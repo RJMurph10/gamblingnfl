@@ -8,3 +8,18 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+## Project rules
+
+- Pages live in `src/routes/` (flat dot-naming); shared UI primitives for the
+  analytics surfaces live in `src/components/booth.tsx` so tables, panels, and
+  stat widgets stay visually consistent.
+- All displayed data flows through accessor functions in `src/data/*.ts`
+  (placeholder sample data today) so the backend can be swapped in one place
+  without touching pages.
+- Statistical computation belongs to the Python layer documented in
+  `python/README.md`; the site only reads precomputed/derived tables.
+- The database schema is maintained as plain SQL in `supabase/schema.sql` and
+  applied to the user's own Supabase project; the site never seeds data.
+- Colors, fonts, and effects are tokens/utilities in `src/styles.css`; never
+  hardcode color utilities in components (team brand colors are data-driven).
