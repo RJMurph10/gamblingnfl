@@ -115,9 +115,6 @@ export function TeamCard({ team }: { team: Team }) {
         <span className="block truncate font-disp text-lg font-semibold uppercase leading-none tracking-tight">
           {team.name.toUpperCase()}
         </span>
-        <span className="mt-1 block font-mono text-[10px] uppercase tracking-wider text-faint">
-          {"\n"}
-        </span>
       </span>
     </Link>
   );
