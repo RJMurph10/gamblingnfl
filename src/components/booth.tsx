@@ -113,10 +113,10 @@ export function TeamCard({ team }: { team: Team }) {
       <TeamMark team={team} />
       <span className="min-w-0">
         <span className="block truncate font-disp text-lg font-semibold uppercase leading-none tracking-tight">
-          {team.name}
+          {team.name.toUpperCase()}
         </span>
         <span className="mt-1 block font-mono text-[10px] uppercase tracking-wider text-faint">
-          {team.city} · {team.record.w}-{team.record.l}
+          {"\n"}
         </span>
       </span>
     </Link>
