@@ -236,14 +236,19 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
     const rawDrives = d?.drives?.previous ?? [];
     base.drives = rawDrives.map((dr: any, i: number): Drive => {
       const teamId = teamByAbbr(dr?.team?.abbreviation ?? "")?.id ?? base.awayTeamId;
+      const top = dr?.timeOfPossession;
+      const yl = Number(dr?.start?.yardLine ?? NaN);
+      const startAt = dr?.start?.text
+        ?? (Number.isFinite(yl) ? (yl <= 50 ? `Own ${yl}` : `Opp ${100 - yl}`) : "—");
       return {
         index: i + 1,
         teamId,
         quarter: Number(dr?.period?.number ?? dr?.start?.period?.number ?? 1),
         plays: Number(dr?.offensivePlays ?? 0),
         yards: Number(dr?.yards ?? 0),
-        timeOfPossession: dr?.timeOfPossession?.displayValue ?? "0:00",
-        startAt: dr?.start?.yardLine ? `Own ${dr.start.yardLine}` : (dr?.start?.text ?? "—"),
+        timeOfPossession:
+          typeof top === "string" ? top : (top?.displayValue ?? "0:00"),
+        startAt,
         result: mapDriveResult(dr?.displayResult ?? dr?.result),
       };
     });
