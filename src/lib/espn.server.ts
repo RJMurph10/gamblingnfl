@@ -212,6 +212,18 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
     const base = mapEvent({ id: eventId, date: comp.date ?? d?.header?.date, competitions: [comp] }, week);
     if (!base) return null;
 
+    // The summary header omits quarter linescores and venue; merge them from
+    // the week's scoreboard event.
+    const sb = await fetchJson(`${SCOREBOARD}?dates=${SEASON}&seasontype=2&week=${week}&limit=100`).catch(() => null);
+    const sbEvent = sb?.events?.find((e: any) => String(e?.id) === String(eventId));
+    const sbGame = sbEvent ? mapEvent(sbEvent, week) : null;
+    if (sbGame) {
+      base.quarters = sbGame.quarters;
+      base.venue = sbGame.venue !== "TBD" ? sbGame.venue : base.venue;
+      if (sbGame.spread !== "—") base.spread = sbGame.spread;
+      if (sbGame.total > 0) base.total = sbGame.total;
+    }
+
     const awayStats = d?.boxscore?.teams?.find(
       (t: any) => teamByAbbr(t?.team?.abbreviation ?? "")?.id === base.awayTeamId,
     );
