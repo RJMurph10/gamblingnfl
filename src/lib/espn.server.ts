@@ -217,6 +217,9 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
     const sb = await fetchJson(`${SCOREBOARD}?dates=${SEASON}&seasontype=2&week=${week}&limit=100`).catch(() => null);
     const sbEvent = sb?.events?.find((e: any) => String(e?.id) === String(eventId));
     const sbGame = sbEvent ? mapEvent(sbEvent, week) : null;
+    if (base.venue === "TBD" && d?.gameInfo?.venue?.fullName) {
+      base.venue = d.gameInfo.venue.fullName;
+    }
     if (sbGame) {
       base.quarters = sbGame.quarters;
       base.venue = sbGame.venue !== "TBD" ? sbGame.venue : base.venue;
