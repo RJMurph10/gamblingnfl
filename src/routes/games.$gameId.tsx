@@ -1,4 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import {
   DriveRail,
   DriveTable,
@@ -12,15 +13,28 @@ import {
 } from "@/components/booth";
 import { gameById, gameScore } from "@/data/games";
 import { teamById } from "@/data/teams";
+import { getLiveGame } from "@/lib/espn.functions";
 
 export const Route = createFileRoute("/games/$gameId")({
   loader: ({ params }) => {
+    // Live ESPN games resolve client-side; only sample ids go through the loader.
+    if (params.gameId.startsWith("espn-")) return { game: null };
     const game = gameById(params.gameId);
     if (!game) throw notFound();
     return { game };
   },
-  head: ({ loaderData }) => {
-    if (!loaderData) {
+  head: ({ loaderData, params }) => {
+    if (params.gameId.startsWith("espn-")) {
+      return {
+        meta: [
+          { title: "Game — GamblingNFL" },
+          { name: "description", content: "Live 2026 NFL game detail: quarter-by-quarter line score, drive chart, team statistics, and box score." },
+          { property: "og:title", content: "Game — GamblingNFL" },
+          { property: "og:description", content: "Live game breakdown with line score, drives, team stats, and box score." },
+        ],
+      };
+    }
+    if (!loaderData?.game) {
       return {
         meta: [{ title: "Game not found — GamblingNFL" }, { name: "robots", content: "noindex" }],
       };
@@ -43,7 +57,35 @@ export const Route = createFileRoute("/games/$gameId")({
 });
 
 function GamePage() {
-  const { game } = Route.useLoaderData();
+  const { game: sampleGame } = Route.useLoaderData();
+  const { gameId } = Route.useParams();
+  const isLive = gameId.startsWith("espn-");
+
+  const { data: liveGame, isLoading } = useQuery({
+    queryKey: ["live-game", gameId],
+    queryFn: () => getLiveGame({ data: { eventId: gameId.replace(/^espn-/, "") } }),
+    enabled: isLive,
+    staleTime: 5 * 60 * 1000,
+    retry: 1,
+  });
+
+  const game = isLive ? (liveGame ?? undefined) : sampleGame;
+
+  if (isLive && isLoading) {
+    return (
+      <PageTitle eyebrow="2026 Season · Live data" title="Loading game…" />
+    );
+  }
+  if (!game) {
+    return (
+      <PageTitle
+        eyebrow="2026 Season"
+        title="Game unavailable"
+        aside={<span className="label-mono">detail feed not reachable</span>}
+      />
+    );
+  }
+
   const away = teamById(game.awayTeamId);
   const home = teamById(game.homeTeamId);
   const score = gameScore(game);
@@ -54,7 +96,7 @@ function GamePage() {
       <PageTitle
         eyebrow={`Week ${game.week} · ${game.venue} · ${game.kickoff}`}
         title={`${away.abbr} @ ${home.abbr}`}
-        aside={<SampleBadge />}
+        aside={isLive ? undefined : <SampleBadge />}
       />
 
       <Panel className="flex flex-wrap items-center gap-4">
@@ -84,7 +126,7 @@ function GamePage() {
           <TeamMark team={home} />
         </Link>
         <span className="ml-auto font-mono text-[11px] uppercase tracking-wider text-faint">
-          {game.spread} · O/U {game.total} · {game.status}
+          {game.spread} · {game.total > 0 ? `O/U ${game.total}` : "O/U —"} · {game.status}
         </span>
       </Panel>
 
@@ -96,14 +138,18 @@ function GamePage() {
           <div className="mt-3">
             <LineScore game={game} />
           </div>
-          <p className="label-mono mt-4">Drive rail · {away.abbr}</p>
-          <div className="mt-1.5">
-            <DriveRail game={game} teamId={away.id} />
-          </div>
-          <p className="label-mono mt-3">Drive rail · {home.abbr}</p>
-          <div className="mt-1.5">
-            <DriveRail game={game} teamId={home.id} />
-          </div>
+          {game.drives.length > 0 && (
+            <>
+              <p className="label-mono mt-4">Drive rail · {away.abbr}</p>
+              <div className="mt-1.5">
+                <DriveRail game={game} teamId={away.id} />
+              </div>
+              <p className="label-mono mt-3">Drive rail · {home.abbr}</p>
+              <div className="mt-1.5">
+                <DriveRail game={game} teamId={home.id} />
+              </div>
+            </>
+          )}
         </Panel>
 
         <Panel className="lg:col-span-7">
@@ -125,7 +171,13 @@ function GamePage() {
             title="Drive by drive"
             aside={<span className="label-mono">{game.drives.length} drives</span>}
           />
-          <DriveTable game={game} />
+          {game.drives.length === 0 ? (
+            <p className="px-4 py-6 font-mono text-[11px] uppercase tracking-wider text-faint">
+              Drives populate once the game is played.
+            </p>
+          ) : (
+            <DriveTable game={game} />
+          )}
         </Panel>
       </section>
 
@@ -134,7 +186,7 @@ function GamePage() {
           <PanelHeader title="Player statistics" aside={<span className="label-mono">box score</span>} />
           {game.boxScore.length === 0 ? (
             <p className="px-4 py-6 font-mono text-[11px] uppercase tracking-wider text-faint">
-              Box score populates once player-level data is imported.
+              Box score populates once the game is played.
             </p>
           ) : (
             <div className="overflow-x-auto">
