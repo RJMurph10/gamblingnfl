@@ -9,6 +9,7 @@ import {
   SampleBadge,
   StatCard,
   StatComparison,
+  TeamLogo,
   TeamMark,
 } from "@/components/booth";
 import { games } from "@/data/games";
@@ -93,10 +94,10 @@ function Dashboard() {
                   key={team.id}
                   to="/teams/$teamId"
                   params={{ teamId: team.id }}
-                  className="glass grid aspect-square place-items-center rounded-xl font-disp text-base font-bold uppercase hover:glow"
+                  className="glass grid aspect-square place-items-center rounded-xl hover:glow"
                   style={{ boxShadow: `inset 0 0 0 1px ${team.color}44` }}
                 >
-                  {team.abbr}
+                  <TeamLogo team={team} className="size-9" />
                 </Link>
               ))}
             </div>

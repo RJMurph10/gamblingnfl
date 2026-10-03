@@ -1,9 +1,9 @@
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import type { Team } from "@/data/teams";
 import type { Game, TeamGameStats } from "@/data/games";
 import { gameScore } from "@/data/games";
-import { teamById } from "@/data/teams";
+import { teamById, teamLogo } from "@/data/teams";
 
 /* ---------- primitives ---------- */
 
@@ -91,15 +91,42 @@ export function TeamMark({
   team: Team;
   size?: "sm" | "md" | "lg";
 }) {
-  const dims =
-    size === "sm" ? "size-7 text-[11px]" : size === "lg" ? "size-14 text-xl" : "size-10 text-sm";
+  const [failed, setFailed] = useState(false);
+  const dims = size === "sm" ? "size-7" : size === "lg" ? "size-14" : "size-10";
+  if (failed) {
+    return (
+      <span
+        className={`glass grid ${dims} shrink-0 place-items-center rounded-xl font-disp text-[11px] font-bold uppercase`}
+        style={{ boxShadow: `inset 0 0 0 1px ${team.color}55, 0 0 18px -8px ${team.color}` }}
+      >
+        {team.abbr}
+      </span>
+    );
+  }
   return (
-    <span
-      className={`glass grid ${dims} shrink-0 place-items-center rounded-xl font-disp font-bold uppercase`}
-      style={{ boxShadow: `inset 0 0 0 1px ${team.color}55, 0 0 18px -8px ${team.color}` }}
-    >
-      {team.abbr}
-    </span>
+    <img
+      src={teamLogo(team)}
+      alt={`${team.city} ${team.name} logo`}
+      className={`${dims} shrink-0 object-contain`}
+      loading="lazy"
+      onError={() => setFailed(true)}
+    />
+  );
+}
+
+export function TeamLogo({ team, className = "size-4" }: { team: Team; className?: string }) {
+  const [failed, setFailed] = useState(false);
+  if (failed) {
+    return <span className="font-mono text-[10px] uppercase text-mute">{team.abbr}</span>;
+  }
+  return (
+    <img
+      src={teamLogo(team)}
+      alt={`${team.city} ${team.name} logo`}
+      className={`inline-block shrink-0 object-contain ${className}`}
+      loading="lazy"
+      onError={() => setFailed(true)}
+    />
   );
 }
 
@@ -321,9 +348,9 @@ export function GameRow({ game }: { game: Game }) {
         <Link
           to="/games/$gameId"
           params={{ gameId: game.id }}
-          className="font-medium hover:text-acc"
+          className="inline-flex items-center gap-1.5 font-medium hover:text-acc"
         >
-          {away.abbr} @ {home.abbr}
+          <TeamLogo team={away} /> {away.abbr} @ <TeamLogo team={home} /> {home.abbr}
         </Link>
       </td>
       <td className="px-2 py-2.5 font-mono text-mute">WK {game.week}</td>

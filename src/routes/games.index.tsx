@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { PageTitle, Panel, PanelHeader, SampleBadge } from "@/components/booth";
+import { PageTitle, Panel, PanelHeader, SampleBadge, TeamLogo } from "@/components/booth";
 import { gameScore, games, weeks } from "@/data/games";
 import { teamById } from "@/data/teams";
 
@@ -64,8 +64,8 @@ function GamesPage() {
                           { team: home, pts: score.home },
                         ].map((side) => (
                           <div key={side.team.id} className="flex items-center justify-between">
-                            <span className="font-disp text-lg font-semibold uppercase leading-none tracking-tight">
-                              {side.team.abbr}{" "}
+                            <span className="flex items-center gap-1.5 font-disp text-lg font-semibold uppercase leading-none tracking-tight">
+                              <TeamLogo team={side.team} /> {side.team.abbr}{" "}
                               <span className="font-body text-xs font-normal normal-case text-mute">
                                 {side.team.name}
                               </span>
