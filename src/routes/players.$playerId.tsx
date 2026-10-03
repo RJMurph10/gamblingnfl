@@ -71,7 +71,7 @@ function PlayerPage() {
       </div>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-12">
-        <section className="lg:col-span-7">
+        <section className="min-w-0 lg:col-span-7">
           <Panel padded={false}>
             <PanelHeader title="Game log" aside={<span className="label-mono">last 5</span>} />
             <div className="overflow-x-auto">
@@ -116,7 +116,7 @@ function PlayerPage() {
           </Panel>
         </section>
 
-        <section className="lg:col-span-5">
+        <section className="min-w-0 lg:col-span-5">
           <Panel>
             <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">
               Prop projections

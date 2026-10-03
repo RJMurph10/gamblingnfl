@@ -73,7 +73,7 @@ function TeamPage() {
       </div>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-12">
-        <section className="lg:col-span-7">
+        <section className="min-w-0 lg:col-span-7">
           <Panel padded={false}>
             <PanelHeader title="Games" aside={<span className="label-mono">sample schedule</span>} />
             {schedule.length === 0 ? (
@@ -103,7 +103,7 @@ function TeamPage() {
           </Panel>
         </section>
 
-        <section className="lg:col-span-5">
+        <section className="min-w-0 lg:col-span-5">
           <Panel padded={false}>
             <PanelHeader title="Roster" aside={<span className="label-mono">sample</span>} />
             {roster.length === 0 ? (

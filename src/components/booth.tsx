@@ -16,7 +16,7 @@ export function Panel({
   className?: string;
   padded?: boolean;
 }) {
-  return <div className={`glass ${padded ? "p-4" : "overflow-hidden"} ${className}`}>{children}</div>;
+  return <div className={`glass min-w-0 ${padded ? "p-4" : "overflow-hidden"} ${className}`}>{children}</div>;
 }
 
 export function PanelHeader({ title, aside }: { title: string; aside?: ReactNode }) {

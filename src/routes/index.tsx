@@ -52,7 +52,7 @@ function Dashboard() {
       </section>
 
       <div className="grid gap-6 lg:grid-cols-12">
-        <section className="lg:col-span-8">
+        <section className="min-w-0 lg:col-span-8">
           <Panel padded={false}>
             <PanelHeader
               title="Recent games"
@@ -83,7 +83,7 @@ function Dashboard() {
           </Panel>
         </section>
 
-        <aside className="lg:col-span-4">
+        <aside className="min-w-0 lg:col-span-4">
           <Panel>
             <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">Team grid</h2>
             <p className="label-mono mb-3">32 clubs · tap to open</p>
