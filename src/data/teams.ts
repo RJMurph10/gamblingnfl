@@ -73,6 +73,10 @@ export const teamById = (id: string): Team | undefined => teams.find((t) => t.id
 export const teamByAbbr = (abbr: string): Team | undefined =>
   teams.find((t) => t.abbr.toLowerCase() === abbr.toLowerCase());
 
+/** Team logo asset from ESPN's public team-logo CDN, keyed by lowercase abbreviation. */
+export const teamLogo = (team: Team): string =>
+  `https://a.espncdn.com/i/teamlogos/nfl/500/${team.abbr.toLowerCase()}.png`;
+
 export const divisions: { conference: Conference; division: DivisionName }[] = [
   { conference: "AFC", division: "East" },
   { conference: "AFC", division: "North" },
