@@ -36,7 +36,6 @@ function TeamsPage() {
                 <h2 className="font-disp text-lg font-semibold uppercase tracking-tight">
                   {conference} {division}
                 </h2>
-                <span className="label-mono">4 clubs</span>
               </div>
               <div className="grid gap-2 sm:grid-cols-2">
                 {group.map((team) => (
