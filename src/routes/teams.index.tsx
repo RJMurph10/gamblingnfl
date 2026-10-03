@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PageTitle, Panel, SampleBadge, TeamCard } from "@/components/booth";
 import { divisions, teams } from "@/data/teams";
 
-export const Route = createFileRoute("/teams")({
+export const Route = createFileRoute("/teams/")({
   head: () => ({
     meta: [
       { title: "All 32 NFL Teams — GamblingNFL" },
