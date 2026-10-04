@@ -65,7 +65,11 @@ function Dashboard() {
   return (
     <>
       <section className="mb-6">
-        <PageTitle eyebrow="Home dashboard" title="Season Pulse" aside={<SampleBadge />} />
+        <PageTitle
+          eyebrow={isLive ? "Home dashboard · 2026 live data" : "Home dashboard"}
+          title="Season Pulse"
+          aside={isLive ? undefined : <SampleBadge />}
+        />
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
           <StatCard label="Win rate" value="54.2" unit="%" note="▲ 2.1 wk/wk" tone="win" />
           <StatCard label="Avg total" value="47.8" note="o/u line 45.5" />
@@ -213,17 +217,27 @@ function Dashboard() {
             <div className="mt-3">
               <LineScore game={featured} />
             </div>
-            <p className="label-mono mt-4">Drive rail · away</p>
-            <div className="mt-1.5">
-              <DriveRail game={featured} teamId={featured.awayTeamId} />
-            </div>
+            {gamecast && gamecast.drives.length > 0 ? (
+              <>
+                <p className="label-mono mt-4">Drive rail · away</p>
+                <div className="mt-1.5">
+                  <DriveRail game={gamecast} teamId={gamecast.awayTeamId} />
+                </div>
+              </>
+            ) : null}
           </Panel>
           <Panel className="lg:col-span-7">
             <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">
               Team comparison
             </h2>
             <div className="mt-4">
-              <StatComparison game={featured} />
+              {gamecast ? (
+                <StatComparison game={gamecast} />
+              ) : (
+                <p className="font-mono text-[11px] uppercase tracking-wider text-faint">
+                  Loading team stats…
+                </p>
+              )}
             </div>
             <div className="mt-4 flex flex-wrap items-center gap-2 rounded-lg bg-panel2 p-2 ring-1 ring-line/10">
               <span className="label-mono">Prop projection</span>
