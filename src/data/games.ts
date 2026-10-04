@@ -42,6 +42,7 @@ export interface BoxScoreLine {
 export interface Game {
   id: string;
   week: number;
+  date: string;
   kickoff: string;
   status: "final" | "live" | "scheduled";
   venue: string;
@@ -83,6 +84,7 @@ export const games: Game[] = [
     id: "2025-w09-kc-buf",
     week: 9,
     kickoff: "Sun 4:25 PM ET",
+    date: "Sun, Nov 2",
     status: "final",
     venue: "Highmark Stadium",
     awayTeamId: "chiefs",
@@ -106,6 +108,7 @@ export const games: Game[] = [
     id: "2025-w09-bal-cin",
     week: 9,
     kickoff: "Sun 1:00 PM ET",
+    date: "Sun, Nov 2",
     status: "final",
     venue: "Paycor Stadium",
     awayTeamId: "ravens",
@@ -127,6 +130,7 @@ export const games: Game[] = [
     id: "2025-w09-det-gb",
     week: 9,
     kickoff: "Sun 8:20 PM ET",
+    date: "Sun, Nov 2",
     status: "final",
     venue: "Lambeau Field",
     awayTeamId: "lions",
@@ -149,6 +153,7 @@ export const games: Game[] = [
     id: "2025-w09-sf-lar",
     week: 9,
     kickoff: "Sun 4:05 PM ET",
+    date: "Sun, Nov 2",
     status: "final",
     venue: "SoFi Stadium",
     awayTeamId: "49ers",
@@ -169,6 +174,7 @@ export const games: Game[] = [
     id: "2025-w09-phi-was",
     week: 9,
     kickoff: "Sun 1:00 PM ET",
+    date: "Sun, Nov 2",
     status: "final",
     venue: "Northwest Stadium",
     awayTeamId: "eagles",
@@ -189,6 +195,7 @@ export const games: Game[] = [
     id: "2025-w10-hou-ind",
     week: 10,
     kickoff: "Sun 1:00 PM ET",
+    date: "Sun, Nov 9",
     status: "scheduled",
     venue: "Lucas Oil Stadium",
     awayTeamId: "texans",
@@ -207,6 +214,7 @@ export const games: Game[] = [
     id: "2025-w10-dal-chi",
     week: 10,
     kickoff: "Sun 4:25 PM ET",
+    date: "Sun, Nov 9",
     status: "scheduled",
     venue: "Soldier Field",
     awayTeamId: "cowboys",
@@ -225,6 +233,7 @@ export const games: Game[] = [
     id: "2025-w10-kc-den",
     week: 10,
     kickoff: "Sun 8:20 PM ET",
+    date: "Sun, Nov 9",
     status: "scheduled",
     venue: "Empower Field",
     awayTeamId: "chiefs",

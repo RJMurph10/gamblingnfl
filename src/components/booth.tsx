@@ -350,7 +350,8 @@ export function GameRow({
   if (!away || !home) return null;
   return (
     <tr className="hover:bg-line/5">
-      <td className="px-4 py-2.5">
+      <td className="whitespace-nowrap px-4 py-2.5 font-mono text-mute">{game.date}</td>
+      <td className="px-2 py-2.5">
         <Link
           to="/games/$gameId"
           params={{ gameId: game.id }}
@@ -359,7 +360,6 @@ export function GameRow({
           <TeamLogo team={away} /> {away.abbr} @ <TeamLogo team={home} /> {home.abbr}
         </Link>
       </td>
-      <td className="px-2 py-2.5 font-mono text-mute">WK {game.week}</td>
       <td className="px-2 py-2.5 text-right font-mono tabular-nums">
         {game.status === "scheduled" ? "—" : `${score.away}–${score.home}`}
       </td>
