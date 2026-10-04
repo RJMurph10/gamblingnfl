@@ -47,6 +47,8 @@ export interface Game {
   kickoff: string;
   status: "final" | "live" | "scheduled";
   venue: string;
+  /** City, state (or city, country for international games). */
+  location: string;
   awayTeamId: string;
   homeTeamId: string;
   quarters: { away: number[]; home: number[] };
