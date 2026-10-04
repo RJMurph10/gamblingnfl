@@ -23,3 +23,6 @@
   applied to the user's own Supabase project; the site never seeds data.
 - Colors, fonts, and effects are tokens/utilities in `src/styles.css`; never
   hardcode color utilities in components (team brand colors are data-driven).
+
+## Live data
+- Games pages read the real 2026 NFL schedule/results from ESPN public feeds via src/lib/espn.server.ts (scoreboard + summary, 5-min module cache) exposed through src/lib/espn.functions.ts; sample data in src/data/games.ts is only a fallback when the feed is unreachable. Game ids from ESPN are prefixed `espn-`.
