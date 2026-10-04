@@ -94,6 +94,7 @@ function Dashboard() {
                 <thead>
                   <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
                     <th className="px-4 py-2 font-normal">Date</th>
+                    <th className="px-2 py-2 font-normal">Time</th>
                     <th className="px-2 py-2 font-normal">Matchup</th>
                     <th className="px-2 py-2 text-right font-normal">Score</th>
                     <th className="px-2 py-2 text-right font-normal">Spread</th>

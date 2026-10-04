@@ -80,6 +80,17 @@ function formatGameDate(iso: string | undefined): string {
   });
 }
 
+function formatGameTime(iso: string | undefined): string {
+  if (!iso) return "TBD";
+  return (
+    new Date(iso).toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+      timeZone: "America/New_York",
+    }) + " ET"
+  );
+}
+
 function mapEvent(event: any, week: number): Game | null {
   const comp = event?.competitions?.[0];
   if (!comp) return null;
@@ -100,6 +111,7 @@ function mapEvent(event: any, week: number): Game | null {
     week,
     kickoff: formatKickoff(event.date),
     date: formatGameDate(event.date),
+    time: formatGameTime(event.date),
     status: mapStatus(comp.status?.type?.name),
     venue: comp.venue?.fullName ?? "TBD",
     awayTeamId: awayTeam.id,

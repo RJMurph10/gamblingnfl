@@ -43,6 +43,7 @@ export interface Game {
   id: string;
   week: number;
   date: string;
+  time?: string;
   kickoff: string;
   status: "final" | "live" | "scheduled";
   venue: string;
