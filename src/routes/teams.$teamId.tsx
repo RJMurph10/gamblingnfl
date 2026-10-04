@@ -1,4 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import {
   GameRow,
   PageTitle,
@@ -8,9 +9,10 @@ import {
   StatCard,
   TeamMark,
 } from "@/components/booth";
-import { gamesByTeam } from "@/data/games";
+import { gamesByTeam, gameScore } from "@/data/games";
 import { playersByTeam } from "@/data/players";
 import { teamById } from "@/data/teams";
+import { getLiveSchedule } from "@/lib/espn.functions";
 
 export const Route = createFileRoute("/teams/$teamId")({
   loader: ({ params }) => {
@@ -39,9 +41,45 @@ export const Route = createFileRoute("/teams/$teamId")({
 
 function TeamPage() {
   const { team } = Route.useLoaderData();
+  const { data: liveGames } = useQuery({
+    queryKey: ["live-schedule"],
+    queryFn: () => getLiveSchedule(),
+    staleTime: 5 * 60 * 1000,
+    retry: 1,
+  });
+  const liveTeamGames = (liveGames ?? []).filter(
+    (g) => g.homeTeamId === team.id || g.awayTeamId === team.id,
+  );
+  const isLive = liveTeamGames.length > 0;
+  const schedule = (isLive ? liveTeamGames : gamesByTeam(team.id))
+    .slice()
+    .sort((a, b) => a.week - b.week);
   const roster = playersByTeam(team.id);
-  const schedule = gamesByTeam(team.id);
-  const played = team.record.w + team.record.l + team.record.t;
+
+  let record = team.record;
+  let pointsFor = team.pointsFor;
+  let pointsAgainst = team.pointsAgainst;
+  if (isLive) {
+    const finals = schedule.filter((g) => g.status === "final");
+    let w = 0;
+    let l = 0;
+    let t = 0;
+    pointsFor = 0;
+    pointsAgainst = 0;
+    for (const g of finals) {
+      const s = gameScore(g);
+      const mine = g.homeTeamId === team.id ? s.home : s.away;
+      const theirs = g.homeTeamId === team.id ? s.away : s.home;
+      pointsFor += mine;
+      pointsAgainst += theirs;
+      if (mine > theirs) w++;
+      else if (mine < theirs) l++;
+      else t++;
+    }
+    record = { w, l, t };
+  }
+  const played = record.w + record.l + record.t;
+  const perGame = (n: number) => (played > 0 ? (n / played).toFixed(1) : "0.0");
 
   return (
     <>
