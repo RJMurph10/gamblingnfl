@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import {
   DriveRail,
   GameRow,
@@ -15,6 +16,7 @@ import {
 import { games } from "@/data/games";
 import { players } from "@/data/players";
 import { teams } from "@/data/teams";
+import { getLiveGame, getLiveSchedule } from "@/lib/espn.functions";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -36,8 +38,28 @@ export const Route = createFileRoute("/")({
 });
 
 function Dashboard() {
-  const recent = games.filter((g) => g.status === "final").slice(0, 5);
+  const { data: liveGames } = useQuery({
+    queryKey: ["live-schedule"],
+    queryFn: () => getLiveSchedule(),
+    staleTime: 5 * 60 * 1000,
+    retry: 1,
+  });
+  const isLive = !!liveGames && liveGames.length > 0;
+  const source = isLive ? liveGames : games;
+  const recent = source
+    .filter((g) => g.status === "final")
+    .sort((a, b) => b.week - a.week)
+    .slice(0, 5);
   const featured = recent[0];
+  const featuredIsLive = !!featured && featured.id.startsWith("espn-");
+  const { data: featuredDetail } = useQuery({
+    queryKey: ["live-game", featured?.id],
+    queryFn: () => getLiveGame({ data: { eventId: featured!.id.replace(/^espn-/, "") } }),
+    enabled: featuredIsLive,
+    staleTime: 5 * 60 * 1000,
+    retry: 1,
+  });
+  const gamecast = featured ? (featuredIsLive ? (featuredDetail ?? null) : featured) : null;
   const topPlayers = [...players].sort((a, b) => b.season.yards - a.season.yards).slice(0, 5);
 
   return (
