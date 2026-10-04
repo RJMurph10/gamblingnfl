@@ -66,9 +66,9 @@ function Dashboard() {
     <>
       <section className="mb-6">
         <PageTitle
-          eyebrow={isLive ? "Home dashboard · 2026 live data" : "Home dashboard"}
+          eyebrow={isLive ? "Home dashboard · 2026 live schedule" : "Home dashboard"}
           title="Season Pulse"
-          aside={isLive ? undefined : <SampleBadge />}
+          aside={<SampleBadge />}
         />
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
           <StatCard label="Win rate" value="54.2" unit="%" note="▲ 2.1 wk/wk" tone="win" />
