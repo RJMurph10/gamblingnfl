@@ -337,7 +337,13 @@ export function StatComparison({ game }: { game: Game }) {
   );
 }
 
-export function GameRow({ game }: { game: Game }) {
+export function GameRow({
+  game,
+  showMarket = true,
+}: {
+  game: Game;
+  showMarket?: boolean;
+}) {
   const away = teamById(game.awayTeamId);
   const home = teamById(game.homeTeamId);
   const score = gameScore(game);
@@ -357,8 +363,12 @@ export function GameRow({ game }: { game: Game }) {
       <td className="px-2 py-2.5 text-right font-mono tabular-nums">
         {game.status === "scheduled" ? "—" : `${score.away}–${score.home}`}
       </td>
-      <td className="px-2 py-2.5 text-right font-mono tabular-nums text-mute">{game.spread}</td>
-      <td className="px-4 py-2.5 text-right font-mono tabular-nums text-mute">{game.total}</td>
+      {showMarket ? (
+        <>
+          <td className="px-2 py-2.5 text-right font-mono tabular-nums text-mute">{game.spread}</td>
+          <td className="px-4 py-2.5 text-right font-mono tabular-nums text-mute">{game.total}</td>
+        </>
+      ) : null}
     </tr>
   );
 }
