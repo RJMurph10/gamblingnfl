@@ -376,9 +376,6 @@ export function GameRow({
         </Link>
       </td>
       <td className="whitespace-nowrap px-2 py-2.5 font-mono text-mute">{game.location}</td>
-      <td className="px-2 py-2.5 text-right font-mono tabular-nums">
-        {game.status === "scheduled" ? "—" : `${score.away}–${score.home}`}
-      </td>
       {showMarket ? (
         <>
           <td className="px-2 py-2.5 text-right font-mono tabular-nums text-mute">{game.spread}</td>
