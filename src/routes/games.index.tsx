@@ -1,7 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { PageTitle, Panel, PanelHeader, SampleBadge, TeamLogo } from "@/components/booth";
-import { gameScore, games, weeks } from "@/data/games";
+import { gameScore, games as sampleGames, weeks as sampleWeeks } from "@/data/games";
 import { teamById } from "@/data/teams";
+import { getLiveSchedule } from "@/lib/espn.functions";
 
 export const Route = createFileRoute("/games/")({
   head: () => ({
@@ -10,12 +12,12 @@ export const Route = createFileRoute("/games/")({
       {
         name: "description",
         content:
-          "NFL games grouped by week with scores, spreads, and totals, linking to quarter-by-quarter and drive-by-drive game detail.",
+          "Live 2026 NFL schedule and results grouped by week, linking to quarter-by-quarter and drive-by-drive game detail.",
       },
       { property: "og:title", content: "Games by Week — GamblingNFL" },
       {
         property: "og:description",
-        content: "Weekly slate with scores, spreads, totals, and full game breakdowns.",
+        content: "Weekly slate with live scores, spreads, totals, and full game breakdowns.",
       },
     ],
   }),
@@ -23,9 +25,26 @@ export const Route = createFileRoute("/games/")({
 });
 
 function GamesPage() {
+  const { data: liveGames } = useQuery({
+    queryKey: ["live-schedule"],
+    queryFn: () => getLiveSchedule(),
+    staleTime: 5 * 60 * 1000,
+    retry: 1,
+  });
+
+  const live = liveGames && liveGames.length > 0;
+  const games = live ? liveGames : sampleGames;
+  const weeks = live
+    ? Array.from(new Set(games.map((g) => g.week))).sort((a, b) => b - a)
+    : sampleWeeks;
+
   return (
     <>
-      <PageTitle eyebrow="Schedule" title="Games" aside={<SampleBadge />} />
+      <PageTitle
+        eyebrow={live ? "2026 Season · Live data" : "Schedule"}
+        title="Games"
+        aside={live ? undefined : <SampleBadge />}
+      />
       <div className="space-y-4">
         {weeks.map((week) => (
           <Panel key={week} padded={false}>
@@ -78,7 +97,7 @@ function GamesPage() {
                       </div>
                       <div className="mt-2 flex justify-between border-t border-line/10 pt-2 font-mono text-[10px] uppercase tracking-wider text-faint">
                         <span>{game.spread}</span>
-                        <span>O/U {game.total}</span>
+                        <span>{game.total > 0 ? `O/U ${game.total}` : "O/U —"}</span>
                       </div>
                     </Link>
                   );
