@@ -70,6 +70,16 @@ function formatKickoff(iso: string | undefined): string {
   );
 }
 
+function formatGameDate(iso: string | undefined): string {
+  if (!iso) return "TBD";
+  return new Date(iso).toLocaleDateString("en-US", {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    timeZone: "America/New_York",
+  });
+}
+
 function mapEvent(event: any, week: number): Game | null {
   const comp = event?.competitions?.[0];
   if (!comp) return null;
@@ -89,6 +99,7 @@ function mapEvent(event: any, week: number): Game | null {
     id: `espn-${event.id}`,
     week,
     kickoff: formatKickoff(event.date),
+    date: formatGameDate(event.date),
     status: mapStatus(comp.status?.type?.name),
     venue: comp.venue?.fullName ?? "TBD",
     awayTeamId: awayTeam.id,
