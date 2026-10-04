@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import {
   DriveRail,
   GameRow,
@@ -15,6 +16,7 @@ import {
 import { games } from "@/data/games";
 import { players } from "@/data/players";
 import { teams } from "@/data/teams";
+import { getLiveGame, getLiveSchedule } from "@/lib/espn.functions";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -36,14 +38,38 @@ export const Route = createFileRoute("/")({
 });
 
 function Dashboard() {
-  const recent = games.filter((g) => g.status === "final").slice(0, 5);
+  const { data: liveGames } = useQuery({
+    queryKey: ["live-schedule"],
+    queryFn: () => getLiveSchedule(),
+    staleTime: 5 * 60 * 1000,
+    retry: 1,
+  });
+  const isLive = !!liveGames && liveGames.length > 0;
+  const source = isLive ? liveGames : games;
+  const recent = source
+    .filter((g) => g.status === "final")
+    .sort((a, b) => b.week - a.week)
+    .slice(0, 5);
   const featured = recent[0];
+  const featuredIsLive = !!featured && featured.id.startsWith("espn-");
+  const { data: featuredDetail } = useQuery({
+    queryKey: ["live-game", featured?.id],
+    queryFn: () => getLiveGame({ data: { eventId: featured!.id.replace(/^espn-/, "") } }),
+    enabled: featuredIsLive,
+    staleTime: 5 * 60 * 1000,
+    retry: 1,
+  });
+  const gamecast = featured ? (featuredIsLive ? (featuredDetail ?? null) : featured) : null;
   const topPlayers = [...players].sort((a, b) => b.season.yards - a.season.yards).slice(0, 5);
 
   return (
     <>
       <section className="mb-6">
-        <PageTitle eyebrow="Home dashboard" title="Season Pulse" aside={<SampleBadge />} />
+        <PageTitle
+          eyebrow={isLive ? "Home dashboard · 2026 live schedule" : "Home dashboard"}
+          title="Season Pulse"
+          aside={<SampleBadge />}
+        />
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
           <StatCard label="Win rate" value="54.2" unit="%" note="▲ 2.1 wk/wk" tone="win" />
           <StatCard label="Avg total" value="47.8" note="o/u line 45.5" />
@@ -191,17 +217,27 @@ function Dashboard() {
             <div className="mt-3">
               <LineScore game={featured} />
             </div>
-            <p className="label-mono mt-4">Drive rail · away</p>
-            <div className="mt-1.5">
-              <DriveRail game={featured} teamId={featured.awayTeamId} />
-            </div>
+            {gamecast && gamecast.drives.length > 0 ? (
+              <>
+                <p className="label-mono mt-4">Drive rail · away</p>
+                <div className="mt-1.5">
+                  <DriveRail game={gamecast} teamId={gamecast.awayTeamId} />
+                </div>
+              </>
+            ) : null}
           </Panel>
           <Panel className="lg:col-span-7">
             <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">
               Team comparison
             </h2>
             <div className="mt-4">
-              <StatComparison game={featured} />
+              {gamecast ? (
+                <StatComparison game={gamecast} />
+              ) : (
+                <p className="font-mono text-[11px] uppercase tracking-wider text-faint">
+                  Loading team stats…
+                </p>
+              )}
             </div>
             <div className="mt-4 flex flex-wrap items-center gap-2 rounded-lg bg-panel2 p-2 ring-1 ring-line/10">
               <span className="label-mono">Prop projection</span>
