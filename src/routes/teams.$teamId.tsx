@@ -97,23 +97,28 @@ function TeamPage() {
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <StatCard
           label="Record"
-          value={`${team.record.w}-${team.record.l}`}
+          value={`${record.w}-${record.l}`}
           note={`${played} games played`}
         />
-        <StatCard label="Points for" value={String(team.pointsFor)} note={`${(team.pointsFor / played).toFixed(1)} per game`} />
-        <StatCard label="Points against" value={String(team.pointsAgainst)} note={`${(team.pointsAgainst / played).toFixed(1)} per game`} />
+        <StatCard label="Points for" value={String(pointsFor)} note={`${perGame(pointsFor)} per game`} />
+        <StatCard label="Points against" value={String(pointsAgainst)} note={`${perGame(pointsAgainst)} per game`} />
         <StatCard
           label="Differential"
-          value={`${team.pointsFor - team.pointsAgainst > 0 ? "+" : ""}${team.pointsFor - team.pointsAgainst}`}
-          note={team.pointsFor >= team.pointsAgainst ? "net positive" : "net negative"}
-          tone={team.pointsFor >= team.pointsAgainst ? "win" : "loss"}
+          value={`${pointsFor - pointsAgainst > 0 ? "+" : ""}${pointsFor - pointsAgainst}`}
+          note={pointsFor >= pointsAgainst ? "net positive" : "net negative"}
+          tone={pointsFor >= pointsAgainst ? "win" : "loss"}
         />
       </div>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-12">
         <section className="min-w-0 lg:col-span-7">
           <Panel padded={false}>
-            <PanelHeader title="Games" aside={<span className="label-mono">sample schedule</span>} />
+            <PanelHeader
+              title="Games"
+              aside={
+                <span className="label-mono">{isLive ? "2026 · live" : "sample schedule"}</span>
+              }
+            />
             {schedule.length === 0 ? (
               <p className="px-4 py-6 font-mono text-[11px] uppercase tracking-wider text-faint">
                 No games in the sample set for this team yet.
