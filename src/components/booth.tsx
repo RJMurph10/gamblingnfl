@@ -360,7 +360,7 @@ export function GameRow({
           params={{ gameId: game.id }}
           className="inline-flex items-center gap-1.5 font-medium hover:text-acc"
         >
-          <TeamLogo team={away} /> {away.abbr} @ <TeamLogo team={home} /> {home.abbr}
+          <TeamLogo team={away} /> @ <TeamLogo team={home} />
         </Link>
       </td>
       <td className="whitespace-nowrap px-2 py-2.5 font-mono text-mute">{game.location}</td>
