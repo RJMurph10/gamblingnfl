@@ -239,19 +239,20 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
     const rawDrives = d?.drives?.previous ?? [];
     base.drives = rawDrives.map((dr: any, i: number): Drive => {
       const teamId = teamByAbbr(dr?.team?.abbreviation ?? "")?.id ?? base.awayTeamId;
-      const top = dr?.timeOfPossession;
-      const yl = Number(dr?.start?.yardLine ?? NaN);
-      const startAt = dr?.start?.text
-        ?? (Number.isFinite(yl) ? (yl <= 50 ? `Own ${yl}` : `Opp ${100 - yl}`) : "—");
+      const clock = (s: any) => {
+        const [m, sec] = String(s?.clock?.displayValue ?? "0:00").split(":").map(Number);
+        return (m || 0) * 60 + (sec || 0);
+      };
+      const topSec = Math.max(0, clock(dr?.start) - clock(dr?.end));
+      const top = `${Math.floor(topSec / 60)}:${String(topSec % 60).padStart(2, "0")}`;
       return {
         index: i + 1,
         teamId,
         quarter: Number(dr?.period?.number ?? dr?.start?.period?.number ?? 1),
         plays: Number(dr?.offensivePlays ?? 0),
         yards: Number(dr?.yards ?? 0),
-        timeOfPossession:
-          typeof top === "string" ? top : (top?.displayValue ?? "0:00"),
-        startAt,
+        timeOfPossession: top,
+        startAt: dr?.start?.text ?? "—",
         result: mapDriveResult(dr?.displayResult ?? dr?.result),
       };
     });
