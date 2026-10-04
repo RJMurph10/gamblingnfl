@@ -351,6 +351,9 @@ export function GameRow({
   return (
     <tr className="hover:bg-line/5">
       <td className="whitespace-nowrap px-4 py-2.5 font-mono text-mute">{game.date}</td>
+      <td className="whitespace-nowrap px-2 py-2.5 font-mono text-mute">
+        {game.time ?? game.kickoff.replace(/^\w+\s+/, "")}
+      </td>
       <td className="px-2 py-2.5">
         <Link
           to="/games/$gameId"
