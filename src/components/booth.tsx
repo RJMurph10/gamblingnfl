@@ -358,8 +358,22 @@ export function GameRow({
         <Link
           to="/games/$gameId"
           params={{ gameId: game.id }}
-          className="inline-flex items-center gap-1.5 font-medium hover:text-acc"
+          className="inline-flex items-center gap-1.5 font-mono tabular-nums font-semibold hover:text-acc"
         >
+          {game.status === "scheduled" ? (
+            <>
+              <TeamLogo team={away} /> <span className="font-sans font-normal text-mute">@</span> <TeamLogo team={home} />
+            </>
+          ) : (
+            <>
+              <span>{score.away}</span>
+              <TeamLogo team={away} />
+              <span className="font-sans font-normal text-mute">@</span>
+              <TeamLogo team={home} />
+              <span>{score.home}</span>
+            </>
+          )}
+        </Link>
           <TeamLogo team={away} /> @ <TeamLogo team={home} />
         </Link>
       </td>
