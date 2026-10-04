@@ -91,6 +91,13 @@ function formatGameTime(iso: string | undefined): string {
   );
 }
 
+function formatLocation(venue: any): string {
+  const addr = venue?.address;
+  if (!addr?.city) return "TBD";
+  const region = addr.state ?? addr.country;
+  return region ? `${addr.city}, ${region}` : addr.city;
+}
+
 function mapEvent(event: any, week: number): Game | null {
   const comp = event?.competitions?.[0];
   if (!comp) return null;
@@ -114,6 +121,7 @@ function mapEvent(event: any, week: number): Game | null {
     time: formatGameTime(event.date),
     status: mapStatus(comp.status?.type?.name),
     venue: comp.venue?.fullName ?? "TBD",
+    location: formatLocation(comp.venue),
     awayTeamId: awayTeam.id,
     homeTeamId: homeTeam.id,
     quarters: {
