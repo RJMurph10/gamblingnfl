@@ -374,8 +374,6 @@ export function GameRow({
             </>
           )}
         </Link>
-          <TeamLogo team={away} /> @ <TeamLogo team={home} />
-        </Link>
       </td>
       <td className="whitespace-nowrap px-2 py-2.5 font-mono text-mute">{game.location}</td>
       <td className="px-2 py-2.5 text-right font-mono tabular-nums">
