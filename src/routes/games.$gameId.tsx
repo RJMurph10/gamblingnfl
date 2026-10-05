@@ -65,9 +65,11 @@ function GamePage() {
     queryKey: ["live-game", gameId],
     queryFn: () => getLiveGame({ data: { eventId: gameId.replace(/^espn-/, "") } }),
     enabled: isLive,
-    staleTime: 5 * 60 * 1000,
+    refetchInterval: 3_500,
+    staleTime: 2_000,
     retry: 1,
   });
+
 
   const game = isLive ? (liveGame ?? undefined) : sampleGame;
 
