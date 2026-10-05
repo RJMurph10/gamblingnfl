@@ -16,7 +16,7 @@ const SUMMARY = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summ
 
 const SEASON = 2026;
 const REGULAR_SEASON_WEEKS = 18;
-const CACHE_TTL_MS = 5 * 60 * 1000;
+const CACHE_TTL_MS = 3 * 1000; // 3-second live server cache
 
 interface CacheEntry<T> {
   at: number;
