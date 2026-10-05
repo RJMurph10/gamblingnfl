@@ -113,8 +113,30 @@ function mapEvent(event: any, week: number): Game | null {
   const homeQ = line(home);
   const odds = comp.odds?.[0];
 
+  const sit = comp.situation;
+  let possession: "away" | "home" | null = null;
+  let isRedZone = false;
+
+  const isLive = comp.status?.type?.name === "STATUS_IN_PROGRESS" || comp.status?.type?.name === "STATUS_HALFTIME";
+  if (isLive && sit) {
+    const possAbbr = sit.possessionText?.split(" ")?.[0];
+    if (possAbbr && away?.team?.abbreviation && possAbbr === away.team.abbreviation) {
+      possession = "away";
+    } else if (possAbbr && home?.team?.abbreviation && possAbbr === home.team.abbreviation) {
+      possession = "home";
+    } else if (sit.lastPlay?.end?.team?.id === away?.team?.id || sit.lastPlay?.team?.id === away?.team?.id) {
+      possession = "away";
+    } else if (sit.lastPlay?.end?.team?.id === home?.team?.id || sit.lastPlay?.team?.id === home?.team?.id) {
+      possession = "home";
+    }
+    isRedZone = Boolean(sit.isRedZone || (typeof sit.yardLine === "number" && sit.yardLine >= 80));
+  }
+
   return {
     id: `espn-${event.id}`,
+    possession,
+    isRedZone,
+
     week,
     kickoff: formatKickoff(event.date),
     date: formatGameDate(event.date),
