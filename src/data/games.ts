@@ -44,6 +44,7 @@ export interface Game {
   week: number;
   date: string;
   time?: string;
+  kickoffIso?: string;
   clock?: string;
   kickoff: string;
   status: "final" | "live" | "scheduled";
