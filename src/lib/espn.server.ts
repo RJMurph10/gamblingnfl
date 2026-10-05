@@ -234,8 +234,8 @@ function mapBoxScore(players: any[], awayTeamId: string, homeTeamId: string): Bo
     if (!teamId || (teamId !== awayTeamId && teamId !== homeTeamId)) continue;
     for (const group of teamBlock?.statistics ?? []) {
       if (!wanted.has(group?.name)) continue;
-      for (const athlete of group?.athletes ?? []) {
-        if (!athlete?.athlete?.displayName) continue;
+      const athlete = group?.athletes?.[0];
+      if (!athlete?.athlete?.displayName) continue;
       const keys: string[] = group.keys ?? [];
       const vals: string[] = athlete.stats ?? [];
       const pick = (...names: string[]) =>
@@ -258,7 +258,6 @@ function mapBoxScore(players: any[], awayTeamId: string, homeTeamId: string): Bo
         teamId,
         statLine,
       });
-      }
     }
   }
   return lines;
@@ -322,44 +321,4 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
     base.boxScore = mapBoxScore(d?.boxscore?.players ?? [], base.awayTeamId, base.homeTeamId);
     return base;
   });
-  export interface LiveRosterPlayer {
-  id: string;
-  name: string;
-  jersey: string;
-  position: string;
-  age?: number;
-  height?: string;
-  weight?: string;
-  headshot?: string;
-  college?: string;
-  experience?: number;
-}
-
-/** Pulls the real active 53+ man roster from ESPN for a team. */
-export async function fetchTeamRoster(teamAbbr: string): Promise<LiveRosterPlayer[]> {
-  return cached(`roster-${teamAbbr.toLowerCase()}`, async () => {
-    const data = await fetchJson(
-      `https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams/${teamAbbr.toLowerCase()}/roster`
-    );
-    const players: LiveRosterPlayer[] = [];
-    for (const group of data?.athletes ?? []) {
-      for (const item of group?.items ?? []) {
-        players.push({
-          id: String(item.id),
-          name: item.fullName ?? `${item.firstName} ${item.lastName}`,
-          jersey: item.jersey ?? "—",
-          position: item.position?.abbreviation ?? "ATH",
-          age: item.age,
-          height: item.displayHeight,
-          weight: item.displayWeight,
-          headshot: item.headshot?.href,
-          college: item.college?.name,
-          experience: item.experience?.years,
-        });
-      }
-    }
-    return players;
-  });
-}
-
 }
