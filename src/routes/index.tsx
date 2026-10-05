@@ -56,6 +56,8 @@ function Dashboard() {
     .filter((g) => g.status === "final")
     .sort((a, b) => b.week - a.week || toTimestamp(b) - toTimestamp(a))
     .slice(0, 5);
+    const live = source.filter((g) => g.status === "live");
+
 
   const featured = recent[0];
   const featuredIsLive = !!featured && featured.id.startsWith("espn-");
@@ -86,7 +88,52 @@ function Dashboard() {
       </section>
 
       <div className="grid gap-6 lg:grid-cols-12">
-        <section className="min-w-0 lg:col-span-8">
+                <section className="min-w-0 lg:col-span-8 space-y-6">
+          <Panel padded={false}>
+            <PanelHeader
+              title={
+                <span className="flex items-center gap-2">
+                  <span
+                    className={`size-2 rounded-full ${
+                      live.length > 0 ? "animate-pulse bg-emerald-400" : "bg-mute/40"
+                    }`}
+                  />
+                  Live games
+                </span>
+              }
+              aside={
+                <span className="font-mono text-[10px] uppercase tracking-wider text-mute">
+                  {live.length > 0 ? `${live.length} in progress` : "None live"}
+                </span>
+              }
+            />
+            {live.length > 0 ? (
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[520px] text-sm">
+                  <thead>
+                    <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
+                      <th className="px-4 py-2 font-normal">Date</th>
+                      <th className="px-2 py-2 font-normal">Time</th>
+                      <th className="px-2 py-2 font-normal">Matchup</th>
+                      <th className="px-2 py-2 font-normal">Venue</th>
+                      <th className="px-2 py-2 text-right font-normal">Spread</th>
+                      <th className="px-4 py-2 text-right font-normal">Total</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-line/5">
+                    {live.map((g) => (
+                      <GameRow key={g.id} game={g} />
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="px-4 py-6 text-center font-mono text-xs text-mute">
+                No games currently in progress
+              </div>
+            )}
+          </Panel>
+
           <Panel padded={false}>
             <PanelHeader
               title="Recent games"
