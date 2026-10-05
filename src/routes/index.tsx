@@ -41,9 +41,11 @@ function Dashboard() {
   const { data: liveGames } = useQuery({
     queryKey: ["live-schedule"],
     queryFn: () => getLiveSchedule(),
-    staleTime: 5 * 60 * 1000,
+    refetchInterval: 3_500, // auto-polls ESPN every 3.5 seconds
+    staleTime: 2_000,
     retry: 1,
   });
+
   const isLive = !!liveGames && liveGames.length > 0;
   const source = isLive ? liveGames : games;
     const toTimestamp = (g: (typeof source)[number]) => {
