@@ -119,18 +119,15 @@ function mapEvent(event: any, week: number): Game | null {
 
   const isLive = comp.status?.type?.name === "STATUS_IN_PROGRESS" || comp.status?.type?.name === "STATUS_HALFTIME";
   if (isLive && sit) {
-    const possAbbr = sit.possessionText?.split(" ")?.[0];
-    if (possAbbr && away?.team?.abbreviation && possAbbr === away.team.abbreviation) {
+    const possId = String(sit.possession ?? sit.lastPlay?.end?.team?.id ?? sit.lastPlay?.team?.id ?? "");
+    if (possId && away?.team?.id && possId === String(away.team.id)) {
       possession = "away";
-    } else if (possAbbr && home?.team?.abbreviation && possAbbr === home.team.abbreviation) {
-      possession = "home";
-    } else if (sit.lastPlay?.end?.team?.id === away?.team?.id || sit.lastPlay?.team?.id === away?.team?.id) {
-      possession = "away";
-    } else if (sit.lastPlay?.end?.team?.id === home?.team?.id || sit.lastPlay?.team?.id === home?.team?.id) {
+    } else if (possId && home?.team?.id && possId === String(home.team.id)) {
       possession = "home";
     }
     isRedZone = Boolean(sit.isRedZone || (typeof sit.yardLine === "number" && sit.yardLine >= 80));
   }
+
 
   return {
     id: `espn-${event.id}`,
