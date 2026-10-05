@@ -1,3 +1,4 @@
+import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -13,10 +14,133 @@ import {
   TeamLogo,
   TeamMark,
 } from "@/components/booth";
-import { games } from "@/data/games";
+import { games, type Game } from "@/data/games";
 import { players } from "@/data/players";
 import { teams } from "@/data/teams";
 import { getLiveGame, getLiveSchedule } from "@/lib/espn.functions";
+
+/* ---------- Upcoming games: slate grouping (Eastern Time) ---------- */
+
+interface Slate {
+  key: string;
+  label: string;
+  dateLabel: string;
+  week: number;
+  games: Game[];
+}
+
+const etFormat = new Intl.DateTimeFormat("en-US", {
+  timeZone: "America/New_York",
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+  weekday: "short",
+  hour: "numeric",
+  minute: "2-digit",
+  hourCycle: "h23",
+});
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+function buildSlates(all: Game[]): Slate[] {
+  const upcoming = all
+    .filter((g) => g.status === "scheduled" && g.kickoffIso)
+    .sort((a, b) => new Date(a.kickoffIso!).getTime() - new Date(b.kickoffIso!).getTime());
+  const slates = new Map<string, Slate>();
+  for (const game of upcoming) {
+    const parts = etFormat.formatToParts(new Date(game.kickoffIso!));
+    const get = (t: string) => parts.find((p) => p.type === t)?.value ?? "";
+    const hour = Number(get("hour"));
+    const weekday = get("weekday");
+    // morning = international window, early = 1:00 PM, late = 4:05/4:25 PM, night = primetime
+    const bucket = hour < 12 ? "morning" : hour < 15 ? "early" : hour < 19 ? "late" : "night";
+    const key = `${get("year")}-${get("month")}-${get("day")}-${bucket}`;
+    if (!slates.has(key)) {
+      const h12 = hour % 12 === 0 ? 12 : hour % 12;
+      slates.set(key, {
+        key,
+        label:
+          bucket === "night"
+            ? `${weekday} Night`
+            : `${weekday} ${h12}:${get("minute")} ${hour < 12 ? "AM" : "PM"}`,
+        dateLabel: `${weekday}, ${MONTHS[Number(get("month")) - 1]} ${Number(get("day"))}`,
+        week: game.week,
+        games: [],
+      });
+    }
+    slates.get(key)!.games.push(game);
+  }
+  return [...slates.values()];
+}
+
+function UpcomingGames({ games: all }: { games: Game[] }) {
+  const slates = useMemo(() => buildSlates(all), [all]);
+  const [selectedKey, setSelectedKey] = useState<string | null>(null);
+  const active = slates.find((s) => s.key === selectedKey) ?? slates[0];
+
+  return (
+    <Panel padded={false}>
+      <PanelHeader
+        title="Upcoming games"
+        aside={
+          active ? (
+            <span className="font-mono text-[10px] uppercase tracking-wider text-mute">
+              Wk {active.week} · {active.dateLabel} · {active.games.length}{" "}
+              {active.games.length === 1 ? "game" : "games"}
+            </span>
+          ) : null
+        }
+      />
+      {active ? (
+        <>
+          <div className="flex gap-2 overflow-x-auto px-4 py-3">
+            {slates.slice(0, 8).map((slate, i) => {
+              const isActive = slate.key === active.key;
+              return (
+                <button
+                  key={slate.key}
+                  type="button"
+                  onClick={() => setSelectedKey(slate.key)}
+                  aria-pressed={isActive}
+                  className={`shrink-0 whitespace-nowrap rounded-full px-3 py-1 font-mono text-[11px] uppercase tracking-wider ring-1 ${
+                    isActive
+                      ? "bg-acc/10 text-acc ring-acc/25"
+                      : "bg-panel2 text-mute ring-line/10 hover:text-acc"
+                  }`}
+                >
+                  {i === 0 ? "Next · " : ""}
+                  {slate.label}
+                </button>
+              );
+            })}
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[620px] text-sm" style={{ tableLayout: "fixed" }}>
+              <thead>
+                <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
+                  <th className="w-[17%] px-4 py-2 font-normal">Date</th>
+                  <th className="w-[15%] px-2 py-2 font-normal">Time</th>
+                  <th className="w-[26%] px-2 py-2 text-center font-normal">Matchup</th>
+                  <th className="w-[22%] px-2 py-2 font-normal">Venue</th>
+                  <th className="w-[10%] px-2 py-2 text-right font-normal">Spread</th>
+                  <th className="w-[10%] px-4 py-2 text-right font-normal">Total</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-line/5">
+                {active.games.map((g) => (
+                  <GameRow key={g.id} game={g} />
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
+      ) : (
+        <div className="px-4 py-6 text-center font-mono text-xs text-mute">
+          No upcoming games scheduled
+        </div>
+      )}
+    </Panel>
+  );
+}
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -139,6 +263,8 @@ function Dashboard() {
               </div>
             )}
           </Panel>
+
+          <UpcomingGames games={source} />
 
           <Panel padded={false}>
             <PanelHeader
