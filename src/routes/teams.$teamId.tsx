@@ -132,7 +132,6 @@ function TeamPage() {
                       <th className="px-2 py-2 font-normal">Time</th>
                       <th className="px-2 py-2 font-normal">Matchup</th>
                       <th className="px-2 py-2 font-normal">Venue</th>
-                      <th className="px-2 py-2 text-right font-normal">Score</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-line/5">
