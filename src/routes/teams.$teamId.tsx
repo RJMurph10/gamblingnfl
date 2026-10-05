@@ -12,7 +12,7 @@ import {
 import { gamesByTeam, gameScore } from "@/data/games";
 import { playersByTeam } from "@/data/players";
 import { teamById } from "@/data/teams";
-import { getLiveSchedule, getTeamRoster } from "@/lib/espn.functions";
+import { getLiveSchedule } from "@/lib/espn.functions";
 
 export const Route = createFileRoute("/teams/$teamId")({
   loader: ({ params }) => {
@@ -55,12 +55,6 @@ function TeamPage() {
     .slice()
     .sort((a, b) => a.week - b.week);
   const roster = playersByTeam(team.id);
-  const { data: liveRoster } = useQuery({
-    queryKey: ["team-roster", team.abbr],
-    queryFn: () => getTeamRoster({ data: { teamAbbr: team.abbr } }),
-    staleTime: 60 * 60 * 1000,
-  });
-  const roster = liveRoster && liveRoster.length > 0 ? liveRoster : [];
 
   let record = team.record;
   let pointsFor = team.pointsFor;
@@ -155,51 +149,40 @@ function TeamPage() {
 
         <section className="min-w-0 lg:col-span-5">
           <Panel padded={false}>
-            <PanelHeader title="Roster" aside={<span className="label-mono">{roster.length} active</span>} />
+            <PanelHeader title="Roster" aside={<span className="label-mono">sample</span>} />
             {roster.length === 0 ? (
               <p className="px-4 py-6 font-mono text-[11px] uppercase tracking-wider text-faint">
-                Loading roster…
+                Roster loads once player data is imported.
               </p>
             ) : (
-              <div className="max-h-[580px] overflow-y-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="sticky top-0 bg-panel text-left font-mono text-[10px] uppercase tracking-wider text-faint">
-                      <th className="px-4 py-2 font-normal">Player</th>
-                      <th className="px-2 py-2 font-normal">Pos</th>
-                      <th className="px-4 py-2 text-right font-normal">Exp</th>
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
+                    <th className="px-4 py-2 font-normal">Player</th>
+                    <th className="px-2 py-2 font-normal">Pos</th>
+                    <th className="px-4 py-2 text-right font-normal">Yds</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-line/5">
+                  {roster.map((p) => (
+                    <tr key={p.id} className="hover:bg-line/5">
+                      <td className="px-4 py-2.5">
+                        <Link
+                          to="/players/$playerId"
+                          params={{ playerId: p.id }}
+                          className="font-medium hover:text-acc"
+                        >
+                          #{p.jersey} {p.firstName} {p.lastName}
+                        </Link>
+                      </td>
+                      <td className="px-2 py-2.5 font-mono text-mute">{p.position}</td>
+                      <td className="px-4 py-2.5 text-right font-mono tabular-nums">
+                        {p.season.yards.toLocaleString()}
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody className="divide-y divide-line/5">
-                    {roster.map((p) => (
-                      <tr key={p.id} className="hover:bg-line/5">
-                        <td className="flex items-center gap-2.5 px-4 py-2">
-                          {p.headshot ? (
-                            <img
-                              src={p.headshot}
-                              alt={p.name}
-                              className="size-7 rounded-full bg-line/10 object-cover"
-                              loading="lazy"
-                            />
-                          ) : (
-                            <span className="size-7 rounded-full bg-line/10 text-center font-mono text-xs leading-7 text-mute">
-                              #{p.jersey}
-                            </span>
-                          )}
-                          <div>
-                            <div className="font-medium text-ink">{p.name}</div>
-                            <div className="font-mono text-[11px] text-faint">#{p.jersey} · {p.college ?? "NFL"}</div>
-                          </div>
-                        </td>
-                        <td className="px-2 py-2 font-mono text-mute">{p.position}</td>
-                        <td className="px-4 py-2 text-right font-mono text-mute">
-                          {p.experience ? `${p.experience}y` : "R"}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                  ))}
+                </tbody>
+              </table>
             )}
           </Panel>
         </section>
