@@ -134,8 +134,9 @@ function mapEvent(event: any, week: number): Game | null {
     possession,
     isRedZone,
 
-    week,
+        week,
     kickoff: formatKickoff(event.date),
+    kickoffIso: event.date,
     date: formatGameDate(event.date),
     time: formatGameTime(event.date),
     clock: comp.status?.type?.detail ?? comp.status?.type?.shortDetail ?? "Live",
