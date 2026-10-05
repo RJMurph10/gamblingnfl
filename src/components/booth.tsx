@@ -360,19 +360,16 @@ export function GameRow({
           params={{ gameId: game.id }}
           className="inline-flex items-center gap-1.5 font-mono tabular-nums font-semibold hover:text-acc"
         >
-          {game.status === "scheduled" ? (
-            <>
-              <TeamLogo team={away} /> <span className="font-sans font-normal text-mute">@</span> <TeamLogo team={home} />
-            </>
-          ) : (
-            <>
-              <span>{score.away}</span>
-              <TeamLogo team={away} />
-              <span className="font-sans font-normal text-mute">@</span>
-              <TeamLogo team={home} />
-              <span>{score.home}</span>
-            </>
-          )}
+                    <span className="w-6 text-right">
+            {game.status !== "scheduled" ? score.away : ""}
+          </span>
+          <TeamLogo team={away} />
+          <span className="font-sans font-normal text-mute">@</span>
+          <TeamLogo team={home} />
+          <span className="w-6 text-left">
+            {game.status !== "scheduled" ? score.home : ""}
+          </span>
+
         </Link>
       </td>
       <td className="whitespace-nowrap px-2 py-2.5 font-mono text-mute">{game.location}</td>
