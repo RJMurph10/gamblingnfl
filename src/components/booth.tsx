@@ -417,12 +417,43 @@ export function GameRow({
       <td className="whitespace-nowrap px-2 py-2.5 font-mono text-mute">
         {game.status === "live" ? (game.clock ?? "Live") : game.location}
       </td>
-      {showMarket ? (
-        <>
-          <td className="px-2 py-2.5 text-right font-mono tabular-nums text-mute">{game.spread}</td>
-          <td className="px-4 py-2.5 text-right font-mono tabular-nums text-mute">{game.total}</td>
-        </>
-      ) : null}
+            {showMarket ? (() => {
+        // Spread cover evaluation
+        let spreadClass = "text-mute";
+        if (game.status !== "scheduled" && game.spread && game.spread !== "—" && game.spread !== "PK" && game.spread !== "EVEN") {
+          const match = game.spread.match(/^([A-Za-z]+)\s*([+-]?\d+(?:\.\d+)?)/);
+          if (match) {
+            const [, favAbbr, ptsStr] = match;
+            const pts = Math.abs(parseFloat(ptsStr));
+            const isAwayFav = favAbbr.toUpperCase() === away.abbr.toUpperCase();
+            const isHomeFav = favAbbr.toUpperCase() === home.abbr.toUpperCase();
+            if (isAwayFav || isHomeFav) {
+              const diff = isAwayFav ? (score.away - score.home) : (score.home - score.away);
+              if (diff > pts) spreadClass = "text-emerald-400 font-semibold";
+              else if (diff < pts) spreadClass = "text-rose-500 font-semibold";
+            }
+          }
+        }
+
+        // Total over/under evaluation
+        let totalClass = "text-mute";
+        if (game.status !== "scheduled" && game.total && game.total > 0) {
+          const totalPoints = score.away + score.home;
+          if (totalPoints > game.total) {
+            totalClass = "text-emerald-400 font-semibold"; // Over hit
+          } else if (game.status === "final" && totalPoints < game.total) {
+            totalClass = "text-rose-500 font-semibold"; // Under hit
+          }
+        }
+
+        return (
+          <>
+            <td className={`whitespace-nowrap px-2 py-2.5 text-right font-mono tabular-nums ${spreadClass}`}>{game.spread}</td>
+            <td className={`whitespace-nowrap px-4 py-2.5 text-right font-mono tabular-nums ${totalClass}`}>{game.total || "—"}</td>
+          </>
+        );
+      })() : null}
+
     </tr>
   );
 }
