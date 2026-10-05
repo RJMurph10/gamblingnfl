@@ -232,7 +232,7 @@ function mapBoxScore(players: any[], awayTeamId: string, homeTeamId: string): Bo
   for (const teamBlock of players ?? []) {
     const teamId = teamByAbbr(teamBlock?.team?.abbreviation ?? "")?.id;
     if (!teamId || (teamId !== awayTeamId && teamId !== homeTeamId)) continue;
-        for (const group of teamBlock?.statistics ?? []) {
+    for (const group of teamBlock?.statistics ?? []) {
       if (!wanted.has(group?.name)) continue;
       for (const athlete of group?.athletes ?? []) {
         if (!athlete?.athlete?.displayName) continue;
@@ -258,6 +258,7 @@ function mapBoxScore(players: any[], awayTeamId: string, homeTeamId: string): Bo
         teamId,
         statLine,
       });
+      }
     }
   }
   return lines;
