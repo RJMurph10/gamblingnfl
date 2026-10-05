@@ -19,9 +19,9 @@ import { players } from "@/data/players";
 import { teams } from "@/data/teams";
 import { getLiveGame, getLiveSchedule } from "@/lib/espn.functions";
 
-/* ---------- Upcoming games: slate grouping (Eastern Time) ---------- */
+/* ---------- Upcoming games: one tab per day (Eastern Time) ---------- */
 
-interface Slate {
+interface GameDay {
   key: string;
   label: string;
   dateLabel: string;
@@ -35,47 +35,45 @@ const etFormat = new Intl.DateTimeFormat("en-US", {
   month: "2-digit",
   day: "2-digit",
   weekday: "short",
-  hour: "numeric",
-  minute: "2-digit",
-  hourCycle: "h23",
 });
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-function buildSlates(all: Game[]): Slate[] {
+// One entry per calendar day, covering the next 7 days only, so a weekday never repeats.
+function buildDays(all: Game[]): GameDay[] {
   const upcoming = all
     .filter((g) => g.status === "scheduled" && g.kickoffIso)
     .sort((a, b) => new Date(a.kickoffIso!).getTime() - new Date(b.kickoffIso!).getTime());
-  const slates = new Map<string, Slate>();
+  const days = new Map<string, GameDay>();
+  let firstDay = 0;
   for (const game of upcoming) {
     const parts = etFormat.formatToParts(new Date(game.kickoffIso!));
     const get = (t: string) => parts.find((p) => p.type === t)?.value ?? "";
-    const hour = Number(get("hour"));
+    const year = Number(get("year"));
+    const month = Number(get("month"));
+    const dayNum = Number(get("day"));
     const weekday = get("weekday");
-    // morning = international window, early = 1:00 PM, late = 4:05/4:25 PM, night = primetime
-    const bucket = hour < 12 ? "morning" : hour < 15 ? "early" : hour < 19 ? "late" : "night";
-    const key = `${get("year")}-${get("month")}-${get("day")}-${bucket}`;
-    if (!slates.has(key)) {
-      const h12 = hour % 12 === 0 ? 12 : hour % 12;
-      slates.set(key, {
+    const dayIndex = Math.floor(Date.UTC(year, month - 1, dayNum) / 86_400_000);
+    if (days.size === 0) firstDay = dayIndex;
+    if (dayIndex - firstDay > 6) break;
+    const key = `${year}-${month}-${dayNum}`;
+    if (!days.has(key)) {
+      days.set(key, {
         key,
-        label:
-          bucket === "night"
-            ? `${weekday} Night`
-            : `${weekday} ${h12}:${get("minute")} ${hour < 12 ? "AM" : "PM"}`,
-        dateLabel: `${weekday}, ${MONTHS[Number(get("month")) - 1]} ${Number(get("day"))}`,
+        label: weekday,
+        dateLabel: `${weekday}, ${MONTHS[month - 1]} ${dayNum}`,
         week: game.week,
         games: [],
       });
     }
-    slates.get(key)!.games.push(game);
+    days.get(key)!.games.push(game);
   }
-  return [...slates.values()];
+  return [...days.values()];
 }
 
 function UpcomingGames({ games: all }: { games: Game[] }) {
-  const slates = useMemo(() => buildSlates(all), [all]);
+  const days = useMemo(() => buildDays(all), [all]);
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
-  const active = slates.find((s) => s.key === selectedKey) ?? slates[0];
+  const active = days.find((d) => d.key === selectedKey) ?? days[0];
 
   return (
     <Panel padded={false}>
@@ -93,13 +91,13 @@ function UpcomingGames({ games: all }: { games: Game[] }) {
       {active ? (
         <>
           <div className="flex gap-2 overflow-x-auto px-4 py-3">
-            {slates.slice(0, 8).map((slate, i) => {
-              const isActive = slate.key === active.key;
+            {days.map((day) => {
+              const isActive = day.key === active.key;
               return (
                 <button
-                  key={slate.key}
+                  key={day.key}
                   type="button"
-                  onClick={() => setSelectedKey(slate.key)}
+                  onClick={() => setSelectedKey(day.key)}
                   aria-pressed={isActive}
                   className={`shrink-0 whitespace-nowrap rounded-full px-3 py-1 font-mono text-[11px] uppercase tracking-wider ring-1 ${
                     isActive
@@ -107,8 +105,7 @@ function UpcomingGames({ games: all }: { games: Game[] }) {
                       : "bg-panel2 text-mute ring-line/10 hover:text-acc"
                   }`}
                 >
-                  {i === 0 ? "Next · " : ""}
-                  {slate.label}
+                  {day.label}
                 </button>
               );
             })}
