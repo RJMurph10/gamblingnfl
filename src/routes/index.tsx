@@ -46,10 +46,17 @@ function Dashboard() {
   });
   const isLive = !!liveGames && liveGames.length > 0;
   const source = isLive ? liveGames : games;
+    const toTimestamp = (g: (typeof source)[number]) => {
+    const d = g.date?.replace(/^[A-Za-z]+,\s*/, "") || "";
+    const t = g.time?.replace(/\s*ET$/, "") || "";
+    return new Date(`${d} 2026 ${t}`).getTime() || 0;
+  };
+
   const recent = source
     .filter((g) => g.status === "final")
-    .sort((a, b) => b.week - a.week)
+    .sort((a, b) => b.week - a.week || toTimestamp(b) - toTimestamp(a))
     .slice(0, 5);
+
   const featured = recent[0];
   const featuredIsLive = !!featured && featured.id.startsWith("espn-");
   const { data: featuredDetail } = useQuery({
