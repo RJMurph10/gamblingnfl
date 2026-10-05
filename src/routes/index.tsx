@@ -109,17 +109,18 @@ function Dashboard() {
             />
             {live.length > 0 ? (
               <div className="overflow-x-auto">
-                <table className="w-full min-w-[520px] text-sm">
+                                <table className="w-full min-w-[540px] text-sm" style={{ tableLayout: "fixed" }}>
                   <thead>
                     <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
-                      <th className="px-4 py-2 font-normal">Date</th>
-                      <th className="px-2 py-2 font-normal">Time</th>
-                      <th className="px-2 py-2 font-normal">Matchup</th>
+                      <th className="w-[120px] px-4 py-2 font-normal">Date</th>
+                      <th className="w-[100px] px-2 py-2 font-normal">Time</th>
+                      <th className="w-[150px] px-2 py-2 font-normal">Matchup</th>
                       <th className="px-2 py-2 font-normal">Venue</th>
-                      <th className="px-2 py-2 text-right font-normal">Spread</th>
-                      <th className="px-4 py-2 text-right font-normal">Total</th>
+                      <th className="w-[80px] px-2 py-2 text-right font-normal">Spread</th>
+                      <th className="w-[80px] px-4 py-2 text-right font-normal">Total</th>
                     </tr>
                   </thead>
+
                   <tbody className="divide-y divide-line/5">
                     {live.map((g) => (
                       <GameRow key={g.id} game={g} />
@@ -144,17 +145,18 @@ function Dashboard() {
               }
             />
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[520px] text-sm">
+                            <table className="w-full min-w-[540px] text-sm" style={{ tableLayout: "fixed" }}>
                 <thead>
                   <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
-                    <th className="px-4 py-2 font-normal">Date</th>
-                    <th className="px-2 py-2 font-normal">Time</th>
-                    <th className="px-2 py-2 font-normal">Matchup</th>
+                    <th className="w-[120px] px-4 py-2 font-normal">Date</th>
+                    <th className="w-[100px] px-2 py-2 font-normal">Time</th>
+                    <th className="w-[150px] px-2 py-2 font-normal">Matchup</th>
                     <th className="px-2 py-2 font-normal">Venue</th>
-                    <th className="px-2 py-2 text-right font-normal">Spread</th>
-                    <th className="px-4 py-2 text-right font-normal">Total</th>
+                    <th className="w-[80px] px-2 py-2 text-right font-normal">Spread</th>
+                    <th className="w-[80px] px-4 py-2 text-right font-normal">Total</th>
                   </tr>
                 </thead>
+
                 <tbody className="divide-y divide-line/5">
                   {recent.map((g) => (
                     <GameRow key={g.id} game={g} />
