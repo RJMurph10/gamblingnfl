@@ -112,13 +112,14 @@ function Dashboard() {
                 <table className="w-full min-w-[620px] text-sm" style={{ tableLayout: "fixed" }}>
                   <thead>
                     <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
-                      <th className="w-[115px] px-4 py-2 font-normal">Date</th>
-                      <th className="w-[90px] px-2 py-2 font-normal">Time</th>
-                      <th className="w-[185px] px-3 py-2 font-normal">Matchup</th>
-                      <th className="px-4 py-2 font-normal">Venue</th>
-                      <th className="w-[75px] px-2 py-2 text-right font-normal">Spread</th>
-                      <th className="w-[75px] px-4 py-2 text-right font-normal">Total</th>
+                      <th className="w-[17%] px-4 py-2 font-normal">Date</th>
+                      <th className="w-[15%] px-2 py-2 font-normal">Time</th>
+                      <th className="w-[26%] px-2 py-2 text-center font-normal">Matchup</th>
+                      <th className="w-[22%] px-2 py-2 font-normal">Venue</th>
+                      <th className="w-[10%] px-2 py-2 text-right font-normal">Spread</th>
+                      <th className="w-[10%] px-4 py-2 text-right font-normal">Total</th>
                     </tr>
+
                   </thead>
 
                   <tbody className="divide-y divide-line/5">
@@ -147,14 +148,15 @@ function Dashboard() {
             <div className="overflow-x-auto">
               <table className="w-full min-w-[620px] text-sm" style={{ tableLayout: "fixed" }}>
                 <thead>
-                  <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
-                    <th className="w-[115px] px-4 py-2 font-normal">Date</th>
-                    <th className="w-[90px] px-2 py-2 font-normal">Time</th>
-                    <th className="w-[185px] px-3 py-2 font-normal">Matchup</th>
-                    <th className="px-4 py-2 font-normal">Venue</th>
-                    <th className="w-[75px] px-2 py-2 text-right font-normal">Spread</th>
-                    <th className="w-[75px] px-4 py-2 text-right font-normal">Total</th>
+                   <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
+                    <th className="w-[17%] px-4 py-2 font-normal">Date</th>
+                    <th className="w-[15%] px-2 py-2 font-normal">Time</th>
+                    <th className="w-[26%] px-2 py-2 text-center font-normal">Matchup</th>
+                    <th className="w-[22%] px-2 py-2 font-normal">Venue</th>
+                    <th className="w-[10%] px-2 py-2 text-right font-normal">Spread</th>
+                    <th className="w-[10%] px-4 py-2 text-right font-normal">Total</th>
                   </tr>
+
                 </thead>
                 
                 <tbody className="divide-y divide-line/5">
