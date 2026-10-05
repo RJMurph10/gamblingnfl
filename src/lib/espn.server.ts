@@ -49,11 +49,16 @@ const zeroStats = (): TeamGameStats => ({
   timeOfPossession: "00:00",
 });
 
-function mapStatus(name: string | undefined): Game["status"] {
-  if (name === "STATUS_FINAL") return "final";
-  if (name === "STATUS_IN_PROGRESS" || name === "STATUS_HALFTIME") return "live";
+function mapStatus(statusType: any): Game["status"] {
+  const name = statusType?.name;
+  const state = statusType?.state;
+  if (name === "STATUS_FINAL" || state === "post") return "final";
+  if (state === "in" || name === "STATUS_IN_PROGRESS" || name === "STATUS_HALFTIME" || name === "STATUS_END_PERIOD") {
+    return "live";
+  }
   return "scheduled";
 }
+
 
 function formatKickoff(iso: string | undefined): string {
   if (!iso) return "TBD";
@@ -139,8 +144,12 @@ function mapEvent(event: any, week: number): Game | null {
     kickoffIso: event.date,
     date: formatGameDate(event.date),
     time: formatGameTime(event.date),
-    clock: comp.status?.type?.detail ?? comp.status?.type?.shortDetail ?? "Live",
-    status: mapStatus(comp.status?.type?.name),
+        clock:
+      comp.status?.type?.name === "STATUS_HALFTIME" ||
+      comp.status?.type?.detail?.toLowerCase().includes("half")
+        ? "Half time"
+        : (comp.status?.type?.detail ?? comp.status?.type?.shortDetail ?? "Live"),
+    status: mapStatus(comp.status?.type),
     venue: comp.venue?.fullName ?? "TBD",
     location: formatLocation(comp.venue),
     awayTeamId: awayTeam.id,
