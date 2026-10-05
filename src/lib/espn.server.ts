@@ -117,7 +117,7 @@ function mapEvent(event: any, week: number): Game | null {
   let possession: "away" | "home" | null = null;
   let isRedZone = false;
 
-  const isLive = comp.status?.type?.name === "STATUS_IN_PROGRESS" || comp.status?.type?.name === "STATUS_HALFTIME";
+  const isLive = comp.status?.type?.name === "STATUS_IN_PROGRESS";
   if (isLive && sit) {
     const possId = String(sit.possession ?? sit.lastPlay?.end?.team?.id ?? sit.lastPlay?.team?.id ?? "");
     if (possId && away?.team?.id && possId === String(away.team.id)) {
