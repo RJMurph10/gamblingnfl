@@ -138,6 +138,7 @@ function mapEvent(event: any, week: number): Game | null {
     kickoff: formatKickoff(event.date),
     date: formatGameDate(event.date),
     time: formatGameTime(event.date),
+    clock: comp.status?.type?.detail ?? comp.status?.type?.shortDetail ?? "Live",
     status: mapStatus(comp.status?.type?.name),
     venue: comp.venue?.fullName ?? "TBD",
     location: formatLocation(comp.venue),
