@@ -354,12 +354,13 @@ export function GameRow({
       <td className="whitespace-nowrap px-2 py-2.5 font-mono text-mute">
         {game.time ?? game.kickoff.replace(/^\w+\s+/, "")}
       </td>
-      <td className="px-2 py-2.5">
+            <td className="px-2 py-2.5 text-center">
         <Link
           to="/games/$gameId"
           params={{ gameId: game.id }}
-          className="inline-flex items-center gap-1.5 font-mono tabular-nums font-semibold hover:text-acc"
+          className="inline-flex items-center justify-center gap-1.5 font-mono tabular-nums font-semibold hover:text-acc"
         >
+
                     <span className="w-6 text-right">
             {game.status !== "scheduled" ? score.away : ""}
           </span>
