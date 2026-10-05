@@ -125,18 +125,20 @@ function TeamPage() {
               </p>
             ) : (
               <div className="overflow-x-auto">
-                  <table className="w-full min-w-[420px] text-sm">
+                  <table className="w-full min-w-[580px] text-sm">
                   <thead>
                     <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
                       <th className="px-4 py-2 font-normal">Date</th>
                       <th className="px-2 py-2 font-normal">Time</th>
                       <th className="px-2 py-2 font-normal">Matchup</th>
                       <th className="px-2 py-2 font-normal">Venue</th>
+                      <th className="px-2 py-2 text-right font-normal">Spread</th>
+                      <th className="px-4 py-2 text-right font-normal">Total</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-line/5">
                     {schedule.map((g) => (
-                      <GameRow key={g.id} game={g} showMarket={false} />
+                      <GameRow key={g.id} game={g} showMarket={true} />
                     ))}
                   </tbody>
                 </table>
