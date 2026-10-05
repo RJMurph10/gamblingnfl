@@ -57,7 +57,10 @@ export interface Game {
   drives: Drive[];
   stats: { away: TeamGameStats; home: TeamGameStats };
   boxScore: BoxScoreLine[];
+  possession?: "away" | "home" | null;
+  isRedZone?: boolean;
 }
+
 
 const sum = (nums: number[]) => nums.reduce((a, b) => a + b, 0);
 
