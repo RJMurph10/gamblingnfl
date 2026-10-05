@@ -50,7 +50,7 @@ export const teams: Team[] = [
   { id: "cowboys", abbr: "DAL", city: "Dallas", name: "Cowboys", conference: "NFC", division: "East", color: "#041E42", record: { w: 4, l: 5, t: 0 }, pointsFor: 197, pointsAgainst: 208 },
   { id: "giants", abbr: "NYG", city: "New York", name: "Giants", conference: "NFC", division: "East", color: "#0B2265", record: { w: 2, l: 7, t: 0 }, pointsFor: 144, pointsAgainst: 224 },
   { id: "eagles", abbr: "PHI", city: "Philadelphia", name: "Eagles", conference: "NFC", division: "East", color: "#004C54", record: { w: 7, l: 2, t: 0 }, pointsFor: 219, pointsAgainst: 170 },
-  { id: "commanders", abbr: "WAS", city: "Washington", name: "Commanders", conference: "NFC", division: "East", color: "#5A1414", record: { w: 5, l: 4, t: 0 }, pointsFor: 201, pointsAgainst: 196 },
+  { id: "commanders", abbr: "WSH", city: "Washington", name: "Commanders", conference: "NFC", division: "East", color: "#5A1414", record: { w: 5, l: 4, t: 0 }, pointsFor: 201, pointsAgainst: 196 },
 
   { id: "bears", abbr: "CHI", city: "Chicago", name: "Bears", conference: "NFC", division: "North", color: "#0B162A", record: { w: 5, l: 4, t: 0 }, pointsFor: 178, pointsAgainst: 181 },
   { id: "lions", abbr: "DET", city: "Detroit", name: "Lions", conference: "NFC", division: "North", color: "#0076B6", record: { w: 7, l: 2, t: 0 }, pointsFor: 248, pointsAgainst: 184 },
