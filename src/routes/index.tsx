@@ -97,7 +97,6 @@ function Dashboard() {
                     <th className="px-2 py-2 font-normal">Time</th>
                     <th className="px-2 py-2 font-normal">Matchup</th>
                     <th className="px-2 py-2 font-normal">Venue</th>
-                    <th className="px-2 py-2 text-right font-normal">Score</th>
                     <th className="px-2 py-2 text-right font-normal">Spread</th>
                     <th className="px-4 py-2 text-right font-normal">Total</th>
                   </tr>
