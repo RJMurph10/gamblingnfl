@@ -381,9 +381,12 @@ export function GameRow({
   return (
     <tr className="hover:bg-line/5">
       <td className="whitespace-nowrap px-4 py-2.5 font-mono text-mute">{game.date}</td>
-      <td className="whitespace-nowrap px-2 py-2.5 font-mono text-mute">
-        {game.time ?? game.kickoff.replace(/^\w+\s+/, "")}
+      <td suppressHydrationWarning className="whitespace-nowrap px-2 py-2.5 font-mono text-mute">
+        {game.kickoffIso
+          ? new Date(game.kickoffIso).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })
+          : (game.time ?? game.kickoff.replace(/^\w+\s+/, "")).replace(/\s*(ET|EDT|EST)$/i, "")}
       </td>
+
             <td className="px-2 py-2.5 text-center">
         <Link
           to="/games/$gameId"
