@@ -334,10 +334,40 @@ export function StatComparison({ game }: { game: Game }) {
         <span className="tabular-nums text-ink">{game.stats.home.timeOfPossession}</span>
       </div>
     </div>
+   );
+}
+
+export function FootballIcon({ isRedZone = false }: { isRedZone?: boolean }) {
+  if (isRedZone) {
+    return (
+      <svg
+        viewBox="0 0 22 24"
+        className="size-3.5 animate-pulse text-rose-500 drop-shadow-[0_0_6px_rgba(244,63,94,0.9)]"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path d="M2 12C5.5 6.5 16.5 6.5 20 12C16.5 17.5 5.5 17.5 2 12Z" fill="currentColor" stroke="#fda4af" strokeWidth="1.2" />
+        <path d="M6.5 12H15.5" stroke="#ffffff" strokeWidth="1.2" strokeLinecap="round" />
+        <path d="M8.5 9.5V14.5M11 9V15M13.5 9.5V14.5" stroke="#ffffff" strokeWidth="1.2" strokeLinecap="round" />
+      </svg>
+    );
+  }
+  return (
+    <svg
+      viewBox="0 0 22 24"
+      className="size-3.5 text-amber-500"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path d="M2 12C5.5 6.5 16.5 6.5 20 12C16.5 17.5 5.5 17.5 2 12Z" fill="currentColor" stroke="#f59e0b" strokeWidth="1.2" />
+      <path d="M6.5 12H15.5" stroke="#ffffff" strokeWidth="1.2" strokeLinecap="round" />
+      <path d="M8.5 9.5V14.5M11 9V15M13.5 9.5V14.5" stroke="#ffffff" strokeWidth="1.2" strokeLinecap="round" />
+    </svg>
   );
 }
 
 export function GameRow({
+
   game,
   showMarket = true,
 }: {
@@ -361,7 +391,12 @@ export function GameRow({
           className="inline-flex items-center justify-center gap-1.5 font-mono tabular-nums font-semibold hover:text-acc"
         >
 
-                    <span className="w-6 text-right">
+          <span className="inline-flex w-4 items-center justify-center">
+            {game.status === "live" && game.possession === "away" ? (
+              <FootballIcon isRedZone={game.isRedZone} />
+            ) : null}
+          </span>
+          <span className="w-6 text-right">
             {game.status !== "scheduled" ? score.away : ""}
           </span>
           <TeamLogo team={away} />
@@ -370,6 +405,12 @@ export function GameRow({
           <span className="w-6 text-left">
             {game.status !== "scheduled" ? score.home : ""}
           </span>
+          <span className="inline-flex w-4 items-center justify-center">
+            {game.status === "live" && game.possession === "home" ? (
+              <FootballIcon isRedZone={game.isRedZone} />
+            ) : null}
+          </span>
+
 
         </Link>
       </td>
