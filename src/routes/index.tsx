@@ -124,7 +124,10 @@ function UpcomingGames({ games: all }: { games: Game[] }) {
               </thead>
               <tbody className="divide-y divide-line/5">
                 {active.games.map((g) => (
-                  <GameRow key={g.id} game={g} />
+                  <GameRow
+                    key={g.id}
+                    game={{ ...g, date: g.date?.replace(/^[A-Za-z]+,\s*/, "") }}
+                  />
                 ))}
               </tbody>
             </table>
