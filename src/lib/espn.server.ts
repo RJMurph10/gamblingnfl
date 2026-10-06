@@ -8,7 +8,7 @@
  */
 
 import type { BoxScoreLine, Drive, DriveResult, Game, TeamGameStats } from "@/data/games";
-import { teamByAbbr } from "@/data/teams";
+import { teamByAbbr, teamById } from "@/data/teams";
 
 const SCOREBOARD =
   "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard";
@@ -295,37 +295,106 @@ function mapTeamStats(stats: any[]): TeamGameStats {
   };
 }
 
-function mapBoxScore(players: any[], awayTeamId: string, homeTeamId: string): BoxScoreLine[] {
+function mapBoxScore(
+  players: any[],
+  awayTeamId: string,
+  homeTeamId: string,
+  posMap?: Map<string, string>,
+): BoxScoreLine[] {
   const lines: BoxScoreLine[] = [];
-  const wanted = new Set(["passing", "rushing", "receiving"]);
+  const wanted = new Set(["passing", "rushing", "receiving", "defensive", "interceptions"]);
+
   for (const teamBlock of players ?? []) {
     const teamId = teamByAbbr(teamBlock?.team?.abbreviation ?? "")?.id;
     if (!teamId || (teamId !== awayTeamId && teamId !== homeTeamId)) continue;
+
     for (const group of teamBlock?.statistics ?? []) {
       if (!wanted.has(group?.name)) continue;
+
       for (const athlete of group?.athletes ?? []) {
         if (!athlete?.athlete?.displayName) continue;
+        const ath = athlete.athlete;
         const keys: string[] = group.keys ?? [];
         const vals: string[] = athlete.stats ?? [];
+
+        const getVal = (name: string) => {
+          const idx = keys.indexOf(name);
+          return idx >= 0 ? vals[idx] : undefined;
+        };
         const pick = (...names: string[]) =>
           names
-            .map((n) => {
-              const i = keys.indexOf(n);
-              return i >= 0 ? vals[i] : undefined;
-            })
+            .map(getVal)
             .filter(Boolean)
             .join(", ");
-        const statLine =
-          group.name === "passing"
-            ? `${pick("completions/passingAttempts")}, ${pick("passingYards")} yds, ${pick("passingTouchdowns")} TD, ${pick("interceptions")} INT`
+
+        let statLine = "";
+        let category: "offense" | "defense" = "offense";
+
+        if (group.name === "passing") {
+          statLine = `${pick("completions/passingAttempts")}, ${pick("passingYards")} yds, ${pick("passingTouchdowns")} TD, ${pick("interceptions")} INT`;
+          category = "offense";
+        } else if (group.name === "rushing") {
+          statLine = `${pick("rushingAttempts")} car, ${pick("rushingYards")} yds, ${pick("rushingTouchdowns")} TD`;
+          category = "offense";
+        } else if (group.name === "receiving") {
+          statLine = `${pick("receptions")} rec, ${pick("receivingYards")} yds, ${pick("receivingTouchdowns")} TD`;
+          category = "offense";
+        } else if (group.name === "defensive") {
+          const tkl = getVal("totalTackles") ?? "0";
+          const solo = getVal("soloTackles");
+          const sck = getVal("sacks");
+          const pd = getVal("passesDefended");
+          const tfl = getVal("tacklesForLoss");
+          const parts: string[] = [];
+          if (tkl && tkl !== "0") parts.push(`${tkl} tkl${solo && solo !== "0" ? ` (${solo} solo)` : ""}`);
+          if (sck && sck !== "0") parts.push(`${sck} sck`);
+          if (pd && pd !== "0") parts.push(`${pd} PD`);
+          if (tfl && tfl !== "0") parts.push(`${tfl} TFL`);
+          statLine = parts.join(", ") || `${tkl} tkl`;
+          category = "defense";
+        } else if (group.name === "interceptions") {
+          const intCount = getVal("interceptions") ?? "1";
+          const intYds = getVal("interceptionYards");
+          const intTd = getVal("interceptionTouchdowns");
+          const parts = [`${intCount} INT`];
+          if (intYds && intYds !== "0") parts.push(`${intYds} yds`);
+          if (intTd && intTd !== "0") parts.push(`${intTd} TD`);
+          statLine = parts.join(", ");
+          category = "defense";
+        }
+
+        // Look up condensed position in roster posMap or fall back to condensed shorthand
+        const athId = String(ath.id ?? "");
+        const athName = (ath.displayName ?? "").toLowerCase();
+        let pos =
+          ath.position?.abbreviation ||
+          posMap?.get(athId) ||
+          posMap?.get(athName) ||
+          (group.name === "passing"
+            ? "QB"
             : group.name === "rushing"
-              ? `${pick("rushingAttempts")} car, ${pick("rushingYards")} yds, ${pick("rushingTouchdowns")} TD`
-              : `${pick("receptions")} rec, ${pick("receivingYards")} yds, ${pick("receivingTouchdowns")} TD`;
+              ? "RB"
+              : group.name === "receiving"
+                ? "WR"
+                : group.name === "defensive"
+                  ? "DEF"
+                  : group.name === "interceptions"
+                    ? "DB"
+                    : "ATH");
+
+        pos = pos.toUpperCase();
+        if (pos === "PASSING") pos = "QB";
+        if (pos === "RUSHING") pos = "RB";
+        if (pos === "RECEIVING") pos = "WR";
+        if (pos === "DEFENSIVE") pos = "DEF";
+
         lines.push({
-          name: athlete.athlete.displayName,
-          position: athlete.athlete.position?.abbreviation ?? group.name.toUpperCase(),
+          playerId: ath.id ? String(ath.id) : undefined,
+          name: ath.displayName,
+          position: pos,
           teamId,
           statLine,
+          category,
         });
       }
     }
@@ -419,7 +488,32 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
       };
     });
 
-    base.boxScore = mapBoxScore(d?.boxscore?.players ?? [], base.awayTeamId, base.homeTeamId);
+    const awayAbbr = teamById(base.awayTeamId)?.abbr;
+    const homeAbbr = teamById(base.homeTeamId)?.abbr;
+    const posMap = new Map<string, string>();
+    if (awayAbbr && homeAbbr) {
+      try {
+        const [awayRoster, homeRoster] = await Promise.all([
+          fetchTeamRoster(awayAbbr),
+          fetchTeamRoster(homeAbbr),
+        ]);
+        for (const p of [...awayRoster, ...homeRoster]) {
+          if (p.position) {
+            posMap.set(p.id, p.position);
+            posMap.set(p.name.toLowerCase(), p.position);
+          }
+        }
+      } catch {
+        // Fallback gracefully to group abbreviations if roster endpoint fails
+      }
+    }
+
+    base.boxScore = mapBoxScore(
+      d?.boxscore?.players ?? [],
+      base.awayTeamId,
+      base.homeTeamId,
+      posMap,
+    );
     return base;
   });
 }
