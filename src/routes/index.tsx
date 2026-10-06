@@ -287,25 +287,21 @@ function Dashboard() {
 
       <div className="grid gap-6 lg:grid-cols-12">
         <section className="min-w-0 lg:col-span-8 space-y-6">
-          <Panel padded={false}>
-            <PanelHeader
-              title={
-                <span className="flex items-center gap-2">
-                  <span
-                    className={`size-2 rounded-full ${
-                      live.length > 0 ? "animate-pulse bg-emerald-400" : "bg-mute/40"
-                    }`}
-                  />
-                  Live games
-                </span>
-              }
-              aside={
-                <span className="font-mono text-[10px] uppercase tracking-wider text-mute">
-                  {live.length > 0 ? `${live.length} in progress` : "None live"}
-                </span>
-              }
-            />
-            {live.length > 0 ? (
+          {live.length > 0 ? (
+            <Panel padded={false}>
+              <PanelHeader
+                title={
+                  <span className="flex items-center gap-2">
+                    <span className="size-2 animate-pulse rounded-full bg-emerald-400" />
+                    Live games
+                  </span>
+                }
+                aside={
+                  <span className="font-mono text-[10px] uppercase tracking-wider text-mute">
+                    {live.length} in progress
+                  </span>
+                }
+              />
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[560px] text-sm" style={{ tableLayout: "fixed" }}>
                   <thead>
@@ -324,12 +320,8 @@ function Dashboard() {
                   </tbody>
                 </table>
               </div>
-            ) : (
-              <div className="px-4 py-6 text-center font-mono text-xs text-mute">
-                No games currently in progress
-              </div>
-            )}
-          </Panel>
+            </Panel>
+          ) : null}
 
           <UpcomingGames games={source} />
 
