@@ -403,6 +403,19 @@ function mapBoxScore(
   const lines: BoxScoreLine[] = [];
   const wanted = new Set(["passing", "rushing", "receiving", "defensive", "interceptions"]);
 
+  // ESPN can list the same player once for every statistical group they recorded
+  // stats in. For example, a QB can appear once under passing and again under
+  // rushing. Build one offensive row per player and combine all of their
+  // offensive stat lines into that single row.
+  const offenseByPlayer = new Map<string, BoxScoreLine>();
+  const defenseByPlayer = new Map<string, BoxScoreLine>();
+
+  const appendStat = (existing: string, addition: string): string => {
+    if (!addition) return existing;
+    if (!existing) return addition;
+    return `${existing} · ${addition}`;
+  };
+
   for (const teamBlock of players ?? []) {
     const teamId = teamByAbbr(teamBlock?.team?.abbreviation ?? "")?.id;
     if (!teamId || (teamId !== awayTeamId && teamId !== homeTeamId)) continue;
@@ -430,13 +443,13 @@ function mapBoxScore(
         let category: "offense" | "defense" = "offense";
 
         if (group.name === "passing") {
-          statLine = `${pick("completions/passingAttempts")}, ${pick("passingYards")} yds, ${pick("passingTouchdowns")} TD, ${pick("interceptions")} INT`;
+          statLine = `Passing ${pick("completions/passingAttempts")}, ${pick("passingYards")} yds, ${pick("passingTouchdowns")} TD, ${pick("interceptions")} INT`;
           category = "offense";
         } else if (group.name === "rushing") {
-          statLine = `${pick("rushingAttempts")} car, ${pick("rushingYards")} yds, ${pick("rushingTouchdowns")} TD`;
+          statLine = `Rushing ${pick("rushingAttempts")} car, ${pick("rushingYards")} yds, ${pick("rushingTouchdowns")} TD`;
           category = "offense";
         } else if (group.name === "receiving") {
-          statLine = `${pick("receptions")} rec, ${pick("receivingYards")} yds, ${pick("receivingTouchdowns")} TD`;
+          statLine = `Receiving ${pick("receptions")} rec, ${pick("receivingYards")} yds, ${pick("receivingTouchdowns")} TD`;
           category = "offense";
         } else if (group.name === "defensive") {
           const tkl = getVal("totalTackles") ?? "0";
@@ -462,7 +475,7 @@ function mapBoxScore(
           category = "defense";
         }
 
-        // Look up condensed position in roster posMap or fall back to condensed shorthand
+        // Look up condensed position in roster posMap or fall back to condensed shorthand.
         const athId = String(ath.id ?? "");
         const athName = (ath.displayName ?? "").toLowerCase();
         let pos =
@@ -487,17 +500,45 @@ function mapBoxScore(
         if (pos === "RECEIVING") pos = "WR";
         if (pos === "DEFENSIVE") pos = "DEF";
 
-        lines.push({
-          playerId: ath.id ? String(ath.id) : undefined,
-          name: ath.displayName,
-          position: pos,
-          teamId,
-          statLine,
-          category,
-        });
+        // Keep one row per player per side of the box score. This removes
+        // duplicate entries such as "Michael Penix — passing" + "Michael Penix — rushing"
+        // while retaining every stat category that player recorded.
+        const playerKey = `${teamId}:${athId || athName}`;
+        const targetMap = category === "offense" ? offenseByPlayer : defenseByPlayer;
+        const existing = targetMap.get(playerKey);
+
+        if (existing) {
+          existing.statLine = appendStat(existing.statLine, statLine);
+          // Prefer the actual roster position if the existing row was created
+          // from a generic group fallback such as RB/WR/DB.
+          if (ath.position?.abbreviation) {
+            existing.position = pos;
+          }
+        } else {
+          targetMap.set(playerKey, {
+            playerId: ath.id ? String(ath.id) : undefined,
+            name: ath.displayName,
+            position: pos,
+            teamId,
+            statLine,
+            category,
+          });
+        }
       }
     }
   }
+
+  // Preserve the existing team/group ordering from ESPN while ensuring every
+  // player appears only once in the appropriate offense or defense tab.
+  for (const teamId of [awayTeamId, homeTeamId]) {
+    for (const line of offenseByPlayer.values()) {
+      if (line.teamId === teamId) lines.push(line);
+    }
+    for (const line of defenseByPlayer.values()) {
+      if (line.teamId === teamId) lines.push(line);
+    }
+  }
+
   return lines;
 }
 
