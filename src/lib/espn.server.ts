@@ -51,7 +51,21 @@ const zeroStats = (): TeamGameStats => ({
   thirdDownPct: 0,
   turnovers: 0,
   penalties: 0,
+  penaltyYards: 0,
   timeOfPossession: "00:00",
+  touchdowns: 0,
+  passingTouchdowns: 0,
+  rushingTouchdowns: 0,
+  fieldGoalsMade: 0,
+  fieldGoalsAttempted: 0,
+  extraPointPct: 0,
+  sacks: 0,
+  defensiveTouchdowns: 0,
+  interceptions: 0,
+  forcedFumbles: 0,
+  tacklesForLoss: 0,
+  passesDefended: 0,
+  qbHits: 0,
 });
 
 function mapStatus(statusType: any): Game["status"] {
@@ -273,25 +287,123 @@ function mapDriveResult(text: string | undefined): DriveResult {
   return "PUNT";
 }
 
-function statNum(stats: any[], name: string): number {
-  const s = stats.find((x: any) => x.name === name);
-  return s ? Number(String(s.displayValue).replace(/,/g, "")) || 0 : 0;
-}
+function mapTeamStats(stats: any[], pgroups?: any[]): TeamGameStats {
+  const statNum = (name: string): number => {
+    const s = stats.find((x: any) => x.name === name);
+    return s ? Number(String(s.displayValue).replace(/,/g, "")) || 0 : 0;
+  };
 
-function mapTeamStats(stats: any[]): TeamGameStats {
-  const third = stats.find((x: any) => x.name === "thirdDownEff")?.displayValue ?? "0-0";
-  const [made, att] = third.split("-").map((n: string) => Number(n) || 0);
-  const pen = stats.find((x: any) => x.name === "penalties")?.displayValue ?? "0-0";
+  const effPair = (name: string): { eff: string; pct: number } => {
+    const s = stats.find((x: any) => x.name === name);
+    if (!s?.displayValue) return { eff: "", pct: 0 };
+    const val = String(s.displayValue);
+    const parts = val.includes("-") ? val.split("-") : val.split("/");
+    if (parts.length === 2) {
+      const m = Number(parts[0]) || 0;
+      const a = Number(parts[1]) || 0;
+      return { eff: val, pct: a > 0 ? Math.round((m / a) * 100) : 0 };
+    }
+    return { eff: val, pct: 0 };
+  };
+
+  const third = effPair("thirdDownEff");
+  const fourth = effPair("fourthDownEff");
+  const redZone = effPair("redZoneAttempts");
+
+  let penCount = 0;
+  let penYards = 0;
+  const penObj = stats.find((x: any) => x.name === "totalPenaltiesYards" || x.name === "penalties");
+  if (penObj?.displayValue) {
+    const parts = String(penObj.displayValue).split("-");
+    penCount = Number(parts[0]) || 0;
+    penYards = parts[1] !== undefined ? Number(parts[1]) || 0 : 0;
+  }
+
+  // Aggregate stats from player groups (kicking, defensive, passing, rushing, fumbles)
+  const pAgg: Record<string, number> = {};
+  let fgEff = "";
+  let fgMade = 0;
+  let fgAtt = 0;
+  let xpEff = "";
+  let xpPct = 0;
+
+  for (const grp of pgroups ?? []) {
+    const gname = grp?.name;
+    const keys: string[] = grp?.keys ?? [];
+    for (const ath of grp?.athletes ?? []) {
+      const vals: string[] = ath?.stats ?? [];
+      for (let i = 0; i < keys.length; i++) {
+        const k = keys[i];
+        const v = Number(vals[i]);
+        if (!isNaN(v)) {
+          pAgg[k] = (pAgg[k] ?? 0) + v;
+        }
+      }
+      if (gname === "kicking") {
+        const fgIdx = keys.indexOf("fieldGoalsMade/fieldGoalAttempts");
+        if (fgIdx >= 0 && vals[fgIdx]) {
+          fgEff = vals[fgIdx];
+          const parts = fgEff.split("/");
+          if (parts.length === 2) {
+            fgMade = Number(parts[0]) || 0;
+            fgAtt = Number(parts[1]) || 0;
+          }
+        }
+        const xpIdx = keys.indexOf("extraPointsMade/extraPointAttempts");
+        if (xpIdx >= 0 && vals[xpIdx]) {
+          xpEff = vals[xpIdx];
+          const parts = xpEff.split("/");
+          if (parts.length === 2 && Number(parts[1]) > 0) {
+            xpPct = Math.round(((Number(parts[0]) || 0) / (Number(parts[1]) || 1)) * 100);
+          }
+        }
+      }
+    }
+  }
+
+  const passTd = Math.round(pAgg["passingTouchdowns"] ?? 0);
+  const rushTd = Math.round(pAgg["rushingTouchdowns"] ?? 0);
+  const defTd = Math.round(statNum("defensiveTouchdowns") || (pAgg["defensiveTouchdowns"] ?? 0));
+  const totalTd = passTd + rushTd + defTd;
+
+  const sacks = Math.round(pAgg["sacks"] ?? 0);
+  const interceptions = Math.round(pAgg["interceptions"] ?? 0);
+  const forcedFumbles = Math.round((pAgg["fumblesLost"] ?? 0) || (pAgg["fumbles"] ?? 0));
+  const tacklesForLoss = Math.round(pAgg["tacklesForLoss"] ?? 0);
+  const passesDefended = Math.round(pAgg["passesDefended"] ?? 0);
+  const qbHits = Math.round(pAgg["QBHits"] ?? 0);
+
   return {
-    totalYards: statNum(stats, "totalYards"),
-    passYards: statNum(stats, "netPassingYards"),
-    rushYards: statNum(stats, "rushingYards"),
-    firstDowns: statNum(stats, "firstDowns"),
-    thirdDownPct: att > 0 ? Math.round((made / att) * 100) : 0,
-    turnovers: statNum(stats, "turnovers"),
-    penalties: Number(pen.split("-")[0]) || 0,
+    totalYards: statNum("totalYards"),
+    passYards: statNum("netPassingYards"),
+    rushYards: statNum("rushingYards"),
+    firstDowns: statNum("firstDowns"),
+    thirdDownPct: third.pct,
+    thirdDownEff: third.eff,
+    fourthDownPct: fourth.pct,
+    fourthDownEff: fourth.eff,
+    redZonePct: redZone.pct,
+    redZoneEff: redZone.eff,
+    turnovers: statNum("turnovers"),
+    penalties: penCount,
+    penaltyYards: penYards,
     timeOfPossession:
       stats.find((x: any) => x.name === "possessionTime")?.displayValue ?? "00:00",
+    touchdowns: totalTd,
+    passingTouchdowns: passTd,
+    rushingTouchdowns: rushTd,
+    fieldGoals: fgEff || (fgMade > 0 ? `${fgMade}/${fgAtt}` : undefined),
+    fieldGoalsMade: fgMade,
+    fieldGoalsAttempted: fgAtt,
+    extraPointPct: xpPct,
+    extraPointsEff: xpEff,
+    sacks,
+    defensiveTouchdowns: defTd,
+    interceptions,
+    forcedFumbles,
+    tacklesForLoss,
+    passesDefended,
+    qbHits,
   };
 }
 
@@ -464,8 +576,15 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
     const homeStats = d?.boxscore?.teams?.find(
       (t: any) => teamByAbbr(t?.team?.abbreviation ?? "")?.id === base.homeTeamId,
     );
-    if (awayStats) base.stats.away = mapTeamStats(awayStats.statistics ?? []);
-    if (homeStats) base.stats.home = mapTeamStats(homeStats.statistics ?? []);
+    const awayPlayers = d?.boxscore?.players?.find(
+      (p: any) => teamByAbbr(p?.team?.abbreviation ?? "")?.id === base.awayTeamId,
+    );
+    const homePlayers = d?.boxscore?.players?.find(
+      (p: any) => teamByAbbr(p?.team?.abbreviation ?? "")?.id === base.homeTeamId,
+    );
+
+    if (awayStats) base.stats.away = mapTeamStats(awayStats.statistics ?? [], awayPlayers?.statistics);
+    if (homeStats) base.stats.home = mapTeamStats(homeStats.statistics ?? [], homePlayers?.statistics);
 
     const rawDrives = d?.drives?.previous ?? [];
     base.drives = rawDrives.map((dr: any, i: number): Drive => {
