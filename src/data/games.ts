@@ -63,6 +63,8 @@ export interface Game {
   isRedZone?: boolean;
   /** Live down & distance, e.g. "1st & 10". Empty between plays / on kickoffs. */
   downDistance?: string;
+  awayRecord?: string;
+  homeRecord?: string;
 }
 
 
