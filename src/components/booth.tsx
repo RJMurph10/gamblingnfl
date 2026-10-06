@@ -149,6 +149,45 @@ export function TeamCard({ team }: { team: Team }) {
   );
 }
 
+/* ---------- Spread Badge with Logo ---------- */
+
+export function SpreadBadge({
+  spread,
+  away,
+  home,
+  className = "",
+}: {
+  spread: string | undefined;
+  away?: Team;
+  home?: Team;
+  className?: string;
+}) {
+  if (!spread || spread === "—") return <span>—</span>;
+  if (spread === "PK" || spread === "EVEN") return <span>{spread}</span>;
+
+  const match = spread.match(/^([A-Za-z]+)\s*([+-]?\d+(?:\.\d+)?)/);
+  if (!match) return <span>{spread}</span>;
+
+  const [, favAbbr, ptsStr] = match;
+  const favTeam =
+    away && favAbbr.toUpperCase() === away.abbr.toUpperCase()
+      ? away
+      : home && favAbbr.toUpperCase() === home.abbr.toUpperCase()
+        ? home
+        : undefined;
+
+  if (!favTeam) return <span>{spread}</span>;
+
+  const formattedPts = ptsStr.startsWith("-") || ptsStr.startsWith("+") ? ptsStr : `-${ptsStr}`;
+
+  return (
+    <span className={`inline-flex items-center gap-1 font-mono tabular-nums ${className}`}>
+      <TeamLogo team={favTeam} className="size-3.5" />
+      <span>{formattedPts}</span>
+    </span>
+  );
+}
+
 /* ---------- game widgets ---------- */
 
 export function LineScore({ game }: { game: Game }) {
@@ -367,7 +406,7 @@ export function FootballIcon({ isRedZone = false }: { isRedZone?: boolean }) {
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
-        <path d="M2 12C5.5 6.5 16.5 6.5 20 12C16.5 17.5 5.5 17.5 2 12Z" fill="currentColor" stroke="#fda4af" strokeWidth="1.2" />
+        <path d="M2 12C5.5 6.5 16.5 6.5 20 12Z" fill="currentColor" stroke="#fda4af" strokeWidth="1.2" />
         <path d="M6.5 12H15.5" stroke="#ffffff" strokeWidth="1.2" strokeLinecap="round" />
         <path d="M8.5 9.5V14.5M11 9V15M13.5 9.5V14.5" stroke="#ffffff" strokeWidth="1.2" strokeLinecap="round" />
       </svg>
@@ -380,7 +419,7 @@ export function FootballIcon({ isRedZone = false }: { isRedZone?: boolean }) {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <path d="M2 12C5.5 6.5 16.5 6.5 20 12C16.5 17.5 5.5 17.5 2 12Z" fill="currentColor" stroke="#f59e0b" strokeWidth="1.2" />
+      <path d="M2 12C5.5 6.5 16.5 6.5 20 12Z" fill="currentColor" stroke="#f59e0b" strokeWidth="1.2" />
       <path d="M6.5 12H15.5" stroke="#ffffff" strokeWidth="1.2" strokeLinecap="round" />
       <path d="M8.5 9.5V14.5M11 9V15M13.5 9.5V14.5" stroke="#ffffff" strokeWidth="1.2" strokeLinecap="round" />
     </svg>
@@ -478,7 +517,11 @@ export function GameRow({
 
         return (
           <>
-            <td className={`whitespace-nowrap px-2 py-2.5 text-right font-mono tabular-nums ${spreadClass}`}>{game.spread}</td>
+            <td className={`whitespace-nowrap px-2 py-2.5 text-right font-mono tabular-nums ${spreadClass}`}>
+              <div className="flex items-center justify-end">
+                <SpreadBadge spread={game.spread} away={away} home={home} />
+              </div>
+            </td>
             <td className={`whitespace-nowrap px-4 py-2.5 text-right font-mono tabular-nums ${totalClass}`}>{game.total || "—"}</td>
           </>
         );
