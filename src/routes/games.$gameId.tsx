@@ -2,7 +2,6 @@ import { useState } from "react";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import {
-  DriveRail,
   DriveTable,
   FootballIcon,
   LineScore,
@@ -362,18 +361,6 @@ function GamePage() {
           <div className="mt-3">
             <LineScore game={game} />
           </div>
-          {game.drives.length > 0 && (
-            <>
-              <p className="label-mono mt-4">Drive rail · {away.abbr}</p>
-              <div className="mt-1.5">
-                <DriveRail game={game} teamId={away.id} />
-              </div>
-              <p className="label-mono mt-3">Drive rail · {home.abbr}</p>
-              <div className="mt-1.5">
-                <DriveRail game={game} teamId={home.id} />
-              </div>
-            </>
-          )}
         </Panel>
 
         <Panel className="lg:col-span-7">
