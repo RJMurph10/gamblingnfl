@@ -160,16 +160,18 @@ export function LineScore({ game }: { game: Game }) {
     { team: home, quarters: game.quarters.home, total: score.home },
   ];
   const winner = score.away === score.home ? null : score.away > score.home ? away.id : home.id;
+  const quarterCount = Math.max(4, game.quarters.away.length, game.quarters.home.length);
 
   return (
     <table className="w-full text-center font-mono text-sm">
       <thead>
         <tr className="text-[10px] uppercase tracking-wider text-faint">
           <th className="text-left font-normal">Team</th>
-          <th className="font-normal">Q1</th>
-          <th className="font-normal">Q2</th>
-          <th className="font-normal">Q3</th>
-          <th className="font-normal">Q4</th>
+          {Array.from({ length: quarterCount }, (_, i) => (
+            <th key={i} className="font-normal">
+              {i < 4 ? `Q${i + 1}` : i === 4 ? "OT" : `OT${i - 3}`}
+            </th>
+          ))}
           <th className="text-right font-normal">T</th>
         </tr>
       </thead>
@@ -334,7 +336,7 @@ export function StatComparison({ game }: { game: Game }) {
         <span className="tabular-nums text-ink">{game.stats.home.timeOfPossession}</span>
       </div>
     </div>
-   );
+  );
 }
 
 export function FootballIcon({ isRedZone = false }: { isRedZone?: boolean }) {
@@ -367,7 +369,6 @@ export function FootballIcon({ isRedZone = false }: { isRedZone?: boolean }) {
 }
 
 export function GameRow({
-
   game,
   showMarket = true,
 }: {
@@ -378,6 +379,12 @@ export function GameRow({
   const home = teamById(game.homeTeamId);
   const score = gameScore(game);
   if (!away || !home) return null;
+
+  const isOT =
+    (game.quarters?.away?.length ?? 0) > 4 ||
+    (game.quarters?.home?.length ?? 0) > 4 ||
+    Boolean(game.clock?.toUpperCase().includes("OT"));
+
   return (
     <tr className="hover:bg-line/5">
       <td className="whitespace-nowrap px-4 py-2.5 font-mono text-mute">{game.date}</td>
@@ -386,14 +393,12 @@ export function GameRow({
           ? new Date(game.kickoffIso).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })
           : (game.time ?? game.kickoff.replace(/^\w+\s+/, "")).replace(/\s*(ET|EDT|EST)$/i, "")}
       </td>
-
-            <td className="px-2 py-2.5 text-center">
+      <td className="px-2 py-2.5 text-center">
         <Link
           to="/games/$gameId"
           params={{ gameId: game.id }}
           className="inline-flex items-center justify-center gap-1.5 font-mono tabular-nums font-semibold hover:text-acc"
         >
-
           <span className="inline-flex w-4 items-center justify-center">
             {game.status === "live" && game.possession === "away" ? (
               <FootballIcon isRedZone={game.isRedZone} />
@@ -408,19 +413,22 @@ export function GameRow({
           <span className="w-6 text-left">
             {game.status !== "scheduled" ? score.home : ""}
           </span>
+          {isOT && game.status !== "scheduled" && (
+            <span className="-ml-1 font-mono text-[10px] font-normal text-mute">
+              (OT)
+            </span>
+          )}
           <span className="inline-flex w-4 items-center justify-center">
             {game.status === "live" && game.possession === "home" ? (
               <FootballIcon isRedZone={game.isRedZone} />
             ) : null}
           </span>
-
-
         </Link>
       </td>
       <td className="whitespace-nowrap px-2 py-2.5 font-mono text-mute">
         {game.status === "live" ? (game.clock ?? "Live") : game.location}
       </td>
-            {showMarket ? (() => {
+      {showMarket ? (() => {
         // Spread cover evaluation
         let spreadClass = "text-mute";
         if (game.status !== "scheduled" && game.spread && game.spread !== "—" && game.spread !== "PK" && game.spread !== "EVEN") {
@@ -456,7 +464,6 @@ export function GameRow({
           </>
         );
       })() : null}
-
     </tr>
   );
 }
