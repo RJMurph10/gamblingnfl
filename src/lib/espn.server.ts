@@ -268,8 +268,23 @@ const DRIVE_RESULTS: Record<string, DriveResult> = {
 };
 
 function mapDriveResult(text: string | undefined): DriveResult {
-  const key = (text ?? "").toUpperCase();
-  for (const [k, v] of Object.entries(DRIVE_RESULTS)) if (key.includes(k)) return v;
+  const key = (text ?? "").toUpperCase().trim();
+
+  // ESPN uses human-readable drive results such as "Touchdown", "Field Goal",
+  // "Punt", "Interception", and "End of Half". Match the full concepts first
+  // instead of looking only for the abbreviation ("TOUCHDOWN" does not contain
+  // the letters "TD").
+  if (key.includes("TOUCHDOWN") || key === "TD") return "TD";
+  if (key.includes("FIELD GOAL") || key === "FG") return "FG";
+  if (key.includes("INTERCEPTION") || key.includes("FUMBLE")) return "TO";
+  if (key.includes("DOWNS") || key.includes("TURNOVER ON DOWNS")) return "DOWNS";
+  if (key.includes("END OF HALF")) return "EOH";
+  if (key.includes("END OF GAME")) return "EOG";
+  if (key.includes("PUNT")) return "PUNT";
+
+  for (const [k, v] of Object.entries(DRIVE_RESULTS)) {
+    if (key.includes(k)) return v;
+  }
   return "PUNT";
 }
 
@@ -632,7 +647,14 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
         yards: Number(dr?.yards ?? 0),
         timeOfPossession: top,
         startAt: dr?.start?.text ?? "—",
-        result: mapDriveResult(dr?.displayResult ?? dr?.result),
+        result: mapDriveResult(
+        dr?.displayResult ??
+          dr?.result?.displayValue ??
+          dr?.result?.text ??
+          dr?.result ??
+          dr?.end?.result?.displayValue ??
+          dr?.end?.result?.text,
+      ),
       };
     };
 
