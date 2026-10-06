@@ -213,10 +213,19 @@ function GamePage() {
   const score = gameScore(game);
   if (!away || !home) return null;
 
+  // Adapt time dynamically to the user's location (no hardcoded "ET")
+  const localKickoff = game.kickoffIso
+    ? `${new Date(game.kickoffIso).toLocaleDateString([], { weekday: "short" })} ${new Date(game.kickoffIso).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}`
+    : (game.kickoff ?? "").replace(/\s*(ET|EDT|EST)$/i, "");
+
+  const localTime = game.kickoffIso
+    ? new Date(game.kickoffIso).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })
+    : (game.time ?? "").replace(/\s*(ET|EDT|EST)$/i, "");
+
   return (
     <>
       <PageTitle
-        eyebrow={`Week ${game.week} · ${game.venue} · ${game.kickoff}`}
+        eyebrow={`Week ${game.week} · ${game.venue} · ${localKickoff}`}
         title={`${away.abbr} @ ${home.abbr}`}
         aside={isLive ? undefined : <SampleBadge />}
       />
@@ -289,8 +298,11 @@ function GamePage() {
                   </>
                 ) : (
                   <>
-                    <div className="font-disp text-base font-bold uppercase tracking-wider text-mute sm:text-lg">
-                      {game.time || "VS"}
+                    <div
+                      suppressHydrationWarning
+                      className="font-disp text-base font-bold uppercase tracking-wider text-mute sm:text-lg"
+                    >
+                      {localTime || "VS"}
                     </div>
                     <div className="mt-0.5 font-mono text-xs text-mute">{game.date}</div>
                   </>
@@ -335,7 +347,7 @@ function GamePage() {
       <div className="mt-6 grid gap-6 lg:grid-cols-12">
         <Panel className="lg:col-span-5">
           <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">
-            Quarter by quarter
+            Box score
           </h2>
           <div className="mt-3">
             <LineScore game={game} />
