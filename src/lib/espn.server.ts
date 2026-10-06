@@ -121,6 +121,7 @@ function mapEvent(event: any, week: number): Game | null {
   const sit = comp.situation;
   let possession: "away" | "home" | null = null;
   let isRedZone = false;
+  let downDistance: string | undefined;
 
   const isLive = comp.status?.type?.name === "STATUS_IN_PROGRESS";
   if (isLive && sit) {
@@ -140,6 +141,14 @@ function mapEvent(event: any, week: number): Game | null {
     );
     const spot = fieldText.match(/\b([A-Z]{2,4})\s+(\d{1,2})\s*$/);
     const onScrimmage = typeof sit.down !== "number" || sit.down >= 1;
+    // Live down & distance, e.g. "1st & 10" (blank on kickoffs and between drives).
+    if (typeof sit.down === "number" && sit.down >= 1 && sit.down <= 4) {
+      downDistance =
+        sit.shortDownDistanceText ??
+        (typeof sit.distance === "number"
+          ? `${["", "1st", "2nd", "3rd", "4th"][sit.down]} & ${sit.distance}`
+          : undefined);
+    }
     if (!onScrimmage || !possession) {
       isRedZone = false; // kickoffs, PATs, no clear possession
     } else if (spot) {
@@ -154,6 +163,7 @@ function mapEvent(event: any, week: number): Game | null {
     id: `espn-${event.id}`,
     possession,
     isRedZone,
+    downDistance,
 
         week,
     kickoff: formatKickoff(event.date),
