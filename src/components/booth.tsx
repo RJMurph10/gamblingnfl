@@ -314,7 +314,20 @@ export function DriveTable({ game }: { game: Game }) {
             return (
               <tr key={d.index} className="hover:bg-line/5">
                 <td className="px-4 py-2.5 font-mono text-mute tabular-nums">{d.index}</td>
-                <td className="px-2 py-2.5 font-mono text-mute">{team?.abbr}</td>
+                <td className="px-2 py-2.5">
+                  {team ? (
+                    <div className="flex items-center gap-2">
+                      <img
+                        src={teamLogo(team)}
+                        alt={`${team.city} ${team.name} logo`}
+                        className="size-5 object-contain"
+                      />
+                      <span className="font-mono text-mute">{team.abbr}</span>
+                    </div>
+                  ) : (
+                    <span className="font-mono text-mute">—</span>
+                  )}
+                </td>
                 <td className="px-2 py-2.5 font-mono text-mute tabular-nums">Q{d.quarter}</td>
                 <td className="px-2 py-2.5 text-right font-mono tabular-nums">{d.plays}</td>
                 <td className="px-2 py-2.5 text-right font-mono tabular-nums">{d.yards}</td>
