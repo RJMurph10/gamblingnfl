@@ -12,8 +12,8 @@ import {
   StatComparison,
   TeamLogo,
 } from "@/components/booth";
-import { gameById, gameScore } from "@/data/games";
-import { teamById } from "@/data/teams";
+import { gameById, gameScore, type Game } from "@/data/games";
+import { teamById, type Team } from "@/data/teams";
 import { getLiveGame } from "@/lib/espn.functions";
 
 export const Route = createFileRoute("/games/$gameId")({
@@ -57,6 +57,128 @@ export const Route = createFileRoute("/games/$gameId")({
   component: GamePage,
 });
 
+/* ---------- Interactive 100-Yard Field Visualizer ---------- */
+
+function LiveFieldTrack({
+  game,
+  away,
+  home,
+}: {
+  game: Game;
+  away: Team;
+  home: Team;
+}) {
+  if (game.status !== "live" || !game.possession) return null;
+
+  const isAwayPossession = game.possession === "away";
+  const possessingTeam = isAwayPossession ? away : home;
+  const text = (game.possessionText ?? "").trim().toUpperCase();
+
+  // Calculate ball yard on 0-100 scale (0 = Away endzone, 100 = Home endzone)
+  let ballYard = 50;
+  if (text === "50") {
+    ballYard = 50;
+  } else {
+    const m = text.match(/^([A-Z]{2,4})\s+(\d{1,2})$/);
+    if (m) {
+      const side = m[1];
+      const yd = parseInt(m[2], 10);
+      if (side === away.abbr.toUpperCase()) {
+        ballYard = yd;
+      } else if (side === home.abbr.toUpperCase()) {
+        ballYard = 100 - yd;
+      }
+    }
+  }
+
+  const dist = typeof game.distance === "number" && game.distance > 0 ? game.distance : 10;
+  const firstDownYard = isAwayPossession
+    ? Math.min(100, ballYard + dist)
+    : Math.max(0, ballYard - dist);
+
+  return (
+    <div className="mt-4 overflow-hidden rounded-lg border border-emerald-500/20 bg-[#091b11] p-3 shadow-inner">
+      {/* Field status banner */}
+      <div className="mb-2 flex items-center justify-between font-mono text-[11px] uppercase tracking-wider text-emerald-400">
+        <span className="flex items-center gap-1.5 font-semibold text-foreground">
+          <FootballIcon isRedZone={game.isRedZone} />
+          <span>{game.downDistance ?? "1st & 10"}</span>
+          <span className="text-mute">·</span>
+          <span>Ball on {game.possessionText ?? `${away.abbr} 50`}</span>
+        </span>
+        <span className="flex items-center gap-1 text-acc font-semibold">
+          <span>Drive</span>
+          <span>{isAwayPossession ? "→" : "←"}</span>
+        </span>
+      </div>
+
+      {/* Field surface */}
+      <div className="relative flex h-14 sm:h-16 w-full select-none overflow-hidden rounded border border-emerald-600/30 bg-[#0e2c1a]">
+        {/* Away End Zone */}
+        <div
+          className="flex w-[10%] shrink-0 items-center justify-center border-r border-emerald-500/30 text-center font-disp text-xs sm:text-sm font-bold uppercase tracking-wider text-white"
+          style={{ backgroundColor: `${away.color}cc` }}
+        >
+          <span className="-rotate-90 sm:rotate-0">{away.abbr}</span>
+        </div>
+
+        {/* 100-Yard Field with 10-yard intervals */}
+        <div className="relative h-full w-[80%] shrink-0">
+          <div className="absolute inset-0 flex justify-between pointer-events-none">
+            {[10, 20, 30, 40, 50, 40, 30, 20, 10].map((yd, idx) => (
+              <div
+                key={idx}
+                className="relative flex h-full flex-col justify-between border-l border-white/15 px-0.5 text-center"
+                style={{ width: "10%" }}
+              >
+                <span className="font-mono text-[8px] sm:text-[9px] text-white/40">{yd}</span>
+                <span className="font-mono text-[8px] sm:text-[9px] text-white/40">{yd}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* 50 Yard Midfield Line */}
+          <div className="absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-white/35" />
+
+          {/* Yellow First Down Line */}
+          <div
+            className="absolute top-0 z-10 h-full w-[2px] bg-amber-300 drop-shadow-[0_0_4px_rgba(250,204,21,0.9)]"
+            style={{ left: `${firstDownYard}%` }}
+          >
+            <div className="absolute -top-0.5 -translate-x-1/2 rounded bg-amber-400 px-1 font-mono text-[7px] font-bold text-black uppercase">
+              1st
+            </div>
+          </div>
+
+          {/* Line of Scrimmage with Football */}
+          <div
+            className="absolute top-0 z-20 h-full w-[2px] shadow-lg"
+            style={{
+              left: `${ballYard}%`,
+              backgroundColor: possessingTeam.color ?? "#38bdf8",
+            }}
+          >
+            <div
+              className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full p-0.5 shadow-[0_0_8px_rgba(0,0,0,0.8)]"
+              style={{ backgroundColor: possessingTeam.color ?? "#38bdf8" }}
+            >
+              <FootballIcon isRedZone={game.isRedZone} />
+            </div>
+          </div>
+        </div>
+
+        {/* Home End Zone */}
+        <div
+          className="flex w-[10%] shrink-0 items-center justify-center border-l border-emerald-500/30 text-center font-disp text-xs sm:text-sm font-bold uppercase tracking-wider text-white"
+          style={{ backgroundColor: `${home.color}cc` }}
+        >
+          <span className="-rotate-90 sm:rotate-0">{home.abbr}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function GamePage() {
   const { game: sampleGame } = Route.useLoaderData();
   const { gameId } = Route.useParams();
@@ -74,9 +196,7 @@ function GamePage() {
   const game = isLive ? (liveGame ?? undefined) : sampleGame;
 
   if (isLive && isLoading) {
-    return (
-      <PageTitle eyebrow="2026 Season · Live data" title="Loading game…" />
-    );
+    return <PageTitle eyebrow="2026 Season · Live data" title="Loading game…" />;
   }
   if (!game) {
     return (
@@ -131,7 +251,7 @@ function GamePage() {
                 </span>
               </div>
 
-              {/* Middle Scorebug: Live Downs & Clock OR Final & Date */}
+              {/* Middle Scorebug: Live Downs ABOVE Clock OR Final & Date */}
               <div className="flex flex-col items-center justify-center px-2 text-center">
                 {game.status === "live" ? (
                   <>
@@ -152,7 +272,7 @@ function GamePage() {
                         <span>{game.downDistance}</span>
                       </div>
                     ) : null}
-                    <div className="font-mono text-xs text-mute sm:text-sm">
+                    <div className="font-mono text-xs font-semibold text-foreground sm:text-sm">
                       {game.clock ?? "Live"}
                     </div>
                   </>
@@ -161,18 +281,14 @@ function GamePage() {
                     <div className="font-disp text-xl font-bold uppercase tracking-wider text-acc sm:text-2xl">
                       FINAL
                     </div>
-                    <div className="mt-0.5 font-mono text-xs text-mute">
-                      {game.date}
-                    </div>
+                    <div className="mt-0.5 font-mono text-xs text-mute">{game.date}</div>
                   </>
                 ) : (
                   <>
                     <div className="font-disp text-base font-bold uppercase tracking-wider text-mute sm:text-lg">
                       {game.time || "VS"}
                     </div>
-                    <div className="mt-0.5 font-mono text-xs text-mute">
-                      {game.date}
-                    </div>
+                    <div className="mt-0.5 font-mono text-xs text-mute">{game.date}</div>
                   </>
                 )}
               </div>
@@ -199,6 +315,9 @@ function GamePage() {
             </div>
           );
         })()}
+
+        {/* Live 100-Yard Field Visualizer (Directly Below the Score Box) */}
+        <LiveFieldTrack game={game} away={away} home={home} />
 
         {/* Closing Odds Line */}
         {((game.spread && game.spread !== "—") || game.total > 0) && (
