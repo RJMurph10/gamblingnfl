@@ -130,7 +130,23 @@ function mapEvent(event: any, week: number): Game | null {
     } else if (possId && home?.team?.id && possId === String(home.team.id)) {
       possession = "home";
     }
-    isRedZone = Boolean(sit.isRedZone || (typeof sit.yardLine === "number" && sit.yardLine >= 80));
+    // Red zone = a scrimmage down with the offense inside the opponent's 20.
+    // Don't use sit.yardLine: it runs along the whole field rather than from the
+    // offense's own goal line, so a drive starting at its own 20 can look like 80.
+    const oppAbbr = (possession === "away" ? home : possession === "home" ? away : null)?.team
+      ?.abbreviation;
+    const fieldText = String(
+      sit.possessionText ?? sit.downDistanceText ?? sit.shortDownDistanceText ?? "",
+    );
+    const spot = fieldText.match(/\b([A-Z]{2,4})\s+(\d{1,2})\s*$/);
+    const onScrimmage = typeof sit.down !== "number" || sit.down >= 1;
+    if (!onScrimmage || !possession) {
+      isRedZone = false; // kickoffs, PATs, no clear possession
+    } else if (spot) {
+      isRedZone = !!oppAbbr && spot[1] === oppAbbr && Number(spot[2]) <= 20;
+    } else {
+      isRedZone = Boolean(sit.isRedZone);
+    }
   }
 
 
