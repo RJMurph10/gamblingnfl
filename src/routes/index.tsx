@@ -3,6 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import {
   DriveRail,
+  FootballIcon,
   GameRow,
   LineScore,
   PageTitle,
@@ -14,10 +15,78 @@ import {
   TeamLogo,
   TeamMark,
 } from "@/components/booth";
-import { games, type Game } from "@/data/games";
+import { gameScore, games, type Game } from "@/data/games";
 import { players } from "@/data/players";
-import { teams } from "@/data/teams";
+import { teamById, teams } from "@/data/teams";
 import { getLiveGame, getLiveSchedule } from "@/lib/espn.functions";
+
+/* ---------- Live games: row without date/time, clock first ---------- */
+
+function LiveGameRow({ game }: { game: Game }) {
+  const away = teamById(game.awayTeamId);
+  const home = teamById(game.homeTeamId);
+  if (!away || !home) return null;
+  const score = gameScore(game);
+  // "8:42 - 1st Quarter" -> "1st 8:42"
+  const rawClock = (game.clock ?? "Live").replace(/\s*Quarter\b/i, "");
+  const clockMatch = rawClock.match(/^(\d{1,2}:\d{2})\s*-\s*(.+)$/);
+  const clock = clockMatch ? `${clockMatch[2]} ${clockMatch[1]}` : rawClock;
+
+  let spreadClass = "text-mute";
+  if (game.spread && game.spread !== "—" && game.spread !== "PK" && game.spread !== "EVEN") {
+    const match = game.spread.match(/^([A-Za-z]+)\s*([+-]?\d+(?:\.\d+)?)/);
+    if (match) {
+      const [, favAbbr, ptsStr] = match;
+      const pts = Math.abs(parseFloat(ptsStr));
+      const isAwayFav = favAbbr.toUpperCase() === away.abbr.toUpperCase();
+      const isHomeFav = favAbbr.toUpperCase() === home.abbr.toUpperCase();
+      if (isAwayFav || isHomeFav) {
+        const diff = isAwayFav ? score.away - score.home : score.home - score.away;
+        if (diff > pts) spreadClass = "text-emerald-400 font-semibold";
+        else if (diff < pts) spreadClass = "text-rose-500 font-semibold";
+      }
+    }
+  }
+
+  let totalClass = "text-mute";
+  if (game.total && game.total > 0 && score.away + score.home > game.total) {
+    totalClass = "text-emerald-400 font-semibold"; // over already hit
+  }
+
+  return (
+    <tr className="hover:bg-line/5">
+      <td className="whitespace-nowrap px-4 py-2.5 font-mono text-mute">{clock}</td>
+      <td className="whitespace-nowrap px-2 py-2.5 font-mono text-mute">
+        {game.downDistance || "—"}
+      </td>
+      <td className="px-2 py-2.5 text-center">
+        <Link
+          to="/games/$gameId"
+          params={{ gameId: game.id }}
+          className="inline-flex items-center justify-center gap-1.5 font-mono tabular-nums font-semibold hover:text-acc"
+        >
+          <span className="inline-flex w-4 items-center justify-center">
+            {game.possession === "away" ? <FootballIcon isRedZone={game.isRedZone} /> : null}
+          </span>
+          <span className="w-6 text-right">{score.away}</span>
+          <TeamLogo team={away} />
+          <span className="font-sans font-normal text-mute">@</span>
+          <TeamLogo team={home} />
+          <span className="w-6 text-left">{score.home}</span>
+          <span className="inline-flex w-4 items-center justify-center">
+            {game.possession === "home" ? <FootballIcon isRedZone={game.isRedZone} /> : null}
+          </span>
+        </Link>
+      </td>
+      <td className={`whitespace-nowrap px-2 py-2.5 text-right font-mono tabular-nums ${spreadClass}`}>
+        {game.spread}
+      </td>
+      <td className={`whitespace-nowrap px-4 py-2.5 text-right font-mono tabular-nums ${totalClass}`}>
+        {game.total || "—"}
+      </td>
+    </tr>
+  );
+}
 
 /* ---------- Upcoming games: one tab per day (Eastern Time) ---------- */
 
@@ -237,22 +306,21 @@ function Dashboard() {
             />
             {live.length > 0 ? (
               <div className="overflow-x-auto">
-                <table className="w-full min-w-[620px] text-sm" style={{ tableLayout: "fixed" }}>
+                <table className="w-full min-w-[560px] text-sm" style={{ tableLayout: "fixed" }}>
                   <thead>
                     <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
-                      <th className="w-[17%] px-4 py-2 font-normal">Date</th>
-                      <th className="w-[15%] px-2 py-2 font-normal">Time</th>
-                      <th className="w-[26%] px-2 py-2 text-center font-normal">Matchup</th>
-                      <th className="w-[22%] px-2 py-2 font-normal">Game Clock</th>
-                      <th className="w-[10%] px-2 py-2 text-right font-normal">Spread</th>
-                      <th className="w-[10%] px-4 py-2 text-right font-normal">Total</th>
+                      <th className="w-[18%] px-4 py-2 font-normal">Game Clock</th>
+                      <th className="w-[16%] px-2 py-2 font-normal">Down</th>
+                      <th className="w-[30%] px-2 py-2 text-center font-normal">Matchup</th>
+                      <th className="w-[18%] px-2 py-2 text-right font-normal">Spread</th>
+                      <th className="w-[18%] px-4 py-2 text-right font-normal">Total</th>
                     </tr>
 
                   </thead>
 
                   <tbody className="divide-y divide-line/5">
                     {live.map((g) => (
-                      <GameRow key={g.id} game={g} />
+                      <LiveGameRow key={g.id} game={g} />
                     ))}
                   </tbody>
                 </table>
