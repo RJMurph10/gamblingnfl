@@ -26,23 +26,26 @@ export interface TeamGameStats {
   rushYards: number;
   firstDowns: number;
   thirdDownPct: number;
-  thirdDownEff?: string;
-  fourthDownPct?: number;
-  fourthDownEff?: string;
-  redZonePct?: number;
-  redZoneEff?: string;
   turnovers: number;
   penalties: number;
-  penaltyYards?: number;
   timeOfPossession: string;
+  /* Extended stats. All optional: sample data leaves them out and the
+     comparison hides any stat that neither team has recorded. */
   touchdowns?: number;
   passingTouchdowns?: number;
   rushingTouchdowns?: number;
-  fieldGoals?: string;
   fieldGoalsMade?: number;
-  fieldGoalsAttempted?: number;
-  extraPointPct?: number;
-  extraPointsEff?: string;
+  fieldGoalAttempts?: number;
+  thirdDownMade?: number;
+  thirdDownAtt?: number;
+  fourthDownMade?: number;
+  fourthDownAtt?: number;
+  redZoneMade?: number;
+  redZoneAtt?: number;
+  extraPointsMade?: number;
+  extraPointAttempts?: number;
+  penaltyYards?: number;
+  /** Defensive stats: things this team's DEFENSE recorded. */
   sacks?: number;
   defensiveTouchdowns?: number;
   interceptions?: number;
@@ -58,7 +61,6 @@ export interface BoxScoreLine {
   position: string;
   teamId: string;
   statLine: string;
-  category?: "offense" | "defense";
 }
 
 export interface Game {
@@ -85,11 +87,8 @@ export interface Game {
   isRedZone?: boolean;
   /** Live down & distance, e.g. "1st & 10". Empty between plays / on kickoffs. */
   downDistance?: string;
-  awayRecord?: string;
-  homeRecord?: string;
-  possessionText?: string;
-  distance?: number;
 }
+
 
 const sum = (nums: number[]) => nums.reduce((a, b) => a + b, 0);
 
@@ -134,10 +133,10 @@ export const games: Game[] = [
       home: { totalYards: 445, passYards: 289, rushYards: 156, firstDowns: 25, thirdDownPct: 52, turnovers: 2, penalties: 7, timeOfPossession: "27:46" },
     },
     boxScore: [
-      { playerId: "j-marrow", name: "Jalen Marrow", position: "QB", teamId: "chiefs", statLine: "26/38, 318 yds, 3 TD, 1 INT", category: "offense" },
-      { playerId: "b-oyelaran", name: "Bram Oyelaran", position: "WR", teamId: "chiefs", statLine: "7 rec, 101 yds, 1 TD", category: "offense" },
-      { playerId: "r-castellan", name: "Rhett Castellan", position: "QB", teamId: "bills", statLine: "23/34, 289 yds, 2 TD", category: "offense" },
-      { name: "Ivo Lindqvist", position: "RB", teamId: "bills", statLine: "21 car, 104 yds, 1 TD", category: "offense" },
+      { playerId: "j-marrow", name: "Jalen Marrow", position: "QB", teamId: "chiefs", statLine: "26/38, 318 yds, 3 TD, 1 INT" },
+      { playerId: "b-oyelaran", name: "Bram Oyelaran", position: "WR", teamId: "chiefs", statLine: "7 rec, 101 yds, 1 TD" },
+      { playerId: "r-castellan", name: "Rhett Castellan", position: "QB", teamId: "bills", statLine: "23/34, 289 yds, 2 TD" },
+      { name: "Ivo Lindqvist", position: "RB", teamId: "bills", statLine: "21 car, 104 yds, 1 TD" },
     ],
   },
   {
@@ -159,8 +158,8 @@ export const games: Game[] = [
       home: { totalYards: 341, passYards: 268, rushYards: 73, firstDowns: 19, thirdDownPct: 38, turnovers: 2, penalties: 6, timeOfPossession: "28:52" },
     },
     boxScore: [
-      { playerId: "d-halloran", name: "Dane Halloran", position: "RB", teamId: "ravens", statLine: "23 car, 121 yds, 2 TD", category: "offense" },
-      { playerId: "s-ibarra", name: "Sol Ibarra", position: "WR", teamId: "bengals", statLine: "7 rec, 94 yds, 1 TD", category: "offense" },
+      { playerId: "d-halloran", name: "Dane Halloran", position: "RB", teamId: "ravens", statLine: "23 car, 121 yds, 2 TD" },
+      { playerId: "s-ibarra", name: "Sol Ibarra", position: "WR", teamId: "bengals", statLine: "7 rec, 94 yds, 1 TD" },
     ],
   },
   {
@@ -182,9 +181,9 @@ export const games: Game[] = [
       home: { totalYards: 402, passYards: 276, rushYards: 126, firstDowns: 22, thirdDownPct: 43, turnovers: 1, penalties: 8, timeOfPossession: "29:19" },
     },
     boxScore: [
-      { playerId: "l-thibault", name: "Luc Thibault", position: "QB", teamId: "lions", statLine: "25/33, 304 yds, 3 TD", category: "offense" },
-      { playerId: "k-brennan", name: "Knox Brennan", position: "RB", teamId: "lions", statLine: "22 car, 108 yds, 2 TD", category: "offense" },
-      { playerId: "c-nakamura", name: "Cory Nakamura", position: "RB", teamId: "packers", statLine: "19 car, 84 yds, 1 TD", category: "offense" },
+      { playerId: "l-thibault", name: "Luc Thibault", position: "QB", teamId: "lions", statLine: "25/33, 304 yds, 3 TD" },
+      { playerId: "k-brennan", name: "Knox Brennan", position: "RB", teamId: "lions", statLine: "22 car, 108 yds, 2 TD" },
+      { playerId: "c-nakamura", name: "Cory Nakamura", position: "RB", teamId: "packers", statLine: "19 car, 84 yds, 1 TD" },
     ],
   },
   {
@@ -206,7 +205,7 @@ export const games: Game[] = [
       home: { totalYards: 396, passYards: 281, rushYards: 115, firstDowns: 21, thirdDownPct: 41, turnovers: 2, penalties: 6, timeOfPossession: "27:58" },
     },
     boxScore: [
-      { playerId: "m-reyes", name: "Marco Reyes", position: "WR", teamId: "49ers", statLine: "10 rec, 138 yds, 2 TD", category: "offense" },
+      { playerId: "m-reyes", name: "Marco Reyes", position: "WR", teamId: "49ers", statLine: "10 rec, 138 yds, 2 TD" },
     ],
   },
   {
@@ -228,7 +227,7 @@ export const games: Game[] = [
       home: { totalYards: 352, passYards: 239, rushYards: 113, firstDowns: 19, thirdDownPct: 39, turnovers: 1, penalties: 5, timeOfPossession: "29:48" },
     },
     boxScore: [
-      { playerId: "t-vance", name: "Theo Vance", position: "WR", teamId: "eagles", statLine: "8 rec, 112 yds, 1 TD", category: "offense" },
+      { playerId: "t-vance", name: "Theo Vance", position: "WR", teamId: "eagles", statLine: "8 rec, 112 yds, 1 TD" },
     ],
   },
   {
