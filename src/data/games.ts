@@ -61,6 +61,8 @@ export interface Game {
   boxScore: BoxScoreLine[];
   possession?: "away" | "home" | null;
   isRedZone?: boolean;
+  /** Live down & distance, e.g. "1st & 10". Empty between plays / on kickoffs. */
+  downDistance?: string;
 }
 
 
