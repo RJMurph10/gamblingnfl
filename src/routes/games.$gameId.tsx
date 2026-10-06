@@ -3,13 +3,14 @@ import { useQuery } from "@tanstack/react-query";
 import {
   DriveRail,
   DriveTable,
+  FootballIcon,
   LineScore,
   PageTitle,
   Panel,
   PanelHeader,
   SampleBadge,
   StatComparison,
-  TeamMark,
+  TeamLogo,
 } from "@/components/booth";
 import { gameById, gameScore } from "@/data/games";
 import { teamById } from "@/data/teams";
@@ -70,7 +71,6 @@ function GamePage() {
     retry: 1,
   });
 
-
   const game = isLive ? (liveGame ?? undefined) : sampleGame;
 
   if (isLive && isLoading) {
@@ -101,35 +101,112 @@ function GamePage() {
         aside={isLive ? undefined : <SampleBadge />}
       />
 
-      <Panel className="flex flex-wrap items-center gap-4">
-        <Link to="/teams/$teamId" params={{ teamId: away.id }} className="flex items-center gap-3">
-          <TeamMark team={away} />
-          <span>
-            <span className="block font-disp text-xl font-semibold uppercase leading-none tracking-tight">
-              {away.name}
-            </span>
-            <span className="label-mono">
-              {away.record.w}-{away.record.l} away
-            </span>
-          </span>
-        </Link>
-        <span className="font-mono text-2xl tabular-nums">
-          {game.status === "scheduled" ? "—" : `${score.away} – ${score.home}`}
-        </span>
-        <Link to="/teams/$teamId" params={{ teamId: home.id }} className="flex items-center gap-3">
-          <span className="text-right">
-            <span className="block font-disp text-xl font-semibold uppercase leading-none tracking-tight">
-              {home.name}
-            </span>
-            <span className="label-mono">
-              {home.record.w}-{home.record.l} home
-            </span>
-          </span>
-          <TeamMark team={home} />
-        </Link>
-        <span className="ml-auto font-mono text-[11px] uppercase tracking-wider text-faint">
-          {game.spread} · {game.total > 0 ? `O/U ${game.total}` : "O/U —"} · {game.status}
-        </span>
+      {/* Traditional NFL Score Box */}
+      <Panel className="p-4 sm:p-6">
+        {(() => {
+          const possessingTeam =
+            game.possession === "away" ? away : game.possession === "home" ? home : null;
+          const isHalftime =
+            game.clock === "Halftime" || Boolean(game.clock?.toLowerCase().includes("half"));
+
+          return (
+            <div className="mx-auto flex max-w-2xl items-center justify-between">
+              {/* Away Team: Logo + Record, then Score */}
+              <div className="flex items-center gap-3 sm:gap-6">
+                <Link
+                  to="/teams/$teamId"
+                  params={{ teamId: away.id }}
+                  className="group flex flex-col items-center gap-1 text-center"
+                >
+                  <TeamLogo
+                    team={away}
+                    className="size-10 sm:size-14 transition-transform group-hover:scale-105"
+                  />
+                  <span className="font-mono text-xs text-mute group-hover:text-acc">
+                    {game.awayRecord ?? `${away.record.w}-${away.record.l}`}
+                  </span>
+                </Link>
+                <span className="font-mono text-3xl font-bold tabular-nums text-foreground sm:text-5xl">
+                  {game.status === "scheduled" ? "—" : score.away}
+                </span>
+              </div>
+
+              {/* Middle Scorebug: Live Downs & Clock OR Final & Date */}
+              <div className="flex flex-col items-center justify-center px-2 text-center">
+                {game.status === "live" ? (
+                  <>
+                    {game.downDistance && !isHalftime ? (
+                      <div
+                        className="mb-1.5 inline-flex items-center gap-1.5 rounded border px-2.5 py-0.5 font-mono text-xs font-semibold tracking-wide shadow-sm"
+                        style={
+                          possessingTeam
+                            ? {
+                                backgroundColor: `${possessingTeam.color}33`,
+                                borderColor: possessingTeam.color,
+                                color: "#ffffff",
+                              }
+                            : undefined
+                        }
+                      >
+                        <FootballIcon isRedZone={game.isRedZone} />
+                        <span>{game.downDistance}</span>
+                      </div>
+                    ) : null}
+                    <div className="font-mono text-xs text-mute sm:text-sm">
+                      {game.clock ?? "Live"}
+                    </div>
+                  </>
+                ) : game.status === "final" ? (
+                  <>
+                    <div className="font-disp text-xl font-bold uppercase tracking-wider text-acc sm:text-2xl">
+                      FINAL
+                    </div>
+                    <div className="mt-0.5 font-mono text-xs text-mute">
+                      {game.date}
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="font-disp text-base font-bold uppercase tracking-wider text-mute sm:text-lg">
+                      {game.time || "VS"}
+                    </div>
+                    <div className="mt-0.5 font-mono text-xs text-mute">
+                      {game.date}
+                    </div>
+                  </>
+                )}
+              </div>
+
+              {/* Home Team: Score, then Logo + Record */}
+              <div className="flex items-center gap-3 sm:gap-6">
+                <span className="font-mono text-3xl font-bold tabular-nums text-foreground sm:text-5xl">
+                  {game.status === "scheduled" ? "—" : score.home}
+                </span>
+                <Link
+                  to="/teams/$teamId"
+                  params={{ teamId: home.id }}
+                  className="group flex flex-col items-center gap-1 text-center"
+                >
+                  <TeamLogo
+                    team={home}
+                    className="size-10 sm:size-14 transition-transform group-hover:scale-105"
+                  />
+                  <span className="font-mono text-xs text-mute group-hover:text-acc">
+                    {game.homeRecord ?? `${home.record.w}-${home.record.l}`}
+                  </span>
+                </Link>
+              </div>
+            </div>
+          );
+        })()}
+
+        {/* Closing Odds Line */}
+        {((game.spread && game.spread !== "—") || game.total > 0) && (
+          <div className="mt-4 flex items-center justify-center gap-4 border-t border-line/10 pt-3 font-mono text-[11px] uppercase tracking-wider text-faint">
+            {game.spread && game.spread !== "—" ? <span>Spread: {game.spread}</span> : null}
+            {game.total > 0 ? <span>O/U: {game.total}</span> : null}
+          </div>
+        )}
       </Panel>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-12">
