@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -7,12 +8,11 @@ import {
   LineScore,
   PageTitle,
   Panel,
-  PanelHeader,
   SampleBadge,
   StatComparison,
   TeamLogo,
 } from "@/components/booth";
-import { gameById, gameScore, type Game } from "@/data/games";
+import { gameById, gameScore, type BoxScoreLine, type Game } from "@/data/games";
 import { teamById, type Team } from "@/data/teams";
 import { getLiveGame } from "@/lib/espn.functions";
 
@@ -150,12 +150,12 @@ function LiveFieldTrack({
             </div>
           </div>
 
-          {/* Line of Scrimmage with Football */}
+          {/* Line of Scrimmage with Team-Colored Football Marker */}
           <div
-            className="absolute top-0 z-20 h-full w-[2px] shadow-lg"
+            className="absolute top-0 z-20 h-full w-[2px] drop-shadow-[0_0_6px_rgba(0,0,0,0.9)]"
             style={{
               left: `${ballYard}%`,
-              backgroundColor: possessingTeam.color ?? "#38bdf8",
+              backgroundColor: possessingTeam.color ?? "#ffffff",
             }}
           >
             <div
@@ -193,6 +193,9 @@ function GamePage() {
     retry: 1,
   });
 
+  const [awayTab, setAwayTab] = useState<"offense" | "defense">("offense");
+  const [homeTab, setHomeTab] = useState<"offense" | "defense">("offense");
+
   const game = isLive ? (liveGame ?? undefined) : sampleGame;
 
   if (isLive && isLoading) {
@@ -213,7 +216,7 @@ function GamePage() {
   const score = gameScore(game);
   if (!away || !home) return null;
 
-  // Adapt time dynamically to the user's location (no hardcoded "ET")
+  // Local user kickoff formatting (no hardcoded "ET")
   const localKickoff = game.kickoffIso
     ? `${new Date(game.kickoffIso).toLocaleDateString([], { weekday: "short" })} ${new Date(game.kickoffIso).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}`
     : (game.kickoff ?? "").replace(/\s*(ET|EDT|EST)$/i, "");
@@ -221,6 +224,25 @@ function GamePage() {
   const localTime = game.kickoffIso
     ? new Date(game.kickoffIso).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })
     : (game.time ?? "").replace(/\s*(ET|EDT|EST)$/i, "");
+
+  // Offense vs Defense filtering
+  const isOffense = (line: BoxScoreLine) =>
+    line.category
+      ? line.category === "offense"
+      : ["QB", "RB", "FB", "WR", "TE", "PASSING", "RUSHING", "RECEIVING"].includes(
+          line.position.toUpperCase(),
+        );
+
+  const awayLines = game.boxScore.filter((l) => l.teamId === away.id);
+  const homeLines = game.boxScore.filter((l) => l.teamId === home.id);
+
+  const awayOffense = awayLines.filter(isOffense);
+  const awayDefense = awayLines.filter((l) => !isOffense(l));
+  const homeOffense = homeLines.filter(isOffense);
+  const homeDefense = homeLines.filter((l) => !isOffense(l));
+
+  const currentAwayLines = awayTab === "offense" ? awayOffense : awayDefense;
+  const currentHomeLines = homeTab === "offense" ? homeOffense : homeDefense;
 
   return (
     <>
@@ -259,60 +281,49 @@ function GamePage() {
                     {game.awayRecord ?? `${away.record.w}-${away.record.l}`}
                   </span>
                 </Link>
-                <span className="font-mono text-3xl font-bold tabular-nums text-foreground sm:text-5xl">
-                  {game.status === "scheduled" ? "—" : score.away}
+                <span className="font-mono text-3xl sm:text-5xl font-bold tabular-nums">
+                  {game.status !== "scheduled" ? score.away : ""}
                 </span>
               </div>
 
-              {/* Middle Scorebug: Live Downs ABOVE Clock OR Final & Date */}
+              {/* Center Status Box */}
               <div className="flex flex-col items-center justify-center px-2 text-center">
                 {game.status === "live" ? (
-                  <>
+                  <div className="flex flex-col items-center gap-1.5">
                     {game.downDistance && !isHalftime ? (
-                      <div
-                        className="mb-1.5 inline-flex items-center gap-1.5 rounded border px-2.5 py-0.5 font-mono text-xs font-semibold tracking-wide shadow-sm"
-                        style={
-                          possessingTeam
-                            ? {
-                                backgroundColor: `${possessingTeam.color}33`,
-                                borderColor: possessingTeam.color,
-                                color: "#ffffff",
-                              }
-                            : undefined
-                        }
+                      <span
+                        className="rounded px-2 py-0.5 font-mono text-[11px] font-bold tracking-wider uppercase text-black"
+                        style={{ backgroundColor: possessingTeam?.color ?? "#38bdf8" }}
                       >
-                        <FootballIcon isRedZone={game.isRedZone} />
-                        <span>{game.downDistance}</span>
-                      </div>
+                        {game.downDistance}
+                      </span>
                     ) : null}
-                    <div className="font-mono text-xs font-semibold text-foreground sm:text-sm">
+                    <span className="flex items-center gap-1.5 font-mono text-xs sm:text-sm font-semibold tracking-wider text-emerald-400">
+                      <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
                       {game.clock ?? "Live"}
-                    </div>
-                  </>
+                    </span>
+                  </div>
                 ) : game.status === "final" ? (
-                  <>
-                    <div className="font-disp text-xl font-bold uppercase tracking-wider text-acc sm:text-2xl">
+                  <div className="flex flex-col items-center">
+                    <span className="font-disp text-lg sm:text-xl font-bold tracking-wider text-foreground">
                       {isOT ? "FINAL/OT" : "FINAL"}
-                    </div>
-                    <div className="mt-0.5 font-mono text-xs text-mute">{game.date}</div>
-                  </>
+                    </span>
+                    <span className="font-mono text-[11px] text-mute">{game.date}</span>
+                  </div>
                 ) : (
-                  <>
-                    <div
-                      suppressHydrationWarning
-                      className="font-disp text-base font-bold uppercase tracking-wider text-mute sm:text-lg"
-                    >
-                      {localTime || "VS"}
-                    </div>
-                    <div className="mt-0.5 font-mono text-xs text-mute">{game.date}</div>
-                  </>
+                  <div className="flex flex-col items-center">
+                    <span className="font-disp text-base sm:text-lg font-bold tracking-wider text-mute">
+                      VS
+                    </span>
+                    <span className="font-mono text-[11px] text-mute">{localTime || game.date}</span>
+                  </div>
                 )}
               </div>
 
               {/* Home Team: Score, then Logo + Record */}
               <div className="flex items-center gap-3 sm:gap-6">
-                <span className="font-mono text-3xl font-bold tabular-nums text-foreground sm:text-5xl">
-                  {game.status === "scheduled" ? "—" : score.home}
+                <span className="font-mono text-3xl sm:text-5xl font-bold tabular-nums">
+                  {game.status !== "scheduled" ? score.home : ""}
                 </span>
                 <Link
                   to="/teams/$teamId"
@@ -332,23 +343,22 @@ function GamePage() {
           );
         })()}
 
-        {/* Live 100-Yard Field Visualizer (Directly Below the Score Box) */}
+        {/* Live Field Track with 10-Yard Markers */}
         <LiveFieldTrack game={game} away={away} home={home} />
 
         {/* Closing Odds Line */}
-        {((game.spread && game.spread !== "—") || game.total > 0) && (
-          <div className="mt-4 flex items-center justify-center gap-4 border-t border-line/10 pt-3 font-mono text-[11px] uppercase tracking-wider text-faint">
-            {game.spread && game.spread !== "—" ? <span>Spread: {game.spread}</span> : null}
-            {game.total > 0 ? <span>O/U: {game.total}</span> : null}
-          </div>
-        )}
+        <div className="mt-4 border-t border-line/10 pt-3 text-center font-mono text-[11px] text-mute">
+          Spread: <span className="text-foreground font-semibold">{game.spread}</span> · Total:{" "}
+          <span className="text-foreground font-semibold">{game.total}</span>
+        </div>
       </Panel>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-12">
         <Panel className="lg:col-span-5">
-          <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">
-            Box score
-          </h2>
+          <div className="flex items-center justify-between">
+            <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">Box score</h2>
+            <span className="label-mono">scoring</span>
+          </div>
           <div className="mt-3">
             <LineScore game={game} />
           </div>
@@ -381,10 +391,12 @@ function GamePage() {
 
       <section className="mt-6">
         <Panel padded={false}>
-          <PanelHeader
-            title="Drive by drive"
-            aside={<span className="label-mono">{game.drives.length} drives</span>}
-          />
+          <div className="flex items-center justify-between border-b border-line/10 px-4 py-3">
+            <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">
+              Drive by drive
+            </h2>
+            <span className="label-mono">{game.drives.length} drives</span>
+          </div>
           {game.drives.length === 0 ? (
             <p className="px-4 py-6 font-mono text-[11px] uppercase tracking-wider text-faint">
               Drives populate once the game is played.
@@ -395,30 +407,69 @@ function GamePage() {
         </Panel>
       </section>
 
+      {/* Two-Column Side-by-Side Player Statistics with Offense/Defense Tabs */}
       <section className="mt-6">
-        <Panel padded={false}>
-          <PanelHeader title="Player statistics" aside={<span className="label-mono">box score</span>} />
-          {game.boxScore.length === 0 ? (
-            <p className="px-4 py-6 font-mono text-[11px] uppercase tracking-wider text-faint">
-              Box score populates once the game is played.
-            </p>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[560px] text-sm">
-                <thead>
-                  <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
-                    <th className="px-4 py-2 font-normal">Player</th>
-                    <th className="px-2 py-2 font-normal">Pos</th>
-                    <th className="px-2 py-2 font-normal">Team</th>
-                    <th className="px-4 py-2 font-normal">Stat line</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-line/5">
-                  {game.boxScore.map((line) => {
-                    const team = teamById(line.teamId);
-                    return (
-                      <tr key={`${line.name}-${line.teamId}`} className="hover:bg-line/5">
-                        <td className="px-4 py-2.5 font-medium">
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">
+            Player statistics
+          </h2>
+          <span className="label-mono">box score</span>
+        </div>
+
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          {/* Away Team Column (Left) */}
+          <Panel padded={false}>
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line/10 px-4 py-3">
+              <div className="flex items-center gap-2">
+                <TeamLogo team={away} className="size-5" />
+                <span className="font-disp text-base font-semibold uppercase tracking-tight">
+                  {away.name}
+                </span>
+              </div>
+              <div className="flex gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => setAwayTab("offense")}
+                  className={`rounded-md px-3 py-1 font-mono text-xs font-medium transition-colors ${
+                    awayTab === "offense"
+                      ? "bg-acc text-black font-semibold"
+                      : "bg-panel2 text-mute hover:bg-line/10 hover:text-foreground"
+                  }`}
+                >
+                  Offense ({awayOffense.length})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setAwayTab("defense")}
+                  className={`rounded-md px-3 py-1 font-mono text-xs font-medium transition-colors ${
+                    awayTab === "defense"
+                      ? "bg-acc text-black font-semibold"
+                      : "bg-panel2 text-mute hover:bg-line/10 hover:text-foreground"
+                  }`}
+                >
+                  Defense ({awayDefense.length})
+                </button>
+              </div>
+            </div>
+
+            {currentAwayLines.length === 0 ? (
+              <p className="px-4 py-8 text-center font-mono text-xs uppercase tracking-wider text-faint">
+                No {awayTab} stats recorded
+              </p>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
+                      <th className="w-[42%] px-4 py-2 font-normal">Player</th>
+                      <th className="w-[18%] px-2 py-2 font-normal">Pos</th>
+                      <th className="w-[40%] px-4 py-2 font-normal">Stat line</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-line/5">
+                    {currentAwayLines.map((line, idx) => (
+                      <tr key={`${line.name}-${line.position}-${idx}`} className="hover:bg-line/5">
+                        <td className="px-4 py-2.5 font-medium truncate max-w-[140px]">
                           {line.playerId ? (
                             <Link
                               to="/players/$playerId"
@@ -432,18 +483,94 @@ function GamePage() {
                           )}
                         </td>
                         <td className="px-2 py-2.5 font-mono text-mute">{line.position}</td>
-                        <td className="px-2 py-2.5 font-mono text-mute">{team?.abbr}</td>
-                        <td className="px-4 py-2.5 font-mono tabular-nums text-mute">
+                        <td className="px-4 py-2.5 font-mono text-xs tabular-nums text-mute">
                           {line.statLine}
                         </td>
                       </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </Panel>
+
+          {/* Home Team Column (Right) */}
+          <Panel padded={false}>
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line/10 px-4 py-3">
+              <div className="flex items-center gap-2">
+                <TeamLogo team={home} className="size-5" />
+                <span className="font-disp text-base font-semibold uppercase tracking-tight">
+                  {home.name}
+                </span>
+              </div>
+              <div className="flex gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => setHomeTab("offense")}
+                  className={`rounded-md px-3 py-1 font-mono text-xs font-medium transition-colors ${
+                    homeTab === "offense"
+                      ? "bg-acc text-black font-semibold"
+                      : "bg-panel2 text-mute hover:bg-line/10 hover:text-foreground"
+                  }`}
+                >
+                  Offense ({homeOffense.length})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setHomeTab("defense")}
+                  className={`rounded-md px-3 py-1 font-mono text-xs font-medium transition-colors ${
+                    homeTab === "defense"
+                      ? "bg-acc text-black font-semibold"
+                      : "bg-panel2 text-mute hover:bg-line/10 hover:text-foreground"
+                  }`}
+                >
+                  Defense ({homeDefense.length})
+                </button>
+              </div>
             </div>
-          )}
-        </Panel>
+
+            {currentHomeLines.length === 0 ? (
+              <p className="px-4 py-8 text-center font-mono text-xs uppercase tracking-wider text-faint">
+                No {homeTab} stats recorded
+              </p>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
+                      <th className="w-[42%] px-4 py-2 font-normal">Player</th>
+                      <th className="w-[18%] px-2 py-2 font-normal">Pos</th>
+                      <th className="w-[40%] px-4 py-2 font-normal">Stat line</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-line/5">
+                    {currentHomeLines.map((line, idx) => (
+                      <tr key={`${line.name}-${line.position}-${idx}`} className="hover:bg-line/5">
+                        <td className="px-4 py-2.5 font-medium truncate max-w-[140px]">
+                          {line.playerId ? (
+                            <Link
+                              to="/players/$playerId"
+                              params={{ playerId: line.playerId }}
+                              className="hover:text-acc"
+                            >
+                              {line.name}
+                            </Link>
+                          ) : (
+                            line.name
+                          )}
+                        </td>
+                        <td className="px-2 py-2.5 font-mono text-mute">{line.position}</td>
+                        <td className="px-4 py-2.5 font-mono text-xs tabular-nums text-mute">
+                          {line.statLine}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </Panel>
+        </div>
       </section>
     </>
   );
