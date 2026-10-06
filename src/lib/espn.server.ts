@@ -361,6 +361,32 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
       base.venue = sbGame.venue !== "TBD" ? sbGame.venue : base.venue;
       if (sbGame.spread !== "—") base.spread = sbGame.spread;
       if (sbGame.total > 0) base.total = sbGame.total;
+      base.possession = sbGame.possession;
+      base.isRedZone = sbGame.isRedZone;
+      base.downDistance = sbGame.downDistance;
+      base.possessionText = sbGame.possessionText;
+      base.distance = sbGame.distance;
+      base.clock = sbGame.clock;
+      base.status = sbGame.status;
+      if (sbGame.awayRecord) base.awayRecord = sbGame.awayRecord;
+      if (sbGame.homeRecord) base.homeRecord = sbGame.homeRecord;
+    }
+
+    // Direct fallback from live summary drive if scoreboard hasn't synced
+    const currentDrive = d?.drives?.current;
+    if (base.status === "live" && !base.possession && currentDrive) {
+      const possTeamId = teamByAbbr(currentDrive?.team?.abbreviation ?? "")?.id;
+      if (possTeamId === base.awayTeamId) base.possession = "away";
+      else if (possTeamId === base.homeTeamId) base.possession = "home";
+
+      const plays = currentDrive.plays ?? [];
+      const lastPlay = plays[plays.length - 1];
+      const endState = lastPlay?.end ?? lastPlay?.start;
+      if (endState) {
+        if (!base.possessionText && endState.possessionText) base.possessionText = endState.possessionText;
+        if (!base.downDistance && endState.shortDownDistanceText) base.downDistance = endState.shortDownDistanceText;
+        if (typeof base.distance !== "number" && typeof endState.distance === "number") base.distance = endState.distance;
+      }
     }
 
     const awayStats = d?.boxscore?.teams?.find(
