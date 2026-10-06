@@ -10,6 +10,7 @@ import {
   Panel,
   PanelHeader,
   SampleBadge,
+  SpreadBadge,
   StatCard,
   StatComparison,
   TeamLogo,
@@ -79,7 +80,9 @@ function LiveGameRow({ game }: { game: Game }) {
         </Link>
       </td>
       <td className={`whitespace-nowrap px-2 py-2.5 text-right font-mono tabular-nums ${spreadClass}`}>
-        {game.spread}
+        <div className="flex items-center justify-end">
+          <SpreadBadge spread={game.spread} away={away} home={home} />
+        </div>
       </td>
       <td className={`whitespace-nowrap px-4 py-2.5 text-right font-mono tabular-nums ${totalClass}`}>
         {game.total || "—"}
@@ -93,92 +96,106 @@ function LiveGameRow({ game }: { game: Game }) {
 interface GameDay {
   key: string;
   label: string;
-  dateLabel: string;
-  week: number;
   games: Game[];
 }
 
-const etFormat = new Intl.DateTimeFormat("en-US", {
-  timeZone: "America/New_York",
-  year: "numeric",
-  month: "2-digit",
-  day: "2-digit",
-  weekday: "short",
-});
-const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
-// One entry per calendar day, covering the next 7 days only, so a weekday never repeats.
-function buildDays(all: Game[]): GameDay[] {
-  const upcoming = all
+function groupGamesByDay(allGames: Game[]): GameDay[] {
+  const upcoming = allGames
     .filter((g) => g.status === "scheduled" && g.kickoffIso)
     .sort((a, b) => new Date(a.kickoffIso!).getTime() - new Date(b.kickoffIso!).getTime());
-  const days = new Map<string, GameDay>();
-  let firstDay = 0;
+
+  const etFormat = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/New_York",
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+
+  const map = new Map<string, { label: string; games: Game[] }>();
+
   for (const game of upcoming) {
     const parts = etFormat.formatToParts(new Date(game.kickoffIso!));
-    const get = (t: string) => parts.find((p) => p.type === t)?.value ?? "";
-    const year = Number(get("year"));
-    const month = Number(get("month"));
-    const dayNum = Number(get("day"));
-    const weekday = get("weekday");
-    const dayIndex = Math.floor(Date.UTC(year, month - 1, dayNum) / 86_400_000);
-    if (days.size === 0) firstDay = dayIndex;
-    if (dayIndex - firstDay > 6) break;
-    const key = `${year}-${month}-${dayNum}`;
-    if (!days.has(key)) {
-      days.set(key, {
-        key,
-        label: weekday,
-        dateLabel: `${weekday}, ${MONTHS[month - 1]} ${dayNum}`,
-        week: game.week,
-        games: [],
-      });
+    const getPart = (type: string) => parts.find((p) => p.type === type)?.value ?? "";
+    const weekday = getPart("weekday");
+    const month = getPart("month");
+    const day = getPart("day");
+    const year = getPart("year");
+
+    const key = `${year}-${month}-${day}`;
+    const label = `${weekday}, ${month} ${day}`;
+
+    const existing = map.get(key);
+    if (existing) {
+      existing.games.push(game);
+    } else {
+      map.set(key, { label, games: [game] });
     }
-    days.get(key)!.games.push(game);
   }
-  return [...days.values()];
+
+  return Array.from(map.entries()).map(([key, val]) => ({
+    key,
+    label: val.label,
+    games: val.games,
+  }));
 }
 
-function UpcomingGames({ games: all }: { games: Game[] }) {
-  const days = useMemo(() => buildDays(all), [all]);
-  const [selectedKey, setSelectedKey] = useState<string | null>(null);
-  const active = days.find((d) => d.key === selectedKey) ?? days[0];
+function UpcomingGames({ allGames }: { allGames: Game[] }) {
+  const days = useMemo(() => groupGamesByDay(allGames), [allGames]);
+  const [activeKey, setActiveKey] = useState<string>(() => days[0]?.key ?? "");
+
+  const currentKey = days.some((d) => d.key === activeKey) ? activeKey : (days[0]?.key ?? "");
+  const activeDay = days.find((d) => d.key === currentKey);
+
+  if (days.length === 0) {
+    return (
+      <section className="mt-6">
+        <Panel padded={false}>
+          <PanelHeader title="Upcoming games" />
+          <p className="px-4 py-8 text-center font-mono text-xs uppercase tracking-wider text-faint">
+            No upcoming games scheduled.
+          </p>
+        </Panel>
+      </section>
+    );
+  }
 
   return (
-    <Panel padded={false}>
-      <PanelHeader
-        title="Upcoming games"
-        aside={
-          active ? (
-            <span className="font-mono text-[10px] uppercase tracking-wider text-mute">
-              Wk {active.week} · {active.dateLabel} · {active.games.length}{" "}
-              {active.games.length === 1 ? "game" : "games"}
-            </span>
-          ) : null
-        }
-      />
-      {active ? (
-        <>
-          <div className="flex gap-2 overflow-x-auto px-4 py-3">
-            {days.map((day) => {
-              const isActive = day.key === active.key;
-              return (
-                <button
-                  key={day.key}
-                  type="button"
-                  onClick={() => setSelectedKey(day.key)}
-                  aria-pressed={isActive}
-                  className={`shrink-0 whitespace-nowrap rounded-full px-3 py-1 font-mono text-[11px] uppercase tracking-wider ring-1 ${
-                    isActive
-                      ? "bg-acc/10 text-acc ring-acc/25"
-                      : "bg-panel2 text-mute ring-line/10 hover:text-acc"
-                  }`}
-                >
-                  {day.label}
-                </button>
-              );
-            })}
-          </div>
+    <section className="mt-6">
+      <Panel padded={false}>
+        <PanelHeader
+          title="Upcoming games"
+          aside={
+            <Link to="/games" className="font-mono text-[11px] text-acc">
+              Full schedule →
+            </Link>
+          }
+        />
+
+        <div className="flex gap-2 overflow-x-auto border-b border-line/10 px-4 py-2">
+          {days.map((day) => {
+            const isActive = day.key === currentKey;
+            return (
+              <button
+                key={day.key}
+                type="button"
+                onClick={() => setActiveKey(day.key)}
+                className={`whitespace-nowrap rounded-md px-3 py-1 font-mono text-xs font-medium transition-colors ${
+                  isActive
+                    ? "bg-acc text-black"
+                    : "bg-panel2 text-mute hover:bg-line/10 hover:text-foreground"
+                }`}
+              >
+                {day.label}{" "}
+                <span className={isActive ? "text-black/70" : "text-faint"}>
+                  ({day.games.length})
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        {activeDay && (
           <div className="overflow-x-auto">
             <table className="w-full min-w-[620px] text-sm" style={{ tableLayout: "fixed" }}>
               <thead>
@@ -192,148 +209,149 @@ function UpcomingGames({ games: all }: { games: Game[] }) {
                 </tr>
               </thead>
               <tbody className="divide-y divide-line/5">
-                {active.games.map((g) => (
-                  <GameRow
-                    key={g.id}
-                    game={{ ...g, date: g.date?.replace(/^[A-Za-z]+,\s*/, "") }}
-                  />
+                {activeDay.games.map((g) => (
+                  <GameRow key={g.id} game={g} />
                 ))}
               </tbody>
             </table>
           </div>
-        </>
-      ) : (
-        <div className="px-4 py-6 text-center font-mono text-xs text-mute">
-          No upcoming games scheduled
-        </div>
-      )}
-    </Panel>
+        )}
+      </Panel>
+    </section>
   );
 }
 
 export const Route = createFileRoute("/")({
+  component: Dashboard,
   head: () => ({
     meta: [
-      { title: "Season Pulse — GamblingNFL dashboard" },
+      { title: "GamblingNFL — NFL Analytics, Stats & Prop Projections" },
       {
         name: "description",
         content:
-          "GamblingNFL home dashboard: season pulse metrics, recent games, the 32-team grid, and live prop projection snapshots.",
+          "Professional NFL analytics portal: team efficiency, drive metrics, quarter-by-quarter scoring, and future betting predictions.",
       },
-      { property: "og:title", content: "Season Pulse — GamblingNFL dashboard" },
+      { property: "og:title", content: "GamblingNFL — NFL Analytics & Props" },
       {
         property: "og:description",
-        content: "Season metrics, recent results, team grid, and prop projections in one view.",
+        content:
+          "Deep NFL statistics, team pages, drive charts, and player prop projection models.",
       },
     ],
   }),
-  component: Dashboard,
 });
 
 function Dashboard() {
-  const { data: liveGames } = useQuery({
+  const { data: liveSchedule } = useQuery({
     queryKey: ["live-schedule"],
     queryFn: () => getLiveSchedule(),
-    refetchInterval: 3_500, // auto-polls ESPN every 3.5 seconds
+    refetchInterval: 3_500,
     staleTime: 2_000,
-    retry: 1,
   });
 
-  const isLive = !!liveGames && liveGames.length > 0;
-  const source = isLive ? liveGames : games;
-  const toTimestamp = (g: (typeof source)[number]) => {
+  const allGames = liveSchedule && liveSchedule.length > 0 ? liveSchedule : games;
+
+  // Real kickoff timestamp sorting for accurate chronology
+  const toTimestamp = (g: Game): number => {
     if (g.kickoffIso) return new Date(g.kickoffIso).getTime();
-    const d = g.date?.replace(/^[A-Za-z]+,\s*/, "") || "";
-    const t = g.time?.replace(/\s*ET$/, "") || "";
-    return new Date(`${d} 2026 ${t}`).getTime() || 0;
+    const d = g.date;
+    const t = g.time?.replace(/\s*(ET|EDT|EST)$/i, "") || "";
+    const currentYear = 2026;
+    const parsed = Date.parse(`${d}, ${currentYear} ${t}`);
+    return Number.isNaN(parsed) ? 0 : parsed;
   };
 
+  const live = allGames.filter((g) => g.status === "live");
 
-  const recent = source
+  const recent = allGames
     .filter((g) => g.status === "final")
-    .sort((a, b) => b.week - a.week || toTimestamp(b) - toTimestamp(a))
+    .sort((a, b) => {
+      if (b.week !== a.week) return b.week - a.week;
+      return toTimestamp(b) - toTimestamp(a);
+    })
     .slice(0, 5);
-    const live = source.filter((g) => g.status === "live");
-
 
   const featured = recent[0];
-  const featuredIsLive = !!featured && featured.id.startsWith("espn-");
+  const isEspnFeatured = featured?.id.startsWith("espn-");
+  const eventId = isEspnFeatured ? featured.id.replace(/^espn-/, "") : null;
+
   const { data: featuredDetail } = useQuery({
     queryKey: ["live-game", featured?.id],
-    queryFn: () => getLiveGame({ data: { eventId: featured!.id.replace(/^espn-/, "") } }),
-    enabled: featuredIsLive,
-    staleTime: 5 * 60 * 1000,
-    retry: 1,
+    queryFn: () => (eventId ? getLiveGame({ data: { eventId } }) : null),
+    enabled: Boolean(eventId),
+    staleTime: 60_000,
   });
-  const gamecast = featured ? (featuredIsLive ? (featuredDetail ?? null) : featured) : null;
-  const topPlayers = [...players].sort((a, b) => b.season.yards - a.season.yards).slice(0, 5);
+
+  const gamecast = isEspnFeatured ? (featuredDetail ?? featured) : featured;
 
   return (
     <>
-      <section className="mb-6">
-        <PageTitle
-          eyebrow={isLive ? "Home dashboard · 2026 live schedule" : "Home dashboard"}
-          title="Season Pulse"
-          aside={<SampleBadge />}
-        />
-        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-          <StatCard label="Win rate" value="54.2" unit="%" note="▲ 2.1 wk/wk" tone="win" />
-          <StatCard label="Avg total" value="47.8" note="o/u line 45.5" />
-          <StatCard label="Cover %" value="51.7" unit="%" note="▼ 0.6 wk/wk" tone="loss" />
-          <StatCard label="Model edge" value="+3.4" unit="pts" note="▲ 0.9 wk/wk" tone="win" />
-        </div>
-      </section>
+      <PageTitle
+        eyebrow="Command center · 2026 Season"
+        title="NFL Analytics & Research"
+        aside={
+          <div className="flex items-center gap-2">
+            <span className="relative flex size-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+              <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
+            </span>
+            <span className="font-mono text-xs uppercase tracking-wider text-emerald-400">
+              Live Feed
+            </span>
+          </div>
+        }
+      />
 
-      <div className="grid gap-6 lg:grid-cols-12">
-                <section className="min-w-0 lg:col-span-8 space-y-6">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <StatCard label="Clubs tracked" value={`${teams.length}`} note="Active 32 franchises" />
+        <StatCard label="Live games" value={`${live.length}`} note={live.length > 0 ? "In progress" : "None live"} tone={live.length > 0 ? "win" : "mute"} />
+        <StatCard label="Games completed" value={`${allGames.filter((g) => g.status === "final").length}`} note="Through Week 5" />
+        <StatCard label="Roster pool" value={`${players.length}`} unit="sample" note="Full depth active" />
+      </div>
+
+      {/* Live games panel */}
+      {live.length > 0 && (
+        <section className="mt-6">
           <Panel padded={false}>
             <PanelHeader
-              title={
-                <span className="flex items-center gap-2">
-                  <span
-                    className={`size-2 rounded-full ${
-                      live.length > 0 ? "animate-pulse bg-emerald-400" : "bg-mute/40"
-                    }`}
-                  />
-                  Live games
-                </span>
-              }
+              title="Live games"
               aside={
-                <span className="font-mono text-[10px] uppercase tracking-wider text-mute">
-                  {live.length > 0 ? `${live.length} in progress` : "None live"}
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="relative flex size-2">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                    <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
+                  </span>
+                  <span className="font-mono text-xs uppercase tracking-wider text-emerald-400">
+                    {live.length} live
+                  </span>
+                </div>
               }
             />
-            {live.length > 0 ? (
-              <div className="overflow-x-auto">
-                <table className="w-full min-w-[560px] text-sm" style={{ tableLayout: "fixed" }}>
-                  <thead>
-                    <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
-                      <th className="w-[18%] px-4 py-2 font-normal">Game Clock</th>
-                      <th className="w-[16%] px-2 py-2 font-normal">Down</th>
-                      <th className="w-[30%] px-2 py-2 text-center font-normal">Matchup</th>
-                      <th className="w-[18%] px-2 py-2 text-right font-normal">Spread</th>
-                      <th className="w-[18%] px-4 py-2 text-right font-normal">Total</th>
-                    </tr>
-
-                  </thead>
-
-                  <tbody className="divide-y divide-line/5">
-                    {live.map((g) => (
-                      <LiveGameRow key={g.id} game={g} />
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            ) : (
-              <div className="px-4 py-6 text-center font-mono text-xs text-mute">
-                No games currently in progress
-              </div>
-            )}
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[620px] text-sm" style={{ tableLayout: "fixed" }}>
+                <thead>
+                  <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
+                    <th className="w-[17%] px-4 py-2 font-normal">Game Clock</th>
+                    <th className="w-[15%] px-2 py-2 font-normal">Down</th>
+                    <th className="w-[26%] px-2 py-2 text-center font-normal">Matchup</th>
+                    <th className="w-[10%] px-2 py-2 text-right font-normal">Spread</th>
+                    <th className="w-[10%] px-4 py-2 text-right font-normal">Total</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-line/5">
+                  {live.map((g) => (
+                    <LiveGameRow key={g.id} game={g} />
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </Panel>
+        </section>
+      )}
 
-          <UpcomingGames games={source} />
-
+      {/* Recent games panel */}
+      <section className="mt-6 grid gap-6 lg:grid-cols-12">
+        <section className="min-w-0 lg:col-span-8">
           <Panel padded={false}>
             <PanelHeader
               title="Recent games"
@@ -346,7 +364,7 @@ function Dashboard() {
             <div className="overflow-x-auto">
               <table className="w-full min-w-[620px] text-sm" style={{ tableLayout: "fixed" }}>
                 <thead>
-                   <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
+                  <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
                     <th className="w-[17%] px-4 py-2 font-normal">Date</th>
                     <th className="w-[15%] px-2 py-2 font-normal">Time</th>
                     <th className="w-[26%] px-2 py-2 text-center font-normal">Matchup</th>
@@ -354,9 +372,7 @@ function Dashboard() {
                     <th className="w-[10%] px-2 py-2 text-right font-normal">Spread</th>
                     <th className="w-[10%] px-4 py-2 text-right font-normal">Total</th>
                   </tr>
-
                 </thead>
-                
                 <tbody className="divide-y divide-line/5">
                   {recent.map((g) => (
                     <GameRow key={g.id} game={g} />
@@ -378,83 +394,18 @@ function Dashboard() {
                   to="/teams/$teamId"
                   params={{ teamId: team.id }}
                   className="glass grid aspect-square place-items-center rounded-xl hover:glow"
-                  style={{ boxShadow: `inset 0 0 0 1px ${team.color}44` }}
+                  title={`${team.city} ${team.name}`}
                 >
-                  <TeamLogo team={team} className="size-9" />
+                  <TeamMark team={team} size="sm" />
                 </Link>
               ))}
             </div>
-            <Link
-              to="/teams"
-              className="mt-3 block text-center font-mono text-[10px] uppercase tracking-wider text-acc"
-            >
-              + all 32 teams
-            </Link>
           </Panel>
         </aside>
-      </div>
-
-      <section className="mt-6">
-        <Panel padded={false}>
-          <PanelHeader
-            title="Player leaders"
-            aside={
-              <Link to="/players" className="font-mono text-[11px] text-acc">
-                Search players →
-              </Link>
-            }
-          />
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[620px] text-sm">
-              <thead>
-                <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
-                  <th className="px-4 py-2 font-normal">Player</th>
-                  <th className="px-2 py-2 font-normal">Pos</th>
-                  <th className="px-2 py-2 font-normal">Team</th>
-                  <th className="px-2 py-2 text-right font-normal">Yds</th>
-                  <th className="px-2 py-2 text-right font-normal">TD</th>
-                  <th className="px-4 py-2 font-normal">Share</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-line/5">
-                {topPlayers.map((p) => {
-                  const team = teams.find((t) => t.id === p.teamId);
-                  const share = Math.round((p.season.yards / topPlayers[0]!.season.yards) * 100);
-                  return (
-                    <tr key={p.id} className="hover:bg-line/5">
-                      <td className="px-4 py-2.5">
-                        <Link
-                          to="/players/$playerId"
-                          params={{ playerId: p.id }}
-                          className="font-medium hover:text-acc"
-                        >
-                          {p.firstName} {p.lastName}
-                        </Link>
-                      </td>
-                      <td className="px-2 py-2.5 font-mono text-mute">{p.position}</td>
-                      <td className="px-2 py-2.5 font-mono text-mute">{team?.abbr}</td>
-                      <td className="px-2 py-2.5 text-right font-mono tabular-nums">
-                        {p.season.yards.toLocaleString()}
-                      </td>
-                      <td className="px-2 py-2.5 text-right font-mono tabular-nums">
-                        {p.season.tds}
-                      </td>
-                      <td className="px-4 py-2.5">
-                        <div className="h-1.5 w-24 rounded-full bg-panel2">
-                          <div
-                            className="h-1.5 rounded-full bg-acc"
-                            style={{ width: `${share}%` }}
-                          />
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </Panel>
       </section>
+
+      {/* Upcoming games panel */}
+      <UpcomingGames allGames={allGames} />
 
       {featured ? (
         <section className="mt-6 grid gap-6 lg:grid-cols-12">
