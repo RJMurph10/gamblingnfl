@@ -278,21 +278,120 @@ function statNum(stats: any[], name: string): number {
   return s ? Number(String(s.displayValue).replace(/,/g, "")) || 0 : 0;
 }
 
+/** Looks up one team-stat by any of several possible ESPN names. */
+function findStat(stats: any[], ...names: string[]): any {
+  for (const n of names) {
+    const hit = stats.find((x: any) => x?.name === n);
+    if (hit) return hit;
+  }
+  return undefined;
+}
+
+/** "5-12" (or "5/12") -> [5, 12]. */
+function parsePair(text: unknown): [number, number] {
+  const m = String(text ?? "").match(/(\d+)\s*[-/]\s*(\d+)/);
+  return m ? [Number(m[1]), Number(m[2])] : [0, 0];
+}
+
 function mapTeamStats(stats: any[]): TeamGameStats {
-  const third = stats.find((x: any) => x.name === "thirdDownEff")?.displayValue ?? "0-0";
-  const [made, att] = third.split("-").map((n: string) => Number(n) || 0);
-  const pen = stats.find((x: any) => x.name === "penalties")?.displayValue ?? "0-0";
+  const [thirdMade, thirdAtt] = parsePair(findStat(stats, "thirdDownEff")?.displayValue);
+  const [fourthMade, fourthAtt] = parsePair(findStat(stats, "fourthDownEff")?.displayValue);
+  const [rzMade, rzAtt] = parsePair(findStat(stats, "redZoneAttempts", "redZoneEff")?.displayValue);
+  // "5-45" = 5 penalties for 45 yards (a bare "5" means no yardage given)
+  const penText = String(findStat(stats, "totalPenaltiesYards", "penalties")?.displayValue ?? "");
+  const hasPair = /\d+\s*[-/]\s*\d+/.test(penText);
+  const [pairCount, penaltyYards] = parsePair(penText);
+  const penalties = hasPair ? pairCount : Number(penText) || 0;
   return {
     totalYards: statNum(stats, "totalYards"),
     passYards: statNum(stats, "netPassingYards"),
     rushYards: statNum(stats, "rushingYards"),
     firstDowns: statNum(stats, "firstDowns"),
-    thirdDownPct: att > 0 ? Math.round((made / att) * 100) : 0,
+    thirdDownPct: thirdAtt > 0 ? Math.round((thirdMade / thirdAtt) * 100) : 0,
+    thirdDownMade: thirdMade,
+    thirdDownAtt: thirdAtt,
+    fourthDownMade: fourthMade,
+    fourthDownAtt: fourthAtt,
+    redZoneMade: rzMade,
+    redZoneAtt: rzAtt,
     turnovers: statNum(stats, "turnovers"),
-    penalties: Number(pen.split("-")[0]) || 0,
+    penalties,
+    penaltyYards,
     timeOfPossession:
       stats.find((x: any) => x.name === "possessionTime")?.displayValue ?? "00:00",
   };
+}
+
+/**
+ * Adds the stats ESPN only publishes per player (touchdowns, field goals,
+ * extra points, sacks, defensive stats...) by summing each team's player
+ * blocks. Anything ESPN doesn't provide stays 0, and the comparison hides
+ * stats nobody recorded, so a missing field never shows a wrong number.
+ */
+function addPlayerTotals(
+  stats: TeamGameStats,
+  teamBlock: any,
+  teamTotals: { defTdFromTeamStat: number },
+): void {
+  const groups: any[] = teamBlock?.statistics ?? [];
+  const sumKey = (groupNames: string[], ...keyNames: string[]): number => {
+    let total = 0;
+    for (const g of groups) {
+      if (!groupNames.includes(g?.name)) continue;
+      const keys: string[] = g.keys ?? [];
+      const idx = keyNames.map((k) => keys.indexOf(k)).find((i) => i >= 0);
+      if (idx === undefined) continue;
+      for (const a of g.athletes ?? []) {
+        total += Number(String(a?.stats?.[idx] ?? "0").replace(/,/g, "")) || 0;
+      }
+    }
+    return total;
+  };
+  const sumPair = (groupNames: string[], keyName: string): [number, number] => {
+    let made = 0;
+    let att = 0;
+    for (const g of groups) {
+      if (!groupNames.includes(g?.name)) continue;
+      const idx = (g.keys ?? []).indexOf(keyName);
+      if (idx < 0) continue;
+      for (const a of g.athletes ?? []) {
+        const [m, t] = parsePair(a?.stats?.[idx]);
+        made += m;
+        att += t;
+      }
+    }
+    return [made, att];
+  };
+
+  const passTd = sumKey(["passing"], "passingTouchdowns");
+  const rushTd = sumKey(["rushing"], "rushingTouchdowns");
+  // Defensive TDs can be reported in more than one place; take the highest
+  // figure rather than adding them, so nothing is ever double counted.
+  const defTd = Math.max(
+    sumKey(["defensive"], "defensiveTouchdowns"),
+    sumKey(["interceptions"], "interceptionTouchdowns"),
+    teamTotals.defTdFromTeamStat,
+  );
+  const returnTd =
+    sumKey(["kickReturns"], "kickReturnTouchdowns") +
+    sumKey(["puntReturns"], "puntReturnTouchdowns");
+  const [fgMade, fgAtt] = sumPair(["kicking"], "fieldGoalsMade/fieldGoalAttempts");
+  const [xpMade, xpAtt] = sumPair(["kicking"], "extraPointsMade/extraPointAttempts");
+
+  stats.passingTouchdowns = passTd;
+  stats.rushingTouchdowns = rushTd;
+  stats.defensiveTouchdowns = defTd;
+  stats.touchdowns = passTd + rushTd + defTd + returnTd;
+  stats.fieldGoalsMade = fgMade;
+  stats.fieldGoalAttempts = fgAtt;
+  stats.extraPointsMade = xpMade;
+  stats.extraPointAttempts = xpAtt;
+  stats.sacks = sumKey(["defensive"], "sacks");
+  stats.tacklesForLoss = sumKey(["defensive"], "tacklesForLoss");
+  stats.passesDefended = sumKey(["defensive"], "passesDefended");
+  stats.qbHits = sumKey(["defensive"], "QBHits", "qbHits");
+  stats.interceptions = sumKey(["interceptions"], "interceptions");
+  stats.forcedFumbles = sumKey(["defensive"], "forcedFumbles", "fumblesForced");
 }
 
 function mapBoxScore(
@@ -466,6 +565,17 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
     );
     if (awayStats) base.stats.away = mapTeamStats(awayStats.statistics ?? []);
     if (homeStats) base.stats.home = mapTeamStats(homeStats.statistics ?? []);
+
+    // Per-player totals (TDs, FGs, XPs, sacks, defensive stats) for each team.
+    for (const block of d?.boxscore?.players ?? []) {
+      const id = teamByAbbr(block?.team?.abbreviation ?? "")?.id;
+      const target =
+        id === base.awayTeamId ? base.stats.away : id === base.homeTeamId ? base.stats.home : null;
+      if (!target) continue;
+      const teamStatBlock = id === base.awayTeamId ? awayStats : homeStats;
+      const defTdFromTeamStat = statNum(teamStatBlock?.statistics ?? [], "defensiveTouchdowns");
+      addPlayerTotals(target, block, { defTdFromTeamStat });
+    }
 
     const rawDrives = d?.drives?.previous ?? [];
     base.drives = rawDrives.map((dr: any, i: number): Drive => {
