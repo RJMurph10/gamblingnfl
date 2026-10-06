@@ -65,6 +65,9 @@ export interface Game {
   downDistance?: string;
   awayRecord?: string;
   homeRecord?: string;
+  possessionText?: string;
+  distance?: number;
+
 }
 
 
