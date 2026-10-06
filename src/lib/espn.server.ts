@@ -110,6 +110,16 @@ function mapEvent(event: any, week: number): Game | null {
   const away = comp.competitors?.find((c: any) => c.homeAway === "away");
   const homeTeam = teamByAbbr(home?.team?.abbreviation ?? "");
   const awayTeam = teamByAbbr(away?.team?.abbreviation ?? "");
+    const parseRecord = (c: any) => {
+    const list = c?.records ?? c?.record ?? [];
+    const total = Array.isArray(list)
+      ? list.find((r: any) => r?.type === "total" || r?.name === "overall")
+      : null;
+    return total?.summary ?? total?.displayValue ?? undefined;
+  };
+  const awayRecord = parseRecord(away);
+  const homeRecord = parseRecord(home);
+
   if (!homeTeam || !awayTeam) return null;
 
   const line = (c: any) =>
@@ -174,6 +184,8 @@ function mapEvent(event: any, week: number): Game | null {
     possession,
     isRedZone,
     downDistance,
+    awayRecord,
+    homeRecord,
 
         week,
     kickoff: formatKickoff(event.date),
