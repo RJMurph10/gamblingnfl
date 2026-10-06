@@ -286,6 +286,12 @@ export function DriveRail({ game, teamId }: { game: Game; teamId: string }) {
 }
 
 export function DriveTable({ game }: { game: Game }) {
+  const [selectedTeamId, setSelectedTeamId] = useState<string>(game.awayTeamId);
+  const selectedDrives = game.drives.filter((d) => d.teamId === selectedTeamId);
+  const selectedTeam = teamById(selectedTeamId);
+  const awayTeam = teamById(game.awayTeamId);
+  const homeTeam = teamById(game.homeTeamId);
+
   if (game.drives.length === 0) {
     return (
       <p className="px-4 py-6 font-mono text-[11px] uppercase tracking-wider text-faint">
@@ -293,68 +299,103 @@ export function DriveTable({ game }: { game: Game }) {
       </p>
     );
   }
+
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full min-w-[640px] text-sm">
-        <thead>
-          <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
-            <th className="px-4 py-2 font-normal">#</th>
-            <th className="px-2 py-2 font-normal">Team</th>
-            <th className="px-2 py-2 font-normal">Qtr</th>
-            <th className="px-2 py-2 text-right font-normal">Plays</th>
-            <th className="px-2 py-2 text-right font-normal">Yards</th>
-            <th className="px-2 py-2 text-right font-normal">TOP</th>
-            <th className="px-2 py-2 font-normal">Start</th>
-            <th className="px-4 py-2 text-right font-normal">Result</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-line/5">
-          {game.drives.map((d) => {
-            const team = teamById(d.teamId);
-            return (
-              <tr key={d.index} className="hover:bg-line/5">
-                <td className="px-4 py-2.5 font-mono text-mute tabular-nums">{d.index}</td>
-                <td className="px-2 py-2.5">
-                  {team ? (
-                    <div className="flex items-center gap-2">
-                      <img
-                        src={teamLogo(team)}
-                        alt={`${team.city} ${team.name} logo`}
-                        className="size-5 object-contain"
-                      />
-                      <span className="font-mono text-mute">{team.abbr}</span>
-                    </div>
-                  ) : (
-                    <span className="font-mono text-mute">—</span>
-                  )}
-                </td>
-                <td className="px-2 py-2.5 font-mono text-mute tabular-nums">Q{d.quarter}</td>
-                <td className="px-2 py-2.5 text-right font-mono tabular-nums">{d.plays}</td>
-                <td className="px-2 py-2.5 text-right font-mono tabular-nums">{d.yards}</td>
-                <td className="px-2 py-2.5 text-right font-mono tabular-nums">
-                  {d.timeOfPossession}
-                </td>
-                <td className="px-2 py-2.5 font-mono text-mute">{d.startAt}</td>
-                <td className="px-4 py-2.5 text-right">
-                  <span
-                    className={`inline-block rounded px-2 py-0.5 font-mono text-[10px] uppercase ${
-                      d.result === "TD"
-                        ? "bg-win/15 text-win"
-                        : d.result === "TO" || d.result === "DOWNS"
-                          ? "bg-loss/15 text-loss"
-                          : d.result === "FG"
-                            ? "bg-acc/15 text-acc"
-                            : "bg-panel2 text-mute"
-                    }`}
-                  >
-                    {d.result}
-                  </span>
-                </td>
+    <div>
+      {/* One tab per team — show only that team's drives. */}
+      <div className="grid grid-cols-2 border-b border-line/10">
+        {[awayTeam, homeTeam].map((team, index) => {
+          if (!team) return null;
+          const active = selectedTeamId === team.id;
+          const count = game.drives.filter((d) => d.teamId === team.id).length;
+          return (
+            <button
+              key={team.id}
+              type="button"
+              onClick={() => setSelectedTeamId(team.id)}
+              className={`flex items-center justify-center gap-2 px-4 py-3 font-disp text-sm font-semibold uppercase tracking-tight transition-colors ${
+                index === 0 ? "border-r border-line/10" : ""
+              } ${
+                active
+                  ? "bg-acc/10 text-foreground shadow-[inset_0_-2px_0_var(--accent)]"
+                  : "text-mute hover:bg-line/5 hover:text-foreground"
+              }`}
+            >
+              <img
+                src={teamLogo(team)}
+                alt=""
+                aria-hidden="true"
+                className="size-6 object-contain"
+              />
+              <span>{team.id === awayTeam?.id && team.city === "Atlanta" ? "Atlanta" : team.name}</span>
+              <span className="font-mono text-[10px] text-faint">{count}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      {selectedDrives.length === 0 ? (
+        <p className="px-4 py-8 text-center font-mono text-[11px] uppercase tracking-wider text-faint">
+          No drives recorded for {selectedTeam?.name ?? "this team"}.
+        </p>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[600px] text-sm">
+            <thead>
+              <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
+                <th className="px-4 py-2 font-normal">#</th>
+                <th className="px-2 py-2 font-normal">Qtr</th>
+                <th className="px-2 py-2 text-right font-normal">Plays</th>
+                <th className="px-2 py-2 text-right font-normal">Yards</th>
+                <th className="px-2 py-2 text-right font-normal">TOP</th>
+                <th className="px-2 py-2 font-normal">Start</th>
+                <th className="px-4 py-2 text-right font-normal">Result</th>
               </tr>
-            );
-          })}
-        </tbody>
-      </table>
+            </thead>
+            <tbody className="divide-y divide-line/5">
+              {selectedDrives.map((d) => {
+                return (
+                  <tr key={d.index} className="hover:bg-line/5">
+                    <td className="px-4 py-2.5 font-mono text-mute tabular-nums">{d.index}</td>
+                    <td className="px-2 py-2.5 font-mono text-mute tabular-nums">
+                      {d.quarter === 1
+                        ? "1st"
+                        : d.quarter === 2
+                          ? "2nd"
+                          : d.quarter === 3
+                            ? "3rd"
+                            : d.quarter === 4
+                              ? "4th"
+                              : "OT"}
+                    </td>
+                    <td className="px-2 py-2.5 text-right font-mono tabular-nums">{d.plays}</td>
+                    <td className="px-2 py-2.5 text-right font-mono tabular-nums">{d.yards}</td>
+                    <td className="px-2 py-2.5 text-right font-mono tabular-nums">
+                      {d.timeOfPossession}
+                    </td>
+                    <td className="px-2 py-2.5 font-mono text-mute">{d.startAt}</td>
+                    <td className="px-4 py-2.5 text-right">
+                      <span
+                        className={`inline-block rounded px-2 py-0.5 font-mono text-[10px] uppercase ${
+                          d.result === "TD"
+                            ? "bg-win/15 text-win"
+                            : d.result === "TO" || d.result === "DOWNS"
+                              ? "bg-loss/15 text-loss"
+                              : d.result === "FG"
+                                ? "bg-acc/15 text-acc"
+                                : "bg-panel2 text-mute"
+                        }`}
+                      >
+                        {d.result}
+                      </span>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }
