@@ -29,30 +29,6 @@ export interface TeamGameStats {
   turnovers: number;
   penalties: number;
   timeOfPossession: string;
-  /* Extended stats. All optional: sample data leaves them out and the
-     comparison hides any stat that neither team has recorded. */
-  touchdowns?: number;
-  passingTouchdowns?: number;
-  rushingTouchdowns?: number;
-  fieldGoalsMade?: number;
-  fieldGoalAttempts?: number;
-  thirdDownMade?: number;
-  thirdDownAtt?: number;
-  fourthDownMade?: number;
-  fourthDownAtt?: number;
-  redZoneMade?: number;
-  redZoneAtt?: number;
-  extraPointsMade?: number;
-  extraPointAttempts?: number;
-  penaltyYards?: number;
-  /** Defensive stats: things this team's DEFENSE recorded. */
-  sacks?: number;
-  defensiveTouchdowns?: number;
-  interceptions?: number;
-  forcedFumbles?: number;
-  tacklesForLoss?: number;
-  passesDefended?: number;
-  qbHits?: number;
 }
 
 export interface BoxScoreLine {
@@ -61,6 +37,8 @@ export interface BoxScoreLine {
   position: string;
   teamId: string;
   statLine: string;
+  category?: "offense" | "defense";
+
 }
 
 export interface Game {
@@ -87,6 +65,11 @@ export interface Game {
   isRedZone?: boolean;
   /** Live down & distance, e.g. "1st & 10". Empty between plays / on kickoffs. */
   downDistance?: string;
+  awayRecord?: string;
+  homeRecord?: string;
+  possessionText?: string;
+  distance?: number;
+
 }
 
 
