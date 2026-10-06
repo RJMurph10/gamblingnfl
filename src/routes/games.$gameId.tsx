@@ -228,6 +228,10 @@ function GamePage() {
             game.possession === "away" ? away : game.possession === "home" ? home : null;
           const isHalftime =
             game.clock === "Halftime" || Boolean(game.clock?.toLowerCase().includes("half"));
+          const isOT =
+            (game.quarters?.away?.length ?? 0) > 4 ||
+            (game.quarters?.home?.length ?? 0) > 4 ||
+            Boolean(game.clock?.toUpperCase().includes("OT"));
 
           return (
             <div className="mx-auto flex max-w-2xl items-center justify-between">
@@ -279,7 +283,7 @@ function GamePage() {
                 ) : game.status === "final" ? (
                   <>
                     <div className="font-disp text-xl font-bold uppercase tracking-wider text-acc sm:text-2xl">
-                      FINAL
+                      {isOT ? "FINAL/OT" : "FINAL"}
                     </div>
                     <div className="mt-0.5 font-mono text-xs text-mute">{game.date}</div>
                   </>
