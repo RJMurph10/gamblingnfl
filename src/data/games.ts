@@ -37,6 +37,8 @@ export interface BoxScoreLine {
   position: string;
   teamId: string;
   statLine: string;
+  category?: "offense" | "defense";
+
 }
 
 export interface Game {
