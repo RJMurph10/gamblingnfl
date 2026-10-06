@@ -17,6 +17,7 @@ const SUMMARY = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summ
 const SEASON = 2026;
 const REGULAR_SEASON_WEEKS = 18;
 const CACHE_TTL_MS = 3 * 1000; // 3-second live server cache
+const ROSTER_CACHE_TTL_MS = 60 * 60 * 1000; // 1-hour roster cache
 
 interface CacheEntry<T> {
   at: number;
@@ -24,9 +25,13 @@ interface CacheEntry<T> {
 }
 const cache = new Map<string, CacheEntry<unknown>>();
 
-async function cached<T>(key: string, load: () => Promise<T>): Promise<T> {
+async function cached<T>(
+  key: string,
+  load: () => Promise<T>,
+  ttl: number = CACHE_TTL_MS,
+): Promise<T> {
   const hit = cache.get(key);
-  if (hit && Date.now() - hit.at < CACHE_TTL_MS) return hit.value as T;
+  if (hit && Date.now() - hit.at < ttl) return hit.value as T;
   const value = await load();
   cache.set(key, { at: Date.now(), value });
   return value;
@@ -53,12 +58,16 @@ function mapStatus(statusType: any): Game["status"] {
   const name = statusType?.name;
   const state = statusType?.state;
   if (name === "STATUS_FINAL" || state === "post") return "final";
-  if (state === "in" || name === "STATUS_IN_PROGRESS" || name === "STATUS_HALFTIME" || name === "STATUS_END_PERIOD") {
+  if (
+    state === "in" ||
+    name === "STATUS_IN_PROGRESS" ||
+    name === "STATUS_HALFTIME" ||
+    name === "STATUS_END_PERIOD"
+  ) {
     return "live";
   }
   return "scheduled";
 }
-
 
 function formatKickoff(iso: string | undefined): string {
   if (!iso) return "TBD";
@@ -103,6 +112,14 @@ function formatLocation(venue: any): string {
   return region ? `${addr.city}, ${region}` : addr.city;
 }
 
+/** Formats "12:55 - 4th Quarter" to "4th 12:55". */
+function formatClock(raw: string | undefined): string {
+  if (!raw) return "Live";
+  const cleaned = raw.replace(/\s*Quarter\b/i, "").trim();
+  const m = cleaned.match(/^(\d{1,2}:\d{2})\s*-\s*(.+)$/);
+  return m ? `${m[2].trim()} ${m[1].trim()}` : raw;
+}
+
 function mapEvent(event: any, week: number): Game | null {
   const comp = event?.competitions?.[0];
   if (!comp) return null;
@@ -110,7 +127,8 @@ function mapEvent(event: any, week: number): Game | null {
   const away = comp.competitors?.find((c: any) => c.homeAway === "away");
   const homeTeam = teamByAbbr(home?.team?.abbreviation ?? "");
   const awayTeam = teamByAbbr(away?.team?.abbreviation ?? "");
-    const parseRecord = (c: any) => {
+
+  const parseRecord = (c: any) => {
     const list = c?.records ?? c?.record ?? [];
     const total = Array.isArray(list)
       ? list.find((r: any) => r?.type === "total" || r?.name === "overall")
@@ -144,16 +162,17 @@ function mapEvent(event: any, week: number): Game | null {
 
   const isHalftime = isHalftimeStatus && !hasThirdQuarterAction;
   const isLive = comp.status?.type?.name === "STATUS_IN_PROGRESS" || hasThirdQuarterAction;
+
   if (isLive && sit) {
-    const possId = String(sit.possession ?? sit.lastPlay?.end?.team?.id ?? sit.lastPlay?.team?.id ?? "");
+    const possId = String(
+      sit.possession ?? sit.lastPlay?.end?.team?.id ?? sit.lastPlay?.team?.id ?? "",
+    );
     if (possId && away?.team?.id && possId === String(away.team.id)) {
       possession = "away";
     } else if (possId && home?.team?.id && possId === String(home.team.id)) {
       possession = "home";
     }
-    // Red zone = a scrimmage down with the offense inside the opponent's 20.
-    // Don't use sit.yardLine: it runs along the whole field rather than from the
-    // offense's own goal line, so a drive starting at its own 20 can look like 80.
+
     const oppAbbr = (possession === "away" ? home : possession === "home" ? away : null)?.team
       ?.abbreviation;
     const fieldText = String(
@@ -161,6 +180,7 @@ function mapEvent(event: any, week: number): Game | null {
     );
     const spot = fieldText.match(/\b([A-Z]{2,4})\s+(\d{1,2})\s*$/);
     const onScrimmage = typeof sit.down !== "number" || sit.down >= 1;
+
     // Live down & distance, e.g. "1st & 10" (blank on kickoffs and between drives).
     if (typeof sit.down === "number" && sit.down >= 1 && sit.down <= 4) {
       downDistance =
@@ -169,15 +189,15 @@ function mapEvent(event: any, week: number): Game | null {
           ? `${["", "1st", "2nd", "3rd", "4th"][sit.down]} & ${sit.distance}`
           : undefined);
     }
+
     if (!onScrimmage || !possession) {
-      isRedZone = false; // kickoffs, PATs, no clear possession
+      isRedZone = false;
     } else if (spot) {
       isRedZone = !!oppAbbr && spot[1] === oppAbbr && Number(spot[2]) <= 20;
     } else {
       isRedZone = Boolean(sit.isRedZone);
     }
   }
-
 
   return {
     id: `espn-${event.id}`,
@@ -186,8 +206,9 @@ function mapEvent(event: any, week: number): Game | null {
     downDistance,
     awayRecord,
     homeRecord,
-
-        week,
+    possessionText: isLive ? sit?.possessionText : undefined,
+    distance: isLive && typeof sit?.distance === "number" ? sit.distance : undefined,
+    week,
     kickoff: formatKickoff(event.date),
     kickoffIso: event.date,
     date: formatGameDate(event.date),
@@ -196,7 +217,7 @@ function mapEvent(event: any, week: number): Game | null {
       ? "Halftime"
       : hasThirdQuarterAction
         ? "3rd Quarter"
-        : (comp.status?.type?.detail ?? comp.status?.type?.shortDetail ?? "Live"),
+        : formatClock(comp.status?.type?.detail ?? comp.status?.type?.shortDetail),
     status: mapStatus(comp.status?.type),
     venue: comp.venue?.fullName ?? "TBD",
     location: formatLocation(comp.venue),
@@ -282,30 +303,31 @@ function mapBoxScore(players: any[], awayTeamId: string, homeTeamId: string): Bo
     if (!teamId || (teamId !== awayTeamId && teamId !== homeTeamId)) continue;
     for (const group of teamBlock?.statistics ?? []) {
       if (!wanted.has(group?.name)) continue;
-      const athlete = group?.athletes?.[0];
-      if (!athlete?.athlete?.displayName) continue;
-      const keys: string[] = group.keys ?? [];
-      const vals: string[] = athlete.stats ?? [];
-      const pick = (...names: string[]) =>
-        names
-          .map((n) => {
-            const i = keys.indexOf(n);
-            return i >= 0 ? vals[i] : undefined;
-          })
-          .filter(Boolean)
-          .join(", ");
-      const statLine =
-        group.name === "passing"
-          ? `${pick("completions/passingAttempts")}, ${pick("passingYards")} yds, ${pick("passingTouchdowns")} TD, ${pick("interceptions")} INT`
-          : group.name === "rushing"
-            ? `${pick("rushingAttempts")} car, ${pick("rushingYards")} yds, ${pick("rushingTouchdowns")} TD`
-            : `${pick("receptions")} rec, ${pick("receivingYards")} yds, ${pick("receivingTouchdowns")} TD`;
-      lines.push({
-        name: athlete.athlete.displayName,
-        position: athlete.athlete.position?.abbreviation ?? group.name.toUpperCase(),
-        teamId,
-        statLine,
-      });
+      for (const athlete of group?.athletes ?? []) {
+        if (!athlete?.athlete?.displayName) continue;
+        const keys: string[] = group.keys ?? [];
+        const vals: string[] = athlete.stats ?? [];
+        const pick = (...names: string[]) =>
+          names
+            .map((n) => {
+              const i = keys.indexOf(n);
+              return i >= 0 ? vals[i] : undefined;
+            })
+            .filter(Boolean)
+            .join(", ");
+        const statLine =
+          group.name === "passing"
+            ? `${pick("completions/passingAttempts")}, ${pick("passingYards")} yds, ${pick("passingTouchdowns")} TD, ${pick("interceptions")} INT`
+            : group.name === "rushing"
+              ? `${pick("rushingAttempts")} car, ${pick("rushingYards")} yds, ${pick("rushingTouchdowns")} TD`
+              : `${pick("receptions")} rec, ${pick("receivingYards")} yds, ${pick("receivingTouchdowns")} TD`;
+        lines.push({
+          name: athlete.athlete.displayName,
+          position: athlete.athlete.position?.abbreviation ?? group.name.toUpperCase(),
+          teamId,
+          statLine,
+        });
+      }
     }
   }
   return lines;
@@ -318,12 +340,17 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
     const comp = d?.header?.competitions?.[0];
     if (!comp) return null;
     const week = d?.header?.week ?? 0;
-    const base = mapEvent({ id: eventId, date: comp.date ?? d?.header?.date, competitions: [comp] }, week);
+    const base = mapEvent(
+      { id: eventId, date: comp.date ?? d?.header?.date, competitions: [comp] },
+      week,
+    );
     if (!base) return null;
 
     // The summary header omits quarter linescores and venue; merge them from
     // the week's scoreboard event.
-    const sb = await fetchJson(`${SCOREBOARD}?dates=${SEASON}&seasontype=2&week=${week}&limit=100`).catch(() => null);
+    const sb = await fetchJson(
+      `${SCOREBOARD}?dates=${SEASON}&seasontype=2&week=${week}&limit=100`,
+    ).catch(() => null);
     const sbEvent = sb?.events?.find((e: any) => String(e?.id) === String(eventId));
     const sbGame = sbEvent ? mapEvent(sbEvent, week) : null;
     if (base.venue === "TBD" && d?.gameInfo?.venue?.fullName) {
@@ -369,4 +396,56 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
     base.boxScore = mapBoxScore(d?.boxscore?.players ?? [], base.awayTeamId, base.homeTeamId);
     return base;
   });
+}
+
+export interface LiveRosterPlayer {
+  id: string;
+  name: string;
+  jersey?: string;
+  position: string;
+  age?: number;
+  height?: string;
+  weight?: string;
+  headshot?: string;
+  college?: string;
+  experience?: number;
+}
+
+/** Fetches real active team roster from ESPN with 1-hour caching. */
+export async function fetchTeamRoster(teamAbbr: string): Promise<LiveRosterPlayer[]> {
+  const abbr = teamAbbr.toUpperCase();
+  return cached(
+    `roster-${abbr}`,
+    async () => {
+      try {
+        const data = await fetchJson(
+          `https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams/${abbr}/roster`,
+        );
+        const groups = data?.athletes ?? [];
+        const players: LiveRosterPlayer[] = [];
+        for (const grp of groups) {
+          for (const item of grp?.items ?? []) {
+            if (!item?.displayName) continue;
+            players.push({
+              id: String(item.id ?? item.displayName),
+              name: item.displayName,
+              jersey: item.jersey,
+              position: item.position?.abbreviation ?? grp?.position ?? "ATH",
+              age: typeof item.age === "number" ? item.age : undefined,
+              height: item.displayHeight,
+              weight: item.displayWeight,
+              headshot: item.headshot?.href,
+              college: item.college?.name,
+              experience:
+                typeof item.experience?.years === "number" ? item.experience.years : undefined,
+            });
+          }
+        }
+        return players;
+      } catch {
+        return [];
+      }
+    },
+    ROSTER_CACHE_TTL_MS,
+  );
 }
