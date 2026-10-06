@@ -123,7 +123,17 @@ function mapEvent(event: any, week: number): Game | null {
   let isRedZone = false;
   let downDistance: string | undefined;
 
-  const isLive = comp.status?.type?.name === "STATUS_IN_PROGRESS";
+  const isHalftimeStatus =
+    comp.status?.type?.name === "STATUS_HALFTIME" ||
+    Boolean(comp.status?.type?.detail?.toLowerCase().includes("half"));
+
+  // Check if 3rd quarter snaps have begun even if ESPN's status is still stuck on halftime
+  const hasThirdQuarterAction =
+    isHalftimeStatus &&
+    ((sit?.lastPlay?.period?.number ?? 0) >= 3 || (comp.status?.period ?? 0) >= 3);
+
+  const isHalftime = isHalftimeStatus && !hasThirdQuarterAction;
+  const isLive = comp.status?.type?.name === "STATUS_IN_PROGRESS" || hasThirdQuarterAction;
   if (isLive && sit) {
     const possId = String(sit.possession ?? sit.lastPlay?.end?.team?.id ?? sit.lastPlay?.team?.id ?? "");
     if (possId && away?.team?.id && possId === String(away.team.id)) {
@@ -170,10 +180,10 @@ function mapEvent(event: any, week: number): Game | null {
     kickoffIso: event.date,
     date: formatGameDate(event.date),
     time: formatGameTime(event.date),
-        clock:
-      comp.status?.type?.name === "STATUS_HALFTIME" ||
-      comp.status?.type?.detail?.toLowerCase().includes("half")
-        ? "Half time"
+    clock: isHalftime
+      ? "Halftime"
+      : hasThirdQuarterAction
+        ? "3rd Quarter"
         : (comp.status?.type?.detail ?? comp.status?.type?.shortDetail ?? "Live"),
     status: mapStatus(comp.status?.type),
     venue: comp.venue?.fullName ?? "TBD",
