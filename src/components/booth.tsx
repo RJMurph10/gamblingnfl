@@ -40,7 +40,9 @@ export function PageTitle({
   return (
     <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
       <div>
-        <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-faint">{eyebrow}</p>
+        <p suppressHydrationWarning className="font-mono text-[11px] uppercase tracking-[0.2em] text-faint">
+          {eyebrow}
+        </p>
         <h1 className="font-disp text-3xl font-bold uppercase leading-none tracking-tight sm:text-4xl">
           {title}
         </h1>
@@ -160,7 +162,22 @@ export function LineScore({ game }: { game: Game }) {
     { team: home, quarters: game.quarters.home, total: score.home },
   ];
   const winner = score.away === score.home ? null : score.away > score.home ? away.id : home.id;
-  const quarterCount = Math.max(4, game.quarters.away.length, game.quarters.home.length);
+  const isFinal = game.status === "final";
+  const isLive = game.status === "live";
+
+  // During a live game: only show quarters that have started or ended.
+  // When final or scheduled: show 4 quarters (plus OT if played).
+  const maxLiveQuarters = Math.max(game.quarters?.away?.length ?? 0, game.quarters?.home?.length ?? 0);
+  const quarterCount = isLive
+    ? Math.max(1, maxLiveQuarters)
+    : Math.max(4, maxLiveQuarters);
+
+  const QUARTER_LABELS = ["1st", "2nd", "3rd", "4th", "OT"];
+  const getQuarterHeader = (i: number) => {
+    if (i < 4) return QUARTER_LABELS[i];
+    if (i === 4) return "OT";
+    return `OT${i - 3}`;
+  };
 
   return (
     <table className="w-full text-center font-mono text-sm">
@@ -169,28 +186,30 @@ export function LineScore({ game }: { game: Game }) {
           <th className="text-left font-normal">Team</th>
           {Array.from({ length: quarterCount }, (_, i) => (
             <th key={i} className="font-normal">
-              {i < 4 ? `Q${i + 1}` : i === 4 ? "OT" : `OT${i - 3}`}
+              {getQuarterHeader(i)}
             </th>
           ))}
-          <th className="text-right font-normal">T</th>
+          {isFinal && <th className="text-right font-normal">Final</th>}
         </tr>
       </thead>
       <tbody className="divide-y divide-line/5">
         {rows.map((row) => (
           <tr key={row.team.id}>
             <td className="py-2 text-left font-medium">{row.team.name}</td>
-            {row.quarters.map((q, i) => (
+            {Array.from({ length: quarterCount }, (_, i) => (
               <td key={i} className="py-2 tabular-nums text-mute">
-                {q}
+                {row.quarters[i] !== undefined ? row.quarters[i] : 0}
               </td>
             ))}
-            <td
-              className={`py-2 text-right font-semibold tabular-nums ${
-                winner === row.team.id ? "text-acc" : ""
-              }`}
-            >
-              {row.total}
-            </td>
+            {isFinal && (
+              <td
+                className={`py-2 text-right font-semibold tabular-nums ${
+                  winner === row.team.id ? "text-acc" : ""
+                }`}
+              >
+                {row.total}
+              </td>
+            )}
           </tr>
         ))}
       </tbody>
