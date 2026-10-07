@@ -155,11 +155,13 @@ export function SpreadBadge({
   spread,
   away,
   home,
+  perspectiveTeam,
   className = "",
 }: {
   spread: string | undefined;
   away?: Team;
   home?: Team;
+  perspectiveTeam?: Team;
   className?: string;
 }) {
   if (!spread || spread === "—") return <span>—</span>;
@@ -178,11 +180,17 @@ export function SpreadBadge({
 
   if (!favTeam) return <span>{spread}</span>;
 
-  const formattedPts = ptsStr.startsWith("-") || ptsStr.startsWith("+") ? ptsStr : `-${ptsStr}`;
+  let formattedPts = ptsStr.startsWith("-") || ptsStr.startsWith("+") ? ptsStr : `-${ptsStr}`;
+  if (perspectiveTeam && favTeam) {
+    const isFavorite = perspectiveTeam.id === favTeam.id;
+    const numericPts = Math.abs(Number(ptsStr));
+    formattedPts = isFavorite ? `-${numericPts}` : `+${numericPts}`;
+    if (numericPts === 0) formattedPts = "PK";
+  }
 
   return (
     <span className={`inline-flex items-center gap-1 font-mono tabular-nums ${className}`}>
-      <TeamLogo team={favTeam} className="size-3.5" />
+      <TeamLogo team={perspectiveTeam ?? favTeam} className="size-3.5" />
       <span className="market-line">{formattedPts}</span>
     </span>
   );
@@ -643,6 +651,7 @@ export function marketResultClass(
   game: Game,
   away: Team,
   home: Team,
+  perspectiveTeam?: Team,
 ): { spread: string; total: string } {
   const neutral = "text-mute";
   const win = "text-green-500 font-semibold";
@@ -656,11 +665,14 @@ export function marketResultClass(
     const pts = Math.abs(Number(m[2]));
     const awayFav = m[1].toUpperCase() === away.abbr.toUpperCase();
     const homeFav = m[1].toUpperCase() === home.abbr.toUpperCase();
+    const score = gameScore(game);
     if (awayFav || homeFav) {
-      const score = gameScore(game);
-      const diff = awayFav ? score.away - score.home : score.home - score.away;
-      if (diff > pts) spread = win;
-      else if (diff < pts) spread = loss;
+      const team = perspectiveTeam ?? (awayFav ? away : home);
+      const teamDiff = team.id === away.id ? score.away - score.home : score.home - score.away;
+      const teamSpread = team.id === (awayFav ? away.id : home.id) ? -pts : pts;
+      const marginAgainstLine = teamDiff + teamSpread;
+      if (marginAgainstLine > 0) spread = win;
+      else if (marginAgainstLine < 0) spread = loss;
       else spread = push;
     }
   }
@@ -679,9 +691,11 @@ export function marketResultClass(
 export function GameRow({
   game,
   showMarket = true,
+  perspectiveTeamId,
 }: {
   game: Game;
   showMarket?: boolean;
+  perspectiveTeamId?: string;
 }) {
   const away = teamById(game.awayTeamId);
   const home = teamById(game.homeTeamId);
@@ -742,12 +756,12 @@ export function GameRow({
         {game.status === "live" ? (game.clock ?? "Live") : game.location}
       </td>
       {showMarket ? (() => {
-        const { spread: spreadClass, total: totalClass } = marketResultClass(game, away, home);
+        const { spread: spreadClass, total: totalClass } = marketResultClass(game, away, home, perspectiveTeam);
         return (
           <>
             <td className={`whitespace-nowrap px-2 py-2.5 text-right font-mono tabular-nums ${spreadClass}`}>
               <div className="flex items-center justify-end">
-                <SpreadBadge spread={game.spread} away={away} home={home} />
+                <SpreadBadge spread={game.spread} away={away} home={home} perspectiveTeam={perspectiveTeam} />
               </div>
             </td>
             <td className={`whitespace-nowrap px-4 py-2.5 text-right font-mono tabular-nums ${totalClass}`}>{game.total || "—"}</td>
