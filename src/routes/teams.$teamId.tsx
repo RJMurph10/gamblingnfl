@@ -1,4 +1,4 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, notFound } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState, type ReactNode } from "react";
 import {
@@ -164,7 +164,7 @@ function TeamPage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-line/5">
-                    {schedule.map((g) => <GameRow key={g.id} game={g} showMarket={true} perspectiveTeamId={team.id} />)}
+                    {schedule.map((g) => <GameRow key={g.id} game={g} showMarket={true} />)}
                   </tbody>
                 </table>
               </div>
