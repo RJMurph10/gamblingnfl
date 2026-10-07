@@ -183,7 +183,7 @@ export function SpreadBadge({
   return (
     <span className={`inline-flex items-center gap-1 font-mono tabular-nums ${className}`}>
       <TeamLogo team={favTeam} className="size-3.5" />
-      <span>{formattedPts}</span>
+      <span className="market-line">{formattedPts}</span>
     </span>
   );
 }
@@ -645,8 +645,8 @@ function marketResultClass(
   home: Team,
 ): { spread: string; total: string } {
   const neutral = "text-mute";
-  const win = "text-lime-300 font-semibold drop-shadow-[0_0_7px_rgba(163,230,53,0.9)]";
-  const loss = "text-red-400 font-semibold drop-shadow-[0_0_7px_rgba(248,113,113,0.9)]";
+  const win = "text-green-500 font-semibold";
+  const loss = "text-red-500 font-semibold";
   if (game.status !== "final") return { spread: neutral, total: neutral };
 
   let spread = neutral;
