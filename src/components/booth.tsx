@@ -19,7 +19,7 @@ export function Panel({
   return <div className={`glass min-w-0 ${padded ? "p-4" : "overflow-hidden"} ${className}`}>{children}</div>;
 }
 
-export function PanelHeader({ title, aside }: { title: ReactNode; aside?: ReactNode }) {
+export function PanelHeader({ title, aside }: { title: string; aside?: ReactNode }) {
   return (
     <div className="flex flex-wrap items-center gap-2 border-b border-line/10 px-4 py-3">
       <h2 className="mr-auto font-disp text-xl font-semibold uppercase tracking-tight">{title}</h2>
@@ -181,17 +181,15 @@ export function SpreadBadge({
   if (!favTeam) return <span>{spread}</span>;
 
   let formattedPts = ptsStr.startsWith("-") || ptsStr.startsWith("+") ? ptsStr : `-${ptsStr}`;
-  if (perspectiveTeam && favTeam) {
-    const isFavorite = perspectiveTeam.id === favTeam.id;
+  if (perspectiveTeam) {
     const numericPts = Math.abs(Number(ptsStr));
-    formattedPts = isFavorite ? `-${numericPts}` : `+${numericPts}`;
-    if (numericPts === 0) formattedPts = "PK";
+    formattedPts = perspectiveTeam.id === favTeam.id ? `-${numericPts}` : `+${numericPts}`;
   }
 
   return (
     <span className={`inline-flex items-center gap-1 font-mono tabular-nums ${className}`}>
-      <TeamLogo team={perspectiveTeam ?? favTeam} className="size-3.5" />
-      <span className="market-line">{formattedPts}</span>
+      <TeamLogo team={favTeam} className="size-3.5" />
+      <span>{formattedPts}</span>
     </span>
   );
 }
@@ -201,7 +199,6 @@ export function SpreadBadge({
 export function LineScore({ game }: { game: Game }) {
   const away = teamById(game.awayTeamId);
   const home = teamById(game.homeTeamId);
-  const perspectiveTeam = perspectiveTeamId ? teamById(perspectiveTeamId) : undefined;
   const score = gameScore(game);
   if (!away || !home) return null;
 
@@ -648,47 +645,6 @@ export function FootballIcon({ isRedZone = false }: { isRedZone?: boolean }) {
   );
 }
 
-export function marketResultClass(
-  game: Game,
-  away: Team,
-  home: Team,
-  perspectiveTeam?: Team,
-): { spread: string; total: string } {
-  const neutral = "text-mute";
-  const win = "text-green-500 font-semibold";
-  const loss = "text-red-500 font-semibold";
-  const push = "text-yellow-400 font-semibold";
-  if (game.status !== "final") return { spread: neutral, total: neutral };
-
-  let spread = neutral;
-  const m = game.spread?.match(/^([A-Za-z]+)\s*([+-]?\d+(?:\.\d+)?)/);
-  if (m) {
-    const pts = Math.abs(Number(m[2]));
-    const awayFav = m[1].toUpperCase() === away.abbr.toUpperCase();
-    const homeFav = m[1].toUpperCase() === home.abbr.toUpperCase();
-    const score = gameScore(game);
-    if (awayFav || homeFav) {
-      const team = perspectiveTeam ?? (awayFav ? away : home);
-      const teamDiff = team.id === away.id ? score.away - score.home : score.home - score.away;
-      const teamSpread = team.id === (awayFav ? away.id : home.id) ? -pts : pts;
-      const marginAgainstLine = teamDiff + teamSpread;
-      if (marginAgainstLine > 0) spread = win;
-      else if (marginAgainstLine < 0) spread = loss;
-      else spread = push;
-    }
-  }
-
-  let total = neutral;
-  if (game.total > 0) {
-    const score = gameScore(game);
-    const points = score.away + score.home;
-    if (points > game.total) total = win;
-    else if (points < game.total) total = loss;
-    else total = push;
-  }
-  return { spread, total };
-}
-
 export function GameRow({
   game,
   showMarket = true,
@@ -701,13 +657,13 @@ export function GameRow({
   const away = teamById(game.awayTeamId);
   const home = teamById(game.homeTeamId);
   const score = gameScore(game);
+  const perspectiveTeam = perspectiveTeamId ? teamById(perspectiveTeamId) : undefined;
   if (!away || !home) return null;
 
   const isOT =
     (game.quarters?.away?.length ?? 0) > 4 ||
     (game.quarters?.home?.length ?? 0) > 4 ||
     Boolean(game.clock?.toUpperCase().includes("OT"));
-  const showOT = isOT && game.status !== "scheduled";
 
   return (
     <tr className="hover:bg-line/5">
@@ -728,12 +684,6 @@ export function GameRow({
               <FootballIcon isRedZone={game.isRedZone} />
             ) : null}
           </span>
-          {/* Invisible twin of the (OT) tag below, so the matchup stays centered in OT games */}
-          {showOT ? (
-            <span aria-hidden="true" className="invisible font-mono text-[10px] font-normal">
-              (OT)
-            </span>
-          ) : null}
           <span className="w-6 text-right">
             {game.status !== "scheduled" ? score.away : ""}
           </span>
@@ -743,9 +693,11 @@ export function GameRow({
           <span className="w-6 text-left">
             {game.status !== "scheduled" ? score.home : ""}
           </span>
-          {showOT ? (
-            <span className="font-mono text-[10px] font-normal text-mute">(OT)</span>
-          ) : null}
+          {isOT && game.status !== "scheduled" && (
+            <span className="-ml-1 font-mono text-[10px] font-normal text-mute">
+              (OT)
+            </span>
+          )}
           <span className="inline-flex w-4 items-center justify-center">
             {game.status === "live" && game.possession === "home" ? (
               <FootballIcon isRedZone={game.isRedZone} />
@@ -757,12 +709,44 @@ export function GameRow({
         {game.status === "live" ? (game.clock ?? "Live") : game.location}
       </td>
       {showMarket ? (() => {
-        const { spread: spreadClass, total: totalClass } = marketResultClass(game, away, home, perspectiveTeam);
+        // Spread cover evaluation
+        let spreadClass = "text-mute";
+        if (game.status !== "scheduled" && game.spread && game.spread !== "—" && game.spread !== "PK" && game.spread !== "EVEN") {
+          const match = game.spread.match(/^([A-Za-z]+)\s*([+-]?\d+(?:\.\d+)?)/);
+          if (match) {
+            const [, favAbbr, ptsStr] = match;
+            const pts = Math.abs(parseFloat(ptsStr));
+            const isAwayFav = favAbbr.toUpperCase() === away.abbr.toUpperCase();
+            const isHomeFav = favAbbr.toUpperCase() === home.abbr.toUpperCase();
+            if (isAwayFav || isHomeFav) {
+              const diff = isAwayFav ? (score.away - score.home) : (score.home - score.away);
+              if (diff > pts) spreadClass = "text-emerald-400 font-semibold";
+              else if (diff < pts) spreadClass = "text-rose-500 font-semibold";
+            }
+          }
+        }
+
+        // Total over/under evaluation
+        let totalClass = "text-mute";
+        if (game.status !== "scheduled" && game.total && game.total > 0) {
+          const totalPoints = score.away + score.home;
+          if (totalPoints > game.total) {
+            totalClass = "text-emerald-400 font-semibold"; // Over hit
+          } else if (game.status === "final" && totalPoints < game.total) {
+            totalClass = "text-rose-500 font-semibold"; // Under hit
+          }
+        }
+
         return (
           <>
             <td className={`whitespace-nowrap px-2 py-2.5 text-right font-mono tabular-nums ${spreadClass}`}>
               <div className="flex items-center justify-end">
-                <SpreadBadge spread={game.spread} away={away} home={home} perspectiveTeam={perspectiveTeam} />
+                <SpreadBadge
+                  spread={game.spread}
+                  away={away}
+                  home={home}
+                  perspectiveTeam={perspectiveTeam}
+                />
               </div>
             </td>
             <td className={`whitespace-nowrap px-4 py-2.5 text-right font-mono tabular-nums ${totalClass}`}>{game.total || "—"}</td>
