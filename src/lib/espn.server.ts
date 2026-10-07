@@ -14,11 +14,13 @@ import { teamByAbbr, teamById } from "@/data/teams";
 const SCOREBOARD =
   "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard";
 const SUMMARY = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary";
+const CORE_ODDS = "https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/events";
 
 const SEASON = 2026;
 const REGULAR_SEASON_WEEKS = 18;
 const CACHE_TTL_MS = 3 * 1000; // 3-second live server cache
 const ROSTER_CACHE_TTL_MS = 60 * 60 * 1000; // 1-hour roster cache
+const HISTORICAL_ODDS_CACHE_TTL_MS = 24 * 60 * 60 * 1000; // historical game lines do not change
 
 interface CacheEntry<T> {
   at: number;
@@ -42,6 +44,26 @@ async function fetchJson(url: string): Promise<any> {
   const res = await fetch(url, { headers: { "User-Agent": "GamblingNFL/1.0" } });
   if (!res.ok) throw new Error(`ESPN feed failed [${res.status}] for ${url}`);
   return res.json();
+}
+
+/** Fetch historical spread/total from ESPN when the scoreboard omits it. */
+async function fetchHistoricalOdds(eventId: string): Promise<{ spread?: string; total?: number }> {
+  return cached(
+    `historical-odds-${eventId}`,
+    async () => {
+      try {
+        const data = await fetchJson(`${CORE_ODDS}/${eventId}/competitions/${eventId}/odds`);
+        const odds = Array.isArray(data?.items) ? data.items[0] : undefined;
+        return {
+          spread: typeof odds?.details === "string" ? odds.details : undefined,
+          total: typeof odds?.overUnder === "number" ? odds.overUnder : undefined,
+        };
+      } catch {
+        return {};
+      }
+    },
+    HISTORICAL_ODDS_CACHE_TTL_MS,
+  );
 }
 
 const zeroStats = (): TeamGameStats => ({
@@ -253,6 +275,20 @@ export async function fetchSchedule(): Promise<Game[]> {
         if (game) games.push(game);
       }
     }
+
+    const missingOddsGames = games.filter(
+      (game) => game.status === "final" && (game.spread === "—" || !game.total),
+    );
+    if (missingOddsGames.length) {
+      await Promise.all(
+        missingOddsGames.map(async (game) => {
+          const odds = await fetchHistoricalOdds(game.id.replace(/^espn-/, ""));
+          if (game.spread === "—" && odds.spread) game.spread = odds.spread;
+          if (!game.total && typeof odds.total === "number") game.total = odds.total;
+        }),
+      );
+    }
+
     return games;
   });
 }
@@ -579,6 +615,12 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
       base.status = sbGame.status;
       if (sbGame.awayRecord) base.awayRecord = sbGame.awayRecord;
       if (sbGame.homeRecord) base.homeRecord = sbGame.homeRecord;
+    }
+
+    if (base.status === "final" && (base.spread === "—" || !base.total)) {
+      const historicalOdds = await fetchHistoricalOdds(eventId);
+      if (base.spread === "—" && historicalOdds.spread) base.spread = historicalOdds.spread;
+      if (!base.total && typeof historicalOdds.total === "number") base.total = historicalOdds.total;
     }
 
     // Direct fallback from live summary drive if scoreboard hasn't synced
