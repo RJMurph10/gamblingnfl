@@ -19,11 +19,7 @@ import {
   getTeamRoster,
   getTeamSeasonStats,
 } from "@/lib/espn.functions";
-import type {
-  DepthChartEntry,
-  LiveRosterPlayer,
-  TeamSeasonStatRow,
-} from "@/lib/espn.server";
+import type { DepthChartEntry, LiveRosterPlayer, TeamSeasonStatRow } from "@/lib/espn.server";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export const Route = createFileRoute("/teams/$teamId")({
@@ -34,18 +30,11 @@ export const Route = createFileRoute("/teams/$teamId")({
   },
   head: ({ loaderData }) => {
     if (!loaderData) {
-      return {
-        meta: [
-          { title: "Team not found — GamblingNFL" },
-          { name: "robots", content: "noindex" },
-        ],
-      };
+      return { meta: [{ title: "Team not found — GamblingNFL" }, { name: "robots", content: "noindex" }] };
     }
-
     const { team } = loaderData;
     const title = `${team.city} ${team.name} Analytics — GamblingNFL`;
     const description = `${team.city} ${team.name} team page with schedule, season player statistics, roster, and depth chart.`;
-
     return {
       meta: [
         { title },
@@ -74,32 +63,21 @@ function TeamPage() {
     (g) => g.homeTeamId === team.id || g.awayTeamId === team.id,
   );
 
-  const schedule = (liveTeamGames.length
-    ? liveTeamGames
-    : gamesByTeam(team.id)
-  )
+  const schedule = (liveTeamGames.length ? liveTeamGames : gamesByTeam(team.id))
     .slice()
     .sort((a, b) => a.week - b.week);
 
   const { data: seasonStats, isLoading: statsLoading } = useQuery({
     queryKey: ["team-season-stats", team.abbr],
-    queryFn: () =>
-      getTeamSeasonStats({
-        data: { teamAbbr: team.abbr },
-      }),
+    queryFn: () => getTeamSeasonStats({ data: { teamAbbr: team.abbr } }),
     staleTime: 10 * 60 * 1000,
     enabled: activeTab === "stats",
     retry: 1,
   });
 
-  const { data: roster = [], isLoading: rosterLoading } = useQuery<
-    LiveRosterPlayer[]
-  >({
+  const { data: roster = [], isLoading: rosterLoading } = useQuery<LiveRosterPlayer[]>({
     queryKey: ["team-roster", team.abbr],
-    queryFn: () =>
-      getTeamRoster({
-        data: { teamAbbr: team.abbr },
-      }),
+    queryFn: () => getTeamRoster({ data: { teamAbbr: team.abbr } }),
     staleTime: 60 * 60 * 1000,
     enabled: activeTab === "roster",
     retry: 1,
@@ -107,10 +85,7 @@ function TeamPage() {
 
   const { data: depthChart, isLoading: depthLoading } = useQuery({
     queryKey: ["team-depth-chart", team.abbr],
-    queryFn: () =>
-      getTeamDepthChart({
-        data: { teamAbbr: team.abbr },
-      }),
+    queryFn: () => getTeamDepthChart({ data: { teamAbbr: team.abbr } }),
     staleTime: 60 * 60 * 1000,
     enabled: activeTab === "depth-chart",
     retry: 1,
@@ -122,7 +97,6 @@ function TeamPage() {
 
   if (liveTeamGames.length) {
     const finals = schedule.filter((g) => g.status === "final");
-
     let w = 0;
     let l = 0;
     let t = 0;
@@ -132,12 +106,8 @@ function TeamPage() {
 
     for (const g of finals) {
       const s = gameScore(g);
-
-      const mine =
-        g.homeTeamId === team.id ? s.home : s.away;
-
-      const theirs =
-        g.homeTeamId === team.id ? s.away : s.home;
+      const mine = g.homeTeamId === team.id ? s.home : s.away;
+      const theirs = g.homeTeamId === team.id ? s.away : s.home;
 
       pointsFor += mine;
       pointsAgainst += theirs;
@@ -151,9 +121,7 @@ function TeamPage() {
   }
 
   const played = record.w + record.l + record.t;
-
-  const perGame = (n: number) =>
-    played > 0 ? (n / played).toFixed(1) : "0.0";
+  const perGame = (n: number) => (played > 0 ? (n / played).toFixed(1) : "0.0");
 
   return (
     <>
@@ -194,19 +162,9 @@ function TeamPage() {
 
         <StatCard
           label="Differential"
-          value={`${
-            pointsFor - pointsAgainst > 0 ? "+" : ""
-          }${pointsFor - pointsAgainst}`}
-          note={
-            pointsFor >= pointsAgainst
-              ? "net positive"
-              : "net negative"
-          }
-          tone={
-            pointsFor >= pointsAgainst
-              ? "win"
-              : "loss"
-          }
+          value={`${pointsFor - pointsAgainst > 0 ? "+" : ""}${pointsFor - pointsAgainst}`}
+          note={pointsFor >= pointsAgainst ? "net positive" : "net negative"}
+          tone={pointsFor >= pointsAgainst ? "win" : "loss"}
         />
       </div>
 
@@ -249,11 +207,7 @@ function TeamPage() {
           <Panel padded={false}>
             <PanelHeader
               title="Schedule"
-              aside={
-                <span className="label-mono">
-                  2026 · ESPN
-                </span>
-              }
+              aside={<span className="label-mono">2026 · ESPN</span>}
             />
 
             {schedule.length === 0 ? (
@@ -265,24 +219,12 @@ function TeamPage() {
                 <table className="w-full min-w-[580px] text-sm">
                   <thead>
                     <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
-                      <th className="px-4 py-2 font-normal">
-                        Date
-                      </th>
-                      <th className="px-2 py-2 font-normal">
-                        Time
-                      </th>
-                      <th className="px-2 py-2 font-normal">
-                        Matchup
-                      </th>
-                      <th className="px-2 py-2 font-normal">
-                        Venue
-                      </th>
-                      <th className="px-2 py-2 text-right font-normal">
-                        Spread
-                      </th>
-                      <th className="px-4 py-2 text-right font-normal">
-                        Total
-                      </th>
+                      <th className="px-4 py-2 font-normal">Date</th>
+                      <th className="px-2 py-2 font-normal">Time</th>
+                      <th className="px-2 py-2 font-normal">Matchup</th>
+                      <th className="px-2 py-2 font-normal">Venue</th>
+                      <th className="px-2 py-2 text-right font-normal">Spread</th>
+                      <th className="px-4 py-2 text-right font-normal">Total</th>
                     </tr>
                   </thead>
 
@@ -350,10 +292,7 @@ function LoadingPanel({
   );
 }
 
-function stat(
-  row: TeamSeasonStatRow,
-  key: string,
-): number {
+function stat(row: TeamSeasonStatRow, key: string): number {
   return Number(row.stats[key] ?? 0) || 0;
 }
 
@@ -365,9 +304,7 @@ function SeasonStats({
   loading: boolean;
 }) {
   if (loading || !stats) {
-    return (
-      <LoadingPanel label="Loading season statistics…" />
-    );
+    return <LoadingPanel label="Loading season statistics…" />;
   }
 
   const passing = stats.offense.passing;
@@ -381,49 +318,23 @@ function SeasonStats({
       <Panel padded={false}>
         <PanelHeader
           title="Passing"
-          aside={
-            <span className="label-mono">
-              {stats.gamesPlayed} GP
-            </span>
-          }
+          aside={<span className="label-mono">{stats.gamesPlayed} GP</span>}
         />
 
         <StatTable
-          headers={[
-            "Player",
-            "GP",
-            "C/ATT",
-            "YDS",
-            "AVG",
-            "TD",
-            "INT",
-          ]}
-          rows={passing.map(
-            (r: TeamSeasonStatRow) => [
-              <PlayerLink
-                id={r.id}
-                name={r.name}
-              />,
-              stat(r, "gamesPlayed"),
-              `${stat(r, "completions")}/${stat(
-                r,
-                "passingAttempts",
-              )}`,
-              stat(r, "passingYards"),
-              (
-                stat(r, "passingYards") /
-                Math.max(
-                  stat(r, "passingAttempts"),
-                  1,
-                )
-              ).toFixed(1),
-              stat(
-                r,
-                "passingTouchdowns",
-              ),
-              stat(r, "interceptions"),
-            ],
-          )}
+          headers={["Player", "GP", "C/ATT", "YDS", "AVG", "TD", "INT"]}
+          rows={passing.map((r: TeamSeasonStatRow) => [
+            <PlayerLink id={r.id} name={r.name} />,
+            stat(r, "gamesPlayed"),
+            `${stat(r, "completions")}/${stat(r, "passingAttempts")}`,
+            stat(r, "passingYards"),
+            (
+              stat(r, "passingYards") /
+              Math.max(stat(r, "passingAttempts"), 1)
+            ).toFixed(1),
+            stat(r, "passingTouchdowns"),
+            stat(r, "interceptions"),
+          ])}
         />
       </Panel>
 
@@ -432,36 +343,18 @@ function SeasonStats({
           <PanelHeader title="Rushing" />
 
           <StatTable
-            headers={[
-              "Player",
-              "GP",
-              "CAR",
-              "YDS",
-              "AVG",
-              "TD",
-            ]}
-            rows={rushing.map(
-              (r: TeamSeasonStatRow) => [
-                <PlayerLink
-                  id={r.id}
-                  name={r.name}
-                />,
-                stat(r, "gamesPlayed"),
-                stat(r, "rushingAttempts"),
-                stat(r, "rushingYards"),
-                (
-                  stat(r, "rushingYards") /
-                  Math.max(
-                    stat(r, "rushingAttempts"),
-                    1,
-                  )
-                ).toFixed(1),
-                stat(
-                  r,
-                  "rushingTouchdowns",
-                ),
-              ],
-            )}
+            headers={["Player", "GP", "CAR", "YDS", "AVG", "TD"]}
+            rows={rushing.map((r: TeamSeasonStatRow) => [
+              <PlayerLink id={r.id} name={r.name} />,
+              stat(r, "gamesPlayed"),
+              stat(r, "rushingAttempts"),
+              stat(r, "rushingYards"),
+              (
+                stat(r, "rushingYards") /
+                Math.max(stat(r, "rushingAttempts"), 1)
+              ).toFixed(1),
+              stat(r, "rushingTouchdowns"),
+            ])}
           />
         </Panel>
 
@@ -469,36 +362,18 @@ function SeasonStats({
           <PanelHeader title="Receiving" />
 
           <StatTable
-            headers={[
-              "Player",
-              "GP",
-              "REC",
-              "YDS",
-              "AVG",
-              "TD",
-            ]}
-            rows={receiving.map(
-              (r: TeamSeasonStatRow) => [
-                <PlayerLink
-                  id={r.id}
-                  name={r.name}
-                />,
-                stat(r, "gamesPlayed"),
-                stat(r, "receptions"),
-                stat(r, "receivingYards"),
-                (
-                  stat(r, "receivingYards") /
-                  Math.max(
-                    stat(r, "receptions"),
-                    1,
-                  )
-                ).toFixed(1),
-                stat(
-                  r,
-                  "receivingTouchdowns",
-                ),
-              ],
-            )}
+            headers={["Player", "GP", "REC", "YDS", "AVG", "TD"]}
+            rows={receiving.map((r: TeamSeasonStatRow) => [
+              <PlayerLink id={r.id} name={r.name} />,
+              stat(r, "gamesPlayed"),
+              stat(r, "receptions"),
+              stat(r, "receivingYards"),
+              (
+                stat(r, "receivingYards") /
+                Math.max(stat(r, "receptions"), 1)
+              ).toFixed(1),
+              stat(r, "receivingTouchdowns"),
+            ])}
           />
         </Panel>
       </div>
@@ -507,33 +382,18 @@ function SeasonStats({
         <PanelHeader title="Defense" />
 
         <StatTable
-          headers={[
-            "Player",
-            "GP",
-            "TKL",
-            "SOLO",
-            "SACK",
-            "TFL",
-            "PD",
-            "INT",
-            "FF",
-          ]}
-          rows={defense.map(
-            (r: TeamSeasonStatRow) => [
-              <PlayerLink
-                id={r.id}
-                name={r.name}
-              />,
-              stat(r, "gamesPlayed"),
-              stat(r, "totalTackles"),
-              stat(r, "soloTackles"),
-              stat(r, "sacks"),
-              stat(r, "tacklesForLoss"),
-              stat(r, "passesDefended"),
-              stat(r, "interceptions"),
-              stat(r, "forcedFumbles"),
-            ],
-          )}
+          headers={["Player", "GP", "TKL", "SOLO", "SACK", "TFL", "PD", "INT", "FF"]}
+          rows={defense.map((r: TeamSeasonStatRow) => [
+            <PlayerLink id={r.id} name={r.name} />,
+            stat(r, "gamesPlayed"),
+            stat(r, "totalTackles"),
+            stat(r, "soloTackles"),
+            stat(r, "sacks"),
+            stat(r, "tacklesForLoss"),
+            stat(r, "passesDefended"),
+            stat(r, "interceptions"),
+            stat(r, "forcedFumbles"),
+          ])}
         />
       </Panel>
 
@@ -542,27 +402,15 @@ function SeasonStats({
           <PanelHeader title="Kicking" />
 
           <StatTable
-            headers={[
-              "Player",
-              "GP",
-              "FG",
-              "FGA",
-              "XP",
-              "XPA",
-            ]}
-            rows={kicking.map(
-              (r: TeamSeasonStatRow) => [
-                <PlayerLink
-                  id={r.id}
-                  name={r.name}
-                />,
-                stat(r, "gamesPlayed"),
-                stat(r, "fieldGoalsMade"),
-                stat(r, "fieldGoalAttempts"),
-                stat(r, "extraPointsMade"),
-                stat(r, "extraPointAttempts"),
-              ],
-            )}
+            headers={["Player", "GP", "FG", "FGA", "XP", "XPA"]}
+            rows={kicking.map((r: TeamSeasonStatRow) => [
+              <PlayerLink id={r.id} name={r.name} />,
+              stat(r, "gamesPlayed"),
+              stat(r, "fieldGoalsMade"),
+              stat(r, "fieldGoalAttempts"),
+              stat(r, "extraPointsMade"),
+              stat(r, "extraPointAttempts"),
+            ])}
           />
         </Panel>
       )}
@@ -648,76 +496,69 @@ function RosterTab({
     return <LoadingPanel label="Loading roster…" />;
   }
 
-  const groups = roster.reduce<
-    Record<string, LiveRosterPlayer[]>
-  >((acc, player) => {
-    const key = player.position || "ATH";
-    (acc[key] ??= []).push(player);
-    return acc;
-  }, {});
+  const groups = roster.reduce<Record<string, LiveRosterPlayer[]>>(
+    (acc, player) => {
+      const key = player.position || "ATH";
+      (acc[key] ??= []).push(player);
+      return acc;
+    },
+    {},
+  );
 
   return (
     <Panel padded={false}>
       <PanelHeader
         title="Roster"
-        aside={
-          <span className="label-mono">
-            ESPN · current roster
-          </span>
-        }
+        aside={<span className="label-mono">ESPN · current roster</span>}
       />
 
       <div className="grid gap-0 sm:grid-cols-2 lg:grid-cols-3">
-        {Object.entries(groups).map(
-          ([position, players]) => (
-            <div
-              key={position}
-              className="border-b border-r border-line/5"
-            >
-              <div className="border-b border-line/5 px-4 py-2 font-mono text-[10px] uppercase tracking-wider text-faint">
-                {position}
-              </div>
+        {Object.entries(groups).map(([position, players]) => (
+          <div
+            key={position}
+            className="border-b border-r border-line/5"
+          >
+            <div className="border-b border-line/5 px-4 py-2 font-mono text-[10px] uppercase tracking-wider text-faint">
+              {position}
+            </div>
 
-              {players.map((p) => (
-                <div
-                  key={p.id}
-                  className="flex items-center gap-3 border-b border-line/5 px-4 py-3 last:border-0 hover:bg-line/5"
-                >
-                  <div className="grid size-9 shrink-0 place-items-center overflow-hidden rounded-full bg-line/10">
-                    {p.headshot ? (
-                      <img
-                        src={p.headshot}
-                        alt=""
-                        className="size-full object-cover"
-                      />
-                    ) : (
-                      <span className="font-mono text-[10px] text-mute">
-                        #{p.jersey ?? "—"}
-                      </span>
-                    )}
-                  </div>
+            {players.map((p) => (
+              <div
+                key={p.id}
+                className="flex items-center gap-3 border-b border-line/5 px-4 py-3 last:border-0 hover:bg-line/5"
+              >
+                <div className="grid size-9 shrink-0 place-items-center overflow-hidden rounded-full bg-line/10">
+                  {p.headshot ? (
+                    <img
+                      src={p.headshot}
+                      alt=""
+                      className="size-full object-cover"
+                    />
+                  ) : (
+                    <span className="font-mono text-[10px] text-mute">
+                      #{p.jersey ?? "—"}
+                    </span>
+                  )}
+                </div>
 
-                  <div className="min-w-0">
-                    <Link
-                      to="/players/$playerId"
-                      params={{ playerId: p.id }}
-                      className="truncate font-medium hover:text-acc"
-                    >
-                      {p.name}
-                    </Link>
+                <div className="min-w-0">
+                  <Link
+                    to="/players/$playerId"
+                    params={{ playerId: p.id }}
+                    className="truncate font-medium hover:text-acc"
+                  >
+                    {p.name}
+                  </Link>
 
-                    <div className="font-mono text-[10px] uppercase text-faint">
-                      #{p.jersey ?? "—"} · {p.position}
-                      {p.college
-                        ? ` · ${p.college}`
-                        : ""}
-                    </div>
+                  <div className="font-mono text-[10px] uppercase text-faint">
+                    #{p.jersey ?? "—"} · {p.position}
+                    {p.college ? ` · ${p.college}` : ""}
                   </div>
                 </div>
-              ))}
-            </div>
-          ),
-        )}
+              </div>
+            ))}
+          </div>
+        ))}
       </div>
     </Panel>
   );
@@ -731,21 +572,13 @@ function DepthChartTab({
   loading: boolean;
 }) {
   if (loading || !depthChart) {
-    return (
-      <LoadingPanel label="Loading depth chart…" />
-    );
+    return <LoadingPanel label="Loading depth chart…" />;
   }
 
-  const sections: [
-    string,
-    DepthChartEntry[],
-  ][] = [
+  const sections: [string, DepthChartEntry[]][] = [
     ["Offense", depthChart.offense],
     ["Defense", depthChart.defense],
-    [
-      "Special Teams",
-      depthChart.specialTeams,
-    ],
+    ["Special Teams", depthChart.specialTeams],
   ];
 
   return (
@@ -759,11 +592,7 @@ function DepthChartTab({
             >
               <PanelHeader
                 title={title}
-                aside={
-                  <span className="label-mono">
-                    Depth chart
-                  </span>
-                }
+                aside={<span className="label-mono">Depth chart</span>}
               />
 
               <div className="grid gap-0 md:grid-cols-2">
@@ -785,39 +614,34 @@ function DepthChartTab({
                     </div>
 
                     <div className="space-y-2">
-                      {entry.players.map(
-                        (player) => (
-                          <div
-                            key={`${entry.key}-${player.id}-${player.rank}`}
-                            className="flex items-center gap-3 rounded-lg bg-line/5 px-3 py-2"
-                          >
-                            <span className="grid size-5 shrink-0 place-items-center rounded-full bg-line/10 font-mono text-[9px] text-mute">
-                              {player.rank}
-                            </span>
+                      {entry.players.map((player) => (
+                        <div
+                          key={`${entry.key}-${player.id}-${player.rank}`}
+                          className="flex items-center gap-3 rounded-lg bg-line/5 px-3 py-2"
+                        >
+                          <span className="grid size-5 shrink-0 place-items-center rounded-full bg-line/10 font-mono text-[9px] text-mute">
+                            {player.rank}
+                          </span>
 
-                            <div className="grid size-8 shrink-0 place-items-center overflow-hidden rounded-full bg-line/10">
-                              {player.headshot ? (
-                                <img
-                                  src={player.headshot}
-                                  alt=""
-                                  className="size-full object-cover"
-                                />
-                              ) : null}
-                            </div>
-
-                            <Link
-                              to="/players/$playerId"
-                              params={{
-                                playerId:
-                                  player.id,
-                              }}
-                              className="font-medium hover:text-acc"
-                            >
-                              {player.name}
-                            </Link>
+                          <div className="grid size-8 shrink-0 place-items-center overflow-hidden rounded-full bg-line/10">
+                            {player.headshot ? (
+                              <img
+                                src={player.headshot}
+                                alt=""
+                                className="size-full object-cover"
+                              />
+                            ) : null}
                           </div>
-                        ),
-                      )}
+
+                          <Link
+                            to="/players/$playerId"
+                            params={{ playerId: player.id }}
+                            className="font-medium hover:text-acc"
+                          >
+                            {player.name}
+                          </Link>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 ))}
