@@ -30,23 +30,23 @@ export const Route = createFileRoute("/players/")({
 
 type Group = "offense" | "defense" | "special";
 
-const POSITIONS: { code: string; label: string; group: Group }[] = [
-  { code: "QB", label: "Quarterback", group: "offense" },
-  { code: "RB", label: "Running Back", group: "offense" },
-  { code: "FB", label: "Fullback", group: "offense" },
-  { code: "WR", label: "Wide Receiver", group: "offense" },
-  { code: "TE", label: "Tight End", group: "offense" },
-  { code: "OT", label: "Offensive Tackle", group: "offense" },
-  { code: "G", label: "Guard", group: "offense" },
-  { code: "C", label: "Center", group: "offense" },
-  { code: "DE", label: "Defensive End", group: "defense" },
-  { code: "DT", label: "Defensive Tackle", group: "defense" },
-  { code: "LB", label: "Linebacker", group: "defense" },
-  { code: "CB", label: "Cornerback", group: "defense" },
-  { code: "S", label: "Safety", group: "defense" },
-  { code: "PK", label: "Kicker", group: "special" },
-  { code: "P", label: "Punter", group: "special" },
-  { code: "LS", label: "Long Snapper", group: "special" },
+const POSITIONS: { code: string; short: string; label: string; group: Group }[] = [
+  { code: "QB", short: "QB", label: "Quarterback", group: "offense" },
+  { code: "RB", short: "RB", label: "Running Back", group: "offense" },
+  { code: "FB", short: "FB", label: "Fullback", group: "offense" },
+  { code: "WR", short: "WR", label: "Wide Receiver", group: "offense" },
+  { code: "TE", short: "TE", label: "Tight End", group: "offense" },
+  { code: "OT", short: "OT", label: "Offensive Tackle", group: "offense" },
+  { code: "G", short: "G", label: "Guard", group: "offense" },
+  { code: "C", short: "C", label: "Center", group: "offense" },
+  { code: "DE", short: "DE", label: "Defensive End", group: "defense" },
+  { code: "DT", short: "DT", label: "Defensive Tackle", group: "defense" },
+  { code: "LB", short: "LB", label: "Linebacker", group: "defense" },
+  { code: "CB", short: "CB", label: "Cornerback", group: "defense" },
+  { code: "S", short: "S", label: "Safety", group: "defense" },
+  { code: "PK", short: "K", label: "Kicker", group: "special" },
+  { code: "P", short: "P", label: "Punter", group: "special" },
+  { code: "LS", short: "LS", label: "Long Snapper", group: "special" },
 ];
 
 const GROUPS: { key: Group; filter: string; label: string }[] = [
@@ -83,6 +83,9 @@ function normalizePos(pos: string): string {
 }
 
 const groupOf = (pos: string): Group | null => POSITIONS.find((p) => p.code === pos)?.group ?? null;
+
+/** Short label shown to people (kickers are "K", ESPN calls them "PK"). */
+const shortPos = (pos: string) => POSITIONS.find((p) => p.code === pos)?.short ?? pos;
 
 function matches(pos: string, filter: string): boolean {
   if (filter === "ALL") return true;
@@ -394,7 +397,7 @@ function PlayersPage() {
         <div className="space-y-3 border-b border-line/10 px-4 py-3">
           <div className="flex flex-wrap items-center gap-2">
             <Chip active={filter === "ALL"} onClick={() => pick("ALL")}>
-              All positions
+              All
             </Chip>
           </div>
           {GROUPS.map((g) => (
@@ -414,9 +417,9 @@ function PlayersPage() {
                   key={p.code}
                   active={filter === p.code}
                   onClick={() => pick(p.code)}
-                  title={p.code}
+                  title={p.label}
                 >
-                  {p.label}
+                  {p.short}
                 </Chip>
               ))}
             </div>
@@ -476,7 +479,7 @@ function PlayersPage() {
                             {p.name}
                           </Link>
                         </td>
-                        <td className="px-2 py-2.5 font-mono text-[11px] text-mute">{pos}</td>
+                        <td className="px-2 py-2.5 font-mono text-[11px] text-mute">{shortPos(pos)}</td>
                         {cols.map((c) => (
                           <td key={c.label} className="px-2 py-2.5 text-right font-mono tabular-nums">
                             {c.value(p)}
