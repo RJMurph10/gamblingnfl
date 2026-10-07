@@ -639,7 +639,7 @@ export function FootballIcon({ isRedZone = false }: { isRedZone?: boolean }) {
   );
 }
 
-function marketResultClass(
+export function marketResultClass(
   game: Game,
   away: Team,
   home: Team,
@@ -647,6 +647,7 @@ function marketResultClass(
   const neutral = "text-mute";
   const win = "text-green-500 font-semibold";
   const loss = "text-red-500 font-semibold";
+  const push = "text-yellow-400 font-semibold";
   if (game.status !== "final") return { spread: neutral, total: neutral };
 
   let spread = neutral;
@@ -660,6 +661,7 @@ function marketResultClass(
       const diff = awayFav ? score.away - score.home : score.home - score.away;
       if (diff > pts) spread = win;
       else if (diff < pts) spread = loss;
+      else spread = push;
     }
   }
 
@@ -669,6 +671,7 @@ function marketResultClass(
     const points = score.away + score.home;
     if (points > game.total) total = win;
     else if (points < game.total) total = loss;
+    else total = push;
   }
   return { spread, total };
 }
