@@ -8,6 +8,7 @@
  */
 
 import type { BoxScoreLine, Drive, DriveResult, Game, TeamGameStats } from "@/data/games";
+import { gameScore } from "@/data/games";
 import { teamByAbbr, teamById } from "@/data/teams";
 
 const SCOREBOARD =
