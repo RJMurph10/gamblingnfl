@@ -19,7 +19,7 @@ export function Panel({
   return <div className={`glass min-w-0 ${padded ? "p-4" : "overflow-hidden"} ${className}`}>{children}</div>;
 }
 
-export function PanelHeader({ title, aside }: { title: string; aside?: ReactNode }) {
+export function PanelHeader({ title, aside }: { title: ReactNode; aside?: ReactNode }) {
   return (
     <div className="flex flex-wrap items-center gap-2 border-b border-line/10 px-4 py-3">
       <h2 className="mr-auto font-disp text-xl font-semibold uppercase tracking-tight">{title}</h2>
