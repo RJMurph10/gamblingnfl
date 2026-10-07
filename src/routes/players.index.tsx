@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { PageTitle, Panel, PanelHeader, SampleBadge } from "@/components/booth";
-import { players, positions, type Position } from "@/data/players";
+import { PageTitle, Panel, PanelHeader } from "@/components/booth";
+import { players, positionGroup, positions, type Position } from "@/data/players";
 import { teamById } from "@/data/teams";
 
 export const Route = createFileRoute("/players/")({
@@ -30,7 +30,7 @@ function PlayersPage() {
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     return players
-      .filter((p) => (position === "ALL" ? true : p.position === position))
+      .filter((p) => (position === "ALL" ? true : positionGroup(p.position) === position))
       .filter((p) => {
         if (!q) return true;
         const team = teamById(p.teamId);
@@ -39,14 +39,15 @@ function PlayersPage() {
           (team ? `${team.city} ${team.name} ${team.abbr}`.toLowerCase().includes(q) : false)
         );
       })
-      .sort((a, b) => b.season.yards - a.season.yards);
+      .sort((a, b) => b.season.yards - a.season.yards || b.season.touches - a.season.touches);
   }, [query, position]);
 
-  const max = filtered[0]?.season.yards ?? 1;
+  const max = filtered[0]?.season.yards || 1;
+  const [limit, setLimit] = useState(150);
 
   return (
     <>
-      <PageTitle eyebrow="Player index" title="Players" aside={<SampleBadge />} />
+      <PageTitle eyebrow="Player index" title="Players" aside={<span className="label-mono">{players.length} players · ESPN 2026</span>} />
       <Panel padded={false}>
         <PanelHeader
           title="Search"
@@ -90,7 +91,7 @@ function PlayersPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-line/5">
-              {filtered.map((p) => {
+              {filtered.slice(0, limit).map((p) => {
                 const team = teamById(p.teamId);
                 return (
                   <tr key={p.id} className="hover:bg-line/5">
@@ -119,7 +120,7 @@ function PlayersPage() {
                     </td>
                     <td className="px-2 py-2.5 text-right font-mono tabular-nums">{p.season.tds}</td>
                     <td className="px-2 py-2.5 text-right font-mono tabular-nums">
-                      {(p.season.yards / p.season.games).toFixed(1)}
+                      {(p.season.yards / Math.max(1, p.season.games)).toFixed(1)}
                     </td>
                     <td className="px-4 py-2.5">
                       <div className="h-1.5 w-24 rounded-full bg-panel2">
@@ -135,6 +136,11 @@ function PlayersPage() {
             </tbody>
           </table>
         </div>
+        {filtered.length > limit ? (
+          <button onClick={() => setLimit((l) => l + 150)} className="w-full px-4 py-3 font-mono text-[11px] uppercase tracking-wider text-acc hover:bg-line/5">
+            Show more ({filtered.length - limit} remaining)
+          </button>
+        ) : null}
         {filtered.length === 0 ? (
           <p className="px-4 py-6 font-mono text-[11px] uppercase tracking-wider text-faint">
             No players match that search.
