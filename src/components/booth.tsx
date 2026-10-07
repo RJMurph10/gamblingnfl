@@ -19,7 +19,7 @@ export function Panel({
   return <div className={`glass min-w-0 ${padded ? "p-4" : "overflow-hidden"} ${className}`}>{children}</div>;
 }
 
-export function PanelHeader({ title, aside }: { title: string; aside?: ReactNode }) {
+export function PanelHeader({ title, aside }: { title: ReactNode; aside?: ReactNode }) {
   return (
     <div className="flex flex-wrap items-center gap-2 border-b border-line/10 px-4 py-3">
       <h2 className="mr-auto font-disp text-xl font-semibold uppercase tracking-tight">{title}</h2>
@@ -183,7 +183,7 @@ export function SpreadBadge({
   return (
     <span className={`inline-flex items-center gap-1 font-mono tabular-nums ${className}`}>
       <TeamLogo team={favTeam} className="size-3.5" />
-      <span>{formattedPts}</span>
+      <span className="market-line">{formattedPts}</span>
     </span>
   );
 }
@@ -639,6 +639,43 @@ export function FootballIcon({ isRedZone = false }: { isRedZone?: boolean }) {
   );
 }
 
+export function marketResultClass(
+  game: Game,
+  away: Team,
+  home: Team,
+): { spread: string; total: string } {
+  const neutral = "text-mute";
+  const win = "text-green-500 font-semibold";
+  const loss = "text-red-500 font-semibold";
+  const push = "text-yellow-400 font-semibold";
+  if (game.status !== "final") return { spread: neutral, total: neutral };
+
+  let spread = neutral;
+  const m = game.spread?.match(/^([A-Za-z]+)\s*([+-]?\d+(?:\.\d+)?)/);
+  if (m) {
+    const pts = Math.abs(Number(m[2]));
+    const awayFav = m[1].toUpperCase() === away.abbr.toUpperCase();
+    const homeFav = m[1].toUpperCase() === home.abbr.toUpperCase();
+    if (awayFav || homeFav) {
+      const score = gameScore(game);
+      const diff = awayFav ? score.away - score.home : score.home - score.away;
+      if (diff > pts) spread = win;
+      else if (diff < pts) spread = loss;
+      else spread = push;
+    }
+  }
+
+  let total = neutral;
+  if (game.total > 0) {
+    const score = gameScore(game);
+    const points = score.away + score.home;
+    if (points > game.total) total = win;
+    else if (points < game.total) total = loss;
+    else total = push;
+  }
+  return { spread, total };
+}
+
 export function GameRow({
   game,
   showMarket = true,
@@ -655,6 +692,7 @@ export function GameRow({
     (game.quarters?.away?.length ?? 0) > 4 ||
     (game.quarters?.home?.length ?? 0) > 4 ||
     Boolean(game.clock?.toUpperCase().includes("OT"));
+  const showOT = isOT && game.status !== "scheduled";
 
   return (
     <tr className="hover:bg-line/5">
@@ -675,6 +713,12 @@ export function GameRow({
               <FootballIcon isRedZone={game.isRedZone} />
             ) : null}
           </span>
+          {/* Invisible twin of the (OT) tag below, so the matchup stays centered in OT games */}
+          {showOT ? (
+            <span aria-hidden="true" className="invisible font-mono text-[10px] font-normal">
+              (OT)
+            </span>
+          ) : null}
           <span className="w-6 text-right">
             {game.status !== "scheduled" ? score.away : ""}
           </span>
@@ -684,11 +728,9 @@ export function GameRow({
           <span className="w-6 text-left">
             {game.status !== "scheduled" ? score.home : ""}
           </span>
-          {isOT && game.status !== "scheduled" && (
-            <span className="-ml-1 font-mono text-[10px] font-normal text-mute">
-              (OT)
-            </span>
-          )}
+          {showOT ? (
+            <span className="font-mono text-[10px] font-normal text-mute">(OT)</span>
+          ) : null}
           <span className="inline-flex w-4 items-center justify-center">
             {game.status === "live" && game.possession === "home" ? (
               <FootballIcon isRedZone={game.isRedZone} />
@@ -700,34 +742,7 @@ export function GameRow({
         {game.status === "live" ? (game.clock ?? "Live") : game.location}
       </td>
       {showMarket ? (() => {
-        // Spread cover evaluation
-        let spreadClass = "text-mute";
-        if (game.status !== "scheduled" && game.spread && game.spread !== "—" && game.spread !== "PK" && game.spread !== "EVEN") {
-          const match = game.spread.match(/^([A-Za-z]+)\s*([+-]?\d+(?:\.\d+)?)/);
-          if (match) {
-            const [, favAbbr, ptsStr] = match;
-            const pts = Math.abs(parseFloat(ptsStr));
-            const isAwayFav = favAbbr.toUpperCase() === away.abbr.toUpperCase();
-            const isHomeFav = favAbbr.toUpperCase() === home.abbr.toUpperCase();
-            if (isAwayFav || isHomeFav) {
-              const diff = isAwayFav ? (score.away - score.home) : (score.home - score.away);
-              if (diff > pts) spreadClass = "text-emerald-400 font-semibold";
-              else if (diff < pts) spreadClass = "text-rose-500 font-semibold";
-            }
-          }
-        }
-
-        // Total over/under evaluation
-        let totalClass = "text-mute";
-        if (game.status !== "scheduled" && game.total && game.total > 0) {
-          const totalPoints = score.away + score.home;
-          if (totalPoints > game.total) {
-            totalClass = "text-emerald-400 font-semibold"; // Over hit
-          } else if (game.status === "final" && totalPoints < game.total) {
-            totalClass = "text-rose-500 font-semibold"; // Under hit
-          }
-        }
-
+        const { spread: spreadClass, total: totalClass } = marketResultClass(game, away, home);
         return (
           <>
             <td className={`whitespace-nowrap px-2 py-2.5 text-right font-mono tabular-nums ${spreadClass}`}>
