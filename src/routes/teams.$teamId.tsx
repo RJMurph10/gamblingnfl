@@ -1,6 +1,6 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import {
   GameRow,
   PageTitle,
@@ -209,31 +209,33 @@ function SeasonStats({ stats, loading }: { stats: any; loading: boolean }) {
     <div className="space-y-5">
       <Panel padded={false}>
         <PanelHeader title="Passing" aside={<span className="label-mono">{stats.gamesPlayed} GP</span>} />
-        <StatTable headers={["Player", "GP", "C/ATT", "YDS", "AVG", "TD", "INT"]} rows={passing.map((r: TeamSeasonStatRow) => [r.name, stat(r,"gamesPlayed"), `${stat(r,"completions")}/${stat(r,"passingAttempts")}`, stat(r,"passingYards"), (stat(r,"passingYards") / Math.max(stat(r,"passingAttempts"),1)).toFixed(1), stat(r,"passingTouchdowns"), stat(r,"interceptions")])} />
+        <StatTable headers={["Player", "GP", "C/ATT", "YDS", "AVG", "TD", "INT"]} rows={passing.map((r: TeamSeasonStatRow) => [<PlayerLink id={r.id} name={r.name} />, stat(r,"gamesPlayed"), `${stat(r,"completions")}/${stat(r,"passingAttempts")}`, stat(r,"passingYards"), (stat(r,"passingYards") / Math.max(stat(r,"passingAttempts"),1)).toFixed(1), stat(r,"passingTouchdowns"), stat(r,"interceptions")])} />
       </Panel>
       <div className="grid gap-5 lg:grid-cols-2">
         <Panel padded={false}>
           <PanelHeader title="Rushing" />
-          <StatTable headers={["Player", "GP", "CAR", "YDS", "AVG", "TD"]} rows={rushing.map((r: TeamSeasonStatRow) => [r.name, stat(r,"gamesPlayed"), stat(r,"rushingAttempts"), stat(r,"rushingYards"), (stat(r,"rushingYards") / Math.max(stat(r,"rushingAttempts"),1)).toFixed(1), stat(r,"rushingTouchdowns")])} />
+          <StatTable headers={["Player", "GP", "CAR", "YDS", "AVG", "TD"]} rows={rushing.map((r: TeamSeasonStatRow) => [<PlayerLink id={r.id} name={r.name} />, stat(r,"gamesPlayed"), stat(r,"rushingAttempts"), stat(r,"rushingYards"), (stat(r,"rushingYards") / Math.max(stat(r,"rushingAttempts"),1)).toFixed(1), stat(r,"rushingTouchdowns")])} />
         </Panel>
         <Panel padded={false}>
           <PanelHeader title="Receiving" />
-          <StatTable headers={["Player", "GP", "REC", "YDS", "AVG", "TD"]} rows={receiving.map((r: TeamSeasonStatRow) => [r.name, stat(r,"gamesPlayed"), stat(r,"receptions"), stat(r,"receivingYards"), (stat(r,"receivingYards") / Math.max(stat(r,"receptions"),1)).toFixed(1), stat(r,"receivingTouchdowns")])} />
+          <StatTable headers={["Player", "GP", "REC", "YDS", "AVG", "TD"]} rows={receiving.map((r: TeamSeasonStatRow) => [<PlayerLink id={r.id} name={r.name} />, stat(r,"gamesPlayed"), stat(r,"receptions"), stat(r,"receivingYards"), (stat(r,"receivingYards") / Math.max(stat(r,"receptions"),1)).toFixed(1), stat(r,"receivingTouchdowns")])} />
         </Panel>
       </div>
       <Panel padded={false}>
         <PanelHeader title="Defense" />
-        <StatTable headers={["Player", "GP", "TKL", "SOLO", "SACK", "TFL", "PD", "INT", "FF"]} rows={defense.map((r: TeamSeasonStatRow) => [r.name, stat(r,"gamesPlayed"), stat(r,"totalTackles"), stat(r,"soloTackles"), stat(r,"sacks"), stat(r,"tacklesForLoss"), stat(r,"passesDefended"), stat(r,"interceptions"), stat(r,"forcedFumbles")])} />
+        <StatTable headers={["Player", "GP", "TKL", "SOLO", "SACK", "TFL", "PD", "INT", "FF"]} rows={defense.map((r: TeamSeasonStatRow) => [<PlayerLink id={r.id} name={r.name} />, stat(r,"gamesPlayed"), stat(r,"totalTackles"), stat(r,"soloTackles"), stat(r,"sacks"), stat(r,"tacklesForLoss"), stat(r,"passesDefended"), stat(r,"interceptions"), stat(r,"forcedFumbles")])} />
       </Panel>
       {kicking.length > 0 && <Panel padded={false}>
         <PanelHeader title="Kicking" />
-        <StatTable headers={["Player", "GP", "FG", "FGA", "XP", "XPA"]} rows={kicking.map((r: TeamSeasonStatRow) => [r.name, stat(r,"gamesPlayed"), stat(r,"fieldGoalsMade"), stat(r,"fieldGoalAttempts"), stat(r,"extraPointsMade"), stat(r,"extraPointAttempts")])} />
+        <StatTable headers={["Player", "GP", "FG", "FGA", "XP", "XPA"]} rows={kicking.map((r: TeamSeasonStatRow) => [<PlayerLink id={r.id} name={r.name} />, stat(r,"gamesPlayed"), stat(r,"fieldGoalsMade"), stat(r,"fieldGoalAttempts"), stat(r,"extraPointsMade"), stat(r,"extraPointAttempts")])} />
       </Panel>}
     </div>
   );
 }
 
-function StatTable({ headers, rows }: { headers: string[]; rows: (string | number)[][] }) {
+function PlayerLink({ id, name }: { id: string; name: string }) { return <Link to="/players/$playerId" params={{ playerId: id }} className="hover:text-acc">{name}</Link>; }
+
+function StatTable({ headers, rows }: { headers: string[]; rows: (ReactNode)[][] }) {
   return <div className="overflow-x-auto"><table className="w-full min-w-[560px] text-sm"><thead><tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">{headers.map((h) => <th key={h} className="px-3 py-2 font-normal first:px-4 last:px-4">{h}</th>)}</tr></thead><tbody className="divide-y divide-line/5">{rows.map((row, i) => <tr key={`${String(row[0])}-${i}`} className="hover:bg-line/5">{row.map((cell, j) => <td key={j} className={`px-3 py-2.5 ${j === 0 ? "px-4 font-medium" : "font-mono tabular-nums text-mute"}`}>{cell}</td>)}</tr>)}</tbody></table></div>;
 }
 
@@ -244,11 +246,11 @@ function RosterTab({ roster, loading }: { roster: LiveRosterPlayer[]; loading: b
     (acc[key] ??= []).push(player);
     return acc;
   }, {});
-  return <Panel padded={false}><PanelHeader title="Roster" aside={<span className="label-mono">ESPN · current roster</span>} /><div className="grid gap-0 sm:grid-cols-2 lg:grid-cols-3">{Object.entries(groups).map(([position, players]) => <div key={position} className="border-b border-r border-line/5"><div className="border-b border-line/5 px-4 py-2 font-mono text-[10px] uppercase tracking-wider text-faint">{position}</div>{players.map((p) => <div key={p.id} className="flex items-center gap-3 border-b border-line/5 px-4 py-3 last:border-0 hover:bg-line/5"><div className="grid size-9 shrink-0 place-items-center overflow-hidden rounded-full bg-line/10">{p.headshot ? <img src={p.headshot} alt="" className="size-full object-cover" /> : <span className="font-mono text-[10px] text-mute">#{p.jersey ?? "—"}</span>}</div><div className="min-w-0"><div className="truncate font-medium">{p.name}</div><div className="font-mono text-[10px] uppercase text-faint">#{p.jersey ?? "—"} · {p.position}{p.college ? ` · ${p.college}` : ""}</div></div></div>)}</div>)}</div></Panel>;
+  return <Panel padded={false}><PanelHeader title="Roster" aside={<span className="label-mono">ESPN · current roster</span>} /><div className="grid gap-0 sm:grid-cols-2 lg:grid-cols-3">{Object.entries(groups).map(([position, players]) => <div key={position} className="border-b border-r border-line/5"><div className="border-b border-line/5 px-4 py-2 font-mono text-[10px] uppercase tracking-wider text-faint">{position}</div>{players.map((p) => <div key={p.id} className="flex items-center gap-3 border-b border-line/5 px-4 py-3 last:border-0 hover:bg-line/5"><div className="grid size-9 shrink-0 place-items-center overflow-hidden rounded-full bg-line/10">{p.headshot ? <img src={p.headshot} alt="" className="size-full object-cover" /> : <span className="font-mono text-[10px] text-mute">#{p.jersey ?? "—"}</span>}</div><div className="min-w-0"><Link to="/players/$playerId" params={{ playerId: p.id }} className="truncate font-medium hover:text-acc">{p.name}</Link><div className="font-mono text-[10px] uppercase text-faint">#{p.jersey ?? "—"} · {p.position}{p.college ? ` · ${p.college}` : ""}</div></div></div>)}</div>)}</div></Panel>;
 }
 
 function DepthChartTab({ depthChart, loading }: { depthChart: any; loading: boolean }) {
   if (loading || !depthChart) return <LoadingPanel label="Loading depth chart…" />;
   const sections: [string, DepthChartEntry[]][] = [["Offense", depthChart.offense], ["Defense", depthChart.defense], ["Special Teams", depthChart.specialTeams]];
-  return <div className="space-y-5">{sections.map(([title, entries]) => entries.length > 0 && <Panel key={title} padded={false}><PanelHeader title={title} aside={<span className="label-mono">Depth chart</span>} /><div className="grid gap-0 md:grid-cols-2">{entries.map((entry) => <div key={`${title}-${entry.key}`} className="border-b border-r border-line/5 p-4"><div className="mb-3 flex items-center justify-between"><div><div className="font-disp text-sm font-semibold uppercase">{entry.position}</div><div className="font-mono text-[10px] uppercase text-faint">{entry.abbreviation}</div></div></div><div className="space-y-2">{entry.players.map((player) => <div key={`${entry.key}-${player.id}-${player.rank}`} className="flex items-center gap-3 rounded-lg bg-line/5 px-3 py-2"><span className="grid size-5 shrink-0 place-items-center rounded-full bg-line/10 font-mono text-[9px] text-mute">{player.rank}</span><div className="grid size-8 shrink-0 place-items-center overflow-hidden rounded-full bg-line/10">{player.headshot ? <img src={player.headshot} alt="" className="size-full object-cover" /> : null}</div><span className="font-medium">{player.name}</span></div>)}</div></div>)}</div></Panel>)}</div>;
+  return <div className="space-y-5">{sections.map(([title, entries]) => entries.length > 0 && <Panel key={title} padded={false}><PanelHeader title={title} aside={<span className="label-mono">Depth chart</span>} /><div className="grid gap-0 md:grid-cols-2">{entries.map((entry) => <div key={`${title}-${entry.key}`} className="border-b border-r border-line/5 p-4"><div className="mb-3 flex items-center justify-between"><div><div className="font-disp text-sm font-semibold uppercase">{entry.position}</div><div className="font-mono text-[10px] uppercase text-faint">{entry.abbreviation}</div></div></div><div className="space-y-2">{entry.players.map((player) => <div key={`${entry.key}-${player.id}-${player.rank}`} className="flex items-center gap-3 rounded-lg bg-line/5 px-3 py-2"><span className="grid size-5 shrink-0 place-items-center rounded-full bg-line/10 font-mono text-[9px] text-mute">{player.rank}</span><div className="grid size-8 shrink-0 place-items-center overflow-hidden rounded-full bg-line/10">{player.headshot ? <img src={player.headshot} alt="" className="size-full object-cover" /> : null}</div><Link to="/players/$playerId" params={{ playerId: player.id }} className="font-medium hover:text-acc">{player.name}</Link></div>)}</div></div>)}</div></Panel>)}</div>;
 }
