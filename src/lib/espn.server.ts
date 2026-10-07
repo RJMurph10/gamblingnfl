@@ -744,6 +744,10 @@ export interface PlayerProfile {
   weight?: string;
   college?: string;
   experience?: number;
+  draft?: string;
+  birthPlace?: string;
+  status?: string;
+  birthDate?: string;
   season: PlayerProfileStat;
   gameLog: PlayerGameLogRow[];
 }
@@ -776,7 +780,7 @@ function playerGroupStats(block: any, playerId: string) {
 export async function fetchPlayerProfile(playerId: string): Promise<PlayerProfile | null> {
   return cached(`player-profile-${playerId}`, async () => {
     try {
-      const data = await fetchJson(`https://site.api.espn.com/apis/site/v2/sports/football/nfl/athletes/${encodeURIComponent(playerId)}`);
+      const data = await fetchJson(`https://site.api.espn.com/apis/common/v3/sports/football/nfl/athletes/${encodeURIComponent(playerId)}`);
       const athlete = data?.athlete ?? data;
       if (!athlete?.id || !athlete?.displayName) return null;
       const teamAbbr = String(athlete?.team?.abbreviation ?? athlete?.team?.shortDisplayName ?? '').toUpperCase();
@@ -819,7 +823,8 @@ export async function fetchPlayerProfile(playerId: string): Promise<PlayerProfil
         id: String(athlete.id), name: athlete.displayName, firstName: athlete.firstName, lastName: athlete.lastName,
         position: athlete.position?.abbreviation ?? athlete.position?.name ?? 'ATH', jersey: athlete.jersey, teamId: team.id, teamAbbr: team.abbr, teamName: `${team.city} ${team.name}`,
         headshot: athlete.headshot?.href, age: athlete.age, height: athlete.displayHeight, weight: athlete.displayWeight,
-        college: athlete.college?.name, experience: athlete.experience?.years, season, gameLog,
+        college: athlete.college?.name, experience: athlete.experience?.years ?? (parseInt(String(athlete.displayExperience ?? '')) || undefined),
+        draft: athlete.displayDraft, birthPlace: athlete.displayBirthPlace, status: athlete.status?.name, birthDate: athlete.displayDOB, season, gameLog,
       };
     } catch { return null; }
   }, 10 * 60 * 1000);

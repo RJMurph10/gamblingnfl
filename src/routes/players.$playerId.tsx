@@ -96,6 +96,7 @@ function PlayerPage() {
           <Info label="Position" value={player.position} /><Info label="Team" value={player.teamName} />
           <Info label="College" value={player.college ?? "—"} /><Info label="Experience" value={player.experience != null ? `${player.experience} yrs` : "—"} />
           <Info label="Age" value={player.age ?? "—"} /><Info label="Height" value={player.height ?? "—"} /><Info label="Weight" value={player.weight ?? "—"} /><Info label="Jersey" value={`#${player.jersey ?? "—"}`} />
+          <Info label="Draft" value={player.draft ?? "Undrafted"} /><Info label="Birthplace" value={player.birthPlace ?? "—"} /><Info label="Born" value={player.birthDate ?? "—"} /><Info label="Status" value={player.status ?? "—"} />
         </div>
       </Panel>
     </>
