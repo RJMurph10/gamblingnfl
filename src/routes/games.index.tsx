@@ -48,6 +48,29 @@ function GamesPage() {
     ? Array.from(new Set(games.map((g) => g.week))).sort((a, b) => b - a)
     : sampleWeeks;
 
+  const marketClass = (game: Game, side: "spread" | "total") => {
+    if (game.status !== "final") return "text-faint";
+    const win = "text-lime-300 drop-shadow-[0_0_7px_rgba(163,230,53,0.9)]";
+    const loss = "text-red-400 drop-shadow-[0_0_7px_rgba(248,113,113,0.9)]";
+    const away = teamById(game.awayTeamId);
+    const home = teamById(game.homeTeamId);
+    if (!away || !home) return "text-faint";
+    const score = gameScore(game);
+    if (side === "total") {
+      if (!game.total) return "text-faint";
+      const points = score.away + score.home;
+      return points > game.total ? win : points < game.total ? loss : "text-mute";
+    }
+    const m = game.spread?.match(/^([A-Za-z]+)\s*([+-]?\d+(?:\.\d+)?)/);
+    if (!m) return "text-faint";
+    const pts = Math.abs(Number(m[2]));
+    const awayFav = m[1].toUpperCase() === away.abbr.toUpperCase();
+    const homeFav = m[1].toUpperCase() === home.abbr.toUpperCase();
+    if (!awayFav && !homeFav) return "text-faint";
+    const diff = awayFav ? score.away - score.home : score.home - score.away;
+    return diff > pts ? win : diff < pts ? loss : "text-mute";
+  };
+
   return (
     <>
       <PageTitle
@@ -104,8 +127,10 @@ function GamesPage() {
                         ))}
                       </div>
                       <div className="mt-2 flex justify-between border-t border-line/10 pt-2 font-mono text-[10px] uppercase tracking-wider text-faint">
-                        <SpreadBadge spread={game.spread} away={away} home={home} />
-                        <span>{game.total > 0 ? `O/U ${game.total}` : "O/U —"}</span>
+                        <span className={marketClass(game, "spread")}>
+                          <SpreadBadge spread={game.spread} away={away} home={home} />
+                        </span>
+                        <span className={marketClass(game, "total")}>{game.total > 0 ? `O/U ${game.total}` : "O/U —"}</span>
                       </div>
                     </Link>
                   );
