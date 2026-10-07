@@ -691,6 +691,139 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
 }
 
 
+
+export interface PlayerProfileStat {
+  gamesPlayed: number;
+  passingAttempts: number;
+  completions: number;
+  passingYards: number;
+  passingTouchdowns: number;
+  interceptions: number;
+  rushingAttempts: number;
+  rushingYards: number;
+  rushingTouchdowns: number;
+  receptions: number;
+  receivingYards: number;
+  receivingTouchdowns: number;
+  totalTackles: number;
+  sacks: number;
+  tacklesForLoss: number;
+  passesDefended: number;
+  forcedFumbles: number;
+  fumbles: number;
+}
+
+export interface PlayerGameLogRow {
+  gameId: string;
+  week: number;
+  opponentId: string;
+  opponentAbbr: string;
+  result: string;
+  passing: string;
+  rushing: string;
+  receiving: string;
+  tackles: number;
+  sacks: number;
+  touchdowns: number;
+}
+
+export interface PlayerProfile {
+  id: string;
+  name: string;
+  firstName?: string;
+  lastName?: string;
+  position: string;
+  jersey?: string;
+  teamId: string;
+  teamAbbr: string;
+  teamName: string;
+  headshot?: string;
+  age?: number;
+  height?: string;
+  weight?: string;
+  college?: string;
+  experience?: number;
+  season: PlayerProfileStat;
+  gameLog: PlayerGameLogRow[];
+}
+
+function emptyPlayerProfileStat(): PlayerProfileStat {
+  return { gamesPlayed: 0, passingAttempts: 0, completions: 0, passingYards: 0, passingTouchdowns: 0, interceptions: 0, rushingAttempts: 0, rushingYards: 0, rushingTouchdowns: 0, receptions: 0, receivingYards: 0, receivingTouchdowns: 0, totalTackles: 0, sacks: 0, tacklesForLoss: 0, passesDefended: 0, forcedFumbles: 0, fumbles: 0 };
+}
+
+function playerGroupStats(block: any, playerId: string) {
+  const out: Record<string, number> = {};
+  for (const group of block?.statistics ?? []) {
+    const keys: string[] = group?.keys ?? [];
+    const athlete = (group?.athletes ?? []).find((x: any) => String(x?.athlete?.id ?? '') === playerId);
+    if (!athlete) continue;
+    keys.forEach((key, i) => {
+      const raw = athlete?.stats?.[i];
+      if (raw === undefined || raw === null || raw === '-') return;
+      if (key === 'completions/passingAttempts') {
+        const [c,a] = parsePair(raw); out.completions = (out.completions ?? 0) + c; out.passingAttempts = (out.passingAttempts ?? 0) + a;
+      } else if (key === 'fieldGoalsMade/fieldGoalAttempts') {
+        const [m,a] = parsePair(raw); out.fieldGoalsMade = (out.fieldGoalsMade ?? 0) + m; out.fieldGoalAttempts = (out.fieldGoalAttempts ?? 0) + a;
+      } else if (key !== 'longFieldGoalMade') {
+        out[key] = (out[key] ?? 0) + numericStat(raw);
+      }
+    });
+  }
+  return out;
+}
+
+export async function fetchPlayerProfile(playerId: string): Promise<PlayerProfile | null> {
+  return cached(`player-profile-${playerId}`, async () => {
+    try {
+      const data = await fetchJson(`https://site.api.espn.com/apis/site/v2/sports/football/nfl/athletes/${encodeURIComponent(playerId)}`);
+      const athlete = data?.athlete ?? data;
+      if (!athlete?.id || !athlete?.displayName) return null;
+      const teamAbbr = String(athlete?.team?.abbreviation ?? athlete?.team?.shortDisplayName ?? '').toUpperCase();
+      const team = teamByAbbr(teamAbbr);
+      if (!team) return null;
+      const schedule = await fetchSchedule();
+      const games = schedule.filter((g) => g.status === 'final' && (g.homeTeamId === team.id || g.awayTeamId === team.id));
+      const season = emptyPlayerProfileStat();
+      const gameLog: PlayerGameLogRow[] = [];
+      const summaries = await Promise.all(games.map(async (game) => {
+        try { return { game, summary: await fetchJson(`${SUMMARY}?event=${game.id.replace(/^espn-/, '')}`) }; } catch { return null; }
+      }));
+      for (const item of summaries) {
+        if (!item) continue;
+        const { game, summary } = item;
+        const block = (summary?.boxscore?.players ?? []).find((b: any) => teamByAbbr(b?.team?.abbreviation ?? '')?.id === team.id);
+        if (!block) continue;
+        const p = playerGroupStats(block, String(playerId));
+        const participated = Object.keys(p).length > 0;
+        if (!participated) continue;
+        season.gamesPlayed += 1;
+        for (const key of Object.keys(p)) {
+          if (key in season) (season as any)[key] += p[key];
+        }
+        const opponent = game.homeTeamId === team.id ? teamById(game.awayTeamId) : teamById(game.homeTeamId);
+        const mine = game.homeTeamId === team.id ? gameScore(game).home : gameScore(game).away;
+        const theirs = game.homeTeamId === team.id ? gameScore(game).away : gameScore(game).home;
+        gameLog.push({
+          gameId: game.id, week: game.week, opponentId: opponent?.id ?? '', opponentAbbr: opponent?.abbr ?? '—',
+          result: mine > theirs ? 'W' : mine < theirs ? 'L' : 'T',
+          passing: p.passingAttempts ? `${p.completions ?? 0}/${p.passingAttempts} · ${p.passingYards ?? 0} yds` : '—',
+          rushing: p.rushingAttempts ? `${p.rushingAttempts} · ${p.rushingYards ?? 0} yds` : '—',
+          receiving: p.receptions ? `${p.receptions} · ${p.receivingYards ?? 0} yds` : '—',
+          tackles: p.totalTackles ?? 0, sacks: p.sacks ?? 0,
+          touchdowns: (p.passingTouchdowns ?? 0) + (p.rushingTouchdowns ?? 0) + (p.receivingTouchdowns ?? 0),
+        });
+      }
+      gameLog.sort((a,b) => b.week - a.week);
+      return {
+        id: String(athlete.id), name: athlete.displayName, firstName: athlete.firstName, lastName: athlete.lastName,
+        position: athlete.position?.abbreviation ?? athlete.position?.name ?? 'ATH', jersey: athlete.jersey, teamId: team.id, teamAbbr: team.abbr, teamName: `${team.city} ${team.name}`,
+        headshot: athlete.headshot?.href, age: athlete.age, height: athlete.displayHeight, weight: athlete.displayWeight,
+        college: athlete.college?.name, experience: athlete.experience?.years, season, gameLog,
+      };
+    } catch { return null; }
+  }, 10 * 60 * 1000);
+}
+
 export interface TeamSeasonStatRow {
   id: string;
   name: string;
@@ -810,18 +943,23 @@ export async function fetchTeamSeasonStats(teamAbbr: string): Promise<TeamSeason
       (g) => g.status === "final" && (g.homeTeamId === team.id || g.awayTeamId === team.id),
     );
 
-    const buckets = new Map<string, { id: string; name: string; position: string; stats: Record<string, number | string> }>();
+    const buckets = new Map<string, { id: string; name: string; position: string; stats: Record<string, number | string>; gameIds: Set<string> }>();
     const summaries = await Promise.all(
       games.map(async (game) => {
         try {
-          return await fetchJson(`${SUMMARY}?event=${game.id.replace(/^espn-/, "")}`);
+          return {
+            gameId: game.id,
+            summary: await fetchJson(`${SUMMARY}?event=${game.id.replace(/^espn-/, "")}`),
+          };
         } catch {
           return null;
         }
       }),
     );
 
-    for (const summary of summaries) {
+    for (const result of summaries) {
+      if (!result) continue;
+      const { gameId, summary } = result;
       const blocks = summary?.boxscore?.players ?? [];
       for (const block of blocks) {
         if (teamByAbbr(block?.team?.abbreviation ?? "")?.id !== team.id) continue;
@@ -833,13 +971,18 @@ export async function fetchTeamSeasonStats(teamAbbr: string): Promise<TeamSeason
             const a = athlete?.athlete;
             if (!a?.displayName) continue;
             const id = teamSeasonPlayerId(a);
-            const existing = buckets.get(`${groupName}:${id}`) ?? {
+            const bucketKey = `${groupName}:${id}`;
+            const existing = buckets.get(bucketKey) ?? {
               id,
               name: a.displayName,
               position: teamSeasonPosition(a, groupName),
               stats: {},
+              gameIds: new Set<string>(),
             };
-            addStat(existing.stats, "gamesPlayed", 1);
+            if (!existing.gameIds.has(gameId)) {
+              existing.gameIds.add(gameId);
+              addStat(existing.stats, "gamesPlayed", 1);
+            }
             keys.forEach((key, i) => {
               const raw = athlete?.stats?.[i];
               if (raw === undefined || raw === null || raw === "-") return;
@@ -857,15 +1000,20 @@ export async function fetchTeamSeasonStats(teamAbbr: string): Promise<TeamSeason
                 addStat(existing.stats, key, raw);
               }
             });
-            buckets.set(`${groupName}:${id}`, existing);
+            buckets.set(bucketKey, existing);
           }
         }
       }
     }
 
-    const rowsFor = (groupName: string) => Array.from(buckets.values())
-      .filter((row) => buckets.has(`${groupName}:${row.id}`))
-      .map((row) => ({ ...row, id: row.id }))
+    const rowsFor = (groupName: string) => Array.from(buckets.entries())
+      .filter(([key]) => key.startsWith(`${groupName}:`))
+      .map(([, row]) => ({
+        id: row.id,
+        name: row.name,
+        position: row.position,
+        stats: row.stats,
+      }))
       .sort((a, b) => a.name.localeCompare(b.name));
 
     // The defensive group and interceptions group can contain the same player;
