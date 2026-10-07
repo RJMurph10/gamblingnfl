@@ -690,6 +690,36 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
   });
 }
 
+
+export interface TeamSeasonStatRow {
+  id: string;
+  name: string;
+  position: string;
+  jersey?: string;
+  headshot?: string;
+  stats: Record<string, number | string>;
+}
+
+export interface TeamSeasonStats {
+  gamesPlayed: number;
+  offense: { passing: TeamSeasonStatRow[]; rushing: TeamSeasonStatRow[]; receiving: TeamSeasonStatRow[] };
+  defense: TeamSeasonStatRow[];
+  kicking: TeamSeasonStatRow[];
+}
+
+export interface DepthChartEntry {
+  key: string;
+  position: string;
+  abbreviation: string;
+  players: { rank: number; id: string; name: string; headshot?: string }[];
+}
+
+export interface TeamDepthChart {
+  offense: DepthChartEntry[];
+  defense: DepthChartEntry[];
+  specialTeams: DepthChartEntry[];
+}
+
 export interface LiveRosterPlayer {
   id: string;
   name: string;
@@ -740,4 +770,169 @@ export async function fetchTeamRoster(teamAbbr: string): Promise<LiveRosterPlaye
     },
     ROSTER_CACHE_TTL_MS,
   );
+}
+
+
+function numericStat(value: unknown): number {
+  if (typeof value === "number") return value;
+  const n = Number(String(value ?? "").replace(/,/g, ""));
+  return Number.isFinite(n) ? n : 0;
+}
+
+function addStat(target: Record<string, number | string>, key: string, value: unknown) {
+  target[key] = numericStat(target[key]) + numericStat(value);
+}
+
+function teamSeasonPlayerId(athlete: any): string {
+  return String(athlete?.id ?? athlete?.displayName ?? "unknown");
+}
+
+function teamSeasonPosition(athlete: any, groupName: string): string {
+  const pos = athlete?.position?.abbreviation;
+  if (pos) return String(pos).toUpperCase();
+  const fallback: Record<string, string> = { passing: "QB", rushing: "RB", receiving: "WR", defensive: "DEF", interceptions: "DB", kicking: "K" };
+  return fallback[groupName] ?? "ATH";
+}
+
+/**
+ * Aggregates the real ESPN player box-score groups from every completed game
+ * this team has played in the 2026 regular season. Results are cached so the
+ * team page does not refetch every game on every render.
+ */
+export async function fetchTeamSeasonStats(teamAbbr: string): Promise<TeamSeasonStats> {
+  const abbr = teamAbbr.toUpperCase();
+  return cached(`team-season-stats-${abbr}`, async () => {
+    const schedule = await fetchSchedule();
+    const team = teamByAbbr(abbr);
+    if (!team) return { gamesPlayed: 0, offense: { passing: [], rushing: [], receiving: [] }, defense: [], kicking: [] };
+
+    const games = schedule.filter(
+      (g) => g.status === "final" && (g.homeTeamId === team.id || g.awayTeamId === team.id),
+    );
+
+    const buckets = new Map<string, { id: string; name: string; position: string; stats: Record<string, number | string> }>();
+    const summaries = await Promise.all(
+      games.map(async (game) => {
+        try {
+          return await fetchJson(`${SUMMARY}?event=${game.id.replace(/^espn-/, "")}`);
+        } catch {
+          return null;
+        }
+      }),
+    );
+
+    for (const summary of summaries) {
+      const blocks = summary?.boxscore?.players ?? [];
+      for (const block of blocks) {
+        if (teamByAbbr(block?.team?.abbreviation ?? "")?.id !== team.id) continue;
+        for (const group of block?.statistics ?? []) {
+          const groupName = String(group?.name ?? "");
+          if (!["passing", "rushing", "receiving", "defensive", "interceptions", "kicking"].includes(groupName)) continue;
+          const keys: string[] = group?.keys ?? [];
+          for (const athlete of group?.athletes ?? []) {
+            const a = athlete?.athlete;
+            if (!a?.displayName) continue;
+            const id = teamSeasonPlayerId(a);
+            const existing = buckets.get(`${groupName}:${id}`) ?? {
+              id,
+              name: a.displayName,
+              position: teamSeasonPosition(a, groupName),
+              stats: {},
+            };
+            addStat(existing.stats, "gamesPlayed", 1);
+            keys.forEach((key, i) => {
+              const raw = athlete?.stats?.[i];
+              if (raw === undefined || raw === null || raw === "-") return;
+              // Preserve completion/attempt strings such as 18/27, while
+              // summing the individual numeric categories elsewhere.
+              if (key === "completions/passingAttempts" || key === "fieldGoalsMade/fieldGoalAttempts" || key === "extraPointsMade/extraPointAttempts") {
+                const parts = String(raw).split(/[\\/\\-]/).map(Number);
+                if (parts.length === 2 && parts.every(Number.isFinite)) {
+                  const madeKey = key === "completions/passingAttempts" ? "completions" : key.startsWith("field") ? "fieldGoalsMade" : "extraPointsMade";
+                  const attKey = key === "completions/passingAttempts" ? "passingAttempts" : key.startsWith("field") ? "fieldGoalAttempts" : "extraPointAttempts";
+                  addStat(existing.stats, madeKey, parts[0]);
+                  addStat(existing.stats, attKey, parts[1]);
+                }
+              } else if (key !== "longFieldGoalMade") {
+                addStat(existing.stats, key, raw);
+              }
+            });
+            buckets.set(`${groupName}:${id}`, existing);
+          }
+        }
+      }
+    }
+
+    const rowsFor = (groupName: string) => Array.from(buckets.values())
+      .filter((row) => buckets.has(`${groupName}:${row.id}`))
+      .map((row) => ({ ...row, id: row.id }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+
+    // The defensive group and interceptions group can contain the same player;
+    // merge those into one defensive row per player.
+    const defenseMap = new Map<string, TeamSeasonStatRow>();
+    for (const groupName of ["defensive", "interceptions"]) {
+      for (const row of rowsFor(groupName)) {
+        const existing = defenseMap.get(row.id) ?? { ...row, stats: {} };
+        for (const [key, value] of Object.entries(row.stats)) addStat(existing.stats, key, value);
+        defenseMap.set(row.id, existing);
+      }
+    }
+
+    return {
+      gamesPlayed: games.length,
+      offense: {
+        passing: rowsFor("passing"),
+        rushing: rowsFor("rushing"),
+        receiving: rowsFor("receiving"),
+      },
+      defense: Array.from(defenseMap.values()).sort((a, b) => a.name.localeCompare(b.name)),
+      kicking: rowsFor("kicking"),
+    };
+  }, 10 * 60 * 1000);
+}
+
+/** Fetches ESPN's current roster for the team. */
+export async function fetchTeamRosterForPage(teamAbbr: string): Promise<LiveRosterPlayer[]> {
+  return fetchTeamRoster(teamAbbr);
+}
+
+/** Fetches ESPN's current depth chart and normalizes its position groups. */
+export async function fetchTeamDepthChart(teamAbbr: string): Promise<TeamDepthChart> {
+  const abbr = teamAbbr.toUpperCase();
+  return cached(`depthchart-${abbr}`, async () => {
+    try {
+      const data = await fetchJson(
+        `https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams/${abbr}/depthcharts`,
+      );
+      const output: TeamDepthChart = { offense: [], defense: [], specialTeams: [] };
+      const charts = data?.depthCharts ?? [];
+      const seen = new Set<string>();
+      for (const chart of charts) {
+        const chartName = String(chart?.name ?? "").toLowerCase();
+        const target = chartName.includes("special") ? output.specialTeams : chartName.includes("def") ? output.defense : output.offense;
+        for (const [key, value] of Object.entries(chart?.positions ?? {})) {
+          const v: any = value;
+          const position = v?.position?.name ?? key;
+          const abbreviation = v?.position?.abbreviation ?? key.toUpperCase();
+          const players = (v?.athletes ?? [])
+            .map((entry: any) => ({
+              rank: Number(entry?.rank ?? 1),
+              id: String(entry?.athlete?.id ?? entry?.athlete?.displayName ?? ""),
+              name: entry?.athlete?.displayName ?? "Unknown",
+              headshot: entry?.athlete?.headshot?.href,
+            }))
+            .filter((p: any) => p.id);
+          if (!players.length) continue;
+          const uniqueKey = `${chartName}:${key}`;
+          if (seen.has(uniqueKey)) continue;
+          seen.add(uniqueKey);
+          target.push({ key, position, abbreviation, players });
+        }
+      }
+      return output;
+    } catch {
+      return { offense: [], defense: [], specialTeams: [] };
+    }
+  }, ROSTER_CACHE_TTL_MS);
 }
