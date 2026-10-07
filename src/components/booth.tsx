@@ -657,11 +657,6 @@ export function GameRow({
     Boolean(game.clock?.toUpperCase().includes("OT"));
   const showOT = isOT && game.status !== "scheduled";
 
-  // Final games: the winner's score is highlighted, like the box score.
-  const decided = game.status === "final" && score.away !== score.home;
-  const awayWon = decided && score.away > score.home;
-  const homeWon = decided && score.home > score.away;
-
   return (
     <tr className="hover:bg-line/5">
       <td className="whitespace-nowrap px-4 py-2.5 font-mono text-mute">{game.date}</td>
@@ -687,13 +682,13 @@ export function GameRow({
               (OT)
             </span>
           ) : null}
-          <span className={`w-6 text-right ${awayWon ? "text-acc" : ""}`}>
+          <span className="w-6 text-right">
             {game.status !== "scheduled" ? score.away : ""}
           </span>
           <TeamLogo team={away} />
           <span className="font-sans font-normal text-mute">@</span>
           <TeamLogo team={home} />
-          <span className={`w-6 text-left ${homeWon ? "text-acc" : ""}`}>
+          <span className="w-6 text-left">
             {game.status !== "scheduled" ? score.home : ""}
           </span>
           {showOT ? (
