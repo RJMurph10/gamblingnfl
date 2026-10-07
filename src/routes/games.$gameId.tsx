@@ -264,6 +264,10 @@ function GamePage() {
             (game.quarters?.away?.length ?? 0) > 4 ||
             (game.quarters?.home?.length ?? 0) > 4 ||
             Boolean(game.clock?.toUpperCase().includes("OT"));
+          // Finished games: the winning score and the FINAL tag glow neon blue.
+          const isFinal = game.status === "final";
+          const awayWon = isFinal && score.away > score.home;
+          const homeWon = isFinal && score.home > score.away;
 
           return (
             <div className="mx-auto flex max-w-2xl items-center justify-between">
@@ -282,7 +286,11 @@ function GamePage() {
                     {game.awayRecord ?? `${away.record.w}-${away.record.l}`}
                   </span>
                 </Link>
-                <span className="font-mono text-3xl sm:text-5xl font-bold tabular-nums">
+                <span
+                  className={`font-mono text-3xl sm:text-5xl font-bold tabular-nums ${
+                    awayWon ? "text-acc" : ""
+                  }`}
+                >
                   {game.status !== "scheduled" ? score.away : ""}
                 </span>
               </div>
@@ -306,7 +314,7 @@ function GamePage() {
                   </div>
                 ) : game.status === "final" ? (
                   <div className="flex flex-col items-center">
-                    <span className="font-disp text-lg sm:text-xl font-bold tracking-wider text-foreground">
+                    <span className="font-disp text-lg sm:text-xl font-bold tracking-wider text-acc">
                       {isOT ? "FINAL/OT" : "FINAL"}
                     </span>
                     <span className="font-mono text-[11px] text-mute">{game.date}</span>
@@ -323,7 +331,11 @@ function GamePage() {
 
               {/* Home Team: Score, then Logo + Record */}
               <div className="flex items-center gap-3 sm:gap-6">
-                <span className="font-mono text-3xl sm:text-5xl font-bold tabular-nums">
+                <span
+                  className={`font-mono text-3xl sm:text-5xl font-bold tabular-nums ${
+                    homeWon ? "text-acc" : ""
+                  }`}
+                >
                   {game.status !== "scheduled" ? score.home : ""}
                 </span>
                 <Link
