@@ -10,6 +10,8 @@ import {
   SampleBadge,
   StatComparison,
   TeamLogo,
+  SpreadBadge,
+  marketResultClass,
 } from "@/components/booth";
 import { gameById, gameScore, type BoxScoreLine, type Game } from "@/data/games";
 import { teamById, type Team } from "@/data/teams";
@@ -360,10 +362,20 @@ function GamePage() {
         <LiveFieldTrack game={game} away={away} home={home} />
 
         {/* Closing Odds Line */}
-        <div className="mt-4 border-t border-line/10 pt-3 text-center font-mono text-[11px] text-mute">
-          Spread: <span className="text-foreground font-semibold">{game.spread}</span> · Total:{" "}
-          <span className="text-foreground font-semibold">{game.total}</span>
-        </div>
+        {(() => {
+          const { spread: spreadClass, total: totalClass } = marketResultClass(game, away, home);
+          return (
+            <div className="mt-4 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 border-t border-line/10 pt-3 font-mono text-[11px] text-mute">
+              <span>Spread:</span>
+              <span className={`inline-flex items-center ${spreadClass}`}>
+                <SpreadBadge spread={game.spread} away={away} home={home} />
+              </span>
+              <span className="text-mute">·</span>
+              <span>O/U:</span>
+              <span className={`font-semibold tabular-nums ${totalClass}`}>{game.total || "—"}</span>
+            </div>
+          );
+        })()}
       </Panel>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-12">
