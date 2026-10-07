@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { PageTitle, Panel, PanelHeader } from "@/components/booth";
+import { PageTitle, Panel, PanelHeader, TeamLogo } from "@/components/booth";
 import { players, positionGroup, positions, type Position } from "@/data/players";
 import { teamById } from "@/data/teams";
 
@@ -80,9 +80,8 @@ function PlayersPage() {
           <table className="w-full min-w-[700px] text-sm">
             <thead>
               <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
-                <th className="px-4 py-2 font-normal">Player</th>
-                <th className="px-2 py-2 font-normal">Pos</th>
-                <th className="px-2 py-2 font-normal">Team</th>
+                <th className="px-4 py-2 font-normal">Team</th>
+                <th className="px-2 py-2 font-normal">Player</th>
                 <th className="px-2 py-2 text-right font-normal">G</th>
                 <th className="px-2 py-2 text-right font-normal">Yds</th>
                 <th className="px-2 py-2 text-right font-normal">TD</th>
@@ -96,6 +95,20 @@ function PlayersPage() {
                 return (
                   <tr key={p.id} className="hover:bg-line/5">
                     <td className="px-4 py-2.5">
+                      {team ? (
+                        <Link
+                          to="/teams/$teamId"
+                          params={{ teamId: team.id }}
+                          className="inline-flex items-center gap-2 text-mute hover:text-acc"
+                        >
+                          <TeamLogo team={team} className="size-6" />
+                          <span className="font-mono text-[11px] uppercase">{team.abbr}</span>
+                        </Link>
+                      ) : (
+                        "—"
+                      )}
+                    </td>
+                    <td className="px-2 py-2.5">
                       <Link
                         to="/players/$playerId"
                         params={{ playerId: p.id }}
@@ -103,16 +116,6 @@ function PlayersPage() {
                       >
                         {p.firstName} {p.lastName}
                       </Link>
-                    </td>
-                    <td className="px-2 py-2.5 font-mono text-mute">{p.position}</td>
-                    <td className="px-2 py-2.5 font-mono text-mute">
-                      {team ? (
-                        <Link to="/teams/$teamId" params={{ teamId: team.id }} className="hover:text-acc">
-                          {team.abbr}
-                        </Link>
-                      ) : (
-                        "—"
-                      )}
                     </td>
                     <td className="px-2 py-2.5 text-right font-mono tabular-nums">{p.season.games}</td>
                     <td className="px-2 py-2.5 text-right font-mono tabular-nums">
