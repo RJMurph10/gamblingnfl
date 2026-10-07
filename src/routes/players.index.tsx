@@ -80,9 +80,8 @@ function PlayersPage() {
           <table className="w-full min-w-[700px] text-sm">
             <thead>
               <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
-                <th className="px-4 py-2 font-normal">Player</th>
-                <th className="px-2 py-2 font-normal">Pos</th>
-                <th className="px-2 py-2 font-normal">Team</th>
+                <th className="px-4 py-2 font-normal">Team</th>
+                <th className="px-2 py-2 font-normal">Player</th>
                 <th className="px-2 py-2 text-right font-normal">G</th>
                 <th className="px-2 py-2 text-right font-normal">Yds</th>
                 <th className="px-2 py-2 text-right font-normal">TD</th>
