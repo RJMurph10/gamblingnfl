@@ -81,19 +81,33 @@ function GamesPage() {
                         {[
                           { team: away, pts: score.away },
                           { team: home, pts: score.home },
-                        ].map((side) => (
+                        ].map((side) => {
+                          const won =
+                            game.status === "final" &&
+                            score.away !== score.home &&
+                            side.pts === Math.max(score.away, score.home);
+                          return (
                           <div key={side.team.id} className="flex items-center justify-between">
-                            <span className="flex items-center gap-1.5 font-disp text-lg font-semibold uppercase leading-none tracking-tight">
+                            <span
+                              className={`flex items-center gap-1.5 font-disp text-lg font-semibold uppercase leading-none tracking-tight ${
+                                won ? "text-acc" : ""
+                              }`}
+                            >
                               <TeamLogo team={side.team} /> {side.team.abbr}{" "}
                               <span className="font-body text-xs font-normal normal-case text-mute">
                                 {side.team.name}
                               </span>
                             </span>
-                            <span className="font-mono text-sm tabular-nums">
+                            <span
+                              className={`font-mono text-sm tabular-nums ${
+                                won ? "font-semibold text-acc" : ""
+                              }`}
+                            >
                               {game.status === "scheduled" ? "—" : side.pts}
                             </span>
                           </div>
-                        ))}
+                          );
+                        })}
                       </div>
                       <div className="mt-2 flex justify-between border-t border-line/10 pt-2 font-mono text-[10px] uppercase tracking-wider text-faint">
                         <span>{game.spread}</span>
