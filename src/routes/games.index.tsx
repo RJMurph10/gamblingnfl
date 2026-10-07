@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { PageTitle, Panel, PanelHeader, SampleBadge, TeamLogo } from "@/components/booth";
-import { gameScore, games as sampleGames, weeks as sampleWeeks } from "@/data/games";
+import { PageTitle, Panel, PanelHeader, SampleBadge, SpreadBadge, TeamLogo } from "@/components/booth";
+import { gameScore, games as sampleGames, weeks as sampleWeeks, type Game } from "@/data/games";
 import { teamById } from "@/data/teams";
 import { getLiveSchedule } from "@/lib/espn.functions";
 
@@ -23,6 +23,16 @@ export const Route = createFileRoute("/games/")({
   }),
   component: GamesPage,
 });
+
+/** Kickoff in the viewer's own time zone, e.g. "Sun 1:00 PM" (no hardcoded ET). */
+function localKickoff(game: Game): string {
+  if (!game.kickoffIso) return (game.kickoff ?? "").replace(/\s*(ET|EDT|EST)$/i, "");
+  const d = new Date(game.kickoffIso);
+  return `${d.toLocaleDateString([], { weekday: "short" })} ${d.toLocaleTimeString([], {
+    hour: "numeric",
+    minute: "2-digit",
+  })}`;
+}
 
 function GamesPage() {
   const { data: liveGames } = useQuery({
@@ -72,7 +82,7 @@ function GamesPage() {
                       className="glass p-3 transition-shadow hover:glow"
                     >
                       <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-wider text-faint">
-                        <span>{game.kickoff}</span>
+                        <span suppressHydrationWarning>{localKickoff(game)}</span>
                         <span className={game.status === "final" ? "text-mute" : "text-acc"}>
                           {game.status}
                         </span>
@@ -81,36 +91,20 @@ function GamesPage() {
                         {[
                           { team: away, pts: score.away },
                           { team: home, pts: score.home },
-                        ].map((side) => {
-                          const won =
-                            game.status === "final" &&
-                            score.away !== score.home &&
-                            side.pts === Math.max(score.away, score.home);
-                          return (
+                        ].map((side) => (
                           <div key={side.team.id} className="flex items-center justify-between">
-                            <span
-                              className={`flex items-center gap-1.5 font-disp text-lg font-semibold uppercase leading-none tracking-tight ${
-                                won ? "text-acc" : ""
-                              }`}
-                            >
-                              <TeamLogo team={side.team} /> {side.team.abbr}{" "}
-                              <span className="font-body text-xs font-normal normal-case text-mute">
-                                {side.team.name}
-                              </span>
+                            <span className="flex items-center gap-2 font-disp text-lg font-bold uppercase leading-none tracking-tight text-ink">
+                              <TeamLogo team={side.team} />
+                              {side.team.name}
                             </span>
-                            <span
-                              className={`font-mono text-sm tabular-nums ${
-                                won ? "font-semibold text-acc" : ""
-                              }`}
-                            >
+                            <span className="font-mono text-sm tabular-nums">
                               {game.status === "scheduled" ? "—" : side.pts}
                             </span>
                           </div>
-                          );
-                        })}
+                        ))}
                       </div>
                       <div className="mt-2 flex justify-between border-t border-line/10 pt-2 font-mono text-[10px] uppercase tracking-wider text-faint">
-                        <span>{game.spread}</span>
+                        <SpreadBadge spread={game.spread} away={away} home={home} />
                         <span>{game.total > 0 ? `O/U ${game.total}` : "O/U —"}</span>
                       </div>
                     </Link>
