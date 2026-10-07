@@ -655,6 +655,12 @@ export function GameRow({
     (game.quarters?.away?.length ?? 0) > 4 ||
     (game.quarters?.home?.length ?? 0) > 4 ||
     Boolean(game.clock?.toUpperCase().includes("OT"));
+  const showOT = isOT && game.status !== "scheduled";
+
+  // Final games: the winner's score is highlighted, like the box score.
+  const decided = game.status === "final" && score.away !== score.home;
+  const awayWon = decided && score.away > score.home;
+  const homeWon = decided && score.home > score.away;
 
   return (
     <tr className="hover:bg-line/5">
@@ -675,20 +681,24 @@ export function GameRow({
               <FootballIcon isRedZone={game.isRedZone} />
             ) : null}
           </span>
-          <span className="w-6 text-right">
+          {/* Invisible twin of the (OT) tag below, so the matchup stays centered in OT games */}
+          {showOT ? (
+            <span aria-hidden="true" className="invisible font-mono text-[10px] font-normal">
+              (OT)
+            </span>
+          ) : null}
+          <span className={`w-6 text-right ${awayWon ? "text-acc" : ""}`}>
             {game.status !== "scheduled" ? score.away : ""}
           </span>
           <TeamLogo team={away} />
           <span className="font-sans font-normal text-mute">@</span>
           <TeamLogo team={home} />
-          <span className="w-6 text-left">
+          <span className={`w-6 text-left ${homeWon ? "text-acc" : ""}`}>
             {game.status !== "scheduled" ? score.home : ""}
           </span>
-          {isOT && game.status !== "scheduled" && (
-            <span className="-ml-1 font-mono text-[10px] font-normal text-mute">
-              (OT)
-            </span>
-          )}
+          {showOT ? (
+            <span className="font-mono text-[10px] font-normal text-mute">(OT)</span>
+          ) : null}
           <span className="inline-flex w-4 items-center justify-center">
             {game.status === "live" && game.possession === "home" ? (
               <FootballIcon isRedZone={game.isRedZone} />
