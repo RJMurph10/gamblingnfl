@@ -50,8 +50,8 @@ function GamesPage() {
 
   const marketClass = (game: Game, side: "spread" | "total") => {
     if (game.status !== "final") return "text-faint";
-    const win = "text-lime-300 drop-shadow-[0_0_7px_rgba(163,230,53,0.9)]";
-    const loss = "text-red-400 drop-shadow-[0_0_7px_rgba(248,113,113,0.9)]";
+    const win = "text-green-500";
+    const loss = "text-red-500";
     const away = teamById(game.awayTeamId);
     const home = teamById(game.homeTeamId);
     if (!away || !home) return "text-faint";
