@@ -155,13 +155,11 @@ export function SpreadBadge({
   spread,
   away,
   home,
-  perspectiveTeam,
   className = "",
 }: {
   spread: string | undefined;
   away?: Team;
   home?: Team;
-  perspectiveTeam?: Team;
   className?: string;
 }) {
   if (!spread || spread === "—") return <span>—</span>;
@@ -180,11 +178,7 @@ export function SpreadBadge({
 
   if (!favTeam) return <span>{spread}</span>;
 
-  let formattedPts = ptsStr.startsWith("-") || ptsStr.startsWith("+") ? ptsStr : `-${ptsStr}`;
-  if (perspectiveTeam) {
-    const numericPts = Math.abs(Number(ptsStr));
-    formattedPts = perspectiveTeam.id === favTeam.id ? `-${numericPts}` : `+${numericPts}`;
-  }
+  const formattedPts = ptsStr.startsWith("-") || ptsStr.startsWith("+") ? ptsStr : `-${ptsStr}`;
 
   return (
     <span className={`inline-flex items-center gap-1 font-mono tabular-nums ${className}`}>
@@ -648,16 +642,13 @@ export function FootballIcon({ isRedZone = false }: { isRedZone?: boolean }) {
 export function GameRow({
   game,
   showMarket = true,
-  perspectiveTeamId,
 }: {
   game: Game;
   showMarket?: boolean;
-  perspectiveTeamId?: string;
 }) {
   const away = teamById(game.awayTeamId);
   const home = teamById(game.homeTeamId);
   const score = gameScore(game);
-  const perspectiveTeam = perspectiveTeamId ? teamById(perspectiveTeamId) : undefined;
   if (!away || !home) return null;
 
   const isOT =
@@ -741,12 +732,7 @@ export function GameRow({
           <>
             <td className={`whitespace-nowrap px-2 py-2.5 text-right font-mono tabular-nums ${spreadClass}`}>
               <div className="flex items-center justify-end">
-                <SpreadBadge
-                  spread={game.spread}
-                  away={away}
-                  home={home}
-                  perspectiveTeam={perspectiveTeam}
-                />
+                <SpreadBadge spread={game.spread} away={away} home={home} />
               </div>
             </td>
             <td className={`whitespace-nowrap px-4 py-2.5 text-right font-mono tabular-nums ${totalClass}`}>{game.total || "—"}</td>
