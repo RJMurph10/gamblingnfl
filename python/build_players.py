@@ -17,8 +17,7 @@ def get(url):
 
 
 teams_src = (ROOT / "src/data/teams.ts").read_text()
-ABBR_TO_ID = {a: i for i, a in re.findall(r'id: "([a-z0-9]+)", abbr: "([A-Z]+)"', teams_src) and
-              [(m[1], m[0]) for m in re.findall(r'id: "([a-z0-9]+)", abbr: "([A-Z]+)"', teams_src)]}
+ABBR_TO_ID = {a: i for i, a in re.findall(r'id: "([a-z0-9]+)", abbr: "([A-Z]+)"', teams_src)}
 
 events = []
 for w in range(1, 19):
