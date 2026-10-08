@@ -9,6 +9,14 @@ export interface GameWeather {
   low: number | null;
 }
 
+interface WeatherResult {
+  temperature: number | null;
+  condition: string;
+  emoji: string;
+  high: number | null;
+  low: number | null;
+}
+
 interface OpenMeteoResponse {
   hourly?: {
     time?: string[];
@@ -21,8 +29,6 @@ interface OpenMeteoResponse {
     temperature_2m_min?: number[];
     weather_code?: number[];
   };
-  error?: boolean;
-  reason?: string;
 }
 
 function isCompleted(status: string): boolean {
@@ -51,10 +57,21 @@ function weatherCodeToCondition(
     };
   }
 
-  if (code === 0) return { condition: "Clear", emoji: "☀️" };
-  if (code === 1) return { condition: "Mostly clear", emoji: "🌤️" };
-  if (code === 2) return { condition: "Partly cloudy", emoji: "⛅" };
-  if (code === 3) return { condition: "Overcast", emoji: "☁️" };
+  if (code === 0) {
+    return { condition: "Clear", emoji: "☀️" };
+  }
+
+  if (code === 1) {
+    return { condition: "Mostly clear", emoji: "🌤️" };
+  }
+
+  if (code === 2) {
+    return { condition: "Partly cloudy", emoji: "⛅" };
+  }
+
+  if (code === 3) {
+    return { condition: "Overcast", emoji: "☁️" };
+  }
 
   if (code === 45 || code === 48) {
     return { condition: "Foggy", emoji: "🌫️" };
@@ -115,11 +132,11 @@ function localHour(
     },
   ).formatToParts(new Date(iso));
 
-  const value = Number(
+  const hour = Number(
     parts.find((p) => p.type === "hour")?.value ?? 0,
   );
 
-  return value === 24 ? 0 : value;
+  return hour === 24 ? 0 : hour;
 }
 
 function dayNightEmoji(
@@ -154,9 +171,8 @@ function closestIndex(
       continue;
     }
 
-    const difference = Math.abs(
-      timestamp - target,
-    );
+    const difference =
+      Math.abs(timestamp - target);
 
     if (difference < bestDifference) {
       bestDifference = difference;
@@ -167,7 +183,11 @@ function closestIndex(
   return bestIndex;
 }
 
-function buildWeatherResult(
+/**
+ * Converts an Open-Meteo response into the format
+ * used by GameWeatherCard.
+ */
+function parseOpenMeteoWeather(
   json: OpenMeteoResponse,
   stadium: StadiumInfo,
   gameTime: string,
@@ -175,10 +195,10 @@ function buildWeatherResult(
   const hourlyTimes =
     json.hourly?.time ?? [];
 
-  const hourlyTemperatures =
+  const temperatures =
     json.hourly?.temperature_2m ?? [];
 
-  const hourlyCodes =
+  const codes =
     json.hourly?.weather_code ?? [];
 
   if (!hourlyTimes.length) {
@@ -195,22 +215,23 @@ function buildWeatherResult(
   }
 
   const temperature =
-    hourlyTemperatures[index];
+    temperatures[index];
 
   if (temperature == null) {
     return null;
   }
 
   const code =
-    hourlyCodes[index] ?? null;
+    codes[index] ?? null;
 
   const weather =
     weatherCodeToCondition(code);
 
-  const date = localDateString(
-    gameTime,
-    stadium.timezone,
-  );
+  const gameDate =
+    localDateString(
+      gameTime,
+      stadium.timezone,
+    );
 
   const dailyTimes =
     json.daily?.time ?? [];
@@ -223,7 +244,7 @@ function buildWeatherResult(
 
   const dailyIndex =
     dailyTimes.findIndex(
-      (value) => value === date,
+      (date) => date === gameDate,
     );
 
   const high =
@@ -246,7 +267,8 @@ function buildWeatherResult(
     temperature: Math.round(
       temperature,
     ),
-    condition: weather.condition,
+    condition:
+      weather.condition,
     emoji:
       code == null
         ? dayNightEmoji(
@@ -259,48 +281,43 @@ function buildWeatherResult(
   };
 }
 
-type WeatherResult = {
-  temperature: number | null;
-  condition: string;
-  emoji: string;
-  high: number | null;
-  low: number | null;
-};
-
 /**
- * Normal Open-Meteo forecast endpoint.
+ * ============================================================
+ * UPCOMING / LIVE — OPEN-METEO
+ * ============================================================
  *
- * Important:
- * `past_days` lets this endpoint return recently
- * archived weather without touching the separate
- * Historical Forecast API.
+ * Used as the international fallback/daily H/L source.
+ *
+ * This is deliberately separate from completed games.
  */
-async function fetchRecentWeather(
+async function fetchOpenMeteoForecast(
   stadium: StadiumInfo,
   gameTime: string,
 ): Promise<WeatherResult | null> {
-  const url =
-    "https://api.open-meteo.com/v1/forecast" +
-    `?latitude=${encodeURIComponent(stadium.lat)}` +
-    `&longitude=${encodeURIComponent(stadium.lon)}` +
-    `&hourly=temperature_2m,weather_code` +
-    `&daily=temperature_2m_max,temperature_2m_min,weather_code` +
-    `&temperature_unit=fahrenheit` +
-    `&timezone=${encodeURIComponent(stadium.timezone)}` +
-    `&past_days=16` +
-    `&forecast_days=16`;
-
-  console.log(
-    "[WEATHER] Recent Open-Meteo request:",
-    url,
-  );
-
   try {
-    const response = await fetch(url);
+    const gameDate =
+      localDateString(
+        gameTime,
+        stadium.timezone,
+      );
+
+    const url =
+      "https://api.open-meteo.com/v1/forecast" +
+      `?latitude=${encodeURIComponent(stadium.lat)}` +
+      `&longitude=${encodeURIComponent(stadium.lon)}` +
+      `&hourly=temperature_2m,weather_code` +
+      `&daily=temperature_2m_max,temperature_2m_min,weather_code` +
+      `&temperature_unit=fahrenheit` +
+      `&timezone=${encodeURIComponent(stadium.timezone)}` +
+      `&start_date=${gameDate}` +
+      `&end_date=${gameDate}`;
+
+    const response =
+      await fetch(url);
 
     if (!response.ok) {
       console.error(
-        "[WEATHER] Recent Open-Meteo HTTP error:",
+        "[WEATHER] Open-Meteo forecast:",
         response.status,
       );
 
@@ -310,14 +327,14 @@ async function fetchRecentWeather(
     const json =
       (await response.json()) as OpenMeteoResponse;
 
-    return buildWeatherResult(
+    return parseOpenMeteoWeather(
       json,
       stadium,
       gameTime,
     );
   } catch (error) {
     console.error(
-      "[WEATHER] Recent Open-Meteo error:",
+      "[WEATHER] Open-Meteo forecast error:",
       error,
     );
 
@@ -326,41 +343,48 @@ async function fetchRecentWeather(
 }
 
 /**
- * Long-term historical fallback.
+ * ============================================================
+ * COMPLETED GAMES — HISTORICAL WEATHER
+ * ============================================================
  *
- * This is useful for older completed games.
+ * Uses the Open-Meteo historical archive ONLY for finished
+ * games. This path is completely separate from upcoming/live
+ * weather.
  */
 async function fetchHistoricalWeather(
   stadium: StadiumInfo,
   gameTime: string,
 ): Promise<WeatherResult | null> {
-  const date = localDateString(
-    gameTime,
-    stadium.timezone,
-  );
-
-  const url =
-    "https://archive-api.open-meteo.com/v1/archive" +
-    `?latitude=${encodeURIComponent(stadium.lat)}` +
-    `&longitude=${encodeURIComponent(stadium.lon)}` +
-    `&start_date=${date}` +
-    `&end_date=${date}` +
-    `&hourly=temperature_2m,weather_code` +
-    `&daily=temperature_2m_max,temperature_2m_min,weather_code` +
-    `&temperature_unit=fahrenheit` +
-    `&timezone=${encodeURIComponent(stadium.timezone)}`;
-
-  console.log(
-    "[WEATHER] Historical Archive request:",
-    url,
-  );
-
   try {
-    const response = await fetch(url);
+    const gameDate =
+      localDateString(
+        gameTime,
+        stadium.timezone,
+      );
+
+    const url =
+      "https://archive-api.open-meteo.com/v1/archive" +
+      `?latitude=${encodeURIComponent(stadium.lat)}` +
+      `&longitude=${encodeURIComponent(stadium.lon)}` +
+      `&start_date=${gameDate}` +
+      `&end_date=${gameDate}` +
+      `&hourly=temperature_2m,weather_code` +
+      `&daily=temperature_2m_max,temperature_2m_min,weather_code` +
+      `&temperature_unit=fahrenheit` +
+      `&timezone=${encodeURIComponent(stadium.timezone)}` +
+      `&cell_selection=nearest`;
+
+    console.log(
+      "[WEATHER] Historical request:",
+      url,
+    );
+
+    const response =
+      await fetch(url);
 
     if (!response.ok) {
       console.error(
-        "[WEATHER] Historical Archive HTTP error:",
+        "[WEATHER] Historical HTTP:",
         response.status,
       );
 
@@ -370,14 +394,14 @@ async function fetchHistoricalWeather(
     const json =
       (await response.json()) as OpenMeteoResponse;
 
-    return buildWeatherResult(
+    return parseOpenMeteoWeather(
       json,
       stadium,
       gameTime,
     );
   } catch (error) {
     console.error(
-      "[WEATHER] Historical Archive error:",
+      "[WEATHER] Historical error:",
       error,
     );
 
@@ -385,6 +409,11 @@ async function fetchHistoricalWeather(
   }
 }
 
+/**
+ * ============================================================
+ * U.S. UPCOMING / LIVE — NWS
+ * ============================================================
+ */
 async function fetchNwsWeather(
   stadium: StadiumInfo,
   gameTime: string,
@@ -404,6 +433,11 @@ async function fetchNwsWeather(
       });
 
     if (!pointsResponse.ok) {
+      console.error(
+        "[WEATHER] NWS points:",
+        pointsResponse.status,
+      );
+
       return null;
     }
 
@@ -427,6 +461,11 @@ async function fetchNwsWeather(
       });
 
     if (!forecastResponse.ok) {
+      console.error(
+        "[WEATHER] NWS forecast:",
+        forecastResponse.status,
+      );
+
       return null;
     }
 
@@ -485,12 +524,12 @@ async function fetchNwsWeather(
       return null;
     }
 
-    const description =
+    const condition =
       best.shortForecast ??
-      "Unknown";
+      "Clear";
 
     const lower =
-      description.toLowerCase();
+      condition.toLowerCase();
 
     let emoji = "☀️";
 
@@ -529,7 +568,7 @@ async function fetchNwsWeather(
       temperature: Math.round(
         best.temperature,
       ),
-      condition: description,
+      condition,
       emoji,
       high: null,
       low: null,
@@ -544,6 +583,11 @@ async function fetchNwsWeather(
   }
 }
 
+/**
+ * ============================================================
+ * MAIN WEATHER FUNCTION
+ * ============================================================
+ */
 export async function fetchGameWeather({
   gameId,
   homeTeamId,
@@ -570,27 +614,25 @@ export async function fetchGameWeather({
       status,
       gameTime,
       stadium: stadium.name,
-      lat: stadium.lat,
-      lon: stadium.lon,
       timezone: stadium.timezone,
       indoor: stadium.isIndoor,
     },
   );
 
-  /*
+  /**
+   * ----------------------------------------------------------
    * INDOOR
+   * ----------------------------------------------------------
    */
   if (stadium.isIndoor) {
-    const weather =
-      await fetchRecentWeather(
-        stadium,
-        gameTime,
-      );
-
+    /*
+     * Keep the existing indoor behavior.
+     *
+     * We don't need outdoor weather for these stadiums.
+     */
     return {
       isIndoor: true,
-      temperature:
-        weather?.temperature ?? 72,
+      temperature: 72,
       condition: "Indoor",
       emoji: "🏟️",
       high: null,
@@ -598,90 +640,83 @@ export async function fetchGameWeather({
     };
   }
 
-  /*
+  /**
+   * ----------------------------------------------------------
    * COMPLETED GAME
+   * ----------------------------------------------------------
    *
-   * First use the normal forecast endpoint with
-   * past_days because recent NFL games are exactly
-   * what this endpoint is good at.
+   * THIS is the only branch that uses historical weather.
    *
-   * If that does not contain the game, use the
-   * long-term archive.
+   * It does not touch NWS or MET Norway.
    */
   if (isCompleted(status)) {
-    const recent =
-      await fetchRecentWeather(
-        stadium,
-        gameTime,
-      );
-
-    if (recent) {
-      console.log(
-        "[WEATHER] Completed game loaded from recent archive.",
-      );
-
-      return {
-        isIndoor: false,
-        ...recent,
-      };
-    }
-
     const historical =
       await fetchHistoricalWeather(
         stadium,
         gameTime,
       );
 
-    if (historical) {
-      console.log(
-        "[WEATHER] Completed game loaded from historical archive.",
+    if (!historical) {
+      console.error(
+        "[WEATHER] Historical weather unavailable:",
+        {
+          gameId,
+          gameTime,
+          stadium: stadium.name,
+        },
       );
 
-      return {
-        isIndoor: false,
-        ...historical,
-      };
+      return null;
     }
 
-    console.error(
-      "[WEATHER] No historical weather found.",
-      {
-        gameId,
-        gameTime,
+    return {
+      isIndoor: false,
+      ...historical,
+    };
+  }
+
+  /**
+   * ----------------------------------------------------------
+   * INTERNATIONAL UPCOMING / LIVE
+   * ----------------------------------------------------------
+   *
+   * Open-Meteo provides the international forecast.
+   *
+   * This replaces the problematic mixed MET/Open-Meteo
+   * implementation and keeps the international game entirely
+   * in one forecast request.
+   */
+  const isInternational =
+    stadium.timezone ===
+      "Europe/London" ||
+    stadium.timezone ===
+      "Europe/Berlin" ||
+    stadium.timezone ===
+      "America/Sao_Paulo";
+
+  if (isInternational) {
+    const forecast =
+      await fetchOpenMeteoForecast(
         stadium,
-      },
-    );
+        gameTime,
+      );
+
+    if (forecast) {
+      return {
+        isIndoor: false,
+        ...forecast,
+      };
+    }
 
     return null;
   }
 
-  /*
-   * UPCOMING / LIVE
+  /**
+   * ----------------------------------------------------------
+   * U.S. UPCOMING / LIVE
+   * ----------------------------------------------------------
    *
-   * Use Open-Meteo for ALL outdoor games.
-   *
-   * This guarantees that the same response contains:
-   * temperature + condition + daily high + daily low.
-   *
-   * This also fixes London because we no longer have
-   * one provider supplying the temperature and another
-   * provider supplying the condition/H-L.
-   */
-  const openMeteo =
-    await fetchRecentWeather(
-      stadium,
-      gameTime,
-    );
-
-  if (openMeteo) {
-    return {
-      isIndoor: false,
-      ...openMeteo,
-    };
-  }
-
-  /*
-   * U.S. NWS fallback.
+   * Restore NWS as the primary source.
    */
   const nws =
     await fetchNwsWeather(
@@ -689,21 +724,18 @@ export async function fetchGameWeather({
       gameTime,
     );
 
-  if (nws) {
-    /*
-     * NWS gives us the kickoff temperature and
-     * condition, but often does not give daily H/L
-     * through this endpoint.
-     *
-     * Try Open-Meteo one more time specifically
-     * for the daily values.
-     */
-    const daily =
-      await fetchRecentWeather(
-        stadium,
-        gameTime,
-      );
+  /**
+   * We use Open-Meteo ONLY to supply the daily H/L
+   * because NWS hourly forecast does not reliably expose
+   * the daily high/low in this response.
+   */
+  const daily =
+    await fetchOpenMeteoForecast(
+      stadium,
+      gameTime,
+    );
 
+  if (nws) {
     return {
       isIndoor: false,
       temperature:
@@ -716,6 +748,17 @@ export async function fetchGameWeather({
         daily?.high ?? null,
       low:
         daily?.low ?? null,
+    };
+  }
+
+  /**
+   * If NWS happens to fail, Open-Meteo remains a fallback
+   * rather than making the entire weather card disappear.
+   */
+  if (daily) {
+    return {
+      isIndoor: false,
+      ...daily,
     };
   }
 
