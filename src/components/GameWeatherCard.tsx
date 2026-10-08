@@ -1,3 +1,4 @@
+
 import type { GameWeather } from "@/lib/weather.server";
 
 export function GameWeatherCard({
@@ -7,55 +8,21 @@ export function GameWeatherCard({
   weather?: GameWeather | null;
   isLoading?: boolean;
 }) {
-  /*
-   * Only pulse while the weather request is actually loading.
-   * A failed/unavailable request gets a normal static card.
-   */
-  if (isLoading) {
-    return (
-      <div className="rounded-lg border border-border/50 bg-panel/60 px-3 py-2 text-right min-w-[120px] shadow-sm">
-        <div className="h-5 w-16 bg-white/10 rounded ml-auto mb-1 animate-pulse" />
-        <div className="h-3 w-12 bg-white/10 rounded ml-auto mb-1 animate-pulse" />
-        <div className="h-3 w-20 bg-white/10 rounded ml-auto animate-pulse" />
-      </div>
-    );
+  // Hide empty weather cards and unavailable-weather placeholders.
+  if (
+    isLoading ||
+    !weather ||
+    weather.condition.toLowerCase() === "weather unavailable"
+  ) {
+    return null;
   }
 
-  /*
-   * Static fallback if no weather object was returned.
-   * This prevents an infinite-looking loading animation.
-   */
-  if (!weather) {
-    return (
-      <div className="rounded-lg border border-border/60 bg-panel/75 px-3 py-2 text-right shadow-sm backdrop-blur-sm min-w-[125px]">
-        <div className="font-disp text-base sm:text-lg font-bold tracking-tight text-foreground">
-          🌡️ —
-        </div>
-
-        <div className="text-xs font-medium text-mute tracking-wide">
-          Weather unavailable
-        </div>
-
-        <div className="font-mono text-[10px] sm:text-[11px] text-faint tracking-wider">
-          H: —° L: —°
-        </div>
-      </div>
-    );
-  }
-
-  /*
-   * Indoor stadium:
-   *
-   * 🏟️ 72°
-   * Indoor
-   */
+  // Indoor stadiums use the static climate-controlled display.
   if (weather.isIndoor) {
     return (
-      <div className="rounded-lg border border-border/60 bg-panel/75 px-3 py-2 text-right shadow-sm backdrop-blur-sm min-w-[125px]">
-        <div className="flex items-center justify-end gap-1.5 font-disp text-base sm:text-lg font-bold tracking-tight text-foreground">
-          <span className="text-lg leading-none">
-            🏟️
-          </span>
+      <div className="min-w-[125px] rounded-lg border border-border/60 bg-panel/75 px-3 py-2 text-right shadow-sm backdrop-blur-sm">
+        <div className="flex items-center justify-end gap-1.5 font-disp text-base font-bold tracking-tight text-foreground sm:text-lg">
+          <span className="text-lg leading-none">🏟️</span>
 
           <span>
             {weather.temperature != null
@@ -64,20 +31,17 @@ export function GameWeatherCard({
           </span>
         </div>
 
-        <div className="text-xs font-semibold text-mute tracking-wide">
+        <div className="text-xs font-semibold tracking-wide text-mute">
           Indoor
         </div>
       </div>
     );
   }
 
-  const isUnavailable =
-    weather.condition.toLowerCase() ===
-    "weather unavailable";
-
+  // Outdoor forecast with temperature, conditions, high and low.
   return (
-    <div className="rounded-lg border border-border/60 bg-panel/75 px-3 py-2 text-right shadow-sm backdrop-blur-sm min-w-[125px]">
-      <div className="flex items-center justify-end gap-1.5 font-disp text-base sm:text-lg font-bold tracking-tight text-foreground">
+    <div className="min-w-[125px] rounded-lg border border-border/60 bg-panel/75 px-3 py-2 text-right shadow-sm backdrop-blur-sm">
+      <div className="flex items-center justify-end gap-1.5 font-disp text-base font-bold tracking-tight text-foreground sm:text-lg">
         <span className="text-lg leading-none">
           {weather.emoji}
         </span>
@@ -89,15 +53,12 @@ export function GameWeatherCard({
         </span>
       </div>
 
-      <div className="text-xs font-medium text-mute tracking-wide">
-        {isUnavailable
-          ? "Weather unavailable"
-          : weather.condition}
+      <div className="text-xs font-medium tracking-wide text-mute">
+        {weather.condition}
       </div>
 
-      <div className="font-mono text-[10px] sm:text-[11px] text-faint tracking-wider">
-        H: {weather.high ?? "—"}° L:{" "}
-        {weather.low ?? "—"}°
+      <div className="font-mono text-[10px] tracking-wider text-faint sm:text-[11px]">
+        H: {weather.high ?? "—"}° L: {weather.low ?? "—"}°
       </div>
     </div>
   );
