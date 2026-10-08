@@ -15,7 +15,8 @@ import {
 } from "@/components/booth";
 import { gameById, gameScore, type BoxScoreLine, type Game } from "@/data/games";
 import { teamById, type Team } from "@/data/teams";
-import { getLiveGame } from "@/lib/espn.functions";
+import { getGameWeather } from "@/lib/espn.functions";
+import { GameWeatherCard } from "@/components/GameWeatherCard";
 import { showGameStatistics } from "@/lib/game-visibility";
 
 export const Route = createFileRoute("/games/$gameId")({
@@ -199,6 +200,24 @@ function GamePage() {
     retry: 1,
   });
 
+  const gameForWeather = liveGame ?? sampleGame;
+
+  const weatherQuery = useQuery({
+    queryKey: ["weather", gameForWeather?.id, gameForWeather?.status],
+    queryFn: () =>
+      getGameWeather({
+        data: {
+          gameId: gameForWeather!.id,
+          homeTeamId: gameForWeather!.homeTeamId,
+          venue: gameForWeather?.venue,
+          status: gameForWeather?.status ?? "scheduled",
+        },
+      }),
+    enabled: Boolean(gameForWeather?.id && gameForWeather?.homeTeamId),
+    // Re-check weather every 12 minutes during live games; final games never refetch.
+    refetchInterval: gameForWeather?.status === "live" ? 12 * 60 * 1000 : false,
+  });
+
   const [selectedTeam, setSelectedTeam] = useState<"away" | "home">("away");
   const [selectedTeamTab, setSelectedTeamTab] = useState<"offense" | "defense">("offense");
 
@@ -257,7 +276,15 @@ function GamePage() {
       <PageTitle
         eyebrow={`Week ${game.week} · ${game.venue} · ${localKickoff}`}
         title={`${away.abbr} @ ${home.abbr}`}
-        aside={isLive ? undefined : <SampleBadge />}
+        aside={
+          <div className="flex items-center gap-3">
+            {!isLive ? <SampleBadge /> : null}
+            <GameWeatherCard
+              weather={weatherQuery.data}
+              isLoading={weatherQuery.isLoading}
+            />
+          </div>
+        }
       />
 
       {/* Traditional NFL Score Box */}
