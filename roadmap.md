@@ -1,3 +1,3 @@
-- [ ] Remove dashboard Gamecast and Team comparison.
-- [ ] Hide scheduled game statistics and retain live/final statistics with automatic updates.
-- [ ] Verify the changed pages and game-state visibility.
+- [x] Remove dashboard Gamecast and Team comparison.
+- [x] Hide scheduled game statistics and retain live/final statistics with automatic updates.
+- [x] Verify the changed pages and game-state visibility.
