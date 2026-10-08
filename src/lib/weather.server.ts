@@ -10,14 +10,80 @@ export interface GameWeather {
   capturedAt: string;
 }
 
-const DEFAULT_INDOOR_TEMPERATURE = 72;
+function findWeatherObjects(
+  value: unknown,
+  path = "root",
+  results: string[] = [],
+): string[] {
+  if (!value || typeof value !== "object") {
+    return results;
+  }
 
-async function fetchWeatherApi(url: string): Promise<any> {
-  const controller = new AbortController();
+  if (Array.isArray(value)) {
+    for (let i = 0; i < value.length; i += 1) {
+      findWeatherObjects(
+        value[i],
+        `${path}[${i}]`,
+        results,
+      );
+    }
 
-  const timeout = setTimeout(() => {
-    controller.abort();
-  }, 12000);
+    return results;
+  }
+
+  const object = value as Record<string, unknown>;
+
+  for (const [key, child] of Object.entries(object)) {
+    const lowerKey = key.toLowerCase();
+
+    if (
+      lowerKey.includes("weather") ||
+      lowerKey.includes("temperature") ||
+      lowerKey === "temp" ||
+      lowerKey === "condition"
+    ) {
+      let preview = "";
+
+      try {
+        preview =
+          typeof child === "object"
+            ? JSON.stringify(child)
+            : String(child);
+      } catch {
+        preview = "[unserializable]";
+      }
+
+      results.push(
+        `${path}.${key} = ${preview.slice(0, 500)}`,
+      );
+    }
+
+    findWeatherObjects(
+      child,
+      `${path}.${key}`,
+      results,
+    );
+  }
+
+  return results;
+}
+
+async function fetchEspnPackage(
+  gameId: string,
+): Promise<unknown> {
+  const eventId =
+    gameId.replace(/^espn-/, "");
+
+  const url =
+    `https://cdn.espn.com/core/nfl/game?xhr=1&gameId=${encodeURIComponent(eventId)}`;
+
+  const controller =
+    new AbortController();
+
+  const timeout =
+    setTimeout(() => {
+      controller.abort();
+    }, 12000);
 
   try {
     const response = await fetch(url, {
@@ -28,260 +94,19 @@ async function fetchWeatherApi(url: string): Promise<any> {
       signal: controller.signal,
     });
 
-    const text = await response.text();
+    const text =
+      await response.text();
 
     if (!response.ok) {
       throw new Error(
-        `HTTP ${response.status}: ${text.slice(0, 300)}`,
+        `ESPN CDN HTTP ${response.status}: ${text.slice(0, 300)}`,
       );
     }
 
-    try {
-      return JSON.parse(text);
-    } catch {
-      throw new Error(
-        `Invalid JSON response: ${text.slice(0, 300)}`,
-      );
-    }
-  } catch (error) {
-    if (
-      error instanceof DOMException &&
-      error.name === "AbortError"
-    ) {
-      throw new Error(
-        "REQUEST TIMEOUT after 12 seconds",
-      );
-    }
-
-    if (error instanceof Error) {
-      throw new Error(error.message);
-    }
-
-    throw new Error(String(error));
+    return JSON.parse(text);
   } finally {
     clearTimeout(timeout);
   }
-}
-
-function mapWmoCode(
-  code: number,
-  isDay: boolean,
-  windSpeedMph: number,
-) {
-  if (windSpeedMph >= 25 && code <= 3) {
-    return {
-      condition: "Windy",
-      emoji: "💨",
-    };
-  }
-
-  if (windSpeedMph >= 18 && code <= 3) {
-    return {
-      condition: "Breezy",
-      emoji: "🌬️",
-    };
-  }
-
-  switch (code) {
-    case 0:
-      return isDay
-        ? { condition: "Sunny", emoji: "☀️" }
-        : { condition: "Clear", emoji: "🌙" };
-
-    case 1:
-      return isDay
-        ? { condition: "Mainly Clear", emoji: "🌤️" }
-        : { condition: "Clear", emoji: "🌙" };
-
-    case 2:
-      return {
-        condition: "Partly Cloudy",
-        emoji: "🌤️",
-      };
-
-    case 3:
-      return {
-        condition: "Cloudy",
-        emoji: "☁️",
-      };
-
-    case 45:
-    case 48:
-      return {
-        condition: "Foggy",
-        emoji: "🌫️",
-      };
-
-    case 51:
-    case 53:
-    case 55:
-    case 56:
-    case 57:
-      return {
-        condition: "Drizzle",
-        emoji: "🌦️",
-      };
-
-    case 61:
-    case 63:
-    case 65:
-      return {
-        condition: "Rain",
-        emoji: "🌧️",
-      };
-
-    case 66:
-    case 67:
-      return {
-        condition: "Freezing Rain",
-        emoji: "🌧️",
-      };
-
-    case 71:
-    case 73:
-    case 75:
-    case 77:
-      return {
-        condition: "Snow",
-        emoji: "🌨️",
-      };
-
-    case 80:
-    case 81:
-    case 82:
-      return {
-        condition: "Showers",
-        emoji: "🌦️",
-      };
-
-    case 85:
-    case 86:
-      return {
-        condition: "Snow Showers",
-        emoji: "🌨️",
-      };
-
-    case 95:
-    case 96:
-    case 99:
-      return {
-        condition: "Thunderstorms",
-        emoji: "⛈️",
-      };
-
-    default:
-      return isDay
-        ? { condition: "Clear", emoji: "☀️" }
-        : { condition: "Clear", emoji: "🌙" };
-  }
-}
-
-async function fetchCurrentGameWeather(params: {
-  lat: number;
-  lon: number;
-}): Promise<GameWeather> {
-  const url = new URL(
-    "https://api.open-meteo.com/v1/forecast",
-  );
-
-  url.searchParams.set(
-    "latitude",
-    String(params.lat),
-  );
-
-  url.searchParams.set(
-    "longitude",
-    String(params.lon),
-  );
-
-  url.searchParams.set(
-    "current",
-    "temperature_2m,weather_code,is_day,wind_speed_10m",
-  );
-
-  url.searchParams.set(
-    "daily",
-    "temperature_2m_max,temperature_2m_min",
-  );
-
-  url.searchParams.set(
-    "temperature_unit",
-    "fahrenheit",
-  );
-
-  url.searchParams.set(
-    "wind_speed_unit",
-    "mph",
-  );
-
-  url.searchParams.set(
-    "timezone",
-    "auto",
-  );
-
-  const data =
-    await fetchWeatherApi(url.toString());
-
-  if (!data?.current) {
-    throw new Error(
-      "Open-Meteo returned no current object",
-    );
-  }
-
-  const temperature =
-    Number(data.current.temperature_2m);
-
-  if (!Number.isFinite(temperature)) {
-    throw new Error(
-      "Open-Meteo returned invalid temperature",
-    );
-  }
-
-  const weatherCode =
-    Number(
-      data.current.weather_code ?? 0,
-    );
-
-  const isDay =
-    Number(
-      data.current.is_day ?? 1,
-    ) === 1;
-
-  const windSpeed =
-    Number(
-      data.current.wind_speed_10m ?? 0,
-    );
-
-  const high =
-    Number(
-      data?.daily?.temperature_2m_max?.[0],
-    );
-
-  const low =
-    Number(
-      data?.daily?.temperature_2m_min?.[0],
-    );
-
-  const mapped =
-    mapWmoCode(
-      weatherCode,
-      isDay,
-      windSpeed,
-    );
-
-  return {
-    isIndoor: false,
-    temperature: Math.round(temperature),
-    condition: mapped.condition,
-    emoji: mapped.emoji,
-    high: Number.isFinite(high)
-      ? Math.round(high)
-      : Math.round(temperature),
-    low: Number.isFinite(low)
-      ? Math.round(low)
-      : Math.round(temperature),
-    capturedAt: new Date().toISOString(),
-  };
 }
 
 export async function fetchGameWeather(params: {
@@ -297,31 +122,73 @@ export async function fetchGameWeather(params: {
     );
 
   /*
-   * Indoor stadiums bypass the weather API.
+   * Keep indoor games working exactly as before.
    */
   if (stadium.isIndoor) {
     return {
       isIndoor: true,
-      temperature:
-        DEFAULT_INDOOR_TEMPERATURE,
+      temperature: 72,
       condition: "Indoor",
       emoji: "🏟️",
       high: null,
       low: null,
-      capturedAt: new Date().toISOString(),
+      capturedAt:
+        new Date().toISOString(),
     };
   }
 
   /*
-   * TEMPORARY DIAGNOSTIC:
-   * Actually contact Open-Meteo and expose the exact
-   * failure instead of hiding it behind "Unavailable".
+   * TEMPORARY ESPN DIAGNOSTIC
    */
   try {
-    return await fetchCurrentGameWeather({
-      lat: stadium.lat,
-      lon: stadium.lon,
-    });
+    const data =
+      await fetchEspnPackage(
+        params.gameId,
+      );
+
+    const matches =
+      findWeatherObjects(data);
+
+    console.log(
+      "[ESPN WEATHER DIAGNOSTIC]",
+      {
+        gameId: params.gameId,
+        stadium: stadium.name,
+        matches,
+      },
+    );
+
+    /*
+     * Put the discovered ESPN fields directly into
+     * the card temporarily so we can see them on mobile.
+     */
+    if (matches.length > 0) {
+      return {
+        isIndoor: false,
+        temperature: null,
+        condition:
+          matches
+            .join(" | ")
+            .slice(0, 180),
+        emoji: "🔎",
+        high: null,
+        low: null,
+        capturedAt:
+          new Date().toISOString(),
+      };
+    }
+
+    return {
+      isIndoor: false,
+      temperature: null,
+      condition:
+        "ESPN: No weather data found",
+      emoji: "🔎",
+      high: null,
+      low: null,
+      capturedAt:
+        new Date().toISOString(),
+    };
   } catch (error) {
     const message =
       error instanceof Error
@@ -329,25 +196,23 @@ export async function fetchGameWeather(params: {
         : String(error);
 
     console.error(
-      "[Weather Diagnostic]",
-      {
-        gameId: params.gameId,
-        homeTeamId: params.homeTeamId,
-        stadium: stadium.name,
-        lat: stadium.lat,
-        lon: stadium.lon,
-        error: message,
-      },
+      "[ESPN WEATHER DIAGNOSTIC ERROR]",
+      message,
     );
 
     return {
       isIndoor: false,
       temperature: null,
-      condition: message.slice(0, 80),
+      condition:
+        `ESPN Error: ${message}`.slice(
+          0,
+          180,
+        ),
       emoji: "⚠️",
       high: null,
       low: null,
-      capturedAt: new Date().toISOString(),
+      capturedAt:
+        new Date().toISOString(),
     };
   }
 }
