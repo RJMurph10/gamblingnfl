@@ -1,16 +1,13 @@
+
 /**
- * Server-only: weather for the game page.
+ * Server-only NFL game weather.
  *
- *  - Indoor stadiums: a fixed "Indoor" card, no API call.
- *  - Finished games: real past weather from Open-Meteo. It tries the forecast
- *    feed (which keeps the last few days), then the history archive (which
- *    trails real time by about five days), then the historical-forecast feed.
- *  - Upcoming / live U.S. games: the National Weather Service, with Open-Meteo
- *    as a backup.
- *  - Upcoming / live international games: MET Norway, with Open-Meteo as a backup.
+ * U.S. upcoming/live: National Weather Service (NWS).
+ * International upcoming/live: MET Norway.
+ * Completed games: Visual Crossing historical Timeline API.
+ * Indoor stadiums: static 72° Indoor card.
  *
- * Open-Meteo times are requested as Unix timestamps, so the hour is matched
- * to kickoff exactly no matter what time zone the stadium or the server is in.
+ * Open-Meteo has been completely removed.
  */
 
 import { getStadiumForGame, type StadiumInfo } from "@/lib/stadiums";
@@ -24,30 +21,22 @@ export interface GameWeather {
   isIndoor: boolean;
 }
 
-const USER_AGENT = "GamblingNFL/1.0 weather service";
+const USER_AGENT = "GamblingNFL/1.0 https://gamblingnfl.lovable.app/";
 const HOUR_MS = 3_600_000;
-const DAY_MS = 24 * HOUR_MS;
-
-/** A forecast point further than this from the target time is not trusted. */
 const MATCH_WINDOW_MS = 4 * HOUR_MS;
+const HISTORICAL_MATCH_WINDOW_MINUTES = 180;
 
-/** Open-Meteo's history archive trails real time by about five days. */
-const ARCHIVE_DELAY_DAYS = 6;
-
-const OPEN_METEO_FORECAST =
-  "https://api.open-meteo.com/v1/forecast";
-
-const OPEN_METEO_ARCHIVE =
-  "https://archive-api.open-meteo.com/v1/archive";
-
-const OPEN_METEO_HISTORICAL_FORECAST =
-  "https://historical-forecast-api.open-meteo.com/v1/forecast";
-
-/* ---------- small helpers ---------- */
+type WeatherResult = {
+  temperature: number | null;
+  condition: string;
+  emoji: string;
+  high: number | null;
+  low: number | null;
+  isIndoor: boolean;
+};
 
 function isCompleted(status: string): boolean {
   const s = status.toLowerCase();
-
   return (
     s.includes("final") ||
     s.includes("complete") ||
@@ -58,73 +47,10 @@ function isCompleted(status: string): boolean {
 
 function isLiveStatus(status: string): boolean {
   const s = status.toLowerCase();
-
-  return (
-    s === "live" ||
-    s === "in" ||
-    s.includes("progress")
-  );
+  return s === "live" || s === "in" || s.includes("progress");
 }
 
-function weatherCodeToCondition(
-  code: number,
-): { condition: string; emoji: string } {
-  if (code === 0) {
-    return { condition: "Clear", emoji: "☀️" };
-  }
-
-  if (code === 1) {
-    return { condition: "Mainly clear", emoji: "🌤️" };
-  }
-
-  if (code === 2) {
-    return { condition: "Partly cloudy", emoji: "⛅" };
-  }
-
-  if (code === 3) {
-    return { condition: "Cloudy", emoji: "☁️" };
-  }
-
-  if (code === 45 || code === 48) {
-    return { condition: "Fog", emoji: "🌫️" };
-  }
-
-  if ([51, 53, 55, 56, 57].includes(code)) {
-    return { condition: "Drizzle", emoji: "🌦️" };
-  }
-
-  if ([61, 63, 65, 66, 67].includes(code)) {
-    return { condition: "Rain", emoji: "🌧️" };
-  }
-
-  if ([71, 73, 75, 77, 85, 86].includes(code)) {
-    return { condition: "Snow", emoji: "🌨️" };
-  }
-
-  if ([80, 81, 82].includes(code)) {
-    return { condition: "Rain showers", emoji: "🌦️" };
-  }
-
-  if ([95, 96, 99].includes(code)) {
-    return { condition: "Thunderstorm", emoji: "⛈️" };
-  }
-
-  return { condition: "Cloudy", emoji: "☁️" };
-}
-
-/**
- * Returns the calendar date at the stadium.
- *
- * IMPORTANT:
- * Do not rely on the runtime's locale-specific output format.
- * Some runtimes/environments do not guarantee that "en-CA" returns
- * YYYY-MM-DD. Open-Meteo's daily.time values are always YYYY-MM-DD,
- * so we explicitly construct the same format here.
- */
-function getLocalDate(
-  iso: string,
-  timezone: string,
-): string {
+function getLocalDate(iso: string, timezone: string): string {
   try {
     const parts = new Intl.DateTimeFormat("en-US", {
       timeZone: timezone,
@@ -133,91 +59,99 @@ function getLocalDate(
       day: "2-digit",
     }).formatToParts(new Date(iso));
 
-    const getPart = (type: string) =>
+    const get = (type: string) =>
       parts.find((part) => part.type === type)?.value;
 
-    const year = getPart("year");
-    const month = getPart("month");
-    const day = getPart("day");
+    const year = get("year");
+    const month = get("month");
+    const day = get("day");
 
     if (!year || !month || !day) {
-      throw new Error(
-        `Could not determine local date for timezone ${timezone}`,
-      );
+      throw new Error("Could not determine local calendar date");
     }
 
     return `${year}-${month}-${day}`;
-  } catch (error) {
-    console.error(
-      `Could not format date for timezone ${timezone}:`,
-      error,
-    );
-
-    throw error;
-  }
-}
-
-function getLocalHour(
-  iso: string,
-  timezone: string,
-): number {
-  try {
-    return Number(
-      new Intl.DateTimeFormat("en-US", {
-        timeZone: timezone,
-        hour: "2-digit",
-        hourCycle: "h23",
-      }).format(new Date(iso)),
-    );
   } catch {
-    return new Date(iso).getUTCHours();
+    return iso.slice(0, 10);
   }
 }
 
-/** Sun / partly-sunny icons turn into a moon after dark. */
+function getLocalMinutes(iso: string, timezone: string): number {
+  try {
+    const parts = new Intl.DateTimeFormat("en-US", {
+      timeZone: timezone,
+      hour: "2-digit",
+      minute: "2-digit",
+      hourCycle: "h23",
+    }).formatToParts(new Date(iso));
+
+    const hour = Number(parts.find((p) => p.type === "hour")?.value);
+    const minute = Number(parts.find((p) => p.type === "minute")?.value);
+
+    if (Number.isFinite(hour) && Number.isFinite(minute)) {
+      return hour * 60 + minute;
+    }
+  } catch {
+    // Fall through to UTC.
+  }
+
+  const date = new Date(iso);
+  return date.getUTCHours() * 60 + date.getUTCMinutes();
+}
+
 function dayNightEmoji(
   iso: string,
   timezone: string,
   emoji: string,
 ): string {
-  const hour = getLocalHour(iso, timezone);
-  const isDay = hour >= 6 && hour < 18;
+  const minutes = getLocalMinutes(iso, timezone);
+  const isDay = minutes >= 6 * 60 && minutes < 18 * 60;
 
-  if (isDay) {
-    return emoji === "🌙" ? "☀️" : emoji;
-  }
+  if (isDay) return emoji === "🌙" ? "☀️" : emoji;
 
-  return emoji === "☀️" ||
-    emoji === "🌤️" ||
-    emoji === "⛅"
-    ? "🌙"
-    : emoji;
+  if (["☀️", "🌤️", "⛅"].includes(emoji)) return "🌙";
+
+  return emoji;
 }
 
-const isoDate = (ms: number) =>
-  new Date(ms).toISOString().slice(0, 10);
+function celsiusToFahrenheit(celsius: number): number {
+  return Math.round((celsius * 9) / 5 + 32);
+}
 
-const celsiusToFahrenheit = (c: number) =>
-  Math.round((c * 9) / 5 + 32);
+function emptyWeather(
+  temperature: number | null = null,
+  condition = "Weather unavailable",
+  emoji = "☁️",
+): GameWeather {
+  return {
+    temperature,
+    condition,
+    emoji,
+    high: null,
+    low: null,
+    isIndoor: false,
+  };
+}
 
 async function getJson<T>(
   url: string,
-  headers?: Record<string, string>,
+  headers: Record<string, string> = {},
 ): Promise<T | null> {
   try {
     const response = await fetch(url, {
       headers: {
         Accept: "application/json",
+        "User-Agent": USER_AGENT,
         ...headers,
       },
       cache: "no-store",
     });
 
     if (!response.ok) {
+      // Do not log query strings because API URLs may contain credentials.
       console.error(
         `Weather request failed [${response.status}]: ${url.split("?")[0]}`,
       );
-
       return null;
     }
 
@@ -227,563 +161,65 @@ async function getJson<T>(
       `Weather request error: ${url.split("?")[0]}`,
       error,
     );
-
     return null;
   }
 }
 
-function buildUrl(
-  base: string,
-  params: Record<string, string>,
-): string {
-  const url = new URL(base);
+/* ---------- Shared weather-condition helpers ---------- */
 
-  for (const [key, value] of Object.entries(params)) {
-    url.searchParams.set(key, value);
-  }
+function conditionToEmoji(condition: string, icon?: string): string {
+  const value = `${condition} ${icon ?? ""}`.toLowerCase();
 
-  return url.toString();
-}
-
-/* ---------- Open-Meteo ---------- */
-
-interface OpenMeteoResponse {
-  hourly?: {
-    time?: number[];
-    temperature_2m?: (number | null)[];
-    weather_code?: (number | null)[];
-  };
-
-  daily?: {
-    time?: string[];
-    temperature_2m_max?: (number | null)[];
-    temperature_2m_min?: (number | null)[];
-  };
-}
-
-/** The hour closest to `target`, or null if there is no data close enough. */
-async function openMeteoHourly(
-  base: string,
-  stadium: StadiumInfo,
-  target: string,
-  extra: Record<string, string>,
-): Promise<GameWeather | null> {
-  const data = await getJson<OpenMeteoResponse>(
-    buildUrl(base, {
-      latitude: String(stadium.lat),
-      longitude: String(stadium.lon),
-      hourly: "temperature_2m,weather_code",
-      temperature_unit: "fahrenheit",
-      timeformat: "unixtime",
-      cell_selection: "nearest",
-      ...extra,
-    }),
-  );
-
-  const hourly = data?.hourly;
-
+  if (value.includes("thunder")) return "⛈️";
+  if (value.includes("snow") || value.includes("sleet")) return "🌨️";
   if (
-    !hourly?.time?.length ||
-    !hourly.temperature_2m
+    value.includes("rain") ||
+    value.includes("shower") ||
+    value.includes("drizzle")
   ) {
-    return null;
+    return "🌧️";
   }
-
-  const targetMs = Date.parse(target);
-
-  let best = -1;
-  let bestDiff = Number.POSITIVE_INFINITY;
-
-  hourly.time.forEach((seconds, i) => {
-    const temp = hourly.temperature_2m![i];
-
-    if (
-      temp == null ||
-      !Number.isFinite(temp)
-    ) {
-      return;
-    }
-
-    const diff = Math.abs(
-      seconds * 1000 - targetMs,
-    );
-
-    if (diff < bestDiff) {
-      bestDiff = diff;
-      best = i;
-    }
-  });
-
+  if (value.includes("fog") || value.includes("mist")) return "🌫️";
+  if (value.includes("wind")) return "💨";
   if (
-    best < 0 ||
-    bestDiff > MATCH_WINDOW_MS
+    value.includes("partly") ||
+    value.includes("partially cloudy") ||
+    value.includes("partly-cloudy")
   ) {
-    return null;
+    return "⛅";
+  }
+  if (value.includes("cloud") || value.includes("overcast")) return "☁️";
+  if (
+    value.includes("clear") ||
+    value.includes("sunny") ||
+    value.includes("fair")
+  ) {
+    return "☀️";
   }
 
-  const weather = weatherCodeToCondition(
-    hourly.weather_code?.[best] ?? 3,
-  );
+  return "☁️";
+}
+
+function validNumber(value: unknown): value is number {
+  return typeof value === "number" && Number.isFinite(value);
+}
+
+function getTemperatureRange(
+  temperatures: Array<number | null | undefined>,
+): { high: number | null; low: number | null } {
+  const valid = temperatures.filter(validNumber);
+
+  if (valid.length === 0) {
+    return { high: null, low: null };
+  }
 
   return {
-    temperature: Math.round(
-      hourly.temperature_2m[best] as number,
-    ),
-    condition: weather.condition,
-    emoji: dayNightEmoji(
-      target,
-      stadium.timezone,
-      weather.emoji,
-    ),
-    high: null,
-    low: null,
-    isIndoor: false,
+    high: Math.round(Math.max(...valid)),
+    low: Math.round(Math.min(...valid)),
   };
 }
 
-/**
- * The day's high and low, for the date the game is played
- * in the stadium's local time zone.
- */
-async function openMeteoDaily(
-  base: string,
-  stadium: StadiumInfo,
-  gameTime: string,
-  extra: Record<string, string>,
-): Promise<{
-  high: number | null;
-  low: number | null;
-}> {
-  const empty = {
-    high: null,
-    low: null,
-  };
-
-  const localDate = getLocalDate(
-    gameTime,
-    stadium.timezone,
-  );
-
-  const data = await getJson<OpenMeteoResponse>(
-    buildUrl(base, {
-      latitude: String(stadium.lat),
-      longitude: String(stadium.lon),
-      daily:
-        "temperature_2m_max,temperature_2m_min",
-      temperature_unit: "fahrenheit",
-      timezone: stadium.timezone,
-      cell_selection: "nearest",
-      ...extra,
-    }),
-  );
-
-  const dates = data?.daily?.time;
-
-  if (!dates?.length) {
-    return empty;
-  }
-
-  const index = dates.indexOf(localDate);
-
-  if (index < 0) {
-    console.error(
-      `Open-Meteo daily date mismatch: wanted ${localDate}, received ${dates[0]} through ${dates[dates.length - 1]}`,
-    );
-
-    return empty;
-  }
-
-  const high =
-    data?.daily?.temperature_2m_max?.[index];
-
-  const low =
-    data?.daily?.temperature_2m_min?.[index];
-
-  return {
-    high:
-      high != null && Number.isFinite(high)
-        ? Math.round(high)
-        : null,
-
-    low:
-      low != null && Number.isFinite(low)
-        ? Math.round(low)
-        : null,
-  };
-}
-
-/**
- * Hour + high/low together.
- *
- * The high/low request is intentionally independent from the
- * hourly request. A daily-data failure must never hide a valid
- * kickoff temperature.
- */
-async function openMeteoWeather(
-  base: string,
-  stadium: StadiumInfo,
-  target: string,
-  gameTime: string,
-  hourlyExtra: Record<string, string>,
-  dailyExtra: Record<string, string>,
-): Promise<GameWeather | null> {
-  const [hourly, daily] = await Promise.all([
-    openMeteoHourly(
-      base,
-      stadium,
-      target,
-      hourlyExtra,
-    ),
-
-    openMeteoDaily(
-      base,
-      stadium,
-      gameTime,
-      dailyExtra,
-    ),
-  ]);
-
-  return hourly
-    ? {
-        ...hourly,
-        high: daily.high,
-        low: daily.low,
-      }
-    : null;
-}
-
-/* ---------- finished games ---------- */
-
-async function fetchPastWeather(
-  stadium: StadiumInfo,
-  gameTime: string,
-): Promise<GameWeather | null> {
-  const gameMs = Date.parse(gameTime);
-
-  const ageDays =
-    (Date.now() - gameMs) / DAY_MS;
-
-  const localDate = getLocalDate(
-    gameTime,
-    stadium.timezone,
-  );
-
-  const oneDay = {
-    start_date: localDate,
-    end_date: localDate,
-  };
-
-  /**
-   * Three UTC days around kickoff, so a night game that is
-   * already tomorrow in UTC is included.
-   */
-  const windowStart = isoDate(
-    gameMs - DAY_MS,
-  );
-
-  const windowEnd = (latestMs: number) =>
-    isoDate(
-      Math.min(
-        gameMs + DAY_MS,
-        latestMs,
-      ),
-    );
-
-  /**
-   * The forecast feed keeps up to 92 past days and has
-   * data for the last few days.
-   */
-  const viaForecast = () =>
-    ageDays <= 90
-      ? openMeteoWeather(
-          OPEN_METEO_FORECAST,
-          stadium,
-          gameTime,
-          gameTime,
-          {
-            past_days: String(
-              Math.min(
-                92,
-                Math.ceil(ageDays) + 2,
-              ),
-            ),
-            forecast_days: "1",
-          },
-          {
-            past_days: String(
-              Math.min(
-                92,
-                Math.ceil(ageDays) + 2,
-              ),
-            ),
-            forecast_days: "1",
-          },
-        )
-      : Promise.resolve(null);
-
-  /**
-   * The archive lags real time by roughly five days,
-   * so only ask it about older games.
-   */
-  const viaArchive = () =>
-    ageDays >= ARCHIVE_DELAY_DAYS
-      ? openMeteoWeather(
-          OPEN_METEO_ARCHIVE,
-          stadium,
-          gameTime,
-          gameTime,
-          {
-            start_date: windowStart,
-            end_date: windowEnd(
-              Date.now() - 5 * DAY_MS,
-            ),
-          },
-          oneDay,
-        )
-      : Promise.resolve(null);
-
-  const viaHistoricalForecast =
-    () =>
-      openMeteoWeather(
-        OPEN_METEO_HISTORICAL_FORECAST,
-        stadium,
-        gameTime,
-        gameTime,
-        {
-          start_date: windowStart,
-          end_date: windowEnd(
-            Date.now() - DAY_MS,
-          ),
-        },
-        oneDay,
-      );
-
-  const attempts =
-    ageDays <= 8
-      ? [
-          viaForecast,
-          viaHistoricalForecast,
-          viaArchive,
-        ]
-      : [
-          viaArchive,
-          viaHistoricalForecast,
-          viaForecast,
-        ];
-
-  for (const attempt of attempts) {
-    const result = await attempt();
-
-    if (result) {
-      return result;
-    }
-  }
-
-  return null;
-}
-
-/* ---------- MET Norway (international upcoming / live) ---------- */
-
-interface MetResponse {
-  properties?: {
-    timeseries?: {
-      time: string;
-
-      data?: {
-        instant?: {
-          details?: {
-            air_temperature?: number;
-          };
-        };
-
-        next_1_hours?: {
-          summary?: {
-            symbol_code?: string;
-          };
-        };
-
-        next_6_hours?: {
-          summary?: {
-            symbol_code?: string;
-          };
-        };
-
-        next_12_hours?: {
-          summary?: {
-            symbol_code?: string;
-          };
-        };
-      };
-    }[];
-  };
-}
-
-function metSymbolToWeather(
-  symbol?: string,
-): {
-  condition: string;
-  emoji: string;
-} {
-  const s = (symbol ?? "").toLowerCase();
-
-  if (s.includes("thunder")) {
-    return {
-      condition: "Thunderstorm",
-      emoji: "⛈️",
-    };
-  }
-
-  if (
-    s.includes("snow") ||
-    s.includes("sleet")
-  ) {
-    return {
-      condition: "Snow",
-      emoji: "🌨️",
-    };
-  }
-
-  if (
-    s.includes("rain") ||
-    s.includes("shower") ||
-    s.includes("drizzle")
-  ) {
-    return {
-      condition: "Rain",
-      emoji: "🌧️",
-    };
-  }
-
-  if (s.includes("fog")) {
-    return {
-      condition: "Fog",
-      emoji: "🌫️",
-    };
-  }
-
-  if (s.includes("partlycloudy")) {
-    return {
-      condition: "Partly cloudy",
-      emoji: "⛅",
-    };
-  }
-
-  if (s.includes("cloud")) {
-    return {
-      condition: "Cloudy",
-      emoji: "☁️",
-    };
-  }
-
-  if (s.includes("fair")) {
-    return {
-      condition: "Mainly clear",
-      emoji: "🌤️",
-    };
-  }
-
-  if (s.includes("clear")) {
-    return {
-      condition: "Clear",
-      emoji: "☀️",
-    };
-  }
-
-  /**
-   * An unfamiliar symbol should never throw away
-   * a valid temperature.
-   */
-  return {
-    condition: "Cloudy",
-    emoji: "☁️",
-  };
-}
-
-async function metNorwayWeather(
-  stadium: StadiumInfo,
-  target: string,
-): Promise<GameWeather | null> {
-  const data = await getJson<MetResponse>(
-    `https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=${stadium.lat.toFixed(
-      4,
-    )}&lon=${stadium.lon.toFixed(4)}`,
-    {
-      "User-Agent": USER_AGENT,
-    },
-  );
-
-  const entries =
-    data?.properties?.timeseries ?? [];
-
-  const targetMs = Date.parse(target);
-
-  let best:
-    | (typeof entries)[number]
-    | null = null;
-
-  let bestDiff =
-    Number.POSITIVE_INFINITY;
-
-  for (const entry of entries) {
-    const diff = Math.abs(
-      Date.parse(entry.time) - targetMs,
-    );
-
-    if (diff < bestDiff) {
-      bestDiff = diff;
-      best = entry;
-    }
-  }
-
-  if (
-    !best ||
-    bestDiff > MATCH_WINDOW_MS
-  ) {
-    return null;
-  }
-
-  const celsius =
-    best.data?.instant?.details
-      ?.air_temperature;
-
-  if (
-    celsius == null ||
-    !Number.isFinite(celsius)
-  ) {
-    return null;
-  }
-
-  const symbol =
-    best.data?.next_1_hours?.summary
-      ?.symbol_code ??
-    best.data?.next_6_hours?.summary
-      ?.symbol_code ??
-    best.data?.next_12_hours?.summary
-      ?.symbol_code;
-
-  const weather =
-    metSymbolToWeather(symbol);
-
-  return {
-    temperature:
-      celsiusToFahrenheit(celsius),
-
-    condition: weather.condition,
-
-    emoji: dayNightEmoji(
-      target,
-      stadium.timezone,
-      weather.emoji,
-    ),
-
-    high: null,
-    low: null,
-
-    isIndoor: false,
-  };
-}
-
-/* ---------- National Weather Service (U.S. upcoming / live) ---------- */
+/* ---------- U.S. forecast: National Weather Service ---------- */
 
 interface NwsPeriod {
   startTime: string;
@@ -791,6 +227,26 @@ interface NwsPeriod {
   temperature?: number;
   temperatureUnit?: string;
   shortForecast?: string;
+}
+
+interface NwsPointsResponse {
+  properties?: {
+    forecastHourly?: string;
+  };
+}
+
+interface NwsHourlyResponse {
+  properties?: {
+    periods?: NwsPeriod[];
+  };
+}
+
+function nwsTemperature(period: NwsPeriod): number | null {
+  if (!validNumber(period.temperature)) return null;
+
+  return period.temperatureUnit === "C"
+    ? celsiusToFahrenheit(period.temperature)
+    : Math.round(period.temperature);
 }
 
 async function nwsWeather(
@@ -802,60 +258,36 @@ async function nwsWeather(
     "User-Agent": USER_AGENT,
   };
 
-  const points = await getJson<{
-    properties?: {
-      forecastHourly?: string;
-    };
-  }>(
-    `https://api.weather.gov/points/${stadium.lat.toFixed(
-      4,
-    )},${stadium.lon.toFixed(4)}`,
-    headers,
-  );
+  const pointsUrl =
+    `https://api.weather.gov/points/` +
+    `${stadium.lat.toFixed(4)},${stadium.lon.toFixed(4)}`;
 
-  const hourlyUrl =
-    points?.properties?.forecastHourly;
+  const points = await getJson<NwsPointsResponse>(pointsUrl, headers);
+  const hourlyUrl = points?.properties?.forecastHourly;
 
-  if (!hourlyUrl) {
-    return null;
-  }
+  if (!hourlyUrl) return null;
 
-  const forecast = await getJson<{
-    properties?: {
-      periods?: NwsPeriod[];
-    };
-  }>(
-    hourlyUrl,
-    headers,
-  );
+  const forecast = await getJson<NwsHourlyResponse>(hourlyUrl, headers);
+  const periods = forecast?.properties?.periods ?? [];
 
-  const periods =
-    forecast?.properties?.periods ?? [];
+  if (periods.length === 0) return null;
 
   const targetMs = Date.parse(target);
+  const targetDate = getLocalDate(target, stadium.timezone);
 
   let best: NwsPeriod | null = null;
-
-  let bestDiff =
-    Number.POSITIVE_INFINITY;
+  let bestDiff = Number.POSITIVE_INFINITY;
 
   for (const period of periods) {
-    const start = Date.parse(
-      period.startTime,
-    );
+    const start = Date.parse(period.startTime);
+    const end = Date.parse(period.endTime);
 
-    const end = Date.parse(
-      period.endTime,
-    );
+    if (!Number.isFinite(start) || !Number.isFinite(end)) continue;
 
     const diff =
-      targetMs >= start &&
-      targetMs <= end
+      targetMs >= start && targetMs < end
         ? 0
-        : Math.min(
-            Math.abs(targetMs - start),
-            Math.abs(targetMs - end),
-          );
+        : Math.min(Math.abs(targetMs - start), Math.abs(targetMs - end));
 
     if (diff < bestDiff) {
       bestDiff = diff;
@@ -863,128 +295,326 @@ async function nwsWeather(
     }
   }
 
-  if (
-    !best ||
-    bestDiff > MATCH_WINDOW_MS
-  ) {
-    return null;
-  }
+  if (!best || bestDiff > MATCH_WINDOW_MS) return null;
 
-  if (
-    best.temperature == null ||
-    !Number.isFinite(best.temperature)
-  ) {
-    return null;
-  }
+  const temperature = nwsTemperature(best);
+  if (temperature === null) return null;
 
-  const temperature =
-    best.temperatureUnit === "C"
-      ? celsiusToFahrenheit(
-          best.temperature,
-        )
-      : Math.round(best.temperature);
+  // Calculate high/low from the same NWS hourly response.
+  // Only include hours on the game's local stadium date.
+  const sameDayTemperatures = periods
+    .filter(
+      (period) =>
+        getLocalDate(period.startTime, stadium.timezone) === targetDate,
+    )
+    .map(nwsTemperature);
 
-  const condition =
-    best.shortForecast || "Cloudy";
-
-  const c = condition.toLowerCase();
-
-  let emoji = "☁️";
-
-  if (c.includes("thunder")) {
-    emoji = "⛈️";
-  } else if (c.includes("snow")) {
-    emoji = "🌨️";
-  } else if (
-    c.includes("rain") ||
-    c.includes("shower") ||
-    c.includes("drizzle")
-  ) {
-    emoji = "🌧️";
-  } else if (c.includes("fog")) {
-    emoji = "🌫️";
-  } else if (c.includes("mostly clear")) {
-    emoji = "🌤️";
-  } else if (c.includes("partly")) {
-    emoji = "⛅";
-  } else if (
-    c.includes("clear") ||
-    c.includes("sunny")
-  ) {
-    emoji = "☀️";
-  }
+  const range = getTemperatureRange(sameDayTemperatures);
+  const condition = best.shortForecast || "Cloudy";
+  const emoji = conditionToEmoji(condition);
 
   return {
     temperature,
     condition,
-    emoji: dayNightEmoji(
-      target,
-      stadium.timezone,
-      emoji,
-    ),
-    high: null,
-    low: null,
+    emoji: dayNightEmoji(target, stadium.timezone, emoji),
+    high: range.high,
+    low: range.low,
     isIndoor: false,
   };
 }
 
-/* ---------- entry point ---------- */
+/* ---------- International forecast: MET Norway ---------- */
 
-const weatherCache = new Map<
-  string,
-  {
-    at: number;
-    value: GameWeather;
+interface MetTimeseriesEntry {
+  time: string;
+  data?: {
+    instant?: {
+      details?: {
+        air_temperature?: number;
+      };
+    };
+    next_1_hours?: {
+      summary?: { symbol_code?: string };
+    };
+    next_6_hours?: {
+      summary?: { symbol_code?: string };
+    };
+    next_12_hours?: {
+      summary?: { symbol_code?: string };
+    };
+  };
+}
+
+interface MetResponse {
+  properties?: {
+    timeseries?: MetTimeseriesEntry[];
+  };
+}
+
+function metSymbolToCondition(symbol?: string): string {
+  const s = (symbol ?? "").toLowerCase();
+
+  if (s.includes("thunder")) return "Thunderstorm";
+  if (s.includes("snow") || s.includes("sleet")) return "Snow";
+  if (s.includes("rain") || s.includes("shower") || s.includes("drizzle")) {
+    return "Rain";
   }
->();
+  if (s.includes("fog")) return "Fog";
+  if (s.includes("partlycloudy")) return "Partly cloudy";
+  if (s.includes("cloud")) return "Cloudy";
+  if (s.includes("fair")) return "Mainly clear";
+  if (s.includes("clear")) return "Clear";
+
+  return "Cloudy";
+}
+
+async function metNorwayWeather(
+  stadium: StadiumInfo,
+  target: string,
+): Promise<GameWeather | null> {
+  const url =
+    "https://api.met.no/weatherapi/locationforecast/2.0/compact" +
+    `?lat=${stadium.lat.toFixed(4)}&lon=${stadium.lon.toFixed(4)}`;
+
+  const data = await getJson<MetResponse>(url);
+  const entries = data?.properties?.timeseries ?? [];
+
+  if (entries.length === 0) return null;
+
+  const targetMs = Date.parse(target);
+  const targetDate = getLocalDate(target, stadium.timezone);
+
+  let best: MetTimeseriesEntry | null = null;
+  let bestDiff = Number.POSITIVE_INFINITY;
+
+  for (const entry of entries) {
+    const entryMs = Date.parse(entry.time);
+    if (!Number.isFinite(entryMs)) continue;
+
+    const diff = Math.abs(entryMs - targetMs);
+
+    if (diff < bestDiff) {
+      bestDiff = diff;
+      best = entry;
+    }
+  }
+
+  if (!best || bestDiff > MATCH_WINDOW_MS) return null;
+
+  const celsius = best.data?.instant?.details?.air_temperature;
+
+  if (!validNumber(celsius)) return null;
+
+  const symbol =
+    best.data?.next_1_hours?.summary?.symbol_code ??
+    best.data?.next_6_hours?.summary?.symbol_code ??
+    best.data?.next_12_hours?.summary?.symbol_code;
+
+  const condition = metSymbolToCondition(symbol);
+  const emoji = conditionToEmoji(condition);
+
+  // Use all forecast temperatures available for the stadium's local date.
+  // MET Norway's farther-out forecast points may be less frequent than hourly.
+  const sameDayTemperatures = entries
+    .filter(
+      (entry) =>
+        getLocalDate(entry.time, stadium.timezone) === targetDate,
+    )
+    .map((entry) => {
+      const value = entry.data?.instant?.details?.air_temperature;
+      return validNumber(value) ? celsiusToFahrenheit(value) : null;
+    });
+
+  const range = getTemperatureRange(sameDayTemperatures);
+
+  return {
+    temperature: celsiusToFahrenheit(celsius),
+    condition,
+    emoji: dayNightEmoji(target, stadium.timezone, emoji),
+    high: range.high,
+    low: range.low,
+    isIndoor: false,
+  };
+}
+
+/* ---------- Historical weather: Visual Crossing ---------- */
+
+interface VisualCrossingHour {
+  datetime?: string;
+  temp?: number;
+  conditions?: string;
+  icon?: string;
+}
+
+interface VisualCrossingDay {
+  datetime?: string;
+  tempmax?: number;
+  tempmin?: number;
+  hours?: VisualCrossingHour[];
+}
+
+interface VisualCrossingResponse {
+  days?: VisualCrossingDay[];
+  errorCode?: number;
+  message?: string;
+}
+
+function getVisualCrossingApiKey(): string | undefined {
+  // Server-side environment variable only. Do not use a VITE_ prefixed key.
+  const runtime = globalThis as typeof globalThis & {
+    process?: {
+      env?: Record<string, string | undefined>;
+    };
+  };
+
+  return runtime.process?.env?.VISUAL_CROSSING_API_KEY;
+}
+
+function parseClockMinutes(clock?: string): number | null {
+  if (!clock) return null;
+
+  const match = clock.match(/^(\d{1,2}):(\d{2})/);
+  if (!match) return null;
+
+  const hour = Number(match[1]);
+  const minute = Number(match[2]);
+
+  if (
+    !Number.isFinite(hour) ||
+    !Number.isFinite(minute) ||
+    hour < 0 ||
+    hour > 23 ||
+    minute < 0 ||
+    minute > 59
+  ) {
+    return null;
+  }
+
+  return hour * 60 + minute;
+}
+
+function clockDifferenceMinutes(a: number, b: number): number {
+  // Treat times as local clock readings; do not convert them through UTC.
+  return Math.abs(a - b);
+}
+
+async function visualCrossingPastWeather(
+  stadium: StadiumInfo,
+  gameTime: string,
+): Promise<GameWeather | null> {
+  const apiKey = getVisualCrossingApiKey();
+
+  if (!apiKey) {
+    console.error(
+      "Historical weather unavailable: VISUAL_CROSSING_API_KEY is not configured.",
+    );
+    return null;
+  }
+
+  const localDate = getLocalDate(gameTime, stadium.timezone);
+  const targetMinutes = getLocalMinutes(gameTime, stadium.timezone);
+
+  const location = encodeURIComponent(`${stadium.lat},${stadium.lon}`);
+  const url = new URL(
+    `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${location}/${localDate}/${localDate}`,
+  );
+
+  url.searchParams.set("unitGroup", "us");
+  url.searchParams.set("key", apiKey);
+  url.searchParams.set("include", "days,hours");
+  url.searchParams.set("contentType", "json");
+  url.searchParams.set("timezone", stadium.timezone);
+  url.searchParams.set(
+    "elements",
+    "datetime,tempmax,tempmin,temp,conditions,icon",
+  );
+
+  const data = await getJson<VisualCrossingResponse>(url.toString());
+
+  if (!data?.days?.length) return null;
+
+  const day =
+    data.days.find((entry) => entry.datetime === localDate) ??
+    data.days[0];
+
+  if (!day) return null;
+
+  const hours = day.hours ?? [];
+
+  let best: VisualCrossingHour | null = null;
+  let bestDiff = Number.POSITIVE_INFINITY;
+
+  for (const hour of hours) {
+    const hourMinutes = parseClockMinutes(hour.datetime);
+    if (hourMinutes === null || !validNumber(hour.temp)) continue;
+
+    const diff = clockDifferenceMinutes(hourMinutes, targetMinutes);
+
+    if (diff < bestDiff) {
+      bestDiff = diff;
+      best = hour;
+    }
+  }
+
+  // Do not silently display a distant hour as the game's kickoff weather.
+  if (
+    !best ||
+    bestDiff > HISTORICAL_MATCH_WINDOW_MINUTES ||
+    !validNumber(best.temp)
+  ) {
+    console.error(
+      `Historical weather had no suitable hourly match for ${localDate}.`,
+    );
+    return null;
+  }
+
+  const condition = best.conditions || "Cloudy";
+  const emoji = conditionToEmoji(condition, best.icon);
+
+  return {
+    temperature: Math.round(best.temp),
+    condition,
+    emoji: dayNightEmoji(gameTime, stadium.timezone, emoji),
+    high: validNumber(day.tempmax) ? Math.round(day.tempmax) : null,
+    low: validNumber(day.tempmin) ? Math.round(day.tempmin) : null,
+    isIndoor: false,
+  };
+}
+
+/* ---------- Cache and public entry point ---------- */
+
+const weatherCache = new Map<string, { at: number; value: GameWeather }>();
 
 const FINAL_TTL_MS = 12 * HOUR_MS;
 const FORECAST_TTL_MS = 10 * 60 * 1000;
 
-export async function fetchGameWeather(
-  input: {
-    gameId: string;
-    homeTeamId: string;
-    venue?: string;
-    status: string;
-    gameTime: string;
-  },
-): Promise<GameWeather | null> {
-  const key =
-    `${input.gameId}|${input.status}|${input.gameTime}`;
+export async function fetchGameWeather(input: {
+  gameId: string;
+  homeTeamId: string;
+  venue?: string;
+  status: string;
+  gameTime: string;
+}): Promise<GameWeather | null> {
+  const key = `${input.gameId}|${input.status}|${input.gameTime}`;
+  const ttl = isCompleted(input.status) ? FINAL_TTL_MS : FORECAST_TTL_MS;
 
-  const ttl = isCompleted(input.status)
-    ? FINAL_TTL_MS
-    : FORECAST_TTL_MS;
+  const cached = weatherCache.get(key);
 
-  const hit = weatherCache.get(key);
-
-  if (
-    hit &&
-    Date.now() - hit.at < ttl
-  ) {
-    return hit.value;
+  if (cached && Date.now() - cached.at < ttl) {
+    return cached.value;
   }
 
-  const value =
-    await loadGameWeather(input);
+  const value = await loadGameWeather(input);
 
-  /**
-   * Only successful lookups are kept,
-   * so a temporary outage is retried next time.
-   */
+  // Cache only successful responses. A failed API request can be retried.
   if (value) {
-    weatherCache.set(key, {
-      at: Date.now(),
-      value,
-    });
+    weatherCache.set(key, { at: Date.now(), value });
   }
 
   return value;
 }
 
 async function loadGameWeather({
-  gameId,
   homeTeamId,
   venue,
   status,
@@ -997,22 +627,14 @@ async function loadGameWeather({
   gameTime: string;
 }): Promise<GameWeather | null> {
   try {
-    void gameId;
-
-    const stadium =
-      getStadiumForGame(
-        homeTeamId,
-        venue,
-      );
+    const stadium = getStadiumForGame(homeTeamId, venue);
 
     if (!stadium) {
+      console.error("Weather lookup failed: no stadium matched the game.");
       return null;
     }
 
-    /**
-     * Domes, retractable roofs and canopies:
-     * no outdoor weather to look up.
-     */
+    // Indoor stadiums do not need an external weather request.
     if (stadium.isIndoor) {
       return {
         temperature: 72,
@@ -1024,139 +646,30 @@ async function loadGameWeather({
       };
     }
 
-    if (
-      !Number.isFinite(
-        Date.parse(gameTime),
-      )
-    ) {
+    if (!Number.isFinite(Date.parse(gameTime))) {
+      console.error("Weather lookup failed: invalid game kickoff time.");
       return null;
     }
 
-    /**
-     * Completed games use historical weather.
-     */
+    // Completed games use a dedicated historical weather source.
     if (isCompleted(status)) {
-      return await fetchPastWeather(
-        stadium,
-        gameTime,
-      );
+      return await visualCrossingPastWeather(stadium, gameTime);
     }
 
-    /**
-     * Live games show conditions right now.
-     * Upcoming games show conditions at kickoff.
-     */
+    // Live games show conditions at the current time.
+    // Scheduled games show conditions at kickoff.
     const target = isLiveStatus(status)
       ? new Date().toISOString()
       : gameTime;
 
-    const hourlyExtra = {
-      past_days: "1",
-      forecast_days: "16",
-    };
-
-    const dailyExtra = {
-      past_days: "1",
-      forecast_days: "16",
-    };
-
-    /**
-     * International:
-     * MET Norway is the primary hourly source.
-     * Open-Meteo supplies the daily H/L and acts as
-     * the hourly fallback.
-     */
+    // No Open-Meteo calls or hidden Open-Meteo fallbacks.
     if (stadium.international) {
-      const [met, daily] =
-        await Promise.all([
-          metNorwayWeather(
-            stadium,
-            target,
-          ),
-
-          openMeteoDaily(
-            OPEN_METEO_FORECAST,
-            stadium,
-            gameTime,
-            dailyExtra,
-          ),
-        ]);
-
-      if (met) {
-        return {
-          ...met,
-          high: daily.high,
-          low: daily.low,
-        };
-      }
-
-      const backup =
-        await openMeteoHourly(
-          OPEN_METEO_FORECAST,
-          stadium,
-          target,
-          hourlyExtra,
-        );
-
-      return backup
-        ? {
-            ...backup,
-            high: daily.high,
-            low: daily.low,
-          }
-        : null;
+      return await metNorwayWeather(stadium, target);
     }
 
-    /**
-     * U.S.:
-     * NWS is the primary hourly source.
-     * Open-Meteo is the hourly fallback and also
-     * supplies the daily H/L.
-     */
-    const [nws, daily] =
-      await Promise.all([
-        nwsWeather(
-          stadium,
-          target,
-        ),
-
-        openMeteoDaily(
-          OPEN_METEO_FORECAST,
-          stadium,
-          gameTime,
-          dailyExtra,
-        ),
-      ]);
-
-    if (nws) {
-      return {
-        ...nws,
-        high: daily.high,
-        low: daily.low,
-      };
-    }
-
-    const backup =
-      await openMeteoHourly(
-        OPEN_METEO_FORECAST,
-        stadium,
-        target,
-        hourlyExtra,
-      );
-
-    return backup
-      ? {
-          ...backup,
-          high: daily.high,
-          low: daily.low,
-        }
-      : null;
+    return await nwsWeather(stadium, target);
   } catch (error) {
-    console.error(
-      "fetchGameWeather error:",
-      error,
-    );
-
+    console.error("fetchGameWeather error:", error);
     return null;
   }
 }
