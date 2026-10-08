@@ -164,7 +164,7 @@ function TeamPage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-line/5">
-                    {schedule.map((g) => <GameRow key={g.id} game={g} showMarket={true} />)}
+                    {schedule.map((g) => <GameRow key={g.id} game={g} showMarket={true} forTeam={team} />)}
                   </tbody>
                 </table>
               </div>
