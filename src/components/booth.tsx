@@ -371,8 +371,7 @@ export function DriveTable({ game }: { game: Game }) {
               {selectedDrives.map((d) => {
                 return (
                   <tr key={d.index} className="hover:bg-line/5">
-                    <td className="px-4 py-2.5 font-mono text-mute tabular-nums">{d.index}</td>
-                    <td className="px-2 py-2.5 font-mono text-mute tabular-nums">
+                    <td className="px-4 py-2.5 font-mono text-mute tabular-nums">
                       {d.quarter === 1
                         ? "1st"
                         : d.quarter === 2
@@ -383,13 +382,7 @@ export function DriveTable({ game }: { game: Game }) {
                               ? "4th"
                               : "OT"}
                     </td>
-                    <td className="px-2 py-2.5 text-right font-mono tabular-nums">{d.plays}</td>
-                    <td className="px-2 py-2.5 text-right font-mono tabular-nums">{d.yards}</td>
-                    <td className="px-2 py-2.5 text-right font-mono tabular-nums">
-                      {d.timeOfPossession}
-                    </td>
-                    <td className="px-2 py-2.5 font-mono text-mute">{d.startAt}</td>
-                    <td className="px-4 py-2.5 text-right">
+                    <td className="px-2 py-2.5">
                       <span
                         className={`inline-block rounded px-2 py-0.5 font-mono text-[10px] uppercase ${
                           d.result === "TD"
@@ -404,6 +397,12 @@ export function DriveTable({ game }: { game: Game }) {
                         {d.result}
                       </span>
                     </td>
+                    <td className="px-2 py-2.5 text-right font-mono tabular-nums">{d.plays}</td>
+                    <td className="px-2 py-2.5 text-right font-mono tabular-nums">{d.yards}</td>
+                    <td className="px-2 py-2.5 text-right font-mono tabular-nums">
+                      {d.timeOfPossession}
+                    </td>
+                    <td className="px-4 py-2.5 text-right font-mono text-mute">{d.startAt}</td>
                   </tr>
                 );
               })}
