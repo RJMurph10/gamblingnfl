@@ -37,17 +37,6 @@ interface NwsForecast {
   };
 }
 
-interface IemObservation {
-  station?: string;
-  valid?: string;
-  tmpf?: string | number | null;
-  wxcodes?: string | null;
-  skyc1?: string | null;
-  skyc2?: string | null;
-  skyc3?: string | null;
-  skyc4?: string | null;
-}
-
 interface MetTimeseriesItem {
   time: string;
   data?: {
@@ -76,19 +65,36 @@ interface MetForecast {
   };
 }
 
+interface OpenMeteoHistorical {
+  hourly?: {
+    time?: string[];
+    temperature_2m?: Array<
+      number | null
+    >;
+    weather_code?: Array<
+      number | null
+    >;
+  };
+  daily?: {
+    time?: string[];
+    temperature_2m_max?: Array<
+      number | null
+    >;
+    temperature_2m_min?: Array<
+      number | null
+    >;
+  };
+}
+
 const NWS_USER_AGENT =
   "GamblingNFL/1.0 (https://gamblingnfl.lovable.app/)";
 
 const MET_USER_AGENT =
   "GamblingNFL/1.0 (https://gamblingnfl.lovable.app/)";
 
-function celsiusToFahrenheit(
-  celsius: number,
-): number {
-  return Math.round(
-    (celsius * 9) / 5 + 32,
-  );
-}
+/* =========================
+   GENERAL HELPERS
+   ========================= */
 
 function normalizeVenue(
   venue?: string,
@@ -112,6 +118,211 @@ function isCompletedStatus(
   );
 }
 
+function getLocalDate(
+  iso: string,
+  timeZone: string,
+): string | null {
+  const date =
+    new Date(iso);
+
+  if (
+    Number.isNaN(
+      date.getTime(),
+    )
+  ) {
+    return null;
+  }
+
+  try {
+    return new Intl.DateTimeFormat(
+      "en-CA",
+      {
+        timeZone,
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      },
+    ).format(date);
+  } catch {
+    return null;
+  }
+}
+
+function getLocalHour(
+  iso: string,
+  timeZone: string,
+): number | null {
+  const date =
+    new Date(iso);
+
+  if (
+    Number.isNaN(
+      date.getTime(),
+    )
+  ) {
+    return null;
+  }
+
+  try {
+    const parts =
+      new Intl.DateTimeFormat(
+        "en-US",
+        {
+          timeZone,
+          hour: "numeric",
+          hour12: false,
+        },
+      ).formatToParts(date);
+
+    const hourPart =
+      parts.find(
+        (part) =>
+          part.type === "hour",
+      );
+
+    if (!hourPart) {
+      return null;
+    }
+
+    let hour =
+      Number(
+        hourPart.value,
+      );
+
+    if (
+      !Number.isFinite(hour)
+    ) {
+      return null;
+    }
+
+    if (hour === 24) {
+      hour = 0;
+    }
+
+    return hour;
+  } catch {
+    return null;
+  }
+}
+
+function isNight(
+  iso: string,
+  timeZone: string,
+): boolean {
+  const hour =
+    getLocalHour(
+      iso,
+      timeZone,
+    );
+
+  if (hour === null) {
+    return false;
+  }
+
+  return (
+    hour >= 18 ||
+    hour < 6
+  );
+}
+
+function weatherEmoji(
+  condition: string,
+  gameTime: string,
+  timeZone: string,
+): string {
+  const value =
+    condition.toLowerCase();
+
+  if (
+    value.includes("thunder") ||
+    value.includes("storm")
+  ) {
+    return "⛈️";
+  }
+
+  if (
+    value.includes("snow") ||
+    value.includes("sleet") ||
+    value.includes("ice")
+  ) {
+    return "❄️";
+  }
+
+  if (
+    value.includes("rain") ||
+    value.includes("drizzle") ||
+    value.includes("shower")
+  ) {
+    return "🌧️";
+  }
+
+  if (
+    value.includes("fog") ||
+    value.includes("mist")
+  ) {
+    return "🌫️";
+  }
+
+  const night =
+    isNight(
+      gameTime,
+      timeZone,
+    );
+
+  if (
+    value.includes("partly")
+  ) {
+    return night
+      ? "🌙"
+      : "🌤️";
+  }
+
+  if (
+    value.includes("cloudy") ||
+    value.includes("overcast")
+  ) {
+    return "☁️";
+  }
+
+  if (
+    value.includes("clear") ||
+    value.includes("sunny")
+  ) {
+    return night
+      ? "🌙"
+      : "☀️";
+  }
+
+  return night
+    ? "🌙"
+    : "🌤️";
+}
+
+async function fetchJson<T>(
+  url: string,
+  init?: RequestInit,
+): Promise<T> {
+  const response =
+    await fetch(
+      url,
+      init,
+    );
+
+  if (!response.ok) {
+    const body =
+      await response.text();
+
+    throw new Error(
+      `HTTP ${response.status}: ${body.slice(
+        0,
+        500,
+      )}`,
+    );
+  }
+
+  return response.json() as Promise<T>;
+}
+
 /* =========================
    INTERNATIONAL VENUES
    ========================= */
@@ -129,7 +340,6 @@ function getInternationalVenue(
       latitude: 51.6043,
       longitude: -0.0664,
       timeZone: "Europe/London",
-      iemStation: "EGLC",
     };
   }
 
@@ -140,7 +350,6 @@ function getInternationalVenue(
       latitude: 51.5560,
       longitude: -0.2795,
       timeZone: "Europe/London",
-      iemStation: "EGLL",
     };
   }
 
@@ -152,7 +361,6 @@ function getInternationalVenue(
       latitude: 48.2188,
       longitude: 11.6247,
       timeZone: "Europe/Berlin",
-      iemStation: "EDDM",
     };
   }
 
@@ -165,7 +373,6 @@ function getInternationalVenue(
       latitude: -23.5453,
       longitude: -46.4742,
       timeZone: "America/Sao_Paulo",
-      iemStation: "SBSP",
     };
   }
 
@@ -278,219 +485,6 @@ function getTimeZone(
   }
 
   return "America/New_York";
-}
-
-function getLocalDate(
-  iso: string,
-  timeZone: string,
-): string | null {
-  const date =
-    new Date(iso);
-
-  if (
-    Number.isNaN(
-      date.getTime(),
-    )
-  ) {
-    return null;
-  }
-
-  try {
-    return new Intl.DateTimeFormat(
-      "en-CA",
-      {
-        timeZone,
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-      },
-    ).format(date);
-  } catch {
-    return null;
-  }
-}
-
-function getLocalHour(
-  iso: string,
-  timeZone: string,
-): number | null {
-  const date =
-    new Date(iso);
-
-  if (
-    Number.isNaN(
-      date.getTime(),
-    )
-  ) {
-    return null;
-  }
-
-  try {
-    const parts =
-      new Intl.DateTimeFormat(
-        "en-US",
-        {
-          timeZone,
-          hour: "numeric",
-          hour12: false,
-        },
-      ).formatToParts(date);
-
-    const hourPart =
-      parts.find(
-        (part) =>
-          part.type === "hour",
-      );
-
-    if (!hourPart) {
-      return null;
-    }
-
-    let hour =
-      Number(
-        hourPart.value,
-      );
-
-    if (
-      !Number.isFinite(hour)
-    ) {
-      return null;
-    }
-
-    if (hour === 24) {
-      hour = 0;
-    }
-
-    return hour;
-  } catch {
-    return null;
-  }
-}
-
-function isNight(
-  iso: string,
-  timeZone: string,
-): boolean {
-  const hour =
-    getLocalHour(
-      iso,
-      timeZone,
-    );
-
-  if (hour === null) {
-    return false;
-  }
-
-  return (
-    hour >= 18 ||
-    hour < 6
-  );
-}
-
-/* =========================
-   WEATHER EMOJI
-   ========================= */
-
-function weatherEmoji(
-  condition: string,
-  gameTime: string,
-  timeZone: string,
-): string {
-  const value =
-    condition.toLowerCase();
-
-  if (
-    value.includes("thunder") ||
-    value.includes("storm")
-  ) {
-    return "⛈️";
-  }
-
-  if (
-    value.includes("snow") ||
-    value.includes("sleet") ||
-    value.includes("ice")
-  ) {
-    return "❄️";
-  }
-
-  if (
-    value.includes("rain") ||
-    value.includes("drizzle") ||
-    value.includes("shower")
-  ) {
-    return "🌧️";
-  }
-
-  if (
-    value.includes("fog") ||
-    value.includes("mist")
-  ) {
-    return "🌫️";
-  }
-
-  const night =
-    isNight(
-      gameTime,
-      timeZone,
-    );
-
-  if (
-    value.includes("partly")
-  ) {
-    return night
-      ? "🌙"
-      : "🌤️";
-  }
-
-  if (
-    value.includes("cloudy") ||
-    value.includes("overcast")
-  ) {
-    return "☁️";
-  }
-
-  if (
-    value.includes("clear") ||
-    value.includes("sunny")
-  ) {
-    return night
-      ? "🌙"
-      : "☀️";
-  }
-
-  return night
-    ? "🌙"
-    : "🌤️";
-}
-
-/* =========================
-   GENERIC FETCH
-   ========================= */
-
-async function fetchJson<T>(
-  url: string,
-  init?: RequestInit,
-): Promise<T> {
-  const response =
-    await fetch(
-      url,
-      init,
-    );
-
-  if (!response.ok) {
-    const body =
-      await response.text();
-
-    throw new Error(
-      `HTTP ${response.status}: ${body.slice(
-        0,
-        500,
-      )}`,
-    );
-  }
-
-  return response.json() as Promise<T>;
 }
 
 /* =========================
@@ -738,8 +732,9 @@ async function fetchMet(
   const temperature =
     typeof temperatureC ===
       "number"
-      ? celsiusToFahrenheit(
-          temperatureC,
+      ? Math.round(
+          (temperatureC * 9) / 5 +
+            32,
         )
       : null;
 
@@ -827,8 +822,9 @@ async function fetchMet(
       "number"
     ) {
       temps.push(
-        celsiusToFahrenheit(
-          instant,
+        Math.round(
+          (instant * 9) / 5 +
+            32,
         ),
       );
     }
@@ -850,8 +846,9 @@ async function fetchMet(
       "number"
     ) {
       temps.push(
-        celsiusToFahrenheit(
-          max,
+        Math.round(
+          (max * 9) / 5 +
+            32,
         ),
       );
     }
@@ -861,8 +858,9 @@ async function fetchMet(
       "number"
     ) {
       temps.push(
-        celsiusToFahrenheit(
-          min,
+        Math.round(
+          (min * 9) / 5 +
+            32,
         ),
       );
     }
@@ -888,27 +886,94 @@ async function fetchMet(
 }
 
 /* =========================
-   IEM — HISTORICAL WEATHER
+   OPEN-METEO — HISTORICAL
    ========================= */
 
-async function fetchIem(
-  station: string,
+function openMeteoCondition(
+  weatherCode: number | null,
+): string {
+  if (
+    weatherCode === null
+  ) {
+    return "Weather unavailable";
+  }
+
+  if (
+    weatherCode === 0
+  ) {
+    return "Clear";
+  }
+
+  if (
+    weatherCode === 1 ||
+    weatherCode === 2
+  ) {
+    return "Partly Cloudy";
+  }
+
+  if (
+    weatherCode === 3
+  ) {
+    return "Overcast";
+  }
+
+  if (
+    weatherCode === 45 ||
+    weatherCode === 48
+  ) {
+    return "Fog";
+  }
+
+  if (
+    weatherCode >= 51 &&
+    weatherCode <= 57
+  ) {
+    return "Drizzle";
+  }
+
+  if (
+    weatherCode >= 61 &&
+    weatherCode <= 67
+  ) {
+    return "Rain";
+  }
+
+  if (
+    weatherCode >= 71 &&
+    weatherCode <= 77
+  ) {
+    return "Snow";
+  }
+
+  if (
+    weatherCode >= 80 &&
+    weatherCode <= 82
+  ) {
+    return "Rain Showers";
+  }
+
+  if (
+    weatherCode === 85 ||
+    weatherCode === 86
+  ) {
+    return "Snow Showers";
+  }
+
+  if (
+    weatherCode >= 95
+  ) {
+    return "Thunderstorms";
+  }
+
+  return "Weather unavailable";
+}
+
+async function fetchHistoricalOpenMeteo(
+  latitude: number,
+  longitude: number,
   gameTime: string,
   timeZone: string,
 ): Promise<GameWeather> {
-  const gameDate =
-    new Date(gameTime);
-
-  if (
-    Number.isNaN(
-      gameDate.getTime(),
-    )
-  ) {
-    throw new Error(
-      "Invalid game time",
-    );
-  }
-
   const localDate =
     getLocalDate(
       gameTime,
@@ -917,215 +982,148 @@ async function fetchIem(
 
   if (!localDate) {
     throw new Error(
-      "Could not determine local game date",
+      "Could not determine historical weather date",
     );
   }
 
   /*
-   * IEM's ASOS API uses sts/ets for an
-   * exact historical date range.
-   *
-   * We request the entire local calendar
-   * day in the stadium timezone and ask
-   * IEM to return timestamps in UTC.
+   * Open-Meteo's historical API supports
+   * named IANA timezones. Requesting the
+   * stadium's timezone means the returned
+   * hourly timestamps are local stadium time.
    */
-  const start =
-    `${localDate}T00:00:00`;
-
-  const nextDate =
-    new Date(
-      `${localDate}T00:00:00`,
-    );
-
-  nextDate.setUTCDate(
-    nextDate.getUTCDate() + 1,
-  );
-
-  const nextLocalDate =
-    nextDate
-      .toISOString()
-      .slice(0, 10);
-
-  const end =
-    `${nextLocalDate}T00:00:00`;
-
   const params =
     new URLSearchParams();
 
   params.set(
-    "station",
-    station,
-  );
-
-  params.append(
-    "data",
-    "tmpf",
-  );
-
-  params.append(
-    "data",
-    "wxcodes",
-  );
-
-  params.append(
-    "data",
-    "skyc1",
-  );
-
-  params.append(
-    "data",
-    "skyc2",
-  );
-
-  params.append(
-    "data",
-    "skyc3",
-  );
-
-  params.append(
-    "data",
-    "skyc4",
+    "latitude",
+    latitude.toString(),
   );
 
   params.set(
-    "sts",
-    start,
+    "longitude",
+    longitude.toString(),
   );
 
   params.set(
-    "ets",
-    end,
+    "start_date",
+    localDate,
   );
 
   params.set(
-    "tz",
+    "end_date",
+    localDate,
+  );
+
+  params.set(
+    "hourly",
+    "temperature_2m,weather_code",
+  );
+
+  params.set(
+    "daily",
+    "temperature_2m_max,temperature_2m_min",
+  );
+
+  params.set(
+    "temperature_unit",
+    "fahrenheit",
+  );
+
+  params.set(
+    "timezone",
     timeZone,
   );
 
   params.set(
-    "format",
-    "json",
-  );
-
-  params.set(
-    "latlon",
-    "no",
-  );
-
-  params.set(
-    "elev",
-    "no",
-  );
-
-  params.set(
-    "missing",
-    "M",
-  );
-
-  params.set(
-    "trace",
-    "T",
-  );
-
-  params.append(
-    "report_type",
-    "3",
-  );
-
-  params.append(
-    "report_type",
-    "4",
+    "models",
+    "era5",
   );
 
   const url =
-    `https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?${params.toString()}`;
+    `https://archive-api.open-meteo.com/v1/archive?${params.toString()}`;
 
-  const response =
-    await fetch(
+  const weather =
+    await fetchJson<OpenMeteoHistorical>(
       url,
       {
         headers: {
-          "User-Agent":
-            MET_USER_AGENT,
           Accept:
             "application/json",
         },
       },
     );
 
-  if (!response.ok) {
-    const body =
-      await response.text();
+  const hourlyTimes =
+    weather.hourly
+      ?.time ?? [];
 
+  const temperatures =
+    weather.hourly
+      ?.temperature_2m ?? [];
+
+  const weatherCodes =
+    weather.hourly
+      ?.weather_code ?? [];
+
+  if (
+    !hourlyTimes.length ||
+    !temperatures.length
+  ) {
     throw new Error(
-      `IEM HTTP ${response.status}: ${body.slice(
-        0,
-        500,
-      )}`,
-    );
-  }
-
-  const data =
-    (await response.json()) as {
-      data?: IemObservation[];
-    };
-
-  const observations =
-    (data.data ?? []).filter(
-      (observation) =>
-        observation.valid &&
-        observation.valid.trim() !==
-          "",
-    );
-
-  if (!observations.length) {
-    throw new Error(
-      `IEM returned no observations for ${station} on ${localDate}`,
+      `Open-Meteo returned no historical hourly data for ${localDate}`,
     );
   }
 
   /*
-   * Because tz=the stadium timezone above,
-   * IEM returns valid timestamps with the
-   * requested local timezone. Comparing
-   * their Date values against gameTime
-   * therefore gives us the closest actual
-   * observation to kickoff.
+   * gameTime is an absolute timestamp.
+   * Convert it to the same local clock
+   * representation used by Open-Meteo.
    */
-  const target =
-    gameDate.getTime();
+  const gameLocalDateTime =
+    new Intl.DateTimeFormat(
+      "sv-SE",
+      {
+        timeZone,
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        hourCycle: "h23",
+      },
+    )
+      .format(
+        new Date(gameTime),
+      )
+      .replace(" ", "T");
 
-  let selected:
-    | IemObservation
-    | null = null;
+  let selectedIndex =
+    0;
 
   let closest =
     Infinity;
 
   for (
-    const observation of observations
+    let i = 0;
+    i < hourlyTimes.length;
+    i++
   ) {
-    if (!observation.valid) {
-      continue;
-    }
+    const timestamp =
+      hourlyTimes[i];
 
-    const observationTime =
-      new Date(
-        observation.valid,
-      ).getTime();
-
-    if (
-      Number.isNaN(
-        observationTime,
-      )
-    ) {
+    if (!timestamp) {
       continue;
     }
 
     const distance =
       Math.abs(
-        observationTime -
-          target,
+        new Date(
+          `${timestamp}:00`,
+        ).getTime() -
+          new Date(
+            `${gameLocalDateTime}:00`,
+          ).getTime(),
       );
 
     if (
@@ -1135,175 +1133,61 @@ async function fetchIem(
       closest =
         distance;
 
-      selected =
-        observation;
+      selectedIndex =
+        i;
     }
   }
 
-  if (!selected) {
-    throw new Error(
-      `IEM could not match an observation to kickoff for ${station} on ${localDate}`,
+  const temperature =
+    typeof temperatures[
+      selectedIndex
+    ] === "number"
+      ? Math.round(
+          temperatures[
+            selectedIndex
+          ] as number,
+        )
+      : null;
+
+  const weatherCode =
+    typeof weatherCodes[
+      selectedIndex
+    ] === "number"
+      ? (weatherCodes[
+          selectedIndex
+        ] as number)
+      : null;
+
+  const condition =
+    openMeteoCondition(
+      weatherCode,
     );
-  }
 
-  let temperature:
-    | number
-    | null = null;
+  const dailyMax =
+    weather.daily
+      ?.temperature_2m_max?.[0];
 
-  if (
-    typeof selected.tmpf ===
-    "number"
-  ) {
-    temperature =
-      Math.round(
-        selected.tmpf,
-      );
-  } else if (
-    typeof selected.tmpf ===
-      "string" &&
-    selected.tmpf.trim() !==
-      ""
-  ) {
-    const parsed =
-      Number(
-        selected.tmpf,
-      );
-
-    if (
-      Number.isFinite(
-        parsed,
-      )
-    ) {
-      temperature =
-        Math.round(parsed);
-    }
-  }
-
-  let condition =
-    "Weather unavailable";
-
-  const wx =
-    (
-      selected.wxcodes ??
-      ""
-    ).toLowerCase();
-
-  if (
-    wx.includes("ts") ||
-    wx.includes("thunder")
-  ) {
-    condition =
-      "Thunderstorms";
-  } else if (
-    wx.includes("sn") ||
-    wx.includes("snow")
-  ) {
-    condition = "Snow";
-  } else if (
-    wx.includes("ra") ||
-    wx.includes("rain") ||
-    wx.includes("sh")
-  ) {
-    condition = "Rain";
-  } else if (
-    wx.includes("fg") ||
-    wx.includes("fog") ||
-    wx.includes("br")
-  ) {
-    condition = "Fog";
-  } else {
-    const sky = [
-      selected.skyc1,
-      selected.skyc2,
-      selected.skyc3,
-      selected.skyc4,
-    ]
-      .filter(Boolean)
-      .map(
-        (value) =>
-          value!.toUpperCase(),
-      );
-
-    if (
-      sky.includes("OVC")
-    ) {
-      condition =
-        "Overcast";
-    } else if (
-      sky.includes("BKN") ||
-      sky.includes("SCT")
-    ) {
-      condition =
-        "Partly Cloudy";
-    } else if (
-      sky.includes("CLR") ||
-      sky.includes("SKC") ||
-      sky.includes("FEW")
-    ) {
-      condition = "Clear";
-    }
-  }
-
-  const temperatures =
-    observations
-      .map(
-        (observation) => {
-          if (
-            typeof observation.tmpf ===
-            "number"
-          ) {
-            return observation.tmpf;
-          }
-
-          if (
-            typeof observation.tmpf ===
-              "string" &&
-            observation.tmpf.trim() !==
-              ""
-          ) {
-            const parsed =
-              Number(
-                observation.tmpf,
-              );
-
-            return Number.isFinite(
-              parsed,
-            )
-              ? parsed
-              : null;
-          }
-
-          return null;
-        },
-      )
-      .filter(
-        (
-          value,
-        ): value is number =>
-          typeof value ===
-            "number" &&
-          Number.isFinite(
-            value,
-          ),
-      );
+  const dailyMin =
+    weather.daily
+      ?.temperature_2m_min?.[0];
 
   return {
     isIndoor: false,
     temperature,
-    high: temperatures.length
-      ? Math.round(
-          Math.max(
-            ...temperatures,
-          ),
-        )
-      : null,
-    low: temperatures.length
-      ? Math.round(
-          Math.min(
-            ...temperatures,
-          ),
-        )
-      : null,
+    high:
+      typeof dailyMax ===
+      "number"
+        ? Math.round(
+            dailyMax,
+          )
+        : null,
+    low:
+      typeof dailyMin ===
+      "number"
+        ? Math.round(
+            dailyMin,
+          )
+        : null,
     condition,
     emoji:
       weatherEmoji(
@@ -1312,69 +1196,6 @@ async function fetchIem(
         timeZone,
       ),
   };
-}
-
-/* =========================
-   IEM STATIONS
-   ========================= */
-
-function getIemStation(
-  teamId: string,
-): string | null {
-  const stations: Record<
-    string,
-    string
-  > = {
-    BUF: "KBUF",
-    MIA: "KMIA",
-    NE: "KBOS",
-    NYJ: "KTEB",
-
-    BAL: "KBWI",
-    CIN: "KLUK",
-    CLE: "KCLE",
-    PIT: "KPIT",
-
-    HOU: "KHOU",
-    IND: "KIND",
-    JAX: "KJAX",
-    TEN: "KBNA",
-
-    DEN: "KDEN",
-    KC: "KMCI",
-    LV: "KLAS",
-    LAC: "KLAX",
-
-    DAL: "KDFW",
-    NYG: "KTEB",
-    PHI: "KPHL",
-    WSH: "KDCA",
-
-    CHI: "KMDW",
-    DET: "KDTW",
-    GB: "KGRB",
-    MIN: "KMSP",
-
-    ATL: "KATL",
-    CAR: "KCLT",
-    NO: "KMSY",
-    TB: "KTPA",
-
-    ARI: "KPHX",
-    LAR: "KLAX",
-    SF: "KSJC",
-    SEA: "KSEA",
-  };
-
-  const normalized =
-    teamId
-      .trim()
-      .toUpperCase();
-
-  return (
-    stations[normalized] ??
-    null
-  );
 }
 
 /* =========================
@@ -1394,8 +1215,8 @@ export async function fetchGameWeather(
   /*
    * INTERNATIONAL VENUE FIRST
    *
-   * This matters because a U.S. team can
-   * be the designated home team overseas.
+   * A U.S. team can be the designated
+   * home team in London/Munich/etc.
    */
   const international =
     getInternationalVenue(
@@ -1403,18 +1224,27 @@ export async function fetchGameWeather(
     );
 
   if (international) {
+    /*
+     * COMPLETED INTERNATIONAL
+     * → Open-Meteo historical
+     */
     if (
       isCompletedStatus(
         status,
       )
     ) {
-      return fetchIem(
-        international.iemStation,
+      return fetchHistoricalOpenMeteo(
+        international.latitude,
+        international.longitude,
         gameTime,
         international.timeZone,
       );
     }
 
+    /*
+     * UPCOMING / LIVE INTERNATIONAL
+     * → MET Norway
+     */
     return fetchMet(
       international.latitude,
       international.longitude,
@@ -1433,7 +1263,7 @@ export async function fetchGameWeather(
     );
 
   /*
-   * INDOOR
+   * INDOOR / CLIMATE CONTROLLED
    */
   if (
     stadium?.isIndoor
@@ -1467,33 +1297,25 @@ export async function fetchGameWeather(
     );
 
   /*
-   * HISTORICAL
+   * COMPLETED U.S. GAMES
+   * → Open-Meteo historical
    */
   if (
     isCompletedStatus(
       status,
     )
   ) {
-    const station =
-      getIemStation(
-        homeTeamId,
-      );
-
-    if (!station) {
-      throw new Error(
-        `No IEM station configured for home team ${homeTeamId}`,
-      );
-    }
-
-    return fetchIem(
-      station,
+    return fetchHistoricalOpenMeteo(
+      coordinates.latitude,
+      coordinates.longitude,
       gameTime,
       timeZone,
     );
   }
 
   /*
-   * UPCOMING / LIVE
+   * UPCOMING / LIVE U.S. GAMES
+   * → NWS
    */
   return fetchNws(
     coordinates.latitude,
