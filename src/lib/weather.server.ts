@@ -38,6 +38,7 @@ interface NwsForecast {
 }
 
 interface IemObservation {
+  station?: string;
   valid?: string;
   tmpf?: string | number | null;
   wxcodes?: string | null;
@@ -101,7 +102,7 @@ function isCompletedStatus(
   status: string,
 ): boolean {
   const value =
-    status.toLowerCase();
+    status.toLowerCase().trim();
 
   return (
     value.includes("final") ||
@@ -111,21 +112,22 @@ function isCompletedStatus(
   );
 }
 
+/* =========================
+   INTERNATIONAL VENUES
+   ========================= */
+
 function getInternationalVenue(
   venue?: string,
 ) {
   const normalized =
     normalizeVenue(venue);
 
-  /*
-   * London
-   */
   if (
     normalized.includes("tottenham")
   ) {
     return {
       latitude: 51.6043,
-      longitude: -0.0661,
+      longitude: -0.0664,
       timeZone: "Europe/London",
       iemStation: "EGLC",
     };
@@ -135,16 +137,13 @@ function getInternationalVenue(
     normalized.includes("wembley")
   ) {
     return {
-      latitude: 51.556,
-      longitude: -0.2796,
+      latitude: 51.5560,
+      longitude: -0.2795,
       timeZone: "Europe/London",
       iemStation: "EGLL",
     };
   }
 
-  /*
-   * Munich
-   */
   if (
     normalized.includes("allianz") ||
     normalized.includes("munich")
@@ -157,17 +156,14 @@ function getInternationalVenue(
     };
   }
 
-  /*
-   * São Paulo
-   */
   if (
     normalized.includes("corinthians") ||
     normalized.includes("neoquimica") ||
     normalized.includes("saopaulo")
   ) {
     return {
-      latitude: -23.5456,
-      longitude: -46.4748,
+      latitude: -23.5453,
+      longitude: -46.4742,
       timeZone: "America/Sao_Paulo",
       iemStation: "SBSP",
     };
@@ -175,6 +171,10 @@ function getInternationalVenue(
 
   return null;
 }
+
+/* =========================
+   STADIUM COORDINATES
+   ========================= */
 
 function getStadiumCoordinates(
   stadium: any,
@@ -216,8 +216,7 @@ function getStadiumCoordinates(
           : typeof stadium.coordinates
                 ?.longitude ===
               "number"
-            ? stadium.coordinates
-                .longitude
+            ? stadium.coordinates.longitude
             : typeof stadium.coordinates
                   ?.lon ===
                 "number"
@@ -249,6 +248,10 @@ function getStadiumCoordinates(
   };
 }
 
+/* =========================
+   TIMEZONE
+   ========================= */
+
 function getTimeZone(
   longitude: number,
   venue?: string,
@@ -275,6 +278,36 @@ function getTimeZone(
   }
 
   return "America/New_York";
+}
+
+function getLocalDate(
+  iso: string,
+  timeZone: string,
+): string | null {
+  const date =
+    new Date(iso);
+
+  if (
+    Number.isNaN(
+      date.getTime(),
+    )
+  ) {
+    return null;
+  }
+
+  try {
+    return new Intl.DateTimeFormat(
+      "en-CA",
+      {
+        timeZone,
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      },
+    ).format(date);
+  } catch {
+    return null;
+  }
 }
 
 function getLocalHour(
@@ -354,6 +387,10 @@ function isNight(
   );
 }
 
+/* =========================
+   WEATHER EMOJI
+   ========================= */
+
 function weatherEmoji(
   condition: string,
   gameTime: string,
@@ -427,6 +464,10 @@ function weatherEmoji(
     : "🌤️";
 }
 
+/* =========================
+   GENERIC FETCH
+   ========================= */
+
 async function fetchJson<T>(
   url: string,
   init?: RequestInit,
@@ -453,7 +494,7 @@ async function fetchJson<T>(
 }
 
 /* =========================
-   NWS — UPCOMING U.S. GAMES
+   NWS — UPCOMING U.S.
    ========================= */
 
 async function fetchNws(
@@ -560,6 +601,12 @@ async function fetchNws(
     selected.shortForecast ??
     "Weather unavailable";
 
+  const gameDate =
+    getLocalDate(
+      gameTime,
+      timeZone,
+    );
+
   const sameDay =
     periods.filter(
       (period) => {
@@ -567,39 +614,11 @@ async function fetchNws(
           return false;
         }
 
-        const periodDate =
-          new Intl.DateTimeFormat(
-            "en-CA",
-            {
-              timeZone,
-              year: "numeric",
-              month: "2-digit",
-              day: "2-digit",
-            },
-          ).format(
-            new Date(
-              period.startTime,
-            ),
-          );
-
-        const gameDate =
-          new Intl.DateTimeFormat(
-            "en-CA",
-            {
-              timeZone,
-              year: "numeric",
-              month: "2-digit",
-              day: "2-digit",
-            },
-          ).format(
-            new Date(
-              gameTime,
-            ),
-          );
-
         return (
-          periodDate ===
-          gameDate
+          getLocalDate(
+            period.startTime,
+            timeZone,
+          ) === gameDate
         );
       },
     );
@@ -777,44 +796,19 @@ async function fetchMet(
     }
   }
 
+  const gameDate =
+    getLocalDate(
+      gameTime,
+      timeZone,
+    );
+
   const sameDay =
     timeseries.filter(
-      (item) => {
-        const itemDate =
-          new Intl.DateTimeFormat(
-            "en-CA",
-            {
-              timeZone,
-              year: "numeric",
-              month: "2-digit",
-              day: "2-digit",
-            },
-          ).format(
-            new Date(
-              item.time,
-            ),
-          );
-
-        const gameDate =
-          new Intl.DateTimeFormat(
-            "en-CA",
-            {
-              timeZone,
-              year: "numeric",
-              month: "2-digit",
-              day: "2-digit",
-            },
-          ).format(
-            new Date(
-              gameTime,
-            ),
-          );
-
-        return (
-          itemDate ===
-          gameDate
-        );
-      },
+      (item) =>
+        getLocalDate(
+          item.time,
+          timeZone,
+        ) === gameDate,
     );
 
   const temps: number[] = [];
@@ -916,38 +910,135 @@ async function fetchIem(
   }
 
   const localDate =
-    new Intl.DateTimeFormat(
-      "en-CA",
-      {
-        timeZone,
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-      },
-    ).format(gameDate);
-
-  const [
-    year,
-    month,
-    day,
-  ] =
-    localDate
-      .split("-")
-      .map(Number);
-
-  const nextDay =
-    new Date(
-      Date.UTC(
-        year,
-        month - 1,
-        day + 1,
-      ),
+    getLocalDate(
+      gameTime,
+      timeZone,
     );
 
+  if (!localDate) {
+    throw new Error(
+      "Could not determine local game date",
+    );
+  }
+
+  /*
+   * IEM's ASOS API uses sts/ets for an
+   * exact historical date range.
+   *
+   * We request the entire local calendar
+   * day in the stadium timezone and ask
+   * IEM to return timestamps in UTC.
+   */
+  const start =
+    `${localDate}T00:00:00`;
+
+  const nextDate =
+    new Date(
+      `${localDate}T00:00:00`,
+    );
+
+  nextDate.setUTCDate(
+    nextDate.getUTCDate() + 1,
+  );
+
+  const nextLocalDate =
+    nextDate
+      .toISOString()
+      .slice(0, 10);
+
+  const end =
+    `${nextLocalDate}T00:00:00`;
+
+  const params =
+    new URLSearchParams();
+
+  params.set(
+    "station",
+    station,
+  );
+
+  params.append(
+    "data",
+    "tmpf",
+  );
+
+  params.append(
+    "data",
+    "wxcodes",
+  );
+
+  params.append(
+    "data",
+    "skyc1",
+  );
+
+  params.append(
+    "data",
+    "skyc2",
+  );
+
+  params.append(
+    "data",
+    "skyc3",
+  );
+
+  params.append(
+    "data",
+    "skyc4",
+  );
+
+  params.set(
+    "sts",
+    start,
+  );
+
+  params.set(
+    "ets",
+    end,
+  );
+
+  params.set(
+    "tz",
+    timeZone,
+  );
+
+  params.set(
+    "format",
+    "json",
+  );
+
+  params.set(
+    "latlon",
+    "no",
+  );
+
+  params.set(
+    "elev",
+    "no",
+  );
+
+  params.set(
+    "missing",
+    "M",
+  );
+
+  params.set(
+    "trace",
+    "T",
+  );
+
+  params.append(
+    "report_type",
+    "3",
+  );
+
+  params.append(
+    "report_type",
+    "4",
+  );
+
   const url =
-    `https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?station=${encodeURIComponent(
-      station,
-    )}&data=tmpf&data=wxcodes&data=skyc1&data=skyc2&data=skyc3&data=skyc4&year1=${year}&month1=${month}&day1=${day}&year2=${nextDay.getUTCFullYear()}&month2=${nextDay.getUTCMonth() + 1}&day2=${nextDay.getUTCDate()}&tz=UTC&format=json&latlon=no&elev=no&missing=M&trace=T&report_type=3&report_type=4`;
+    `https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py?${params.toString()}`;
 
   const response =
     await fetch(
@@ -969,7 +1060,7 @@ async function fetchIem(
     throw new Error(
       `IEM HTTP ${response.status}: ${body.slice(
         0,
-        300,
+        500,
       )}`,
     );
   }
@@ -980,7 +1071,12 @@ async function fetchIem(
     };
 
   const observations =
-    data.data ?? [];
+    (data.data ?? []).filter(
+      (observation) =>
+        observation.valid &&
+        observation.valid.trim() !==
+          "",
+    );
 
   if (!observations.length) {
     throw new Error(
@@ -988,11 +1084,20 @@ async function fetchIem(
     );
   }
 
+  /*
+   * Because tz=the stadium timezone above,
+   * IEM returns valid timestamps with the
+   * requested local timezone. Comparing
+   * their Date values against gameTime
+   * therefore gives us the closest actual
+   * observation to kickoff.
+   */
   const target =
     gameDate.getTime();
 
-  let selected =
-    observations[0];
+  let selected:
+    | IemObservation
+    | null = null;
 
   let closest =
     Infinity;
@@ -1033,6 +1138,12 @@ async function fetchIem(
       selected =
         observation;
     }
+  }
+
+  if (!selected) {
+    throw new Error(
+      `IEM could not match an observation to kickoff for ${station} on ${localDate}`,
+    );
   }
 
   let temperature:
@@ -1224,6 +1335,8 @@ function getIemStation(
     CLE: "KCLE",
     PIT: "KPIT",
 
+    HOU: "KHOU",
+    IND: "KIND",
     JAX: "KJAX",
     TEN: "KBNA",
 
@@ -1281,9 +1394,8 @@ export async function fetchGameWeather(
   /*
    * INTERNATIONAL VENUE FIRST
    *
-   * This is important because Jacksonville,
-   * for example, can be the designated home
-   * team in London.
+   * This matters because a U.S. team can
+   * be the designated home team overseas.
    */
   const international =
     getInternationalVenue(
@@ -1347,11 +1459,6 @@ export async function fetchGameWeather(
     );
   }
 
-  /*
-   * Prefer the actual stadium timezone
-   * from stadiums.ts. Fall back to the
-   * longitude-based timezone if needed.
-   */
   const timeZone =
     stadium?.timezone ??
     getTimeZone(
