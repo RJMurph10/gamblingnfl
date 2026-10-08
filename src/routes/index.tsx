@@ -2,24 +2,21 @@ import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import {
-  DriveRail,
   FootballIcon,
   GameRow,
-  LineScore,
   PageTitle,
   Panel,
   PanelHeader,
   SampleBadge,
   SpreadBadge,
   StatCard,
-  StatComparison,
   TeamLogo,
   TeamMark,
 } from "@/components/booth";
 import { gameScore, games, type Game } from "@/data/games";
 import { players } from "@/data/players";
 import { teamById, teams } from "@/data/teams";
-import { getLiveGame, getLiveSchedule } from "@/lib/espn.functions";
+import { getLiveSchedule } from "@/lib/espn.functions";
 
 /* ---------- Live games: row without date/time, clock first ---------- */
 
@@ -218,15 +215,17 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Season Pulse — GamblingNFL dashboard" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       {
         name: "description",
         content:
-          "GamblingNFL home dashboard: season pulse metrics, recent games, the 32-team grid, and live prop projection snapshots.",
+          "GamblingNFL home dashboard: season pulse metrics, recent games, the 32-team grid, and player leaders.",
       },
       { property: "og:title", content: "Season Pulse — GamblingNFL dashboard" },
       {
         property: "og:description",
-        content: "Season metrics, recent results, team grid, and prop projections in one view.",
+        content: "Season metrics, live and upcoming games, recent results, team grid, and player leaders in one view.",
       },
     ],
   }),
@@ -257,16 +256,6 @@ function Dashboard() {
     .slice(0, 5);
   const live = source.filter((g) => g.status === "live");
 
-  const featured = recent[0];
-  const featuredIsLive = !!featured && featured.id.startsWith("espn-");
-  const { data: featuredDetail } = useQuery({
-    queryKey: ["live-game", featured?.id],
-    queryFn: () => getLiveGame({ data: { eventId: featured!.id.replace(/^espn-/, "") } }),
-    enabled: featuredIsLive,
-    staleTime: 5 * 60 * 1000,
-    retry: 1,
-  });
-  const gamecast = featured ? (featuredIsLive ? (featuredDetail ?? null) : featured) : null;
   const topPlayers = [...players].sort((a, b) => b.season.yards - a.season.yards).slice(0, 5);
 
   return (
@@ -444,56 +433,6 @@ function Dashboard() {
           </div>
         </Panel>
       </section>
-
-      {featured ? (
-        <section className="mt-6 grid gap-6 lg:grid-cols-12">
-          <Panel className="lg:col-span-5">
-            <div className="flex items-center justify-between">
-              <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">
-                Gamecast
-              </h2>
-              <Link
-                to="/games/$gameId"
-                params={{ gameId: featured.id }}
-                className="font-mono text-[10px] uppercase text-acc"
-              >
-                Final →
-              </Link>
-            </div>
-            <div className="mt-3">
-              <LineScore game={featured} />
-            </div>
-            {gamecast && gamecast.drives.length > 0 ? (
-              <>
-                <p className="label-mono mt-4">Drive rail · away</p>
-                <div className="mt-1.5">
-                  <DriveRail game={gamecast} teamId={gamecast.awayTeamId} />
-                </div>
-              </>
-            ) : null}
-          </Panel>
-          <Panel className="lg:col-span-7">
-            <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">
-              Team comparison
-            </h2>
-            <div className="mt-4">
-              {gamecast ? (
-                <StatComparison game={gamecast} />
-              ) : (
-                <p className="font-mono text-[11px] uppercase tracking-wider text-faint">
-                  Loading team stats…
-                </p>
-              )}
-            </div>
-            <div className="mt-4 flex flex-wrap items-center gap-2 rounded-lg bg-panel2 p-2 ring-1 ring-line/10">
-              <span className="label-mono">Prop projection</span>
-              <span className="ml-auto font-mono text-sm tabular-nums">
-                J. Marrow 291.0 pass yds <span className="text-win">▲</span>
-              </span>
-            </div>
-          </Panel>
-        </section>
-      ) : null}
 
       <section className="mt-6">
         <Panel className="flex flex-wrap items-center gap-3">

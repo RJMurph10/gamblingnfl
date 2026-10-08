@@ -16,6 +16,7 @@ import {
 import { gameById, gameScore, type BoxScoreLine, type Game } from "@/data/games";
 import { teamById, type Team } from "@/data/teams";
 import { getLiveGame } from "@/lib/espn.functions";
+import { showGameStatistics } from "@/lib/game-visibility";
 
 export const Route = createFileRoute("/games/$gameId")({
   loader: ({ params }) => {
@@ -30,6 +31,8 @@ export const Route = createFileRoute("/games/$gameId")({
       return {
         meta: [
           { title: "Game — GamblingNFL" },
+          { property: "og:type", content: "website" },
+          { name: "twitter:card", content: "summary_large_image" },
           { name: "description", content: "Live 2026 NFL game detail: quarter-by-quarter line score, drive chart, team statistics, and box score." },
           { property: "og:title", content: "Game — GamblingNFL" },
           { property: "og:description", content: "Live game breakdown with line score, drives, team stats, and box score." },
@@ -49,6 +52,8 @@ export const Route = createFileRoute("/games/$gameId")({
     return {
       meta: [
         { title },
+        { property: "og:type", content: "website" },
+        { name: "twitter:card", content: "summary_large_image" },
         { name: "description", content: description },
         { property: "og:title", content: title },
         { property: "og:description", content: description },
@@ -378,6 +383,8 @@ function GamePage() {
         })()}
       </Panel>
 
+      {showGameStatistics(game.status) ? (
+      <>
       <div className="mt-6 grid gap-6 lg:grid-cols-12">
         <Panel className="lg:col-span-5">
           <div className="flex items-center justify-between">
@@ -535,6 +542,8 @@ function GamePage() {
           )}
         </Panel>
       </section>
+    </>
+      ) : null}
     </>
   );
 }
