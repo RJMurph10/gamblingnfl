@@ -1,3 +1,4 @@
+```tsx
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
@@ -245,13 +246,18 @@ function GamePage() {
    * final     → historical weather at completion
    */
   const weatherQuery = useQuery({
-    queryKey: ["weather", game?.id, game?.status],
+    queryKey: ["weather", game?.id, game?.status, game?.kickoffIso],
 
     queryFn: async () => {
       /*
        * The weather server function now handles its own
        * timeout. We intentionally do NOT add another
        * client-side timeout here.
+       *
+       * IMPORTANT:
+       * Pass the actual ESPN kickoff time directly.
+       * The weather server no longer needs to make a
+       * second ESPN request just to determine game time.
        */
       return getGameWeather({
         data: {
@@ -259,12 +265,15 @@ function GamePage() {
           homeTeamId: game!.homeTeamId,
           venue: game?.venue,
           status: game?.status ?? "scheduled",
+          gameTime: game!.kickoffIso,
         },
       });
     },
 
     enabled: Boolean(
-      game?.id && game?.homeTeamId,
+      game?.id &&
+        game?.homeTeamId &&
+        game?.kickoffIso,
     ),
 
     /*
@@ -823,3 +832,32 @@ function GamePage() {
     </>
   );
 }
+```
+
+### The important change
+
+I made **two small related improvements** to the weather query:
+
+1. Pass the actual kickoff time:
+
+```tsx
+gameTime: game!.kickoffIso,
+```
+
+2. Include `kickoffIso` in the React Query key:
+
+```tsx
+queryKey: ["weather", game?.id, game?.status, game?.kickoffIso],
+```
+
+And I require `kickoffIso` before making the weather request:
+
+```tsx
+enabled: Boolean(
+  game?.id &&
+    game?.homeTeamId &&
+    game?.kickoffIso,
+),
+```
+
+Everything else in your file is preserved.
