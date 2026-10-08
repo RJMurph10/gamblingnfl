@@ -155,14 +155,30 @@ export function SpreadBadge({
   spread,
   away,
   home,
+  forTeam,
   className = "",
 }: {
   spread: string | undefined;
   away?: Team;
   home?: Team;
+  forTeam?: Team;
   className?: string;
 }) {
   if (!spread || spread === "—") return <span>—</span>;
+  if (forTeam) {
+    const fm = spread.match(/^([A-Za-z]+)\s*([+-]?\d+(?:\.\d+)?)/);
+    let line = spread === "PK" || spread === "EVEN" ? "PK" : spread;
+    if (fm) {
+      const pts = Math.abs(Number(fm[2]));
+      line = fm[1].toUpperCase() === forTeam.abbr.toUpperCase() ? `-${pts}` : `+${pts}`;
+    }
+    return (
+      <span className={`inline-flex items-center gap-1 font-mono tabular-nums ${className}`}>
+        <TeamLogo team={forTeam} className="size-3.5" />
+        <span className="market-line">{line}</span>
+      </span>
+    );
+  }
   if (spread === "PK" || spread === "EVEN") return <span>{spread}</span>;
 
   const match = spread.match(/^([A-Za-z]+)\s*([+-]?\d+(?:\.\d+)?)/);
@@ -643,6 +659,7 @@ export function marketResultClass(
   game: Game,
   away: Team,
   home: Team,
+  forTeam?: Team,
 ): { spread: string; total: string } {
   const neutral = "text-mute";
   const win = "text-green-500 font-semibold";
@@ -652,7 +669,16 @@ export function marketResultClass(
 
   let spread = neutral;
   const m = game.spread?.match(/^([A-Za-z]+)\s*([+-]?\d+(?:\.\d+)?)/);
-  if (m) {
+  const isPk = game.spread === "PK" || game.spread === "EVEN";
+  if (forTeam && (m || isPk)) {
+    const score = gameScore(game);
+    const isAway = forTeam.id === away.id;
+    const diff = isAway ? score.away - score.home : score.home - score.away;
+    const pts = m ? Math.abs(Number(m[2])) : 0;
+    const line = m && m[1].toUpperCase() === forTeam.abbr.toUpperCase() ? -pts : pts;
+    const margin = diff + line;
+    spread = margin > 0 ? win : margin < 0 ? loss : push;
+  } else if (m) {
     const pts = Math.abs(Number(m[2]));
     const awayFav = m[1].toUpperCase() === away.abbr.toUpperCase();
     const homeFav = m[1].toUpperCase() === home.abbr.toUpperCase();
@@ -679,9 +705,11 @@ export function marketResultClass(
 export function GameRow({
   game,
   showMarket = true,
+  forTeam,
 }: {
   game: Game;
   showMarket?: boolean;
+  forTeam?: Team;
 }) {
   const away = teamById(game.awayTeamId);
   const home = teamById(game.homeTeamId);
@@ -742,12 +770,12 @@ export function GameRow({
         {game.status === "live" ? (game.clock ?? "Live") : game.location}
       </td>
       {showMarket ? (() => {
-        const { spread: spreadClass, total: totalClass } = marketResultClass(game, away, home);
+        const { spread: spreadClass, total: totalClass } = marketResultClass(game, away, home, forTeam);
         return (
           <>
             <td className={`whitespace-nowrap px-2 py-2.5 text-right font-mono tabular-nums ${spreadClass}`}>
               <div className="flex items-center justify-end">
-                <SpreadBadge spread={game.spread} away={away} home={home} />
+                <SpreadBadge spread={game.spread} away={away} home={home} forTeam={forTeam} />
               </div>
             </td>
             <td className={`whitespace-nowrap px-4 py-2.5 text-right font-mono tabular-nums ${totalClass}`}>{game.total || "—"}</td>
