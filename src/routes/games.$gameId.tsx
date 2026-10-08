@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
@@ -221,13 +222,18 @@ function GamePage() {
 
     /*
      * Live games update frequently.
-     * Upcoming and completed games do not constantly poll.
+     * Upcoming games refresh every five minutes so newly released
+     * betting lines can unlock the weather card automatically.
      */
     refetchInterval: (query) => {
       const currentGame = query.state.data;
 
       if (currentGame?.status === "live") {
         return 3500;
+      }
+
+      if (currentGame?.status === "scheduled") {
+        return 5 * 60 * 1000;
       }
 
       return false;
@@ -240,7 +246,7 @@ function GamePage() {
   /*
    * Weather:
    *
-   * scheduled → current/forecast stadium weather
+   * scheduled → forecast weather, but only after both spread and total exist
    * live      → current stadium weather
    * final     → historical weather at game time
    */
@@ -255,9 +261,8 @@ function GamePage() {
     queryFn: async () => {
       /*
        * Pass the actual ESPN kickoff time directly.
-       *
-       * The weather server no longer needs to make a
-       * second ESPN request just to determine game time.
+       * The weather server does not need a second ESPN request
+       * just to determine the game time.
        */
       return getGameWeather({
         data: {
@@ -273,7 +278,14 @@ function GamePage() {
     enabled: Boolean(
       game?.id &&
         game?.homeTeamId &&
-        game?.kickoffIso,
+        game?.kickoffIso &&
+        (game.status !== "scheduled" || (
+          typeof game.spread === "string" &&
+          game.spread.trim().length > 0 &&
+          !["—", "-", "N/A", "NA"].includes(game.spread.trim().toUpperCase()) &&
+          typeof game.total === "number" &&
+          game.total > 0
+        )),
     ),
 
     /*
@@ -399,10 +411,9 @@ function GamePage() {
         eyebrow={`Week ${game.week} · ${game.venue} · ${localKickoff}`}
         title={`${away.abbr} @ ${home.abbr}`}
         aside={
-          <GameWeatherCard
-            weather={weatherQuery.data}
-            isLoading={weatherQuery.isLoading}
-          />
+          weatherQuery.data ? (
+            <GameWeatherCard weather={weatherQuery.data} />
+          ) : undefined
         }
       />
 
