@@ -359,13 +359,12 @@ export function DriveTable({ game }: { game: Game }) {
           <table className="w-full min-w-[600px] text-sm">
             <thead>
               <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
-                <th className="px-4 py-2 font-normal">#</th>
-                <th className="px-2 py-2 font-normal">Qtr</th>
+                <th className="px-4 py-2 font-normal">Qtr</th>
+                <th className="px-2 py-2 font-normal">Result</th>
                 <th className="px-2 py-2 text-right font-normal">Plays</th>
                 <th className="px-2 py-2 text-right font-normal">Yards</th>
                 <th className="px-2 py-2 text-right font-normal">TOP</th>
-                <th className="px-2 py-2 font-normal">Start</th>
-                <th className="px-4 py-2 text-right font-normal">Result</th>
+                <th className="px-4 py-2 text-right font-normal">Start</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-line/5">
