@@ -14,17 +14,7 @@ interface WeatherRequest {
   homeTeamId: string;
   venue?: string;
   status: string;
-}
-
-interface EspnSummary {
-  header?: {
-    competitions?: Array<{
-      date?: string;
-      venue?: {
-        fullName?: string;
-      };
-    }>;
-  };
+  gameTime: string;
 }
 
 interface NwsPoint {
@@ -70,6 +60,12 @@ interface MetTimeseriesItem {
         symbol_code?: string;
       };
     };
+    next_6_hours?: {
+      details?: {
+        air_temperature_max?: number;
+        air_temperature_min?: number;
+      };
+    };
   };
 }
 
@@ -80,7 +76,7 @@ interface MetForecast {
 }
 
 const NWS_USER_AGENT =
-  "GamblingNFL/1.0 (gamblingnfl.lovable.app)";
+  "GamblingNFL/1.0 (https://gamblingnfl.lovable.app/)";
 
 const MET_USER_AGENT =
   "GamblingNFL/1.0 (https://gamblingnfl.lovable.app/)";
@@ -121,6 +117,9 @@ function getInternationalVenue(
   const normalized =
     normalizeVenue(venue);
 
+  /*
+   * London
+   */
   if (
     normalized.includes("tottenham")
   ) {
@@ -143,6 +142,9 @@ function getInternationalVenue(
     };
   }
 
+  /*
+   * Munich
+   */
   if (
     normalized.includes("allianz") ||
     normalized.includes("munich")
@@ -155,6 +157,9 @@ function getInternationalVenue(
     };
   }
 
+  /*
+   * São Paulo
+   */
   if (
     normalized.includes("corinthians") ||
     normalized.includes("neoquimica") ||
@@ -173,47 +178,67 @@ function getInternationalVenue(
 
 function getStadiumCoordinates(
   stadium: any,
-) {
+): {
+  latitude: number;
+  longitude: number;
+} | null {
   if (!stadium) {
     return null;
   }
 
   const latitude =
-    typeof stadium.latitude === "number"
+    typeof stadium.latitude ===
+      "number"
       ? stadium.latitude
-      : typeof stadium.lat === "number"
+      : typeof stadium.lat ===
+          "number"
         ? stadium.lat
-        : typeof stadium.coordinates?.latitude ===
+        : typeof stadium.coordinates
+              ?.latitude ===
             "number"
           ? stadium.coordinates.latitude
-          : typeof stadium.coordinates?.lat ===
+          : typeof stadium.coordinates
+                ?.lat ===
               "number"
             ? stadium.coordinates.lat
             : null;
 
   const longitude =
-    typeof stadium.longitude === "number"
+    typeof stadium.longitude ===
+      "number"
       ? stadium.longitude
-      : typeof stadium.lon === "number"
+      : typeof stadium.lon ===
+          "number"
         ? stadium.lon
-        : typeof stadium.lng === "number"
+        : typeof stadium.lng ===
+            "number"
           ? stadium.lng
-          : typeof stadium.coordinates?.longitude ===
+          : typeof stadium.coordinates
+                ?.longitude ===
               "number"
-            ? stadium.coordinates.longitude
-            : typeof stadium.coordinates?.lon ===
+            ? stadium.coordinates
+                .longitude
+            : typeof stadium.coordinates
+                  ?.lon ===
                 "number"
               ? stadium.coordinates.lon
-              : typeof stadium.coordinates?.lng ===
+              : typeof stadium.coordinates
+                    ?.lng ===
                   "number"
                 ? stadium.coordinates.lng
                 : null;
 
   if (
-    typeof latitude !== "number" ||
-    typeof longitude !== "number" ||
-    !Number.isFinite(latitude) ||
-    !Number.isFinite(longitude)
+    typeof latitude !==
+      "number" ||
+    typeof longitude !==
+      "number" ||
+    !Number.isFinite(
+      latitude,
+    ) ||
+    !Number.isFinite(
+      longitude,
+    )
   ) {
     return null;
   }
@@ -229,7 +254,9 @@ function getTimeZone(
   venue?: string,
 ): string {
   const international =
-    getInternationalVenue(venue);
+    getInternationalVenue(
+      venue,
+    );
 
   if (international) {
     return international.timeZone;
@@ -425,64 +452,9 @@ async function fetchJson<T>(
   return response.json() as Promise<T>;
 }
 
-/*
- * IMPORTANT:
- * Do NOT silently swallow ESPN errors.
- *
- * If ESPN fails, we need to know exactly why.
- */
-async function fetchEspnSummary(
-  gameId: string,
-): Promise<EspnSummary> {
-  const url =
-    `https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=${encodeURIComponent(
-      gameId,
-    )}`;
-
-  try {
-    return await fetchJson<EspnSummary>(
-      url,
-    );
-  } catch (error) {
-    throw new Error(
-      `ESPN WEATHER SUMMARY FAILED: ${
-        error instanceof Error
-          ? error.message
-          : String(error)
-      }`,
-    );
-  }
-}
-
-function getGameTime(
-  summary: EspnSummary,
-): string {
-  const date =
-    summary
-      .header
-      ?.competitions?.[0]
-      ?.date;
-
-  if (!date) {
-    throw new Error(
-      "ESPN WEATHER: game start time missing",
-    );
-  }
-
-  return date;
-}
-
-function getSummaryVenue(
-  summary: EspnSummary,
-): string | undefined {
-  return (
-    summary
-      .header
-      ?.competitions?.[0]
-      ?.venue
-      ?.fullName
-  );
-}
+/* =========================
+   NWS — UPCOMING U.S. GAMES
+   ========================= */
 
 async function fetchNws(
   latitude: number,
@@ -509,12 +481,11 @@ async function fetchNws(
   const forecastUrl =
     points.properties
       ?.forecastHourly ??
-    points.properties
-      ?.forecast;
+    points.properties?.forecast;
 
   if (!forecastUrl) {
     throw new Error(
-      "NWS WEATHER: forecast URL missing",
+      "NWS did not return a forecast URL",
     );
   }
 
@@ -537,7 +508,7 @@ async function fetchNws(
 
   if (!periods.length) {
     throw new Error(
-      "NWS WEATHER: no forecast periods",
+      "NWS returned no forecast periods",
     );
   }
 
@@ -596,7 +567,7 @@ async function fetchNws(
           return false;
         }
 
-        const a =
+        const periodDate =
           new Intl.DateTimeFormat(
             "en-CA",
             {
@@ -611,7 +582,7 @@ async function fetchNws(
             ),
           );
 
-        const b =
+        const gameDate =
           new Intl.DateTimeFormat(
             "en-CA",
             {
@@ -626,7 +597,10 @@ async function fetchNws(
             ),
           );
 
-        return a === b;
+        return (
+          periodDate ===
+          gameDate
+        );
       },
     );
 
@@ -666,6 +640,10 @@ async function fetchNws(
   };
 }
 
+/* =========================
+   MET NORWAY — INTERNATIONAL
+   ========================= */
+
 async function fetchMet(
   latitude: number,
   longitude: number,
@@ -694,7 +672,7 @@ async function fetchMet(
 
   if (!timeseries.length) {
     throw new Error(
-      "MET WEATHER: no forecast data",
+      "MET Norway returned no forecast data",
     );
   }
 
@@ -759,7 +737,9 @@ async function fetchMet(
     const s =
       symbol.toLowerCase();
 
-    if (s.includes("thunder")) {
+    if (
+      s.includes("thunder")
+    ) {
       condition =
         "Thunderstorms";
     } else if (
@@ -797,11 +777,112 @@ async function fetchMet(
     }
   }
 
+  const sameDay =
+    timeseries.filter(
+      (item) => {
+        const itemDate =
+          new Intl.DateTimeFormat(
+            "en-CA",
+            {
+              timeZone,
+              year: "numeric",
+              month: "2-digit",
+              day: "2-digit",
+            },
+          ).format(
+            new Date(
+              item.time,
+            ),
+          );
+
+        const gameDate =
+          new Intl.DateTimeFormat(
+            "en-CA",
+            {
+              timeZone,
+              year: "numeric",
+              month: "2-digit",
+              day: "2-digit",
+            },
+          ).format(
+            new Date(
+              gameTime,
+            ),
+          );
+
+        return (
+          itemDate ===
+          gameDate
+        );
+      },
+    );
+
+  const temps: number[] = [];
+
+  for (
+    const item of sameDay
+  ) {
+    const instant =
+      item.data
+        ?.instant
+        ?.details
+        ?.air_temperature;
+
+    if (
+      typeof instant ===
+      "number"
+    ) {
+      temps.push(
+        celsiusToFahrenheit(
+          instant,
+        ),
+      );
+    }
+
+    const max =
+      item.data
+        ?.next_6_hours
+        ?.details
+        ?.air_temperature_max;
+
+    const min =
+      item.data
+        ?.next_6_hours
+        ?.details
+        ?.air_temperature_min;
+
+    if (
+      typeof max ===
+      "number"
+    ) {
+      temps.push(
+        celsiusToFahrenheit(
+          max,
+        ),
+      );
+    }
+
+    if (
+      typeof min ===
+      "number"
+    ) {
+      temps.push(
+        celsiusToFahrenheit(
+          min,
+        ),
+      );
+    }
+  }
+
   return {
     isIndoor: false,
     temperature,
-    high: temperature,
-    low: temperature,
+    high: temps.length
+      ? Math.max(...temps)
+      : temperature,
+    low: temps.length
+      ? Math.min(...temps)
+      : temperature,
     condition,
     emoji:
       weatherEmoji(
@@ -811,6 +892,10 @@ async function fetchMet(
       ),
   };
 }
+
+/* =========================
+   IEM — HISTORICAL WEATHER
+   ========================= */
 
 async function fetchIem(
   station: string,
@@ -826,7 +911,7 @@ async function fetchIem(
     )
   ) {
     throw new Error(
-      "IEM WEATHER: invalid game time",
+      "Invalid game time",
     );
   }
 
@@ -878,8 +963,14 @@ async function fetchIem(
     );
 
   if (!response.ok) {
+    const body =
+      await response.text();
+
     throw new Error(
-      `IEM WEATHER HTTP ${response.status}`,
+      `IEM HTTP ${response.status}: ${body.slice(
+        0,
+        300,
+      )}`,
     );
   }
 
@@ -893,7 +984,7 @@ async function fetchIem(
 
   if (!observations.length) {
     throw new Error(
-      `IEM WEATHER: no observations for ${station} on ${localDate}`,
+      `IEM returned no observations for ${station} on ${localDate}`,
     );
   }
 
@@ -913,11 +1004,22 @@ async function fetchIem(
       continue;
     }
 
+    const observationTime =
+      new Date(
+        observation.valid,
+      ).getTime();
+
+    if (
+      Number.isNaN(
+        observationTime,
+      )
+    ) {
+      continue;
+    }
+
     const distance =
       Math.abs(
-        new Date(
-          observation.valid,
-        ).getTime() -
+        observationTime -
           target,
       );
 
@@ -933,20 +1035,38 @@ async function fetchIem(
     }
   }
 
-  const temperature =
+  let temperature:
+    | number
+    | null = null;
+
+  if (
     typeof selected.tmpf ===
-      "number"
-      ? Math.round(
-          selected.tmpf,
-        )
-      : typeof selected.tmpf ===
-            "string"
-        ? Math.round(
-            Number(
-              selected.tmpf,
-            ),
-          )
-        : null;
+    "number"
+  ) {
+    temperature =
+      Math.round(
+        selected.tmpf,
+      );
+  } else if (
+    typeof selected.tmpf ===
+      "string" &&
+    selected.tmpf.trim() !==
+      ""
+  ) {
+    const parsed =
+      Number(
+        selected.tmpf,
+      );
+
+    if (
+      Number.isFinite(
+        parsed,
+      )
+    ) {
+      temperature =
+        Math.round(parsed);
+    }
+  }
 
   let condition =
     "Weather unavailable";
@@ -989,8 +1109,8 @@ async function fetchIem(
     ]
       .filter(Boolean)
       .map(
-        (x) =>
-          x!.toUpperCase(),
+        (value) =>
+          value!.toUpperCase(),
       );
 
     if (
@@ -1013,7 +1133,7 @@ async function fetchIem(
     }
   }
 
-  const temps =
+  const temperatures =
     observations
       .map(
         (observation) => {
@@ -1027,17 +1147,18 @@ async function fetchIem(
           if (
             typeof observation.tmpf ===
               "string" &&
-            observation.tmpf !== ""
+            observation.tmpf.trim() !==
+              ""
           ) {
-            const n =
+            const parsed =
               Number(
                 observation.tmpf,
               );
 
             return Number.isFinite(
-              n,
+              parsed,
             )
-              ? n
+              ? parsed
               : null;
           }
 
@@ -1046,24 +1167,30 @@ async function fetchIem(
       )
       .filter(
         (
-          x,
-        ): x is number =>
-          typeof x ===
+          value,
+        ): value is number =>
+          typeof value ===
             "number" &&
-          Number.isFinite(x),
+          Number.isFinite(
+            value,
+          ),
       );
 
   return {
     isIndoor: false,
     temperature,
-    high: temps.length
+    high: temperatures.length
       ? Math.round(
-          Math.max(...temps),
+          Math.max(
+            ...temperatures,
+          ),
         )
       : null,
-    low: temps.length
+    low: temperatures.length
       ? Math.round(
-          Math.min(...temps),
+          Math.min(
+            ...temperatures,
+          ),
         )
       : null,
     condition,
@@ -1075,6 +1202,10 @@ async function fetchIem(
       ),
   };
 }
+
+/* =========================
+   IEM STATIONS
+   ========================= */
 
 function getIemStation(
   teamId: string,
@@ -1090,15 +1221,15 @@ function getIemStation(
     "5": "KIND",
     "6": "KBUF",
     "7": "KCAR",
-    "8": "KCHI",
+    "8": "KORD",
     "9": "KCLE",
     "10": "KCMH",
-    "11": "KCIN",
-    "12": "KDET",
+    "11": "KLUK",
+    "12": "KDTW",
     "13": "KGBR",
     "14": "KHOU",
     "15": "KJAX",
-    "16": "KANS",
+    "16": "KMCI",
     "17": "KPHX",
     "18": "KSEA",
     "19": "KTBM",
@@ -1123,139 +1254,128 @@ function getIemStation(
   );
 }
 
+/* =========================
+   MAIN WEATHER FUNCTION
+   ========================= */
+
 export async function fetchGameWeather(
   data: WeatherRequest,
 ): Promise<GameWeather> {
-  try {
-    const summary =
-      await fetchEspnSummary(
-        data.gameId,
-      );
+  const {
+    homeTeamId,
+    venue,
+    status,
+    gameTime,
+  } = data;
 
-    const gameTime =
-      getGameTime(
-        summary,
-      );
+  /*
+   * INTERNATIONAL VENUE FIRST
+   *
+   * This is important because Jacksonville,
+   * for example, can be the designated home
+   * team in London.
+   */
+  const international =
+    getInternationalVenue(
+      venue,
+    );
 
-    const summaryVenue =
-      getSummaryVenue(
-        summary,
-      );
-
-    const actualVenue =
-      data.venue ??
-      summaryVenue;
-
-    /*
-     * INTERNATIONAL FIRST
-     */
-    const international =
-      getInternationalVenue(
-        actualVenue,
-      );
-
-    if (international) {
-      if (
-        isCompletedStatus(
-          data.status,
-        )
-      ) {
-        return await fetchIem(
-          international.iemStation,
-          gameTime,
-          international.timeZone,
-        );
-      }
-
-      return await fetchMet(
-        international.latitude,
-        international.longitude,
+  if (international) {
+    if (
+      isCompletedStatus(
+        status,
+      )
+    ) {
+      return fetchIem(
+        international.iemStation,
         gameTime,
         international.timeZone,
       );
     }
 
-    /*
-     * U.S. STADIUM
-     */
-    const stadium =
-      getStadiumForGame(
-        data.homeTeamId,
-        actualVenue,
-      );
+    return fetchMet(
+      international.latitude,
+      international.longitude,
+      gameTime,
+      international.timeZone,
+    );
+  }
 
-    if (
-      stadium?.isIndoor
-    ) {
-      return {
-        isIndoor: true,
-        temperature: 72,
-        high: null,
-        low: null,
-        condition: "Indoor",
-        emoji: "🏟️",
-      };
-    }
+  /*
+   * U.S. STADIUM
+   */
+  const stadium =
+    getStadiumForGame(
+      homeTeamId,
+      venue,
+    );
 
-    const coordinates =
-      getStadiumCoordinates(
-        stadium,
-      );
+  /*
+   * INDOOR
+   */
+  if (
+    stadium?.isIndoor
+  ) {
+    return {
+      isIndoor: true,
+      temperature: 72,
+      high: null,
+      low: null,
+      condition: "Indoor",
+      emoji: "🏟️",
+    };
+  }
 
-    if (!coordinates) {
-      throw new Error(
-        `STADIUM WEATHER: invalid coordinates for home team ${data.homeTeamId}`,
-      );
-    }
+  const coordinates =
+    getStadiumCoordinates(
+      stadium,
+    );
 
-    const timeZone =
-      getTimeZone(
-        coordinates.longitude,
-        actualVenue,
-      );
+  if (!coordinates) {
+    throw new Error(
+      `No valid coordinates for stadium/home team ${homeTeamId}`,
+    );
+  }
 
-    if (
-      isCompletedStatus(
-        data.status,
-      )
-    ) {
-      const station =
-        getIemStation(
-          data.homeTeamId,
-        );
-
-      if (!station) {
-        throw new Error(
-          `IEM WEATHER: no station for home team ${data.homeTeamId}`,
-        );
-      }
-
-      return await fetchIem(
-        station,
-        gameTime,
-        timeZone,
-      );
-    }
-
-    return await fetchNws(
-      coordinates.latitude,
+  const timeZone =
+    getTimeZone(
       coordinates.longitude,
+      venue,
+    );
+
+  /*
+   * HISTORICAL
+   */
+  if (
+    isCompletedStatus(
+      status,
+    )
+  ) {
+    const station =
+      getIemStation(
+        homeTeamId,
+      );
+
+    if (!station) {
+      throw new Error(
+        `No IEM station configured for home team ${homeTeamId}`,
+      );
+    }
+
+    return fetchIem(
+      station,
       gameTime,
       timeZone,
     );
-  } catch (error) {
-    /*
-     * THIS IS TEMPORARY AND INTENTIONAL.
-     *
-     * Instead of returning null and making the UI say
-     * "Weather unavailable", expose the actual failure.
-     */
-    throw new Error(
-      `WEATHER DEBUG: ${
-        error instanceof Error
-          ? error.message
-          : String(error)
-      }`,
-    );
   }
+
+  /*
+   * UPCOMING / LIVE
+   */
+  return fetchNws(
+    coordinates.latitude,
+    coordinates.longitude,
+    gameTime,
+    timeZone,
+  );
 }
