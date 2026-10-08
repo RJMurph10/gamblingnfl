@@ -10,17 +10,8 @@ export interface GameWeather {
   capturedAt: string;
 }
 
-/*
- * Completed-game weather cache.
- *
- * Once a completed game's historical weather is found,
- * it is frozen and never replaced with current weather.
- */
 const completedGamesWeather = new Map<string, GameWeather>();
 
-/*
- * Current weather cache for upcoming/live games.
- */
 interface LiveCacheEntry {
   data: GameWeather;
   timestamp: number;
@@ -30,10 +21,10 @@ const liveWeatherCache = new Map<string, LiveCacheEntry>();
 
 const CACHE_TTL_MS = 10 * 60 * 1000;
 
-/**
- * Convert Open-Meteo WMO weather codes into the
- * three-line weather-card condition + emoji.
- */
+// Indoor stadiums do not expose an actual interior temperature
+// through Open-Meteo, so use a neutral indoor estimate.
+const DEFAULT_INDOOR_TEMPERATURE = 72;
+
 function mapWmoCode(
   code: number,
   isDay: boolean,
@@ -173,12 +164,6 @@ function mapWmoCode(
   }
 }
 
-/**
- * Get the best available timestamp for when an ESPN game ended.
- *
- * ESPN's summary feed contains play-level wallclock timestamps.
- * The final play is used as the completion time.
- */
 async function getGameCompletionTime(
   gameId: string,
 ): Promise<Date | null> {
@@ -206,11 +191,8 @@ async function getGameCompletionTime(
       ? data.plays
       : [];
 
-    /*
-     * Work backward through the plays.
-     * The last wallclock timestamp is the closest
-     * available representation of game completion.
-     */
+    // The final play's wallclock is the closest
+    // available representation of game completion.
     for (let i = plays.length - 1; i >= 0; i -= 1) {
       const wallclock = plays[i]?.wallclock;
 
@@ -225,10 +207,6 @@ async function getGameCompletionTime(
       }
     }
 
-    /*
-     * Fallback to ESPN's competition timestamp if no
-     * play-level timestamp exists.
-     */
     const competitionDate =
       data?.header?.competitions?.[0]?.date ??
       data?.header?.competitions?.[0]?.startDate;
@@ -252,9 +230,6 @@ async function getGameCompletionTime(
   }
 }
 
-/**
- * Get historical weather around the time the game ended.
- */
 async function fetchHistoricalGameWeather(params: {
   gameId: string;
   lat: number;
@@ -266,7 +241,8 @@ async function fetchHistoricalGameWeather(params: {
   const targetTime =
     completionTime ?? new Date();
 
-  const year = targetTime.getUTCFullYear();
+  const year =
+    targetTime.getUTCFullYear();
 
   const month = String(
     targetTime.getUTCMonth() + 1,
@@ -337,12 +313,9 @@ async function fetchHistoricalGameWeather(params: {
     );
   }
 
-  /*
-   * Find the hourly observation closest to the
-   * game's actual completion time.
-   */
   let bestIndex = 0;
-  let bestDifference = Number.POSITIVE_INFINITY;
+  let bestDifference =
+    Number.POSITIVE_INFINITY;
 
   for (let i = 0; i < times.length; i += 1) {
     const observationTime =
@@ -384,10 +357,6 @@ async function fetchHistoricalGameWeather(params: {
   const observationTime =
     new Date(times[bestIndex]);
 
-  /*
-   * The archive response is localized to the stadium's
-   * timezone because timezone=auto was requested.
-   */
   const hour =
     observationTime.getHours();
 
@@ -424,19 +393,11 @@ async function fetchHistoricalGameWeather(params: {
     emoji,
     high,
     low,
-
-    /*
-     * This represents the weather observation itself,
-     * not the time the page was opened.
-     */
     capturedAt:
       observationTime.toISOString(),
   };
 }
 
-/**
- * Get current weather for upcoming/live games.
- */
 async function fetchCurrentGameWeather(params: {
   lat: number;
   lon: number;
@@ -531,12 +492,15 @@ export async function fetchGameWeather(params: {
   );
 
   /*
-   * Indoor stadiums don't use outdoor weather.
+   * Indoor stadium:
+   * show a neutral indoor temperature instead of
+   * leaving the card blank or using outdoor weather.
    */
   if (stadium.isIndoor) {
     return {
       isIndoor: true,
-      temperature: null,
+      temperature:
+        DEFAULT_INDOOR_TEMPERATURE,
       condition: "Indoor",
       emoji: "🏟️",
       high: null,
@@ -556,11 +520,8 @@ export async function fetchGameWeather(params: {
     normalizedStatus === "completed";
 
   /*
-   * COMPLETED GAME
-   *
-   * Never request current weather.
-   * Instead request historical weather around
-   * the actual completion time.
+   * Completed games use historical weather and
+   * never fall back to current weather.
    */
   if (isFinal) {
     const cached =
@@ -580,9 +541,6 @@ export async function fetchGameWeather(params: {
           lon: stadium.lon,
         });
 
-      /*
-       * Freeze the result.
-       */
       completedGamesWeather.set(
         params.gameId,
         historicalWeather,
@@ -595,14 +553,11 @@ export async function fetchGameWeather(params: {
         error,
       );
 
-      /*
-       * Don't pretend current weather is the
-       * weather from the completed game.
-       */
       return {
         isIndoor: false,
         temperature: null,
-        condition: "Weather Unavailable",
+        condition:
+          "Weather Unavailable",
         emoji: "🌡️",
         high: null,
         low: null,
@@ -613,9 +568,7 @@ export async function fetchGameWeather(params: {
   }
 
   /*
-   * UPCOMING / LIVE GAME
-   *
-   * Current weather at the exact stadium location.
+   * Upcoming/live games use current weather.
    */
   const cached =
     liveWeatherCache.get(
@@ -655,7 +608,8 @@ export async function fetchGameWeather(params: {
     return {
       isIndoor: false,
       temperature: null,
-      condition: "Weather Unavailable",
+      condition:
+        "Weather Unavailable",
       emoji: "🌡️",
       high: null,
       low: null,
