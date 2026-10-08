@@ -247,15 +247,34 @@ function GamePage() {
   const weatherQuery = useQuery({
     queryKey: ["weather", game?.id, game?.status],
 
-    queryFn: () =>
-      getGameWeather({
+    queryFn: async () => {
+      /*
+       * Give the weather request a hard client-side timeout.
+       *
+       * This prevents the mobile browser from sitting on the
+       * loading skeleton indefinitely if the server/API request
+       * gets stuck.
+       */
+      const weatherRequest = getGameWeather({
         data: {
           gameId: game!.id,
           homeTeamId: game!.homeTeamId,
           venue: game?.venue,
           status: game?.status ?? "scheduled",
         },
-      }),
+      });
+
+      const timeoutRequest = new Promise<null>((resolve) => {
+        setTimeout(() => {
+          resolve(null);
+        }, 10000);
+      });
+
+      return Promise.race([
+        weatherRequest,
+        timeoutRequest,
+      ]);
+    },
 
     enabled: Boolean(
       game?.id && game?.homeTeamId,
@@ -270,6 +289,13 @@ function GamePage() {
       game?.status === "scheduled"
         ? 12 * 60 * 1000
         : false,
+
+    /*
+     * The server already handles weather failures and returns
+     * "Weather Unavailable", so only retry once for a transient
+     * failure.
+     */
+    retry: 1,
   });
 
   const [selectedTeam, setSelectedTeam] =
