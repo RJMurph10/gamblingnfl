@@ -249,13 +249,11 @@ function GamePage() {
 
     queryFn: async () => {
       /*
-       * Give the weather request a hard client-side timeout.
-       *
-       * This prevents the mobile browser from sitting on the
-       * loading skeleton indefinitely if the server/API request
-       * gets stuck.
+       * The weather server function now handles its own
+       * timeout. We intentionally do NOT add another
+       * client-side timeout here.
        */
-      const weatherRequest = getGameWeather({
+      return getGameWeather({
         data: {
           gameId: game!.id,
           homeTeamId: game!.homeTeamId,
@@ -263,17 +261,6 @@ function GamePage() {
           status: game?.status ?? "scheduled",
         },
       });
-
-      const timeoutRequest = new Promise<null>((resolve) => {
-        setTimeout(() => {
-          resolve(null);
-        }, 10000);
-      });
-
-      return Promise.race([
-        weatherRequest,
-        timeoutRequest,
-      ]);
     },
 
     enabled: Boolean(
@@ -291,8 +278,8 @@ function GamePage() {
         : false,
 
     /*
-     * The server already handles weather failures and returns
-     * "Weather Unavailable", so only retry once for a transient
+     * The server handles weather failures and returns
+     * "Weather Unavailable", so retry once for a transient
      * failure.
      */
     retry: 1,
