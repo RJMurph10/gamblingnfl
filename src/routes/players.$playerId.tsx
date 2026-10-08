@@ -104,6 +104,13 @@ function PlayerPage() {
           </div>
         </Panel>
       </div>
+    </>
+  );
+}
+
+function Metric({ label, value }: { label: string; value: string | number }) {
+  return <div className="p-4"><div className="label-mono">{label}</div><div className="mt-1 font-disp text-xl font-semibold tabular-nums">{value}</div></div>;
+}
 
 function Chip({ label, value }: { label: string; value: string | number }) {
   return (
