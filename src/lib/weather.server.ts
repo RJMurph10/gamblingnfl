@@ -1214,42 +1214,52 @@ function getIemStation(
     string,
     string
   > = {
-    "1": "KPHI",
-    "2": "KDAL",
-    "3": "KDEN",
-    "4": "KJAX",
-    "5": "KIND",
-    "6": "KBUF",
-    "7": "KCAR",
-    "8": "KORD",
-    "9": "KCLE",
-    "10": "KCMH",
-    "11": "KLUK",
-    "12": "KDTW",
-    "13": "KGBR",
-    "14": "KHOU",
-    "15": "KJAX",
-    "16": "KMCI",
-    "17": "KPHX",
-    "18": "KSEA",
-    "19": "KTBM",
-    "20": "KMSY",
-    "21": "KMIA",
-    "22": "KMSP",
-    "23": "KNEV",
-    "24": "KNYC",
-    "25": "KJFK",
-    "26": "KORF",
-    "27": "KPIT",
-    "28": "KSFO",
-    "29": "KSTL",
-    "30": "KSEA",
-    "31": "KTBN",
-    "32": "KCLT",
+    BUF: "KBUF",
+    MIA: "KMIA",
+    NE: "KBOS",
+    NYJ: "KTEB",
+
+    BAL: "KBWI",
+    CIN: "KLUK",
+    CLE: "KCLE",
+    PIT: "KPIT",
+
+    JAX: "KJAX",
+    TEN: "KBNA",
+
+    DEN: "KDEN",
+    KC: "KMCI",
+    LV: "KLAS",
+    LAC: "KLAX",
+
+    DAL: "KDFW",
+    NYG: "KTEB",
+    PHI: "KPHL",
+    WSH: "KDCA",
+
+    CHI: "KMDW",
+    DET: "KDTW",
+    GB: "KGRB",
+    MIN: "KMSP",
+
+    ATL: "KATL",
+    CAR: "KCLT",
+    NO: "KMSY",
+    TB: "KTPA",
+
+    ARI: "KPHX",
+    LAR: "KLAX",
+    SF: "KSJC",
+    SEA: "KSEA",
   };
 
+  const normalized =
+    teamId
+      .trim()
+      .toUpperCase();
+
   return (
-    stations[teamId] ??
+    stations[normalized] ??
     null
   );
 }
@@ -1337,7 +1347,13 @@ export async function fetchGameWeather(
     );
   }
 
+  /*
+   * Prefer the actual stadium timezone
+   * from stadiums.ts. Fall back to the
+   * longitude-based timezone if needed.
+   */
   const timeZone =
+    stadium?.timezone ??
     getTimeZone(
       coordinates.longitude,
       venue,
