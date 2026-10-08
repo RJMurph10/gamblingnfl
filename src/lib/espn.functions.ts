@@ -7,7 +7,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { fetchGameDetail, fetchSchedule, fetchTeamDepthChart, fetchTeamRosterForPage, fetchTeamSeasonStats, fetchPlayerProfile } from "./espn.server";
-import { fetchLeaguePlayers } from "./league-players.server";
+import { fetchLeaguePlayers, fetchPlayerGameLog } from "./league-players.server";
 
 export const getLiveSchedule = createServerFn({ method: "GET" }).handler(async () => {
   return fetchSchedule();
@@ -40,3 +40,9 @@ export const getPlayerProfile = createServerFn({ method: "GET" })
 export const getLeaguePlayers = createServerFn({ method: "GET" }).handler(async () => {
   return fetchLeaguePlayers();
 });
+
+export const getPlayerGameLog = createServerFn({ method: "GET" })
+  .inputValidator((data) =>
+    z.object({ playerId: z.string(), teamId: z.string().optional() }).parse(data),
+  )
+  .handler(async ({ data }) => fetchPlayerGameLog(data.playerId, data.teamId));
