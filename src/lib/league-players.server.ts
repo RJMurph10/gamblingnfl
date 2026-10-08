@@ -7,6 +7,7 @@
  * league-wide totals are rebuilt every few minutes.
  */
 
+import { gameScore } from "@/data/games";
 import { teams, teamByAbbr } from "@/data/teams";
 import { fetchSchedule, fetchTeamRoster } from "./espn.server";
 
@@ -140,7 +141,11 @@ export function extractGameRecords(
         keys.forEach((key, i) => {
           const raw = entry?.stats?.[i];
           if (raw === undefined || raw === null || raw === "-") return;
-          if (key === "fieldGoalsMade/fieldGoalAttempts") {
+          if (key === "completions/passingAttempts") {
+            const [m, t] = pair(raw);
+            add(rec!.flat, "pc", m);
+            add(rec!.flat, "pa", t);
+          } else if (key === "fieldGoalsMade/fieldGoalAttempts") {
             const [m, t] = pair(raw);
             add(rec!.flat, "fgm", m);
             add(rec!.flat, "fga", t);
@@ -247,17 +252,18 @@ export function buildLeaguePlayers(
 /* ---------- ESPN fetching ---------- */
 
 async function fetchGameRecords(eventId: string): Promise<GameRecord[]> {
-  return memoize(`league-game-${eventId}`, GAME_TTL_MS, async () => {
-    try {
+  try {
+    return await memoize(`league-game-${eventId}`, GAME_TTL_MS, async () => {
       const res = await fetch(`${SUMMARY}?event=${eventId}`, {
         headers: { "User-Agent": "GamblingNFL/1.0" },
       });
-      if (!res.ok) return [];
+      // Throwing (instead of returning []) keeps a failed fetch from being cached.
+      if (!res.ok) throw new Error(`ESPN summary failed [${res.status}]`);
       return extractGameRecords(await res.json(), (abbr) => teamByAbbr(abbr)?.id);
-    } catch {
-      return [];
-    }
-  });
+    });
+  } catch {
+    return [];
+  }
 }
 
 /** Every player with a recorded stat this season, with offense, defense, kicking and punting totals. */
@@ -289,5 +295,67 @@ export async function fetchLeaguePlayers(): Promise<LeaguePlayer[]> {
       );
     }
     return buildLeaguePlayers(gameRecords, positionById);
+  });
+}
+
+/* ---------- one player's game log ---------- */
+
+export interface PlayerGameLogEntry {
+  gameId: string;
+  week: number;
+  awayTeamId: string;
+  homeTeamId: string;
+  awayScore: number;
+  homeScore: number;
+  overtime: boolean;
+  /** Raw per-game stat totals, e.g. "passing.passingYards", "pc", "pa", "fgm". */
+  stats: Record<string, number>;
+}
+
+/**
+ * Every finished game a player recorded a stat in, oldest first, with the
+ * full stat line for that game. Pass the player's current team to look at
+ * that team's games first (much faster); if nothing turns up (traded
+ * players) every game is checked.
+ */
+export async function fetchPlayerGameLog(
+  playerId: string,
+  teamId?: string,
+): Promise<PlayerGameLogEntry[]> {
+  return memoize(`player-gamelog-${playerId}-${teamId ?? "any"}`, TOTALS_TTL_MS, async () => {
+    const schedule = await fetchSchedule();
+    const finals = schedule.filter((g) => g.status === "final");
+
+    const scan = async (games: typeof finals): Promise<PlayerGameLogEntry[]> => {
+      const out: PlayerGameLogEntry[] = [];
+      for (let i = 0; i < games.length; i += BATCH_SIZE) {
+        const batch = games.slice(i, i + BATCH_SIZE);
+        const records = await Promise.all(
+          batch.map((g) => fetchGameRecords(g.id.replace(/^espn-/, ""))),
+        );
+        batch.forEach((game, idx) => {
+          const rec = records[idx].find((r) => r.id === playerId);
+          if (!rec) return;
+          const score = gameScore(game);
+          out.push({
+            gameId: game.id,
+            week: game.week,
+            awayTeamId: game.awayTeamId,
+            homeTeamId: game.homeTeamId,
+            awayScore: score.away,
+            homeScore: score.home,
+            overtime: game.quarters.away.length > 4 || game.quarters.home.length > 4,
+            stats: rec.flat,
+          });
+        });
+      }
+      return out;
+    };
+
+    let log = teamId
+      ? await scan(finals.filter((g) => g.homeTeamId === teamId || g.awayTeamId === teamId))
+      : [];
+    if (log.length === 0) log = await scan(finals);
+    return log.sort((a, b) => a.week - b.week);
   });
 }
