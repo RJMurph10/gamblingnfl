@@ -21,10 +21,41 @@ const liveWeatherCache = new Map<string, LiveCacheEntry>();
 
 const CACHE_TTL_MS = 10 * 60 * 1000;
 
-// Indoor stadiums do not expose an actual interior temperature
-// through Open-Meteo, so use a neutral indoor estimate.
+const WEATHER_REQUEST_TIMEOUT_MS = 8000;
+
 const DEFAULT_INDOOR_TEMPERATURE = 72;
 
+/**
+ * Fetch with a hard timeout.
+ *
+ * This prevents a slow/unreachable external API from
+ * keeping the weather request stuck indefinitely.
+ */
+async function fetchWithTimeout(
+  input: RequestInfo | URL,
+  init?: RequestInit,
+  timeoutMs = WEATHER_REQUEST_TIMEOUT_MS,
+): Promise<Response> {
+  const controller = new AbortController();
+
+  const timeout = setTimeout(() => {
+    controller.abort();
+  }, timeoutMs);
+
+  try {
+    return await fetch(input, {
+      ...init,
+      signal: controller.signal,
+    });
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+/**
+ * Convert Open-Meteo WMO weather codes into
+ * the weather-card condition + emoji.
+ */
 function mapWmoCode(
   code: number,
   isDay: boolean,
@@ -164,6 +195,9 @@ function mapWmoCode(
   }
 }
 
+/**
+ * Get the best available timestamp for when an ESPN game ended.
+ */
 async function getGameCompletionTime(
   gameId: string,
 ): Promise<Date | null> {
@@ -173,7 +207,7 @@ async function getGameCompletionTime(
     const url =
       `https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=${encodeURIComponent(eventId)}`;
 
-    const response = await fetch(url, {
+    const response = await fetchWithTimeout(url, {
       headers: {
         "User-Agent": "GamblingNFL/1.0",
       },
@@ -191,8 +225,6 @@ async function getGameCompletionTime(
       ? data.plays
       : [];
 
-    // The final play's wallclock is the closest
-    // available representation of game completion.
     for (let i = plays.length - 1; i >= 0; i -= 1) {
       const wallclock = plays[i]?.wallclock;
 
@@ -230,6 +262,9 @@ async function getGameCompletionTime(
   }
 }
 
+/**
+ * Get historical weather around the time the game ended.
+ */
 async function fetchHistoricalGameWeather(params: {
   gameId: string;
   lat: number;
@@ -267,7 +302,7 @@ async function fetchHistoricalGameWeather(params: {
     `&wind_speed_unit=mph` +
     `&timezone=auto`;
 
-  const response = await fetch(url, {
+  const response = await fetchWithTimeout(url, {
     headers: {
       "User-Agent": "GamblingNFL/1.0",
     },
@@ -398,6 +433,9 @@ async function fetchHistoricalGameWeather(params: {
   };
 }
 
+/**
+ * Get current weather for upcoming/live games.
+ */
 async function fetchCurrentGameWeather(params: {
   lat: number;
   lon: number;
@@ -412,7 +450,7 @@ async function fetchCurrentGameWeather(params: {
     `&wind_speed_unit=mph` +
     `&timezone=auto`;
 
-  const response = await fetch(url, {
+  const response = await fetchWithTimeout(url, {
     headers: {
       "User-Agent": "GamblingNFL/1.0",
     },
@@ -426,38 +464,59 @@ async function fetchCurrentGameWeather(params: {
 
   const data = await response.json();
 
-  const temperature = Math.round(
-    Number(
-      data?.current?.temperature_2m ?? 65,
-    ),
-  );
+  /*
+   * Make sure the expected Open-Meteo structure exists.
+   */
+  if (!data?.current) {
+    throw new Error(
+      "Open-Meteo response missing current weather",
+    );
+  }
 
-  const weatherCode = Number(
-    data?.current?.weather_code ?? 0,
-  );
+  const temperatureValue =
+    Number(data.current.temperature_2m);
+
+  if (!Number.isFinite(temperatureValue)) {
+    throw new Error(
+      "Open-Meteo returned an invalid temperature",
+    );
+  }
+
+  const temperature =
+    Math.round(temperatureValue);
+
+  const weatherCode =
+    Number(
+      data.current.weather_code ?? 0,
+    );
 
   const isDay =
     Number(
-      data?.current?.is_day ?? 1,
+      data.current.is_day ?? 1,
     ) === 1;
 
-  const windSpeed = Number(
-    data?.current?.wind_speed_10m ?? 0,
-  );
-
-  const high = Math.round(
+  const windSpeed =
     Number(
-      data?.daily?.temperature_2m_max?.[0] ??
-        temperature,
-    ),
-  );
+      data.current.wind_speed_10m ?? 0,
+    );
 
-  const low = Math.round(
+  const highValue =
     Number(
-      data?.daily?.temperature_2m_min?.[0] ??
-        temperature,
-    ),
-  );
+      data?.daily?.temperature_2m_max?.[0],
+    );
+
+  const lowValue =
+    Number(
+      data?.daily?.temperature_2m_min?.[0],
+    );
+
+  const high = Number.isFinite(highValue)
+    ? Math.round(highValue)
+    : temperature;
+
+  const low = Number.isFinite(lowValue)
+    ? Math.round(lowValue)
+    : temperature;
 
   const {
     condition,
@@ -492,9 +551,8 @@ export async function fetchGameWeather(params: {
   );
 
   /*
-   * Indoor stadium:
-   * show a neutral indoor temperature instead of
-   * leaving the card blank or using outdoor weather.
+   * Indoor stadiums don't need an external
+   * weather request at all.
    */
   if (stadium.isIndoor) {
     return {
@@ -520,8 +578,9 @@ export async function fetchGameWeather(params: {
     normalizedStatus === "completed";
 
   /*
-   * Completed games use historical weather and
-   * never fall back to current weather.
+   * COMPLETED GAME
+   *
+   * Use historical weather.
    */
   if (isFinal) {
     const cached =
@@ -568,7 +627,9 @@ export async function fetchGameWeather(params: {
   }
 
   /*
-   * Upcoming/live games use current weather.
+   * UPCOMING / LIVE GAME
+   *
+   * Use current stadium weather.
    */
   const cached =
     liveWeatherCache.get(
