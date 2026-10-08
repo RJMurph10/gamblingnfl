@@ -37,11 +37,26 @@ function PlayerPage() {
         <div className="grid size-20 shrink-0 place-items-center overflow-hidden rounded-xl bg-panel2 ring-1 ring-line/10">
           {player.headshot ? <img src={player.headshot} alt={player.name} className="size-full object-cover" /> : null}
         </div>
-        {team ? <TeamMark team={team} size="lg" /> : null}
-        <PageTitle
-          eyebrow={`${player.position} · #${player.jersey ?? "—"} · ${player.teamName}`}
-          title={player.name}
-        />
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-4">
+            {team ? <TeamMark team={team} size="lg" /> : null}
+            <PageTitle
+              eyebrow={`${player.position} · #${player.jersey ?? "—"} · ${player.teamName}`}
+              title={player.name}
+            />
+          </div>
+          <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
+            <Chip label="Age" value={player.age ?? "—"} />
+            <Chip label="Height" value={player.height ?? "—"} />
+            <Chip label="Weight" value={player.weight ?? "—"} />
+            <Chip label="Born" value={player.birthDate ?? "—"} />
+            <Chip label="Birthplace" value={player.birthPlace ?? "—"} />
+            <Chip label="College" value={player.college ?? "—"} />
+            <Chip label="Experience" value={player.experience != null ? `${player.experience} yrs` : "—"} />
+            <Chip label="Draft" value={player.draft ?? "Undrafted"} />
+            <Chip label="Status" value={player.status ?? "—"} />
+          </div>
+        </div>
       </div>
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
@@ -90,22 +105,11 @@ function PlayerPage() {
         </Panel>
       </div>
 
-      <Panel className="mt-5">
-        <PanelHeader title="Player information" aside={<span className="label-mono">ESPN profile</span>} />
-        <div className="grid gap-3 text-sm sm:grid-cols-2 lg:grid-cols-4">
-          <Info label="Position" value={player.position} /><Info label="Team" value={player.teamName} />
-          <Info label="College" value={player.college ?? "—"} /><Info label="Experience" value={player.experience != null ? `${player.experience} yrs` : "—"} />
-          <Info label="Age" value={player.age ?? "—"} /><Info label="Height" value={player.height ?? "—"} /><Info label="Weight" value={player.weight ?? "—"} /><Info label="Jersey" value={`#${player.jersey ?? "—"}`} />
-          <Info label="Draft" value={player.draft ?? "Undrafted"} /><Info label="Birthplace" value={player.birthPlace ?? "—"} /><Info label="Born" value={player.birthDate ?? "—"} /><Info label="Status" value={player.status ?? "—"} />
-        </div>
-      </Panel>
-    </>
+function Chip({ label, value }: { label: string; value: string | number }) {
+  return (
+    <span className="text-xs">
+      <span className="label-mono mr-1.5">{label}</span>
+      <span className="font-medium">{value}</span>
+    </span>
   );
-}
-
-function Metric({ label, value }: { label: string; value: string | number }) {
-  return <div className="p-4"><div className="label-mono">{label}</div><div className="mt-1 font-disp text-xl font-semibold tabular-nums">{value}</div></div>;
-}
-function Info({ label, value }: { label: string; value: string | number }) {
-  return <div className="rounded-lg bg-panel2 p-3 ring-1 ring-line/10"><div className="label-mono">{label}</div><div className="mt-1 font-medium">{value}</div></div>;
 }
