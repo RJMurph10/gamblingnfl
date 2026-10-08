@@ -1,3 +1,4 @@
+
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { PageTitle, Panel, PanelHeader, SampleBadge, SpreadBadge, TeamLogo } from "@/components/booth";
@@ -38,7 +39,10 @@ function GamesPage() {
   const { data: liveGames } = useQuery({
     queryKey: ["live-schedule"],
     queryFn: () => getLiveSchedule(),
-    staleTime: 5 * 60 * 1000,
+    // Recheck the ESPN schedule periodically so newly released lines appear
+    // without requiring the user to reload the Games tab.
+    refetchInterval: 5 * 60 * 1000,
+    staleTime: 60 * 1000,
     retry: 1,
   });
 
@@ -68,7 +72,7 @@ function GamesPage() {
     const homeFav = m[1].toUpperCase() === home.abbr.toUpperCase();
     if (!awayFav && !homeFav) return "text-faint";
     const diff = awayFav ? score.away - score.home : score.home - score.away;
-    return diff > pts ? win : diff < pts ? loss : "text-mute";
+    return diff > pts ? win : diff < -pts ? loss : "text-mute";
   };
 
   return (
@@ -97,6 +101,14 @@ function GamesPage() {
                   const home = teamById(game.homeTeamId);
                   const score = gameScore(game);
                   if (!away || !home) return null;
+
+                  const hasSpread =
+                    typeof game.spread === "string" &&
+                    game.spread.trim().length > 0 &&
+                    !["—", "-", "N/A", "NA"].includes(game.spread.trim().toUpperCase());
+                  const hasTotal = typeof game.total === "number" && game.total > 0;
+                  const hasMarket = hasSpread || hasTotal;
+
                   return (
                     <Link
                       key={game.id}
@@ -126,12 +138,18 @@ function GamesPage() {
                           </div>
                         ))}
                       </div>
-                      <div className="mt-2 flex justify-between border-t border-line/10 pt-2 font-mono text-[10px] uppercase tracking-wider text-faint">
-                        <span className={marketClass(game, "spread")}>
-                          <SpreadBadge spread={game.spread} away={away} home={home} />
-                        </span>
-                        <span className={marketClass(game, "total")}>{game.total > 0 ? `O/U ${game.total}` : "O/U —"}</span>
-                      </div>
+                      {hasMarket && (
+                        <div className="mt-2 flex justify-between border-t border-line/10 pt-2 font-mono text-[10px] uppercase tracking-wider text-faint">
+                          {hasSpread ? (
+                            <span className={marketClass(game, "spread")}>
+                              <SpreadBadge spread={game.spread} away={away} home={home} />
+                            </span>
+                          ) : <span />}
+                          {hasTotal && (
+                            <span className={marketClass(game, "total")}>O/U {game.total}</span>
+                          )}
+                        </div>
+                      )}
                     </Link>
                   );
                 })}
