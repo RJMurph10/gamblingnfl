@@ -25,4 +25,5 @@
   hardcode color utilities in components (team brand colors are data-driven).
 
 ## Live data
+- Game detail statistics visibility is defined in a browser-safe status helper so scheduled/live/final behavior can be tested without contacting ESPN.
 - Games pages read the real 2026 NFL schedule/results from ESPN public feeds via src/lib/espn.server.ts (scoreboard + summary, 5-min module cache) exposed through src/lib/espn.functions.ts; sample data in src/data/games.ts is only a fallback when the feed is unreachable. Game ids from ESPN are prefixed `espn-`.
