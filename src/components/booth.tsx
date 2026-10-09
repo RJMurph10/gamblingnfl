@@ -662,53 +662,42 @@ export function marketResultClass(
   const neutral = "text-mute";
   const win = "text-green-500 font-semibold";
   const loss = "text-red-500 font-semibold";
-  const push = "text-yellow-400 font-semibold";
+  const push = neutral;
 
-  // Pregame lines remain neutral until kickoff; evaluate them live and after the game.
+  // Show the pregame line without grading it until the game has started.
   if (game.status === "scheduled") return { spread: neutral, total: neutral };
 
+  const score = gameScore(game);
+  const scoreDiff = score.away - score.home;
   let spread = neutral;
   const m = game.spread?.match(/^([A-Za-z]+)\s*([+-]?\d+(?:\.\d+)?)/);
   const isPk = game.spread === "PK" || game.spread === "EVEN";
 
   if (forTeam && (m || isPk)) {
-    const score = gameScore(game);
-    const isAway = forTeam.id === away.id;
-    const diff = isAway ? score.away - score.home : score.home - score.away;
-    const pts = m ? Math.abs(Number(m[2])) : 0;
-
-    // A negative line belongs to the favorite named in the stored spread.
-    const line =
-      m && m[1].toUpperCase() === forTeam.abbr.toUpperCase()
-        ? -pts
-        : pts;
-
-    const margin = diff + line;
-    spread = margin > 0 ? win : margin < 0 ? loss : push;
+    const margin = forTeam.id === away.id ? scoreDiff : -scoreDiff;
+    const points = m ? Math.abs(Number(m[2])) : 0;
+    const isFavorite = Boolean(m && m[1].toUpperCase() === forTeam.abbr.toUpperCase());
+    const adjustedMargin = isPk ? margin : margin + (isFavorite ? -points : points);
+    spread = adjustedMargin > 0 ? win : adjustedMargin < 0 ? loss : push;
   } else if (m) {
-    const pts = Math.abs(Number(m[2]));
-    const awayFav = m[1].toUpperCase() === away.abbr.toUpperCase();
-    const homeFav = m[1].toUpperCase() === home.abbr.toUpperCase();
-
+    const points = Math.abs(Number(m[2]));
+    const favoriteAbbr = m[1].toUpperCase();
+    const awayFav = favoriteAbbr === away.abbr.toUpperCase();
+    const homeFav = favoriteAbbr === home.abbr.toUpperCase();
     if (awayFav || homeFav) {
-      const score = gameScore(game);
-      const diff = awayFav ? score.away - score.home : score.home - score.away;
-      const margin = diff - pts;
-
-      spread = margin > 0 ? win : margin < 0 ? loss : push;
+      const favoriteMargin = awayFav ? scoreDiff : -scoreDiff;
+      const adjustedMargin = favoriteMargin - points;
+      spread = adjustedMargin > 0 ? win : adjustedMargin < 0 ? loss : push;
     }
+  } else if (isPk) {
+    spread = scoreDiff > 0 ? win : scoreDiff < 0 ? loss : push;
   }
 
   let total = neutral;
   if (game.total > 0) {
-    const score = gameScore(game);
     const points = score.away + score.home;
-
-    if (points > game.total) total = win;
-    else if (points < game.total) total = loss;
-    else total = push;
+    total = points > game.total ? win : points < game.total ? loss : push;
   }
-
   return { spread, total };
 }
 
