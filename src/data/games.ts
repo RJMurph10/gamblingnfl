@@ -1,4 +1,3 @@
-
 /**
  * Sample game data for the visual prototype: line scores, drive charts,
  * team stat lines, and box scores.
@@ -72,6 +71,16 @@ export interface GameProbabilityPoint {
   homeCoverProbability?: number;
   /** Probability the game goes over the pregame total, expressed from 0 to 1. */
   overProbability?: number;
+  /** Play context attached to this probability sample when ESPN supplies it. */
+  playId?: string;
+  quarter?: number;
+  clock?: string;
+  down?: number;
+  distance?: number;
+  yardLine?: string;
+  awayScore?: number;
+  homeScore?: number;
+  playText?: string;
 }
 
 export interface Game {
@@ -308,8 +317,7 @@ export const games: Game[] = [
   },
 ];
 
-export const gameById = (id: string): Game | undefined =>
-  games.find((g) => g.id === id);
+export const gameById = (id: string): Game | undefined => games.find((g) => g.id === id);
 
 export const gamesByTeam = (teamId: string): Game[] =>
   games.filter((g) => g.awayTeamId === teamId || g.homeTeamId === teamId);
