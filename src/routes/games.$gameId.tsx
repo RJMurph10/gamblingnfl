@@ -304,6 +304,8 @@ function GamePage() {
 
   const [selectedTeamTab, setSelectedTeamTab] =
     useState<"offense" | "defense">("offense");
+  const [activeGameTab, setActiveGameTab] =
+    useState<"gamecast" | "stats" | "markets">("gamecast");
 
   if (isLoading) {
     return (
@@ -607,8 +609,24 @@ function GamePage() {
 
       {showGameStatistics(game.status) ? (
         <>
+          {game.status === "final" ? (
+            <nav className="mt-6 grid grid-cols-3 border-b border-line/15" aria-label="Game details tabs">
+              {([ ["gamecast", "Gamecast"], ["stats", "Stats"], ["markets", "Markets"] ] as const).map(([tab, label]) => (
+                <button
+                  key={tab}
+                  type="button"
+                  onClick={() => setActiveGameTab(tab)}
+                  aria-pressed={activeGameTab === tab}
+                  className={`border-b-2 px-3 py-3 font-disp text-sm font-semibold uppercase tracking-wider transition-colors ${activeGameTab === tab ? "border-acc text-foreground" : "border-transparent text-mute hover:text-foreground"}`}
+                >
+                  {label}
+                </button>
+              ))}
+            </nav>
+          ) : null}
+          <div>
           <div className="mt-6 grid gap-6 lg:grid-cols-12">
-            <Panel className="lg:col-span-5">
+            <Panel className={`lg:col-span-5 ${game.status === "final" && activeGameTab !== "gamecast" ? "hidden" : ""}`}>
               <div className="flex items-center justify-between">
                 <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">
                   Box score
@@ -624,7 +642,7 @@ function GamePage() {
               </div>
             </Panel>
 
-            <Panel className="lg:col-span-7">
+            <Panel className={`lg:col-span-7 ${game.status === "final" && activeGameTab !== "stats" ? "hidden" : ""}`}>
               <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">
                 Team statistics
               </h2>
@@ -638,9 +656,47 @@ function GamePage() {
               </div>
             </Panel>
           </div>
+          </div>
+
+          {game.status === "final" && activeGameTab === "gamecast" ? (
+            <section className="mt-6">
+              <Panel>
+                <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">Game leaders</h2>
+                <p className="label-mono mt-1">Top individual performances · {away.abbr} and {home.abbr}</p>
+                <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  {([
+                    { label: "Passing yards", pattern: /([0-9,]+) yds/i, positions: ["QB", "PASSING"] },
+                    { label: "Rushing yards", pattern: /([0-9,]+) yds/i, positions: ["RB", "FB", "RUSHING"] },
+                    { label: "Receiving yards", pattern: /([0-9,]+) yds/i, positions: ["WR", "TE", "RECEIVING"] },
+                    { label: "Sacks", pattern: /([0-9]+(?:\.[0-9])?) sck/i, positions: ["DEF"] },
+                    { label: "Tackles", pattern: /([0-9]+) tkl/i, positions: ["DEF"] },
+                  ] as const).map((leader) => {
+                    const candidates = game.boxScore.filter((line) => {
+                      const pos = line.position.toUpperCase();
+                      if (leader.label === "Sacks" || leader.label === "Tackles") return line.category === "defense" || pos === "DEF";
+                      if (leader.label === "Passing yards") return /\bpass/i.test(line.statLine) || pos === "QB" || line.statLine.includes("INT");
+                      if (leader.label === "Rushing yards") return /\bcar\b/i.test(line.statLine);
+                      return /\brec\b/i.test(line.statLine);
+                    }).map((line) => {
+                      const match = line.statLine.match(leader.pattern);
+                      return { line, value: match ? Number(match[1].replace(/,/g, "")) : -1 };
+                    }).filter((item) => item.value >= 0).sort((a, b) => b.value - a.value);
+                    const top = candidates[0];
+                    return (
+                      <div key={leader.label} className="rounded-lg border border-line/10 bg-panel2/40 p-3">
+                        <div className="label-mono">{leader.label}</div>
+                        {top ? <div className="mt-2 flex items-start justify-between gap-2"><div><div className="font-semibold">{top.line.name}</div><div className="text-xs text-mute">{top.line.teamId === away.id ? away.abbr : home.abbr}</div></div><div className="font-mono text-lg font-bold tabular-nums text-acc">{top.value}{leader.label.includes("yards") ? " yds" : ""}</div></div> : <p className="mt-2 text-sm text-mute">No leader data available</p>}
+                      </div>
+                    );
+                  })}
+                </div>
+              </Panel>
+            </section>
+          ) : null}
 
           {/* Drive by drive */}
-          <section className="mt-6">
+          <section className={`mt-6 ${game.status === "final" && activeGameTab !== "gamecast" ? "hidden" : ""}`}>
+
             <Panel padded={false}>
               <div className="flex items-center justify-between border-b border-line/10 px-4 py-3">
                 <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">
@@ -663,7 +719,7 @@ function GamePage() {
           </section>
 
           {/* Team selector + player statistics */}
-          <section className="mt-6">
+          <section className={`mt-6 ${game.status === "final" && activeGameTab !== "stats" ? "hidden" : ""}`}>
             <div className="mb-3 flex items-center justify-between">
               <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">
                 Player statistics
@@ -831,6 +887,31 @@ function GamePage() {
               )}
             </Panel>
           </section>
+          {game.status === "final" && activeGameTab === "markets" ? (
+            <section className="mt-6 space-y-4">
+              <Panel>
+                <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">Moneyline probability</h2>
+                <p className="label-mono mt-1">ESPN game probability by play, when provided by the feed</p>
+                <div className="mt-4 grid grid-cols-2 gap-3">
+                  <div className="rounded-lg border border-line/10 p-4"><div className="label-mono">{away.abbr} win probability</div><div className="mt-1 font-mono text-2xl font-bold text-acc">{game.status === "final" ? (score.away > score.home ? "100%" : score.away < score.home ? "0%" : "50%") : "—"}</div></div>
+                  <div className="rounded-lg border border-line/10 p-4"><div className="label-mono">{home.abbr} win probability</div><div className="mt-1 font-mono text-2xl font-bold text-acc">{game.status === "final" ? (score.home > score.away ? "100%" : score.home < score.away ? "0%" : "50%") : "—"}</div></div>
+                </div>
+                <p className="mt-3 text-xs text-mute">Final win percentages above represent the game result, not ESPN's historical in-game probability curve.</p>
+              </Panel>
+              <div className="grid gap-4 md:grid-cols-2">
+                <Panel>
+                  <h2 className="font-disp text-lg font-semibold uppercase tracking-tight">Spread probability</h2>
+                  <div className="mt-2 font-mono text-sm text-mute">Pregame line: {game.spread || "—"}</div>
+                  <p className="mt-3 text-sm text-mute">ESPN's public game-summary feed does not expose a historical cover-probability series for this event, so a probability chart cannot be populated reliably from the current source.</p>
+                </Panel>
+                <Panel>
+                  <h2 className="font-disp text-lg font-semibold uppercase tracking-tight">Total probability</h2>
+                  <div className="mt-2 font-mono text-sm text-mute">Pregame total: {game.total || "—"}</div>
+                  <p className="mt-3 text-sm text-mute">ESPN's public game-summary feed does not expose a historical over/under-probability series for this event, so a probability chart cannot be populated reliably from the current source.</p>
+                </Panel>
+              </div>
+            </section>
+          ) : null}
         </>
       ) : null}
     </>
