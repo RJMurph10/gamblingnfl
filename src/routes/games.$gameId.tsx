@@ -200,25 +200,32 @@ type ProbabilityKey = "homeWinProbability" | "homeCoverProbability" | "overProba
 function ProbabilityGraph({
   points,
   probabilityKey,
-  primaryLabel,
-  secondaryLabel,
-  primaryValues,
-  secondaryValues,
+  values,
+  highColor,
+  lowColor,
+  highLabel,
+  lowLabel,
+  away,
+  home,
 }: {
   points: GameProbabilityPoint[];
   probabilityKey: ProbabilityKey;
-  primaryLabel: string;
-  secondaryLabel: string;
-  primaryValues: Array<number | undefined>;
-  secondaryValues: Array<number | undefined>;
+  values: Array<number | undefined>;
+  highColor: string;
+  lowColor: string;
+  highLabel: string;
+  lowLabel: string;
+  away?: Team;
+  home?: Team;
 }) {
-  const available = primaryValues.some((value) => typeof value === "number") || secondaryValues.some((value) => typeof value === "number");
-  if (!available) {
+  const [hoverIndex, setHoverIndex] = useState<number | null>(null);
+  const valid = values.map((v, i) => typeof v === "number" ? i : -1).filter((i) => i >= 0);
+  if (!valid.length) {
     return (
       <div className="mt-4 rounded-lg border border-line/10 bg-panel2/30 px-4 py-10 text-center">
         <p className="font-semibold">Probability history unavailable</p>
         <p className="mx-auto mt-2 max-w-lg text-sm text-mute">
-          ESPN did not return a {probabilityKey === "homeWinProbability" ? "win-probability" : probabilityKey === "homeCoverProbability" ? "spread-cover" : "over/under-probability"} series for this game. No estimated or fabricated values are shown.
+          ESPN did not return this probability series for the game. No estimated or fabricated values are shown.
         </p>
       </div>
     );
@@ -232,32 +239,73 @@ function ProbabilityGraph({
   const bottom = 42;
   const plotWidth = width - left - right;
   const plotHeight = height - top - bottom;
-  const xFor = (index: number, length: number) => left + (length <= 1 ? plotWidth / 2 : (index / (length - 1)) * plotWidth);
+  const xFor = (index: number) => left + (values.length <= 1 ? plotWidth / 2 : (index / (values.length - 1)) * plotWidth);
   const yFor = (value: number) => top + (1 - Math.max(0, Math.min(1, value))) * plotHeight;
-  const lineFor = (values: Array<number | undefined>) => values
-    .map((value, index) => typeof value === "number" ? `${xFor(index, values.length)},${yFor(value)}` : null)
-    .filter(Boolean).join(" ");
+  const baseline = yFor(0.5);
+  const segments = values.slice(0, -1).map((value, index) => {
+    const next = values[index + 1];
+    if (typeof value !== "number" || typeof next !== "number") return null;
+    return { index, value, next, color: (value + next) / 2 >= 0.5 ? highColor : lowColor };
+  }).filter((segment): segment is { index: number; value: number; next: number; color: string } => segment !== null);
+  const selected = hoverIndex === null ? null : points[hoverIndex];
+  const selectedValue = hoverIndex === null ? undefined : values[hoverIndex];
+  const selectedTeam = typeof selectedValue === "number" && selectedValue >= 0.5 ? highLabel : lowLabel;
+  const scoreText = selected && (typeof selected.awayScore === "number" || typeof selected.homeScore === "number")
+    ? `${away?.abbr ?? "Away"} ${selected.awayScore ?? "—"} · ${home?.abbr ?? "Home"} ${selected.homeScore ?? "—"}`
+    : "";
+  const pointClock = selected?.clock ? ` ${selected.clock}` : "";
 
   return (
     <div className="mt-4 rounded-lg border border-line/10 bg-panel2/20 p-2 sm:p-4">
-      <div className="mb-3 flex flex-wrap gap-x-5 gap-y-2 text-xs font-medium">
-        <span className="inline-flex items-center gap-2"><span className="inline-block size-2.5 rounded-full bg-acc" />{primaryLabel}</span>
-        <span className="inline-flex items-center gap-2"><span className="inline-block size-2.5 rounded-full bg-rose-500" />{secondaryLabel}</span>
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-3 text-xs font-medium">
+          {away && <span className="inline-flex items-center gap-1.5"><TeamLogo team={away} className="size-5" /><span className="inline-block h-0.5 w-5" style={{ backgroundColor: lowColor }} />{lowLabel}</span>}
+          {home && <span className="inline-flex items-center gap-1.5"><TeamLogo team={home} className="size-5" /><span className="inline-block h-0.5 w-5" style={{ backgroundColor: highColor }} />{highLabel}</span>}
+          {!away && <span className="inline-flex items-center gap-1.5"><span className="inline-block size-2.5 rounded-full" style={{ backgroundColor: highColor }} />{highLabel}</span>}
+          {!home && <span className="inline-flex items-center gap-1.5"><span className="inline-block size-2.5 rounded-full" style={{ backgroundColor: lowColor }} />{lowLabel}</span>}
+        </div>
+        <div className="flex items-center gap-2 font-mono text-xs tabular-nums">
+          <span className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 font-semibold text-white" style={{ backgroundColor: highColor }}>
+            {home ? <TeamLogo team={home} className="size-5" /> : <span>Over</span>}
+            <span aria-hidden="true">—</span>
+            {Math.round((values[values.length - 1] ?? 0) * 100)}%
+          </span>
+          <span className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 font-semibold text-white" style={{ backgroundColor: lowColor }}>
+            {away ? <TeamLogo team={away} className="size-5" /> : <span>Under</span>}
+            <span aria-hidden="true">—</span>
+            {Math.round((1 - (values[values.length - 1] ?? 0)) * 100)}%
+          </span>
+        </div>
       </div>
-      <svg viewBox={`0 0 ${width} ${height}`} className="block w-full" role="img" aria-label={`${primaryLabel} and ${secondaryLabel} probability through the game`}>
+      <svg viewBox={`0 0 ${width} ${height}`} className="block w-full touch-pan-x" role="img" aria-label={`${probabilityKey} probability over the game`} onMouseLeave={() => setHoverIndex(null)}>
         {[0, 0.5, 1].map((tick) => {
           const y = yFor(tick);
-          return <g key={tick}><line x1={left} x2={width - right} y1={y} y2={y} stroke="currentColor" strokeOpacity="0.12" strokeDasharray="4 5" /><text x={left - 12} y={y + 4} textAnchor="end" fontSize="14" fill="currentColor" opacity="0.65">{Math.round(tick * 100)}%</text></g>;
+          return <g key={tick}><line x1={left} x2={width - right} y1={y} y2={y} stroke="currentColor" strokeOpacity={tick === 0.5 ? 0.35 : 0.12} strokeDasharray={tick === 0.5 ? "5 4" : "4 5"} /><text x={left - 12} y={y + 4} textAnchor="end" fontSize="14" fill="currentColor" opacity="0.65">{Math.round(tick * 100)}%</text></g>;
         })}
         <line x1={left} x2={left} y1={top} y2={height - bottom} stroke="currentColor" strokeOpacity="0.2" />
         <line x1={left} x2={width - right} y1={height - bottom} y2={height - bottom} stroke="currentColor" strokeOpacity="0.2" />
-        <polyline points={lineFor(primaryValues)} fill="none" stroke="var(--accent)" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
-        <polyline points={lineFor(secondaryValues)} fill="none" stroke="#f43f5e" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+        {segments.map(({ index, value, next, color }) => {
+          const x1 = xFor(index), x2 = xFor(index + 1), y1 = yFor(value), y2 = yFor(next);
+          const area = `${x1},${baseline} ${x1},${y1} ${x2},${y2} ${x2},${baseline}`;
+          return <g key={index}><polygon points={area} fill={color} fillOpacity="0.14" /><line x1={x1} y1={y1} x2={x2} y2={y2} stroke={color} strokeWidth="4" strokeLinecap="round" /></g>;
+        })}
+        {hoverIndex !== null && typeof values[hoverIndex] === "number" ? <line x1={xFor(hoverIndex)} x2={xFor(hoverIndex)} y1={top} y2={height - bottom} stroke="currentColor" strokeOpacity="0.45" strokeDasharray="3 4" /> : null}
+        {values.map((value, index) => typeof value === "number" ? <circle key={index} cx={xFor(index)} cy={yFor(value)} r={hoverIndex === index ? 6 : 2.4} fill={(value >= 0.5 ? highColor : lowColor)} stroke="currentColor" strokeOpacity={hoverIndex === index ? 0.7 : 0} strokeWidth="1.5" onMouseEnter={() => setHoverIndex(index)} onFocus={() => setHoverIndex(index)} tabIndex={0} role="button" aria-label={`Play ${index + 1}, ${Math.round(value * 100)} percent`} /> : null)}
         <text x={left} y={height - 12} fontSize="14" fill="currentColor" opacity="0.65">Kickoff</text>
         <text x={left + plotWidth / 2} y={height - 12} textAnchor="middle" fontSize="14" fill="currentColor" opacity="0.65">Game progress</text>
         <text x={width - right} y={height - 12} textAnchor="end" fontSize="14" fill="currentColor" opacity="0.65">Final</text>
       </svg>
-      <p className="mt-1 text-[11px] text-mute">{points.length} play-level data points · probabilities are sourced from ESPN when available</p>
+      {selected ? (
+        <div className="mt-2 rounded-lg border border-line/10 bg-panel p-3">
+          <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-mono text-mute">
+            <span>{selected.quarter ? `Q${selected.quarter}` : "Game play"}{pointClock}</span>
+            <span>{scoreText}</span>
+            <span>{typeof selectedValue === "number" ? `${selectedTeam}: ${Math.round(selectedValue * 100)}%` : ""}</span>
+          </div>
+          {(selected.down || selected.distance || selected.yardLine) ? <p className="mt-2 text-sm font-semibold">{selected.down ? `${selected.down}${selected.down === 1 ? "st" : selected.down === 2 ? "nd" : selected.down === 3 ? "rd" : "th"} & ${selected.distance ?? "—"}` : "Down and distance"}{selected.yardLine ? ` at ${selected.yardLine}` : ""}</p> : null}
+          <p className="mt-1 text-sm leading-relaxed">{selected.playText || `Play-level probability sample ${hoverIndex! + 1}. ESPN did not provide a play description for this point.`}</p>
+        </div>
+      ) : <p className="mt-2 text-[11px] text-mute">Hover or focus a point to inspect the play and probability. {points.length} ESPN data points.</p>}
     </div>
   );
 }
@@ -982,24 +1030,44 @@ function GamePage() {
                 <div className="mt-5 grid grid-cols-3 rounded-lg border border-line/10 p-1" role="tablist" aria-label="Market probability type">
                   {([ ["moneyline", "Moneyline"], ["spread", "Spread"], ["total", "Total"] ] as const).map(([tab, label]) => (
                     <button key={tab} type="button" role="tab" aria-selected={activeMarketTab === tab} onClick={() => setActiveMarketTab(tab)} className={`rounded-md px-2 py-2.5 font-disp text-xs font-semibold uppercase tracking-wider transition-colors sm:text-sm ${activeMarketTab === tab ? "bg-acc text-black" : "text-mute hover:bg-line/5 hover:text-foreground"}`}>
-                      {label}
-                      <span className="mt-0.5 block font-mono text-[9px] font-normal normal-case tracking-normal sm:text-[10px]">{tab === "moneyline" ? "Win probability" : tab === "spread" ? "Cover probability" : "Over/under probability"}</span>
+                      {tab === "moneyline" ? "MoneyLine" : label}
                     </button>
                   ))}
                 </div>
                 {activeMarketTab === "moneyline" ? (
-                  <>
-                    <div className="mt-4 flex items-center justify-between gap-3 rounded-lg bg-panel2/40 p-3">
-                      <div className="flex items-center gap-2"><TeamLogo team={away} className="size-6" /><span className="text-sm font-semibold">{away.name}</span></div>
-                      <span className="font-mono text-xs text-mute">vs.</span>
-                      <div className="flex items-center gap-2"><span className="text-sm font-semibold">{home.name}</span><TeamLogo team={home} className="size-6" /></div>
-                    </div>
-                    <ProbabilityGraph points={game.probabilities ?? []} probabilityKey="homeWinProbability" primaryLabel={`${home.abbr} win`} secondaryLabel={`${away.abbr} win`} primaryValues={(game.probabilities ?? []).map((point) => point.homeWinProbability)} secondaryValues={(game.probabilities ?? []).map((point) => typeof point.homeWinProbability === "number" ? 1 - point.homeWinProbability : undefined)} />
-                  </>
+                  <ProbabilityGraph
+                    points={game.probabilities ?? []}
+                    probabilityKey="homeWinProbability"
+                    values={(game.probabilities ?? []).map((point) => point.homeWinProbability)}
+                    highColor={home.color}
+                    lowColor={away.color}
+                    highLabel={home.name}
+                    lowLabel={away.name}
+                    away={away}
+                    home={home}
+                  />
                 ) : activeMarketTab === "spread" ? (
-                  <ProbabilityGraph points={game.probabilities ?? []} probabilityKey="homeCoverProbability" primaryLabel={`${home.abbr} cover`} secondaryLabel={`${away.abbr} cover`} primaryValues={(game.probabilities ?? []).map((point) => point.homeCoverProbability)} secondaryValues={(game.probabilities ?? []).map((point) => typeof point.homeCoverProbability === "number" ? 1 - point.homeCoverProbability : undefined)} />
+                  <ProbabilityGraph
+                    points={game.probabilities ?? []}
+                    probabilityKey="homeCoverProbability"
+                    values={(game.probabilities ?? []).map((point) => point.homeCoverProbability)}
+                    highColor={home.color}
+                    lowColor={away.color}
+                    highLabel={`${home.name} cover`}
+                    lowLabel={`${away.name} cover`}
+                    away={away}
+                    home={home}
+                  />
                 ) : (
-                  <ProbabilityGraph points={game.probabilities ?? []} probabilityKey="overProbability" primaryLabel="Over" secondaryLabel="Under" primaryValues={(game.probabilities ?? []).map((point) => point.overProbability)} secondaryValues={(game.probabilities ?? []).map((point) => typeof point.overProbability === "number" ? 1 - point.overProbability : undefined)} />
+                  <ProbabilityGraph
+                    points={game.probabilities ?? []}
+                    probabilityKey="overProbability"
+                    values={(game.probabilities ?? []).map((point) => point.overProbability)}
+                    highColor="#22c55e"
+                    lowColor="#ef4444"
+                    highLabel="Over"
+                    lowLabel="Under"
+                  />
                 )}
               </Panel>
             </section>
