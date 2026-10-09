@@ -16,6 +16,12 @@ const SCOREBOARD =
 const SUMMARY = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary";
 const CORE_ODDS = "https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/events";
 
+const optionalNumber = (value: unknown): number | undefined => {
+  if (value === undefined || value === null || value === "") return undefined;
+  const parsed = typeof value === "number" ? value : Number(value);
+  return Number.isFinite(parsed) ? parsed : undefined;
+};
+
 const SEASON = 2026;
 const REGULAR_SEASON_WEEKS = 18;
 const CACHE_TTL_MS = 3 * 1000; // 3-second live server cache
@@ -600,11 +606,17 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
 
     const summaryProbabilities = Array.isArray(d?.winprobability) ? d.winprobability : [];
     const coreProbabilityItems = Array.isArray(coreProbabilities?.items) ? coreProbabilities.items : [];
+    const summaryPlays = [
+      ...(Array.isArray(d?.drives?.previous) ? d.drives.previous : []),
+      ...(d?.drives?.current ? [d.drives.current] : []),
+    ].flatMap((drive: any) => Array.isArray(drive?.plays) ? drive.plays : []);
     const probabilityCount = Math.max(summaryProbabilities.length, coreProbabilityItems.length);
     if (probabilityCount > 0) {
       base.probabilities = Array.from({ length: probabilityCount }, (_, index) => {
         const summaryPoint = summaryProbabilities[index] ?? {};
         const corePoint = coreProbabilityItems[index] ?? {};
+        const pointId = String(corePoint.playId ?? summaryPoint.playId ?? corePoint.id ?? summaryPoint.id ?? "");
+        const matchingPlay = (pointId ? summaryPlays.find((play: any) => String(play?.id ?? play?.playId ?? "") === pointId) : undefined) ?? summaryPlays[index] ?? {};
         const asProbability = (value: unknown): number | undefined => {
           if (value === undefined || value === null || value === "") return undefined;
           const number = typeof value === "number" ? value : Number(value);
@@ -616,6 +628,15 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
           homeWinProbability: asProbability(summaryPoint.homeWinPercentage ?? corePoint.homeWinPercentage),
           homeCoverProbability: asProbability(corePoint.spreadCoverProbHome ?? corePoint.homeSpreadCoverProbability),
           overProbability: asProbability(corePoint.totalOverProb ?? corePoint.overProbability),
+          playId: pointId || String(matchingPlay?.id ?? "") || undefined,
+          quarter: Number(corePoint.period ?? corePoint.quarter ?? summaryPoint.period ?? summaryPoint.quarter ?? matchingPlay?.period?.number ?? matchingPlay?.period) || undefined,
+          clock: String(corePoint.clock?.displayValue ?? corePoint.clock ?? summaryPoint.clock?.displayValue ?? summaryPoint.clock ?? matchingPlay?.clock?.displayValue ?? matchingPlay?.clock ?? "") || undefined,
+          down: Number(corePoint.down ?? summaryPoint.down ?? matchingPlay?.start?.down ?? matchingPlay?.down) || undefined,
+          distance: Number(corePoint.distance ?? summaryPoint.distance ?? matchingPlay?.start?.distance ?? matchingPlay?.distance) || undefined,
+          yardLine: String(corePoint.yardLine ?? corePoint.start?.yardLine ?? summaryPoint.yardLine ?? matchingPlay?.start?.yardLine ?? matchingPlay?.end?.yardLine ?? "") || undefined,
+          awayScore: optionalNumber(corePoint.awayScore ?? corePoint.scoreAway ?? summaryPoint.awayScore ?? summaryPoint.scoreAway ?? matchingPlay?.awayScore ?? matchingPlay?.start?.team?.score),
+          homeScore: optionalNumber(corePoint.homeScore ?? corePoint.scoreHome ?? summaryPoint.homeScore ?? summaryPoint.scoreHome ?? matchingPlay?.homeScore),
+          playText: String(corePoint.text ?? corePoint.playText ?? summaryPoint.text ?? summaryPoint.playText ?? matchingPlay?.text ?? matchingPlay?.shortText ?? "") || undefined,
         };
       }).filter((point) => point.homeWinProbability !== undefined || point.homeCoverProbability !== undefined || point.overProbability !== undefined);
       // ESPN can return placeholder zeroes when a market probability series is
