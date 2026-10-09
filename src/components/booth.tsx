@@ -664,8 +664,11 @@ export function marketResultClass(
   const loss = "text-red-500 font-semibold";
   const push = neutral;
 
-  // Show the pregame line without grading it until the game has started.
-  if (game.status === "scheduled") return { spread: neutral, total: neutral };
+  // Pregame lines remain visible during live play and are evaluated against
+  // the current score. Scheduled games have no result yet.
+  if (game.status === "scheduled") {
+    return { spread: neutral, total: neutral };
+  }
 
   const score = gameScore(game);
   const scoreDiff = score.away - score.home;
@@ -674,10 +677,11 @@ export function marketResultClass(
   const isPk = game.spread === "PK" || game.spread === "EVEN";
 
   if (forTeam && (m || isPk)) {
-    const margin = forTeam.id === away.id ? scoreDiff : -scoreDiff;
+    const diff = forTeam.id === away.id ? score.away - score.home : score.home - score.away;
     const points = m ? Math.abs(Number(m[2])) : 0;
-    const isFavorite = Boolean(m && m[1].toUpperCase() === forTeam.abbr.toUpperCase());
-    const adjustedMargin = isPk ? margin : margin + (isFavorite ? -points : points);
+    const favoriteAbbr = m?.[1].toUpperCase();
+    const isFavorite = favoriteAbbr === forTeam.abbr.toUpperCase();
+    const adjustedMargin = isPk ? diff : diff + (isFavorite ? -points : points);
     spread = adjustedMargin > 0 ? win : adjustedMargin < 0 ? loss : push;
   } else if (m) {
     const points = Math.abs(Number(m[2]));
@@ -694,10 +698,11 @@ export function marketResultClass(
   }
 
   let total = neutral;
-  if (game.total > 0) {
+  if (typeof game.total === "number" && game.total > 0) {
     const points = score.away + score.home;
     total = points > game.total ? win : points < game.total ? loss : push;
   }
+
   return { spread, total };
 }
 
