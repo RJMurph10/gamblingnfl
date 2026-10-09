@@ -12,6 +12,7 @@ import {
   StatCard,
   TeamLogo,
   TeamMark,
+  marketResultClass,
 } from "@/components/booth";
 import { gameScore, games, type Game } from "@/data/games";
 import { players } from "@/data/players";
@@ -20,7 +21,7 @@ import { getLiveSchedule } from "@/lib/espn.functions";
 
 /* ---------- Live games: row without date/time, clock first ---------- */
 
-function LiveGameRow({ game }: { game: Game }) {
+function LiveGameRow({ game, showDown }: { game: Game; showDown: boolean }) {
   const away = teamById(game.awayTeamId);
   const home = teamById(game.homeTeamId);
   if (!away || !home) return null;
@@ -30,34 +31,21 @@ function LiveGameRow({ game }: { game: Game }) {
   const clockMatch = rawClock.match(/^(\d{1,2}:\d{2})\s*-\s*(.+)$/);
   const clock = clockMatch ? `${clockMatch[2]} ${clockMatch[1]}` : rawClock;
 
-  let spreadClass = "text-mute";
-  if (game.spread && game.spread !== "—" && game.spread !== "PK" && game.spread !== "EVEN") {
-    const match = game.spread.match(/^([A-Za-z]+)\s*([+-]?\d+(?:\.\d+)?)/);
-    if (match) {
-      const [, favAbbr, ptsStr] = match;
-      const pts = Math.abs(parseFloat(ptsStr));
-      const isAwayFav = favAbbr.toUpperCase() === away.abbr.toUpperCase();
-      const isHomeFav = favAbbr.toUpperCase() === home.abbr.toUpperCase();
-      if (isAwayFav || isHomeFav) {
-        const diff = isAwayFav ? score.away - score.home : score.home - score.away;
-        spreadClass = diff > pts ? "text-green-500 font-semibold" : "text-red-500 font-semibold";
-      }
-    }
-  }
-
-  let totalClass = "text-mute";
-  if (game.total && game.total > 0) {
-    totalClass = score.away + score.home > game.total
-      ? "text-green-500 font-semibold"
-      : "text-red-500 font-semibold";
-  }
+  const { spread: spreadClass, total: totalClass } = marketResultClass(
+    game,
+    away,
+    home,
+  );
+  const isHalftime = /half/i.test(game.clock ?? "");
 
   return (
     <tr className="hover:bg-line/5">
       <td className="whitespace-nowrap px-4 py-2.5 font-mono text-mute">{clock}</td>
-      <td className="whitespace-nowrap px-2 py-2.5 font-mono text-mute">
-        {game.downDistance || "—"}
-      </td>
+      {showDown ? (
+        <td className="whitespace-nowrap px-2 py-2.5 font-mono text-mute">
+          {!isHalftime ? game.downDistance || "—" : ""}
+        </td>
+      ) : null}
       <td className="px-2 py-2.5 text-center">
         <Link
           to="/games/$gameId"
@@ -256,6 +244,8 @@ function Dashboard() {
     .sort((a, b) => b.week - a.week || toTimestamp(b) - toTimestamp(a))
     .slice(0, 5);
   const live = source.filter((g) => g.status === "live");
+  // Hide the Down column when every live game is at halftime.
+  const showLiveDownColumn = live.some((g) => !/half/i.test(g.clock ?? ""));
 
   const topPlayers = [...players].sort((a, b) => b.season.yards - a.season.yards).slice(0, 5);
 
@@ -297,7 +287,9 @@ function Dashboard() {
                   <thead>
                     <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
                       <th className="w-[18%] px-4 py-2 font-normal">Game Clock</th>
-                      <th className="w-[16%] px-2 py-2 font-normal">Down</th>
+                      {showLiveDownColumn ? (
+                        <th className="w-[16%] px-2 py-2 font-normal">Down</th>
+                      ) : null}
                       <th className="w-[30%] px-2 py-2 text-center font-normal">Matchup</th>
                       <th className="w-[18%] px-2 py-2 text-right font-normal">Spread</th>
                       <th className="w-[18%] px-4 py-2 text-right font-normal">Total</th>
@@ -305,7 +297,7 @@ function Dashboard() {
                   </thead>
                   <tbody className="divide-y divide-line/5">
                     {live.map((g) => (
-                      <LiveGameRow key={g.id} game={g} />
+                      <LiveGameRow key={g.id} game={g} showDown={showLiveDownColumn} />
                     ))}
                   </tbody>
                 </table>
