@@ -13,7 +13,7 @@ import {
   SpreadBadge,
   marketResultClass,
 } from "@/components/booth";
-import { gameScore, type BoxScoreLine, type Game } from "@/data/games";
+import { gameScore, type BoxScoreLine, type Game, type GameProbabilityPoint } from "@/data/games";
 import { teamById, type Team } from "@/data/teams";
 import { getGameWeather, getLiveGame } from "@/lib/espn.functions";
 import { GameWeatherCard } from "@/components/GameWeatherCard";
@@ -195,6 +195,73 @@ function LiveFieldTrack({
   );
 }
 
+type ProbabilityKey = "homeWinProbability" | "homeCoverProbability" | "overProbability";
+
+function ProbabilityGraph({
+  points,
+  probabilityKey,
+  primaryLabel,
+  secondaryLabel,
+  primaryValues,
+  secondaryValues,
+}: {
+  points: GameProbabilityPoint[];
+  probabilityKey: ProbabilityKey;
+  primaryLabel: string;
+  secondaryLabel: string;
+  primaryValues: Array<number | undefined>;
+  secondaryValues: Array<number | undefined>;
+}) {
+  const available = primaryValues.some((value) => typeof value === "number") || secondaryValues.some((value) => typeof value === "number");
+  if (!available) {
+    return (
+      <div className="mt-4 rounded-lg border border-line/10 bg-panel2/30 px-4 py-10 text-center">
+        <p className="font-semibold">Probability history unavailable</p>
+        <p className="mx-auto mt-2 max-w-lg text-sm text-mute">
+          ESPN did not return a {probabilityKey === "homeWinProbability" ? "win-probability" : probabilityKey === "homeCoverProbability" ? "spread-cover" : "over/under-probability"} series for this game. No estimated or fabricated values are shown.
+        </p>
+      </div>
+    );
+  }
+
+  const width = 1000;
+  const height = 320;
+  const left = 62;
+  const right = 18;
+  const top = 20;
+  const bottom = 42;
+  const plotWidth = width - left - right;
+  const plotHeight = height - top - bottom;
+  const xFor = (index: number, length: number) => left + (length <= 1 ? plotWidth / 2 : (index / (length - 1)) * plotWidth);
+  const yFor = (value: number) => top + (1 - Math.max(0, Math.min(1, value))) * plotHeight;
+  const lineFor = (values: Array<number | undefined>) => values
+    .map((value, index) => typeof value === "number" ? `${xFor(index, values.length)},${yFor(value)}` : null)
+    .filter(Boolean).join(" ");
+
+  return (
+    <div className="mt-4 rounded-lg border border-line/10 bg-panel2/20 p-2 sm:p-4">
+      <div className="mb-3 flex flex-wrap gap-x-5 gap-y-2 text-xs font-medium">
+        <span className="inline-flex items-center gap-2"><span className="inline-block size-2.5 rounded-full bg-acc" />{primaryLabel}</span>
+        <span className="inline-flex items-center gap-2"><span className="inline-block size-2.5 rounded-full bg-rose-500" />{secondaryLabel}</span>
+      </div>
+      <svg viewBox={`0 0 ${width} ${height}`} className="block w-full" role="img" aria-label={`${primaryLabel} and ${secondaryLabel} probability through the game`}>
+        {[0, 0.5, 1].map((tick) => {
+          const y = yFor(tick);
+          return <g key={tick}><line x1={left} x2={width - right} y1={y} y2={y} stroke="currentColor" strokeOpacity="0.12" strokeDasharray="4 5" /><text x={left - 12} y={y + 4} textAnchor="end" fontSize="14" fill="currentColor" opacity="0.65">{Math.round(tick * 100)}%</text></g>;
+        })}
+        <line x1={left} x2={left} y1={top} y2={height - bottom} stroke="currentColor" strokeOpacity="0.2" />
+        <line x1={left} x2={width - right} y1={height - bottom} y2={height - bottom} stroke="currentColor" strokeOpacity="0.2" />
+        <polyline points={lineFor(primaryValues)} fill="none" stroke="var(--accent)" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+        <polyline points={lineFor(secondaryValues)} fill="none" stroke="#f43f5e" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+        <text x={left} y={height - 12} fontSize="14" fill="currentColor" opacity="0.65">Kickoff</text>
+        <text x={left + plotWidth / 2} y={height - 12} textAnchor="middle" fontSize="14" fill="currentColor" opacity="0.65">Game progress</text>
+        <text x={width - right} y={height - 12} textAnchor="end" fontSize="14" fill="currentColor" opacity="0.65">Final</text>
+      </svg>
+      <p className="mt-1 text-[11px] text-mute">{points.length} play-level data points · probabilities are sourced from ESPN when available</p>
+    </div>
+  );
+}
+
 function GamePage() {
   const { gameId } = Route.useParams();
 
@@ -306,6 +373,8 @@ function GamePage() {
     useState<"offense" | "defense">("offense");
   const [activeGameTab, setActiveGameTab] =
     useState<"gamecast" | "stats" | "markets">("gamecast");
+  const [activeMarketTab, setActiveMarketTab] =
+    useState<"moneyline" | "spread" | "total">("moneyline");
 
   if (isLoading) {
     return (
@@ -660,35 +729,45 @@ function GamePage() {
 
           {game.status === "final" && activeGameTab === "gamecast" ? (
             <section className="mt-6">
-              <Panel>
-                <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">Game leaders</h2>
-                <p className="label-mono mt-1">Top individual performances · {away.abbr} and {home.abbr}</p>
-                <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                  {([
-                    { label: "Passing yards", pattern: /([0-9,]+) yds/i, positions: ["QB", "PASSING"] },
-                    { label: "Rushing yards", pattern: /([0-9,]+) yds/i, positions: ["RB", "FB", "RUSHING"] },
-                    { label: "Receiving yards", pattern: /([0-9,]+) yds/i, positions: ["WR", "TE", "RECEIVING"] },
-                    { label: "Sacks", pattern: /([0-9]+(?:\.[0-9])?) sck/i, positions: ["DEF"] },
-                    { label: "Tackles", pattern: /([0-9]+) tkl/i, positions: ["DEF"] },
-                  ] as const).map((leader) => {
-                    const candidates = game.boxScore.filter((line) => {
-                      const pos = line.position.toUpperCase();
-                      if (leader.label === "Sacks" || leader.label === "Tackles") return line.category === "defense" || pos === "DEF";
-                      if (leader.label === "Passing yards") return /\bpass/i.test(line.statLine) || pos === "QB" || line.statLine.includes("INT");
-                      if (leader.label === "Rushing yards") return /\bcar\b/i.test(line.statLine);
-                      return /\brec\b/i.test(line.statLine);
-                    }).map((line) => {
-                      const match = line.statLine.match(leader.pattern);
-                      return { line, value: match ? Number(match[1].replace(/,/g, "")) : -1 };
-                    }).filter((item) => item.value >= 0).sort((a, b) => b.value - a.value);
-                    const top = candidates[0];
-                    return (
-                      <div key={leader.label} className="rounded-lg border border-line/10 bg-panel2/40 p-3">
-                        <div className="label-mono">{leader.label}</div>
-                        {top ? <div className="mt-2 flex items-start justify-between gap-2"><div><div className="font-semibold">{top.line.name}</div><div className="text-xs text-mute">{top.line.teamId === away.id ? away.abbr : home.abbr}</div></div><div className="font-mono text-lg font-bold tabular-nums text-acc">{top.value}{leader.label.includes("yards") ? " yds" : ""}</div></div> : <p className="mt-2 text-sm text-mute">No leader data available</p>}
-                      </div>
-                    );
-                  })}
+              <Panel padded={false}>
+                <div className="border-b border-line/10 px-4 py-3">
+                  <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">Game leaders</h2>
+                  <p className="label-mono mt-1">Top individual performance for each team</p>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full min-w-[560px] text-sm">
+                    <thead>
+                      <tr className="border-b border-line/10 text-left font-mono text-[10px] uppercase tracking-wider text-faint">
+                        <th className="w-[26%] px-4 py-3 font-normal">Category</th>
+                        <th className="w-[37%] px-4 py-3 font-normal"><span className="flex items-center gap-2"><TeamLogo team={away} className="size-5" />{away.abbr}</span></th>
+                        <th className="w-[37%] px-4 py-3 font-normal"><span className="flex items-center gap-2"><TeamLogo team={home} className="size-5" />{home.abbr}</span></th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-line/5">
+                      {([
+                        { label: "Passing yards", pattern: /([0-9,]+) yds/i, matches: (line: BoxScoreLine) => /\bpass/i.test(line.statLine) || line.position.toUpperCase() === "QB" || line.statLine.includes("INT"), suffix: " yds" },
+                        { label: "Rushing yards", pattern: /([0-9,]+) yds/i, matches: (line: BoxScoreLine) => /\bcar\b/i.test(line.statLine), suffix: " yds" },
+                        { label: "Receiving yards", pattern: /([0-9,]+) yds/i, matches: (line: BoxScoreLine) => /\brec\b/i.test(line.statLine), suffix: " yds" },
+                        { label: "Sacks", pattern: /([0-9]+(?:\.[0-9])?) sck/i, matches: (line: BoxScoreLine) => line.category === "defense" || line.position.toUpperCase() === "DEF", suffix: "" },
+                        { label: "Tackles", pattern: /([0-9]+) tkl/i, matches: (line: BoxScoreLine) => line.category === "defense" || line.position.toUpperCase() === "DEF", suffix: "" },
+                      ] as const).map((leader) => {
+                        const getTop = (teamId: string) => game.boxScore
+                          .filter((line) => line.teamId === teamId && leader.matches(line))
+                          .map((line) => ({ line, value: Number(line.statLine.match(leader.pattern)?.[1]?.replace(/,/g, "") ?? -1) }))
+                          .filter((item) => Number.isFinite(item.value) && item.value >= 0)
+                          .sort((a, b) => b.value - a.value)[0];
+                        const awayLeader = getTop(away.id);
+                        const homeLeader = getTop(home.id);
+                        const cell = (leaderData: ReturnType<typeof getTop>) => leaderData ? (
+                          <div className="flex items-center justify-between gap-3">
+                            <div className="min-w-0"><div className="truncate font-semibold">{leaderData.line.name}</div><div className="text-xs text-mute">{leaderData.line.position}</div></div>
+                            <div className="shrink-0 font-mono font-bold tabular-nums text-acc">{leaderData.value}{leader.suffix}</div>
+                          </div>
+                        ) : <span className="text-mute">No data</span>;
+                        return <tr key={leader.label} className="hover:bg-line/5"><th className="px-4 py-3 text-left font-medium">{leader.label}</th><td className="px-4 py-3">{cell(awayLeader)}</td><td className="px-4 py-3">{cell(homeLeader)}</td></tr>;
+                      })}
+                    </tbody>
+                  </table>
                 </div>
               </Panel>
             </section>
@@ -890,26 +969,39 @@ function GamePage() {
           {game.status === "final" && activeGameTab === "markets" ? (
             <section className="mt-6 space-y-4">
               <Panel>
-                <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">Moneyline probability</h2>
-                <p className="label-mono mt-1">ESPN game probability by play, when provided by the feed</p>
-                <div className="mt-4 grid grid-cols-2 gap-3">
-                  <div className="rounded-lg border border-line/10 p-4"><div className="label-mono">{away.abbr} win probability</div><div className="mt-1 font-mono text-2xl font-bold text-acc">{game.status === "final" ? (score.away > score.home ? "100%" : score.away < score.home ? "0%" : "50%") : "—"}</div></div>
-                  <div className="rounded-lg border border-line/10 p-4"><div className="label-mono">{home.abbr} win probability</div><div className="mt-1 font-mono text-2xl font-bold text-acc">{game.status === "final" ? (score.home > score.away ? "100%" : score.home < score.away ? "0%" : "50%") : "—"}</div></div>
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div>
+                    <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">Market probabilities</h2>
+                    <p className="label-mono mt-1">Play-by-play probability trends · ESPN data</p>
+                  </div>
+                  <div className="text-right text-xs text-mute">
+                    <div>Spread: <span className="font-mono font-semibold text-foreground">{game.spread || "—"}</span></div>
+                    <div className="mt-1">Total: <span className="font-mono font-semibold text-foreground">{game.total || "—"}</span></div>
+                  </div>
                 </div>
-                <p className="mt-3 text-xs text-mute">Final win percentages above represent the game result, not ESPN's historical in-game probability curve.</p>
+                <div className="mt-5 grid grid-cols-3 rounded-lg border border-line/10 p-1" role="tablist" aria-label="Market probability type">
+                  {([ ["moneyline", "Moneyline"], ["spread", "Spread"], ["total", "Total"] ] as const).map(([tab, label]) => (
+                    <button key={tab} type="button" role="tab" aria-selected={activeMarketTab === tab} onClick={() => setActiveMarketTab(tab)} className={`rounded-md px-2 py-2.5 font-disp text-xs font-semibold uppercase tracking-wider transition-colors sm:text-sm ${activeMarketTab === tab ? "bg-acc text-black" : "text-mute hover:bg-line/5 hover:text-foreground"}`}>
+                      {label}
+                      <span className="mt-0.5 block font-mono text-[9px] font-normal normal-case tracking-normal sm:text-[10px]">{tab === "moneyline" ? "Win probability" : tab === "spread" ? "Cover probability" : "Over/under probability"}</span>
+                    </button>
+                  ))}
+                </div>
+                {activeMarketTab === "moneyline" ? (
+                  <>
+                    <div className="mt-4 flex items-center justify-between gap-3 rounded-lg bg-panel2/40 p-3">
+                      <div className="flex items-center gap-2"><TeamLogo team={away} className="size-6" /><span className="text-sm font-semibold">{away.name}</span></div>
+                      <span className="font-mono text-xs text-mute">vs.</span>
+                      <div className="flex items-center gap-2"><span className="text-sm font-semibold">{home.name}</span><TeamLogo team={home} className="size-6" /></div>
+                    </div>
+                    <ProbabilityGraph points={game.probabilities ?? []} probabilityKey="homeWinProbability" primaryLabel={`${home.abbr} win`} secondaryLabel={`${away.abbr} win`} primaryValues={(game.probabilities ?? []).map((point) => point.homeWinProbability)} secondaryValues={(game.probabilities ?? []).map((point) => typeof point.homeWinProbability === "number" ? 1 - point.homeWinProbability : undefined)} />
+                  </>
+                ) : activeMarketTab === "spread" ? (
+                  <ProbabilityGraph points={game.probabilities ?? []} probabilityKey="homeCoverProbability" primaryLabel={`${home.abbr} cover`} secondaryLabel={`${away.abbr} cover`} primaryValues={(game.probabilities ?? []).map((point) => point.homeCoverProbability)} secondaryValues={(game.probabilities ?? []).map((point) => typeof point.homeCoverProbability === "number" ? 1 - point.homeCoverProbability : undefined)} />
+                ) : (
+                  <ProbabilityGraph points={game.probabilities ?? []} probabilityKey="overProbability" primaryLabel="Over" secondaryLabel="Under" primaryValues={(game.probabilities ?? []).map((point) => point.overProbability)} secondaryValues={(game.probabilities ?? []).map((point) => typeof point.overProbability === "number" ? 1 - point.overProbability : undefined)} />
+                )}
               </Panel>
-              <div className="grid gap-4 md:grid-cols-2">
-                <Panel>
-                  <h2 className="font-disp text-lg font-semibold uppercase tracking-tight">Spread probability</h2>
-                  <div className="mt-2 font-mono text-sm text-mute">Pregame line: {game.spread || "—"}</div>
-                  <p className="mt-3 text-sm text-mute">ESPN's public game-summary feed does not expose a historical cover-probability series for this event, so a probability chart cannot be populated reliably from the current source.</p>
-                </Panel>
-                <Panel>
-                  <h2 className="font-disp text-lg font-semibold uppercase tracking-tight">Total probability</h2>
-                  <div className="mt-2 font-mono text-sm text-mute">Pregame total: {game.total || "—"}</div>
-                  <p className="mt-3 text-sm text-mute">ESPN's public game-summary feed does not expose a historical over/under-probability series for this event, so a probability chart cannot be populated reliably from the current source.</p>
-                </Panel>
-              </div>
             </section>
           ) : null}
         </>
