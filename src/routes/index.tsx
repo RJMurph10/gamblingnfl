@@ -40,15 +40,16 @@ function LiveGameRow({ game }: { game: Game }) {
       const isHomeFav = favAbbr.toUpperCase() === home.abbr.toUpperCase();
       if (isAwayFav || isHomeFav) {
         const diff = isAwayFav ? score.away - score.home : score.home - score.away;
-        if (diff > pts) spreadClass = "text-green-500 font-semibold";
-        else if (diff < pts) spreadClass = "text-red-500 font-semibold";
+        spreadClass = diff > pts ? "text-green-500 font-semibold" : "text-red-500 font-semibold";
       }
     }
   }
 
   let totalClass = "text-mute";
-  if (game.total && game.total > 0 && score.away + score.home > game.total) {
-    totalClass = "text-green-500 font-semibold"; // over already hit
+  if (game.total && game.total > 0) {
+    totalClass = score.away + score.home > game.total
+      ? "text-green-500 font-semibold"
+      : "text-red-500 font-semibold";
   }
 
   return (
