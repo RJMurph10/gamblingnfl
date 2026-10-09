@@ -276,8 +276,10 @@ export async function fetchSchedule(): Promise<Game[]> {
       }
     }
 
+    // Keep the pregame spread/total available after kickoff if the live
+    // scoreboard drops the odds fields. Historical odds are also used for finals.
     const missingOddsGames = games.filter(
-      (game) => game.status === "final" && (game.spread === "—" || !game.total),
+      (game) => game.status !== "scheduled" && (game.spread === "—" || !game.total),
     );
     if (missingOddsGames.length) {
       await Promise.all(
@@ -617,7 +619,7 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
       if (sbGame.homeRecord) base.homeRecord = sbGame.homeRecord;
     }
 
-    if (base.status === "final" && (base.spread === "—" || !base.total)) {
+    if (base.status !== "scheduled" && (base.spread === "—" || !base.total)) {
       const historicalOdds = await fetchHistoricalOdds(eventId);
       if (base.spread === "—" && historicalOdds.spread) base.spread = historicalOdds.spread;
       if (!base.total && typeof historicalOdds.total === "number") base.total = historicalOdds.total;
