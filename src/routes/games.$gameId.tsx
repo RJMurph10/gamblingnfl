@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
@@ -107,24 +108,7 @@ function LiveFieldTrack({
           <span>{game.downDistance ?? "1st & 10"}</span>
           <span className="text-mute">·</span>
           <span className="inline-flex items-center gap-1">
-            Ball on{" "}
-            {isMidfield ? (
-              "50"
-            ) : spotMatch ? (
-              <>
-                <TeamLogo
-                  team={
-                    teamById(
-                      spotMatch[1] === away.abbr ? away.id : home.id,
-                    ) ?? (spotMatch[1] === away.abbr ? away : home)
-                  }
-                  className="size-4"
-                />
-                {spotMatch[2]}
-              </>
-            ) : (
-              game.possessionText ?? "50"
-            )}
+            Ball on {isMidfield ? "50" : spotMatch ? <><TeamLogo team={teamById(spotMatch[1] === away.abbr ? away.id : home.id) ?? (spotMatch[1] === away.abbr ? away : home)} className="size-4" />{spotMatch[2]}</> : game.possessionText ?? "50"}
           </span>
         </span>
 
@@ -183,13 +167,15 @@ function LiveFieldTrack({
             className="absolute top-0 z-20 h-full w-[2px] drop-shadow-[0_0_6px_rgba(0,0,0,0.9)]"
             style={{
               left: `${ballYard}%`,
-              backgroundColor: possessingTeam.color ?? "#ffffff",
+              backgroundColor:
+                possessingTeam.color ?? "#ffffff",
             }}
           >
             <div
               className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full p-0.5 shadow-[0_0_8px_rgba(0,0,0,0.8)]"
               style={{
-                backgroundColor: possessingTeam.color ?? "#38bdf8",
+                backgroundColor:
+                  possessingTeam.color ?? "#38bdf8",
               }}
             >
               <FootballIcon isRedZone={game.isRedZone} />
@@ -291,14 +277,13 @@ function GamePage() {
       game?.id &&
         game?.homeTeamId &&
         game?.kickoffIso &&
-        (game.status !== "scheduled" ||
-          (typeof game.spread === "string" &&
-            game.spread.trim().length > 0 &&
-            !["—", "-", "N/A", "NA"].includes(
-              game.spread.trim().toUpperCase(),
-            ) &&
-            typeof game.total === "number" &&
-            game.total > 0)),
+        (game.status !== "scheduled" || (
+          typeof game.spread === "string" &&
+          game.spread.trim().length > 0 &&
+          !["—", "-", "N/A", "NA"].includes(game.spread.trim().toUpperCase()) &&
+          typeof game.total === "number" &&
+          game.total > 0
+        )),
     ),
 
     /*
@@ -306,7 +291,8 @@ function GamePage() {
      * Completed-game weather never refreshes.
      */
     refetchInterval:
-      game?.status === "live" || game?.status === "scheduled"
+      game?.status === "live" ||
+      game?.status === "scheduled"
         ? 12 * 60 * 1000
         : false,
 
