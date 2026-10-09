@@ -584,6 +584,11 @@ function mapBoxScore(
 export async function fetchGameDetail(eventId: string): Promise<Game | null> {
   return cached(`game-${eventId}`, async () => {
     const d = await fetchJson(`${SUMMARY}?event=${eventId}`);
+    // ESPN publishes per-play win probabilities in the summary and may expose
+    // spread-cover / total-over probabilities through its Core API.
+    const coreProbabilities = await fetchJson(
+      `${CORE_ODDS}/${eventId}/competitions/${eventId}/probabilities?limit=400`,
+    ).catch(() => null);
     const comp = d?.header?.competitions?.[0];
     if (!comp) return null;
     const week = d?.header?.week ?? 0;
@@ -592,6 +597,38 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
       week,
     );
     if (!base) return null;
+
+    const summaryProbabilities = Array.isArray(d?.winprobability) ? d.winprobability : [];
+    const coreProbabilityItems = Array.isArray(coreProbabilities?.items) ? coreProbabilities.items : [];
+    const probabilityCount = Math.max(summaryProbabilities.length, coreProbabilityItems.length);
+    if (probabilityCount > 0) {
+      base.probabilities = Array.from({ length: probabilityCount }, (_, index) => {
+        const summaryPoint = summaryProbabilities[index] ?? {};
+        const corePoint = coreProbabilityItems[index] ?? {};
+        const asProbability = (value: unknown): number | undefined => {
+          if (value === undefined || value === null || value === "") return undefined;
+          const number = typeof value === "number" ? value : Number(value);
+          if (!Number.isFinite(number)) return undefined;
+          const normalized = number > 1 ? number / 100 : number;
+          return Math.max(0, Math.min(1, normalized));
+        };
+        return {
+          homeWinProbability: asProbability(summaryPoint.homeWinPercentage ?? corePoint.homeWinPercentage),
+          homeCoverProbability: asProbability(corePoint.spreadCoverProbHome ?? corePoint.homeSpreadCoverProbability),
+          overProbability: asProbability(corePoint.totalOverProb ?? corePoint.overProbability),
+        };
+      }).filter((point) => point.homeWinProbability !== undefined || point.homeCoverProbability !== undefined || point.overProbability !== undefined);
+      // ESPN can return placeholder zeroes when a market probability series is
+      // not populated for a sport/event. Treat an all-zero series as missing.
+      const hasNonZero = (key: "homeWinProbability" | "homeCoverProbability" | "overProbability") =>
+        base.probabilities!.some((point) => typeof point[key] === "number" && point[key]! > 0);
+      if (!hasNonZero("homeCoverProbability")) {
+        base.probabilities = base.probabilities.map((point) => ({ ...point, homeCoverProbability: undefined }));
+      }
+      if (!hasNonZero("overProbability")) {
+        base.probabilities = base.probabilities.map((point) => ({ ...point, overProbability: undefined }));
+      }
+    }
 
     // The summary header omits quarter linescores and venue; merge them from
     // the week's scoreboard event.
