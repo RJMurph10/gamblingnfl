@@ -220,6 +220,8 @@ export function LineScore({ game }: { game: Game }) {
   const isFinal = game.status === "final";
   const isLive = game.status === "live";
 
+  // During a live game: only show quarters that have started or ended.
+  // When final or scheduled: show 4 quarters (plus OT if played).
   const maxLiveQuarters = Math.max(game.quarters?.away?.length ?? 0, game.quarters?.home?.length ?? 0);
   const quarterCount = isLive
     ? Math.max(1, maxLiveQuarters)
@@ -316,6 +318,7 @@ export function DriveTable({ game }: { game: Game }) {
 
   return (
     <div>
+      {/* One tab per team — show only that team's drives. */}
       <div className="grid grid-cols-2 border-b border-line/10">
         {[awayTeam, homeTeam].map((team, index) => {
           if (!team) return null;
@@ -365,40 +368,44 @@ export function DriveTable({ game }: { game: Game }) {
               </tr>
             </thead>
             <tbody className="divide-y divide-line/5">
-              {selectedDrives.map((d) => (
-                <tr key={d.index} className="hover:bg-line/5">
-                  <td className="px-4 py-2.5 font-mono text-mute tabular-nums">
-                    {d.quarter === 1
-                      ? "1st"
-                      : d.quarter === 2
-                        ? "2nd"
-                        : d.quarter === 3
-                          ? "3rd"
-                          : d.quarter === 4
-                            ? "4th"
-                            : "OT"}
-                  </td>
-                  <td className="px-2 py-2.5">
-                    <span
-                      className={`inline-block rounded px-2 py-0.5 font-mono text-[10px] uppercase ${
-                        d.result === "TD"
-                          ? "bg-win/15 text-win"
-                          : d.result === "TO" || d.result === "DOWNS"
-                            ? "bg-loss/15 text-loss"
-                            : d.result === "FG"
-                              ? "bg-acc/15 text-acc"
-                              : "bg-panel2 text-mute"
-                      }`}
-                    >
-                      {d.result}
-                    </span>
-                  </td>
-                  <td className="px-2 py-2.5 text-right font-mono tabular-nums">{d.plays}</td>
-                  <td className="px-2 py-2.5 text-right font-mono tabular-nums">{d.yards}</td>
-                  <td className="px-2 py-2.5 text-right font-mono tabular-nums">{d.timeOfPossession}</td>
-                  <td className="px-4 py-2.5 text-right font-mono text-mute">{d.startAt}</td>
-                </tr>
-              ))}
+              {selectedDrives.map((d) => {
+                return (
+                  <tr key={d.index} className="hover:bg-line/5">
+                    <td className="px-4 py-2.5 font-mono text-mute tabular-nums">
+                      {d.quarter === 1
+                        ? "1st"
+                        : d.quarter === 2
+                          ? "2nd"
+                          : d.quarter === 3
+                            ? "3rd"
+                            : d.quarter === 4
+                              ? "4th"
+                              : "OT"}
+                    </td>
+                    <td className="px-2 py-2.5">
+                      <span
+                        className={`inline-block rounded px-2 py-0.5 font-mono text-[10px] uppercase ${
+                          d.result === "TD"
+                            ? "bg-win/15 text-win"
+                            : d.result === "TO" || d.result === "DOWNS"
+                              ? "bg-loss/15 text-loss"
+                              : d.result === "FG"
+                                ? "bg-acc/15 text-acc"
+                                : "bg-panel2 text-mute"
+                        }`}
+                      >
+                        {d.result}
+                      </span>
+                    </td>
+                    <td className="px-2 py-2.5 text-right font-mono tabular-nums">{d.plays}</td>
+                    <td className="px-2 py-2.5 text-right font-mono tabular-nums">{d.yards}</td>
+                    <td className="px-2 py-2.5 text-right font-mono tabular-nums">
+                      {d.timeOfPossession}
+                    </td>
+                    <td className="px-4 py-2.5 text-right font-mono text-mute">{d.startAt}</td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
@@ -411,14 +418,19 @@ export function DriveTable({ game }: { game: Game }) {
 
 interface StatDef {
   label: string;
+  /** Number used for the bar and for deciding whether the stat happened. */
   value: (s: TeamGameStats) => number;
+  /** Text shown at the edges (defaults to the number). */
   text?: (s: TeamGameStats) => string;
+  /** True when this team recorded the stat. Defaults to value !== 0. */
   happened?: (s: TeamGameStats) => boolean;
+  /** Bars scale to 100 (percentages) instead of the larger of the two teams. */
   percent?: boolean;
 }
 
 const num = (v: number | undefined) => v ?? 0;
 
+/** made/attempts stat shown as a percentage, e.g. "42% (5/12)". */
 function pctStat(
   label: string,
   made: (s: TeamGameStats) => number,
@@ -438,6 +450,7 @@ function pctStat(
   };
 }
 
+// Order matters: this is the order the rows appear in.
 const statDefs: StatDef[] = [
   {
     label: "Touchdowns",
@@ -476,12 +489,15 @@ const statDefs: StatDef[] = [
   { label: "QB hits", value: (s) => num(s.qbHits) },
 ];
 
+/** Only the stats at least one team actually recorded. */
 function visibleStats(away: TeamGameStats, home: TeamGameStats): StatDef[] {
   return statDefs.filter((def) => {
     const happened = def.happened ?? ((s: TeamGameStats) => def.value(s) !== 0);
     return happened(away) || happened(home);
   });
 }
+
+/* team-color helpers: keep bars visible on the dark UI and apart from each other */
 
 function hexToRgb(hex: string): [number, number, number] {
   const h = hex.replace("#", "");
@@ -512,6 +528,7 @@ function distance(a: [number, number, number], b: [number, number, number]) {
   return Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
 }
 
+/** Team colors for the two bars: lightened if too dark, separated if too similar. */
 function pickBarColors(awayHex: string, homeHex: string): [string, string] {
   const brighten = (hex: string) => {
     let rgb = hexToRgb(hex);
@@ -537,6 +554,7 @@ export function StatComparison({ game }: { game: Game }) {
 
   return (
     <div className="text-sm">
+      {/* logos sit at 1/3 and 2/3 of the width */}
       <div className="relative mb-5 h-[4.25rem]">
         {[
           { team: away, left: "33.3333%" },
@@ -645,29 +663,39 @@ export function marketResultClass(
   const win = "text-green-500 font-semibold";
   const loss = "text-red-500 font-semibold";
   const push = "text-yellow-400 font-semibold";
-  if (game.status !== "final") return { spread: neutral, total: neutral };
+
+  // Pregame lines remain neutral until kickoff; evaluate them live and after the game.
+  if (game.status === "scheduled") return { spread: neutral, total: neutral };
 
   let spread = neutral;
   const m = game.spread?.match(/^([A-Za-z]+)\s*([+-]?\d+(?:\.\d+)?)/);
   const isPk = game.spread === "PK" || game.spread === "EVEN";
+
   if (forTeam && (m || isPk)) {
     const score = gameScore(game);
     const isAway = forTeam.id === away.id;
     const diff = isAway ? score.away - score.home : score.home - score.away;
     const pts = m ? Math.abs(Number(m[2])) : 0;
-    const line = m && m[1].toUpperCase() === forTeam.abbr.toUpperCase() ? -pts : pts;
+
+    // A negative line belongs to the favorite named in the stored spread.
+    const line =
+      m && m[1].toUpperCase() === forTeam.abbr.toUpperCase()
+        ? -pts
+        : pts;
+
     const margin = diff + line;
     spread = margin > 0 ? win : margin < 0 ? loss : push;
   } else if (m) {
     const pts = Math.abs(Number(m[2]));
     const awayFav = m[1].toUpperCase() === away.abbr.toUpperCase();
     const homeFav = m[1].toUpperCase() === home.abbr.toUpperCase();
+
     if (awayFav || homeFav) {
       const score = gameScore(game);
       const diff = awayFav ? score.away - score.home : score.home - score.away;
-      if (diff > pts) spread = win;
-      else if (diff < pts) spread = loss;
-      else spread = push;
+      const margin = diff - pts;
+
+      spread = margin > 0 ? win : margin < 0 ? loss : push;
     }
   }
 
@@ -675,10 +703,12 @@ export function marketResultClass(
   if (game.total > 0) {
     const score = gameScore(game);
     const points = score.away + score.home;
+
     if (points > game.total) total = win;
     else if (points < game.total) total = loss;
     else total = push;
   }
+
   return { spread, total };
 }
 
@@ -721,6 +751,7 @@ export function GameRow({
               <FootballIcon isRedZone={game.isRedZone} />
             ) : null}
           </span>
+          {/* Invisible twin of the (OT) tag below, so the matchup stays centered in OT games */}
           {showOT ? (
             <span aria-hidden="true" className="invisible font-mono text-[10px] font-normal">
               (OT)
@@ -757,9 +788,7 @@ export function GameRow({
                 <SpreadBadge spread={game.spread} away={away} home={home} forTeam={forTeam} />
               </div>
             </td>
-            <td className={`whitespace-nowrap px-4 py-2.5 text-right font-mono tabular-nums ${totalClass}`}>
-              {game.total || "—"}
-            </td>
+            <td className={`whitespace-nowrap px-4 py-2.5 text-right font-mono tabular-nums ${totalClass}`}>{game.total || "—"}</td>
           </>
         );
       })() : null}
