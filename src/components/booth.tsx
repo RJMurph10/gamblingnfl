@@ -662,7 +662,6 @@ export function marketResultClass(
   const neutral = "text-mute";
   const win = "text-green-500 font-semibold";
   const loss = "text-red-500 font-semibold";
-  const push = neutral;
 
   // Pregame lines remain visible during live play and are evaluated against
   // the current score. Scheduled games have no result yet.
@@ -682,7 +681,7 @@ export function marketResultClass(
     const favoriteAbbr = m?.[1].toUpperCase();
     const isFavorite = favoriteAbbr === forTeam.abbr.toUpperCase();
     const adjustedMargin = isPk ? diff : diff + (isFavorite ? -points : points);
-    spread = adjustedMargin > 0 ? win : adjustedMargin < 0 ? loss : push;
+    spread = adjustedMargin > 0 ? win : loss;
   } else if (m) {
     const points = Math.abs(Number(m[2]));
     const favoriteAbbr = m[1].toUpperCase();
@@ -691,16 +690,16 @@ export function marketResultClass(
     if (awayFav || homeFav) {
       const favoriteMargin = awayFav ? scoreDiff : -scoreDiff;
       const adjustedMargin = favoriteMargin - points;
-      spread = adjustedMargin > 0 ? win : adjustedMargin < 0 ? loss : push;
+      spread = adjustedMargin > 0 ? win : loss;
     }
   } else if (isPk) {
-    spread = scoreDiff > 0 ? win : scoreDiff < 0 ? loss : push;
+    spread = scoreDiff > 0 ? win : loss;
   }
 
   let total = neutral;
   if (typeof game.total === "number" && game.total > 0) {
     const points = score.away + score.home;
-    total = points > game.total ? win : points < game.total ? loss : push;
+    total = points > game.total ? win : loss;
   }
 
   return { spread, total };
