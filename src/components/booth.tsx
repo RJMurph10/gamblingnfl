@@ -269,6 +269,8 @@ const driveTone: Record<string, string> = {
   FG: "bg-acc",
   PUNT: "bg-faint",
   TO: "bg-loss",
+  INT: "bg-loss",
+  FUM: "bg-loss",
   DOWNS: "bg-loss",
   EOH: "bg-faint",
   EOG: "bg-faint",
@@ -565,7 +567,24 @@ export function StatComparison({ game }: { game: Game }) {
   const home = teamById(game.homeTeamId);
   if (!away || !home) return null;
 
-  const rows = visibleStats(game.stats.away, game.stats.home);
+  // Keep the Team Stats display accurate even when ESPN omits forced-fumble
+  // player totals: each FUM-ending drive is credited to the opposing defense.
+  // This is a display-only fallback; the drive table and other stats are unchanged.
+  const awayForcedFumblesFromDrives = game.drives.filter(
+    (drive) => drive.result === "FUM" && drive.teamId === game.homeTeamId,
+  ).length;
+  const homeForcedFumblesFromDrives = game.drives.filter(
+    (drive) => drive.result === "FUM" && drive.teamId === game.awayTeamId,
+  ).length;
+  const awayStats = {
+    ...game.stats.away,
+    forcedFumbles: Math.max(game.stats.away.forcedFumbles ?? 0, awayForcedFumblesFromDrives),
+  };
+  const homeStats = {
+    ...game.stats.home,
+    forcedFumbles: Math.max(game.stats.home.forcedFumbles ?? 0, homeForcedFumblesFromDrives),
+  };
+  const rows = visibleStats(awayStats, homeStats);
   const [awayColor, homeColor] = pickBarColors(away.color, home.color);
   const showPossession =
     !/^0?0:00$/.test(game.stats.away.timeOfPossession) ||
@@ -599,17 +618,17 @@ export function StatComparison({ game }: { game: Game }) {
       ) : (
         <div className="space-y-3">
           {rows.map((row) => {
-            const a = row.value(game.stats.away);
-            const h = row.value(game.stats.home);
+            const a = row.value(awayStats);
+            const h = row.value(homeStats);
             const max = row.percent ? 100 : Math.max(a, h, 1);
             const width = (v: number) => `${Math.min(100, Math.max(v > 0 ? 3 : 0, (v / max) * 100))}%`;
             const fmt = (s: TeamGameStats, v: number) => (row.text ? row.text(s) : String(v));
             return (
               <div key={row.label}>
                 <div className="mb-1 grid grid-cols-[1fr_auto_1fr] items-baseline gap-2 font-mono text-[11px]">
-                  <span className="text-left tabular-nums">{fmt(game.stats.away, a)}</span>
+                  <span className="text-left tabular-nums">{fmt(awayStats, a)}</span>
                   <span className="text-center text-faint">{row.label}</span>
-                  <span className="text-right tabular-nums">{fmt(game.stats.home, h)}</span>
+                  <span className="text-right tabular-nums">{fmt(homeStats, h)}</span>
                 </div>
                 <div className="flex gap-1">
                   <div className="flex h-2 flex-1 justify-end overflow-hidden rounded-full bg-panel2">
