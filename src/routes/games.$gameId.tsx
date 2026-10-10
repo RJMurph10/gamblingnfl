@@ -228,8 +228,8 @@ function ProbabilityGraph({
     : values.map((value) => typeof value === "number"
       ? (favoriteSide === "home" ? value : 1 - value)
       : undefined);
-  const graphHighColor = probabilityKey === "overProbability" ? highColor : (favoriteSide === "home" ? highColor : lowColor);
-  const graphLowColor = probabilityKey === "overProbability" ? lowColor : (favoriteSide === "home" ? lowColor : highColor);
+  const graphHighColor = probabilityKey === "overProbability" ? "#16a34a" : (favoriteSide === "home" ? highColor : lowColor);
+  const graphLowColor = probabilityKey === "overProbability" ? "#dc2626" : (favoriteSide === "home" ? lowColor : highColor);
   const graphHighLabel = probabilityKey === "overProbability" ? highLabel : `${favoriteSide === "home" ? home?.name : away?.name}${probabilityKey === "homeCoverProbability" ? " Cover" : ""}`;
   const graphLowLabel = probabilityKey === "overProbability" ? lowLabel : `${favoriteSide === "home" ? away?.name : home?.name}${probabilityKey === "homeCoverProbability" ? " Cover" : ""}`;
   const graphHighTeam = favoriteSide === "home" ? home : away;
@@ -276,10 +276,19 @@ function ProbabilityGraph({
     <div className="mt-4 rounded-lg border border-line/10 bg-panel2/20 p-2 sm:p-4">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-3 text-xs font-medium">
-          {away && <span className="inline-flex items-center gap-1.5"><TeamLogo team={graphLowTeam ?? away} className="size-5" /><span className="inline-block h-0.5 w-5" style={{ backgroundColor: graphLowColor }} />{probabilityKey === "overProbability" ? graphLowLabel : ""}</span>}
-          {home && <span className="inline-flex items-center gap-1.5"><TeamLogo team={graphHighTeam ?? home} className="size-5" /><span className="inline-block h-0.5 w-5" style={{ backgroundColor: graphHighColor }} />{probabilityKey === "overProbability" ? graphHighLabel : ""}</span>}
-          {!away && <span className="inline-flex items-center gap-1.5"><span className="inline-block size-2.5 rounded-full" style={{ backgroundColor: graphHighColor }} />{highLabel}</span>}
-          {!home && <span className="inline-flex items-center gap-1.5"><span className="inline-block size-2.5 rounded-full" style={{ backgroundColor: graphLowColor }} />{lowLabel}</span>}
+          {probabilityKey === "overProbability" ? (
+            <>
+              <span className="inline-flex items-center gap-1.5 font-semibold text-white"><span>Over</span><span className="inline-block h-0.5 w-5 bg-green-600" /></span>
+              <span className="inline-flex items-center gap-1.5 font-semibold text-white"><span>Under</span><span className="inline-block h-0.5 w-5 bg-red-600" /></span>
+            </>
+          ) : (
+            <>
+              {away && <span className="inline-flex items-center gap-1.5"><TeamLogo team={graphLowTeam ?? away} className="size-5" /><span className="inline-block h-0.5 w-5" style={{ backgroundColor: graphLowColor }} /></span>}
+              {home && <span className="inline-flex items-center gap-1.5"><TeamLogo team={graphHighTeam ?? home} className="size-5" /><span className="inline-block h-0.5 w-5" style={{ backgroundColor: graphHighColor }} /></span>}
+              {!away && <span className="inline-flex items-center gap-1.5"><span className="inline-block size-2.5 rounded-full" style={{ backgroundColor: graphHighColor }} />{highLabel}</span>}
+              {!home && <span className="inline-flex items-center gap-1.5"><span className="inline-block size-2.5 rounded-full" style={{ backgroundColor: graphLowColor }} />{lowLabel}</span>}
+            </>
+          )}
         </div>
         <div className="flex flex-wrap items-center justify-end gap-2 font-mono text-xs tabular-nums">
           {(() => {
@@ -289,7 +298,7 @@ function ProbabilityGraph({
             const team = showHigh ? graphHighTeam : graphLowTeam;
             return (
               <span
-                className={`inline-flex items-center gap-1.5 font-semibold ${probabilityKey === "overProbability" ? (showHigh ? "text-green-600" : "text-red-600") : "rounded-full px-3 py-1.5 text-white"}`}
+                className={`inline-flex items-center gap-1.5 font-semibold rounded-full px-3 py-1.5 text-white ${probabilityKey === "overProbability" ? (showHigh ? "bg-green-600" : "bg-red-600") : ""}`}
                 style={probabilityKey === "overProbability" ? undefined : { backgroundColor: showHigh ? graphHighColor : graphLowColor }}
               >
                 {probabilityKey === "overProbability" ? (
@@ -327,19 +336,20 @@ function ProbabilityGraph({
       {selected ? (
         <div className="mt-2 rounded-lg border border-line/10 bg-panel p-3">
           <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-mono text-mute">
-            <span className="inline-flex items-center gap-1.5">
-              {away && <span className="inline-flex items-center gap-1"><TeamLogo team={away} className="size-5" /><span>{selected?.awayScore ?? "—"}</span></span>}
+            <span className="inline-flex items-center gap-1.5 rounded-lg border border-line/40 px-2 py-1">
+              {away && <span className="inline-flex items-center gap-1.5"><TeamLogo team={away} className="size-5" /><span>{selected?.awayScore ?? "—"}</span></span>}
               <span className="text-faint">—</span>
               <span className="whitespace-nowrap text-foreground">
                 {selected.quarter ? `${["", "1st", "2nd", "3rd", "4th", "OT"][selected.quarter] ?? `Q${selected.quarter}`} ` : ""}
                 {selected.clock ?? "—"}
               </span>
               <span className="text-faint">—</span>
-              {home && <span className="inline-flex items-center gap-1"><span>{selected?.homeScore ?? "—"}</span><TeamLogo team={home} className="size-5" /></span>}
+              {home && <span className="inline-flex items-center gap-1.5"><span>{selected?.homeScore ?? "—"}</span><TeamLogo team={home} className="size-5" /></span>}
             </span>
             {typeof selectedBadgeValue === "number" ? (
               <span
-                className={`inline-flex items-center gap-1.5 font-semibold ${probabilityKey === "overProbability" ? (selectedBadgeValue >= 0.5 ? "text-green-600" : "text-red-600") : "rounded-full px-2 py-1 text-white"}`}
+                className={`inline-flex items-center gap-1.5 rounded-full px-2 py-1 font-semibold text-white ${probabilityKey === "overProbability" ? (selectedBadgeValue >= 0.5 ? "bg-green-600" : "bg-red-600") : ""}`}
+                style={probabilityKey === "overProbability" ? undefined : { backgroundColor: selectedBadgeValue >= 0.5 ? graphHighColor : graphLowColor }}
                 aria-live="polite"
               >
                 {probabilityKey === "overProbability" ? (
@@ -884,34 +894,15 @@ function GamePage() {
                   </div>
                   <div className="divide-y divide-line/10">
                     {([
-                      {
-                        label: "Passing yards",
-                        // Passing lines begin with completions/attempts. Read the yards
-                        // immediately after that prefix so an appended rushing line
-                        // cannot suppress or replace the quarterback's passing yards.
-                        pattern: /^\s*\d+\s*\/\s*\d+\s*,?\s*([0-9,]+)\s+yds/i,
-                        matches: (line: BoxScoreLine) => /^\s*\d+\s*\/\s*\d+\b/.test(line.statLine),
-                        suffix: " yds",
-                      },
-                      {
-                        label: "Rushing yards",
-                        pattern: /\bcar\b\s*,?\s*([0-9,]+) yds/i,
-                        matches: (line: BoxScoreLine) => /\b\d+\s+car\b/i.test(line.statLine),
-                        suffix: " yds",
-                      },
-                      {
-                        label: "Receiving yards",
-                        pattern: /\brec\b\s*,?\s*([0-9,]+) yds/i,
-                        matches: (line: BoxScoreLine) => /\b\d+\s+rec\b/i.test(line.statLine),
-                        suffix: " yds",
-                      },
+                      { label: "Passing yards", pattern: /([0-9,]+) yds/i, matches: (line: BoxScoreLine) => /\bpass/i.test(line.statLine) || line.position.toUpperCase() === "QB" || line.statLine.includes("INT"), suffix: " yds" },
+                      { label: "Rushing yards", pattern: /([0-9,]+) yds/i, matches: (line: BoxScoreLine) => /\bcar\b/i.test(line.statLine), suffix: " yds" },
+                      { label: "Receiving yards", pattern: /([0-9,]+) yds/i, matches: (line: BoxScoreLine) => /\brec\b/i.test(line.statLine), suffix: " yds" },
                       { label: "Sacks", pattern: /([0-9]+(?:\.[0-9])?) sck/i, matches: (line: BoxScoreLine) => line.category === "defense" || line.position.toUpperCase() === "DEF", suffix: "" },
                       { label: "Tackles", pattern: /([0-9]+) tkl/i, matches: (line: BoxScoreLine) => line.category === "defense" || line.position.toUpperCase() === "DEF", suffix: "" },
                     ] as const).map((leader) => {
                       const getTop = (teamId: string) => game.boxScore
                         .filter((line) => line.teamId === teamId && leader.matches(line))
                         .map((line) => ({ line, value: Number(line.statLine.match(leader.pattern)?.[1]?.replace(/,/g, "") ?? -1) }))
-                        // A zero or missing stat should leave the team's cell blank.
                         .filter((item) => Number.isFinite(item.value) && item.value > 0)
                         .sort((a, b) => b.value - a.value)[0];
                       const awayLeader = getTop(away.id);
@@ -919,7 +910,7 @@ function GamePage() {
                       const playerCell = (leaderData: ReturnType<typeof getTop>, side: "away" | "home") => {
                         const isHome = side === "home";
                         const alignment = isHome ? "justify-end text-right" : "justify-start text-left";
-                        if (!leaderData) return <div className="min-h-16 py-4" aria-hidden="true" />;
+                        if (!leaderData) return <div className="py-4" aria-hidden="true" />;
                         const playerContent = (
                           <>
                             <div className={`flex min-w-0 items-center gap-2.5 ${isHome ? "flex-row-reverse" : ""}`}>
