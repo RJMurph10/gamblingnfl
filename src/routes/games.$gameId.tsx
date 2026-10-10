@@ -328,14 +328,14 @@ function ProbabilityGraph({
         <div className="mt-2 rounded-lg border border-line/10 bg-panel p-3">
           <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-mono text-mute">
             <span className="inline-flex items-center gap-1.5">
-              {away && <span className="inline-flex items-center gap-1"><TeamLogo team={away} className="size-5" /><span>{selected?.awayScore ?? "—"}</span></span>}
+              {away && <span className="inline-flex items-center gap-1.5"><span className="inline-flex items-center justify-center rounded-full border border-line/20 bg-panel2 px-2 py-1"><TeamLogo team={away} className="size-5" /></span><span>{selected?.awayScore ?? "—"}</span></span>}
               <span className="text-faint">—</span>
               <span className="whitespace-nowrap text-foreground">
                 {selected.quarter ? `${["", "1st", "2nd", "3rd", "4th", "OT"][selected.quarter] ?? `Q${selected.quarter}`} ` : ""}
                 {selected.clock ?? "—"}
               </span>
               <span className="text-faint">—</span>
-              {home && <span className="inline-flex items-center gap-1"><span>{selected?.homeScore ?? "—"}</span><TeamLogo team={home} className="size-5" /></span>}
+              {home && <span className="inline-flex items-center gap-1.5"><span>{selected?.homeScore ?? "—"}</span><span className="inline-flex items-center justify-center rounded-full border border-line/20 bg-panel2 px-2 py-1"><TeamLogo team={home} className="size-5" /></span></span>}
             </span>
             {typeof selectedBadgeValue === "number" ? (
               <span
