@@ -155,30 +155,16 @@ export function SpreadBadge({
   spread,
   away,
   home,
-  forTeam,
+  perspectiveTeam,
   className = "",
 }: {
   spread: string | undefined;
   away?: Team;
   home?: Team;
-  forTeam?: Team;
+  perspectiveTeam?: Team;
   className?: string;
 }) {
   if (!spread || spread === "—") return <span>—</span>;
-  if (forTeam) {
-    const fm = spread.match(/^([A-Za-z]+)\s*([+-]?\d+(?:\.\d+)?)/);
-    let line = spread === "PK" || spread === "EVEN" ? "PK" : spread;
-    if (fm) {
-      const pts = Math.abs(Number(fm[2]));
-      line = fm[1].toUpperCase() === forTeam.abbr.toUpperCase() ? `-${pts}` : `+${pts}`;
-    }
-    return (
-      <span className={`inline-flex items-center gap-1 font-mono tabular-nums ${className}`}>
-        <TeamLogo team={forTeam} className="size-3.5" />
-        <span className="market-line">{line}</span>
-      </span>
-    );
-  }
   if (spread === "PK" || spread === "EVEN") return <span>{spread}</span>;
 
   const match = spread.match(/^([A-Za-z]+)\s*([+-]?\d+(?:\.\d+)?)/);
@@ -194,11 +180,17 @@ export function SpreadBadge({
 
   if (!favTeam) return <span>{spread}</span>;
 
-  const formattedPts = ptsStr.startsWith("-") || ptsStr.startsWith("+") ? ptsStr : `-${ptsStr}`;
+  let formattedPts = ptsStr.startsWith("-") || ptsStr.startsWith("+") ? ptsStr : `-${ptsStr}`;
+  if (perspectiveTeam && favTeam) {
+    const isFavorite = perspectiveTeam.id === favTeam.id;
+    const numericPts = Math.abs(Number(ptsStr));
+    formattedPts = isFavorite ? `-${numericPts}` : `+${numericPts}`;
+    if (numericPts === 0) formattedPts = "PK";
+  }
 
   return (
     <span className={`inline-flex items-center gap-1 font-mono tabular-nums ${className}`}>
-      <TeamLogo team={favTeam} className="size-3.5" />
+      <TeamLogo team={perspectiveTeam ?? favTeam} className="size-3.5" />
       <span className="market-line">{formattedPts}</span>
     </span>
   );
@@ -209,6 +201,7 @@ export function SpreadBadge({
 export function LineScore({ game }: { game: Game }) {
   const away = teamById(game.awayTeamId);
   const home = teamById(game.homeTeamId);
+  const perspectiveTeam = perspectiveTeamId ? teamById(perspectiveTeamId) : undefined;
   const score = gameScore(game);
   if (!away || !home) return null;
 
@@ -359,19 +352,39 @@ export function DriveTable({ game }: { game: Game }) {
           <table className="w-full min-w-[600px] text-sm">
             <thead>
               <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
-                <th className="px-4 py-2 font-normal">Qtr</th>
-                <th className="px-2 py-2 font-normal">Result</th>
+                <th className="px-4 py-2 font-normal">#</th>
+                <th className="px-2 py-2 font-normal">Qtr</th>
                 <th className="px-2 py-2 text-right font-normal">Plays</th>
                 <th className="px-2 py-2 text-right font-normal">Yards</th>
                 <th className="px-2 py-2 text-right font-normal">TOP</th>
-                <th className="px-4 py-2 text-right font-normal">Start</th>
+                <th className="px-2 py-2 font-normal">Start</th>
+                <th className="px-4 py-2 text-right font-normal">Result</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-line/5">
               {selectedDrives.map((d) => {
+                // ESPN occasionally omits a drive's time of possession. Keep the
+                // missing value visibly estimated instead of displaying an impossible 0:00.
+                const rawTop = String(d.timeOfPossession ?? "").trim();
+                const hasValidTop = rawTop !== "" && !/^0?:?0:00$/.test(rawTop);
+                const estimatedSeconds = Math.max(30, Number(d.plays || 0) * 25);
+                const estimatedTop = `${Math.floor(estimatedSeconds / 60)}:${String(estimatedSeconds % 60).padStart(2, "0")}`;
+                const displayTop = hasValidTop ? rawTop : Number(d.plays || 0) > 0 ? `~${estimatedTop}` : "—";
+                const rawResult = String(d.result ?? "").trim();
+                const normalizedResult = rawResult.toUpperCase();
+                const resultLabel = /INTERCEPTION|\bINT\b/.test(normalizedResult)
+                  ? "INT"
+                  : /FUMBLE|\bFUM\b/.test(normalizedResult)
+                    ? "FUM"
+                    : normalizedResult === "EOH"
+                      ? "Half"
+                      : normalizedResult === "EOG"
+                        ? "Game"
+                        : normalizedResult;
                 return (
                   <tr key={d.index} className="hover:bg-line/5">
-                    <td className="px-4 py-2.5 font-mono text-mute tabular-nums">
+                    <td className="px-4 py-2.5 font-mono text-mute tabular-nums">{d.index}</td>
+                    <td className="px-2 py-2.5 font-mono text-mute tabular-nums">
                       {d.quarter === 1
                         ? "1st"
                         : d.quarter === 2
@@ -382,7 +395,15 @@ export function DriveTable({ game }: { game: Game }) {
                               ? "4th"
                               : "OT"}
                     </td>
-                    <td className="px-2 py-2.5">
+                    <td className="px-2 py-2.5 text-right font-mono tabular-nums">{d.plays}</td>
+                    <td className="px-2 py-2.5 text-right font-mono tabular-nums">{d.yards}</td>
+                    <td className="px-2 py-2.5 text-right font-mono tabular-nums">
+                      <span title={hasValidTop ? "Time of possession" : "Estimated from play count because the source supplied no usable duration"}>
+                        {displayTop}
+                      </span>
+                    </td>
+                    <td className="px-2 py-2.5 font-mono text-mute">{d.startAt}</td>
+                    <td className="px-4 py-2.5 text-right">
                       <span
                         className={`inline-block rounded px-2 py-0.5 font-mono text-[10px] uppercase ${
                           d.result === "TD"
@@ -394,15 +415,9 @@ export function DriveTable({ game }: { game: Game }) {
                                 : "bg-panel2 text-mute"
                         }`}
                       >
-                        {d.result}
+                        {resultLabel}
                       </span>
                     </td>
-                    <td className="px-2 py-2.5 text-right font-mono tabular-nums">{d.plays}</td>
-                    <td className="px-2 py-2.5 text-right font-mono tabular-nums">{d.yards}</td>
-                    <td className="px-2 py-2.5 text-right font-mono tabular-nums">
-                      {d.timeOfPossession}
-                    </td>
-                    <td className="px-4 py-2.5 text-right font-mono text-mute">{d.startAt}</td>
                   </tr>
                 );
               })}
@@ -657,62 +672,51 @@ export function marketResultClass(
   game: Game,
   away: Team,
   home: Team,
-  forTeam?: Team,
+  perspectiveTeam?: Team,
 ): { spread: string; total: string } {
   const neutral = "text-mute";
   const win = "text-green-500 font-semibold";
   const loss = "text-red-500 font-semibold";
+  const push = "text-yellow-400 font-semibold";
+  if (game.status !== "final") return { spread: neutral, total: neutral };
 
-  // Pregame lines remain visible during live play and are evaluated against
-  // the current score. Scheduled games have no result yet.
-  if (game.status === "scheduled") {
-    return { spread: neutral, total: neutral };
-  }
-
-  const score = gameScore(game);
-  const scoreDiff = score.away - score.home;
   let spread = neutral;
   const m = game.spread?.match(/^([A-Za-z]+)\s*([+-]?\d+(?:\.\d+)?)/);
-  const isPk = game.spread === "PK" || game.spread === "EVEN";
-
-  if (forTeam && (m || isPk)) {
-    const diff = forTeam.id === away.id ? score.away - score.home : score.home - score.away;
-    const points = m ? Math.abs(Number(m[2])) : 0;
-    const favoriteAbbr = m?.[1].toUpperCase();
-    const isFavorite = favoriteAbbr === forTeam.abbr.toUpperCase();
-    const adjustedMargin = isPk ? diff : diff + (isFavorite ? -points : points);
-    spread = adjustedMargin > 0 ? win : loss;
-  } else if (m) {
-    const points = Math.abs(Number(m[2]));
-    const favoriteAbbr = m[1].toUpperCase();
-    const awayFav = favoriteAbbr === away.abbr.toUpperCase();
-    const homeFav = favoriteAbbr === home.abbr.toUpperCase();
+  if (m) {
+    const pts = Math.abs(Number(m[2]));
+    const awayFav = m[1].toUpperCase() === away.abbr.toUpperCase();
+    const homeFav = m[1].toUpperCase() === home.abbr.toUpperCase();
+    const score = gameScore(game);
     if (awayFav || homeFav) {
-      const favoriteMargin = awayFav ? scoreDiff : -scoreDiff;
-      const adjustedMargin = favoriteMargin - points;
-      spread = adjustedMargin > 0 ? win : loss;
+      const team = perspectiveTeam ?? (awayFav ? away : home);
+      const teamDiff = team.id === away.id ? score.away - score.home : score.home - score.away;
+      const teamSpread = team.id === (awayFav ? away.id : home.id) ? -pts : pts;
+      const marginAgainstLine = teamDiff + teamSpread;
+      if (marginAgainstLine > 0) spread = win;
+      else if (marginAgainstLine < 0) spread = loss;
+      else spread = push;
     }
-  } else if (isPk) {
-    spread = scoreDiff > 0 ? win : loss;
   }
 
   let total = neutral;
-  if (typeof game.total === "number" && game.total > 0) {
+  if (game.total > 0) {
+    const score = gameScore(game);
     const points = score.away + score.home;
-    total = points > game.total ? win : loss;
+    if (points > game.total) total = win;
+    else if (points < game.total) total = loss;
+    else total = push;
   }
-
   return { spread, total };
 }
 
 export function GameRow({
   game,
   showMarket = true,
-  forTeam,
+  perspectiveTeamId,
 }: {
   game: Game;
   showMarket?: boolean;
-  forTeam?: Team;
+  perspectiveTeamId?: string;
 }) {
   const away = teamById(game.awayTeamId);
   const home = teamById(game.homeTeamId);
@@ -773,12 +777,12 @@ export function GameRow({
         {game.status === "live" ? (game.clock ?? "Live") : game.location}
       </td>
       {showMarket ? (() => {
-        const { spread: spreadClass, total: totalClass } = marketResultClass(game, away, home, forTeam);
+        const { spread: spreadClass, total: totalClass } = marketResultClass(game, away, home, perspectiveTeam);
         return (
           <>
             <td className={`whitespace-nowrap px-2 py-2.5 text-right font-mono tabular-nums ${spreadClass}`}>
               <div className="flex items-center justify-end">
-                <SpreadBadge spread={game.spread} away={away} home={home} forTeam={forTeam} />
+                <SpreadBadge spread={game.spread} away={away} home={home} perspectiveTeam={perspectiveTeam} />
               </div>
             </td>
             <td className={`whitespace-nowrap px-4 py-2.5 text-right font-mono tabular-nums ${totalClass}`}>{game.total || "—"}</td>
