@@ -201,7 +201,6 @@ export function SpreadBadge({
 export function LineScore({ game }: { game: Game }) {
   const away = teamById(game.awayTeamId);
   const home = teamById(game.homeTeamId);
-  const perspectiveTeam = perspectiveTeamId ? teamById(perspectiveTeamId) : undefined;
   const score = gameScore(game);
   if (!away || !home) return null;
 
