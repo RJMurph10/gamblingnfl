@@ -894,9 +894,28 @@ function GamePage() {
                   </div>
                   <div className="divide-y divide-line/10">
                     {([
-                      { label: "Passing yards", pattern: /([0-9,]+) yds/i, matches: (line: BoxScoreLine) => /\bpass/i.test(line.statLine) || line.position.toUpperCase() === "QB" || line.statLine.includes("INT"), suffix: " yds" },
-                      { label: "Rushing yards", pattern: /([0-9,]+) yds/i, matches: (line: BoxScoreLine) => /\bcar\b/i.test(line.statLine), suffix: " yds" },
-                      { label: "Receiving yards", pattern: /([0-9,]+) yds/i, matches: (line: BoxScoreLine) => /\brec\b/i.test(line.statLine), suffix: " yds" },
+                      {
+                        label: "Passing yards",
+                        // Only use the yards attached to a completions/attempts passing line.
+                        // Some ESPN box-score lines append rushing stats for the same QB.
+                        pattern: /^\s*\d+\s*\/\s*\d+\s*,?\s*([0-9,]+)\s+yds/i,
+                        matches: (line: BoxScoreLine) => /^\s*\d+\s*\/\s*\d+\b/.test(line.statLine),
+                        suffix: " yds",
+                      },
+                      {
+                        label: "Rushing yards",
+                        // Capture the yardage immediately after the carries count, not the
+                        // first "yds" in a combined passing-and-rushing stat line.
+                        pattern: /\b\d+\s+car\b\s*,?\s*([0-9,]+)\s+yds/i,
+                        matches: (line: BoxScoreLine) => /\b\d+\s+car\b/i.test(line.statLine),
+                        suffix: " yds",
+                      },
+                      {
+                        label: "Receiving yards",
+                        pattern: /\b\d+\s+rec\b\s*,?\s*([0-9,]+)\s+yds/i,
+                        matches: (line: BoxScoreLine) => /\b\d+\s+rec\b/i.test(line.statLine),
+                        suffix: " yds",
+                      },
                       { label: "Sacks", pattern: /([0-9]+(?:\.[0-9])?) sck/i, matches: (line: BoxScoreLine) => line.category === "defense" || line.position.toUpperCase() === "DEF", suffix: "" },
                       { label: "Tackles", pattern: /([0-9]+) tkl/i, matches: (line: BoxScoreLine) => line.category === "defense" || line.position.toUpperCase() === "DEF", suffix: "" },
                     ] as const).map((leader) => {
