@@ -339,12 +339,13 @@ function ProbabilityGraph({
             </span>
             {typeof selectedBadgeValue === "number" ? (
               <span
-                className={`inline-flex items-center gap-1.5 font-semibold rounded-full px-2 py-1 text-white ${probabilityKey === "overProbability" ? (selectedBadgeValue >= 0.5 ? "bg-green-600" : "bg-red-600") : ""}`}
+                className={`inline-flex items-center gap-1.5 rounded-full px-2 py-1 font-semibold text-white ${probabilityKey === "overProbability" ? (selectedBadgeValue >= 0.5 ? "bg-green-600" : "bg-red-600") : ""}`}
+                style={probabilityKey === "overProbability" ? undefined : { backgroundColor: selectedBadgeValue >= 0.5 ? graphHighColor : graphLowColor }}
                 aria-live="polite"
               >
                 {probabilityKey === "overProbability" ? (
                   <span>{selectedBadgeValue >= 0.5 ? "Over" : "Under"}</span>
-                ) : selectedBadgeTeam ? <span className="inline-flex items-center justify-center rounded-full border border-line/20 bg-panel2 px-2 py-1"><TeamLogo team={selectedBadgeTeam} className="size-5" /></span> : null}
+                ) : selectedBadgeTeam ? <TeamLogo team={selectedBadgeTeam} className="size-5" /> : null}
                 <span>{Math.round(Math.max(selectedBadgeValue, 1 - selectedBadgeValue) * 100)}%</span>
               </span>
             ) : null}
