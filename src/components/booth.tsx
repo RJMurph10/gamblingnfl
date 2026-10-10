@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router";
 import type { Team } from "@/data/teams";
 import type { Game, TeamGameStats } from "@/data/games";
 import { gameScore } from "@/data/games";
-import { teamById, teamLogo } from "@/data/teams";
+import { teamByAbbr, teamById, teamLogo } from "@/data/teams";
 
 /* ---------- primitives ---------- */
 
@@ -369,7 +369,11 @@ export function DriveTable({ game }: { game: Game }) {
                 const hasValidTop = rawTop !== "" && !/^0?:?0:00$/.test(rawTop);
                 const estimatedSeconds = Math.max(30, Number(d.plays || 0) * 25);
                 const estimatedTop = `${Math.floor(estimatedSeconds / 60)}:${String(estimatedSeconds % 60).padStart(2, "0")}`;
-                const displayTop = hasValidTop ? rawTop : Number(d.plays || 0) > 0 ? `~${estimatedTop}` : "—";
+                const displayTop = hasValidTop ? rawTop : Number(d.plays || 0) > 0 ? estimatedTop : "—";
+                const startText = String(d.startAt ?? "").trim();
+                const startParts = startText.split(/\s+/);
+                const startTeam = startParts.length > 1 ? teamByAbbr(startParts[0]) : undefined;
+                const startYardLine = startTeam ? startParts.slice(1).join(" ") : startText;
                 const rawResult = String(d.result ?? "").trim();
                 const normalizedResult = rawResult.toUpperCase();
                 // Some feed records label the outcome only as TO. Search all
@@ -423,7 +427,20 @@ export function DriveTable({ game }: { game: Game }) {
                         {displayTop}
                       </span>
                     </td>
-                    <td className="px-2 py-2.5 font-mono text-mute">{d.startAt}</td>
+                    <td className="px-2 py-2.5">
+                      <span className="inline-flex items-center gap-1.5 font-mono text-mute">
+                        {startTeam ? (
+                          <img
+                            src={teamLogo(startTeam)}
+                            alt={`${startTeam.city} ${startTeam.name}`}
+                            title={`${startTeam.city} ${startTeam.name}`}
+                            className="size-5 shrink-0 object-contain"
+                            loading="lazy"
+                          />
+                        ) : null}
+                        <span>{startYardLine}</span>
+                      </span>
+                    </td>
                   </tr>
                 );
               })}
