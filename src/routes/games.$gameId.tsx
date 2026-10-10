@@ -665,7 +665,7 @@ function GamePage() {
             isFinal && score.home > score.away;
 
           return (
-            <div className="mx-auto flex max-w-2xl items-center justify-between">
+            <div className="mx-auto flex max-w-2xl items-center justify-between gap-2 rounded-xl border border-line/40 px-3 py-3 sm:gap-4 sm:px-5 sm:py-4">
               {/* Away Team */}
               <div className="flex items-center gap-3 sm:gap-6">
                 <Link
