@@ -207,6 +207,7 @@ function ProbabilityGraph({
   lowLabel,
   away,
   home,
+  favoriteSide = "home",
 }: {
   points: GameProbabilityPoint[];
   probabilityKey: ProbabilityKey;
@@ -217,9 +218,23 @@ function ProbabilityGraph({
   lowLabel: string;
   away?: Team;
   home?: Team;
+  favoriteSide?: "home" | "away";
 }) {
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
-  const valid = values.map((v, i) => typeof v === "number" ? i : -1).filter((i) => i >= 0);
+  // ESPN stores win/cover probability from the home team's perspective.
+  // Normalize team markets to the pregame favorite's perspective exactly once.
+  const graphValues = probabilityKey === "overProbability"
+    ? values
+    : values.map((value) => typeof value === "number"
+      ? (favoriteSide === "home" ? value : 1 - value)
+      : undefined);
+  const graphHighColor = probabilityKey === "overProbability" ? highColor : (favoriteSide === "home" ? highColor : lowColor);
+  const graphLowColor = probabilityKey === "overProbability" ? lowColor : (favoriteSide === "home" ? lowColor : highColor);
+  const graphHighLabel = probabilityKey === "overProbability" ? highLabel : `${favoriteSide === "home" ? home?.name : away?.name}${probabilityKey === "homeCoverProbability" ? " Cover" : ""}`;
+  const graphLowLabel = probabilityKey === "overProbability" ? lowLabel : `${favoriteSide === "home" ? away?.name : home?.name}${probabilityKey === "homeCoverProbability" ? " Cover" : ""}`;
+  const graphHighTeam = favoriteSide === "home" ? home : away;
+  const graphLowTeam = favoriteSide === "home" ? away : home;
+  const valid = graphValues.map((v, i) => typeof v === "number" ? i : -1).filter((i) => i >= 0);
   if (!valid.length) {
     return (
       <div className="mt-4 rounded-lg border border-line/10 bg-panel2/30 px-4 py-10 text-center">
@@ -239,41 +254,37 @@ function ProbabilityGraph({
   const bottom = 42;
   const plotWidth = width - left - right;
   const plotHeight = height - top - bottom;
-  const xFor = (index: number) => left + (values.length <= 1 ? plotWidth / 2 : (index / (values.length - 1)) * plotWidth);
+  const xFor = (index: number) => left + (graphValues.length <= 1 ? plotWidth / 2 : (index / (graphValues.length - 1)) * plotWidth);
   const yFor = (value: number) => top + (1 - Math.max(0, Math.min(1, value))) * plotHeight;
   const baseline = yFor(0.5);
-  const segments = values.slice(0, -1).map((value, index) => {
-    const next = values[index + 1];
+  const segments = graphValues.slice(0, -1).map((value, index) => {
+    const next = graphValues[index + 1];
     if (typeof value !== "number" || typeof next !== "number") return null;
-    return { index, value, next, color: (value + next) / 2 >= 0.5 ? highColor : lowColor };
+    return { index, value, next, color: (value + next) / 2 >= 0.5 ? graphHighColor : graphLowColor };
   }).filter((segment): segment is { index: number; value: number; next: number; color: string } => segment !== null);
   const selected = hoverIndex === null ? null : points[hoverIndex];
-  const selectedValue = hoverIndex === null ? undefined : values[hoverIndex];
-  const selectedTeam = typeof selectedValue === "number" && selectedValue >= 0.5 ? highLabel : lowLabel;
-  const scoreText = selected && (typeof selected.awayScore === "number" || typeof selected.homeScore === "number")
-    ? `${away?.abbr ?? "Away"} ${selected.awayScore ?? "—"} · ${home?.abbr ?? "Home"} ${selected.homeScore ?? "—"}`
-    : "";
+  const selectedValue = hoverIndex === null ? undefined : graphValues[hoverIndex];
   const pointClock = selected?.clock ? ` ${selected.clock}` : "";
 
   return (
     <div className="mt-4 rounded-lg border border-line/10 bg-panel2/20 p-2 sm:p-4">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-3 text-xs font-medium">
-          {away && <span className="inline-flex items-center gap-1.5"><TeamLogo team={away} className="size-5" /><span className="inline-block h-0.5 w-5" style={{ backgroundColor: lowColor }} />{lowLabel}</span>}
-          {home && <span className="inline-flex items-center gap-1.5"><TeamLogo team={home} className="size-5" /><span className="inline-block h-0.5 w-5" style={{ backgroundColor: highColor }} />{highLabel}</span>}
-          {!away && <span className="inline-flex items-center gap-1.5"><span className="inline-block size-2.5 rounded-full" style={{ backgroundColor: highColor }} />{highLabel}</span>}
-          {!home && <span className="inline-flex items-center gap-1.5"><span className="inline-block size-2.5 rounded-full" style={{ backgroundColor: lowColor }} />{lowLabel}</span>}
+          {away && <span className="inline-flex items-center gap-1.5"><TeamLogo team={graphLowTeam ?? away} className="size-5" /><span className="inline-block h-0.5 w-5" style={{ backgroundColor: graphLowColor }} />{probabilityKey === "homeCoverProbability" ? "Cover" : probabilityKey === "overProbability" ? graphLowLabel : ""}</span>}
+          {home && <span className="inline-flex items-center gap-1.5"><TeamLogo team={graphHighTeam ?? home} className="size-5" /><span className="inline-block h-0.5 w-5" style={{ backgroundColor: graphHighColor }} />{probabilityKey === "homeCoverProbability" ? "Cover" : probabilityKey === "overProbability" ? graphHighLabel : ""}</span>}
+          {!away && <span className="inline-flex items-center gap-1.5"><span className="inline-block size-2.5 rounded-full" style={{ backgroundColor: graphHighColor }} />{highLabel}</span>}
+          {!home && <span className="inline-flex items-center gap-1.5"><span className="inline-block size-2.5 rounded-full" style={{ backgroundColor: graphLowColor }} />{lowLabel}</span>}
         </div>
         <div className="flex items-center gap-2 font-mono text-xs tabular-nums">
-          <span className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 font-semibold text-white" style={{ backgroundColor: highColor }}>
-            {home ? <TeamLogo team={home} className="size-5" /> : <span>Over</span>}
+          <span className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 font-semibold text-white" style={{ backgroundColor: graphHighColor }}>
+            {probabilityKey === "overProbability" ? <span>Over</span> : graphHighTeam ? <TeamLogo team={graphHighTeam} className="size-5" /> : null}
             <span aria-hidden="true">—</span>
-            {Math.round((values[values.length - 1] ?? 0) * 100)}%
+            {Math.round((graphValues[graphValues.length - 1] ?? 0) * 100)}%
           </span>
-          <span className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 font-semibold text-white" style={{ backgroundColor: lowColor }}>
-            {away ? <TeamLogo team={away} className="size-5" /> : <span>Under</span>}
+          <span className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 font-semibold text-white" style={{ backgroundColor: graphLowColor }}>
+            {probabilityKey === "overProbability" ? <span>Under</span> : graphLowTeam ? <TeamLogo team={graphLowTeam} className="size-5" /> : null}
             <span aria-hidden="true">—</span>
-            {Math.round((1 - (values[values.length - 1] ?? 0)) * 100)}%
+            {Math.round((1 - (graphValues[graphValues.length - 1] ?? 0)) * 100)}%
           </span>
         </div>
       </div>
@@ -289,18 +300,29 @@ function ProbabilityGraph({
           const area = `${x1},${baseline} ${x1},${y1} ${x2},${y2} ${x2},${baseline}`;
           return <g key={index}><polygon points={area} fill={color} fillOpacity="0.14" /><line x1={x1} y1={y1} x2={x2} y2={y2} stroke={color} strokeWidth="4" strokeLinecap="round" /></g>;
         })}
-        {hoverIndex !== null && typeof values[hoverIndex] === "number" ? <line x1={xFor(hoverIndex)} x2={xFor(hoverIndex)} y1={top} y2={height - bottom} stroke="currentColor" strokeOpacity="0.45" strokeDasharray="3 4" /> : null}
-        {values.map((value, index) => typeof value === "number" ? <circle key={index} cx={xFor(index)} cy={yFor(value)} r={hoverIndex === index ? 6 : 2.4} fill={(value >= 0.5 ? highColor : lowColor)} stroke="currentColor" strokeOpacity={hoverIndex === index ? 0.7 : 0} strokeWidth="1.5" onMouseEnter={() => setHoverIndex(index)} onFocus={() => setHoverIndex(index)} tabIndex={0} role="button" aria-label={`Play ${index + 1}, ${Math.round(value * 100)} percent`} /> : null)}
-        <text x={left} y={height - 12} fontSize="14" fill="currentColor" opacity="0.65">Kickoff</text>
-        <text x={left + plotWidth / 2} y={height - 12} textAnchor="middle" fontSize="14" fill="currentColor" opacity="0.65">Game progress</text>
-        <text x={width - right} y={height - 12} textAnchor="end" fontSize="14" fill="currentColor" opacity="0.65">Final</text>
+        {hoverIndex !== null && typeof graphValues[hoverIndex] === "number" ? <line x1={xFor(hoverIndex)} x2={xFor(hoverIndex)} y1={top} y2={height - bottom} stroke="currentColor" strokeOpacity="0.45" strokeDasharray="3 4" /> : null}
+        {graphValues.map((value, index) => typeof value === "number" ? <circle key={index} cx={xFor(index)} cy={yFor(value)} r={hoverIndex === index ? 6 : 2.4} fill={(value >= 0.5 ? graphHighColor : graphLowColor)} stroke="currentColor" strokeOpacity={hoverIndex === index ? 0.7 : 0} strokeWidth="1.5" onMouseEnter={() => setHoverIndex(index)} onFocus={() => setHoverIndex(index)} tabIndex={0} role="button" aria-label={`Play ${index + 1}, ${Math.round(value * 100)} percent`} /> : null)}
+        {[1, 2, 3, 4].map((quarter) => {
+          const quarterIndexes = points.map((point, index) => point.quarter === quarter ? index : -1).filter((index) => index >= 0);
+          if (!quarterIndexes.length) return null;
+          const centerIndex = (quarterIndexes[0] + quarterIndexes[quarterIndexes.length - 1]) / 2;
+          return <text key={quarter} x={xFor(centerIndex)} y={height - 12} textAnchor="middle" fontSize="14" fill="currentColor" opacity="0.75">{["", "1st", "2nd", "3rd", "4th"][quarter]}</text>;
+        })}
+        <text x={left} y={height - 28} fontSize="11" fill="currentColor" opacity="0.55">Kickoff</text>
+        <text x={width - right} y={height - 28} textAnchor="end" fontSize="11" fill="currentColor" opacity="0.55">Final</text>
       </svg>
       {selected ? (
         <div className="mt-2 rounded-lg border border-line/10 bg-panel p-3">
           <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-mono text-mute">
             <span>{selected.quarter ? `Q${selected.quarter}` : "Game play"}{pointClock}</span>
-            <span>{scoreText}</span>
-            <span>{typeof selectedValue === "number" ? `${selectedTeam}: ${Math.round(selectedValue * 100)}%` : ""}</span>
+            <span className="inline-flex items-center justify-center gap-2">
+              {away && <span className="inline-flex items-center gap-1"><TeamLogo team={away} className="size-5" />{selected?.awayScore ?? "—"}</span>}
+              <span className="text-faint">—</span>
+              <span>{selected?.clock ?? "—"}</span>
+              <span className="text-faint">—</span>
+              {home && <span className="inline-flex items-center gap-1">{selected?.homeScore ?? "—"}<TeamLogo team={home} className="size-5" /></span>}
+            </span>
+            <span>{typeof selectedValue === "number" ? `${graphHighLabel}: ${Math.round(selectedValue * 100)}%` : ""}</span>
           </div>
           {(selected.down || selected.distance || selected.yardLine) ? <p className="mt-2 text-sm font-semibold">{selected.down ? `${selected.down}${selected.down === 1 ? "st" : selected.down === 2 ? "nd" : selected.down === 3 ? "rd" : "th"} & ${selected.distance ?? "—"}` : "Down and distance"}{selected.yardLine ? ` at ${selected.yardLine}` : ""}</p> : null}
           <p className="mt-1 text-sm leading-relaxed">{selected.playText || `Play-level probability sample ${hoverIndex! + 1}. ESPN did not provide a play description for this point.`}</p>
@@ -308,6 +330,26 @@ function ProbabilityGraph({
       ) : <p className="mt-2 text-[11px] text-mute">Hover or focus a point to inspect the play and probability. {points.length} ESPN data points.</p>}
     </div>
   );
+}
+
+function MarketSpreadLabel({ spread, away, home }: { spread: string; away: Team; home: Team }) {
+  const match = spread.match(/^([A-Za-z]+)\\s*([+-]?\\d+(?:\\.\\d+)?)/);
+  if (!match) return <span>{spread || "—"}</span>;
+  const abbreviation = match[1].toUpperCase();
+  const team = abbreviation === away.abbr.toUpperCase() ? away : abbreviation === home.abbr.toUpperCase() ? home : undefined;
+  if (!team) return <span>{spread}</span>;
+  const points = Number(match[2]);
+  const formatted = points === 0 ? "PK" : `${points > 0 ? "+" : ""}${points}`;
+  return <span className="inline-flex items-center gap-1.5"><TeamLogo team={team} className="size-5" /><span>{formatted}</span></span>;
+}
+
+function favoriteSideFromSpread(spread: string, away: Team, home: Team): "home" | "away" {
+  const match = spread.match(/^([A-Za-z]+)\\s*([+-]?\\d+(?:\\.\\d+)?)/);
+  if (!match) return "home";
+  const abbreviation = match[1].toUpperCase();
+  if (abbreviation === away.abbr.toUpperCase()) return "away";
+  if (abbreviation === home.abbr.toUpperCase()) return "home";
+  return "home";
 }
 
 function GamePage() {
@@ -1023,7 +1065,7 @@ function GamePage() {
                     <p className="label-mono mt-1">Play-by-play probability trends · ESPN data</p>
                   </div>
                   <div className="text-right text-xs text-mute">
-                    <div>Spread: <span className="font-mono font-semibold text-foreground">{game.spread || "—"}</span></div>
+                    <div className="flex items-center justify-end gap-1.5">Spread: <span className="font-mono font-semibold text-foreground"><MarketSpreadLabel spread={game.spread} away={away} home={home} /></span></div>
                     <div className="mt-1">Total: <span className="font-mono font-semibold text-foreground">{game.total || "—"}</span></div>
                   </div>
                 </div>
@@ -1043,6 +1085,7 @@ function GamePage() {
                     lowColor={away.color}
                     highLabel={home.name}
                     lowLabel={away.name}
+                    favoriteSide={favoriteSideFromSpread(game.spread, away, home)}
                     away={away}
                     home={home}
                   />
@@ -1053,8 +1096,9 @@ function GamePage() {
                     values={(game.probabilities ?? []).map((point) => point.homeCoverProbability)}
                     highColor={home.color}
                     lowColor={away.color}
-                    highLabel={`${home.name} cover`}
-                    lowLabel={`${away.name} cover`}
+                    highLabel={`${home.name} Cover`}
+                    lowLabel={`${away.name} Cover`}
+                    favoriteSide={favoriteSideFromSpread(game.spread, away, home)}
                     away={away}
                     home={home}
                   />
