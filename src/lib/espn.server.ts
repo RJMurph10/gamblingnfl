@@ -305,8 +305,8 @@ const DRIVE_RESULTS: Record<string, DriveResult> = {
   TD: "TD",
   FG: "FG",
   PUNT: "PUNT",
-  FUMBLE: "TO",
-  INTERCEPTION: "TO",
+  FUMBLE: "FUM",
+  INTERCEPTION: "INT",
   DOWNS: "DOWNS",
   "END OF HALF": "EOH",
   "END OF GAME": "EOG",
@@ -321,7 +321,9 @@ function mapDriveResult(text: string | undefined): DriveResult {
   // the letters "TD").
   if (key.includes("TOUCHDOWN") || key === "TD") return "TD";
   if (key.includes("FIELD GOAL") || key === "FG") return "FG";
-  if (key.includes("INTERCEPTION") || key.includes("FUMBLE")) return "TO";
+  // Preserve the actual turnover type so the drive table can distinguish INT from FUM.
+  if (key.includes("INTERCEPTION") || /\bINT\b/.test(key)) return "INT";
+  if (key.includes("FUMBLE") || /\bFUM\b/.test(key)) return "FUM";
   if (key.includes("DOWNS") || key.includes("TURNOVER ON DOWNS")) return "DOWNS";
   if (key.includes("END OF HALF")) return "EOH";
   if (key.includes("END OF GAME")) return "EOG";
@@ -450,8 +452,33 @@ function addPlayerTotals(
   stats.tacklesForLoss = sumKey(["defensive"], "tacklesForLoss");
   stats.passesDefended = sumKey(["defensive"], "passesDefended");
   stats.qbHits = sumKey(["defensive"], "QBHits", "qbHits");
-  stats.interceptions = sumKey(["interceptions"], "interceptions");
-  stats.forcedFumbles = sumKey(["defensive"], "forcedFumbles", "fumblesForced");
+  stats.interceptions = Math.max(
+    sumKey(["interceptions"], "interceptions", "interceptionsThrown"),
+    sumKey(["defensive"], "interceptions", "interceptionsThrown"),
+  );
+
+  // ESPN has used different group/key names for forced fumbles across feeds.
+  // Search all defensive/fumble-related groups and key aliases rather than
+  // assuming the field always lives under the exact `defensive` group.
+  const forcedFumbleKeys = ["forcedFumbles", "fumblesForced", "forcedFumble", "FF"];
+  let forcedFumbles = 0;
+  const seenAthletes = new Map<string, number>();
+  for (const group of groups) {
+    const groupName = String(group?.name ?? "").toLowerCase();
+    if (!/(defens|fumble|interception)/.test(groupName)) continue;
+    const keys: string[] = group.keys ?? [];
+    const idx = forcedFumbleKeys.map((key) => keys.indexOf(key)).find((i) => i >= 0);
+    if (idx === undefined) continue;
+    for (const [athleteIndex, athlete] of (group.athletes ?? []).entries()) {
+      const value = Number(String(athlete?.stats?.[idx] ?? "0").replace(/,/g, "")) || 0;
+      const athleteId = String(athlete?.athlete?.id ?? athlete?.id ?? athlete?.athlete?.displayName ?? athlete?.displayName ?? `${groupName}-${athleteIndex}`);
+      // Some ESPN feeds repeat a defender in multiple groups. Keep the largest
+      // value for that player instead of double-counting the same forced fumble.
+      seenAthletes.set(athleteId, Math.max(seenAthletes.get(athleteId) ?? 0, value));
+    }
+  }
+  forcedFumbles = [...seenAthletes.values()].reduce((total, value) => total + value, 0);
+  stats.forcedFumbles = forcedFumbles;
 }
 
 function mapBoxScore(
