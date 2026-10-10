@@ -289,7 +289,7 @@ function ProbabilityGraph({
             const team = showHigh ? graphHighTeam : graphLowTeam;
             return (
               <span
-                className={`inline-flex items-center gap-1.5 font-semibold ${probabilityKey === "overProbability" ? (showHigh ? "text-green-600" : "text-red-600") : "rounded-full px-3 py-1.5 text-white"}`}
+                className={`inline-flex items-center gap-1.5 font-semibold rounded-full px-3 py-1.5 text-white ${probabilityKey === "overProbability" ? (showHigh ? "bg-green-600" : "bg-red-600") : ""}`}
                 style={probabilityKey === "overProbability" ? undefined : { backgroundColor: showHigh ? graphHighColor : graphLowColor }}
               >
                 {probabilityKey === "overProbability" ? (
@@ -339,7 +339,7 @@ function ProbabilityGraph({
             </span>
             {typeof selectedBadgeValue === "number" ? (
               <span
-                className={`inline-flex items-center gap-1.5 font-semibold ${probabilityKey === "overProbability" ? (selectedBadgeValue >= 0.5 ? "text-green-600" : "text-red-600") : "rounded-full px-2 py-1 text-white"}`}
+                className={`inline-flex items-center gap-1.5 font-semibold rounded-full px-2 py-1 text-white ${probabilityKey === "overProbability" ? (selectedBadgeValue >= 0.5 ? "bg-green-600" : "bg-red-600") : ""}`}
                 aria-live="polite"
               >
                 {probabilityKey === "overProbability" ? (
