@@ -327,7 +327,7 @@ function ProbabilityGraph({
       {selected ? (
         <div className="mt-2 rounded-lg border border-line/10 bg-panel p-3">
           <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-mono text-mute">
-            <span className="inline-flex items-center gap-1.5">
+            <span className="inline-flex items-center gap-1.5 rounded-lg border border-line/40 px-2 py-1">
               {away && <span className="inline-flex items-center gap-1.5"><TeamLogo team={away} className="size-5" /><span>{selected?.awayScore ?? "—"}</span></span>}
               <span className="text-faint">—</span>
               <span className="whitespace-nowrap text-foreground">
@@ -665,7 +665,7 @@ function GamePage() {
             isFinal && score.home > score.away;
 
           return (
-            <div className="mx-auto flex max-w-2xl items-center justify-between gap-2 rounded-xl border border-line/40 px-3 py-3 sm:gap-4 sm:px-5 sm:py-4">
+            <div className="mx-auto flex max-w-2xl items-center justify-between gap-2 sm:gap-4">
               {/* Away Team */}
               <div className="flex items-center gap-3 sm:gap-6">
                 <Link
