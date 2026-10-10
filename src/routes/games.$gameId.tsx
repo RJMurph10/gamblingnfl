@@ -278,8 +278,8 @@ function ProbabilityGraph({
         <div className="flex flex-wrap items-center gap-3 text-xs font-medium">
           {probabilityKey === "overProbability" ? (
             <>
-              <span className="inline-flex items-center gap-1.5 font-semibold text-green-600"><span>Over</span><span className="inline-block h-0.5 w-5 bg-green-600" /></span>
-              <span className="inline-flex items-center gap-1.5 font-semibold text-red-600"><span>Under</span><span className="inline-block h-0.5 w-5 bg-red-600" /></span>
+              <span className="inline-flex items-center gap-1.5 font-semibold text-white"><span>Over</span><span className="inline-block h-0.5 w-5 bg-green-600" /></span>
+              <span className="inline-flex items-center gap-1.5 font-semibold text-white"><span>Under</span><span className="inline-block h-0.5 w-5 bg-red-600" /></span>
             </>
           ) : (
             <>
