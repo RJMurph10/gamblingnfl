@@ -228,8 +228,8 @@ function ProbabilityGraph({
     : values.map((value) => typeof value === "number"
       ? (favoriteSide === "home" ? value : 1 - value)
       : undefined);
-  const graphHighColor = probabilityKey === "overProbability" ? "#16a34a" : (favoriteSide === "home" ? highColor : lowColor);
-  const graphLowColor = probabilityKey === "overProbability" ? "#dc2626" : (favoriteSide === "home" ? lowColor : highColor);
+  const graphHighColor = probabilityKey === "overProbability" ? highColor : (favoriteSide === "home" ? highColor : lowColor);
+  const graphLowColor = probabilityKey === "overProbability" ? lowColor : (favoriteSide === "home" ? lowColor : highColor);
   const graphHighLabel = probabilityKey === "overProbability" ? highLabel : `${favoriteSide === "home" ? home?.name : away?.name}${probabilityKey === "homeCoverProbability" ? " Cover" : ""}`;
   const graphLowLabel = probabilityKey === "overProbability" ? lowLabel : `${favoriteSide === "home" ? away?.name : home?.name}${probabilityKey === "homeCoverProbability" ? " Cover" : ""}`;
   const graphHighTeam = favoriteSide === "home" ? home : away;
@@ -276,19 +276,10 @@ function ProbabilityGraph({
     <div className="mt-4 rounded-lg border border-line/10 bg-panel2/20 p-2 sm:p-4">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-3 text-xs font-medium">
-          {probabilityKey === "overProbability" ? (
-            <>
-              <span className="inline-flex items-center gap-1.5 font-semibold text-white"><span>Over</span><span className="inline-block h-0.5 w-5 bg-green-600" /></span>
-              <span className="inline-flex items-center gap-1.5 font-semibold text-white"><span>Under</span><span className="inline-block h-0.5 w-5 bg-red-600" /></span>
-            </>
-          ) : (
-            <>
-              {away && <span className="inline-flex items-center gap-1.5"><TeamLogo team={graphLowTeam ?? away} className="size-5" /><span className="inline-block h-0.5 w-5" style={{ backgroundColor: graphLowColor }} /></span>}
-              {home && <span className="inline-flex items-center gap-1.5"><TeamLogo team={graphHighTeam ?? home} className="size-5" /><span className="inline-block h-0.5 w-5" style={{ backgroundColor: graphHighColor }} /></span>}
-              {!away && <span className="inline-flex items-center gap-1.5"><span className="inline-block size-2.5 rounded-full" style={{ backgroundColor: graphHighColor }} />{highLabel}</span>}
-              {!home && <span className="inline-flex items-center gap-1.5"><span className="inline-block size-2.5 rounded-full" style={{ backgroundColor: graphLowColor }} />{lowLabel}</span>}
-            </>
-          )}
+          {away && <span className="inline-flex items-center gap-1.5"><TeamLogo team={graphLowTeam ?? away} className="size-5" /><span className="inline-block h-0.5 w-5" style={{ backgroundColor: graphLowColor }} />{probabilityKey === "overProbability" ? graphLowLabel : ""}</span>}
+          {home && <span className="inline-flex items-center gap-1.5"><TeamLogo team={graphHighTeam ?? home} className="size-5" /><span className="inline-block h-0.5 w-5" style={{ backgroundColor: graphHighColor }} />{probabilityKey === "overProbability" ? graphHighLabel : ""}</span>}
+          {!away && <span className="inline-flex items-center gap-1.5"><span className="inline-block size-2.5 rounded-full" style={{ backgroundColor: graphHighColor }} />{highLabel}</span>}
+          {!home && <span className="inline-flex items-center gap-1.5"><span className="inline-block size-2.5 rounded-full" style={{ backgroundColor: graphLowColor }} />{lowLabel}</span>}
         </div>
         <div className="flex flex-wrap items-center justify-end gap-2 font-mono text-xs tabular-nums">
           {(() => {
@@ -298,7 +289,7 @@ function ProbabilityGraph({
             const team = showHigh ? graphHighTeam : graphLowTeam;
             return (
               <span
-                className={`inline-flex items-center gap-1.5 font-semibold rounded-full px-3 py-1.5 text-white ${probabilityKey === "overProbability" ? (showHigh ? "bg-green-600" : "bg-red-600") : ""}`}
+                className={`inline-flex items-center gap-1.5 font-semibold ${probabilityKey === "overProbability" ? (showHigh ? "text-green-600" : "text-red-600") : "rounded-full px-3 py-1.5 text-white"}`}
                 style={probabilityKey === "overProbability" ? undefined : { backgroundColor: showHigh ? graphHighColor : graphLowColor }}
               >
                 {probabilityKey === "overProbability" ? (
@@ -336,20 +327,19 @@ function ProbabilityGraph({
       {selected ? (
         <div className="mt-2 rounded-lg border border-line/10 bg-panel p-3">
           <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-mono text-mute">
-            <span className="inline-flex items-center gap-1.5 rounded-lg border border-line/40 px-2 py-1">
-              {away && <span className="inline-flex items-center gap-1.5"><TeamLogo team={away} className="size-5" /><span>{selected?.awayScore ?? "—"}</span></span>}
+            <span className="inline-flex items-center gap-1.5">
+              {away && <span className="inline-flex items-center gap-1"><TeamLogo team={away} className="size-5" /><span>{selected?.awayScore ?? "—"}</span></span>}
               <span className="text-faint">—</span>
               <span className="whitespace-nowrap text-foreground">
                 {selected.quarter ? `${["", "1st", "2nd", "3rd", "4th", "OT"][selected.quarter] ?? `Q${selected.quarter}`} ` : ""}
                 {selected.clock ?? "—"}
               </span>
               <span className="text-faint">—</span>
-              {home && <span className="inline-flex items-center gap-1.5"><span>{selected?.homeScore ?? "—"}</span><TeamLogo team={home} className="size-5" /></span>}
+              {home && <span className="inline-flex items-center gap-1"><span>{selected?.homeScore ?? "—"}</span><TeamLogo team={home} className="size-5" /></span>}
             </span>
             {typeof selectedBadgeValue === "number" ? (
               <span
-                className={`inline-flex items-center gap-1.5 rounded-full px-2 py-1 font-semibold text-white ${probabilityKey === "overProbability" ? (selectedBadgeValue >= 0.5 ? "bg-green-600" : "bg-red-600") : ""}`}
-                style={probabilityKey === "overProbability" ? undefined : { backgroundColor: selectedBadgeValue >= 0.5 ? graphHighColor : graphLowColor }}
+                className={`inline-flex items-center gap-1.5 font-semibold ${probabilityKey === "overProbability" ? (selectedBadgeValue >= 0.5 ? "text-green-600" : "text-red-600") : "rounded-full px-2 py-1 text-white"}`}
                 aria-live="polite"
               >
                 {probabilityKey === "overProbability" ? (
@@ -674,7 +664,7 @@ function GamePage() {
             isFinal && score.home > score.away;
 
           return (
-            <div className="mx-auto flex max-w-2xl items-center justify-between gap-2 sm:gap-4">
+            <div className="mx-auto flex max-w-2xl items-center justify-between">
               {/* Away Team */}
               <div className="flex items-center gap-3 sm:gap-6">
                 <Link
@@ -886,40 +876,70 @@ function GamePage() {
                   <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">Game leaders</h2>
                   <p className="label-mono mt-1">Top individual performance for each team</p>
                 </div>
-                <div className="overflow-x-auto">
-                  <table className="w-full min-w-[560px] text-sm">
-                    <thead>
-                      <tr className="border-b border-line/10 text-left font-mono text-[10px] uppercase tracking-wider text-faint">
-                        <th className="w-[26%] px-4 py-3 font-normal">Category</th>
-                        <th className="w-[37%] px-4 py-3 font-normal"><span className="flex items-center gap-2"><TeamLogo team={away} className="size-5" />{away.abbr}</span></th>
-                        <th className="w-[37%] px-4 py-3 font-normal"><span className="flex items-center gap-2"><TeamLogo team={home} className="size-5" />{home.abbr}</span></th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-line/5">
-                      {([
-                        { label: "Passing yards", pattern: /([0-9,]+) yds/i, matches: (line: BoxScoreLine) => /\bpass/i.test(line.statLine) || line.position.toUpperCase() === "QB" || line.statLine.includes("INT"), suffix: " yds" },
-                        { label: "Rushing yards", pattern: /([0-9,]+) yds/i, matches: (line: BoxScoreLine) => /\bcar\b/i.test(line.statLine), suffix: " yds" },
-                        { label: "Receiving yards", pattern: /([0-9,]+) yds/i, matches: (line: BoxScoreLine) => /\brec\b/i.test(line.statLine), suffix: " yds" },
-                        { label: "Sacks", pattern: /([0-9]+(?:\.[0-9])?) sck/i, matches: (line: BoxScoreLine) => line.category === "defense" || line.position.toUpperCase() === "DEF", suffix: "" },
-                        { label: "Tackles", pattern: /([0-9]+) tkl/i, matches: (line: BoxScoreLine) => line.category === "defense" || line.position.toUpperCase() === "DEF", suffix: "" },
-                      ] as const).map((leader) => {
-                        const getTop = (teamId: string) => game.boxScore
-                          .filter((line) => line.teamId === teamId && leader.matches(line))
-                          .map((line) => ({ line, value: Number(line.statLine.match(leader.pattern)?.[1]?.replace(/,/g, "") ?? -1) }))
-                          .filter((item) => Number.isFinite(item.value) && item.value >= 0)
-                          .sort((a, b) => b.value - a.value)[0];
-                        const awayLeader = getTop(away.id);
-                        const homeLeader = getTop(home.id);
-                        const cell = (leaderData: ReturnType<typeof getTop>) => leaderData ? (
-                          <div className="flex items-center justify-between gap-3">
-                            <div className="min-w-0"><div className="truncate font-semibold">{leaderData.line.name}</div><div className="text-xs text-mute">{leaderData.line.position}</div></div>
-                            <div className="shrink-0 font-mono font-bold tabular-nums text-acc">{leaderData.value}{leader.suffix}</div>
+                <div className="px-3 sm:px-5">
+                  <div className="grid grid-cols-[minmax(0,1fr)_112px_minmax(0,1fr)] items-center gap-2 border-b border-line/10 py-3 text-[10px] font-mono uppercase tracking-wider text-faint sm:grid-cols-[minmax(0,1fr)_160px_minmax(0,1fr)]">
+                    <div className="flex items-center gap-2"><TeamLogo team={away} className="size-5" /><span>{away.name}</span></div>
+                    <div className="text-center">Category</div>
+                    <div className="flex items-center justify-end gap-2 text-right"><span>{home.name}</span><TeamLogo team={home} className="size-5" /></div>
+                  </div>
+                  <div className="divide-y divide-line/10">
+                    {([
+                      { label: "Passing yards", pattern: /([0-9,]+) yds/i, matches: (line: BoxScoreLine) => /\bpass/i.test(line.statLine) || line.position.toUpperCase() === "QB" || line.statLine.includes("INT"), suffix: " yds" },
+                      { label: "Rushing yards", pattern: /([0-9,]+) yds/i, matches: (line: BoxScoreLine) => /\bcar\b/i.test(line.statLine), suffix: " yds" },
+                      { label: "Receiving yards", pattern: /([0-9,]+) yds/i, matches: (line: BoxScoreLine) => /\brec\b/i.test(line.statLine), suffix: " yds" },
+                      { label: "Sacks", pattern: /([0-9]+(?:\.[0-9])?) sck/i, matches: (line: BoxScoreLine) => line.category === "defense" || line.position.toUpperCase() === "DEF", suffix: "" },
+                      { label: "Tackles", pattern: /([0-9]+) tkl/i, matches: (line: BoxScoreLine) => line.category === "defense" || line.position.toUpperCase() === "DEF", suffix: "" },
+                    ] as const).map((leader) => {
+                      const getTop = (teamId: string) => game.boxScore
+                        .filter((line) => line.teamId === teamId && leader.matches(line))
+                        .map((line) => ({ line, value: Number(line.statLine.match(leader.pattern)?.[1]?.replace(/,/g, "") ?? -1) }))
+                        .filter((item) => Number.isFinite(item.value) && item.value >= 0)
+                        .sort((a, b) => b.value - a.value)[0];
+                      const awayLeader = getTop(away.id);
+                      const homeLeader = getTop(home.id);
+                      const playerCell = (leaderData: ReturnType<typeof getTop>, side: "away" | "home") => {
+                        const isHome = side === "home";
+                        const alignment = isHome ? "justify-end text-right" : "justify-start text-left";
+                        if (!leaderData) return <div className={`py-4 text-xs text-mute ${isHome ? "text-right" : "text-left"}`}>No data</div>;
+                        const playerContent = (
+                          <>
+                            <div className={`flex min-w-0 items-center gap-2.5 ${isHome ? "flex-row-reverse" : ""}`}>
+                              <img
+                                src={leaderData.line.playerId ? `https://a.espncdn.com/i/headshots/nfl/players/full/${leaderData.line.playerId}.png` : ""}
+                                alt=""
+                                loading="lazy"
+                                className="size-11 shrink-0 rounded-full bg-line/10 object-cover ring-1 ring-line/15 sm:size-12"
+                                onError={(event) => { event.currentTarget.style.visibility = "hidden"; }}
+                              />
+                              <div className={`min-w-0 ${isHome ? "text-right" : "text-left"}`}>
+                                <div className="truncate text-sm font-semibold text-foreground group-hover:text-acc">{leaderData.line.name}</div>
+                                <div className="mt-0.5 text-[11px] text-mute">{leaderData.line.position}</div>
+                                <div className="mt-1 font-mono text-sm font-bold tabular-nums text-acc">{leaderData.value}{leader.suffix}</div>
+                              </div>
+                            </div>
+                          </>
+                        );
+                        return (
+                          <div className={`flex min-w-0 items-center py-3 ${alignment}`}>
+                            {leaderData.line.playerId ? (
+                              <Link to="/players/$playerId" params={{ playerId: leaderData.line.playerId }} className="group block min-w-0 rounded-md p-1 transition-colors hover:bg-line/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-acc">
+                                {playerContent}
+                              </Link>
+                            ) : <div className="min-w-0 p-1">{playerContent}</div>}
                           </div>
-                        ) : <span className="text-mute">No data</span>;
-                        return <tr key={leader.label} className="hover:bg-line/5"><th className="px-4 py-3 text-left font-medium">{leader.label}</th><td className="px-4 py-3">{cell(awayLeader)}</td><td className="px-4 py-3">{cell(homeLeader)}</td></tr>;
-                      })}
-                    </tbody>
-                  </table>
+                        );
+                      };
+                      return (
+                        <div key={leader.label} className="grid grid-cols-[minmax(0,1fr)_112px_minmax(0,1fr)] items-center gap-2 sm:grid-cols-[minmax(0,1fr)_160px_minmax(0,1fr)]">
+                          {playerCell(awayLeader, "away")}
+                          <div className="px-1 text-center">
+                            <div className="text-[11px] font-semibold uppercase leading-tight tracking-wide text-mute sm:text-xs">{leader.label}</div>
+                          </div>
+                          {playerCell(homeLeader, "home")}
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               </Panel>
             </section>
