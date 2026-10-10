@@ -275,17 +275,25 @@ function ProbabilityGraph({
           {!away && <span className="inline-flex items-center gap-1.5"><span className="inline-block size-2.5 rounded-full" style={{ backgroundColor: graphHighColor }} />{highLabel}</span>}
           {!home && <span className="inline-flex items-center gap-1.5"><span className="inline-block size-2.5 rounded-full" style={{ backgroundColor: graphLowColor }} />{lowLabel}</span>}
         </div>
-        <div className="flex items-center gap-2 font-mono text-xs tabular-nums">
-          <span className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 font-semibold text-white" style={{ backgroundColor: graphHighColor }}>
-            {probabilityKey === "overProbability" ? <span>Over</span> : graphHighTeam ? <TeamLogo team={graphHighTeam} className="size-5" /> : null}
-            <span aria-hidden="true">—</span>
-            {Math.round((graphValues[graphValues.length - 1] ?? 0) * 100)}%
-          </span>
-          <span className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 font-semibold text-white" style={{ backgroundColor: graphLowColor }}>
-            {probabilityKey === "overProbability" ? <span>Under</span> : graphLowTeam ? <TeamLogo team={graphLowTeam} className="size-5" /> : null}
-            <span aria-hidden="true">—</span>
-            {Math.round((1 - (graphValues[graphValues.length - 1] ?? 0)) * 100)}%
-          </span>
+        <div className="flex flex-wrap items-center justify-end gap-2 font-mono text-xs tabular-nums">
+          {(() => {
+            const latest = graphValues[graphValues.length - 1] ?? 0;
+            const showHigh = latest >= 0.5;
+            const probability = Math.round(Math.max(latest, 1 - latest) * 100);
+            const team = showHigh ? graphHighTeam : graphLowTeam;
+            return (
+              <span
+                className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 font-semibold text-white"
+                style={{ backgroundColor: probabilityKey === "overProbability" ? (showHigh ? "#16a34a" : "#dc2626") : (showHigh ? graphHighColor : graphLowColor) }}
+              >
+                {probabilityKey === "overProbability" ? (
+                  <span>{showHigh ? "Over" : "Under"}</span>
+                ) : team ? <TeamLogo team={team} className="size-5" /> : null}
+                {probabilityKey === "homeCoverProbability" ? <span>Cover</span> : null}
+                <span>{probability}%</span>
+              </span>
+            );
+          })()}
         </div>
       </div>
       <svg viewBox={`0 0 ${width} ${height}`} className="block w-full touch-pan-x" role="img" aria-label={`${probabilityKey} probability over the game`} onMouseLeave={() => setHoverIndex(null)}>
@@ -325,23 +333,42 @@ function ProbabilityGraph({
               {home && <span className="inline-flex items-center gap-1"><span>{selected?.homeScore ?? "—"}</span><TeamLogo team={home} className="size-5" /></span>}
             </span>
             {typeof selectedValue === "number" ? (
-              <span className="inline-flex items-center gap-1.5 font-semibold text-foreground" aria-live="polite">
-                {probabilityKey !== "overProbability" && (
+              <span
+                className={`inline-flex items-center gap-1.5 font-semibold ${probabilityKey === "overProbability" ? (selectedValue >= 0.5 ? "text-green-500" : "text-red-500") : "text-foreground"}`}
+                aria-live="polite"
+              >
+                {probabilityKey === "overProbability" ? (
+                  <span>{selectedValue >= 0.5 ? "Over" : "Under"}</span>
+                ) : (
                   <TeamLogo team={selectedValue >= 0.5 ? (graphHighTeam ?? home!) : (graphLowTeam ?? away!)} className="size-5" />
                 )}
-                <span>
-                  {probabilityKey === "homeCoverProbability"
-                    ? "Cover"
-                    : probabilityKey === "overProbability"
-                      ? (selectedValue >= 0.5 ? graphHighLabel : graphLowLabel)
-                      : ""}
-                  {probabilityKey !== "homeWinProbability" ? " " : ""}
-                  {Math.round(Math.max(selectedValue, 1 - selectedValue) * 100)}%
-                </span>
+                {probabilityKey === "homeCoverProbability" ? <span>Cover</span> : null}
+                <span>{Math.round(Math.max(selectedValue, 1 - selectedValue) * 100)}%</span>
               </span>
             ) : null}
           </div>
-          {(selected.down || selected.distance || selected.yardLine) ? <p className="mt-2 text-sm font-semibold">{selected.down ? `${selected.down}${selected.down === 1 ? "st" : selected.down === 2 ? "nd" : selected.down === 3 ? "rd" : "th"} & ${selected.distance ?? "—"}` : "Down and distance"}{selected.yardLine ? ` at ${selected.yardLine}` : ""}</p> : null}
+          {(selected.down || selected.distance || selected.yardLine) ? (
+            <div className="mt-2 flex flex-wrap items-center gap-2 text-sm font-semibold">
+              <span>{selected.down ? `${selected.down}${selected.down === 1 ? "st" : selected.down === 2 ? "nd" : selected.down === 3 ? "rd" : "th"} & ${selected.distance ?? "—"}` : "Down and distance"}</span>
+              {selected.yardLine ? (() => {
+                const rawSpot = String(selected.yardLine).trim();
+                const teamSpot = rawSpot.match(/^([A-Za-z]{2,4})\s+(?:at\s*)?(\d{1,2})$/i);
+                const numberSpot = rawSpot.match(/^(?:at\s*)?(\d{1,3})$/i);
+                const abbr = teamSpot?.[1]?.toUpperCase();
+                const rawYard = Number(teamSpot?.[2] ?? numberSpot?.[1]);
+                const spotTeam = abbr
+                  ? (away?.abbr.toUpperCase() === abbr ? away : home?.abbr.toUpperCase() === abbr ? home : undefined)
+                  : undefined;
+                if (rawYard === 50) return <span className="font-medium text-mute">Ball is on 50</span>;
+                if (spotTeam && Number.isFinite(rawYard)) {
+                  const ownYard = rawYard > 50 ? 100 - rawYard : rawYard;
+                  return <span className="inline-flex items-center gap-1.5"><TeamLogo team={spotTeam} className="size-5" /><span>{ownYard}</span></span>;
+                }
+                // A bare non-midfield yard number has no reliable team-side orientation in this feed.
+                return <span className="font-medium text-mute">{numberSpot ? `Ball at ${rawYard}` : `Ball at ${rawSpot.replace(/^at\s*/i, "")}`}</span>;
+              })() : null}
+            </div>
+          ) : null}
           <p className="mt-1 text-sm leading-relaxed">{selected.playText || `Play-level probability sample ${hoverIndex! + 1}. ESPN did not provide a play description for this point.`}</p>
         </div>
       ) : <p className="mt-2 text-[11px] text-mute">Hover or focus a point to inspect the play and probability. {points.length} ESPN data points.</p>}
