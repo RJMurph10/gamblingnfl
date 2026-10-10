@@ -289,7 +289,6 @@ function ProbabilityGraph({
                 {probabilityKey === "overProbability" ? (
                   <span>{showHigh ? "Over" : "Under"}</span>
                 ) : team ? <TeamLogo team={team} className="size-5" /> : null}
-                {probabilityKey === "homeCoverProbability" ? <span>Cover</span> : null}
                 <span>{probability}%</span>
               </span>
             );
@@ -342,7 +341,6 @@ function ProbabilityGraph({
                 ) : (
                   <TeamLogo team={selectedValue >= 0.5 ? (graphHighTeam ?? home!) : (graphLowTeam ?? away!)} className="size-5" />
                 )}
-                {probabilityKey === "homeCoverProbability" ? <span>Cover</span> : null}
                 <span>{Math.round(Math.max(selectedValue, 1 - selectedValue) * 100)}%</span>
               </span>
             ) : null}
@@ -364,8 +362,13 @@ function ProbabilityGraph({
                   const ownYard = rawYard > 50 ? 100 - rawYard : rawYard;
                   return <span className="inline-flex items-center gap-1.5"><TeamLogo team={spotTeam} className="size-5" /><span>{ownYard}</span></span>;
                 }
-                // A bare non-midfield yard number has no reliable team-side orientation in this feed.
-                return <span className="font-medium text-mute">{numberSpot ? `Ball at ${rawYard}` : `Ball at ${rawSpot.replace(/^at\s*/i, "")}`}</span>;
+                // ESPN sometimes provides a field-wide 0–100 spot without a team abbreviation.
+                // Convert the far-half coordinate to its own-side yard number, but don't guess a logo.
+                if (numberSpot && Number.isFinite(rawYard)) {
+                  const ownYard = rawYard > 50 ? 100 - rawYard : rawYard;
+                  return <span className="font-medium text-mute">Ball at {ownYard}</span>;
+                }
+                return <span className="font-medium text-mute">Ball at {rawSpot.replace(/^at\s*/i, "")}</span>;
               })() : null}
             </div>
           ) : null}
