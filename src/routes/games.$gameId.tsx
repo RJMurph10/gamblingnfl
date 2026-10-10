@@ -264,14 +264,9 @@ function ProbabilityGraph({
   }).filter((segment): segment is { index: number; value: number; next: number; color: string } => segment !== null);
   const selected = hoverIndex === null ? null : points[hoverIndex];
   const selectedValue = hoverIndex === null ? undefined : graphValues[hoverIndex];
-  // Keep the hover context's probability badge identical across all market tabs.
-  // On the Total chart, show the same team win-probability badge as Moneyline/Spread,
-  // rather than replacing it with an Over/Under label.
-  const selectedBadgeValue = probabilityKey === "overProbability"
-    ? (typeof selected?.homeWinProbability === "number"
-      ? (favoriteSide === "home" ? selected.homeWinProbability : 1 - selected.homeWinProbability)
-      : undefined)
-    : selectedValue;
+  // Use the selected chart's actual probability. For Total, this is the
+  // Over probability; values below 50% mean Under is the more likely outcome.
+  const selectedBadgeValue = selectedValue;
   const selectedBadgeTeam = typeof selectedBadgeValue === "number"
     ? (selectedBadgeValue >= 0.5 ? graphHighTeam : graphLowTeam)
     : undefined;
@@ -294,8 +289,8 @@ function ProbabilityGraph({
             const team = showHigh ? graphHighTeam : graphLowTeam;
             return (
               <span
-                className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 font-semibold text-white"
-                style={{ backgroundColor: probabilityKey === "overProbability" ? (showHigh ? "#16a34a" : "#dc2626") : (showHigh ? graphHighColor : graphLowColor) }}
+                className={`inline-flex items-center gap-1.5 font-semibold ${probabilityKey === "overProbability" ? (showHigh ? "text-green-600" : "text-red-600") : "rounded-full px-3 py-1.5 text-white"}`}
+                style={probabilityKey === "overProbability" ? undefined : { backgroundColor: showHigh ? graphHighColor : graphLowColor }}
               >
                 {probabilityKey === "overProbability" ? (
                   <span>{showHigh ? "Over" : "Under"}</span>
@@ -344,8 +339,7 @@ function ProbabilityGraph({
             </span>
             {typeof selectedBadgeValue === "number" ? (
               <span
-                className="inline-flex items-center gap-1.5 rounded-full px-2 py-1 font-semibold text-white"
-                style={probabilityKey === "overProbability" ? { backgroundColor: selectedBadgeValue >= 0.5 ? "#16a34a" : "#dc2626" } : undefined}
+                className={`inline-flex items-center gap-1.5 font-semibold ${probabilityKey === "overProbability" ? (selectedBadgeValue >= 0.5 ? "text-green-600" : "text-red-600") : "rounded-full px-2 py-1 text-white"}`}
                 aria-live="polite"
               >
                 {probabilityKey === "overProbability" ? (
@@ -370,14 +364,14 @@ function ProbabilityGraph({
                 if (rawYard === 50) return <span className="font-medium text-mute">Ball is on 50</span>;
                 if (spotTeam && Number.isFinite(rawYard)) {
                   const ownYard = rawYard > 50 ? 100 - rawYard : rawYard;
-                  return <span className="inline-flex items-center gap-1.5"><TeamLogo team={spotTeam} className="size-5" /><span>{ownYard}</span></span>;
+                  return <span className="inline-flex items-center gap-1.5"><span>Ball at</span><TeamLogo team={spotTeam} className="size-5" /><span>{ownYard}</span></span>;
                 }
                 // ESPN sometimes provides a field-wide 0–100 spot without a team abbreviation.
                 // Show the field-side logo alongside the normalized own-side yard number.
                 if (numberSpot && Number.isFinite(rawYard)) {
                   const ownYard = rawYard > 50 ? 100 - rawYard : rawYard;
                   const fieldSideTeam = rawYard > 50 ? home : away;
-                  return <span className="inline-flex items-center gap-1.5"><TeamLogo team={fieldSideTeam ?? selectedBadgeTeam ?? away} className="size-5" /><span>{ownYard}</span></span>;
+                  return <span className="inline-flex items-center gap-1.5"><span>Ball at</span><TeamLogo team={fieldSideTeam ?? selectedBadgeTeam ?? away} className="size-5" /><span>{ownYard}</span></span>;
                 }
                 return <span className="font-medium text-mute">Ball at {rawSpot.replace(/^at\s*/i, "")}</span>;
               })() : null}
