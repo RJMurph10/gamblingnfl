@@ -270,8 +270,8 @@ function ProbabilityGraph({
     <div className="mt-4 rounded-lg border border-line/10 bg-panel2/20 p-2 sm:p-4">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-3 text-xs font-medium">
-          {away && <span className="inline-flex items-center gap-1.5"><TeamLogo team={graphLowTeam ?? away} className="size-5" /><span className="inline-block h-0.5 w-5" style={{ backgroundColor: graphLowColor }} />{probabilityKey === "homeCoverProbability" ? "Cover" : probabilityKey === "overProbability" ? graphLowLabel : ""}</span>}
-          {home && <span className="inline-flex items-center gap-1.5"><TeamLogo team={graphHighTeam ?? home} className="size-5" /><span className="inline-block h-0.5 w-5" style={{ backgroundColor: graphHighColor }} />{probabilityKey === "homeCoverProbability" ? "Cover" : probabilityKey === "overProbability" ? graphHighLabel : ""}</span>}
+          {away && <span className="inline-flex items-center gap-1.5"><TeamLogo team={graphLowTeam ?? away} className="size-5" /><span className="inline-block h-0.5 w-5" style={{ backgroundColor: graphLowColor }} />{probabilityKey === "overProbability" ? graphLowLabel : ""}</span>}
+          {home && <span className="inline-flex items-center gap-1.5"><TeamLogo team={graphHighTeam ?? home} className="size-5" /><span className="inline-block h-0.5 w-5" style={{ backgroundColor: graphHighColor }} />{probabilityKey === "overProbability" ? graphHighLabel : ""}</span>}
           {!away && <span className="inline-flex items-center gap-1.5"><span className="inline-block size-2.5 rounded-full" style={{ backgroundColor: graphHighColor }} />{highLabel}</span>}
           {!home && <span className="inline-flex items-center gap-1.5"><span className="inline-block size-2.5 rounded-full" style={{ backgroundColor: graphLowColor }} />{lowLabel}</span>}
         </div>
@@ -333,7 +333,7 @@ function ProbabilityGraph({
             </span>
             {typeof selectedValue === "number" ? (
               <span
-                className={`inline-flex items-center gap-1.5 font-semibold ${probabilityKey === "overProbability" ? (selectedValue >= 0.5 ? "text-green-500" : "text-red-500") : "text-foreground"}`}
+                className={`inline-flex items-center gap-1.5 rounded-full px-2 py-1 font-semibold ${probabilityKey === "overProbability" ? (selectedValue >= 0.5 ? "bg-green-500/10 text-green-600 dark:text-green-400" : "bg-red-500/10 text-red-600 dark:text-red-400") : "text-foreground"}`}
                 aria-live="polite"
               >
                 {probabilityKey === "overProbability" ? (
