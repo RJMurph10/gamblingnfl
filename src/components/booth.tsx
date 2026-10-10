@@ -351,13 +351,12 @@ export function DriveTable({ game }: { game: Game }) {
           <table className="w-full min-w-[600px] text-sm">
             <thead>
               <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
-                <th className="px-4 py-2 font-normal">#</th>
+                <th className="px-4 py-2 font-normal">Result</th>
                 <th className="px-2 py-2 font-normal">Qtr</th>
                 <th className="px-2 py-2 text-right font-normal">Plays</th>
                 <th className="px-2 py-2 text-right font-normal">Yards</th>
                 <th className="px-2 py-2 text-right font-normal">TOP</th>
                 <th className="px-2 py-2 font-normal">Start</th>
-                <th className="px-4 py-2 text-right font-normal">Result</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-line/5">
@@ -371,9 +370,16 @@ export function DriveTable({ game }: { game: Game }) {
                 const displayTop = hasValidTop ? rawTop : Number(d.plays || 0) > 0 ? `~${estimatedTop}` : "—";
                 const rawResult = String(d.result ?? "").trim();
                 const normalizedResult = rawResult.toUpperCase();
-                const resultLabel = /INTERCEPTION|\bINT\b/.test(normalizedResult)
+                // Some feed records label the outcome only as TO. Search all
+                // available drive fields for the underlying turnover type before
+                // falling back to the generic label.
+                const driveText = Object.values(d as unknown as Record<string, unknown>)
+                  .filter((value): value is string => typeof value === "string")
+                  .join(" ")
+                  .toUpperCase();
+                const resultLabel = /INTERCEPTION|\bINT\b/.test(driveText)
                   ? "INT"
-                  : /FUMBLE|\bFUM\b/.test(normalizedResult)
+                  : /FUMBLE|\bFUM\b/.test(driveText)
                     ? "FUM"
                     : normalizedResult === "EOH"
                       ? "Half"
@@ -382,7 +388,21 @@ export function DriveTable({ game }: { game: Game }) {
                         : normalizedResult;
                 return (
                   <tr key={d.index} className="hover:bg-line/5">
-                    <td className="px-4 py-2.5 font-mono text-mute tabular-nums">{d.index}</td>
+                    <td className="px-4 py-2.5 text-left">
+                      <span
+                        className={`inline-block rounded px-2 py-0.5 font-mono text-[10px] uppercase ${
+                          resultLabel === "TD"
+                            ? "bg-win/15 text-win"
+                            : resultLabel === "TO" || resultLabel === "DOWNS" || resultLabel === "INT" || resultLabel === "FUM"
+                              ? "bg-loss/15 text-loss"
+                              : resultLabel === "FG"
+                                ? "bg-acc/15 text-acc"
+                                : "bg-panel2 text-mute"
+                        }`}
+                      >
+                        {resultLabel}
+                      </span>
+                    </td>
                     <td className="px-2 py-2.5 font-mono text-mute tabular-nums">
                       {d.quarter === 1
                         ? "1st"
@@ -402,21 +422,6 @@ export function DriveTable({ game }: { game: Game }) {
                       </span>
                     </td>
                     <td className="px-2 py-2.5 font-mono text-mute">{d.startAt}</td>
-                    <td className="px-4 py-2.5 text-right">
-                      <span
-                        className={`inline-block rounded px-2 py-0.5 font-mono text-[10px] uppercase ${
-                          d.result === "TD"
-                            ? "bg-win/15 text-win"
-                            : d.result === "TO" || d.result === "DOWNS"
-                              ? "bg-loss/15 text-loss"
-                              : d.result === "FG"
-                                ? "bg-acc/15 text-acc"
-                                : "bg-panel2 text-mute"
-                        }`}
-                      >
-                        {resultLabel}
-                      </span>
-                    </td>
                   </tr>
                 );
               })}
