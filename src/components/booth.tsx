@@ -721,6 +721,7 @@ export function GameRow({
   const away = teamById(game.awayTeamId);
   const home = teamById(game.homeTeamId);
   const score = gameScore(game);
+  const perspectiveTeam = perspectiveTeamId ? teamById(perspectiveTeamId) : undefined;
   if (!away || !home) return null;
 
   const isOT =
