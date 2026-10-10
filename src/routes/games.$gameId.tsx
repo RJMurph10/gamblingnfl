@@ -264,6 +264,17 @@ function ProbabilityGraph({
   }).filter((segment): segment is { index: number; value: number; next: number; color: string } => segment !== null);
   const selected = hoverIndex === null ? null : points[hoverIndex];
   const selectedValue = hoverIndex === null ? undefined : graphValues[hoverIndex];
+  // Keep the hover context's probability badge identical across all market tabs.
+  // On the Total chart, show the same team win-probability badge as Moneyline/Spread,
+  // rather than replacing it with an Over/Under label.
+  const selectedBadgeValue = probabilityKey === "overProbability"
+    ? (typeof selected?.homeWinProbability === "number"
+      ? (favoriteSide === "home" ? selected.homeWinProbability : 1 - selected.homeWinProbability)
+      : undefined)
+    : selectedValue;
+  const selectedBadgeTeam = typeof selectedBadgeValue === "number"
+    ? (selectedBadgeValue >= 0.5 ? graphHighTeam : graphLowTeam)
+    : undefined;
   const pointClock = selected?.clock ? ` ${selected.clock}` : "";
 
   return (
@@ -331,17 +342,13 @@ function ProbabilityGraph({
               <span className="text-faint">—</span>
               {home && <span className="inline-flex items-center gap-1"><span>{selected?.homeScore ?? "—"}</span><TeamLogo team={home} className="size-5" /></span>}
             </span>
-            {typeof selectedValue === "number" ? (
+            {typeof selectedBadgeValue === "number" ? (
               <span
-                className={`inline-flex items-center gap-1.5 rounded-full px-2 py-1 font-semibold ${probabilityKey === "overProbability" ? (selectedValue >= 0.5 ? "bg-green-500/10 text-green-600 dark:text-green-400" : "bg-red-500/10 text-red-600 dark:text-red-400") : "text-foreground"}`}
+                className="inline-flex items-center gap-1.5 rounded-full px-2 py-1 font-semibold text-foreground"
                 aria-live="polite"
               >
-                {probabilityKey === "overProbability" ? (
-                  <span>{selectedValue >= 0.5 ? "Over" : "Under"}</span>
-                ) : (
-                  <TeamLogo team={selectedValue >= 0.5 ? (graphHighTeam ?? home!) : (graphLowTeam ?? away!)} className="size-5" />
-                )}
-                <span>{Math.round(Math.max(selectedValue, 1 - selectedValue) * 100)}%</span>
+                {selectedBadgeTeam ? <TeamLogo team={selectedBadgeTeam} className="size-5" /> : null}
+                <span>{Math.round(Math.max(selectedBadgeValue, 1 - selectedBadgeValue) * 100)}%</span>
               </span>
             ) : null}
           </div>
