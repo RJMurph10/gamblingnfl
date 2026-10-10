@@ -958,6 +958,8 @@ function GamePage() {
                           </div>
                         );
                       };
+                      // Hide the entire category when neither team has a positive stat value.
+                      if (!awayLeader && !homeLeader) return null;
                       return (
                         <div key={leader.label} className="grid grid-cols-[minmax(0,1fr)_112px_minmax(0,1fr)] items-center gap-2 sm:grid-cols-[minmax(0,1fr)_160px_minmax(0,1fr)]">
                           {playerCell(awayLeader, "away")}
