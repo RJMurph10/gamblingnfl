@@ -884,23 +884,39 @@ function GamePage() {
                   </div>
                   <div className="divide-y divide-line/10">
                     {([
-                      { label: "Passing yards", pattern: /([0-9,]+) yds/i, matches: (line: BoxScoreLine) => /\bpass/i.test(line.statLine) || line.position.toUpperCase() === "QB" || line.statLine.includes("INT"), suffix: " yds" },
-                      { label: "Rushing yards", pattern: /([0-9,]+) yds/i, matches: (line: BoxScoreLine) => /\bcar\b/i.test(line.statLine), suffix: " yds" },
-                      { label: "Receiving yards", pattern: /([0-9,]+) yds/i, matches: (line: BoxScoreLine) => /\brec\b/i.test(line.statLine), suffix: " yds" },
+                      {
+                        label: "Passing yards",
+                        pattern: /(?:^|,\s*)([0-9,]+) yds/i,
+                        matches: (line: BoxScoreLine) => /^\s*\d+\s*\/\s*\d+\b/.test(line.statLine) && !/\b(?:car|rec)\b/i.test(line.statLine),
+                        suffix: " yds",
+                      },
+                      {
+                        label: "Rushing yards",
+                        pattern: /\bcar\b\s*,?\s*([0-9,]+) yds/i,
+                        matches: (line: BoxScoreLine) => /\b\d+\s+car\b/i.test(line.statLine),
+                        suffix: " yds",
+                      },
+                      {
+                        label: "Receiving yards",
+                        pattern: /\brec\b\s*,?\s*([0-9,]+) yds/i,
+                        matches: (line: BoxScoreLine) => /\b\d+\s+rec\b/i.test(line.statLine),
+                        suffix: " yds",
+                      },
                       { label: "Sacks", pattern: /([0-9]+(?:\.[0-9])?) sck/i, matches: (line: BoxScoreLine) => line.category === "defense" || line.position.toUpperCase() === "DEF", suffix: "" },
                       { label: "Tackles", pattern: /([0-9]+) tkl/i, matches: (line: BoxScoreLine) => line.category === "defense" || line.position.toUpperCase() === "DEF", suffix: "" },
                     ] as const).map((leader) => {
                       const getTop = (teamId: string) => game.boxScore
                         .filter((line) => line.teamId === teamId && leader.matches(line))
                         .map((line) => ({ line, value: Number(line.statLine.match(leader.pattern)?.[1]?.replace(/,/g, "") ?? -1) }))
-                        .filter((item) => Number.isFinite(item.value) && item.value >= 0)
+                        // A zero or missing stat should leave the team's cell blank.
+                        .filter((item) => Number.isFinite(item.value) && item.value > 0)
                         .sort((a, b) => b.value - a.value)[0];
                       const awayLeader = getTop(away.id);
                       const homeLeader = getTop(home.id);
                       const playerCell = (leaderData: ReturnType<typeof getTop>, side: "away" | "home") => {
                         const isHome = side === "home";
                         const alignment = isHome ? "justify-end text-right" : "justify-start text-left";
-                        if (!leaderData) return <div className={`py-4 text-xs text-mute ${isHome ? "text-right" : "text-left"}`}>No data</div>;
+                        if (!leaderData) return <div className="min-h-16 py-4" aria-hidden="true" />;
                         const playerContent = (
                           <>
                             <div className={`flex min-w-0 items-center gap-2.5 ${isHome ? "flex-row-reverse" : ""}`}>
