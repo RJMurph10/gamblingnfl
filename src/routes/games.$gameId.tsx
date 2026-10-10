@@ -886,8 +886,11 @@ function GamePage() {
                     {([
                       {
                         label: "Passing yards",
-                        pattern: /(?:^|,\s*)([0-9,]+) yds/i,
-                        matches: (line: BoxScoreLine) => /^\s*\d+\s*\/\s*\d+\b/.test(line.statLine) && !/\b(?:car|rec)\b/i.test(line.statLine),
+                        // Passing lines begin with completions/attempts. Read the yards
+                        // immediately after that prefix so an appended rushing line
+                        // cannot suppress or replace the quarterback's passing yards.
+                        pattern: /^\s*\d+\s*\/\s*\d+\s*,?\s*([0-9,]+)\s+yds/i,
+                        matches: (line: BoxScoreLine) => /^\s*\d+\s*\/\s*\d+\b/.test(line.statLine),
                         suffix: " yds",
                       },
                       {
