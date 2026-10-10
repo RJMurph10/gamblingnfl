@@ -228,8 +228,8 @@ function ProbabilityGraph({
     : values.map((value) => typeof value === "number"
       ? (favoriteSide === "home" ? value : 1 - value)
       : undefined);
-  const graphHighColor = probabilityKey === "overProbability" ? highColor : (favoriteSide === "home" ? highColor : lowColor);
-  const graphLowColor = probabilityKey === "overProbability" ? lowColor : (favoriteSide === "home" ? lowColor : highColor);
+  const graphHighColor = probabilityKey === "overProbability" ? "#16a34a" : (favoriteSide === "home" ? highColor : lowColor);
+  const graphLowColor = probabilityKey === "overProbability" ? "#dc2626" : (favoriteSide === "home" ? lowColor : highColor);
   const graphHighLabel = probabilityKey === "overProbability" ? highLabel : `${favoriteSide === "home" ? home?.name : away?.name}${probabilityKey === "homeCoverProbability" ? " Cover" : ""}`;
   const graphLowLabel = probabilityKey === "overProbability" ? lowLabel : `${favoriteSide === "home" ? away?.name : home?.name}${probabilityKey === "homeCoverProbability" ? " Cover" : ""}`;
   const graphHighTeam = favoriteSide === "home" ? home : away;
@@ -276,10 +276,19 @@ function ProbabilityGraph({
     <div className="mt-4 rounded-lg border border-line/10 bg-panel2/20 p-2 sm:p-4">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-3 text-xs font-medium">
-          {away && <span className="inline-flex items-center gap-1.5"><TeamLogo team={graphLowTeam ?? away} className="size-5" /><span className="inline-block h-0.5 w-5" style={{ backgroundColor: graphLowColor }} />{probabilityKey === "overProbability" ? graphLowLabel : ""}</span>}
-          {home && <span className="inline-flex items-center gap-1.5"><TeamLogo team={graphHighTeam ?? home} className="size-5" /><span className="inline-block h-0.5 w-5" style={{ backgroundColor: graphHighColor }} />{probabilityKey === "overProbability" ? graphHighLabel : ""}</span>}
-          {!away && <span className="inline-flex items-center gap-1.5"><span className="inline-block size-2.5 rounded-full" style={{ backgroundColor: graphHighColor }} />{highLabel}</span>}
-          {!home && <span className="inline-flex items-center gap-1.5"><span className="inline-block size-2.5 rounded-full" style={{ backgroundColor: graphLowColor }} />{lowLabel}</span>}
+          {probabilityKey === "overProbability" ? (
+            <>
+              <span className="inline-flex items-center gap-1.5 font-semibold text-green-600"><span>Over</span><span className="inline-block h-0.5 w-5 bg-green-600" /></span>
+              <span className="inline-flex items-center gap-1.5 font-semibold text-red-600"><span>Under</span><span className="inline-block h-0.5 w-5 bg-red-600" /></span>
+            </>
+          ) : (
+            <>
+              {away && <span className="inline-flex items-center gap-1.5"><TeamLogo team={graphLowTeam ?? away} className="size-5" /><span className="inline-block h-0.5 w-5" style={{ backgroundColor: graphLowColor }} /></span>}
+              {home && <span className="inline-flex items-center gap-1.5"><TeamLogo team={graphHighTeam ?? home} className="size-5" /><span className="inline-block h-0.5 w-5" style={{ backgroundColor: graphHighColor }} /></span>}
+              {!away && <span className="inline-flex items-center gap-1.5"><span className="inline-block size-2.5 rounded-full" style={{ backgroundColor: graphHighColor }} />{highLabel}</span>}
+              {!home && <span className="inline-flex items-center gap-1.5"><span className="inline-block size-2.5 rounded-full" style={{ backgroundColor: graphLowColor }} />{lowLabel}</span>}
+            </>
+          )}
         </div>
         <div className="flex flex-wrap items-center justify-end gap-2 font-mono text-xs tabular-nums">
           {(() => {
