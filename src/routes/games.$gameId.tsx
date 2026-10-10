@@ -264,10 +264,15 @@ function ProbabilityGraph({
   }).filter((segment): segment is { index: number; value: number; next: number; color: string } => segment !== null);
   const selected = hoverIndex === null ? null : points[hoverIndex];
   const selectedValue = hoverIndex === null ? undefined : graphValues[hoverIndex];
-  // Keep the hover context layout shared across tabs, while the badge reflects
-  // the selected market: team logo for Moneyline/Spread, Over/Under for Total.
-  const selectedBadgeValue = selectedValue;
-  const selectedBadgeTeam = probabilityKey !== "overProbability" && typeof selectedBadgeValue === "number"
+  // Keep the hover context's probability badge identical across all market tabs.
+  // On the Total chart, show the same team win-probability badge as Moneyline/Spread,
+  // rather than replacing it with an Over/Under label.
+  const selectedBadgeValue = probabilityKey === "overProbability"
+    ? (typeof selected?.homeWinProbability === "number"
+      ? (favoriteSide === "home" ? selected.homeWinProbability : 1 - selected.homeWinProbability)
+      : undefined)
+    : selectedValue;
+  const selectedBadgeTeam = typeof selectedBadgeValue === "number"
     ? (selectedBadgeValue >= 0.5 ? graphHighTeam : graphLowTeam)
     : undefined;
   const pointClock = selected?.clock ? ` ${selected.clock}` : "";
@@ -339,12 +344,13 @@ function ProbabilityGraph({
             </span>
             {typeof selectedBadgeValue === "number" ? (
               <span
-                className="inline-flex items-center gap-1.5 rounded-full px-2 py-1 font-semibold text-foreground"
+                className="inline-flex items-center gap-1.5 rounded-full px-2 py-1 font-semibold text-white"
+                style={probabilityKey === "overProbability" ? { backgroundColor: selectedBadgeValue >= 0.5 ? "#16a34a" : "#dc2626" } : undefined}
                 aria-live="polite"
               >
-                {probabilityKey === "overProbability"
-                  ? <span>{selectedBadgeValue >= 0.5 ? "Over" : "Under"}</span>
-                  : selectedBadgeTeam ? <TeamLogo team={selectedBadgeTeam} className="size-5" /> : null}
+                {probabilityKey === "overProbability" ? (
+                  <span>{selectedBadgeValue >= 0.5 ? "Over" : "Under"}</span>
+                ) : selectedBadgeTeam ? <TeamLogo team={selectedBadgeTeam} className="size-5" /> : null}
                 <span>{Math.round(Math.max(selectedBadgeValue, 1 - selectedBadgeValue) * 100)}%</span>
               </span>
             ) : null}
@@ -361,21 +367,17 @@ function ProbabilityGraph({
                 const spotTeam = abbr
                   ? (away?.abbr.toUpperCase() === abbr ? away : home?.abbr.toUpperCase() === abbr ? home : undefined)
                   : undefined;
-                const possessionTeamId = selected.possessionTeamId;
-                const possessionTeam = possessionTeamId
-                  ? (away?.id === possessionTeamId ? away : home?.id === possessionTeamId ? home : undefined)
-                  : undefined;
                 if (rawYard === 50) return <span className="font-medium text-mute">Ball is on 50</span>;
-                const yardTeam = spotTeam ?? possessionTeam;
-                if (yardTeam && Number.isFinite(rawYard)) {
+                if (spotTeam && Number.isFinite(rawYard)) {
                   const ownYard = rawYard > 50 ? 100 - rawYard : rawYard;
-                  return <span className="inline-flex items-center gap-1.5"><TeamLogo team={yardTeam} className="size-5" /><span>{ownYard}</span></span>;
+                  return <span className="inline-flex items-center gap-1.5"><TeamLogo team={spotTeam} className="size-5" /><span>{ownYard}</span></span>;
                 }
-                // If ESPN provides a bare field-wide coordinate without possession metadata,
-                // show the converted own-side number without guessing which team's logo to use.
+                // ESPN sometimes provides a field-wide 0–100 spot without a team abbreviation.
+                // Show the field-side logo alongside the normalized own-side yard number.
                 if (numberSpot && Number.isFinite(rawYard)) {
                   const ownYard = rawYard > 50 ? 100 - rawYard : rawYard;
-                  return <span className="font-medium text-mute">Ball at {ownYard}</span>;
+                  const fieldSideTeam = rawYard > 50 ? home : away;
+                  return <span className="inline-flex items-center gap-1.5"><TeamLogo team={fieldSideTeam ?? selectedBadgeTeam ?? away} className="size-5" /><span>{ownYard}</span></span>;
                 }
                 return <span className="font-medium text-mute">Ball at {rawSpot.replace(/^at\s*/i, "")}</span>;
               })() : null}
