@@ -1165,6 +1165,9 @@ function GamePage() {
                     lowColor="#ef4444"
                     highLabel="Over"
                     lowLabel="Under"
+                    favoriteSide={favoriteSideFromSpread(game.spread, away, home)}
+                    away={away}
+                    home={home}
                   />
                 )}
               </Panel>
