@@ -964,14 +964,14 @@ export interface TeamOverviewStats {
   ppg: number;
   passingYardsPerGame: number;
   rushingYardsPerGame: number;
-  touchdownsPerGame: number;
+  touchdowns: number;
   yardsPerPlay: number;
   turnoversPerGame: number;
   opponentPpg: number;
   opponentPassingYardsPerGame: number;
   opponentRushingYardsPerGame: number;
-  opponentTouchdownsPerGame: number;
-  sacksPerGame: number;
+  opponentTouchdowns: number;
+  sacks: number;
   takeawaysPerGame: number;
 }
 
@@ -983,7 +983,7 @@ export async function fetchTeamOverviewStats(teamId: string): Promise<TeamOvervi
       (game) => game.status === "final" && (game.homeTeamId === teamId || game.awayTeamId === teamId),
     );
     const totals = {
-      pointsFor: 0, pointsAgainst: 0, passingYards: 0, rushingYards: 0,
+      pointsFor: 0, pointsAgainst: 0, passingYards: 0, rushingYards: 0, totalYards: 0,
       offensiveTouchdowns: 0, plays: 0, turnovers: 0, opponentPassingYards: 0,
       opponentRushingYards: 0, opponentTouchdowns: 0, sacks: 0, takeaways: 0,
       games: 0,
@@ -1019,14 +1019,14 @@ export async function fetchTeamOverviewStats(teamId: string): Promise<TeamOvervi
       ppg: totals.pointsFor / games,
       passingYardsPerGame: totals.passingYards / games,
       rushingYardsPerGame: totals.rushingYards / games,
-      touchdownsPerGame: totals.offensiveTouchdowns / games,
+      touchdowns: totals.offensiveTouchdowns,
       yardsPerPlay: totals.plays > 0 ? totals.totalYards / totals.plays : 0,
       turnoversPerGame: totals.turnovers / games,
       opponentPpg: totals.pointsAgainst / games,
       opponentPassingYardsPerGame: totals.opponentPassingYards / games,
       opponentRushingYardsPerGame: totals.opponentRushingYards / games,
-      opponentTouchdownsPerGame: totals.opponentTouchdowns / games,
-      sacksPerGame: totals.sacks / games,
+      opponentTouchdowns: totals.opponentTouchdowns,
+      sacks: totals.sacks,
       takeawaysPerGame: totals.takeaways / games,
     };
   }, 10 * 60 * 1000);
