@@ -51,8 +51,10 @@ function LiveGameRow({ game, showDown }: { game: Game; showDown: boolean }) {
           {!isHalftime ? (
             showScoringTransition ? (
               <span className="inline-flex items-center gap-1">
-                {game.scoringAlert!.type}
                 <TeamLogo team={teamById(game.scoringAlert!.teamId)!} className="size-4" />
+                {game.scoringAlert!.type === "FG"
+                  ? `${game.scoringAlert!.yards ?? ""}${game.scoringAlert!.yards ? "yd " : ""}FG`
+                  : "TD"}
               </span>
             ) : hasLiveDowns ? liveDownDistance : "—"
           ) : ""}
