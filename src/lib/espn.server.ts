@@ -180,6 +180,26 @@ function mapEvent(event: any, week: number): Game | null {
   let isRedZone = false;
   let downDistance: string | undefined;
 
+  // ESPN's live situation can briefly omit down & distance immediately after
+  // a score. Use its last-play description to show who just scored instead.
+  let scoringAlert: string | undefined;
+  const lastPlay = sit?.lastPlay;
+  const lastPlayText = String(
+    lastPlay?.text ?? lastPlay?.shortText ?? lastPlay?.type?.text ?? lastPlay?.type?.name ?? "",
+  );
+  const playTypeText = String(lastPlay?.type?.text ?? lastPlay?.type?.name ?? "");
+  const isTouchdown = /touchdown|\bTD\b/i.test(`${lastPlayText} ${playTypeText}`);
+  const isFieldGoal = /field goal/i.test(`${lastPlayText} ${playTypeText}`) &&
+    !/missed|no good|blocked|failed/i.test(`${lastPlayText} ${playTypeText}`);
+  if (isTouchdown || isFieldGoal) {
+    const scoringTeam = teamByAbbr(
+      lastPlay?.team?.abbreviation ?? lastPlay?.end?.team?.abbreviation ?? lastPlay?.start?.team?.abbreviation ?? "",
+    );
+    if (scoringTeam && (scoringTeam.id === awayTeam.id || scoringTeam.id === homeTeam.id)) {
+      scoringAlert = `${isTouchdown ? "TD" : "FG"} ${scoringTeam.name}`;
+    }
+  }
+
   const isHalftimeStatus =
     comp.status?.type?.name === "STATUS_HALFTIME" ||
     Boolean(comp.status?.type?.detail?.toLowerCase().includes("half"));
@@ -233,6 +253,7 @@ function mapEvent(event: any, week: number): Game | null {
     possession,
     isRedZone,
     downDistance,
+    scoringAlert,
     awayRecord,
     homeRecord,
     possessionText: isLive ? sit?.possessionText : undefined,
@@ -696,6 +717,7 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
       base.possession = sbGame.possession;
       base.isRedZone = sbGame.isRedZone;
       base.downDistance = sbGame.downDistance;
+      base.scoringAlert = sbGame.scoringAlert;
       base.possessionText = sbGame.possessionText;
       base.distance = sbGame.distance;
       base.clock = sbGame.clock;
