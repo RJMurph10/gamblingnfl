@@ -990,10 +990,11 @@ export async function fetchTeamOverviewStats(teamId: string): Promise<TeamOvervi
     );
     const totals = {
       pointsFor: 0, pointsAgainst: 0, passingYards: 0, rushingYards: 0, totalYards: 0,
-      passingTouchdowns: 0, rushingTouchdowns: 0, plays: 0,
+      passingTouchdowns: 0, rushingTouchdowns: 0, touchdowns: 0, plays: 0,
       turnovers: 0, opponentPassingYards: 0, opponentRushingYards: 0,
       opponentTotalYards: 0, opponentPassingTouchdowns: 0,
-      opponentRushingTouchdowns: 0, sacks: 0, takeaways: 0, games: 0,
+      opponentRushingTouchdowns: 0, opponentTouchdowns: 0,
+      sacks: 0, takeaways: 0, games: 0,
     };
 
     const details = await Promise.all(completed.map((game) => fetchGameDetail(game.id.replace(/^espn-/, ""))));
@@ -1010,9 +1011,11 @@ export async function fetchTeamOverviewStats(teamId: string): Promise<TeamOvervi
       totals.rushingYards += own.rushYards;
       totals.passingTouchdowns += own.passingTouchdowns ?? 0;
       totals.rushingTouchdowns += own.rushingTouchdowns ?? 0;
-      // Keep total offensive TDs consistent with the displayed breakdown:
-      // passing TDs + rushing TDs. Counting TD-result drives separately can
-      // disagree with the player/stat totals (and can count non-offensive TDs).
+      // TD is the full team scoring-TD total, not only offensive TDs. ESPN's
+      // per-game player totals include defensive and return touchdowns too.
+      // Keep PTD/RUTD as the offensive breakdown, and use the full TD field
+      // for the total column so it can correctly exceed PTD + RUTD.
+      totals.touchdowns += own.touchdowns ?? ((own.passingTouchdowns ?? 0) + (own.rushingTouchdowns ?? 0));
       totals.plays += game.drives.filter((drive) => drive.teamId === teamId).reduce((sum, drive) => sum + Math.max(0, drive.plays), 0);
       totals.turnovers += own.turnovers;
       totals.opponentTotalYards += opponent.totalYards;
@@ -1020,7 +1023,8 @@ export async function fetchTeamOverviewStats(teamId: string): Promise<TeamOvervi
       totals.opponentRushingYards += opponent.rushYards;
       totals.opponentPassingTouchdowns += opponent.passingTouchdowns ?? 0;
       totals.opponentRushingTouchdowns += opponent.rushingTouchdowns ?? 0;
-      // Opponent total TDs use the same additive definition as offense.
+      // Opponent TD includes offensive, defensive, and return scores allowed.
+      totals.opponentTouchdowns += opponent.touchdowns ?? ((opponent.passingTouchdowns ?? 0) + (opponent.rushingTouchdowns ?? 0));
       totals.sacks += own.sacks ?? 0;
       // Turnovers committed by the opponent are the defense's takeaways.
       totals.takeaways += opponent.turnovers;
@@ -1034,7 +1038,7 @@ export async function fetchTeamOverviewStats(teamId: string): Promise<TeamOvervi
       passingYardsPerGame: totals.passingYards / games,
       totalYardsPerGame: totals.totalYards / games,
       rushingYardsPerGame: totals.rushingYards / games,
-      touchdowns: totals.passingTouchdowns + totals.rushingTouchdowns,
+      touchdowns: totals.touchdowns,
       passingTouchdowns: totals.passingTouchdowns,
       rushingTouchdowns: totals.rushingTouchdowns,
       yardsPerPlay: totals.plays > 0 ? totals.totalYards / totals.plays : 0,
@@ -1043,7 +1047,7 @@ export async function fetchTeamOverviewStats(teamId: string): Promise<TeamOvervi
       opponentTotalYardsPerGame: totals.opponentTotalYards / games,
       opponentPassingYardsPerGame: totals.opponentPassingYards / games,
       opponentRushingYardsPerGame: totals.opponentRushingYards / games,
-      opponentTouchdowns: totals.opponentPassingTouchdowns + totals.opponentRushingTouchdowns,
+      opponentTouchdowns: totals.opponentTouchdowns,
       opponentPassingTouchdowns: totals.opponentPassingTouchdowns,
       opponentRushingTouchdowns: totals.opponentRushingTouchdowns,
       sacks: totals.sacks,
