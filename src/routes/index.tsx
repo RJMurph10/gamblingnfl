@@ -42,8 +42,15 @@ function LiveGameRow({ game, showDown }: { game: Game; showDown: boolean }) {
     <tr className="hover:bg-line/5">
       <td className="whitespace-nowrap px-4 py-2.5 font-mono text-mute">{clock}</td>
       {showDown ? (
-        <td className={`whitespace-nowrap px-2 py-2.5 font-mono ${game.scoringAlert ? "font-semibold text-green-500" : "text-mute"}`}>
-          {!isHalftime ? game.scoringAlert || game.downDistance || "—" : ""}
+        <td className="whitespace-nowrap px-2 py-2.5 font-mono text-mute">
+          {!isHalftime ? (
+            game.scoringAlert ? (
+              <span className="inline-flex items-center gap-1 font-semibold text-win">
+                {game.scoringAlert.type}
+                <TeamLogo team={teamById(game.scoringAlert.teamId)!} className="size-4" />
+              </span>
+            ) : game.downDistance || "—"
+          ) : ""}
         </td>
       ) : null}
       <td className="px-2 py-2.5 text-center">
