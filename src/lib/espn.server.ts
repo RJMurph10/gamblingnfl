@@ -179,25 +179,14 @@ function mapEvent(event: any, week: number): Game | null {
   let possession: "away" | "home" | null = null;
   let isRedZone = false;
   let downDistance: string | undefined;
+  let scoringAlert: Game["scoringAlert"];
 
-  // ESPN's live situation can briefly omit down & distance immediately after
-  // a score. Use its last-play description to show who just scored instead.
-  let scoringAlert: string | undefined;
-  const lastPlay = sit?.lastPlay;
-  const lastPlayText = String(
-    lastPlay?.text ?? lastPlay?.shortText ?? lastPlay?.type?.text ?? lastPlay?.type?.name ?? "",
-  );
-  const playTypeText = String(lastPlay?.type?.text ?? lastPlay?.type?.name ?? "");
-  const isTouchdown = /touchdown|\bTD\b/i.test(`${lastPlayText} ${playTypeText}`);
-  const isFieldGoal = /field goal/i.test(`${lastPlayText} ${playTypeText}`) &&
-    !/missed|no good|blocked|failed/i.test(`${lastPlayText} ${playTypeText}`);
-  if (isTouchdown || isFieldGoal) {
-    const scoringTeam = teamByAbbr(
-      lastPlay?.team?.abbreviation ?? lastPlay?.end?.team?.abbreviation ?? lastPlay?.start?.team?.abbreviation ?? "",
-    );
-    if (scoringTeam && (scoringTeam.id === awayTeam.id || scoringTeam.id === homeTeam.id)) {
-      scoringAlert = `${isTouchdown ? "TD" : "FG"} ${scoringTeam.name}`;
-    }
+  const lastPlayText = String(sit?.lastPlay?.text ?? sit?.lastPlay?.shortText ?? sit?.lastPlay?.type?.text ?? "");
+  const scoringType = /touchdown|\bTD\b/i.test(lastPlayText) ? "TD" : /field goal|\bFG\b/i.test(lastPlayText) && !/missed|no good|blocked|failed/i.test(lastPlayText) ? "FG" : undefined;
+  const scoringTeamAbbr = String(sit?.lastPlay?.team?.abbreviation ?? sit?.lastPlay?.end?.team?.abbreviation ?? sit?.lastPlay?.start?.team?.abbreviation ?? "");
+  const scoringTeam = teamByAbbr(scoringTeamAbbr);
+  if (scoringType && scoringTeam && (scoringTeam.id === homeTeam.id || scoringTeam.id === awayTeam.id)) {
+    scoringAlert = { type: scoringType, teamId: scoringTeam.id };
   }
 
   const isHalftimeStatus =
@@ -302,6 +291,37 @@ export async function fetchSchedule(): Promise<Game[]> {
         if (game) games.push(game);
       }
     }
+
+    // The scoreboard's situation.lastPlay often omits scoring play details.
+    // For live games, use ESPN's summary drives to identify the most recent
+    // touchdown or successful field goal and its team.
+    const liveGames = games.filter((game) => game.status === "live");
+    await Promise.all(liveGames.map(async (game) => {
+      const eventId = game.id.replace(/^espn-/, "");
+      const summary = await cached(`live-scoring-${eventId}`, async () => {
+        try {
+          return await fetchJson(`${SUMMARY}?event=${eventId}`);
+        } catch {
+          return null;
+        }
+      });
+      const drives = [
+        ...(Array.isArray(summary?.drives?.previous) ? summary.drives.previous : []),
+        ...(summary?.drives?.current ? [summary.drives.current] : []),
+      ];
+      for (let i = drives.length - 1; i >= 0; i--) {
+        const drive = drives[i];
+        const result = String(
+          drive?.displayResult ?? drive?.result?.displayValue ?? drive?.result?.text ?? drive?.result ?? drive?.end?.result?.displayValue ?? drive?.end?.result?.text ?? "",
+        );
+        const type = /touchdown|\bTD\b/i.test(result) ? "TD" : /field goal|\bFG\b/i.test(result) && !/missed|no good|blocked|failed/i.test(result) ? "FG" : undefined;
+        const scoringTeam = teamByAbbr(String(drive?.team?.abbreviation ?? ""));
+        if (type && scoringTeam && (scoringTeam.id === game.homeTeamId || scoringTeam.id === game.awayTeamId)) {
+          game.scoringAlert = { type, teamId: scoringTeam.id };
+          break;
+        }
+      }
+    }));
 
     // Keep the pregame spread/total available after kickoff if the live
     // scoreboard drops the odds fields. Historical odds are also used for finals.
@@ -717,7 +737,7 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
       base.possession = sbGame.possession;
       base.isRedZone = sbGame.isRedZone;
       base.downDistance = sbGame.downDistance;
-      base.scoringAlert = sbGame.scoringAlert;
+      base.scoringAlert = sbGame.scoringAlert ?? base.scoringAlert;
       base.possessionText = sbGame.possessionText;
       base.distance = sbGame.distance;
       base.clock = sbGame.clock;
