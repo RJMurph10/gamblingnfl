@@ -181,13 +181,6 @@ function mapEvent(event: any, week: number): Game | null {
   let downDistance: string | undefined;
   let scoringAlert: Game["scoringAlert"];
 
-  const lastPlayText = String(sit?.lastPlay?.text ?? sit?.lastPlay?.shortText ?? sit?.lastPlay?.type?.text ?? "");
-  const scoringType = /touchdown|\bTD\b/i.test(lastPlayText) ? "TD" : /field goal|\bFG\b/i.test(lastPlayText) && !/missed|no good|blocked|failed/i.test(lastPlayText) ? "FG" : undefined;
-  const scoringTeamAbbr = String(sit?.lastPlay?.team?.abbreviation ?? sit?.lastPlay?.end?.team?.abbreviation ?? sit?.lastPlay?.start?.team?.abbreviation ?? "");
-  const scoringTeam = teamByAbbr(scoringTeamAbbr);
-  if (scoringType && scoringTeam && (scoringTeam.id === homeTeam.id || scoringTeam.id === awayTeam.id)) {
-    scoringAlert = { type: scoringType, teamId: scoringTeam.id };
-  }
 
   const isHalftimeStatus =
     comp.status?.type?.name === "STATUS_HALFTIME" ||
@@ -305,20 +298,44 @@ export async function fetchSchedule(): Promise<Game[]> {
           return null;
         }
       });
-      const drives = [
-        ...(Array.isArray(summary?.drives?.previous) ? summary.drives.previous : []),
-        ...(summary?.drives?.current ? [summary.drives.current] : []),
-      ];
-      for (let i = drives.length - 1; i >= 0; i--) {
-        const drive = drives[i];
-        const result = String(
-          drive?.displayResult ?? drive?.result?.displayValue ?? drive?.result?.text ?? drive?.result ?? drive?.end?.result?.displayValue ?? drive?.end?.result?.text ?? "",
-        );
-        const type = /touchdown|\bTD\b/i.test(result) ? "TD" : /field goal|\bFG\b/i.test(result) && !/missed|no good|blocked|failed/i.test(result) ? "FG" : undefined;
-        const scoringTeam = teamByAbbr(String(drive?.team?.abbreviation ?? ""));
+      // ESPN's scoringPlays identifies the team that actually scored. This is
+      // important for defensive fumble/interception returns, where the drive's
+      // offense is NOT the scoring team.
+      const scoringPlays = Array.isArray(summary?.scoringPlays) ? summary.scoringPlays : [];
+      for (let i = scoringPlays.length - 1; i >= 0; i--) {
+        const play = scoringPlays[i];
+        const text = String(play?.text ?? play?.shortText ?? play?.type?.text ?? "");
+        const type = /touchdown|\bTD\b/i.test(text) ? "TD" : /field goal|\bFG\b/i.test(text) && !/missed|no good|blocked|failed/i.test(text) ? "FG" : undefined;
+        const scoringTeam = teamByAbbr(String(play?.team?.abbreviation ?? play?.team?.shortDisplayName ?? ""));
         if (type && scoringTeam && (scoringTeam.id === game.homeTeamId || scoringTeam.id === game.awayTeamId)) {
-          game.scoringAlert = { type, teamId: scoringTeam.id };
+          const yardsMatch = type === "FG" ? text.match(/\b(\d{1,2})\s*(?:-?yard|yd)\s*(?:field goal|FG)\b/i) ?? text.match(/(?:field goal|FG)\s*(?:from\s*)?(\d{1,2})\s*(?:yards?|yd)?\b/i) : null;
+          game.scoringAlert = { type, teamId: scoringTeam.id, ...(yardsMatch ? { yards: Number(yardsMatch[1]) } : {}) };
           break;
+        }
+      }
+
+      // Fallback for ESPN responses that omit scoringPlays. Avoid using the
+      // drive's offense for return touchdowns, which can credit the wrong team.
+      if (!game.scoringAlert) {
+        const drives = [
+          ...(Array.isArray(summary?.drives?.previous) ? summary.drives.previous : []),
+          ...(summary?.drives?.current ? [summary.drives.current] : []),
+        ];
+        for (let i = drives.length - 1; i >= 0; i--) {
+          const drive = drives[i];
+          const result = String(
+            drive?.displayResult ?? drive?.result?.displayValue ?? drive?.result?.text ?? drive?.result ?? drive?.end?.result?.displayValue ?? drive?.end?.result?.text ?? "",
+          );
+          const type = /touchdown|\bTD\b/i.test(result) ? "TD" : /field goal|\bFG\b/i.test(result) && !/missed|no good|blocked|failed/i.test(result) ? "FG" : undefined;
+          if (!type || /fumble|interception|return/i.test(result)) continue;
+          const scoringTeam = teamByAbbr(String(drive?.team?.abbreviation ?? ""));
+          if (scoringTeam && (scoringTeam.id === game.homeTeamId || scoringTeam.id === game.awayTeamId)) {
+            const playTexts = (drive?.plays ?? []).map((p: any) => String(p?.text ?? p?.shortText ?? ""));
+            const scoringText = [...playTexts].reverse().find((t: string) => /field goal|\bFG\b|touchdown|\bTD\b/i.test(t)) ?? result;
+            const yardsMatch = type === "FG" ? scoringText.match(/\b(\d{1,2})\s*(?:-?yard|yd)\s*(?:field goal|FG)\b/i) ?? scoringText.match(/(?:field goal|FG)\s*(?:from\s*)?(\d{1,2})\s*(?:yards?|yd)?\b/i) : null;
+            game.scoringAlert = { type, teamId: scoringTeam.id, ...(yardsMatch ? { yards: Number(yardsMatch[1]) } : {}) };
+            break;
+          }
         }
       }
     }));
