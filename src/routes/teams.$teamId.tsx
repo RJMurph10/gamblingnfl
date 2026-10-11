@@ -18,6 +18,7 @@ import {
   getTeamRoster,
   getTeamSeasonStats,
   getTeamOverviewStats,
+  getLeagueTeamOverviewStats,
 } from "@/lib/espn.functions";
 import type { DepthChartEntry, LiveRosterPlayer, TeamSeasonStatRow, TeamOverviewStats } from "@/lib/espn.server";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -50,6 +51,7 @@ export const Route = createFileRoute("/teams/$teamId")({
 function TeamPage() {
   const { team } = Route.useLoaderData();
   const [activeTab, setActiveTab] = useState("schedule");
+  const [selectedRanking, setSelectedRanking] = useState<{ label: string; key: string; higherIsBetter: boolean } | null>(null);
   const fallbackRoster = playersByTeam(team.id);
 
   const { data: liveGames } = useQuery({
@@ -64,6 +66,12 @@ function TeamPage() {
   const { data: overviewStats, isLoading: overviewLoading } = useQuery<TeamOverviewStats>({
     queryKey: ["team-overview-stats", team.id],
     queryFn: () => getTeamOverviewStats({ data: { teamId: team.id } }),
+    staleTime: 10 * 60 * 1000,
+    retry: 1,
+  });
+  const { data: leagueOverviewStats = [], isLoading: rankingsLoading } = useQuery({
+    queryKey: ["league-team-overview-stats"],
+    queryFn: () => getLeagueTeamOverviewStats(),
     staleTime: 10 * 60 * 1000,
     retry: 1,
   });
@@ -133,35 +141,55 @@ function TeamPage() {
           title="Offense"
           gamesPlayed={overviewStats?.gamesPlayed ?? 0}
           loading={overviewLoading}
+          teamId={team.id}
+          leagueStats={leagueOverviewStats}
+          rankingsLoading={rankingsLoading}
+          onSelectRanking={setSelectedRanking}
           metrics={[
-            ["PPG", overviewStats?.ppg, "Points per game"],
-            ["TYDS", overviewStats?.totalYardsPerGame, "Total offensive yards per game"],
-            ["PYDS", overviewStats?.passingYardsPerGame, "Passing yards per game"],
-            ["RUYDS", overviewStats?.rushingYardsPerGame, "Rushing yards per game"],
-            ["TD", overviewStats?.touchdowns, "Total offensive touchdowns this season"],
-            ["PTD", overviewStats?.passingTouchdowns, "Total passing touchdowns this season"],
-            ["RUTD", overviewStats?.rushingTouchdowns, "Total rushing touchdowns this season"],
-            ["YPP", overviewStats?.yardsPerPlay, "Yards per offensive play"],
-            ["TO", overviewStats?.turnoversPerGame, "Turnovers per game"],
+            ["PPG", overviewStats?.ppg, "Points per game", "ppg", true],
+            ["TYDS", overviewStats?.totalYardsPerGame, "Total offensive yards per game", "totalYardsPerGame", true],
+            ["PYDS", overviewStats?.passingYardsPerGame, "Passing yards per game", "passingYardsPerGame", true],
+            ["RUYDS", overviewStats?.rushingYardsPerGame, "Rushing yards per game", "rushingYardsPerGame", true],
+            ["TD", overviewStats?.touchdowns, "Total team touchdowns this season", "touchdowns", true],
+            ["PTD", overviewStats?.passingTouchdowns, "Total passing touchdowns this season", "passingTouchdowns", true],
+            ["RUTD", overviewStats?.rushingTouchdowns, "Total rushing touchdowns this season", "rushingTouchdowns", true],
+            ["YPP", overviewStats?.yardsPerPlay, "Yards per offensive play", "yardsPerPlay", true],
+            ["TO", overviewStats?.turnoversPerGame, "Turnovers per game", "turnoversPerGame", false],
           ]}
         />
         <TeamMetricPanel
           title="Defense"
           gamesPlayed={overviewStats?.gamesPlayed ?? 0}
           loading={overviewLoading}
+          teamId={team.id}
+          leagueStats={leagueOverviewStats}
+          rankingsLoading={rankingsLoading}
+          onSelectRanking={setSelectedRanking}
           metrics={[
-            ["OPPG", overviewStats?.opponentPpg, "Opponent points per game"],
-            ["OTYDS", overviewStats?.opponentTotalYardsPerGame, "Opponent total yards per game"],
-            ["OPYDS", overviewStats?.opponentPassingYardsPerGame, "Opponent passing yards per game"],
-            ["ORUYDS", overviewStats?.opponentRushingYardsPerGame, "Opponent rushing yards per game"],
-            ["OTD", overviewStats?.opponentTouchdowns, "Total opponent touchdowns this season"],
-            ["OPTD", overviewStats?.opponentPassingTouchdowns, "Total opponent passing touchdowns this season"],
-            ["ORUTD", overviewStats?.opponentRushingTouchdowns, "Total opponent rushing touchdowns this season"],
-            ["SACK", overviewStats?.sacks, "Total sacks this season"],
-            ["TWAYS", overviewStats?.takeawaysPerGame, "Takeaways per game"],
+            ["OPPG", overviewStats?.opponentPpg, "Opponent points per game", "opponentPpg", false],
+            ["OTYDS", overviewStats?.opponentTotalYardsPerGame, "Opponent total yards per game", "opponentTotalYardsPerGame", false],
+            ["OPYDS", overviewStats?.opponentPassingYardsPerGame, "Opponent passing yards per game", "opponentPassingYardsPerGame", false],
+            ["ORUYDS", overviewStats?.opponentRushingYardsPerGame, "Opponent rushing yards per game", "opponentRushingYardsPerGame", false],
+            ["OTD", overviewStats?.opponentTouchdowns, "Total opponent touchdowns this season", "opponentTouchdowns", false],
+            ["OPTD", overviewStats?.opponentPassingTouchdowns, "Total opponent passing touchdowns this season", "opponentPassingTouchdowns", false],
+            ["ORUTD", overviewStats?.opponentRushingTouchdowns, "Total opponent rushing touchdowns this season", "opponentRushingTouchdowns", false],
+            ["SACK", overviewStats?.sacks, "Total sacks this season", "sacks", true],
+            ["TWAYS", overviewStats?.takeawaysPerGame, "Takeaways per game", "takeawaysPerGame", true],
           ]}
         />
       </div>
+
+      {selectedRanking && (
+        <RankingModal
+          title={selectedRanking.label}
+          statKey={selectedRanking.key}
+          higherIsBetter={selectedRanking.higherIsBetter}
+          currentTeamId={team.id}
+          leagueStats={leagueOverviewStats}
+          loading={rankingsLoading}
+          onClose={() => setSelectedRanking(null)}
+        />
+      )}
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-6">
         <TabsList className="w-full justify-start overflow-x-auto rounded-none border-b border-line/10 bg-transparent p-0">
@@ -216,16 +244,47 @@ function TeamPage() {
   );
 }
 
+type RankingStatsRow = { teamId: string; teamAbbr: string; teamName: string; stats: TeamOverviewStats };
+type MetricTuple = [string, number | undefined, string, string, boolean];
+
+function ordinal(rank: number): string {
+  const mod100 = rank % 100;
+  if (mod100 >= 11 && mod100 <= 13) return `${rank}th`;
+  switch (rank % 10) {
+    case 1: return `${rank}st`;
+    case 2: return `${rank}nd`;
+    case 3: return `${rank}rd`;
+    default: return `${rank}th`;
+  }
+}
+
+function rankedTeams(rows: RankingStatsRow[], key: string, higherIsBetter: boolean) {
+  const valid = rows.filter((row) => Number.isFinite(Number((row.stats as any)[key])) && row.stats.gamesPlayed > 0);
+  valid.sort((a, b) => {
+    const diff = Number((a.stats as any)[key]) - Number((b.stats as any)[key]);
+    return (higherIsBetter ? -diff : diff) || a.teamName.localeCompare(b.teamName);
+  });
+  let lastValue: number | undefined;
+  let rank = 0;
+  return valid.map((row, index) => {
+    const value = Number((row.stats as any)[key]);
+    if (lastValue === undefined || value !== lastValue) rank = index + 1;
+    lastValue = value;
+    return { ...row, value, rank };
+  });
+}
+
 function TeamMetricPanel({
-  title,
-  gamesPlayed,
-  loading,
-  metrics,
+  title, gamesPlayed, loading, metrics, teamId, leagueStats, rankingsLoading, onSelectRanking,
 }: {
   title: string;
   gamesPlayed: number;
   loading: boolean;
-  metrics: [string, number | undefined, string][];
+  metrics: MetricTuple[];
+  teamId: string;
+  leagueStats: RankingStatsRow[];
+  rankingsLoading: boolean;
+  onSelectRanking: (ranking: { label: string; key: string; higherIsBetter: boolean }) => void;
 }) {
   const format = (value: number | undefined, label: string) => {
     if (loading || !gamesPlayed || value === undefined || !Number.isFinite(value)) return "—";
@@ -237,14 +296,50 @@ function TeamMetricPanel({
     <section className="min-w-0 py-2">
       <h2 className="mb-4 text-center font-disp text-lg font-semibold tracking-wide text-ink">{title}</h2>
       <div className="overflow-x-auto"><div className="grid min-w-[900px] grid-cols-9 gap-y-5">
-        {metrics.map(([label, value, description]) => (
-          <div key={label} title={description} className="min-w-0 px-2 text-center">
-            <div className="font-mono text-[10px] uppercase tracking-wider text-faint">{label}</div>
-            <div className="mt-1 font-disp text-xl font-semibold tabular-nums tracking-tight text-ink">{format(value, label)}</div>
-          </div>
-        ))}
+        {metrics.map(([label, value, description, statKey, higherIsBetter]) => {
+          const ranked = rankedTeams(leagueStats, statKey, higherIsBetter);
+          const current = ranked.find((row) => row.teamId === teamId);
+          return (
+            <button key={label} type="button" title={`${description}. Click to view all 32 teams ranked.`}
+              onClick={() => onSelectRanking({ label, key: statKey, higherIsBetter })}
+              className="min-w-0 rounded-md px-2 py-1 text-center transition-colors hover:bg-panel2/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-acc">
+              <div className="font-mono text-[10px] uppercase tracking-wider text-faint">{label}</div>
+              <div className="mt-1 font-disp text-xl font-semibold tabular-nums tracking-tight text-ink">{format(value, label)}</div>
+              <div className="mt-0.5 min-h-4 font-mono text-[10px] tabular-nums text-mute">{rankingsLoading || !current ? " " : ordinal(current.rank)}</div>
+            </button>
+          );
+        })}
       </div></div>
     </section>
+  );
+}
+
+function RankingModal({ title, statKey, higherIsBetter, currentTeamId, leagueStats, loading, onClose }: {
+  title: string; statKey: string; higherIsBetter: boolean; currentTeamId: string;
+  leagueStats: RankingStatsRow[]; loading: boolean; onClose: () => void;
+}) {
+  const rows = rankedTeams(leagueStats, statKey, higherIsBetter);
+  const format = (value: number) => ["touchdowns", "passingTouchdowns", "rushingTouchdowns", "opponentTouchdowns", "opponentPassingTouchdowns", "opponentRushingTouchdowns", "sacks"].includes(statKey)
+    ? String(Math.round(value)) : value.toFixed(1);
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}>
+      <section role="dialog" aria-modal="true" aria-label={`${title} team rankings`} className="flex max-h-[85vh] w-full max-w-xl flex-col overflow-hidden rounded-xl border border-line/20 bg-panel shadow-2xl">
+        <header className="flex items-center justify-between border-b border-line/10 px-5 py-4">
+          <div><h2 className="font-disp text-xl font-semibold text-ink">{title} Rankings</h2><p className="mt-1 font-mono text-[10px] uppercase tracking-wider text-mute">2026 season · {higherIsBetter ? "Higher is better" : "Lower is better"}</p></div>
+          <button type="button" onClick={onClose} aria-label="Close rankings" className="rounded-md px-3 py-2 text-lg text-mute hover:bg-panel2">×</button>
+        </header>
+        <div className="overflow-y-auto">
+          {loading ? <p className="p-6 text-center font-mono text-xs text-mute">Loading league rankings…</p> : rows.length ? rows.map((row) => (
+            <div key={row.teamId} className={`grid grid-cols-[3.5rem_1fr_auto] items-center gap-3 border-b border-line/5 px-5 py-3 ${row.teamId === currentTeamId ? "bg-acc/10 font-semibold" : ""}`}>
+              <span className="font-mono text-sm tabular-nums text-mute">{ordinal(row.rank)}</span>
+              <span className="text-sm text-ink">{row.teamName} <span className="ml-1 font-mono text-[10px] text-mute">{row.teamAbbr}</span></span>
+              <span className="font-mono text-sm tabular-nums text-ink">{format(row.value)}</span>
+            </div>
+          )) : <p className="p-6 text-center font-mono text-xs text-mute">Rankings are unavailable until team stats load.</p>}
+        </div>
+        <footer className="border-t border-line/10 px-5 py-3 font-mono text-[10px] text-mute">Tied teams share the same rank.</footer>
+      </section>
+    </div>
   );
 }
 
