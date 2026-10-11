@@ -236,14 +236,14 @@ function TeamMetricPanel({
   return (
     <section className="min-w-0 py-2">
       <h2 className="mb-4 text-center font-disp text-lg font-semibold tracking-wide text-ink">{title}</h2>
-      <div className="grid grid-cols-3 gap-y-5 sm:grid-cols-3 lg:grid-cols-5">
+      <div className="overflow-x-auto"><div className="grid min-w-[900px] grid-cols-9 gap-y-5">
         {metrics.map(([label, value, description]) => (
           <div key={label} title={description} className="min-w-0 px-2 text-center">
             <div className="font-mono text-[10px] uppercase tracking-wider text-faint">{label}</div>
             <div className="mt-1 font-disp text-xl font-semibold tabular-nums tracking-tight text-ink">{format(value, label)}</div>
           </div>
         ))}
-      </div>
+      </div></div>
     </section>
   );
 }
