@@ -107,6 +107,8 @@ export interface Game {
   isRedZone?: boolean;
   /** Live down & distance, e.g. "1st & 10". Empty between plays / on kickoffs. */
   downDistance?: string;
+  /** Short live alert when the most recent play was a touchdown or successful field goal. */
+  scoringAlert?: string;
   awayRecord?: string;
   homeRecord?: string;
   possessionText?: string;
