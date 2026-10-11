@@ -24,7 +24,7 @@ const optionalNumber = (value: unknown): number | undefined => {
 
 const SEASON = 2026;
 const REGULAR_SEASON_WEEKS = 18;
-const CACHE_TTL_MS = 3 * 1000; // 3-second live server cache
+const CACHE_TTL_MS = 1_500; // Keep live scoreboard and scoring transitions tightly synchronized
 const ROSTER_CACHE_TTL_MS = 60 * 60 * 1000; // 1-hour roster cache
 const HISTORICAL_ODDS_CACHE_TTL_MS = 24 * 60 * 60 * 1000; // historical game lines do not change
 
@@ -297,7 +297,7 @@ export async function fetchSchedule(): Promise<Game[]> {
         } catch {
           return null;
         }
-      });
+      }, 750);
 
       const scoringPlays = Array.isArray(summary?.scoringPlays) ? summary.scoringPlays : [];
       const currentScore = gameScore(game);
@@ -378,7 +378,7 @@ export async function fetchSchedule(): Promise<Game[]> {
     }
 
     return games;
-  });
+  }, 1_500);
 }
 
 const DRIVE_RESULTS: Record<string, DriveResult> = {
