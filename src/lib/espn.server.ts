@@ -959,6 +959,79 @@ export async function fetchPlayerProfile(playerId: string): Promise<PlayerProfil
   }, 10 * 60 * 1000);
 }
 
+export interface TeamOverviewStats {
+  gamesPlayed: number;
+  ppg: number;
+  passingYardsPerGame: number;
+  rushingYardsPerGame: number;
+  touchdownsPerGame: number;
+  yardsPerPlay: number;
+  turnoversPerGame: number;
+  opponentPpg: number;
+  opponentPassingYardsPerGame: number;
+  opponentRushingYardsPerGame: number;
+  opponentTouchdownsPerGame: number;
+  sacksPerGame: number;
+  takeawaysPerGame: number;
+}
+
+/** Aggregate season-to-date team metrics from completed ESPN game summaries. */
+export async function fetchTeamOverviewStats(teamId: string): Promise<TeamOverviewStats> {
+  return cached(`team-overview-${teamId}`, async () => {
+    const schedule = await fetchSchedule();
+    const completed = schedule.filter(
+      (game) => game.status === "final" && (game.homeTeamId === teamId || game.awayTeamId === teamId),
+    );
+    const totals = {
+      pointsFor: 0, pointsAgainst: 0, passingYards: 0, rushingYards: 0,
+      offensiveTouchdowns: 0, plays: 0, turnovers: 0, opponentPassingYards: 0,
+      opponentRushingYards: 0, opponentTouchdowns: 0, sacks: 0, takeaways: 0,
+      games: 0,
+    };
+
+    const details = await Promise.all(completed.map((game) => fetchGameDetail(game.id.replace(/^espn-/, ""))));
+    for (const game of details) {
+      if (!game || game.status !== "final") continue;
+      const isHome = game.homeTeamId === teamId;
+      const own = isHome ? game.stats.home : game.stats.away;
+      const opponent = isHome ? game.stats.away : game.stats.home;
+      const score = gameScore(game);
+      totals.pointsFor += isHome ? score.home : score.away;
+      totals.pointsAgainst += isHome ? score.away : score.home;
+      totals.totalYards += own.totalYards;
+      totals.passingYards += own.passYards;
+      totals.rushingYards += own.rushYards;
+      totals.offensiveTouchdowns += (own.passingTouchdowns ?? 0) + (own.rushingTouchdowns ?? 0);
+      totals.plays += game.drives.filter((drive) => drive.teamId === teamId).reduce((sum, drive) => sum + Math.max(0, drive.plays), 0);
+      totals.turnovers += own.turnovers;
+      totals.opponentPassingYards += opponent.passYards;
+      totals.opponentRushingYards += opponent.rushYards;
+      totals.opponentTouchdowns += (opponent.passingTouchdowns ?? 0) + (opponent.rushingTouchdowns ?? 0);
+      totals.sacks += own.sacks ?? 0;
+      // Turnovers committed by the opponent are the defense's takeaways.
+      totals.takeaways += opponent.turnovers;
+      totals.games++;
+    }
+
+    const games = Math.max(1, totals.games);
+    return {
+      gamesPlayed: totals.games,
+      ppg: totals.pointsFor / games,
+      passingYardsPerGame: totals.passingYards / games,
+      rushingYardsPerGame: totals.rushingYards / games,
+      touchdownsPerGame: totals.offensiveTouchdowns / games,
+      yardsPerPlay: totals.plays > 0 ? totals.totalYards / totals.plays : 0,
+      turnoversPerGame: totals.turnovers / games,
+      opponentPpg: totals.pointsAgainst / games,
+      opponentPassingYardsPerGame: totals.opponentPassingYards / games,
+      opponentRushingYardsPerGame: totals.opponentRushingYards / games,
+      opponentTouchdownsPerGame: totals.opponentTouchdowns / games,
+      sacksPerGame: totals.sacks / games,
+      takeawaysPerGame: totals.takeaways / games,
+    };
+  }, 10 * 60 * 1000);
+}
+
 export interface TeamSeasonStatRow {
   id: string;
   name: string;
