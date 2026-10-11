@@ -9,7 +9,7 @@
 
 import type { BoxScoreLine, Drive, DriveResult, Game, TeamGameStats } from "@/data/games";
 import { gameScore } from "@/data/games";
-import { teamByAbbr, teamById } from "@/data/teams";
+import { teamByAbbr, teamById, teams } from "@/data/teams";
 
 const SCOREBOARD =
   "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard";
@@ -1053,6 +1053,25 @@ export async function fetchTeamOverviewStats(teamId: string): Promise<TeamOvervi
       sacks: totals.sacks,
       takeawaysPerGame: totals.takeaways / games,
     };
+  }, 10 * 60 * 1000);
+}
+
+export interface LeagueTeamOverviewRow {
+  teamId: string;
+  teamAbbr: string;
+  teamName: string;
+  stats: TeamOverviewStats;
+}
+
+/** Return current overview metrics for all NFL teams so the UI can rank every stat live. */
+export async function fetchLeagueTeamOverviewStats(): Promise<LeagueTeamOverviewRow[]> {
+  return cached("league-team-overview-stats", async () => {
+    return Promise.all(teams.map(async (team) => ({
+      teamId: team.id,
+      teamAbbr: team.abbr,
+      teamName: `${team.city} ${team.name}`,
+      stats: await fetchTeamOverviewStats(team.id),
+    })));
   }, 10 * 60 * 1000);
 }
 
