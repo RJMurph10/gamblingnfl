@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router";
 import type { Team } from "@/data/teams";
 import type { Game, TeamGameStats } from "@/data/games";
 import { gameScore } from "@/data/games";
-import { teamById, teamLogo } from "@/data/teams";
+import { teamByAbbr, teamById, teamLogo } from "@/data/teams";
 
 /* ---------- primitives ---------- */
 
@@ -269,6 +269,8 @@ const driveTone: Record<string, string> = {
   FG: "bg-acc",
   PUNT: "bg-faint",
   TO: "bg-loss",
+  INT: "bg-loss",
+  FUM: "bg-loss",
   DOWNS: "bg-loss",
   EOH: "bg-faint",
   EOG: "bg-faint",
@@ -351,20 +353,62 @@ export function DriveTable({ game }: { game: Game }) {
           <table className="w-full min-w-[600px] text-sm">
             <thead>
               <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
-                <th className="px-4 py-2 font-normal">#</th>
+                <th className="px-4 py-2 font-normal">Result</th>
                 <th className="px-2 py-2 font-normal">Qtr</th>
                 <th className="px-2 py-2 text-right font-normal">Plays</th>
                 <th className="px-2 py-2 text-right font-normal">Yards</th>
                 <th className="px-2 py-2 text-right font-normal">TOP</th>
                 <th className="px-2 py-2 font-normal">Start</th>
-                <th className="px-4 py-2 text-right font-normal">Result</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-line/5">
               {selectedDrives.map((d) => {
+                // ESPN occasionally omits a drive's time of possession. Keep the
+                // missing value visibly estimated instead of displaying an impossible 0:00.
+                const rawTop = String(d.timeOfPossession ?? "").trim();
+                const hasValidTop = rawTop !== "" && !/^0?:?0:00$/.test(rawTop);
+                const estimatedSeconds = Math.max(30, Number(d.plays || 0) * 25);
+                const estimatedTop = `${Math.floor(estimatedSeconds / 60)}:${String(estimatedSeconds % 60).padStart(2, "0")}`;
+                const displayTop = hasValidTop ? rawTop : Number(d.plays || 0) > 0 ? estimatedTop : "—";
+                const startText = String(d.startAt ?? "").trim();
+                const startParts = startText.split(/\s+/);
+                const startTeam = startParts.length > 1 ? teamByAbbr(startParts[0]) : undefined;
+                const startYardLine = startTeam ? startParts.slice(1).join(" ") : startText;
+                const rawResult = String(d.result ?? "").trim();
+                const normalizedResult = rawResult.toUpperCase();
+                // Some feed records label the outcome only as TO. Search all
+                // available drive fields for the underlying turnover type before
+                // falling back to the generic label.
+                const driveText = Object.values(d as unknown as Record<string, unknown>)
+                  .filter((value): value is string => typeof value === "string")
+                  .join(" ")
+                  .toUpperCase();
+                const resultLabel = /INTERCEPTION|\bINT\b/.test(driveText)
+                  ? "INT"
+                  : /FUMBLE|\bFUM\b/.test(driveText)
+                    ? "FUM"
+                    : normalizedResult === "EOH"
+                      ? "Half"
+                      : normalizedResult === "EOG"
+                        ? "Game"
+                        : normalizedResult;
                 return (
                   <tr key={d.index} className="hover:bg-line/5">
-                    <td className="px-4 py-2.5 font-mono text-mute tabular-nums">{d.index}</td>
+                    <td className="px-4 py-2.5 text-left">
+                      <span
+                        className={`inline-block rounded px-2 py-0.5 font-mono text-[10px] uppercase ${
+                          resultLabel === "TD"
+                            ? "bg-win/15 text-win"
+                            : resultLabel === "TO" || resultLabel === "DOWNS" || resultLabel === "INT" || resultLabel === "FUM"
+                              ? "bg-loss/15 text-loss"
+                              : resultLabel === "FG"
+                                ? "bg-acc/15 text-acc"
+                                : "bg-panel2 text-mute"
+                        }`}
+                      >
+                        {resultLabel}
+                      </span>
+                    </td>
                     <td className="px-2 py-2.5 font-mono text-mute tabular-nums">
                       {d.quarter === 1
                         ? "1st"
@@ -379,22 +423,22 @@ export function DriveTable({ game }: { game: Game }) {
                     <td className="px-2 py-2.5 text-right font-mono tabular-nums">{d.plays}</td>
                     <td className="px-2 py-2.5 text-right font-mono tabular-nums">{d.yards}</td>
                     <td className="px-2 py-2.5 text-right font-mono tabular-nums">
-                      {d.timeOfPossession}
+                      <span title={hasValidTop ? "Time of possession" : "Estimated from play count because the source supplied no usable duration"}>
+                        {displayTop}
+                      </span>
                     </td>
-                    <td className="px-2 py-2.5 font-mono text-mute">{d.startAt}</td>
-                    <td className="px-4 py-2.5 text-right">
-                      <span
-                        className={`inline-block rounded px-2 py-0.5 font-mono text-[10px] uppercase ${
-                          d.result === "TD"
-                            ? "bg-win/15 text-win"
-                            : d.result === "TO" || d.result === "DOWNS"
-                              ? "bg-loss/15 text-loss"
-                              : d.result === "FG"
-                                ? "bg-acc/15 text-acc"
-                                : "bg-panel2 text-mute"
-                        }`}
-                      >
-                        {d.result}
+                    <td className="px-2 py-2.5">
+                      <span className="inline-flex items-center gap-1.5 font-mono text-mute">
+                        {startTeam ? (
+                          <img
+                            src={teamLogo(startTeam)}
+                            alt={`${startTeam.city} ${startTeam.name}`}
+                            title={`${startTeam.city} ${startTeam.name}`}
+                            className="size-5 shrink-0 object-contain"
+                            loading="lazy"
+                          />
+                        ) : null}
+                        <span>{startYardLine}</span>
                       </span>
                     </td>
                   </tr>
@@ -472,12 +516,12 @@ const statDefs: StatDef[] = [
   pctStat("Red zone %", (s) => num(s.redZoneMade), (s) => num(s.redZoneAtt)),
   pctStat("Extra point %", (s) => num(s.extraPointsMade), (s) => num(s.extraPointAttempts)),
   { label: "Turnovers", value: (s) => s.turnovers },
+  { label: "Interceptions", value: (s) => num(s.interceptions), happened: () => true },
+  { label: "Forced fumbles", value: (s) => num(s.forcedFumbles), happened: () => true },
   { label: "Penalties", value: (s) => s.penalties },
   { label: "Penalty yards", value: (s) => num(s.penaltyYards) },
   { label: "Sacks", value: (s) => num(s.sacks) },
   { label: "Defensive TDs", value: (s) => num(s.defensiveTouchdowns) },
-  { label: "Interceptions", value: (s) => num(s.interceptions) },
-  { label: "Forced fumbles", value: (s) => num(s.forcedFumbles) },
   { label: "Tackles for loss", value: (s) => num(s.tacklesForLoss) },
   { label: "Passes defended", value: (s) => num(s.passesDefended) },
   { label: "QB hits", value: (s) => num(s.qbHits) },
@@ -540,7 +584,24 @@ export function StatComparison({ game }: { game: Game }) {
   const home = teamById(game.homeTeamId);
   if (!away || !home) return null;
 
-  const rows = visibleStats(game.stats.away, game.stats.home);
+  // Keep the Team Stats display accurate even when ESPN omits forced-fumble
+  // player totals: each FUM-ending drive is credited to the opposing defense.
+  // This is a display-only fallback; the drive table and other stats are unchanged.
+  const awayForcedFumblesFromDrives = game.drives.filter(
+    (drive) => drive.result === "FUM" && drive.teamId === game.homeTeamId,
+  ).length;
+  const homeForcedFumblesFromDrives = game.drives.filter(
+    (drive) => drive.result === "FUM" && drive.teamId === game.awayTeamId,
+  ).length;
+  const awayStats = {
+    ...game.stats.away,
+    forcedFumbles: Math.max(game.stats.away.forcedFumbles ?? 0, awayForcedFumblesFromDrives),
+  };
+  const homeStats = {
+    ...game.stats.home,
+    forcedFumbles: Math.max(game.stats.home.forcedFumbles ?? 0, homeForcedFumblesFromDrives),
+  };
+  const rows = visibleStats(awayStats, homeStats);
   const [awayColor, homeColor] = pickBarColors(away.color, home.color);
   const showPossession =
     !/^0?0:00$/.test(game.stats.away.timeOfPossession) ||
@@ -574,17 +635,17 @@ export function StatComparison({ game }: { game: Game }) {
       ) : (
         <div className="space-y-3">
           {rows.map((row) => {
-            const a = row.value(game.stats.away);
-            const h = row.value(game.stats.home);
+            const a = row.value(awayStats);
+            const h = row.value(homeStats);
             const max = row.percent ? 100 : Math.max(a, h, 1);
             const width = (v: number) => `${Math.min(100, Math.max(v > 0 ? 3 : 0, (v / max) * 100))}%`;
             const fmt = (s: TeamGameStats, v: number) => (row.text ? row.text(s) : String(v));
             return (
               <div key={row.label}>
                 <div className="mb-1 grid grid-cols-[1fr_auto_1fr] items-baseline gap-2 font-mono text-[11px]">
-                  <span className="text-left tabular-nums">{fmt(game.stats.away, a)}</span>
+                  <span className="text-left tabular-nums">{fmt(awayStats, a)}</span>
                   <span className="text-center text-faint">{row.label}</span>
-                  <span className="text-right tabular-nums">{fmt(game.stats.home, h)}</span>
+                  <span className="text-right tabular-nums">{fmt(homeStats, h)}</span>
                 </div>
                 <div className="flex gap-1">
                   <div className="flex h-2 flex-1 justify-end overflow-hidden rounded-full bg-panel2">
@@ -657,7 +718,7 @@ export function marketResultClass(
   const win = "text-green-500 font-semibold";
   const loss = "text-red-500 font-semibold";
   const push = "text-yellow-400 font-semibold";
-  if (game.status !== "live" && game.status !== "final") return { spread: neutral, total: neutral };
+  if (game.status !== "final") return { spread: neutral, total: neutral };
 
   let spread = neutral;
   const m = game.spread?.match(/^([A-Za-z]+)\s*([+-]?\d+(?:\.\d+)?)/);
@@ -700,6 +761,7 @@ export function GameRow({
   const away = teamById(game.awayTeamId);
   const home = teamById(game.homeTeamId);
   const score = gameScore(game);
+  const perspectiveTeam = perspectiveTeamId ? teamById(perspectiveTeamId) : undefined;
   if (!away || !home) return null;
 
   const isOT =
