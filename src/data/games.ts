@@ -108,7 +108,7 @@ export interface Game {
   /** Live down & distance, e.g. "1st & 10". Empty between plays / on kickoffs. */
   downDistance?: string;
   /** Most recent scoring drive during a live game. */
-  scoringAlert?: { type: "TD" | "FG"; teamId: string };
+  scoringAlert?: { type: "TD" | "FG"; teamId: string; yards?: number };
   awayRecord?: string;
   homeRecord?: string;
   possessionText?: string;
