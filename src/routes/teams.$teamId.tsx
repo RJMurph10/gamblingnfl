@@ -51,7 +51,7 @@ export const Route = createFileRoute("/teams/$teamId")({
 function TeamPage() {
   const { team } = Route.useLoaderData();
   const [activeTab, setActiveTab] = useState("schedule");
-  const [selectedRanking, setSelectedRanking] = useState<{ label: string; key: string; higherIsBetter: boolean } | null>(null);
+  const [selectedRanking, setSelectedRanking] = useState<{ label: string; key: string; higherIsBetter: boolean; compositeMetrics?: [string, boolean][] } | null>(null);
   const fallbackRoster = playersByTeam(team.id);
 
   const { data: liveGames } = useQuery({
@@ -194,6 +194,7 @@ function TeamPage() {
           title={selectedRanking.label}
           statKey={selectedRanking.key}
           higherIsBetter={selectedRanking.higherIsBetter}
+          compositeMetrics={selectedRanking.compositeMetrics}
           currentTeamId={team.id}
           leagueStats={leagueOverviewStats}
           loading={rankingsLoading}
@@ -298,6 +299,29 @@ function compositeTeamRank(
   return scores.findIndex((row) => row.score === current.score) + 1;
 }
 
+function rankedCompositeTeams(rows: RankingStatsRow[], metrics: [string, boolean][]) {
+  const validRows = rows.filter((row) => row.stats.gamesPlayed > 0);
+  const totals = new Map<string, number>();
+  const counts = new Map<string, number>();
+  for (const [key, higherIsBetter] of metrics) {
+    for (const row of rankedTeams(validRows, key, higherIsBetter)) {
+      totals.set(row.teamId, (totals.get(row.teamId) ?? 0) + row.rank);
+      counts.set(row.teamId, (counts.get(row.teamId) ?? 0) + 1);
+    }
+  }
+  const scores = validRows
+    .filter((row) => counts.get(row.teamId) === metrics.length)
+    .map((row) => ({ ...row, value: (totals.get(row.teamId) ?? 0) / metrics.length }))
+    .sort((a, b) => a.value - b.value || a.teamName.localeCompare(b.teamName));
+  let lastValue: number | undefined;
+  let rank = 0;
+  return scores.map((row, index) => {
+    if (lastValue === undefined || row.value !== lastValue) rank = index + 1;
+    lastValue = row.value;
+    return { ...row, rank };
+  });
+}
+
 function rankedTeams(rows: RankingStatsRow[], key: string, higherIsBetter: boolean) {
   const valid = rows.filter((row) => Number.isFinite(Number((row.stats as any)[key])) && row.stats.gamesPlayed > 0);
   valid.sort((a, b) => {
@@ -325,7 +349,7 @@ function TeamMetricPanel({
   teamId: string;
   leagueStats: RankingStatsRow[];
   rankingsLoading: boolean;
-  onSelectRanking: (ranking: { label: string; key: string; higherIsBetter: boolean }) => void;
+  onSelectRanking: (ranking: { label: string; key: string; higherIsBetter: boolean; compositeMetrics?: [string, boolean][] }) => void;
 }) {
   const format = (value: number | undefined, label: string) => {
     if (loading || !gamesPlayed || value === undefined || !Number.isFinite(value)) return "—";
@@ -336,7 +360,17 @@ function TeamMetricPanel({
   return (
     <section className="min-w-0 py-2">
       <h2 className="mb-4 flex items-center justify-center gap-2 font-disp text-lg font-semibold tracking-wide text-ink">
-        <span>{title}</span>
+        <button
+          type="button"
+          title={`Click to view all 32 teams ranked by weighted ${title.toLowerCase()} performance.`}
+          onClick={() => onSelectRanking({
+            label: `${title} Overall`,
+            key: "__composite__",
+            higherIsBetter: true,
+            compositeMetrics: metrics.map(([, , , statKey, higherIsBetter]) => [statKey, higherIsBetter]),
+          })}
+          className="rounded px-1 transition-colors hover:text-acc focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-acc"
+        >{title}</button>
         <span className="font-mono text-sm font-medium tabular-nums text-mute">{overallRank === undefined ? "—" : ordinal(overallRank)}</span>
       </h2>
       <div className="overflow-x-auto"><div className="grid min-w-[900px] grid-cols-9 gap-y-5">
@@ -358,18 +392,22 @@ function TeamMetricPanel({
   );
 }
 
-function RankingModal({ title, statKey, higherIsBetter, currentTeamId, leagueStats, loading, onClose }: {
-  title: string; statKey: string; higherIsBetter: boolean; currentTeamId: string;
+function RankingModal({ title, statKey, higherIsBetter, compositeMetrics, currentTeamId, leagueStats, loading, onClose }: {
+  title: string; statKey: string; higherIsBetter: boolean; compositeMetrics?: [string, boolean][]; currentTeamId: string;
   leagueStats: RankingStatsRow[]; loading: boolean; onClose: () => void;
 }) {
-  const rows = rankedTeams(leagueStats, statKey, higherIsBetter);
-  const format = (value: number) => ["touchdowns", "passingTouchdowns", "rushingTouchdowns", "opponentTouchdowns", "opponentPassingTouchdowns", "opponentRushingTouchdowns", "sacks"].includes(statKey)
-    ? String(Math.round(value)) : value.toFixed(1);
+  const rows = compositeMetrics?.length
+    ? rankedCompositeTeams(leagueStats, compositeMetrics)
+    : rankedTeams(leagueStats, statKey, higherIsBetter);
+  const format = (value: number) => compositeMetrics?.length
+    ? value.toFixed(2)
+    : ["touchdowns", "passingTouchdowns", "rushingTouchdowns", "opponentTouchdowns", "opponentPassingTouchdowns", "opponentRushingTouchdowns", "sacks"].includes(statKey)
+      ? String(Math.round(value)) : value.toFixed(1);
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}>
       <section role="dialog" aria-modal="true" aria-label={`${title} team rankings`} className="flex max-h-[85vh] w-full max-w-xl flex-col overflow-hidden rounded-xl border border-line/20 bg-panel shadow-2xl">
         <header className="flex items-center justify-between border-b border-line/10 px-5 py-4">
-          <div><h2 className="font-disp text-xl font-semibold text-ink">{title} Rankings</h2><p className="mt-1 font-mono text-[10px] uppercase tracking-wider text-mute">2026 season · {higherIsBetter ? "Higher is better" : "Lower is better"}</p></div>
+          <div><h2 className="font-disp text-xl font-semibold text-ink">{title} Rankings</h2><p className="mt-1 font-mono text-[10px] uppercase tracking-wider text-mute">2026 season · {compositeMetrics?.length ? "Equal-weight average rank · lower is better" : higherIsBetter ? "Higher is better" : "Lower is better"}</p></div>
           <button type="button" onClick={onClose} aria-label="Close rankings" className="rounded-md px-3 py-2 text-lg text-mute hover:bg-panel2">×</button>
         </header>
         <div className="overflow-y-auto">
