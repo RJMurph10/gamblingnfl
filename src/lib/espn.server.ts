@@ -1010,7 +1010,7 @@ export async function fetchTeamOverviewStats(teamId: string): Promise<TeamOvervi
       totals.rushingYards += own.rushYards;
       totals.passingTouchdowns += own.passingTouchdowns ?? 0;
       totals.rushingTouchdowns += own.rushingTouchdowns ?? 0;
-      totals.offensiveTouchdowns += (own.passingTouchdowns ?? 0) + (own.rushingTouchdowns ?? 0);
+      totals.offensiveTouchdowns += game.drives.filter((drive) => drive.teamId === teamId && drive.result === "TD").length;
       totals.plays += game.drives.filter((drive) => drive.teamId === teamId).reduce((sum, drive) => sum + Math.max(0, drive.plays), 0);
       totals.turnovers += own.turnovers;
       totals.opponentTotalYards += opponent.totalYards;
@@ -1018,7 +1018,8 @@ export async function fetchTeamOverviewStats(teamId: string): Promise<TeamOvervi
       totals.opponentRushingYards += opponent.rushYards;
       totals.opponentPassingTouchdowns += opponent.passingTouchdowns ?? 0;
       totals.opponentRushingTouchdowns += opponent.rushingTouchdowns ?? 0;
-      totals.opponentTouchdowns += (opponent.passingTouchdowns ?? 0) + (opponent.rushingTouchdowns ?? 0);
+      const opponentTeamId = isHome ? game.awayTeamId : game.homeTeamId;
+      totals.opponentTouchdowns += game.drives.filter((drive) => drive.teamId === opponentTeamId && drive.result === "TD").length;
       totals.sacks += own.sacks ?? 0;
       // Turnovers committed by the opponent are the defense's takeaways.
       totals.takeaways += opponent.turnovers;
