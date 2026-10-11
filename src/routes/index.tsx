@@ -239,8 +239,8 @@ function Dashboard() {
   const { data: liveGames } = useQuery({
     queryKey: ["live-schedule"],
     queryFn: () => getLiveSchedule(),
-    refetchInterval: 3_500, // auto-polls ESPN every 3.5 seconds
-    staleTime: 2_000,
+    refetchInterval: 1_500, // refresh score and scoring transition together
+    staleTime: 0,
     retry: 1,
   });
 
