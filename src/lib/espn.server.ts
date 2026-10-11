@@ -285,9 +285,9 @@ export async function fetchSchedule(): Promise<Game[]> {
       }
     }
 
-    // The scoreboard's situation.lastPlay often omits scoring play details.
-    // For live games, use ESPN's summary drives to identify the most recent
-    // touchdown or successful field goal and its team.
+    // Build the scoring transition only from the scoring play that matches the
+    // scoreboard's CURRENT score. Never fall back to an old drive result: that
+    // can show a previous field goal after a newer touchdown.
     const liveGames = games.filter((game) => game.status === "live");
     await Promise.all(liveGames.map(async (game) => {
       const eventId = game.id.replace(/^espn-/, "");
@@ -298,45 +298,67 @@ export async function fetchSchedule(): Promise<Game[]> {
           return null;
         }
       });
-      // ESPN's scoringPlays identifies the team that actually scored. This is
-      // important for defensive fumble/interception returns, where the drive's
-      // offense is NOT the scoring team.
+
       const scoringPlays = Array.isArray(summary?.scoringPlays) ? summary.scoringPlays : [];
+      const currentScore = gameScore(game);
+      const asScore = (value: unknown): number | undefined => {
+        if (value === undefined || value === null || value === "") return undefined;
+        const parsed = Number(value);
+        return Number.isFinite(parsed) ? parsed : undefined;
+      };
+
+      // Search backward for the latest play whose resulting score agrees with
+      // the live scoreboard. This prevents stale scoring data from other plays
+      // or games from being displayed as the latest event.
       for (let i = scoringPlays.length - 1; i >= 0; i--) {
         const play = scoringPlays[i];
-        const text = String(play?.text ?? play?.shortText ?? play?.type?.text ?? "");
-        const type = /touchdown|\bTD\b/i.test(text) ? "TD" : /field goal|\bFG\b/i.test(text) && !/missed|no good|blocked|failed/i.test(text) ? "FG" : undefined;
-        const scoringTeam = teamByAbbr(String(play?.team?.abbreviation ?? play?.team?.shortDisplayName ?? ""));
-        if (type && scoringTeam && (scoringTeam.id === game.homeTeamId || scoringTeam.id === game.awayTeamId)) {
-          const yardsMatch = type === "FG" ? text.match(/\b(\d{1,2})\s*(?:-?yard|yd)\s*(?:field goal|FG)\b/i) ?? text.match(/(?:field goal|FG)\s*(?:from\s*)?(\d{1,2})\s*(?:yards?|yd)?\b/i) : null;
-          game.scoringAlert = { type, teamId: scoringTeam.id, ...(yardsMatch ? { yards: Number(yardsMatch[1]) } : {}) };
-          break;
-        }
-      }
+        const playHomeScore = asScore(play?.homeScore);
+        const playAwayScore = asScore(play?.awayScore);
+        if (playHomeScore === undefined || playAwayScore === undefined) continue;
+        if (playHomeScore !== currentScore.home || playAwayScore !== currentScore.away) continue;
 
-      // Fallback for ESPN responses that omit scoringPlays. Avoid using the
-      // drive's offense for return touchdowns, which can credit the wrong team.
-      if (!game.scoringAlert) {
-        const drives = [
-          ...(Array.isArray(summary?.drives?.previous) ? summary.drives.previous : []),
-          ...(summary?.drives?.current ? [summary.drives.current] : []),
-        ];
-        for (let i = drives.length - 1; i >= 0; i--) {
-          const drive = drives[i];
-          const result = String(
-            drive?.displayResult ?? drive?.result?.displayValue ?? drive?.result?.text ?? drive?.result ?? drive?.end?.result?.displayValue ?? drive?.end?.result?.text ?? "",
-          );
-          const type = /touchdown|\bTD\b/i.test(result) ? "TD" : /field goal|\bFG\b/i.test(result) && !/missed|no good|blocked|failed/i.test(result) ? "FG" : undefined;
-          if (!type || /fumble|interception|return/i.test(result)) continue;
-          const scoringTeam = teamByAbbr(String(drive?.team?.abbreviation ?? ""));
-          if (scoringTeam && (scoringTeam.id === game.homeTeamId || scoringTeam.id === game.awayTeamId)) {
-            const playTexts = (drive?.plays ?? []).map((p: any) => String(p?.text ?? p?.shortText ?? ""));
-            const scoringText = [...playTexts].reverse().find((t: string) => /field goal|\bFG\b|touchdown|\bTD\b/i.test(t)) ?? result;
-            const yardsMatch = type === "FG" ? scoringText.match(/\b(\d{1,2})\s*(?:-?yard|yd)\s*(?:field goal|FG)\b/i) ?? scoringText.match(/(?:field goal|FG)\s*(?:from\s*)?(\d{1,2})\s*(?:yards?|yd)?\b/i) : null;
-            game.scoringAlert = { type, teamId: scoringTeam.id, ...(yardsMatch ? { yards: Number(yardsMatch[1]) } : {}) };
-            break;
+        const playText = String(play?.text ?? play?.shortText ?? "");
+        const typeText = String(
+          play?.scoringType?.name ?? play?.type?.text ?? play?.type?.name ?? "",
+        );
+        const description = `${typeText} ${playText}`;
+        const type = /touchdown|\bTD\b/i.test(description)
+          ? "TD"
+          : /field goal|\bFG\b/i.test(description) && !/missed|no good|blocked|failed/i.test(description)
+            ? "FG"
+            : undefined;
+        if (!type) break;
+
+        // Prefer the actual scoreboard change over play.team. That correctly
+        // handles defensive fumble/interception-return touchdowns.
+        const previous = scoringPlays[i - 1];
+        const previousHomeScore = asScore(previous?.homeScore);
+        const previousAwayScore = asScore(previous?.awayScore);
+        let scoringTeamId: string | undefined;
+        if (previousHomeScore !== undefined && previousAwayScore !== undefined) {
+          const homeDelta = playHomeScore - previousHomeScore;
+          const awayDelta = playAwayScore - previousAwayScore;
+          if (homeDelta > 0 && awayDelta <= 0) scoringTeamId = game.homeTeamId;
+          else if (awayDelta > 0 && homeDelta <= 0) scoringTeamId = game.awayTeamId;
+        }
+        if (!scoringTeamId) {
+          const apiTeam = play?.team;
+          const team = teamByAbbr(String(apiTeam?.abbreviation ?? apiTeam?.shortDisplayName ?? ""));
+          if (team && (team.id === game.homeTeamId || team.id === game.awayTeamId)) {
+            scoringTeamId = team.id;
           }
         }
+        if (!scoringTeamId) break;
+
+        const yardsMatch = type === "FG"
+          ? description.match(/\b(\d{1,2})\s*(?:-?\s*(?:yard|yd)s?)\b/i)
+          : null;
+        game.scoringAlert = {
+          type,
+          teamId: scoringTeamId,
+          ...(yardsMatch ? { yards: Number(yardsMatch[1]) } : {}),
+        };
+        break;
       }
     }));
 
