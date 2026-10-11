@@ -963,14 +963,20 @@ export interface TeamOverviewStats {
   gamesPlayed: number;
   ppg: number;
   passingYardsPerGame: number;
+  totalYardsPerGame: number;
   rushingYardsPerGame: number;
   touchdowns: number;
+  passingTouchdowns: number;
+  rushingTouchdowns: number;
   yardsPerPlay: number;
   turnoversPerGame: number;
   opponentPpg: number;
+  opponentTotalYardsPerGame: number;
   opponentPassingYardsPerGame: number;
   opponentRushingYardsPerGame: number;
   opponentTouchdowns: number;
+  opponentPassingTouchdowns: number;
+  opponentRushingTouchdowns: number;
   sacks: number;
   takeawaysPerGame: number;
 }
@@ -984,9 +990,10 @@ export async function fetchTeamOverviewStats(teamId: string): Promise<TeamOvervi
     );
     const totals = {
       pointsFor: 0, pointsAgainst: 0, passingYards: 0, rushingYards: 0, totalYards: 0,
-      offensiveTouchdowns: 0, plays: 0, turnovers: 0, opponentPassingYards: 0,
-      opponentRushingYards: 0, opponentTouchdowns: 0, sacks: 0, takeaways: 0,
-      games: 0,
+      offensiveTouchdowns: 0, passingTouchdowns: 0, rushingTouchdowns: 0, plays: 0,
+      turnovers: 0, opponentPassingYards: 0, opponentRushingYards: 0,
+      opponentTotalYards: 0, opponentTouchdowns: 0, opponentPassingTouchdowns: 0,
+      opponentRushingTouchdowns: 0, sacks: 0, takeaways: 0, games: 0,
     };
 
     const details = await Promise.all(completed.map((game) => fetchGameDetail(game.id.replace(/^espn-/, ""))));
@@ -1001,11 +1008,16 @@ export async function fetchTeamOverviewStats(teamId: string): Promise<TeamOvervi
       totals.totalYards += own.totalYards;
       totals.passingYards += own.passYards;
       totals.rushingYards += own.rushYards;
+      totals.passingTouchdowns += own.passingTouchdowns ?? 0;
+      totals.rushingTouchdowns += own.rushingTouchdowns ?? 0;
       totals.offensiveTouchdowns += (own.passingTouchdowns ?? 0) + (own.rushingTouchdowns ?? 0);
       totals.plays += game.drives.filter((drive) => drive.teamId === teamId).reduce((sum, drive) => sum + Math.max(0, drive.plays), 0);
       totals.turnovers += own.turnovers;
+      totals.opponentTotalYards += opponent.totalYards;
       totals.opponentPassingYards += opponent.passYards;
       totals.opponentRushingYards += opponent.rushYards;
+      totals.opponentPassingTouchdowns += opponent.passingTouchdowns ?? 0;
+      totals.opponentRushingTouchdowns += opponent.rushingTouchdowns ?? 0;
       totals.opponentTouchdowns += (opponent.passingTouchdowns ?? 0) + (opponent.rushingTouchdowns ?? 0);
       totals.sacks += own.sacks ?? 0;
       // Turnovers committed by the opponent are the defense's takeaways.
@@ -1018,14 +1030,20 @@ export async function fetchTeamOverviewStats(teamId: string): Promise<TeamOvervi
       gamesPlayed: totals.games,
       ppg: totals.pointsFor / games,
       passingYardsPerGame: totals.passingYards / games,
+      totalYardsPerGame: totals.totalYards / games,
       rushingYardsPerGame: totals.rushingYards / games,
       touchdowns: totals.offensiveTouchdowns,
+      passingTouchdowns: totals.passingTouchdowns,
+      rushingTouchdowns: totals.rushingTouchdowns,
       yardsPerPlay: totals.plays > 0 ? totals.totalYards / totals.plays : 0,
       turnoversPerGame: totals.turnovers / games,
       opponentPpg: totals.pointsAgainst / games,
+      opponentTotalYardsPerGame: totals.opponentTotalYards / games,
       opponentPassingYardsPerGame: totals.opponentPassingYards / games,
       opponentRushingYardsPerGame: totals.opponentRushingYards / games,
       opponentTouchdowns: totals.opponentTouchdowns,
+      opponentPassingTouchdowns: totals.opponentPassingTouchdowns,
+      opponentRushingTouchdowns: totals.opponentRushingTouchdowns,
       sacks: totals.sacks,
       takeawaysPerGame: totals.takeaways / games,
     };
