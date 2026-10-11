@@ -117,7 +117,7 @@ function TeamPage() {
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-3">
             <PageTitle eyebrow={`${team.conference} ${team.division}`} title={`${team.city} ${team.name}`} />
-            <span className="rounded-md border border-line/15 bg-line/5 px-2.5 py-1 font-mono text-xs font-semibold tabular-nums text-mute">
+            <span className="font-mono text-sm font-semibold tabular-nums text-mute">
               {record.w}-{record.l}{record.t ? `-${record.t}` : ""}
             </span>
           </div>
@@ -128,7 +128,7 @@ function TeamPage() {
         </div>
       </div>
 
-      <div className="grid gap-3 xl:grid-cols-2">
+      <div className="space-y-5">
         <TeamMetricPanel
           title="Offense"
           gamesPlayed={overviewStats?.gamesPlayed ?? 0}
@@ -137,7 +137,7 @@ function TeamPage() {
             ["PPG", overviewStats?.ppg, "Points per game"],
             ["PYDS", overviewStats?.passingYardsPerGame, "Passing yards per game"],
             ["RUYDS", overviewStats?.rushingYardsPerGame, "Rushing yards per game"],
-            ["TD", overviewStats?.touchdownsPerGame, "Offensive TDs per game"],
+            ["TD", overviewStats?.touchdowns, "Total offensive touchdowns this season"],
             ["YPP", overviewStats?.yardsPerPlay, "Yards per offensive play"],
             ["TO", overviewStats?.turnoversPerGame, "Turnovers per game"],
           ]}
@@ -150,8 +150,8 @@ function TeamPage() {
             ["OPPG", overviewStats?.opponentPpg, "Opponent points per game"],
             ["OPYDS", overviewStats?.opponentPassingYardsPerGame, "Opponent passing yards per game"],
             ["ORUYDS", overviewStats?.opponentRushingYardsPerGame, "Opponent rushing yards per game"],
-            ["OTD", overviewStats?.opponentTouchdownsPerGame, "Opponent offensive TDs per game"],
-            ["SACK", overviewStats?.sacksPerGame, "Sacks per game"],
+            ["OTD", overviewStats?.opponentTouchdowns, "Total opponent touchdowns this season"],
+            ["SACK", overviewStats?.sacks, "Total sacks this season"],
             ["TWAYS", overviewStats?.takeawaysPerGame, "Takeaways per game"],
           ]}
         />
@@ -223,20 +223,22 @@ function TeamMetricPanel({
 }) {
   const format = (value: number | undefined, label: string) => {
     if (loading || !gamesPlayed || value === undefined || !Number.isFinite(value)) return "—";
-    return label === "YPP" ? value.toFixed(2) : value.toFixed(1);
+    if (label === "YPP") return value.toFixed(2);
+    if (["TD", "OTD", "SACK"].includes(label)) return String(Math.round(value));
+    return value.toFixed(1);
   };
   return (
-    <Panel padded={false}>
-      <PanelHeader title={title} aside={<span className="label-mono">{gamesPlayed} GP</span>} />
-      <div className="grid grid-cols-3 divide-x divide-y divide-line/10 sm:grid-cols-6 sm:divide-y-0">
+    <section className="min-w-0 py-2">
+      <h2 className="mb-4 text-center font-disp text-lg font-semibold tracking-wide text-ink">{title}</h2>
+      <div className="grid grid-cols-3 gap-y-5 sm:grid-cols-6">
         {metrics.map(([label, value, description]) => (
-          <div key={label} title={description} className="min-w-0 px-3 py-3 sm:px-2 sm:py-4">
+          <div key={label} title={description} className="min-w-0 px-2 text-center">
             <div className="font-mono text-[10px] uppercase tracking-wider text-faint">{label}</div>
             <div className="mt-1 font-disp text-xl font-semibold tabular-nums tracking-tight text-ink">{format(value, label)}</div>
           </div>
         ))}
       </div>
-    </Panel>
+    </section>
   );
 }
 
