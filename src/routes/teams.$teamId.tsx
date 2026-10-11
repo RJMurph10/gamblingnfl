@@ -263,7 +263,7 @@ function TeamPage() {
 }
 
 
-/** Return only this team's signed point spread (e.g. -3.5 or +3.5). */
+/** Return this team's logo key plus signed point spread (e.g. "DEN -3.5" or "DEN +3.5") so GameRow keeps its usual logo formatting. */
 function spreadForTeam(game: { spread?: string; homeTeamId: string; awayTeamId: string }, teamAbbr: string): string {
   const spread = game.spread?.trim();
   if (!spread || spread === "—") return spread ?? "—";
@@ -277,7 +277,7 @@ function spreadForTeam(game: { spread?: string; homeTeamId: string; awayTeamId: 
   const namedLine = Number(match[2].replace(/\s/g, ""));
   if (!Number.isFinite(namedLine)) return spread;
   const teamLine = namedTeam === teamAbbr ? namedLine : -namedLine;
-  return `${teamLine > 0 ? "+" : ""}${teamLine}`;
+  return `${teamAbbr} ${teamLine > 0 ? "+" : ""}${teamLine}`;
 }
 
 type RankingStatsRow = { teamId: string; teamAbbr: string; teamName: string; stats: TeamOverviewStats };
