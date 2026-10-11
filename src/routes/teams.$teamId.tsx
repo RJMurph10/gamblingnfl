@@ -330,10 +330,10 @@ function RankingModal({ title, statKey, higherIsBetter, currentTeamId, leagueSta
         </header>
         <div className="overflow-y-auto">
           {loading ? <p className="p-6 text-center font-mono text-xs text-mute">Loading league rankings…</p> : rows.length ? rows.map((row) => (
-            <div key={row.teamId} className={`grid grid-cols-[3.5rem_1fr_auto] items-center gap-3 border-b border-line/5 px-5 py-3 ${row.teamId === currentTeamId ? "bg-acc/10 font-semibold" : ""}`}>
+            <div key={row.teamId} className={`grid grid-cols-[3.5rem_2rem_1fr] items-center gap-3 border-b border-line/5 px-5 py-3 ${row.teamId === currentTeamId ? "bg-acc/10 font-semibold" : ""}`}>
               <span className="font-mono text-sm tabular-nums text-mute">{ordinal(row.rank)}</span>
-              <span className="text-sm text-ink">{row.teamName} <span className="ml-1 font-mono text-[10px] text-mute">{row.teamAbbr}</span></span>
-              <span className="font-mono text-sm tabular-nums text-ink">{format(row.value)}</span>
+              <span className="flex items-center justify-center">{teamById(row.teamId) ? <TeamLogo team={teamById(row.teamId)!} className="size-7" /> : <span className="font-mono text-[10px] text-mute">{row.teamAbbr}</span>}</span>
+              <span className="text-right font-mono text-sm tabular-nums text-ink">{format(row.value)}</span>
             </div>
           )) : <p className="p-6 text-center font-mono text-xs text-mute">Rankings are unavailable until team stats load.</p>}
         </div>
