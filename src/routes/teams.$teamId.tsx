@@ -451,16 +451,16 @@ function SeasonStats({ stats, loading }: { stats: any; loading: boolean }) {
     <div className="space-y-5">
       <Panel padded={false}>
         <PanelHeader title="Passing" aside={<span className="label-mono">{stats.gamesPlayed} GP</span>} />
-        <StatTable headers={["Player", "GP", "C/ATT", "YDS", "AVG", "TD", "INT"]} rows={passing.map((r: TeamSeasonStatRow) => [<PlayerLink id={r.id} name={r.name} />, stat(r,"gamesPlayed"), `${stat(r,"completions")}/${stat(r,"passingAttempts")}`, stat(r,"passingYards"), (stat(r,"passingYards") / Math.max(stat(r,"passingAttempts"),1)).toFixed(1), stat(r,"passingTouchdowns"), stat(r,"interceptions")])} />
+        <StatTable headers={["Player", "GP", "C/ATT", "YDS", "AVG", "TD", "INT"]} rows={[...passing].sort((a: TeamSeasonStatRow, b: TeamSeasonStatRow) => stat(b,"passingYards") - stat(a,"passingYards")).map((r: TeamSeasonStatRow) => [<PlayerLink id={r.id} name={r.name} />, stat(r,"gamesPlayed"), `${stat(r,"completions")}/${stat(r,"passingAttempts")}`, stat(r,"passingYards"), (stat(r,"passingYards") / Math.max(stat(r,"passingAttempts"),1)).toFixed(1), stat(r,"passingTouchdowns"), stat(r,"interceptions")])} />
       </Panel>
       <div className="grid gap-5 lg:grid-cols-2">
         <Panel padded={false}>
           <PanelHeader title="Rushing" />
-          <StatTable headers={["Player", "GP", "CAR", "YDS", "AVG", "TD"]} rows={rushing.map((r: TeamSeasonStatRow) => [<PlayerLink id={r.id} name={r.name} />, stat(r,"gamesPlayed"), stat(r,"rushingAttempts"), stat(r,"rushingYards"), (stat(r,"rushingYards") / Math.max(stat(r,"rushingAttempts"),1)).toFixed(1), stat(r,"rushingTouchdowns")])} />
+          <StatTable headers={["Player", "GP", "CAR", "YDS", "AVG", "TD"]} rows={[...rushing].sort((a: TeamSeasonStatRow, b: TeamSeasonStatRow) => stat(b,"rushingYards") - stat(a,"rushingYards")).map((r: TeamSeasonStatRow) => [<PlayerLink id={r.id} name={r.name} />, stat(r,"gamesPlayed"), stat(r,"rushingAttempts"), stat(r,"rushingYards"), (stat(r,"rushingYards") / Math.max(stat(r,"rushingAttempts"),1)).toFixed(1), stat(r,"rushingTouchdowns")])} />
         </Panel>
         <Panel padded={false}>
           <PanelHeader title="Receiving" />
-          <StatTable headers={["Player", "GP", "REC", "YDS", "AVG", "TD"]} rows={receiving.map((r: TeamSeasonStatRow) => [<PlayerLink id={r.id} name={r.name} />, stat(r,"gamesPlayed"), stat(r,"receptions"), stat(r,"receivingYards"), (stat(r,"receivingYards") / Math.max(stat(r,"receptions"),1)).toFixed(1), stat(r,"receivingTouchdowns")])} />
+          <StatTable headers={["Player", "GP", "REC", "YDS", "AVG", "TD"]} rows={[...receiving].sort((a: TeamSeasonStatRow, b: TeamSeasonStatRow) => stat(b,"receivingYards") - stat(a,"receivingYards")).map((r: TeamSeasonStatRow) => [<PlayerLink id={r.id} name={r.name} />, stat(r,"gamesPlayed"), stat(r,"receptions"), stat(r,"receivingYards"), (stat(r,"receivingYards") / Math.max(stat(r,"receptions"),1)).toFixed(1), stat(r,"receivingTouchdowns")])} />
         </Panel>
       </div>
       <Panel padded={false}>
