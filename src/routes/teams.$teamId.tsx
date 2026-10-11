@@ -6,11 +6,10 @@ import {
   PageTitle,
   Panel,
   PanelHeader,
-  StatCard,
   TeamLogo,
   TeamMark,
 } from "@/components/booth";
-import { gamesByTeam, gameScore } from "@/data/games";
+import { gamesByTeam } from "@/data/games";
 import { playersByTeam } from "@/data/players";
 import { teamById } from "@/data/teams";
 import {
@@ -18,8 +17,9 @@ import {
   getTeamDepthChart,
   getTeamRoster,
   getTeamSeasonStats,
+  getTeamOverviewStats,
 } from "@/lib/espn.functions";
-import type { DepthChartEntry, LiveRosterPlayer, TeamSeasonStatRow } from "@/lib/espn.server";
+import type { DepthChartEntry, LiveRosterPlayer, TeamSeasonStatRow, TeamOverviewStats } from "@/lib/espn.server";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export const Route = createFileRoute("/teams/$teamId")({
@@ -61,6 +61,12 @@ function TeamPage() {
   const liveTeamGames = (liveGames ?? []).filter(
     (g) => g.homeTeamId === team.id || g.awayTeamId === team.id,
   );
+  const { data: overviewStats, isLoading: overviewLoading } = useQuery<TeamOverviewStats>({
+    queryKey: ["team-overview-stats", team.id],
+    queryFn: () => getTeamOverviewStats({ data: { teamId: team.id } }),
+    staleTime: 10 * 60 * 1000,
+    retry: 1,
+  });
   const schedule = (liveTeamGames.length ? liveTeamGames : gamesByTeam(team.id))
     .slice()
     .sort((a, b) => a.week - b.week);
@@ -88,36 +94,33 @@ function TeamPage() {
   });
 
   let record = team.record;
-  let pointsFor = team.pointsFor;
-  let pointsAgainst = team.pointsAgainst;
   if (liveTeamGames.length) {
     const finals = schedule.filter((g) => g.status === "final");
     let w = 0;
     let l = 0;
     let t = 0;
-    pointsFor = 0;
-    pointsAgainst = 0;
     for (const g of finals) {
-      const s = gameScore(g);
-      const mine = g.homeTeamId === team.id ? s.home : s.away;
-      const theirs = g.homeTeamId === team.id ? s.away : s.home;
-      pointsFor += mine;
-      pointsAgainst += theirs;
+      const homeScore = g.quarters.home.reduce((sum, score) => sum + score, 0);
+      const awayScore = g.quarters.away.reduce((sum, score) => sum + score, 0);
+      const mine = g.homeTeamId === team.id ? homeScore : awayScore;
+      const theirs = g.homeTeamId === team.id ? awayScore : homeScore;
       if (mine > theirs) w++;
       else if (mine < theirs) l++;
       else t++;
     }
     record = { w, l, t };
   }
-  const played = record.w + record.l + record.t;
-  const perGame = (n: number) => (played > 0 ? (n / played).toFixed(1) : "0.0");
-
   return (
     <>
       <div className="mb-4 flex flex-wrap items-center gap-4">
         <TeamMark team={team} size="lg" />
-        <div>
-          <PageTitle eyebrow={`${team.conference} ${team.division}`} title={`${team.city} ${team.name}`} />
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-3">
+            <PageTitle eyebrow={`${team.conference} ${team.division}`} title={`${team.city} ${team.name}`} />
+            <span className="rounded-md border border-line/15 bg-line/5 px-2.5 py-1 font-mono text-xs font-semibold tabular-nums text-mute">
+              {record.w}-{record.l}{record.t ? `-${record.t}` : ""}
+            </span>
+          </div>
           <div className="mt-1 flex items-center gap-2 font-mono text-[10px] uppercase tracking-wider text-faint">
             <TeamLogo team={team} className="size-3.5" />
             Live ESPN team data
@@ -125,15 +128,32 @@ function TeamPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatCard label="Record" value={`${record.w}-${record.l}`} note={`${played} games played`} />
-        <StatCard label="Points for" value={String(pointsFor)} note={`${perGame(pointsFor)} per game`} />
-        <StatCard label="Points against" value={String(pointsAgainst)} note={`${perGame(pointsAgainst)} per game`} />
-        <StatCard
-          label="Differential"
-          value={`${pointsFor - pointsAgainst > 0 ? "+" : ""}${pointsFor - pointsAgainst}`}
-          note={pointsFor >= pointsAgainst ? "net positive" : "net negative"}
-          tone={pointsFor >= pointsAgainst ? "win" : "loss"}
+      <div className="grid gap-3 xl:grid-cols-2">
+        <TeamMetricPanel
+          title="Offense"
+          gamesPlayed={overviewStats?.gamesPlayed ?? 0}
+          loading={overviewLoading}
+          metrics={[
+            ["PPG", overviewStats?.ppg, "Points per game"],
+            ["PYDS", overviewStats?.passingYardsPerGame, "Passing yards per game"],
+            ["RUYDS", overviewStats?.rushingYardsPerGame, "Rushing yards per game"],
+            ["TD", overviewStats?.touchdownsPerGame, "Offensive TDs per game"],
+            ["YPP", overviewStats?.yardsPerPlay, "Yards per offensive play"],
+            ["TO", overviewStats?.turnoversPerGame, "Turnovers per game"],
+          ]}
+        />
+        <TeamMetricPanel
+          title="Defense"
+          gamesPlayed={overviewStats?.gamesPlayed ?? 0}
+          loading={overviewLoading}
+          metrics={[
+            ["OPPG", overviewStats?.opponentPpg, "Opponent points per game"],
+            ["OPYDS", overviewStats?.opponentPassingYardsPerGame, "Opponent passing yards per game"],
+            ["ORUYDS", overviewStats?.opponentRushingYardsPerGame, "Opponent rushing yards per game"],
+            ["OTD", overviewStats?.opponentTouchdownsPerGame, "Opponent offensive TDs per game"],
+            ["SACK", overviewStats?.sacksPerGame, "Sacks per game"],
+            ["TWAYS", overviewStats?.takeawaysPerGame, "Takeaways per game"],
+          ]}
         />
       </div>
 
@@ -187,6 +207,36 @@ function TeamPage() {
         </TabsContent>
       </Tabs>
     </>
+  );
+}
+
+function TeamMetricPanel({
+  title,
+  gamesPlayed,
+  loading,
+  metrics,
+}: {
+  title: string;
+  gamesPlayed: number;
+  loading: boolean;
+  metrics: [string, number | undefined, string][];
+}) {
+  const format = (value: number | undefined, label: string) => {
+    if (loading || !gamesPlayed || value === undefined || !Number.isFinite(value)) return "—";
+    return label === "YPP" ? value.toFixed(2) : value.toFixed(1);
+  };
+  return (
+    <Panel padded={false}>
+      <PanelHeader title={title} aside={<span className="label-mono">{gamesPlayed} GP</span>} />
+      <div className="grid grid-cols-3 divide-x divide-y divide-line/10 sm:grid-cols-6 sm:divide-y-0">
+        {metrics.map(([label, value, description]) => (
+          <div key={label} title={description} className="min-w-0 px-3 py-3 sm:px-2 sm:py-4">
+            <div className="font-mono text-[10px] uppercase tracking-wider text-faint">{label}</div>
+            <div className="mt-1 font-disp text-xl font-semibold tabular-nums tracking-tight text-ink">{format(value, label)}</div>
+          </div>
+        ))}
+      </div>
+    </Panel>
   );
 }
 
