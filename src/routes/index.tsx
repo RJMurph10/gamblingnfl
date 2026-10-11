@@ -37,6 +37,11 @@ function LiveGameRow({ game, showDown }: { game: Game; showDown: boolean }) {
     home,
   );
   const isHalftime = /half/i.test(game.clock ?? "");
+  // A TD/FG is only a brief substitute for the dash while ESPN has no
+  // live down-and-distance to report. As soon as downs return, show them.
+  const liveDownDistance = game.downDistance?.trim() ?? "";
+  const hasLiveDowns = liveDownDistance !== "" && !/^[-—]+$/.test(liveDownDistance);
+  const showScoringTransition = Boolean(game.scoringAlert) && !hasLiveDowns;
 
   return (
     <tr className="hover:bg-line/5">
@@ -44,12 +49,12 @@ function LiveGameRow({ game, showDown }: { game: Game; showDown: boolean }) {
       {showDown ? (
         <td className="whitespace-nowrap px-2 py-2.5 font-mono text-mute">
           {!isHalftime ? (
-            game.scoringAlert ? (
-              <span className="inline-flex items-center gap-1 font-semibold text-win">
-                {game.scoringAlert.type}
-                <TeamLogo team={teamById(game.scoringAlert.teamId)!} className="size-4" />
+            showScoringTransition ? (
+              <span className="inline-flex items-center gap-1">
+                {game.scoringAlert!.type}
+                <TeamLogo team={teamById(game.scoringAlert!.teamId)!} className="size-4" />
               </span>
-            ) : game.downDistance || "—"
+            ) : hasLiveDowns ? liveDownDistance : "—"
           ) : ""}
         </td>
       ) : null}
