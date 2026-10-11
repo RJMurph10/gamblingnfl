@@ -232,9 +232,9 @@ function TeamPage() {
                     {schedule.map((g) => (
                       <GameRow
                         key={g.id}
-                        game={{ ...g, spread: spreadForTeam(g, team.abbr) }}
+                        game={g}
                         showMarket={true}
-                        forTeam={team}
+                        perspectiveTeamId={team.id}
                       />
                     ))}
                   </tbody>
@@ -262,23 +262,6 @@ function TeamPage() {
   );
 }
 
-
-/** Return this team's logo key plus signed point spread (e.g. "DEN -3.5" or "DEN +3.5") so GameRow keeps its usual logo formatting. */
-function spreadForTeam(game: { spread?: string; homeTeamId: string; awayTeamId: string }, teamAbbr: string): string {
-  const spread = game.spread?.trim();
-  if (!spread || spread === "—") return spread ?? "—";
-
-  // ESPN's odds details typically look like "DEN -3.5". The number is
-  // from the named team's perspective, so flip its sign for the opponent.
-  const match = spread.match(/\b([A-Z]{2,3})\s*([+-]\s*\d+(?:\.\d+)?)\b/);
-  if (!match) return spread;
-
-  const namedTeam = match[1];
-  const namedLine = Number(match[2].replace(/\s/g, ""));
-  if (!Number.isFinite(namedLine)) return spread;
-  const teamLine = namedTeam === teamAbbr ? namedLine : -namedLine;
-  return `${teamAbbr} ${teamLine > 0 ? "+" : ""}${teamLine}`;
-}
 
 type RankingStatsRow = { teamId: string; teamAbbr: string; teamName: string; stats: TeamOverviewStats };
 type MetricTuple = [string, number | undefined, string, string, boolean];
