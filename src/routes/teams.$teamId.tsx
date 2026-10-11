@@ -135,9 +135,12 @@ function TeamPage() {
           loading={overviewLoading}
           metrics={[
             ["PPG", overviewStats?.ppg, "Points per game"],
+            ["TYDS", overviewStats?.totalYardsPerGame, "Total offensive yards per game"],
             ["PYDS", overviewStats?.passingYardsPerGame, "Passing yards per game"],
             ["RUYDS", overviewStats?.rushingYardsPerGame, "Rushing yards per game"],
             ["TD", overviewStats?.touchdowns, "Total offensive touchdowns this season"],
+            ["PTD", overviewStats?.passingTouchdowns, "Total passing touchdowns this season"],
+            ["RUTD", overviewStats?.rushingTouchdowns, "Total rushing touchdowns this season"],
             ["YPP", overviewStats?.yardsPerPlay, "Yards per offensive play"],
             ["TO", overviewStats?.turnoversPerGame, "Turnovers per game"],
           ]}
@@ -148,9 +151,12 @@ function TeamPage() {
           loading={overviewLoading}
           metrics={[
             ["OPPG", overviewStats?.opponentPpg, "Opponent points per game"],
+            ["OTYDS", overviewStats?.opponentTotalYardsPerGame, "Opponent total yards per game"],
             ["OPYDS", overviewStats?.opponentPassingYardsPerGame, "Opponent passing yards per game"],
             ["ORUYDS", overviewStats?.opponentRushingYardsPerGame, "Opponent rushing yards per game"],
             ["OTD", overviewStats?.opponentTouchdowns, "Total opponent touchdowns this season"],
+            ["OPTD", overviewStats?.opponentPassingTouchdowns, "Total opponent passing touchdowns this season"],
+            ["ORUTD", overviewStats?.opponentRushingTouchdowns, "Total opponent rushing touchdowns this season"],
             ["SACK", overviewStats?.sacks, "Total sacks this season"],
             ["TWAYS", overviewStats?.takeawaysPerGame, "Takeaways per game"],
           ]}
@@ -223,14 +229,14 @@ function TeamMetricPanel({
 }) {
   const format = (value: number | undefined, label: string) => {
     if (loading || !gamesPlayed || value === undefined || !Number.isFinite(value)) return "—";
-    if (label === "YPP") return value.toFixed(2);
-    if (["TD", "OTD", "SACK"].includes(label)) return String(Math.round(value));
+    if (label === "YPP") return value.toFixed(1);
+    if (["TD", "PTD", "RUTD", "OTD", "OPTD", "ORUTD", "SACK"].includes(label)) return String(Math.round(value));
     return value.toFixed(1);
   };
   return (
     <section className="min-w-0 py-2">
       <h2 className="mb-4 text-center font-disp text-lg font-semibold tracking-wide text-ink">{title}</h2>
-      <div className="grid grid-cols-3 gap-y-5 sm:grid-cols-6">
+      <div className="grid grid-cols-3 gap-y-5 sm:grid-cols-3 lg:grid-cols-5">
         {metrics.map(([label, value, description]) => (
           <div key={label} title={description} className="min-w-0 px-2 text-center">
             <div className="font-mono text-[10px] uppercase tracking-wider text-faint">{label}</div>
