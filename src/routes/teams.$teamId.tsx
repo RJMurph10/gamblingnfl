@@ -229,7 +229,14 @@ function TeamPage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-line/5">
-                    {schedule.map((g) => <GameRow key={g.id} game={g} showMarket={true} forTeam={team} />)}
+                    {schedule.map((g) => (
+                      <GameRow
+                        key={g.id}
+                        game={{ ...g, spread: spreadForTeam(g, team.abbr) }}
+                        showMarket={true}
+                        forTeam={team}
+                      />
+                    ))}
                   </tbody>
                 </table>
               </div>
@@ -253,6 +260,24 @@ function TeamPage() {
       </Tabs>
     </>
   );
+}
+
+
+/** Return only this team's signed point spread (e.g. -3.5 or +3.5). */
+function spreadForTeam(game: { spread?: string; homeTeamId: string; awayTeamId: string }, teamAbbr: string): string {
+  const spread = game.spread?.trim();
+  if (!spread || spread === "—") return spread ?? "—";
+
+  // ESPN's odds details typically look like "DEN -3.5". The number is
+  // from the named team's perspective, so flip its sign for the opponent.
+  const match = spread.match(/\b([A-Z]{2,3})\s*([+-]\s*\d+(?:\.\d+)?)\b/);
+  if (!match) return spread;
+
+  const namedTeam = match[1];
+  const namedLine = Number(match[2].replace(/\s/g, ""));
+  if (!Number.isFinite(namedLine)) return spread;
+  const teamLine = namedTeam === teamAbbr ? namedLine : -namedLine;
+  return `${teamLine > 0 ? "+" : ""}${teamLine}`;
 }
 
 type RankingStatsRow = { teamId: string; teamAbbr: string; teamName: string; stats: TeamOverviewStats };
