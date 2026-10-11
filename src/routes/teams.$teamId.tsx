@@ -378,7 +378,7 @@ function TeamMetricPanel({
           })}
           className="rounded px-1 transition-colors hover:text-acc focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-acc"
         >{title}</button>
-        <span className="font-mono text-sm font-medium tabular-nums text-sky-300">{overallRank === undefined ? "—" : `${rankMedal(overallRank)}${ordinal(overallRank)}`}</span>
+        <span className="font-mono text-sm font-medium tabular-nums text-acc">{overallRank === undefined ? "—" : `${rankMedal(overallRank)}${ordinal(overallRank)}`}</span>
       </h2>
       <div className="overflow-x-auto"><div className="grid min-w-[900px] grid-cols-9 gap-y-5">
         {metrics.map(([label, value, description, statKey, higherIsBetter]) => {
@@ -390,7 +390,7 @@ function TeamMetricPanel({
               className="min-w-0 rounded-md px-2 py-1 text-center transition-colors hover:bg-panel2/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-acc">
               <div className="font-mono text-[10px] uppercase tracking-wider text-faint">{label}</div>
               <div className="mt-1 font-disp text-xl font-semibold tabular-nums tracking-tight text-ink">{format(value, label)}</div>
-              <div className="mt-0.5 min-h-4 font-mono text-[10px] tabular-nums text-sky-300">{rankingsLoading || !current ? " " : `${rankMedal(current.rank)}${ordinal(current.rank)}`}</div>
+              <div className="mt-0.5 min-h-4 font-mono text-[10px] tabular-nums text-acc">{rankingsLoading || !current ? " " : `${rankMedal(current.rank)}${ordinal(current.rank)}`}</div>
             </button>
           );
         })}
@@ -420,7 +420,7 @@ function RankingModal({ title, statKey, higherIsBetter, compositeMetrics, curren
         <div className="overflow-y-auto">
           {loading ? <p className="p-6 text-center font-mono text-xs text-mute">Loading league rankings…</p> : rows.length ? rows.map((row) => (
             <div key={row.teamId} className={`grid grid-cols-[3.5rem_2rem_1fr] items-center gap-3 border-b border-line/5 px-5 py-3 ${row.teamId === currentTeamId ? "bg-acc/10 font-semibold" : ""}`}>
-              <span className="font-mono text-sm tabular-nums text-sky-300">{`${rankMedal(row.rank)}${ordinal(row.rank)}`}</span>
+              <span className="font-mono text-sm tabular-nums text-acc">{`${rankMedal(row.rank)}${ordinal(row.rank)}`}</span>
               <Link to="/teams/$teamId" params={{ teamId: row.teamId }} aria-label={`Open ${row.teamName} team page`} className="flex items-center justify-center rounded transition-transform hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-acc">{teamById(row.teamId) ? <TeamLogo team={teamById(row.teamId)!} className="size-7" /> : <span className="font-mono text-[10px] text-mute">{row.teamAbbr}</span>}</Link>
               <span className="text-right font-mono text-sm tabular-nums text-ink">{format(row.value)}</span>
             </div>
