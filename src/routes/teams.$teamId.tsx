@@ -139,6 +139,11 @@ function TeamPage() {
       <div className="space-y-5">
         <TeamMetricPanel
           title="Offense"
+          overallRank={rankingsLoading ? undefined : compositeTeamRank(leagueOverviewStats, team.id, [
+            ["ppg", true], ["totalYardsPerGame", true], ["passingYardsPerGame", true],
+            ["rushingYardsPerGame", true], ["touchdowns", true], ["passingTouchdowns", true],
+            ["rushingTouchdowns", true], ["yardsPerPlay", true], ["turnoversPerGame", false],
+          ])}
           gamesPlayed={overviewStats?.gamesPlayed ?? 0}
           loading={overviewLoading}
           teamId={team.id}
@@ -159,6 +164,11 @@ function TeamPage() {
         />
         <TeamMetricPanel
           title="Defense"
+          overallRank={rankingsLoading ? undefined : compositeTeamRank(leagueOverviewStats, team.id, [
+            ["opponentPpg", false], ["opponentTotalYardsPerGame", false], ["opponentPassingYardsPerGame", false],
+            ["opponentRushingYardsPerGame", false], ["opponentTouchdowns", false], ["opponentPassingTouchdowns", false],
+            ["opponentRushingTouchdowns", false], ["sacks", true], ["takeawaysPerGame", true],
+          ])}
           gamesPlayed={overviewStats?.gamesPlayed ?? 0}
           loading={overviewLoading}
           teamId={team.id}
@@ -258,6 +268,36 @@ function ordinal(rank: number): string {
   }
 }
 
+function compositeTeamRank(
+  rows: RankingStatsRow[],
+  currentTeamId: string,
+  metrics: [key: string, higherIsBetter: boolean][],
+): number | undefined {
+  const validRows = rows.filter((row) => row.stats.gamesPlayed > 0);
+  if (!validRows.length || !validRows.some((row) => row.teamId === currentTeamId)) return undefined;
+
+  const rankTotals = new Map<string, number>();
+  const rankCounts = new Map<string, number>();
+  for (const [key, higherIsBetter] of metrics) {
+    const ranked = rankedTeams(validRows, key, higherIsBetter);
+    for (const row of ranked) {
+      rankTotals.set(row.teamId, (rankTotals.get(row.teamId) ?? 0) + row.rank);
+      rankCounts.set(row.teamId, (rankCounts.get(row.teamId) ?? 0) + 1);
+    }
+  }
+
+  const scores = validRows
+    .map((row) => ({
+      teamId: row.teamId,
+      score: (rankTotals.get(row.teamId) ?? 0) / (rankCounts.get(row.teamId) || 1),
+    }))
+    .filter((row) => rankCounts.get(row.teamId) === metrics.length)
+    .sort((a, b) => a.score - b.score);
+  const current = scores.find((row) => row.teamId === currentTeamId);
+  if (!current) return undefined;
+  return scores.findIndex((row) => row.score === current.score) + 1;
+}
+
 function rankedTeams(rows: RankingStatsRow[], key: string, higherIsBetter: boolean) {
   const valid = rows.filter((row) => Number.isFinite(Number((row.stats as any)[key])) && row.stats.gamesPlayed > 0);
   valid.sort((a, b) => {
@@ -275,9 +315,10 @@ function rankedTeams(rows: RankingStatsRow[], key: string, higherIsBetter: boole
 }
 
 function TeamMetricPanel({
-  title, gamesPlayed, loading, metrics, teamId, leagueStats, rankingsLoading, onSelectRanking,
+  title, overallRank, gamesPlayed, loading, metrics, teamId, leagueStats, rankingsLoading, onSelectRanking,
 }: {
   title: string;
+  overallRank?: number;
   gamesPlayed: number;
   loading: boolean;
   metrics: MetricTuple[];
@@ -294,7 +335,10 @@ function TeamMetricPanel({
   };
   return (
     <section className="min-w-0 py-2">
-      <h2 className="mb-4 text-center font-disp text-lg font-semibold tracking-wide text-ink">{title}</h2>
+      <h2 className="mb-4 flex items-center justify-center gap-2 font-disp text-lg font-semibold tracking-wide text-ink">
+        <span>{title}</span>
+        <span className="font-mono text-sm font-medium tabular-nums text-mute">{overallRank === undefined ? "—" : ordinal(overallRank)}</span>
+      </h2>
       <div className="overflow-x-auto"><div className="grid min-w-[900px] grid-cols-9 gap-y-5">
         {metrics.map(([label, value, description, statKey, higherIsBetter]) => {
           const ranked = rankedTeams(leagueStats, statKey, higherIsBetter);
