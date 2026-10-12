@@ -2,8 +2,8 @@ import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import {
-  FootballIcon,
   GameRow,
+  MatchupLink,
   PageTitle,
   Panel,
   PanelHeader,
@@ -81,23 +81,14 @@ function LiveGameRow({ game, showDown }: { game: Game; showDown: boolean }) {
         </td>
       ) : null}
       <td className="px-2 py-2.5 text-center">
-        <Link
-          to="/games/$gameId"
-          params={{ gameId: game.id }}
-          className="inline-flex items-center justify-center gap-1.5 font-mono tabular-nums font-semibold hover:text-acc"
-        >
-          <span className="inline-flex w-4 items-center justify-center">
-            {game.possession === "away" ? <FootballIcon isRedZone={game.isRedZone} /> : null}
-          </span>
-          <span className="w-6 text-right">{score.away}</span>
-          <TeamLogo team={away} />
-          <span className="font-sans font-normal text-mute">@</span>
-          <TeamLogo team={home} />
-          <span className="w-6 text-left">{score.home}</span>
-          <span className="inline-flex w-4 items-center justify-center">
-            {game.possession === "home" ? <FootballIcon isRedZone={game.isRedZone} /> : null}
-          </span>
-        </Link>
+        <MatchupLink
+          game={game}
+          away={away}
+          home={home}
+          awayScore={score.away}
+          homeScore={score.home}
+          showPossession
+        />
       </td>
       <td className={`whitespace-nowrap px-2 py-2.5 text-right font-mono tabular-nums ${spreadClass}`}>
         <div className="flex items-center justify-end">
@@ -351,7 +342,7 @@ function Dashboard() {
               }
             />
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[620px] text-sm" style={{ tableLayout: "fixed" }}>
+              <table className="w-full min-w-[680px] text-sm" style={{ tableLayout: "fixed" }}>
                 <thead>
                   <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
                     <th className="w-[17%] px-4 py-2 font-normal">Date</th>
