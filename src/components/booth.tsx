@@ -752,6 +752,18 @@ export function marketResultClass(
   return { spread, total };
 }
 
+const MONTHS = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
+
+/** "Sep 13" / "Sun, Sep 13" -> "9/13" (month number / day number). Leaves anything else untouched. */
+export function formatNumericDate(date: string | undefined): string {
+  if (!date) return "";
+  const match = date.match(/([A-Za-z]{3,9})\.?\s+(\d{1,2})\b/);
+  if (!match) return date;
+  const month = MONTHS.indexOf(match[1].slice(0, 3).toLowerCase());
+  if (month === -1) return date;
+  return `${month + 1}/${Number(match[2])}`;
+}
+
 /**
  * Matchup link used in game tables. A 3-column grid (1fr / @ / 1fr) keeps the
  * "@" in the exact center of the cell on every row, regardless of score width,
@@ -835,7 +847,7 @@ export function GameRow({
 
   return (
     <tr className="hover:bg-line/5">
-      <td className="whitespace-nowrap px-4 py-2.5 font-mono text-mute">{game.date}</td>
+      <td className="whitespace-nowrap px-4 py-2.5 font-mono text-mute">{formatNumericDate(game.date)}</td>
       <td suppressHydrationWarning className="whitespace-nowrap px-2 py-2.5 font-mono text-mute">
         {game.kickoffIso
           ? new Date(game.kickoffIso).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })
