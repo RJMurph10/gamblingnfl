@@ -830,7 +830,7 @@ function GamePage() {
 
       {showGameStatistics(game.status) ? (
         <>
-          {game.status === "final" ? (
+          {showGameStatistics(game.status) ? (
             <nav className="mt-6 grid grid-cols-3 border-b border-line/15" aria-label="Game details tabs">
               {([ ["gamecast", "Gamecast"], ["stats", "Stats"], ["markets", "Markets"] ] as const).map(([tab, label]) => (
                 <button
@@ -847,7 +847,7 @@ function GamePage() {
           ) : null}
           <div>
           <div className="mt-6 grid gap-6 lg:grid-cols-12">
-            <Panel className={`lg:col-span-5 ${game.status === "final" && activeGameTab !== "gamecast" ? "hidden" : ""}`}>
+            <Panel className={`lg:col-span-5 ${showGameStatistics(game.status) && activeGameTab !== "gamecast" ? "hidden" : ""}`}>
               <div className="flex items-center justify-between">
                 <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">
                   Box score
@@ -863,7 +863,7 @@ function GamePage() {
               </div>
             </Panel>
 
-            <Panel className={`lg:col-span-7 ${game.status === "final" && activeGameTab !== "stats" ? "hidden" : ""}`}>
+            <Panel className={`lg:col-span-7 ${showGameStatistics(game.status) && activeGameTab !== "stats" ? "hidden" : ""}`}>
               <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">
                 Team statistics
               </h2>
@@ -879,7 +879,7 @@ function GamePage() {
           </div>
           </div>
 
-          {game.status === "final" && activeGameTab === "gamecast" ? (
+          {showGameStatistics(game.status) && activeGameTab === "gamecast" ? (
             <section className="mt-6">
               <Panel padded={false}>
                 <div className="border-b border-line/10 px-4 py-3">
@@ -977,7 +977,7 @@ function GamePage() {
           ) : null}
 
           {/* Drive by drive */}
-          <section className={`mt-6 ${game.status === "final" && activeGameTab !== "gamecast" ? "hidden" : ""}`}>
+          <section className={`mt-6 ${showGameStatistics(game.status) && activeGameTab !== "gamecast" ? "hidden" : ""}`}>
 
             <Panel padded={false}>
               <div className="flex items-center justify-between border-b border-line/10 px-4 py-3">
@@ -1001,7 +1001,7 @@ function GamePage() {
           </section>
 
           {/* Team selector + player statistics */}
-          <section className={`mt-6 ${game.status === "final" && activeGameTab !== "stats" ? "hidden" : ""}`}>
+          <section className={`mt-6 ${showGameStatistics(game.status) && activeGameTab !== "stats" ? "hidden" : ""}`}>
             <div className="mb-3 flex items-center justify-between">
               <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">
                 Player statistics
@@ -1169,7 +1169,7 @@ function GamePage() {
               )}
             </Panel>
           </section>
-          {game.status === "final" && activeGameTab === "markets" ? (
+          {showGameStatistics(game.status) && activeGameTab === "markets" ? (
             <section className="mt-6 space-y-4">
               <Panel>
                 <div className="flex flex-wrap items-start justify-between gap-3">
