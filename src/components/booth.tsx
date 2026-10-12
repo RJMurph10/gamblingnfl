@@ -717,8 +717,11 @@ export function marketResultClass(
   const neutral = "text-mute";
   const win = "text-green-500 font-semibold";
   const loss = "text-red-500 font-semibold";
-  const push = "text-yellow-400 font-semibold";
-  if (game.status !== "final") return { spread: neutral, total: neutral };
+  const isLive = game.status === "live";
+  // Live games: exactly on the line counts as "not covering" / "not over" (red).
+  // Final games keep the yellow push color.
+  const push = isLive ? loss : "text-yellow-400 font-semibold";
+  if (game.status !== "final" && !isLive) return { spread: neutral, total: neutral };
 
   let spread = neutral;
   const m = game.spread?.match(/^([A-Za-z]+)\s*([+-]?\d+(?:\.\d+)?)/);
