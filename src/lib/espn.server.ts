@@ -179,6 +179,7 @@ function mapEvent(event: any, week: number): Game | null {
   let possession: "away" | "home" | null = null;
   let isRedZone = false;
   let downDistance: string | undefined;
+  let ballSpot: Game["ballSpot"];
   let scoringAlert: Game["scoringAlert"];
 
 
@@ -221,6 +222,25 @@ function mapEvent(event: any, week: number): Game | null {
           : undefined);
     }
 
+    // Where the ball is on the field, e.g. "BAL 46" -> BAL's 46, "50" -> midfield.
+    if (typeof sit.down === "number" && sit.down >= 1 && sit.down <= 4) {
+      const spotText = [sit.possessionText, sit.downDistanceText, sit.shortDownDistanceText]
+        .map((t) => String(t ?? "").trim())
+        .find((t) => /\b(?:[A-Z]{2,4}\s+)?\d{1,2}\s*$/.test(t));
+      const ballMatch = spotText?.match(/\b(?:([A-Z]{2,4})\s+)?(\d{1,2})\s*$/);
+      if (ballMatch) {
+        const yard = Number(ballMatch[2]);
+        const abbr = ballMatch[1];
+        if (yard === 50) {
+          ballSpot = { side: "mid", yard: 50 };
+        } else if (abbr && abbr === away?.team?.abbreviation) {
+          ballSpot = { side: "away", yard };
+        } else if (abbr && abbr === home?.team?.abbreviation) {
+          ballSpot = { side: "home", yard };
+        }
+      }
+    }
+
     if (!onScrimmage || !possession) {
       isRedZone = false;
     } else if (spot) {
@@ -235,6 +255,7 @@ function mapEvent(event: any, week: number): Game | null {
     possession,
     isRedZone,
     downDistance,
+    ballSpot,
     scoringAlert,
     awayRecord,
     homeRecord,
