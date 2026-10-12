@@ -42,6 +42,9 @@ function LiveGameRow({ game, showDown }: { game: Game; showDown: boolean }) {
   const liveDownDistance = game.downDistance?.trim() ?? "";
   const hasLiveDowns = liveDownDistance !== "" && !/^[-—]+$/.test(liveDownDistance);
   const showScoringTransition = Boolean(game.scoringAlert) && !hasLiveDowns;
+  // Team whose side of the field the ball is on (none at midfield).
+  const ballTeam =
+    game.ballSpot?.side === "away" ? away : game.ballSpot?.side === "home" ? home : null;
 
   return (
     <tr className="hover:bg-line/5">
@@ -56,7 +59,24 @@ function LiveGameRow({ game, showDown }: { game: Game; showDown: boolean }) {
                   ? `${game.scoringAlert!.yards ?? ""}${game.scoringAlert!.yards ? "yd " : ""}FG`
                   : "TD"}
               </span>
-            ) : hasLiveDowns ? liveDownDistance : "—"
+            ) : hasLiveDowns ? (
+              <span className="inline-flex items-center gap-1">
+                {liveDownDistance}
+                {ballTeam ? (
+                  <>
+                    <span>·</span>
+                    <span>Ball on</span>
+                    <TeamLogo team={ballTeam} className="size-4" />
+                    <span>{game.ballSpot!.yard}</span>
+                  </>
+                ) : game.ballSpot?.side === "mid" ? (
+                  <>
+                    <span>·</span>
+                    <span>Ball on 50</span>
+                  </>
+                ) : null}
+              </span>
+            ) : "—"
           ) : ""}
         </td>
       ) : null}
@@ -297,16 +317,16 @@ function Dashboard() {
                 }
               />
               <div className="overflow-x-auto">
-                <table className="w-full min-w-[560px] text-sm" style={{ tableLayout: "fixed" }}>
+                <table className="w-full min-w-[680px] text-sm" style={{ tableLayout: "fixed" }}>
                   <thead>
                     <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
-                      <th className="w-[18%] px-4 py-2 font-normal">Game Clock</th>
+                      <th className="w-[14%] px-4 py-2 font-normal">Game Clock</th>
                       {showLiveDownColumn ? (
-                        <th className="w-[16%] px-2 py-2 font-normal">Down</th>
+                        <th className="w-[28%] px-2 py-2 font-normal">Down</th>
                       ) : null}
-                      <th className="w-[30%] px-2 py-2 text-center font-normal">Matchup</th>
-                      <th className="w-[18%] px-2 py-2 text-right font-normal">Spread</th>
-                      <th className="w-[18%] px-4 py-2 text-right font-normal">Total</th>
+                      <th className="w-[26%] px-2 py-2 text-center font-normal">Matchup</th>
+                      <th className="w-[16%] px-2 py-2 text-right font-normal">Spread</th>
+                      <th className="w-[16%] px-4 py-2 text-right font-normal">Total</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-line/5">
