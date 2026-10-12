@@ -107,6 +107,8 @@ export interface Game {
   isRedZone?: boolean;
   /** Live down & distance, e.g. "1st & 10". Empty between plays / on kickoffs. */
   downDistance?: string;
+  /** Live ball spot: which side of the field ("away"/"home" team's territory, or "mid" for the 50) and the yard line. */
+  ballSpot?: { side: "away" | "home" | "mid"; yard: number };
   /** Most recent scoring drive during a live game. */
   scoringAlert?: { type: "TD" | "FG"; teamId: string; yards?: number };
   awayRecord?: string;
