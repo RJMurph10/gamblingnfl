@@ -420,11 +420,12 @@ function mapDriveResult(text: string | undefined): DriveResult {
   // "Punt", "Interception", and "End of Half". Match the full concepts first
   // instead of looking only for the abbreviation ("TOUCHDOWN" does not contain
   // the letters "TD").
-  if (key.includes("TOUCHDOWN") || key === "TD") return "TD";
-  if (key.includes("FIELD GOAL") || key === "FG") return "FG";
-  // Preserve the actual turnover type so the drive table can distinguish INT from FUM.
+  // A pick-six or fumble-return TD is a turnover for the offense, not a TD,
+  // so check for turnover wording before the touchdown label.
   if (key.includes("INTERCEPTION") || /\bINT\b/.test(key)) return "INT";
   if (key.includes("FUMBLE") || /\bFUM\b/.test(key)) return "FUM";
+  if (key.includes("TOUCHDOWN") || key === "TD") return "TD";
+  if (key.includes("FIELD GOAL") || key === "FG") return "FG";
   if (key.includes("DOWNS") || key.includes("TURNOVER ON DOWNS")) return "DOWNS";
   if (key.includes("END OF HALF")) return "EOH";
   if (key.includes("END OF GAME")) return "EOG";
@@ -434,6 +435,33 @@ function mapDriveResult(text: string | undefined): DriveResult {
     if (key.includes(k)) return v;
   }
   return "PUNT";
+}
+
+/**
+ * ESPN sometimes labels a drive "TD" when the offense turned the ball over and
+ * the defense scored (pick-six or fumble return). Look at the drive's final
+ * play: if it was an interception or a fumble recovered by the other team and
+ * ended in a touchdown, report INT or FUM instead of TD.
+ */
+function refineTurnoverTd(
+  result: DriveResult,
+  drive: any,
+  driveTeamAbbr: string | undefined,
+): DriveResult {
+  if (result !== "TD") return result;
+  const plays: any[] = Array.isArray(drive?.plays) ? drive.plays : [];
+  const last = plays[plays.length - 1];
+  if (!last) return result;
+  const text = `${last?.text ?? ""} ${last?.shortText ?? ""} ${last?.type?.text ?? ""}`;
+  if (!/touchdown/i.test(text)) return result;
+  if (/intercept/i.test(text)) return "INT";
+  if (/fumble/i.test(text)) {
+    // If the drive team itself recovered and scored, it is still a normal TD.
+    const recovered = text.match(/recovered by\s+([A-Z]{2,4})-/i)?.[1]?.toUpperCase();
+    if (recovered && driveTeamAbbr && recovered === driveTeamAbbr.toUpperCase()) return result;
+    return "FUM";
+  }
+  return result;
 }
 
 function statNum(stats: any[], name: string): number {
@@ -879,14 +907,18 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
         yards: Number(dr?.yards ?? 0),
         timeOfPossession: top,
         startAt: dr?.start?.text ?? "—",
-        result: mapDriveResult(
-        dr?.displayResult ??
-          dr?.result?.displayValue ??
-          dr?.result?.text ??
-          dr?.result ??
-          dr?.end?.result?.displayValue ??
-          dr?.end?.result?.text,
-      ),
+        result: refineTurnoverTd(
+          mapDriveResult(
+            dr?.displayResult ??
+              dr?.result?.displayValue ??
+              dr?.result?.text ??
+              dr?.result ??
+              dr?.end?.result?.displayValue ??
+              dr?.end?.result?.text,
+          ),
+          dr,
+          teamByAbbr(dr?.team?.abbreviation ?? "")?.abbr,
+        ),
       };
     };
 
