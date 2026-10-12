@@ -752,6 +752,66 @@ export function marketResultClass(
   return { spread, total };
 }
 
+/**
+ * Matchup link used in game tables. A 3-column grid (1fr / @ / 1fr) keeps the
+ * "@" in the exact center of the cell on every row, regardless of score width,
+ * OT tags, or possession footballs (which are positioned outside the grid flow).
+ */
+export function MatchupLink({
+  game,
+  away,
+  home,
+  awayScore,
+  homeScore,
+  showOT = false,
+  showPossession = false,
+}: {
+  game: Game;
+  away: Team;
+  home: Team;
+  awayScore: number | string;
+  homeScore: number | string;
+  showOT?: boolean;
+  showPossession?: boolean;
+}) {
+  const awayBall = showPossession && game.possession === "away";
+  const homeBall = showPossession && game.possession === "home";
+  return (
+    <Link
+      to="/games/$gameId"
+      params={{ gameId: game.id }}
+      className="grid w-full grid-cols-[1fr_auto_1fr] items-center gap-1.5 font-mono tabular-nums font-semibold hover:text-acc"
+    >
+      <span className="flex justify-end">
+        <span className="relative inline-flex items-center gap-1.5">
+          {awayBall ? (
+            <span className="absolute right-full top-1/2 mr-1.5 -translate-y-1/2">
+              <FootballIcon isRedZone={game.isRedZone} />
+            </span>
+          ) : null}
+          <span className="w-6 text-right">{awayScore}</span>
+          <TeamLogo team={away} />
+        </span>
+      </span>
+      <span className="text-center font-sans font-normal text-mute">@</span>
+      <span className="flex justify-start">
+        <span className="relative inline-flex items-center gap-1.5">
+          <TeamLogo team={home} />
+          <span className="w-6 text-left">{homeScore}</span>
+          {showOT || homeBall ? (
+            <span className="absolute left-full top-1/2 ml-1.5 flex -translate-y-1/2 items-center gap-1.5 whitespace-nowrap">
+              {showOT ? (
+                <span className="font-mono text-[10px] font-normal text-mute">(OT)</span>
+              ) : null}
+              {homeBall ? <FootballIcon isRedZone={game.isRedZone} /> : null}
+            </span>
+          ) : null}
+        </span>
+      </span>
+    </Link>
+  );
+}
+
 export function GameRow({
   game,
   showMarket = true,
@@ -782,40 +842,15 @@ export function GameRow({
           : (game.time ?? game.kickoff.replace(/^\w+\s+/, "")).replace(/\s*(ET|EDT|EST)$/i, "")}
       </td>
       <td className="px-2 py-2.5 text-center">
-        <Link
-          to="/games/$gameId"
-          params={{ gameId: game.id }}
-          className="inline-flex items-center justify-center gap-1.5 font-mono tabular-nums font-semibold hover:text-acc"
-        >
-          <span className="inline-flex w-4 items-center justify-center">
-            {game.status === "live" && game.possession === "away" ? (
-              <FootballIcon isRedZone={game.isRedZone} />
-            ) : null}
-          </span>
-          {/* Invisible twin of the (OT) tag below, so the matchup stays centered in OT games */}
-          {showOT ? (
-            <span aria-hidden="true" className="invisible font-mono text-[10px] font-normal">
-              (OT)
-            </span>
-          ) : null}
-          <span className="w-6 text-right">
-            {game.status !== "scheduled" ? score.away : ""}
-          </span>
-          <TeamLogo team={away} />
-          <span className="font-sans font-normal text-mute">@</span>
-          <TeamLogo team={home} />
-          <span className="w-6 text-left">
-            {game.status !== "scheduled" ? score.home : ""}
-          </span>
-          {showOT ? (
-            <span className="font-mono text-[10px] font-normal text-mute">(OT)</span>
-          ) : null}
-          <span className="inline-flex w-4 items-center justify-center">
-            {game.status === "live" && game.possession === "home" ? (
-              <FootballIcon isRedZone={game.isRedZone} />
-            ) : null}
-          </span>
-        </Link>
+        <MatchupLink
+          game={game}
+          away={away}
+          home={home}
+          awayScore={game.status !== "scheduled" ? score.away : ""}
+          homeScore={game.status !== "scheduled" ? score.home : ""}
+          showOT={showOT}
+          showPossession={game.status === "live"}
+        />
       </td>
       <td className="whitespace-nowrap px-2 py-2.5 font-mono text-mute">
         {game.status === "live" ? (game.clock ?? "Live") : game.location}
