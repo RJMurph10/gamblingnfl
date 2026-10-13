@@ -109,7 +109,7 @@ function LiveFieldTrack({
           <span>{game.downDistance ?? "1st & 10"}</span>
           <span className="text-mute">·</span>
           <span className="inline-flex items-center gap-1">
-            Ball on {isMidfield ? "50" : spotMatch ? <><TeamLogo team={teamById(spotMatch[1] === away.abbr ? away.id : home.id) ?? (spotMatch[1] === away.abbr ? away : home)} className="size-4" />{spotMatch[2]}</> : game.possessionText ?? "50"}
+            {isMidfield ? "50" : spotMatch ? <><TeamLogo team={teamById(spotMatch[1] === away.abbr ? away.id : home.id) ?? (spotMatch[1] === away.abbr ? away : home)} className="size-4" />{spotMatch[2]}</> : game.possessionText ?? "50"}
           </span>
         </span>
 
