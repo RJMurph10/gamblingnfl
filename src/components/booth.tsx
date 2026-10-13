@@ -1,11 +1,103 @@
 import { useState, type ReactNode, type SyntheticEvent } from "react";
 import { Link } from "@tanstack/react-router";
 import type { Team } from "@/data/teams";
-import type { Game, PlayByPlayItem, TeamGameStats } from "@/data/games";
+import type { Game, PlayByPlayItem, SeasonLeader, TeamGameStats } from "@/data/games";
 import { gameScore } from "@/data/games";
 import { teamByAbbr, teamById, teamLogo, teamLogoFallback } from "@/data/teams";
 
 /* ---------- primitives ---------- */
+
+/** Pregame "Season leaders": same look as Game leaders, but cumulative season stats. */
+export function SeasonLeaders({ game, away, home }: { game: Game; away: Team; home: Team }) {
+  const rows = game.seasonLeaders ?? [];
+  const playerCell = (leader: SeasonLeader | undefined, side: "away" | "home") => {
+    const isHome = side === "home";
+    const alignment = isHome ? "justify-end text-right" : "justify-start text-left";
+    if (!leader) return <div className="py-4" aria-hidden="true" />;
+    const content = (
+      <div className={`flex min-w-0 items-center gap-2.5 ${isHome ? "flex-row-reverse" : ""}`}>
+        <img
+          src={
+            leader.headshot ??
+            (leader.playerId ? `https://a.espncdn.com/i/headshots/nfl/players/full/${leader.playerId}.png` : "")
+          }
+          alt=""
+          loading="lazy"
+          className="size-11 shrink-0 rounded-full bg-line/10 object-cover ring-1 ring-line/15 sm:size-12"
+          onError={(event) => {
+            event.currentTarget.style.visibility = "hidden";
+          }}
+        />
+        <div className={`min-w-0 ${isHome ? "text-right" : "text-left"}`}>
+          <div className="truncate text-sm font-semibold text-foreground group-hover:text-acc">{leader.name}</div>
+          {leader.position ? <div className="mt-0.5 text-[11px] text-mute">{leader.position}</div> : null}
+          <div className="mt-1 font-mono text-sm font-bold tabular-nums text-acc">
+            {leader.value}
+            {leader.unit ? ` ${leader.unit.toLowerCase()}` : ""}
+          </div>
+        </div>
+      </div>
+    );
+    return (
+      <div className={`flex min-w-0 items-center py-3 ${alignment}`}>
+        {leader.playerId ? (
+          <Link
+            to="/players/$playerId"
+            params={{ playerId: leader.playerId }}
+            className="group block min-w-0 rounded-md p-1 transition-colors hover:bg-line/5"
+          >
+            {content}
+          </Link>
+        ) : (
+          <div className="min-w-0 p-1">{content}</div>
+        )}
+      </div>
+    );
+  };
+  return (
+    <Panel padded={false}>
+      <div className="border-b border-line/10 px-4 py-3">
+        <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">Season leaders</h2>
+        <p className="label-mono mt-1">Cumulative stats from this season</p>
+      </div>
+      <div className="px-3 sm:px-5">
+        <div className="grid grid-cols-[minmax(0,1fr)_112px_minmax(0,1fr)] items-center gap-2 border-b border-line/10 py-3 font-mono text-[10px] uppercase tracking-wider text-faint sm:grid-cols-[minmax(0,1fr)_160px_minmax(0,1fr)]">
+          <div className="flex items-center gap-2">
+            <TeamLogo team={away} className="size-5" />
+            <span>{away.name}</span>
+          </div>
+          <div className="text-center">Category</div>
+          <div className="flex items-center justify-end gap-2 text-right">
+            <span>{home.name}</span>
+            <TeamLogo team={home} className="size-5" />
+          </div>
+        </div>
+        {rows.length === 0 ? (
+          <p className="py-6 text-center font-mono text-[11px] uppercase tracking-wider text-faint">
+            Season leaders aren&apos;t available for this game yet
+          </p>
+        ) : (
+          <div className="divide-y divide-line/10">
+            {rows.map((row) => (
+              <div
+                key={row.category}
+                className="grid grid-cols-[minmax(0,1fr)_112px_minmax(0,1fr)] items-center gap-2 sm:grid-cols-[minmax(0,1fr)_160px_minmax(0,1fr)]"
+              >
+                {playerCell(row.away, "away")}
+                <div className="px-1 text-center">
+                  <div className="text-[11px] font-semibold uppercase leading-tight tracking-wide text-mute sm:text-xs">
+                    {row.category}
+                  </div>
+                </div>
+                {playerCell(row.home, "home")}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </Panel>
+  );
+}
 
 /** ESPN-style pregame "Matchup Predictor": donut with both logos, win % in the top corners. */
 export function MatchupPredictor({ game, away, home }: { game: Game; away: Team; home: Team }) {
