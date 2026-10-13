@@ -1,11 +1,21 @@
-import { useState, type ReactNode } from "react";
+import { useState, type ReactNode, type SyntheticEvent } from "react";
 import { Link } from "@tanstack/react-router";
 import type { Team } from "@/data/teams";
 import type { Game, PlayByPlayItem, TeamGameStats } from "@/data/games";
 import { gameScore } from "@/data/games";
-import { teamByAbbr, teamById, teamLogo } from "@/data/teams";
+import { teamByAbbr, teamById, teamLogo, teamLogoFallback } from "@/data/teams";
 
 /* ---------- primitives ---------- */
+
+/** On a logo load error, try the team's backup logo once before giving up. */
+function onLogoError(e: SyntheticEvent<HTMLImageElement>, team: Team, onFail?: () => void) {
+  const fallback = teamLogoFallback(team);
+  if (fallback && !e.currentTarget.src.endsWith(fallback)) {
+    e.currentTarget.src = fallback;
+  } else {
+    onFail?.();
+  }
+}
 
 export function Panel({
   children,
@@ -111,7 +121,7 @@ export function TeamMark({
       alt={`${team.city} ${team.name} logo`}
       className={`${dims} shrink-0 object-contain`}
       loading="lazy"
-      onError={() => setFailed(true)}
+      onError={(e) => onLogoError(e, team, () => setFailed(true))}
     />
   );
 }
@@ -127,7 +137,7 @@ export function TeamLogo({ team, className = "size-4" }: { team: Team; className
       alt={`${team.city} ${team.name} logo`}
       className={`inline-block shrink-0 object-contain ${className}`}
       loading="lazy"
-      onError={() => setFailed(true)}
+      onError={(e) => onLogoError(e, team, () => setFailed(true))}
     />
   );
 }
@@ -336,6 +346,7 @@ export function DriveTable({ game }: { game: Game }) {
                 alt=""
                 aria-hidden="true"
                 className="size-6 object-contain"
+                onError={(e) => onLogoError(e, team)}
               />
               <span>{team.id === awayTeam?.id && team.city === "Atlanta" ? "Atlanta" : team.name}</span>
               <span className="font-mono text-[10px] text-faint">{count}</span>
@@ -436,6 +447,7 @@ export function DriveTable({ game }: { game: Game }) {
                             title={`${startTeam.city} ${startTeam.name}`}
                             className="size-5 shrink-0 object-contain"
                             loading="lazy"
+                            onError={(e) => onLogoError(e, startTeam)}
                           />
                         ) : null}
                         <span>{startYardLine}</span>
