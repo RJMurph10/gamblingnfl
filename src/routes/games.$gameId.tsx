@@ -222,7 +222,9 @@ function ProbabilityGraph({
   away,
   home,
   favoriteSide = "home",
+  pregame = false,
 }: {
+  pregame?: boolean;
   points: GameProbabilityPoint[];
   probabilityKey: ProbabilityKey;
   values: Array<number | undefined>;
@@ -252,9 +254,11 @@ function ProbabilityGraph({
   if (!valid.length) {
     return (
       <div className="mt-4 rounded-lg border border-line/10 bg-panel2/30 px-4 py-10 text-center">
-        <p className="font-semibold">Probability history unavailable</p>
+        <p className="font-semibold">{pregame ? "Probabilities appear once the game starts" : "Probability history unavailable"}</p>
         <p className="mx-auto mt-2 max-w-lg text-sm text-mute">
-          ESPN did not return this probability series for the game. No estimated or fabricated values are shown.
+          {pregame
+            ? "Live win, spread and total probabilities will populate here during the game."
+            : "ESPN did not return this probability series for the game. No estimated or fabricated values are shown."}
         </p>
       </div>
     );
@@ -1241,6 +1245,7 @@ function GamePage() {
                     highLabel={home.name}
                     lowLabel={away.name}
                     favoriteSide={favoriteSideFromSpread(game.spread, away, home)}
+                    pregame={game.status === "scheduled"}
                     away={away}
                     home={home}
                   />
@@ -1254,6 +1259,7 @@ function GamePage() {
                     highLabel={`${home.name} Cover`}
                     lowLabel={`${away.name} Cover`}
                     favoriteSide={favoriteSideFromSpread(game.spread, away, home)}
+                    pregame={game.status === "scheduled"}
                     away={away}
                     home={home}
                   />
@@ -1267,6 +1273,7 @@ function GamePage() {
                     highLabel="Over"
                     lowLabel="Under"
                     favoriteSide={favoriteSideFromSpread(game.spread, away, home)}
+                    pregame={game.status === "scheduled"}
                     away={away}
                     home={home}
                   />
