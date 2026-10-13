@@ -114,6 +114,17 @@ export interface SeasonLeaderRow {
   home?: SeasonLeader;
 }
 
+/** Extra game details shown on the Information tab. */
+export interface GameInfo {
+  capacity?: number;
+  /** "Grass" or "Artificial turf" when ESPN says which. */
+  surface?: string;
+  attendance?: number;
+  /** TV network(s), e.g. "NBC, Peacock". */
+  broadcast?: string;
+  officials?: { role?: string; name: string }[];
+}
+
 export interface Game {
   id: string;
   week: number;
@@ -146,6 +157,8 @@ export interface Game {
   homeRecord?: string;
   possessionText?: string;
   distance?: number;
+  /** Venue, TV, attendance and officials for the Information tab. */
+  info?: GameInfo;
   /** Pregame season leaders (cumulative stats this season) for each team. */
   seasonLeaders?: SeasonLeaderRow[];
   /** ESPN pregame matchup predictor: projected win probability (0-100) per team. */
