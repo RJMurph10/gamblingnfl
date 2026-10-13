@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import type { Team } from "@/data/teams";
-import type { Game, TeamGameStats } from "@/data/games";
+import type { Game, PlayByPlayItem, TeamGameStats } from "@/data/games";
 import { gameScore } from "@/data/games";
 import { teamByAbbr, teamById, teamLogo } from "@/data/teams";
 
@@ -750,6 +750,51 @@ export function marketResultClass(
     else total = push;
   }
   return { spread, total };
+}
+
+/** ESPN-style live play-by-play list (newest play first). */
+export function PlayByPlay({ plays }: { plays: PlayByPlayItem[] }) {
+  return (
+    <Panel padded={false} className="mt-6">
+      <PanelHeader
+        title={
+          <span className="flex items-center gap-2">
+            <span className="size-2 animate-pulse rounded-full bg-emerald-400" />
+            Play-by-play
+          </span>
+        }
+      />
+      {plays.length === 0 ? (
+        <div className="px-4 py-6 text-center text-sm text-mute">Waiting for the first play…</div>
+      ) : (
+        <ul className="max-h-[28rem] divide-y divide-line/5 overflow-y-auto">
+          {plays.map((play, i) => {
+            const team = play.teamId ? teamById(play.teamId) : undefined;
+            const isNewest = i === 0;
+            return (
+              <li
+                key={play.id}
+                className={`flex items-start gap-3 px-4 py-3 ${play.scoring ? "bg-emerald-400/10" : isNewest ? "bg-line/5" : ""}`}
+              >
+                <div className="flex w-12 shrink-0 flex-col items-center gap-1 pt-0.5">
+                  {team ? <TeamLogo team={team} className="size-6" /> : null}
+                  <span className="font-mono text-[10px] text-mute">
+                    {play.quarter ? `Q${play.quarter}` : ""} {play.clock ?? ""}
+                  </span>
+                </div>
+                <div className="min-w-0 flex-1">
+                  {play.header ? (
+                    <div className="font-mono text-xs font-semibold text-foreground">{play.header}</div>
+                  ) : null}
+                  <div className={`text-sm ${play.scoring ? "font-semibold" : "text-mute"}`}>{play.text}</div>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </Panel>
+  );
 }
 
 const MONTHS = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
