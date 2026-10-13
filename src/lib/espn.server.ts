@@ -938,6 +938,10 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
           .replace(/\(\s*no huddle\s*,\s*shotgun\s*\)/gi, "(No Huddle)")
           .replace(/\(\s*shotgun\s*,\s*no huddle\s*\)/gi, "(No Huddle)")
           .replace(/\(\s*shotgun\s*\)/gi, "")
+          // Drop where the play ended ("to BUF 43", "ran ob at BUF 42", "sacked at BUF 12");
+          // the next play's header already shows the new spot.
+          .replace(/\s+to\s+(?:[A-Z]{2,4}\s+\d{1,2}|the\s+50)\b/g, "")
+          .replace(/\b(ran ob|pushed ob|sacked)\s+at\s+[A-Z]{2,4}\s+\d{1,2}\b/gi, "$1")
           .replace(/\s{2,}/g, " ")
           .replace(/\s+([.,;])/g, "$1")
           .trim();
