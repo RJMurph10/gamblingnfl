@@ -1,5 +1,9 @@
 import type { Game } from "@/data/games";
 
-export function showGameStatistics(status: Game["status"]): boolean {
-  return status === "live" || status === "final";
+/**
+ * Gamecast / Stats / Markets tabs are available for every game, including
+ * upcoming ones (they show empty states until the game starts).
+ */
+export function showGameStatistics(_status: Game["status"]): boolean {
+  return true;
 }
