@@ -7,6 +7,20 @@ import { teamByAbbr, teamById, teamLogo, teamLogoFallback } from "@/data/teams";
 
 /* ---------- primitives ---------- */
 
+/** Three vertical dots showing a team's timeouts: white = remaining, darker shade of the same dot = used. */
+export function TimeoutDots({ remaining }: { remaining: number }) {
+  return (
+    <div className="flex flex-col items-center gap-1" aria-label={`${remaining} timeouts remaining`}>
+      {[0, 1, 2].map((i) => (
+        <span
+          key={i}
+          className={`size-1.5 rounded-full sm:size-2 ${i < remaining ? "bg-foreground" : "bg-foreground/35"}`}
+        />
+      ))}
+    </div>
+  );
+}
+
 /** On a logo load error, try the team's backup logo once before giving up. */
 function onLogoError(e: SyntheticEvent<HTMLImageElement>, team: Team, onFail?: () => void) {
   const fallback = teamLogoFallback(team);
