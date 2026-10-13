@@ -8,6 +8,7 @@ import {
   LineScore,
   PageTitle,
   Panel,
+  PlayByPlay,
   StatComparison,
   TeamLogo,
   SpreadBadge,
@@ -827,6 +828,8 @@ function GamePage() {
           );
         })()}
       </Panel>
+
+      {game.status === "live" ? <PlayByPlay plays={game.playByPlay ?? []} /> : null}
 
       {showGameStatistics(game.status) ? (
         <>
