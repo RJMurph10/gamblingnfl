@@ -9,6 +9,7 @@ import { teamByAbbr, teamById, teamLogo, teamLogoFallback } from "@/data/teams";
 
 /** ESPN-style pregame "Matchup Predictor": donut with both logos, win % in the top corners. */
 export function MatchupPredictor({ game, away, home }: { game: Game; away: Team; home: Team }) {
+  // Pregame only: ESPN's matchup predictor (the page refreshes it every few minutes before kickoff).
   const predictor = game.predictor;
   const radius = 45;
   const circumference = 2 * Math.PI * radius;
@@ -76,17 +77,6 @@ export function MatchupPredictor({ game, away, home }: { game: Game; away: Team;
               </div>
             </div>
           </div>
-          <p className="mt-4 text-center text-sm text-mute">
-            According to{" "}
-            <a
-              href="https://www.espn.com/nfl/fpi"
-              target="_blank"
-              rel="noreferrer"
-              className="underline underline-offset-2 hover:text-foreground"
-            >
-              ESPN Analytics
-            </a>
-          </p>
         </>
       ) : (
         <p className="py-6 text-center font-mono text-[11px] uppercase tracking-wider text-faint">
