@@ -17,7 +17,7 @@ function VenueImage({ urls, alt }: { urls: string[]; alt: string }) {
       src={urls[index]}
       alt={alt}
       loading="lazy"
-      className="h-44 w-full object-cover sm:h-64"
+      className="block h-auto w-full"
       onError={() => setIndex((i) => i + 1)}
     />
   );
@@ -30,15 +30,16 @@ export function GameInformation({ game, away, home }: { game: Game; away: Team; 
   const isFinal = game.status === "final";
   const rows: { label: string; value: ReactNode }[] = [];
 
-  // e.g. "7:15 PM, October 12"
+  // e.g. "October 12, 7:15 PM" — shown in the viewer's own time zone.
   let when = "";
   if (game.kickoffIso) {
     const kickoff = new Date(game.kickoffIso);
-    const time = kickoff.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
-    const day = kickoff.toLocaleDateString("en-US", { month: "long", day: "numeric" });
-    when = `${time}, ${day}`;
+    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const day = kickoff.toLocaleDateString("en-US", { month: "long", day: "numeric", timeZone });
+    const time = kickoff.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", timeZone });
+    when = `${day}, ${time}`;
   } else {
-    when = [(game.time ?? "").replace(/\s*(ET|EDT|EST)$/i, ""), game.date].filter(Boolean).join(", ");
+    when = [game.date, (game.time ?? "").replace(/\s*(ET|EDT|EST)$/i, "")].filter(Boolean).join(", ");
   }
   if (when) rows.push({ label: "Date", value: when });
   if (game.venue && game.venue !== "TBD") rows.push({ label: "Venue", value: game.venue });
@@ -65,7 +66,9 @@ export function GameInformation({ game, away, home }: { game: Game; away: Team; 
         {rows.map((row) => (
           <div key={row.label} className="flex items-start justify-between gap-4 py-3 text-sm">
             <dt className="font-mono text-[11px] uppercase tracking-wider text-faint">{row.label}</dt>
-            <dd className="text-right font-semibold text-foreground">{row.value}</dd>
+            <dd suppressHydrationWarning className="text-right font-semibold text-foreground">
+              {row.value}
+            </dd>
           </div>
         ))}
       </dl>
