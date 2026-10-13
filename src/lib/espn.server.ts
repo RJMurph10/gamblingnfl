@@ -239,26 +239,21 @@ function parseGameInfo(d: any): Game["info"] {
       role: o?.position?.displayName ? String(o.position.displayName) : undefined,
     }))
     .filter((o: { name: string }) => o.name);
-  // Prefer ESPN's full-field stadium photos (the "full" daytime shots used on espn.com)
-  // over entrance/exterior shots, then fall back to anything else ESPN lists.
+  // ESPN's Game Information photo is the *interior* shot that shows the field
+  // (https://a.espncdn.com/i/venues/nfl/day/interior/<venueId>.jpg). The other venue
+  // photos are exterior/entrance shots, so they are never used.
   const images: any[] = (Array.isArray(venue?.images) ? venue.images : []).filter((img: any) => img?.href);
   const relOf = (img: any): string[] => (Array.isArray(img?.rel) ? img.rel.map((r: any) => String(r)) : []);
-  const score = (img: any): number => {
-    const href = String(img.href);
-    const rel = relOf(img);
-    let pts = 0;
-    if (/\/full\//i.test(href) || rel.includes("full")) pts += 4;
-    if (/\/day\//i.test(href) || rel.includes("day")) pts += 2;
-    if (/entrance|exterior|gate|interior/i.test(href) || rel.some((r) => /entrance|exterior|gate/i.test(r))) pts -= 6;
-    return pts;
-  };
-  const ranked = [...images]
-    .sort((a, b) => score(b) - score(a) || Number(b?.width ?? 0) - Number(a?.width ?? 0))
+  const isInterior = (img: any) => /\/interior\//i.test(String(img.href)) || relOf(img).includes("interior");
+  const isDay = (img: any) => /\/day\//i.test(String(img.href)) || relOf(img).includes("day");
+  const interiorFromApi = images
+    .filter(isInterior)
+    .sort((a, b) => Number(isDay(b)) - Number(isDay(a)))
     .map((img) => String(img.href));
   const constructed = venue?.id
-    ? [`https://a.espncdn.com/i/venues/nfl/day/full/${venue.id}.jpg`]
+    ? [`https://a.espncdn.com/i/venues/nfl/day/interior/${venue.id}.jpg`]
     : [];
-  const venueImages = [...new Set([...ranked.slice(0, 1), ...constructed, ...ranked.slice(1)])];
+  const venueImages = [...new Set([...interiorFromApi, ...constructed])];
   const info: NonNullable<Game["info"]> = {};
   if (venueImages.length) info.venueImages = venueImages;
   if (Number.isFinite(capacity) && capacity > 0) info.capacity = capacity;
