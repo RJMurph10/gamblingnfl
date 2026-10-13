@@ -184,6 +184,38 @@ function parseSeasonLeaders(
   return [...rows.values()].sort((a, b) => order.indexOf(a.category) - order.indexOf(b.category));
 }
 
+/** Builds the Information-tab details (venue, TV, attendance, officials) from an ESPN summary. */
+function parseGameInfo(d: any): Game["info"] {
+  const gi = d?.gameInfo;
+  const venue = gi?.venue;
+  const capacity = Number(venue?.capacity);
+  const attendance = Number(gi?.attendance);
+  const surface =
+    typeof venue?.grass === "boolean" ? (venue.grass ? "Grass" : "Artificial turf") : undefined;
+  const broadcastNames: string[] = [];
+  const broadcastSources: any[] = [
+    ...(Array.isArray(d?.header?.competitions?.[0]?.broadcasts) ? d.header.competitions[0].broadcasts : []),
+    ...(Array.isArray(d?.broadcasts) ? d.broadcasts : []),
+  ];
+  for (const b of broadcastSources) {
+    const name = b?.media?.shortName ?? b?.shortName ?? b?.name;
+    if (name && !broadcastNames.includes(String(name))) broadcastNames.push(String(name));
+  }
+  const officials = (Array.isArray(gi?.officials) ? gi.officials : [])
+    .map((o: any) => ({
+      name: String(o?.displayName ?? o?.fullName ?? "").trim(),
+      role: o?.position?.displayName ? String(o.position.displayName) : undefined,
+    }))
+    .filter((o: { name: string }) => o.name);
+  const info: NonNullable<Game["info"]> = {};
+  if (Number.isFinite(capacity) && capacity > 0) info.capacity = capacity;
+  if (Number.isFinite(attendance) && attendance > 0) info.attendance = attendance;
+  if (surface) info.surface = surface;
+  if (broadcastNames.length) info.broadcast = broadcastNames.join(", ");
+  if (officials.length) info.officials = officials;
+  return Object.keys(info).length ? info : undefined;
+}
+
 /** Reads timeouts remaining from an ESPN "situation" object, if present. */
 function parseTimeouts(sit: any): { away: number; home: number } | undefined {
   if (!sit) return undefined;
@@ -940,6 +972,8 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
         if (typeof base.distance !== "number" && typeof endState.distance === "number") base.distance = endState.distance;
       }
     }
+
+    base.info = parseGameInfo(d);
 
     // Pregame matchup predictor (shown on the Markets tab for upcoming games).
     if (base.status === "scheduled") {
