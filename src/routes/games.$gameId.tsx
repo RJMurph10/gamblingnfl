@@ -743,6 +743,26 @@ function GamePage() {
                       <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
                       {game.clock ?? "Live"}
                     </span>
+
+                    {isHalftime && game.drives?.length
+                      ? (() => {
+                          // The team that received the opening kickoff (first drive)
+                          // kicks off, so the other team starts the 2nd half with the ball.
+                          const firstDriveTeamId = game.drives[0]?.teamId;
+                          const secondHalfTeam =
+                            firstDriveTeamId === away.id
+                              ? home
+                              : firstDriveTeamId === home.id
+                                ? away
+                                : null;
+                          return secondHalfTeam ? (
+                            <span className="flex items-center gap-1.5 font-mono text-[11px] text-mute">
+                              <TeamLogo team={secondHalfTeam} className="size-4" />
+                              <span>starts with ball in 2nd half</span>
+                            </span>
+                          ) : null;
+                        })()
+                      : null}
                   </div>
                 ) : game.status === "final" ? (
                   <div className="flex flex-col items-center">
