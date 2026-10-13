@@ -128,6 +128,10 @@ export interface Game {
   homeRecord?: string;
   possessionText?: string;
   distance?: number;
+  /** ESPN pregame matchup predictor: projected win probability (0-100) per team. */
+  predictor?: { away: number; home: number };
+  /** Live timeouts remaining for each team (0-3). */
+  timeouts?: { away: number; home: number };
   /** Live play-by-play, newest play first. */
   playByPlay?: PlayByPlayItem[];
   /** ESPN play-by-play market probabilities when available. */
