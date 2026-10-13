@@ -891,6 +891,9 @@ function GamePage() {
               ))}
             </nav>
           ) : null}
+          {/* Tab content only appears once the game is live or finished. */}
+          {game.status !== "scheduled" ? (
+            <>
           <div>
           <div className="mt-6 grid gap-6 lg:grid-cols-12">
             <Panel className={`lg:col-span-5 ${showGameStatistics(game.status) && activeGameTab !== "gamecast" ? "hidden" : ""}`}>
@@ -1280,6 +1283,8 @@ function GamePage() {
                 )}
               </Panel>
             </section>
+          ) : null}
+            </>
           ) : null}
         </>
       ) : null}
