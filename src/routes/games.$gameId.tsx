@@ -655,8 +655,8 @@ function GamePage() {
   return (
     <>
       <PageTitle
-        eyebrow={`Week ${game.week} · ${game.venue} · ${localKickoff}`}
-        title={`${away.abbr} @ ${home.abbr}`}
+        eyebrow=""
+        title={`Week ${game.week} ${away.abbr} @ ${home.abbr}`}
         aside={
           weatherQuery.data ? (
             <GameWeatherCard weather={weatherQuery.data} />
