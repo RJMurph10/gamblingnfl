@@ -65,14 +65,13 @@ function LiveGameRow({ game, showDown }: { game: Game; showDown: boolean }) {
                 {ballTeam ? (
                   <>
                     <span>·</span>
-                    <span>Ball on</span>
                     <TeamLogo team={ballTeam} className="size-4" />
                     <span>{game.ballSpot!.yard}</span>
                   </>
                 ) : game.ballSpot?.side === "mid" ? (
                   <>
                     <span>·</span>
-                    <span>Ball on 50</span>
+                    <span>50</span>
                   </>
                 ) : null}
               </span>
