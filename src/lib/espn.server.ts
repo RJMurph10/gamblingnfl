@@ -930,7 +930,17 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
       const driveTeamId = teamByAbbr(dr?.team?.abbreviation ?? "")?.id;
       const drivePlays: any[] = Array.isArray(dr?.plays) ? dr.plays : [];
       drivePlays.forEach((play: any, i: number) => {
-        const text = String(play?.text ?? play?.shortText ?? "").trim();
+        const rawText = String(play?.text ?? play?.shortText ?? "").trim();
+        // Drop end-of-quarter marker plays entirely.
+        if (/\bend\s+(of\s+)?(the\s+)?(\d(st|nd|rd|th)\s+)?(quarter|q\d)\b|\bend\s+quarter\b/i.test(rawText)) return;
+        // Remove the "(Shotgun)" formation tag but keep the rest of the play.
+        const text = rawText
+          .replace(/\(\s*no huddle\s*,\s*shotgun\s*\)/gi, "(No Huddle)")
+          .replace(/\(\s*shotgun\s*,\s*no huddle\s*\)/gi, "(No Huddle)")
+          .replace(/\(\s*shotgun\s*\)/gi, "")
+          .replace(/\s{2,}/g, " ")
+          .replace(/\s+([.,;])/g, "$1")
+          .trim();
         if (!text) return;
         const header = String(
           play?.start?.downDistanceText ?? play?.start?.shortDownDistanceText ?? "",
