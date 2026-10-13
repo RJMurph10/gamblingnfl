@@ -7,31 +7,54 @@ import { teamByAbbr, teamById, teamLogo, teamLogoFallback } from "@/data/teams";
 
 /* ---------- primitives ---------- */
 
-/** Information tab: kickoff, venue, TV, attendance, officials and the betting line. */
+/** Information tab: stadium photo, kickoff, venue, location, TV, attendance, officials. */
 export function GameInformation({ game, away, home }: { game: Game; away: Team; home: Team }) {
   const info = game.info;
+  const isScheduled = game.status === "scheduled";
+  const isFinal = game.status === "final";
   const rows: { label: string; value: ReactNode }[] = [];
-  const when = [game.date, game.status === "scheduled" ? game.time : undefined].filter(Boolean).join(" · ");
+
+  // e.g. "7:15 PM, October 12"
+  let when = "";
+  if (game.kickoffIso) {
+    const kickoff = new Date(game.kickoffIso);
+    const time = kickoff.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+    const day = kickoff.toLocaleDateString("en-US", { month: "long", day: "numeric" });
+    when = `${time}, ${day}`;
+  } else {
+    when = [(game.time ?? "").replace(/\s*(ET|EDT|EST)$/i, ""), game.date].filter(Boolean).join(", ");
+  }
   if (when) rows.push({ label: "Date", value: when });
   if (game.venue && game.venue !== "TBD") rows.push({ label: "Venue", value: game.venue });
-  if (game.location) rows.push({ label: "Location", value: game.location });
+  if (game.location && game.location !== "TBD") rows.push({ label: "Location", value: game.location });
   if (info?.capacity) rows.push({ label: "Capacity", value: info.capacity.toLocaleString() });
-  if (info?.surface) rows.push({ label: "Surface", value: info.surface });
+  if (isScheduled && info?.surface) rows.push({ label: "Surface", value: info.surface });
   if (info?.broadcast) rows.push({ label: "TV", value: info.broadcast });
-  if (game.status === "final" && info?.attendance) {
-    rows.push({ label: "Attendance", value: info.attendance.toLocaleString() });
-  }
-  if (game.spread && game.spread !== "—" && game.total > 0) {
+  if (isFinal && info?.attendance) rows.push({ label: "Attendance", value: info.attendance.toLocaleString() });
+  if (isScheduled && game.spread && game.spread !== "—" && game.total > 0) {
     rows.push({ label: "Line", value: `${game.spread} · O/U ${game.total}` });
   }
   return (
     <Panel padded={false}>
       <div className="border-b border-line/10 px-4 py-3">
         <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">Game information</h2>
-        <p className="label-mono mt-1">
-          {away.name} @ {home.name}
-        </p>
+        <div className="mt-2 flex items-center gap-2">
+          <TeamLogo team={away} className="size-7" />
+          <span className="font-mono text-sm text-mute">@</span>
+          <TeamLogo team={home} className="size-7" />
+        </div>
       </div>
+      {info?.venueImage ? (
+        <img
+          src={info.venueImage}
+          alt={game.venue}
+          loading="lazy"
+          className="h-44 w-full object-cover sm:h-64"
+          onError={(event) => {
+            event.currentTarget.style.display = "none";
+          }}
+        />
+      ) : null}
       <dl className="divide-y divide-line/10 px-4 sm:px-5">
         {rows.map((row) => (
           <div key={row.label} className="flex items-start justify-between gap-4 py-3 text-sm">
@@ -43,11 +66,11 @@ export function GameInformation({ game, away, home }: { game: Game; away: Team; 
       {info?.officials?.length ? (
         <div className="border-t border-line/10 px-4 py-3 sm:px-5">
           <h3 className="font-mono text-[11px] uppercase tracking-wider text-faint">Officials</h3>
-          <ul className="mt-2 grid gap-x-6 gap-y-1 text-sm sm:grid-cols-2">
+          <ul className="mt-2 grid grid-cols-1 gap-1.5 text-sm">
             {info.officials.map((official) => (
               <li key={`${official.role}-${official.name}`} className="flex justify-between gap-3">
                 <span className="text-mute">{official.role ?? "Official"}</span>
-                <span className="font-semibold text-foreground">{official.name}</span>
+                <span className="text-right font-semibold text-foreground">{official.name}</span>
               </li>
             ))}
           </ul>
