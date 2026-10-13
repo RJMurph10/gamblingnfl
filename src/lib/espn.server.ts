@@ -113,6 +113,16 @@ function formatKickoff(iso: string | undefined): string {
   );
 }
 
+/** Reads timeouts remaining from an ESPN "situation" object, if present. */
+function parseTimeouts(sit: any): { away: number; home: number } | undefined {
+  if (!sit) return undefined;
+  const away = Number(sit.awayTimeouts);
+  const home = Number(sit.homeTimeouts);
+  if (!Number.isFinite(away) && !Number.isFinite(home)) return undefined;
+  const clamp = (n: number) => (Number.isFinite(n) ? Math.max(0, Math.min(3, Math.round(n))) : 3);
+  return { away: clamp(away), home: clamp(home) };
+}
+
 function formatGameDate(iso: string | undefined): string {
   if (!iso) return "TBD";
   return new Date(iso).toLocaleDateString("en-US", {
@@ -256,6 +266,7 @@ function mapEvent(event: any, week: number): Game | null {
     isRedZone,
     downDistance,
     ballSpot,
+    timeouts: parseTimeouts(sit),
     scoringAlert,
     awayRecord,
     homeRecord,
@@ -825,6 +836,8 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
       base.possession = sbGame.possession;
       base.isRedZone = sbGame.isRedZone;
       base.downDistance = sbGame.downDistance;
+      base.ballSpot = sbGame.ballSpot;
+      base.timeouts = sbGame.timeouts ?? base.timeouts;
       base.scoringAlert = sbGame.scoringAlert ?? base.scoringAlert;
       base.possessionText = sbGame.possessionText;
       base.distance = sbGame.distance;
@@ -855,6 +868,15 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
         if (!base.downDistance && endState.shortDownDistanceText) base.downDistance = endState.shortDownDistanceText;
         if (typeof base.distance !== "number" && typeof endState.distance === "number") base.distance = endState.distance;
       }
+    }
+
+    // Timeouts remaining: fall back to ESPN's core "situation" feed if the summary lacks them.
+    if (base.status === "live" && !base.timeouts) {
+      const coreSituation = await fetchJson(
+        `${CORE_ODDS}/${eventId}/competitions/${eventId}/situation`,
+      ).catch(() => null);
+      const found = parseTimeouts(coreSituation) ?? parseTimeouts(d?.situation);
+      if (found) base.timeouts = found;
     }
 
     const awayStats = d?.boxscore?.teams?.find(
