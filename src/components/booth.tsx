@@ -801,6 +801,24 @@ function withFieldLogos(text: string): ReactNode {
   return parts;
 }
 
+/**
+ * Splits a play description into the main line and the tackler/defender
+ * parenthetical, e.g. "... for 5 yards (C.Gardner-Johnson; A.Kendall)." ->
+ * main "... for 5 yards." and detail "(C.Gardner-Johnson; A.Kendall)".
+ */
+function splitPlayDetail(text: string): { main: string; detail?: string } {
+  for (const m of text.matchAll(/\(([^()]+)\)/g)) {
+    const start = m.index ?? 0;
+    if (start === 0) continue; // leading tags like "(No Huddle)"
+    if (/no huddle|shotgun|timeout|kick|conversion|attempt|pass failed|run failed|good|no good/i.test(m[1])) continue;
+    const before = text.slice(0, start).trimEnd();
+    const after = text.slice(start + m[0].length).trim();
+    const main = (after.startsWith(".") || after.startsWith(",") ? before + after : `${before} ${after}`).trim();
+    return { main, detail: m[0] };
+  }
+  return { main: text };
+}
+
 /** ESPN-style live play-by-play list (newest play first). */
 export function PlayByPlay({ plays }: { plays: PlayByPlayItem[] }) {
   return (
@@ -835,7 +853,15 @@ export function PlayByPlay({ plays }: { plays: PlayByPlayItem[] }) {
                   {play.header ? (
                     <div className="font-mono text-xs font-semibold text-foreground">{withFieldLogos(play.header)}</div>
                   ) : null}
-                  <div className={`text-sm ${play.scoring ? "font-semibold" : "text-mute"}`}>{play.text}</div>
+                  {(() => {
+                    const { main, detail } = splitPlayDetail(play.text);
+                    return (
+                      <>
+                        <div className={`text-sm ${play.scoring ? "font-semibold" : "text-mute"}`}>{main}</div>
+                        {detail ? <div className="text-xs text-faint">{detail}</div> : null}
+                      </>
+                    );
+                  })()}
                 </div>
               </li>
             );
