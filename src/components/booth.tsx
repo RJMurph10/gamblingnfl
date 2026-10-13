@@ -7,6 +7,52 @@ import { teamByAbbr, teamById, teamLogo, teamLogoFallback } from "@/data/teams";
 
 /* ---------- primitives ---------- */
 
+/** ESPN-style pregame "Matchup Predictor": projected win probability for each team. */
+export function MatchupPredictor({ game, away, home }: { game: Game; away: Team; home: Team }) {
+  const predictor = game.predictor;
+  const fmt = (n: number) => `${n.toFixed(1)}%`;
+  return (
+    <Panel>
+      <div className="flex flex-wrap items-start justify-between gap-2">
+        <div>
+          <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">Matchup predictor</h2>
+          <p className="label-mono mt-1">Projected win probability · ESPN Analytics</p>
+        </div>
+      </div>
+      {predictor ? (
+        <div className="mt-5">
+          <div className="flex items-center justify-between gap-4">
+            {[
+              { team: away, pct: predictor.away, align: "items-start text-left" },
+              { team: home, pct: predictor.home, align: "items-end text-right" },
+            ].map(({ team, pct, align }) => (
+              <div key={team.id} className={`flex flex-col gap-1 ${align}`}>
+                <TeamLogo team={team} className="size-12 sm:size-14" />
+                <span className="font-mono text-[11px] uppercase tracking-wider text-mute">{team.abbr}</span>
+                <span
+                  className={`font-disp text-3xl font-bold tabular-nums sm:text-4xl ${
+                    pct >= 50 ? "text-foreground" : "text-mute"
+                  }`}
+                >
+                  {fmt(pct)}
+                </span>
+              </div>
+            ))}
+          </div>
+          <div className="mt-4 flex h-3 w-full gap-0.5 overflow-hidden rounded-full bg-panel2">
+            <div className="h-3 rounded-l-full" style={{ width: `${predictor.away}%`, backgroundColor: away.color }} />
+            <div className="h-3 flex-1 rounded-r-full" style={{ backgroundColor: home.color }} />
+          </div>
+        </div>
+      ) : (
+        <p className="py-6 text-center font-mono text-[11px] uppercase tracking-wider text-faint">
+          Matchup predictor isn&apos;t available for this game yet
+        </p>
+      )}
+    </Panel>
+  );
+}
+
 /** Three vertical dots showing a team's timeouts: white = remaining, darker shade of the same dot = used. */
 export function TimeoutDots({ remaining }: { remaining: number }) {
   return (
