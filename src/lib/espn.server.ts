@@ -207,7 +207,12 @@ function parseGameInfo(d: any): Game["info"] {
       role: o?.position?.displayName ? String(o.position.displayName) : undefined,
     }))
     .filter((o: { name: string }) => o.name);
+  const images: any[] = Array.isArray(venue?.images) ? venue.images : [];
+  const bestImage = [...images]
+    .filter((img) => img?.href)
+    .sort((a, b) => Number(b?.width ?? 0) - Number(a?.width ?? 0))[0];
   const info: NonNullable<Game["info"]> = {};
+  if (bestImage?.href) info.venueImage = String(bestImage.href);
   if (Number.isFinite(capacity) && capacity > 0) info.capacity = capacity;
   if (Number.isFinite(attendance) && attendance > 0) info.attendance = attendance;
   if (surface) info.surface = surface;
@@ -931,9 +936,15 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
     if (base.venue === "TBD" && d?.gameInfo?.venue?.fullName) {
       base.venue = d.gameInfo.venue.fullName;
     }
+    // Fill in the stadium's city/state from the summary when the header lacks it.
+    if (!base.location || base.location === "TBD") {
+      const infoLocation = formatLocation(d?.gameInfo?.venue);
+      if (infoLocation !== "TBD") base.location = infoLocation;
+    }
     if (sbGame) {
       base.quarters = sbGame.quarters;
       base.venue = sbGame.venue !== "TBD" ? sbGame.venue : base.venue;
+      if (sbGame.location && sbGame.location !== "TBD") base.location = sbGame.location;
       if (sbGame.spread !== "—") base.spread = sbGame.spread;
       if (sbGame.total > 0) base.total = sbGame.total;
       base.possession = sbGame.possession;
