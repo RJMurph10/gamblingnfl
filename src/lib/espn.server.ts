@@ -53,23 +53,55 @@ async function fetchJson(url: string): Promise<any> {
 }
 
 /** Fetch historical spread/total from ESPN when the scoreboard omits it. */
-async function fetchHistoricalOdds(eventId: string): Promise<{ spread?: string; total?: number }> {
-  return cached(
-    `historical-odds-${eventId}`,
-    async () => {
-      try {
-        const data = await fetchJson(`${CORE_ODDS}/${eventId}/competitions/${eventId}/odds`);
-        const odds = Array.isArray(data?.items) ? data.items[0] : undefined;
-        return {
-          spread: typeof odds?.details === "string" ? odds.details : undefined,
-          total: typeof odds?.overUnder === "number" ? odds.overUnder : undefined,
-        };
-      } catch {
-        return {};
+type HistoricalOdds = { spread?: string; total?: number };
+const historicalOddsCache = new Map<string, { at: number; value: HistoricalOdds }>();
+
+async function loadHistoricalOdds(eventId: string): Promise<HistoricalOdds> {
+  const result: HistoricalOdds = {};
+  // 1) Core odds feed: look through every provider for a spread and a total.
+  try {
+    const data = await fetchJson(`${CORE_ODDS}/${eventId}/competitions/${eventId}/odds`);
+    for (const odds of Array.isArray(data?.items) ? data.items : []) {
+      if (!result.spread && typeof odds?.details === "string" && odds.details.trim()) {
+        result.spread = odds.details;
       }
-    },
-    HISTORICAL_ODDS_CACHE_TTL_MS,
-  );
+      if (result.total === undefined && typeof odds?.overUnder === "number") {
+        result.total = odds.overUnder;
+      }
+    }
+  } catch {
+    // fall through to the summary feed
+  }
+  // 2) Game summary "pickcenter" keeps the closing line for finished games.
+  if (!result.spread || result.total === undefined) {
+    try {
+      const summary = await fetchJson(`${SUMMARY}?event=${eventId}`);
+      for (const pick of Array.isArray(summary?.pickcenter) ? summary.pickcenter : []) {
+        if (!result.spread && typeof pick?.details === "string" && pick.details.trim()) {
+          result.spread = pick.details;
+        }
+        if (result.total === undefined && typeof pick?.overUnder === "number") {
+          result.total = pick.overUnder;
+        }
+      }
+    } catch {
+      // leave whatever we found
+    }
+  }
+  return result;
+}
+
+async function fetchHistoricalOdds(eventId: string): Promise<HistoricalOdds> {
+  const hit = historicalOddsCache.get(eventId);
+  const found = (v: HistoricalOdds) => Boolean(v.spread) || v.total !== undefined;
+  // Remember good results for a day, but retry empty ones after 30 seconds so a single
+  // failed request can't blank a finished game's spread for hours.
+  if (hit && Date.now() - hit.at < (found(hit.value) ? HISTORICAL_ODDS_CACHE_TTL_MS : 30_000)) {
+    return hit.value;
+  }
+  const value = await loadHistoricalOdds(eventId);
+  historicalOddsCache.set(eventId, { at: Date.now(), value });
+  return value;
 }
 
 const zeroStats = (): TeamGameStats => ({
@@ -207,12 +239,28 @@ function parseGameInfo(d: any): Game["info"] {
       role: o?.position?.displayName ? String(o.position.displayName) : undefined,
     }))
     .filter((o: { name: string }) => o.name);
-  const images: any[] = Array.isArray(venue?.images) ? venue.images : [];
-  const bestImage = [...images]
-    .filter((img) => img?.href)
-    .sort((a, b) => Number(b?.width ?? 0) - Number(a?.width ?? 0))[0];
+  // Prefer ESPN's full-field stadium photos (the "full" daytime shots used on espn.com)
+  // over entrance/exterior shots, then fall back to anything else ESPN lists.
+  const images: any[] = (Array.isArray(venue?.images) ? venue.images : []).filter((img: any) => img?.href);
+  const relOf = (img: any): string[] => (Array.isArray(img?.rel) ? img.rel.map((r: any) => String(r)) : []);
+  const score = (img: any): number => {
+    const href = String(img.href);
+    const rel = relOf(img);
+    let pts = 0;
+    if (/\/full\//i.test(href) || rel.includes("full")) pts += 4;
+    if (/\/day\//i.test(href) || rel.includes("day")) pts += 2;
+    if (/entrance|exterior|gate|interior/i.test(href) || rel.some((r) => /entrance|exterior|gate/i.test(r))) pts -= 6;
+    return pts;
+  };
+  const ranked = [...images]
+    .sort((a, b) => score(b) - score(a) || Number(b?.width ?? 0) - Number(a?.width ?? 0))
+    .map((img) => String(img.href));
+  const constructed = venue?.id
+    ? [`https://a.espncdn.com/i/venues/nfl/day/full/${venue.id}.jpg`]
+    : [];
+  const venueImages = [...new Set([...ranked.slice(0, 1), ...constructed, ...ranked.slice(1)])];
   const info: NonNullable<Game["info"]> = {};
-  if (bestImage?.href) info.venueImage = String(bestImage.href);
+  if (venueImages.length) info.venueImages = venueImages;
   if (Number.isFinite(capacity) && capacity > 0) info.capacity = capacity;
   if (Number.isFinite(attendance) && attendance > 0) info.attendance = attendance;
   if (surface) info.surface = surface;
