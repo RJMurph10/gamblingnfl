@@ -8,6 +8,7 @@ import {
   LineScore,
   PageTitle,
   Panel,
+  MatchupPredictor,
   PlayByPlay,
   StatComparison,
   TeamLogo,
@@ -1285,6 +1286,10 @@ function GamePage() {
             </section>
           ) : null}
             </>
+          ) : activeGameTab === "markets" ? (
+            <section className="mt-6">
+              <MatchupPredictor game={game} away={away} home={home} />
+            </section>
           ) : null}
         </>
       ) : null}
