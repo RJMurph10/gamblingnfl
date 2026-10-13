@@ -120,6 +120,8 @@ export interface GameInfo {
   /** "Grass" or "Artificial turf" when ESPN says which. */
   surface?: string;
   attendance?: number;
+  /** Stadium photo URL from ESPN. */
+  venueImage?: string;
   /** TV network(s), e.g. "NBC, Peacock". */
   broadcast?: string;
   officials?: { role?: string; name: string }[];
