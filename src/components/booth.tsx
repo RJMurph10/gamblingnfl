@@ -764,6 +764,29 @@ export function marketResultClass(
   return { spread, total };
 }
 
+/** Replace field-position text like "BAL 25" or "LA 5" with the team's logo + yard line. */
+function withFieldLogos(text: string): ReactNode {
+  const alias: Record<string, string> = { LA: "LAR", WAS: "WSH", JAC: "JAX", OAK: "LV" };
+  const parts: ReactNode[] = [];
+  let last = 0;
+  for (const m of text.matchAll(/\b([A-Z]{2,4})\s+(\d{1,2})\b/g)) {
+    const team = teamByAbbr(alias[m[1]] ?? m[1]);
+    if (!team) continue;
+    const start = m.index ?? 0;
+    if (start > last) parts.push(text.slice(last, start));
+    parts.push(
+      <span key={start} className="inline-flex items-center gap-1 align-middle">
+        <TeamLogo team={team} className="size-4" />
+        {m[2]}
+      </span>,
+    );
+    last = start + m[0].length;
+  }
+  if (parts.length === 0) return text;
+  if (last < text.length) parts.push(text.slice(last));
+  return parts;
+}
+
 /** ESPN-style live play-by-play list (newest play first). */
 export function PlayByPlay({ plays }: { plays: PlayByPlayItem[] }) {
   return (
@@ -796,7 +819,7 @@ export function PlayByPlay({ plays }: { plays: PlayByPlayItem[] }) {
                 </div>
                 <div className="min-w-0 flex-1">
                   {play.header ? (
-                    <div className="font-mono text-xs font-semibold text-foreground">{play.header}</div>
+                    <div className="font-mono text-xs font-semibold text-foreground">{withFieldLogos(play.header)}</div>
                   ) : null}
                   <div className={`text-sm ${play.scoring ? "font-semibold" : "text-mute"}`}>{play.text}</div>
                 </div>
