@@ -138,6 +138,52 @@ function parsePredictor(pred: any): { away: number; home: number } | undefined {
   return { away, home };
 }
 
+/**
+ * Reads ESPN's team season leaders from the game summary ("leaders" array) into
+ * one row per category, with the away and home leader side by side.
+ */
+function parseSeasonLeaders(
+  leaders: any,
+  awayTeamId: string,
+  homeTeamId: string,
+): NonNullable<Game["seasonLeaders"]> {
+  if (!Array.isArray(leaders)) return [];
+  const labels: Record<string, string> = {
+    passingYards: "Passing yards",
+    rushingYards: "Rushing yards",
+    receivingYards: "Receiving yards",
+    sacks: "Sacks",
+    totalTackles: "Tackles",
+    tackles: "Tackles",
+  };
+  const order = Object.values(labels).filter((v, i, a) => a.indexOf(v) === i);
+  const rows = new Map<string, { category: string; away?: any; home?: any }>();
+  for (const entry of leaders) {
+    const teamId = teamByAbbr(entry?.team?.abbreviation ?? "")?.id;
+    const side = teamId === awayTeamId ? "away" : teamId === homeTeamId ? "home" : undefined;
+    if (!side) continue;
+    for (const cat of Array.isArray(entry?.leaders) ? entry.leaders : []) {
+      const label = labels[String(cat?.name ?? "")];
+      if (!label) continue;
+      const top = Array.isArray(cat?.leaders) ? cat.leaders[0] : undefined;
+      const athlete = top?.athlete;
+      if (!athlete?.displayName) continue;
+      const mainValue = top?.mainStat?.value ?? top?.displayValue ?? "";
+      const row = rows.get(label) ?? { category: label };
+      row[side] = {
+        playerId: athlete?.id ? String(athlete.id) : undefined,
+        name: String(athlete.displayName),
+        position: athlete?.position?.abbreviation ? String(athlete.position.abbreviation) : undefined,
+        value: String(mainValue),
+        unit: top?.mainStat?.label ? String(top.mainStat.label) : undefined,
+        headshot: athlete?.headshot?.href ? String(athlete.headshot.href) : undefined,
+      };
+      rows.set(label, row);
+    }
+  }
+  return [...rows.values()].sort((a, b) => order.indexOf(a.category) - order.indexOf(b.category));
+}
+
 /** Reads timeouts remaining from an ESPN "situation" object, if present. */
 function parseTimeouts(sit: any): { away: number; home: number } | undefined {
   if (!sit) return undefined;
@@ -903,6 +949,7 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
         : await fetchJson(`${CORE_ODDS}/${eventId}/competitions/${eventId}/predictor`).catch(() => null);
       const found = fromSummary ?? parsePredictor(corePredictor);
       if (found) base.predictor = found;
+      base.seasonLeaders = parseSeasonLeaders(d?.leaders, base.awayTeamId, base.homeTeamId);
     }
 
     // Timeouts remaining: fall back to ESPN's core "situation" feed if the summary lacks them.
