@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -8,6 +8,7 @@ import {
   LineScore,
   PageTitle,
   Panel,
+  GameInformation,
   MatchupPredictor,
   SeasonLeaders,
   PlayByPlay,
@@ -544,7 +545,12 @@ function GamePage() {
   const [selectedTeamTab, setSelectedTeamTab] =
     useState<"offense" | "defense">("offense");
   const [activeGameTab, setActiveGameTab] =
-    useState<"gamecast" | "stats" | "markets">("gamecast");
+    useState<"gamecast" | "stats" | "markets" | "information">("gamecast");
+
+  // The Information tab isn't offered during live games; fall back to Gamecast if a game goes live.
+  useEffect(() => {
+    if (game?.status === "live" && activeGameTab === "information") setActiveGameTab("gamecast");
+  }, [game?.status, activeGameTab]);
   const [activeMarketTab, setActiveMarketTab] =
     useState<"moneyline" | "spread" | "total">("moneyline");
 
@@ -879,8 +885,16 @@ function GamePage() {
       {showGameStatistics(game.status) ? (
         <>
           {showGameStatistics(game.status) ? (
-            <nav className="mt-6 grid grid-cols-3 border-b border-line/15" aria-label="Game details tabs">
-              {([ ["gamecast", "Gamecast"], ["stats", "Stats"], ["markets", "Markets"] ] as const).map(([tab, label]) => (
+            <nav
+              className={`mt-6 grid border-b border-line/15 ${game.status === "live" ? "grid-cols-3" : "grid-cols-4"}`}
+              aria-label="Game details tabs"
+            >
+              {([
+                ["gamecast", "Gamecast"],
+                ["stats", "Stats"],
+                ["markets", "Markets"],
+                ...(game.status !== "live" ? ([["information", "Information"]] as const) : []),
+              ] as const).map(([tab, label]) => (
                 <button
                   key={tab}
                   type="button"
@@ -894,7 +908,11 @@ function GamePage() {
             </nav>
           ) : null}
           {/* Tab content only appears once the game is live or finished. */}
-          {game.status !== "scheduled" ? (
+          {activeGameTab === "information" && game.status !== "live" ? (
+            <section className="mt-6">
+              <GameInformation game={game} away={away} home={home} />
+            </section>
+          ) : game.status !== "scheduled" ? (
             <>
           <div>
           <div className="mt-6 grid gap-6 lg:grid-cols-12">
