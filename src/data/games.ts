@@ -96,6 +96,24 @@ export interface PlayByPlayItem {
   scoring?: boolean;
 }
 
+/** One team's season leader in a category (cumulative stats for the season). */
+export interface SeasonLeader {
+  playerId?: string;
+  name: string;
+  position?: string;
+  /** Main stat value, e.g. "2,174". */
+  value: string;
+  /** Unit label, e.g. "YDS". */
+  unit?: string;
+  headshot?: string;
+}
+
+export interface SeasonLeaderRow {
+  category: string;
+  away?: SeasonLeader;
+  home?: SeasonLeader;
+}
+
 export interface Game {
   id: string;
   week: number;
@@ -128,6 +146,8 @@ export interface Game {
   homeRecord?: string;
   possessionText?: string;
   distance?: number;
+  /** Pregame season leaders (cumulative stats this season) for each team. */
+  seasonLeaders?: SeasonLeaderRow[];
   /** ESPN pregame matchup predictor: projected win probability (0-100) per team. */
   predictor?: { away: number; home: number };
   /** Live timeouts remaining for each team (0-3). */
