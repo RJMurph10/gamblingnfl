@@ -955,6 +955,8 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
         const rawText = String(play?.text ?? play?.shortText ?? "").trim();
         // Drop end-of-quarter marker plays entirely.
         if (/\bend\s+(of\s+)?(the\s+)?(\d(st|nd|rd|th)\s+)?(quarter|q\d)\b|\bend\s+quarter\b/i.test(rawText)) return;
+        // Drop official timeouts entirely.
+        if (/\bofficial\s+time[\s-]?outs?\b/i.test(rawText)) return;
         // Remove the "(Shotgun)" formation tag but keep the rest of the play.
         const text = rawText
           .replace(/\(\s*no huddle\s*,\s*shotgun\s*\)/gi, "(No Huddle)")
