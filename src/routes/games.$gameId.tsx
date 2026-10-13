@@ -11,6 +11,7 @@ import {
   PlayByPlay,
   StatComparison,
   TeamLogo,
+  TimeoutDots,
   SpreadBadge,
   marketResultClass,
 } from "@/components/booth";
@@ -62,7 +63,10 @@ function LiveFieldTrack({
   away: Team;
   home: Team;
 }) {
-  if (game.status !== "live" || !game.possession) return null;
+  if (game.status !== "live") return null;
+  // At halftime the field is shown plain: no ball, line of scrimmage, first-down line or down banner.
+  const isHalftime = /half/i.test(game.clock ?? "");
+  if (!isHalftime && !game.possession) return null;
 
   const isAwayPossession = game.possession === "away";
   const possessingTeam = isAwayPossession ? away : home;
@@ -102,22 +106,27 @@ function LiveFieldTrack({
 
   return (
     <div className="mt-4 overflow-hidden rounded-lg border border-emerald-500/20 bg-[#091b11] p-3 shadow-inner">
-      {/* Field status banner */}
-      <div className="mb-2 flex items-center justify-between font-mono text-[11px] uppercase tracking-wider text-emerald-400">
-        <span className="flex items-center gap-1.5 font-semibold text-foreground">
-          <FootballIcon isRedZone={game.isRedZone} />
-          <span>{game.downDistance ?? "1st & 10"}</span>
-          <span className="text-mute">·</span>
-          <span className="inline-flex items-center gap-1">
-            {isMidfield ? "50" : spotMatch ? <><TeamLogo team={teamById(spotMatch[1] === away.abbr ? away.id : home.id) ?? (spotMatch[1] === away.abbr ? away : home)} className="size-4" />{spotMatch[2]}</> : game.possessionText ?? "50"}
+      {!isHalftime ? (
+        <>
+        {/* Field status banner */}
+        <div className="mb-2 flex items-center justify-between font-mono text-[11px] uppercase tracking-wider text-emerald-400">
+          <span className="flex items-center gap-1.5 font-semibold text-foreground">
+            <FootballIcon isRedZone={game.isRedZone} />
+            <span>{game.downDistance ?? "1st & 10"}</span>
+            <span className="text-mute">·</span>
+            <span className="inline-flex items-center gap-1">
+              {isMidfield ? "50" : spotMatch ? <><TeamLogo team={teamById(spotMatch[1] === away.abbr ? away.id : home.id) ?? (spotMatch[1] === away.abbr ? away : home)} className="size-4" />{spotMatch[2]}</> : game.possessionText ?? "50"}
+            </span>
           </span>
-        </span>
 
-        <span className="flex items-center gap-1 text-acc font-semibold">
-          <span>Drive</span>
-          <span>{isAwayPossession ? "→" : "←"}</span>
-        </span>
-      </div>
+          <span className="flex items-center gap-1 text-acc font-semibold">
+            <span>Drive</span>
+            <span>{isAwayPossession ? "→" : "←"}</span>
+          </span>
+        </div>
+
+        </>
+      ) : null}
 
       {/* Field surface */}
       <div className="relative flex h-14 sm:h-16 w-full select-none overflow-hidden rounded border border-emerald-600/30 bg-[#0e2c1a]">
@@ -153,35 +162,39 @@ function LiveFieldTrack({
           {/* 50 Yard Midfield Line */}
           <div className="absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-white/35" />
 
-          {/* Yellow First Down Line */}
-          <div
-            className="absolute top-0 z-10 h-full w-[2px] bg-amber-300 drop-shadow-[0_0_4px_rgba(250,204,21,0.9)]"
-            style={{ left: `${firstDownYard}%` }}
-          >
-            <div className="absolute -top-0.5 -translate-x-1/2 rounded bg-amber-400 px-1 font-mono text-[7px] font-bold text-black uppercase">
-              1st
-            </div>
-          </div>
+          {!isHalftime ? (
+            <>
+              {/* Yellow First Down Line */}
+              <div
+                className="absolute top-0 z-10 h-full w-[2px] bg-amber-300 drop-shadow-[0_0_4px_rgba(250,204,21,0.9)]"
+                style={{ left: `${firstDownYard}%` }}
+              >
+                <div className="absolute -top-0.5 -translate-x-1/2 rounded bg-amber-400 px-1 font-mono text-[7px] font-bold text-black uppercase">
+                  1st
+                </div>
+              </div>
 
-          {/* Line of Scrimmage */}
-          <div
-            className="absolute top-0 z-20 h-full w-[2px] drop-shadow-[0_0_6px_rgba(0,0,0,0.9)]"
-            style={{
-              left: `${ballYard}%`,
-              backgroundColor:
-                possessingTeam.color ?? "#ffffff",
-            }}
-          >
-            <div
-              className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full p-0.5 shadow-[0_0_8px_rgba(0,0,0,0.8)]"
-              style={{
-                backgroundColor:
-                  possessingTeam.color ?? "#38bdf8",
-              }}
-            >
-              <FootballIcon isRedZone={game.isRedZone} />
-            </div>
-          </div>
+              {/* Line of Scrimmage */}
+              <div
+                className="absolute top-0 z-20 h-full w-[2px] drop-shadow-[0_0_6px_rgba(0,0,0,0.9)]"
+                style={{
+                  left: `${ballYard}%`,
+                  backgroundColor:
+                    possessingTeam.color ?? "#ffffff",
+                }}
+              >
+                <div
+                  className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full p-0.5 shadow-[0_0_8px_rgba(0,0,0,0.8)]"
+                  style={{
+                    backgroundColor:
+                      possessingTeam.color ?? "#38bdf8",
+                  }}
+                >
+                  <FootballIcon isRedZone={game.isRedZone} />
+                </div>
+              </div>
+            </>
+          ) : null}
         </div>
 
         {/* Home End Zone */}
@@ -678,6 +691,9 @@ function GamePage() {
             <div className="mx-auto flex max-w-2xl items-center justify-between">
               {/* Away Team */}
               <div className="flex items-center gap-3 sm:gap-6">
+                {game.status === "live" && game.timeouts ? (
+                  <TimeoutDots remaining={game.timeouts.away} />
+                ) : null}
                 <Link
                   to="/teams/$teamId"
                   params={{ teamId: away.id }}
@@ -778,6 +794,9 @@ function GamePage() {
                       `${home.record.w}-${home.record.l}`}
                   </span>
                 </Link>
+                {game.status === "live" && game.timeouts ? (
+                  <TimeoutDots remaining={game.timeouts.home} />
+                ) : null}
               </div>
             </div>
           );
