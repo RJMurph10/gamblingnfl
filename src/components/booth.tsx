@@ -7,72 +7,87 @@ import { teamByAbbr, teamById, teamLogo, teamLogoFallback } from "@/data/teams";
 
 /* ---------- primitives ---------- */
 
-/** ESPN-style pregame "Matchup Predictor": projected win probability for each team. */
+/** ESPN-style pregame "Matchup Predictor": donut with both logos, win % in the top corners. */
 export function MatchupPredictor({ game, away, home }: { game: Game; away: Team; home: Team }) {
   const predictor = game.predictor;
-  const fmt = (n: number) => `${n.toFixed(1)}%`;
+  const radius = 45;
+  const circumference = 2 * Math.PI * radius;
+  const gap = 1.2;
+  // ESPN's numbers are shown as-is; they can sum to slightly under 100 (the rest is a tie).
+  const arc = (pct: number) => Math.max(0, (pct / 100) * circumference - gap);
+  const swatch = (team: Team) => (
+    <span className="inline-block size-3.5 shrink-0 rounded-[3px]" style={{ backgroundColor: team.color }} />
+  );
+  const corner = (team: Team, pct: number, align: "left" | "right") => (
+    <div className={`flex flex-col ${align === "left" ? "items-start text-left" : "items-end text-right"}`}>
+      <span className="font-disp text-3xl font-bold leading-none tabular-nums sm:text-4xl">{pct.toFixed(1)}%</span>
+      <div className="mt-1.5 flex items-center gap-1.5">
+        {align === "left" ? swatch(team) : null}
+        <span className="text-sm text-mute">{team.abbr}</span>
+        {align === "right" ? swatch(team) : null}
+      </div>
+    </div>
+  );
   return (
     <Panel>
-      <div className="flex flex-wrap items-start justify-between gap-2">
-        <div>
-          <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">Matchup predictor</h2>
-          <p className="label-mono mt-1">Projected win probability · ESPN Analytics</p>
-        </div>
-      </div>
+      <h2 className="border-b border-line/15 pb-3 font-disp text-xl font-bold uppercase tracking-tight">
+        Matchup Predictor
+      </h2>
       {predictor ? (
-        (() => {
-          const radius = 42;
-          const circumference = 2 * Math.PI * radius;
-          const gap = 1.5;
-          const awayLen = Math.max(0, (predictor.away / 100) * circumference - gap);
-          const homeLen = Math.max(0, (predictor.home / 100) * circumference - gap);
-          const leader = predictor.away >= predictor.home ? away : home;
-          const side = (team: Team, pct: number, align: string) => (
-            <div className={`flex min-w-0 flex-1 flex-col gap-1 ${align}`}>
-              <TeamLogo team={team} className="size-10 sm:size-12" />
-              <span className="font-mono text-[11px] uppercase tracking-wider text-mute">{team.abbr}</span>
-              <span
-                className={`font-disp text-2xl font-bold tabular-nums sm:text-4xl ${pct >= 50 ? "text-foreground" : "text-mute"}`}
-              >
-                {fmt(pct)}
-              </span>
-            </div>
-          );
-          return (
-            <div className="mt-5 flex items-center justify-between gap-3">
-              {side(away, predictor.away, "items-start text-left")}
-              <div className="relative size-32 shrink-0 sm:size-40">
-                <svg viewBox="0 0 100 100" className="size-full -rotate-90" role="img" aria-label="Matchup predictor">
-                  <circle cx="50" cy="50" r={radius} fill="none" strokeWidth="12" className="stroke-panel2" />
-                  <circle
-                    cx="50"
-                    cy="50"
-                    r={radius}
-                    fill="none"
-                    strokeWidth="12"
-                    stroke={away.color}
-                    strokeDasharray={`${awayLen} ${circumference - awayLen}`}
-                    strokeDashoffset={-gap / 2}
-                  />
-                  <circle
-                    cx="50"
-                    cy="50"
-                    r={radius}
-                    fill="none"
-                    strokeWidth="12"
-                    stroke={home.color}
-                    strokeDasharray={`${homeLen} ${circumference - homeLen}`}
-                    strokeDashoffset={-(awayLen + gap * 1.5)}
-                  />
-                </svg>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <TeamLogo team={leader} className="size-12 sm:size-16" />
+        <>
+          <div className="relative mt-4 flex justify-center">
+            <div className="absolute left-0 top-0">{corner(away, predictor.away, "left")}</div>
+            <div className="absolute right-0 top-0">{corner(home, predictor.home, "right")}</div>
+            <div className="relative mt-6 size-48 shrink-0 sm:size-64">
+              <svg viewBox="0 0 100 100" className="size-full -rotate-90" role="img" aria-label="Matchup predictor">
+                <circle cx="50" cy="50" r={radius} fill="none" strokeWidth="9" className="stroke-panel2" />
+                {/* Home team first, clockwise from the top. */}
+                <circle
+                  cx="50"
+                  cy="50"
+                  r={radius}
+                  fill="none"
+                  strokeWidth="9"
+                  stroke={home.color}
+                  strokeDasharray={`${arc(predictor.home)} ${circumference}`}
+                  strokeDashoffset={-gap / 2}
+                />
+                {/* Away team follows, ending back at the top. */}
+                <circle
+                  cx="50"
+                  cy="50"
+                  r={radius}
+                  fill="none"
+                  strokeWidth="9"
+                  stroke={away.color}
+                  strokeDasharray={`${arc(predictor.away)} ${circumference}`}
+                  strokeDashoffset={-((predictor.home / 100) * circumference + gap / 2)}
+                />
+              </svg>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="flex w-1/2 justify-center">
+                  <TeamLogo team={away} className="size-12 sm:size-16" />
+                </div>
+                <div className="w-1/2" aria-hidden />
+                <div className="absolute inset-y-[22%] left-1/2 border-l border-dashed border-line/30" />
+                <div className="absolute inset-y-0 right-0 flex w-1/2 items-center justify-center">
+                  <TeamLogo team={home} className="size-12 sm:size-16" />
                 </div>
               </div>
-              {side(home, predictor.home, "items-end text-right")}
             </div>
-          );
-        })()
+          </div>
+          <p className="mt-4 text-center text-sm text-mute">
+            According to{" "}
+            <a
+              href="https://www.espn.com/nfl/fpi"
+              target="_blank"
+              rel="noreferrer"
+              className="underline underline-offset-2 hover:text-foreground"
+            >
+              ESPN Analytics
+            </a>
+          </p>
+        </>
       ) : (
         <p className="py-6 text-center font-mono text-[11px] uppercase tracking-wider text-faint">
           Matchup predictor isn&apos;t available for this game yet
