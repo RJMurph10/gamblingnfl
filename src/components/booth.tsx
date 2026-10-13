@@ -20,30 +20,59 @@ export function MatchupPredictor({ game, away, home }: { game: Game; away: Team;
         </div>
       </div>
       {predictor ? (
-        <div className="mt-5">
-          <div className="flex items-center justify-between gap-4">
-            {[
-              { team: away, pct: predictor.away, align: "items-start text-left" },
-              { team: home, pct: predictor.home, align: "items-end text-right" },
-            ].map(({ team, pct, align }) => (
-              <div key={team.id} className={`flex flex-col gap-1 ${align}`}>
-                <TeamLogo team={team} className="size-12 sm:size-14" />
-                <span className="font-mono text-[11px] uppercase tracking-wider text-mute">{team.abbr}</span>
-                <span
-                  className={`font-disp text-3xl font-bold tabular-nums sm:text-4xl ${
-                    pct >= 50 ? "text-foreground" : "text-mute"
-                  }`}
-                >
-                  {fmt(pct)}
-                </span>
+        (() => {
+          const radius = 42;
+          const circumference = 2 * Math.PI * radius;
+          const gap = 1.5;
+          const awayLen = Math.max(0, (predictor.away / 100) * circumference - gap);
+          const homeLen = Math.max(0, (predictor.home / 100) * circumference - gap);
+          const leader = predictor.away >= predictor.home ? away : home;
+          const side = (team: Team, pct: number, align: string) => (
+            <div className={`flex min-w-0 flex-1 flex-col gap-1 ${align}`}>
+              <TeamLogo team={team} className="size-10 sm:size-12" />
+              <span className="font-mono text-[11px] uppercase tracking-wider text-mute">{team.abbr}</span>
+              <span
+                className={`font-disp text-2xl font-bold tabular-nums sm:text-4xl ${pct >= 50 ? "text-foreground" : "text-mute"}`}
+              >
+                {fmt(pct)}
+              </span>
+            </div>
+          );
+          return (
+            <div className="mt-5 flex items-center justify-between gap-3">
+              {side(away, predictor.away, "items-start text-left")}
+              <div className="relative size-32 shrink-0 sm:size-40">
+                <svg viewBox="0 0 100 100" className="size-full -rotate-90" role="img" aria-label="Matchup predictor">
+                  <circle cx="50" cy="50" r={radius} fill="none" strokeWidth="12" className="stroke-panel2" />
+                  <circle
+                    cx="50"
+                    cy="50"
+                    r={radius}
+                    fill="none"
+                    strokeWidth="12"
+                    stroke={away.color}
+                    strokeDasharray={`${awayLen} ${circumference - awayLen}`}
+                    strokeDashoffset={-gap / 2}
+                  />
+                  <circle
+                    cx="50"
+                    cy="50"
+                    r={radius}
+                    fill="none"
+                    strokeWidth="12"
+                    stroke={home.color}
+                    strokeDasharray={`${homeLen} ${circumference - homeLen}`}
+                    strokeDashoffset={-(awayLen + gap * 1.5)}
+                  />
+                </svg>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <TeamLogo team={leader} className="size-12 sm:size-16" />
+                </div>
               </div>
-            ))}
-          </div>
-          <div className="mt-4 flex h-3 w-full gap-0.5 overflow-hidden rounded-full bg-panel2">
-            <div className="h-3 rounded-l-full" style={{ width: `${predictor.away}%`, backgroundColor: away.color }} />
-            <div className="h-3 flex-1 rounded-r-full" style={{ backgroundColor: home.color }} />
-          </div>
-        </div>
+              {side(home, predictor.home, "items-end text-right")}
+            </div>
+          );
+        })()
       ) : (
         <p className="py-6 text-center font-mono text-[11px] uppercase tracking-wider text-faint">
           Matchup predictor isn&apos;t available for this game yet
