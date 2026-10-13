@@ -9,6 +9,7 @@ import {
   PageTitle,
   Panel,
   MatchupPredictor,
+  SeasonLeaders,
   PlayByPlay,
   StatComparison,
   TeamLogo,
@@ -1289,6 +1290,10 @@ function GamePage() {
           ) : activeGameTab === "markets" ? (
             <section className="mt-6">
               <MatchupPredictor game={game} away={away} home={home} />
+            </section>
+          ) : activeGameTab === "gamecast" ? (
+            <section className="mt-6">
+              <SeasonLeaders game={game} away={away} home={home} />
             </section>
           ) : null}
         </>
