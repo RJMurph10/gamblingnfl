@@ -924,6 +924,30 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
 
     base.drives = driveRows.map(mapEspnDrive);
 
+    // Live play-by-play (newest first), straight from the drives in ESPN's summary feed.
+    const pbp: NonNullable<Game["playByPlay"]> = [];
+    driveRows.forEach((dr: any) => {
+      const driveTeamId = teamByAbbr(dr?.team?.abbreviation ?? "")?.id;
+      const drivePlays: any[] = Array.isArray(dr?.plays) ? dr.plays : [];
+      drivePlays.forEach((play: any, i: number) => {
+        const text = String(play?.text ?? play?.shortText ?? "").trim();
+        if (!text) return;
+        const header = String(
+          play?.start?.downDistanceText ?? play?.start?.shortDownDistanceText ?? "",
+        ).trim();
+        pbp.push({
+          id: String(play?.id ?? `${dr?.id ?? "d"}-${i}`),
+          quarter: Number(play?.period?.number) || undefined,
+          clock: play?.clock?.displayValue ? String(play.clock.displayValue) : undefined,
+          teamId: teamByAbbr(play?.team?.abbreviation ?? "")?.id ?? driveTeamId,
+          header: header || undefined,
+          text,
+          scoring: Boolean(play?.scoringPlay),
+        });
+      });
+    });
+    base.playByPlay = pbp.reverse().slice(0, 60);
+
     const awayAbbr = teamById(base.awayTeamId)?.abbr;
     const homeAbbr = teamById(base.homeTeamId)?.abbr;
     const posMap = new Map<string, string>();
