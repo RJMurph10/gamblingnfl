@@ -318,9 +318,11 @@ export function PageTitle({
   return (
     <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
       <div>
-        <p suppressHydrationWarning className="font-mono text-[11px] uppercase tracking-[0.2em] text-faint">
-          {eyebrow}
-        </p>
+        {eyebrow ? (
+          <p suppressHydrationWarning className="font-mono text-[11px] uppercase tracking-[0.2em] text-faint">
+            {eyebrow}
+          </p>
+        ) : null}
         <h1 className="font-disp text-3xl font-bold uppercase leading-none tracking-tight sm:text-4xl">
           {title}
         </h1>
