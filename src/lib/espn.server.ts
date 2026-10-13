@@ -113,6 +113,31 @@ function formatKickoff(iso: string | undefined): string {
   );
 }
 
+/**
+ * Reads ESPN's matchup predictor (projected win % per team). Handles both the
+ * summary shape ({ homeTeam: { gameProjection } }) and the core-API shape
+ * ({ homeTeam: { statistics: [{ name: "gameProjection", value }] } }).
+ */
+function parsePredictor(pred: any): { away: number; home: number } | undefined {
+  if (!pred) return undefined;
+  const read = (side: any): number | undefined => {
+    if (!side) return undefined;
+    const direct = Number(side.gameProjection);
+    if (side.gameProjection != null && Number.isFinite(direct)) return direct;
+    const stat = Array.isArray(side.statistics)
+      ? side.statistics.find((st: any) => st?.name === "gameProjection")
+      : undefined;
+    const v = Number(stat?.value ?? stat?.displayValue);
+    return Number.isFinite(v) ? v : undefined;
+  };
+  let home = read(pred.homeTeam);
+  let away = read(pred.awayTeam);
+  if (home === undefined && away === undefined) return undefined;
+  if (home === undefined) home = 100 - (away as number);
+  if (away === undefined) away = 100 - home;
+  return { away, home };
+}
+
 /** Reads timeouts remaining from an ESPN "situation" object, if present. */
 function parseTimeouts(sit: any): { away: number; home: number } | undefined {
   if (!sit) return undefined;
@@ -868,6 +893,16 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
         if (!base.downDistance && endState.shortDownDistanceText) base.downDistance = endState.shortDownDistanceText;
         if (typeof base.distance !== "number" && typeof endState.distance === "number") base.distance = endState.distance;
       }
+    }
+
+    // Pregame matchup predictor (shown on the Markets tab for upcoming games).
+    if (base.status === "scheduled") {
+      const fromSummary = parsePredictor(d?.predictor);
+      const corePredictor = fromSummary
+        ? null
+        : await fetchJson(`${CORE_ODDS}/${eventId}/competitions/${eventId}/predictor`).catch(() => null);
+      const found = fromSummary ?? parsePredictor(corePredictor);
+      if (found) base.predictor = found;
     }
 
     // Timeouts remaining: fall back to ESPN's core "situation" feed if the summary lacks them.
