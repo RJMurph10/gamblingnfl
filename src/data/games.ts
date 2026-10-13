@@ -83,6 +83,19 @@ export interface GameProbabilityPoint {
   playText?: string;
 }
 
+/** One play from ESPN's live play-by-play feed. */
+export interface PlayByPlayItem {
+  id: string;
+  quarter?: number;
+  clock?: string;
+  /** Team on offense for this play. */
+  teamId?: string;
+  /** Down & distance + spot, e.g. "2nd & 10 at BAL 25". */
+  header?: string;
+  text: string;
+  scoring?: boolean;
+}
+
 export interface Game {
   id: string;
   week: number;
@@ -115,6 +128,8 @@ export interface Game {
   homeRecord?: string;
   possessionText?: string;
   distance?: number;
+  /** Live play-by-play, newest play first. */
+  playByPlay?: PlayByPlayItem[];
   /** ESPN play-by-play market probabilities when available. */
   probabilities?: GameProbabilityPoint[];
 }
