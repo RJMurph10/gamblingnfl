@@ -63,7 +63,7 @@ export const teams: Team[] = [
   { id: "buccaneers", abbr: "TB", city: "Tampa Bay", name: "Buccaneers", conference: "NFC", division: "South", color: "#D50A0A", record: { w: 4, l: 5, t: 0 }, pointsFor: 189, pointsAgainst: 198 },
 
   { id: "cardinals", abbr: "ARI", city: "Arizona", name: "Cardinals", conference: "NFC", division: "West", color: "#97233F", record: { w: 4, l: 5, t: 0 }, pointsFor: 181, pointsAgainst: 195 },
-  { id: "rams", abbr: "LAR", city: "Los Angeles", name: "Rams", conference: "NFC", division: "West", color: "#003594", record: { w: 5, l: 4, t: 0 }, pointsFor: 198, pointsAgainst: 190 },
+  { id: "rams", abbr: "LAR", city: "Los Angeles", name: "Rams", conference: "NFC", division: "West", color: "#FFD100", record: { w: 5, l: 4, t: 0 }, pointsFor: 198, pointsAgainst: 190 },
   { id: "49ers", abbr: "SF", city: "San Francisco", name: "49ers", conference: "NFC", division: "West", color: "#AA0000", record: { w: 6, l: 3, t: 0 }, pointsFor: 216, pointsAgainst: 179 },
   { id: "seahawks", abbr: "SEA", city: "Seattle", name: "Seahawks", conference: "NFC", division: "West", color: "#002244", record: { w: 5, l: 4, t: 0 }, pointsFor: 193, pointsAgainst: 186 },
 ];
@@ -73,9 +73,23 @@ export const teamById = (id: string): Team | undefined => teams.find((t) => t.id
 export const teamByAbbr = (abbr: string): Team | undefined =>
   teams.find((t) => t.abbr.toLowerCase() === abbr.toLowerCase());
 
-/** Team logo asset from ESPN's public team-logo CDN, keyed by lowercase abbreviation. */
+/**
+ * Team logo from ESPN's public team-logo CDN, keyed by lowercase abbreviation.
+ * The site only has a dark theme, so the Rams use ESPN's dark-background logo
+ * variant (500-dark). The light-background (all-blue) logo is `teamLogoLight`.
+ */
 export const teamLogo = (team: Team): string =>
+  team.id === "rams"
+    ? `https://a.espncdn.com/i/teamlogos/nfl/500-dark/${team.abbr.toLowerCase()}.png`
+    : `https://a.espncdn.com/i/teamlogos/nfl/500/${team.abbr.toLowerCase()}.png`;
+
+/** Light-background logo (ESPN's standard version). Not used while the site is dark-only. */
+export const teamLogoLight = (team: Team): string =>
   `https://a.espncdn.com/i/teamlogos/nfl/500/${team.abbr.toLowerCase()}.png`;
+
+/** Locally hosted backup used if a team's main logo fails to load. */
+export const teamLogoFallback = (team: Team): string | undefined =>
+  team.id === "rams" ? "/logos/lar.png" : undefined;
 
 export const divisions: { conference: Conference; division: DivisionName }[] = [
   { conference: "AFC", division: "East" },
