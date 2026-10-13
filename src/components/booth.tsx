@@ -7,6 +7,22 @@ import { teamByAbbr, teamById, teamLogo, teamLogoFallback } from "@/data/teams";
 
 /* ---------- primitives ---------- */
 
+/** Stadium photo that tries each candidate URL in order and hides itself if none load. */
+function VenueImage({ urls, alt }: { urls: string[]; alt: string }) {
+  const [index, setIndex] = useState(0);
+  if (index >= urls.length) return null;
+  return (
+    <img
+      key={urls[index]}
+      src={urls[index]}
+      alt={alt}
+      loading="lazy"
+      className="h-44 w-full object-cover sm:h-64"
+      onError={() => setIndex((i) => i + 1)}
+    />
+  );
+}
+
 /** Information tab: stadium photo, kickoff, venue, location, TV, attendance, officials. */
 export function GameInformation({ game, away, home }: { game: Game; away: Team; home: Team }) {
   const info = game.info;
@@ -44,17 +60,7 @@ export function GameInformation({ game, away, home }: { game: Game; away: Team; 
           <TeamLogo team={home} className="size-7" />
         </div>
       </div>
-      {info?.venueImage ? (
-        <img
-          src={info.venueImage}
-          alt={game.venue}
-          loading="lazy"
-          className="h-44 w-full object-cover sm:h-64"
-          onError={(event) => {
-            event.currentTarget.style.display = "none";
-          }}
-        />
-      ) : null}
+      {info?.venueImages?.length ? <VenueImage urls={info.venueImages} alt={game.venue} /> : null}
       <dl className="divide-y divide-line/10 px-4 sm:px-5">
         {rows.map((row) => (
           <div key={row.label} className="flex items-start justify-between gap-4 py-3 text-sm">
