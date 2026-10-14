@@ -21,6 +21,80 @@ const optionalNumber = (value: unknown): number | undefined => {
   const parsed = typeof value === "number" ? value : Number(value);
   return Number.isFinite(parsed) ? parsed : undefined;
 };
+/**
+ * Fallback estimate for cover/total probabilities when ESPN's public NFL feed
+ * only supplies win probability. This is deliberately labelled estimated: the
+ * proprietary ESPN Analytics cover/total model is not exposed by that feed.
+ */
+function estimateMarketProbabilities(point: any, game: Game, homeAbbr: string, awayAbbr: string) {
+  const parseHomeExpectedMargin = (): number => {
+    const line = String(game.spread ?? "");
+    const match = line.match(/\b([A-Z]{2,3})\s*([+-]?\d+(?:\.\d+)?)/i);
+    if (!match) return 0;
+    const team = match[1].toUpperCase();
+    const value = Number(match[2]);
+    if (!Number.isFinite(value)) return 0;
+    if (team === homeAbbr.toUpperCase()) return -value;
+    if (team === awayAbbr.toUpperCase()) return value;
+    return 0;
+  };
+  const normalCdf = (z: number): number => {
+    const sign = z < 0 ? -1 : 1;
+    const x = Math.abs(z) / Math.sqrt(2);
+    const t = 1 / (1 + 0.3275911 * x);
+    const polynomial = (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592);
+    const erf = 1 - polynomial * t * Math.exp(-x * x);
+    return Math.max(0, Math.min(1, 0.5 * (1 + sign * erf)));
+  };
+  const normalInv = (probability: number): number => {
+    const p = Math.max(0.0001, Math.min(0.9999, probability));
+    let low = -6;
+    let high = 6;
+    for (let i = 0; i < 48; i++) {
+      const mid = (low + high) / 2;
+      if (normalCdf(mid) < p) low = mid;
+      else high = mid;
+    }
+    return (low + high) / 2;
+  };
+
+  const quarter = Math.max(1, Number(point.quarter) || 1);
+  const clockMatch = String(point.clock ?? "").match(/(\d{1,2}):(\d{2})/);
+  const clockSeconds = clockMatch ? Number(clockMatch[1]) * 60 + Number(clockMatch[2]) : 900;
+  const secondsRemaining = quarter <= 4
+    ? Math.max(0, Math.min(3600, (4 - (quarter - 1)) * 900 - (900 - clockSeconds)))
+    : 0;
+  const remaining = Math.max(0, Math.min(1, secondsRemaining / 3600));
+  const homeScore = Number.isFinite(Number(point.homeScore)) ? Number(point.homeScore) : 0;
+  const awayScore = Number.isFinite(Number(point.awayScore)) ? Number(point.awayScore) : 0;
+  const currentMargin = homeScore - awayScore;
+  const currentTotal = homeScore + awayScore;
+  const marketExpectedMargin = parseHomeExpectedMargin();
+  const marginSd = Math.max(0.25, 13.5 * Math.sqrt(remaining));
+
+  // ESPN's win-probability series reflects more game state than score/clock
+  // alone. Convert it to an implied final-margin estimate, then blend it with
+  // the market's pregame expected margin so a noisy WP point cannot dominate.
+  const wp = Number(point.homeWinProbability);
+  const baselineFinalMargin = currentMargin + marketExpectedMargin * remaining;
+  const wpImpliedFinalMargin = Number.isFinite(wp) && remaining > 0.015
+    ? normalInv(wp) * marginSd
+    : currentMargin;
+  const projectedFinalMargin = remaining <= 0.015
+    ? currentMargin
+    : 0.7 * wpImpliedFinalMargin + 0.3 * baselineFinalMargin;
+  const homeCoverProbability = normalCdf((projectedFinalMargin - marketExpectedMargin) / marginSd);
+
+  const totalLine = Number(game.total);
+  const totalSd = Math.max(0.25, 16 * Math.sqrt(remaining));
+  const projectedFinalTotal = currentTotal + (Number.isFinite(totalLine) && totalLine > 0 ? totalLine * remaining : 0);
+  const overProbability = Number.isFinite(totalLine) && totalLine > 0
+    ? (remaining <= 0.015 ? (currentTotal > totalLine ? 1 : currentTotal < totalLine ? 0 : 0.5) : normalCdf((projectedFinalTotal - totalLine) / totalSd))
+    : undefined;
+
+  return { homeCoverProbability, overProbability };
+}
+
 const SEASON = 2026;
 const REGULAR_SEASON_WEEKS = 18;
 const CACHE_TTL_MS = 1_500; // Keep live scoreboard and scoring transitions tightly synchronized
@@ -1055,16 +1129,28 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
       if (!base.total && typeof historicalOdds.total === "number") base.total = historicalOdds.total;
     }
 
-    // Keep the ESPN-provided market series unchanged after odds are merged.
-    // If ESPN has no cover/total series for this event, leave those values absent
-    // rather than drawing a curve that cannot match ESPN's graph.
+    // Use ESPN's actual market probabilities when populated. The public NFL feed
+    // often omits those fields, so estimate only the missing market series after
+    // the final closing spread/total have been merged. Estimates are explicitly
+    // labelled and must not be mistaken for ESPN Analytics' proprietary values.
     if (base.probabilities?.length) {
-      base.probabilities = base.probabilities.map((point) => ({
-        ...point,
-        probabilitySource: point.homeCoverProbability !== undefined || point.overProbability !== undefined
-          ? "espn" as const
-          : undefined,
-      }));
+      const hasNonZero = (key: "homeCoverProbability" | "overProbability") =>
+        base.probabilities!.some((point) => typeof point[key] === "number" && point[key]! > 0);
+      const hasEspnCover = hasNonZero("homeCoverProbability");
+      const hasEspnTotal = hasNonZero("overProbability");
+      const homeAbbr = teamById(base.homeTeamId)?.abbr ?? "";
+      const awayAbbr = teamById(base.awayTeamId)?.abbr ?? "";
+      base.probabilities = base.probabilities.map((point) => {
+        const estimated = estimateMarketProbabilities(point, base, homeAbbr, awayAbbr);
+        const homeCoverProbability = hasEspnCover ? point.homeCoverProbability : estimated.homeCoverProbability;
+        const overProbability = hasEspnTotal ? point.overProbability : estimated.overProbability;
+        return {
+          ...point,
+          homeCoverProbability,
+          overProbability,
+          probabilitySource: hasEspnCover && hasEspnTotal ? "espn" as const : "estimated" as const,
+        };
+      });
     }
 
     // Direct fallback from live summary drive if scoreboard hasn't synced
