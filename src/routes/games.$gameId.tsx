@@ -309,7 +309,8 @@ function ProbabilityGraph({
   const quarterTicks = [0, 1, 2, 3].map((q) => ({ label: QUARTER_LABELS[q + 1], x: xFor(q * 900 + 450) }));
   const hasOvertime = domain > 3600;
   if (hasOvertime) quarterTicks.push({ label: "OT", x: xFor(3600 + (domain - 3600) / 2) });
-  const quarterLines = [1, 2, 3, 4].map((q) => xFor(q * 900));
+  // Interior quarter dividers only; the outer edges are the border. The 4th/OT divider appears only in overtime games.
+  const quarterLines = (hasOvertime ? [1, 2, 3, 4] : [1, 2, 3]).map((q) => xFor(q * 900));
 
   const activeEntry = hoverIndex === null ? usable[usable.length - 1] : usable[hoverIndex];
   const homePct = Math.round(activeEntry.value * 100);
@@ -335,7 +336,7 @@ function ProbabilityGraph({
 
   const ordinal = (n?: number) => (n === 1 ? "1st" : n === 2 ? "2nd" : n === 3 ? "3rd" : n ? `${n}th` : "");
   const headerRow = (kind: "top" | "bottom", pct: number) => {
-        const dotted = kind === "top" && !isTotal;
+        const dotted = false;
     const color = kind === "top" ? topColor : bottomColor;
     const team = kind === "top" ? away : home;
     const label = isTotal ? (kind === "top" ? "Over" : "Under") : team.abbr;
@@ -383,17 +384,17 @@ function ProbabilityGraph({
           </clipPath>
         </defs>
         {/* Grid: five horizontal lines and a line at each quarter boundary. */}
-        {[0, 0.25, 0.5, 0.75, 1].map((t) => (
+        {[0.25, 0.5, 0.75].map((t) => (
           <line key={t} x1={plotLeft} x2={plotRight} y1={plotTop + t * plotHeight} y2={plotTop + t * plotHeight} stroke="currentColor" strokeOpacity="0.3" strokeDasharray="1 4" />
         ))}
-        {[0, ...quarterLines].map((x) => (
+        {quarterLines.map((x) => (
           <line key={x} x1={x} x2={x} y1={plotTop} y2={plotBottom} stroke="currentColor" strokeOpacity="0.3" strokeDasharray="1 4" />
         ))}
         {/* Shaded area between the line and 50%: away color above, home color below. */}
         <path d={areaPath} fill={topColor} fillOpacity="0.16" clipPath={`url(#${uid}-top)`} />
         <path d={areaPath} fill={bottomColor} fillOpacity="0.16" clipPath={`url(#${uid}-bottom)`} />
         {/* Away team ahead: away color. Home team ahead: home color. */}
-        <path d={linePath} fill="none" stroke={topColor} strokeWidth="2" strokeDasharray={isTotal ? undefined : "2 2"} clipPath={`url(#${uid}-top)`} />
+        <path d={linePath} fill="none" stroke={topColor} strokeWidth="2" clipPath={`url(#${uid}-top)`} />
         <path d={linePath} fill="none" stroke={bottomColor} strokeWidth="2" clipPath={`url(#${uid}-bottom)`} />
         {/* Border around the whole graph: same weight and shade as the tab bar border. */}
         <rect x={plotLeft} y={plotTop} width={plotWidth} height={plotHeight} rx="8" fill="none" className="stroke-line/10" strokeWidth="1" vectorEffect="non-scaling-stroke" />
