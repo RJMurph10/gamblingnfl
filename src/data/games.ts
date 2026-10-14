@@ -71,6 +71,8 @@ export interface GameProbabilityPoint {
   homeCoverProbability?: number;
   /** Probability the game goes over the pregame total, expressed from 0 to 1. */
   overProbability?: number;
+  /** Marks market values derived from the app model rather than supplied by ESPN. */
+  probabilitySource?: "espn" | "estimated";
   /** Play context attached to this probability sample when ESPN supplies it. */
   playId?: string;
   quarter?: number;
