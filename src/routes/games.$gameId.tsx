@@ -261,7 +261,7 @@ function ProbabilityGraph({
         <p className="mx-auto mt-2 max-w-lg text-sm text-mute">
           {pregame
             ? "Live win, spread and total probabilities will populate here during the game."
-            : "ESPN did not return this probability series for the game. No estimated or fabricated values are shown."}
+            : "This probability series is unavailable because the game data or pregame market line is missing."}
         </p>
       </div>
     );
