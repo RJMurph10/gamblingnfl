@@ -1026,9 +1026,15 @@ function homeSpreadFromLine(spread: string, game: Game): number | undefined {
 }
 
 function hasRealSeries(points: NonNullable<Game["probabilities"]>, key: "homeCoverProbability" | "overProbability") {
-  const values = points.map((p) => p[key]).filter((v): v is number => typeof v === "number");
-  // ESPN returns placeholder zeroes when a market series is not populated.
-  return values.length > 1 && values.some((v) => v > 0.001) && new Set(values.map((v) => v.toFixed(3))).size > 1;
+  const values = points.map((p) => p[key]);
+  const numeric = values.filter((v): v is number => typeof v === "number");
+  if (numeric.length < 2 || numeric.length < points.length * 0.95) return false;
+  // ESPN fills unpopulated plays with 0, so a partly-filled series would show false
+  // "100% under/over" jumps. Only trust a series that is populated almost everywhere
+  // (allowing the very end, where a resolved market can legitimately sit at 0 or 1).
+  const body = numeric.slice(0, Math.max(2, Math.floor(numeric.length * 0.97)));
+  const populated = body.filter((v) => v > 0.001 && v < 0.999).length;
+  return populated >= body.length * 0.95 && new Set(body.map((v) => v.toFixed(3))).size > 1;
 }
 
 function withMarketProbabilities(
@@ -1044,15 +1050,18 @@ function withMarketProbabilities(
   let lastAway: number | undefined;
   let lastHome: number | undefined;
   const out = input.map((point, index) => {
-    if (typeof point.awayScore === "number") lastAway = point.awayScore;
-    if (typeof point.homeScore === "number") lastHome = point.homeScore;
+    // Scores only ever go up; ignore stale or out-of-order values from play matching.
+    if (typeof point.awayScore === "number") lastAway = Math.max(lastAway ?? 0, point.awayScore);
+    if (typeof point.homeScore === "number") lastHome = Math.max(lastHome ?? 0, point.homeScore);
     const next = { ...point };
     let estimated = false;
 
     // Fraction of regulation remaining; fall back to even spacing if ESPN omits secondsLeft.
     const rawFraction =
       typeof point.secondsLeft === "number" ? point.secondsLeft / 3600 : 1 - index / Math.max(1, count - 1);
-    const fraction = Math.max(0.01, Math.min(1, rawFraction));
+    // Overtime is sudden death-ish: never treat it as "almost over" for the variance.
+    const inOvertime = typeof point.quarter === "number" && point.quarter > 4;
+    const fraction = Math.max(inOvertime ? 0.06 : 0.01, Math.min(1, rawFraction));
 
     if (!useRealCover) {
       next.homeCoverProbability = undefined;
@@ -1069,7 +1078,12 @@ function withMarketProbabilities(
       next.overProbability = undefined;
       if (totalLine !== undefined && lastAway !== undefined && lastHome !== undefined) {
         const sigma = 13 * Math.sqrt(fraction);
-        const expectedFinal = lastAway + lastHome + totalLine * fraction;
+        // Remaining points: mostly the pregame total's pace, nudged toward the pace seen so far.
+        const scoredSoFar = lastAway + lastHome;
+        const playedFraction = 1 - fraction;
+        const observedRate = playedFraction > 0.15 ? scoredSoFar / playedFraction : totalLine;
+        const blendedRate = playedFraction > 0.15 ? 0.75 * totalLine + 0.25 * observedRate : totalLine;
+        const expectedFinal = scoredSoFar + blendedRate * fraction;
         next.overProbability = 1 - normalCdf((totalLine - expectedFinal) / sigma);
         estimated = true;
       }
@@ -1079,15 +1093,25 @@ function withMarketProbabilities(
   });
 
   // Finished games: the last sample resolves to the actual result against the line.
-  if (game.status === "final" && out.length && lastAway !== undefined && lastHome !== undefined) {
-    const last = out[out.length - 1];
-    if (!useRealCover && homeSpread !== undefined) {
-      const diff = lastHome - lastAway + homeSpread;
-      last.homeCoverProbability = diff > 0 ? 1 : diff < 0 ? 0 : 0.5;
-    }
-    if (!useRealOver && totalLine !== undefined) {
-      const total = lastAway + lastHome;
-      last.overProbability = total > totalLine ? 1 : total < totalLine ? 0 : 0.5;
+  const sumQuarters = (values?: number[]) => (Array.isArray(values) ? values.reduce((a, b) => a + (Number(b) || 0), 0) : 0);
+  const officialAway = sumQuarters(game.quarters?.away);
+  const officialHome = sumQuarters(game.quarters?.home);
+  if (game.status === "final" && out.length) {
+    // Use the official final score, not whatever the last matched play carried.
+    const finalAway = officialAway + officialHome > 0 ? officialAway : lastAway;
+    const finalHome = officialAway + officialHome > 0 ? officialHome : lastHome;
+    if (finalAway !== undefined && finalHome !== undefined) {
+      const last = out[out.length - 1];
+      last.awayScore = finalAway;
+      last.homeScore = finalHome;
+      if (!useRealCover && homeSpread !== undefined) {
+        const diff = finalHome - finalAway + homeSpread;
+        last.homeCoverProbability = diff > 0 ? 1 : diff < 0 ? 0 : 0.5;
+      }
+      if (!useRealOver && totalLine !== undefined) {
+        const total = finalAway + finalHome;
+        last.overProbability = total > totalLine ? 1 : total < totalLine ? 0 : 0.5;
+      }
     }
   }
   return out;
