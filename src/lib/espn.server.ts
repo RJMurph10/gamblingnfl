@@ -923,7 +923,21 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
     if (!base) return null;
 
     const summaryProbabilities = Array.isArray(d?.winprobability) ? d.winprobability : [];
-    const coreProbabilityItems = Array.isArray(coreProbabilities?.items) ? coreProbabilities.items : [];
+    // ESPN Core API list endpoints can return $ref-only items rather than the
+    // actual probability records. Resolve those references before reading the
+    // market probability fields; otherwise Spread and Total silently appear empty.
+    const rawCoreProbabilityItems = Array.isArray(coreProbabilities?.items) ? coreProbabilities.items : [];
+    const coreProbabilityItems = await Promise.all(
+      rawCoreProbabilityItems.map(async (item: any) => {
+        const ref = typeof item?.$ref === "string" ? item.$ref : undefined;
+        if (!ref) return item;
+        try {
+          return await fetchJson(ref);
+        } catch {
+          return item;
+        }
+      }),
+    );
     const summaryPlays = [
       ...(Array.isArray(d?.drives?.previous) ? d.drives.previous : []),
       ...(d?.drives?.current ? [d.drives.current] : []),
