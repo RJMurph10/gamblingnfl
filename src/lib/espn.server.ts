@@ -21,60 +21,6 @@ const optionalNumber = (value: unknown): number | undefined => {
   const parsed = typeof value === "number" ? value : Number(value);
   return Number.isFinite(parsed) ? parsed : undefined;
 };
-/**
- * Fallback model for the market charts. ESPN's public NFL probability feed
- * supplies win probability, but does not publish the live spread-cover/total
- * series used by ESPN Analytics' separate Live Cover Prob page. This simple
- * score/clock/closing-line model keeps the charts useful without presenting
- * estimated values as official ESPN market probabilities.
- */
-function estimateMarketProbabilities(point: any, game: Game, homeAbbr: string, awayAbbr: string) {
-  const parseSpread = (): number => {
-    const line = String(game.spread ?? "");
-    const match = line.match(/\b([A-Z]{2,3})\s*([+-]?\d+(?:\.\d+)?)/);
-    if (!match) return 0;
-    const team = match[1].toUpperCase();
-    const value = Number(match[2]);
-    if (!Number.isFinite(value)) return 0;
-    if (team === homeAbbr.toUpperCase()) return -value;
-    if (team === awayAbbr.toUpperCase()) return value;
-    return 0;
-  };
-  const normalCdf = (z: number): number => {
-    // Abramowitz-Stegun approximation of the standard normal CDF.
-    const sign = z < 0 ? -1 : 1;
-    const x = Math.abs(z) / Math.sqrt(2);
-    const t = 1 / (1 + 0.3275911 * x);
-    const erf = 1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-x * x);
-    return Math.max(0, Math.min(1, 0.5 * (1 + sign * erf)));
-  };
-  const quarter = Math.max(1, Number(point.quarter) || 1);
-  const clockMatch = String(point.clock ?? "").match(/(\d{1,2}):(\d{2})/);
-  const clockSeconds = clockMatch ? Number(clockMatch[1]) * 60 + Number(clockMatch[2]) : 900;
-  const secondsRemaining = quarter <= 4
-    ? Math.max(0, Math.min(3600, (4 - (quarter - 1)) * 900 - (900 - clockSeconds)))
-    : 0;
-  const remaining = Math.max(0, Math.min(1, secondsRemaining / 3600));
-  const homeScore = Number.isFinite(Number(point.homeScore)) ? Number(point.homeScore) : 0;
-  const awayScore = Number.isFinite(Number(point.awayScore)) ? Number(point.awayScore) : 0;
-  const currentMargin = homeScore - awayScore;
-  const currentTotal = homeScore + awayScore;
-  const expectedHomeMargin = parseSpread();
-  const spreadSd = Math.max(0.25, 13.5 * Math.sqrt(remaining));
-  const projectedFinalMargin = currentMargin + expectedHomeMargin * remaining;
-  const homeCoverProbability = normalCdf((projectedFinalMargin - expectedHomeMargin) / spreadSd);
-  const totalLine = Number(game.total);
-  const overProbability = Number.isFinite(totalLine) && totalLine > 0
-    ? normalCdf((currentTotal + totalLine * remaining - totalLine) / Math.max(0.25, 16 * Math.sqrt(remaining)))
-    : undefined;
-  return {
-    homeCoverProbability,
-    overProbability,
-    probabilitySource: "estimated" as const,
-  };
-}
-
-
 const SEASON = 2026;
 const REGULAR_SEASON_WEEKS = 18;
 const CACHE_TTL_MS = 1_500; // Keep live scoreboard and scoring transitions tightly synchronized
@@ -103,6 +49,58 @@ async function fetchJson(url: string): Promise<any> {
   const res = await fetch(url, { headers: { "User-Agent": "GamblingNFL/1.0" } });
   if (!res.ok) throw new Error(`ESPN feed failed [${res.status}] for ${url}`);
   return res.json();
+}
+
+
+/**
+ * ESPN Core API's probability collection commonly contains $ref-only items.
+ * Resolve those references so market fields (when ESPN publishes them) are
+ * actually read instead of silently falling back to an unrelated estimate.
+ */
+async function fetchCoreProbabilityRecords(eventId: string): Promise<any[]> {
+  const url = `${CORE_ODDS}/${eventId}/competitions/${eventId}/probabilities?limit=400&page=1`;
+  let collection: any;
+  try {
+    collection = await fetchJson(url);
+  } catch {
+    return [];
+  }
+
+  const rawItems: any[] = Array.isArray(collection?.items) ? [...collection.items] : [];
+  const expectedCount = Number(collection?.count) || rawItems.length;
+  const pageSize = Number(collection?.pageSize) || rawItems.length || 1;
+  // If the API applies a smaller page limit than requested, fetch the remaining pages.
+  for (let page = 2; rawItems.length < expectedCount && page <= Math.ceil(expectedCount / pageSize); page++) {
+    try {
+      const next = await fetchJson(`${CORE_ODDS}/${eventId}/competitions/${eventId}/probabilities?limit=400&page=${page}`);
+      const items = Array.isArray(next?.items) ? next.items : [];
+      if (!items.length) break;
+      rawItems.push(...items);
+    } catch {
+      break;
+    }
+  }
+
+  const records: any[] = new Array(rawItems.length);
+  const refs: Array<{ index: number; url: string }> = [];
+  rawItems.forEach((item, index) => {
+    const ref = item?.$ref;
+    if (typeof ref === "string" && ref) refs.push({ index, url: ref });
+    else records[index] = item;
+  });
+
+  // Keep the number of concurrent requests modest to avoid overwhelming ESPN.
+  const batchSize = 12;
+  for (let start = 0; start < refs.length; start += batchSize) {
+    const batch = refs.slice(start, start + batchSize);
+    const resolved = await Promise.all(batch.map(async ({ url }) => {
+      try { return await fetchJson(url); } catch { return null; }
+    }));
+    resolved.forEach((record, offset) => {
+      records[batch[offset].index] = record;
+    });
+  }
+  return records.filter((record) => record && typeof record === "object");
 }
 
 /** Fetch historical spread/total from ESPN when the scoreboard omits it. */
@@ -961,11 +959,8 @@ function mapBoxScore(
 export async function fetchGameDetail(eventId: string): Promise<Game | null> {
   return cached(`game-${eventId}`, async () => {
     const d = await fetchJson(`${SUMMARY}?event=${eventId}`);
-    // ESPN publishes per-play win probabilities in the summary and may expose
-    // spread-cover / total-over probabilities through its Core API.
-    const coreProbabilities = await fetchJson(
-      `${CORE_ODDS}/${eventId}/competitions/${eventId}/probabilities?limit=400`,
-    ).catch(() => null);
+    // Resolve ESPN Core API probability records; items may be $ref-only.
+    const coreProbabilityItems = await fetchCoreProbabilityRecords(eventId);
     const comp = d?.header?.competitions?.[0];
     if (!comp) return null;
     const week = d?.header?.week ?? 0;
@@ -976,7 +971,6 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
     if (!base) return null;
 
     const summaryProbabilities = Array.isArray(d?.winprobability) ? d.winprobability : [];
-    const coreProbabilityItems = Array.isArray(coreProbabilities?.items) ? coreProbabilities.items : [];
     const summaryPlays = [
       ...(Array.isArray(d?.drives?.previous) ? d.drives.previous : []),
       ...(d?.drives?.current ? [d.drives.current] : []),
@@ -1010,23 +1004,14 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
           playText: String(corePoint.text ?? corePoint.playText ?? summaryPoint.text ?? summaryPoint.playText ?? matchingPlay?.text ?? matchingPlay?.shortText ?? "") || undefined,
         };
       }).filter((point) => point.homeWinProbability !== undefined || point.homeCoverProbability !== undefined || point.overProbability !== undefined);
-      // ESPN can return placeholder zeroes when a market probability series is
-      // not populated for a sport/event. Treat an all-zero series as missing.
-      const hasNonZero = (key: "homeWinProbability" | "homeCoverProbability" | "overProbability") =>
-        base.probabilities!.some((point) => typeof point[key] === "number" && point[key]! > 0);
-      const homeAbbr = String(comp?.competitors?.find((team: any) => team?.homeAway === "home")?.team?.abbreviation ?? "");
-      const awayAbbr = String(comp?.competitors?.find((team: any) => team?.homeAway === "away")?.team?.abbreviation ?? "");
-      const hasEspnCover = hasNonZero("homeCoverProbability");
-      const hasEspnTotal = hasNonZero("overProbability");
-      base.probabilities = base.probabilities.map((point) => {
-        const estimated = estimateMarketProbabilities(point, base, homeAbbr, awayAbbr);
-        return {
-          ...point,
-          homeCoverProbability: hasEspnCover ? point.homeCoverProbability : estimated.homeCoverProbability,
-          overProbability: hasEspnTotal ? point.overProbability : estimated.overProbability,
-          probabilitySource: hasEspnCover && hasEspnTotal ? "espn" as const : "estimated" as const,
-        };
-      });
+      // Never substitute a locally generated estimate for ESPN's market data.
+      // This keeps the plotted values faithful to ESPN whenever the feed has them.
+      base.probabilities = base.probabilities.map((point) => ({
+        ...point,
+        probabilitySource: point.homeCoverProbability !== undefined || point.overProbability !== undefined
+          ? "espn" as const
+          : undefined,
+      }));
     }
 
     // The summary header omits quarter linescores and venue; merge them from
@@ -1070,25 +1055,16 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
       if (!base.total && typeof historicalOdds.total === "number") base.total = historicalOdds.total;
     }
 
-    // Market lines may only be available from the scoreboard or historical-odds
-    // fallback, both of which are merged after the play-probability feed above.
-    // Recompute missing market series now that the final pregame lines are known.
+    // Keep the ESPN-provided market series unchanged after odds are merged.
+    // If ESPN has no cover/total series for this event, leave those values absent
+    // rather than drawing a curve that cannot match ESPN's graph.
     if (base.probabilities?.length) {
-      const hasNonZeroProbability = (key: "homeCoverProbability" | "overProbability") =>
-        base.probabilities!.some((point) => typeof point[key] === "number" && point[key]! > 0);
-      const hasEspnCover = hasNonZeroProbability("homeCoverProbability");
-      const hasEspnTotal = hasNonZeroProbability("overProbability");
-      const homeAbbr = teamById(base.homeTeamId)?.abbr ?? "";
-      const awayAbbr = teamById(base.awayTeamId)?.abbr ?? "";
-      base.probabilities = base.probabilities.map((point) => {
-        const estimated = estimateMarketProbabilities(point, base, homeAbbr, awayAbbr);
-        return {
-          ...point,
-          homeCoverProbability: hasEspnCover ? point.homeCoverProbability : estimated.homeCoverProbability,
-          overProbability: hasEspnTotal ? point.overProbability : estimated.overProbability,
-          probabilitySource: hasEspnCover && hasEspnTotal ? "espn" as const : "estimated" as const,
-        };
-      });
+      base.probabilities = base.probabilities.map((point) => ({
+        ...point,
+        probabilitySource: point.homeCoverProbability !== undefined || point.overProbability !== undefined
+          ? "espn" as const
+          : undefined,
+      }));
     }
 
     // Direct fallback from live summary drive if scoreboard hasn't synced
