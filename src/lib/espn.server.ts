@@ -1026,23 +1026,50 @@ function homeSpreadFromLine(spread: string, game: Game): number | undefined {
 }
 
 function hasRealSeries(points: NonNullable<Game["probabilities"]>, key: "homeCoverProbability" | "overProbability") {
-  const values = points.map((p) => p[key]);
-  const numeric = values.filter((v): v is number => typeof v === "number");
-  if (numeric.length < 2 || numeric.length < points.length * 0.95) return false;
-  // ESPN fills unpopulated plays with 0, so a partly-filled series would show false
-  // "100% under/over" jumps. Only trust a series that is populated almost everywhere
-  // (allowing the very end, where a resolved market can legitimately sit at 0 or 1).
-  const body = numeric.slice(0, Math.max(2, Math.floor(numeric.length * 0.97)));
-  const populated = body.filter((v) => v > 0.001 && v < 0.999).length;
-  return populated >= body.length * 0.95 && new Set(body.map((v) => v.toFixed(3))).size > 1;
+  const numeric = points.map((p) => p[key]).filter((v): v is number => typeof v === "number");
+  // Needs data for most plays, many distinct values and real movement. ESPN's real series
+  // legitimately sit at 0 or 1 late in a game; placeholder series are flat (0 or 0.5).
+  if (numeric.length < Math.max(8, points.length * 0.6)) return false;
+  const distinct = new Set(numeric.map((v) => v.toFixed(3))).size;
+  const range = Math.max(...numeric) - Math.min(...numeric);
+  return distinct >= 8 && range > 0.05;
+}
+
+/** Fill plays that ESPN left out by carrying the nearest known value across the gap. */
+function fillSeriesGaps(points: NonNullable<Game["probabilities"]>, key: "homeCoverProbability" | "overProbability") {
+  let last: number | undefined;
+  for (const point of points) {
+    if (typeof point[key] === "number") last = point[key];
+    else if (last !== undefined) point[key] = last;
+  }
+  const first = points.find((p) => typeof p[key] === "number")?.[key];
+  if (first !== undefined) {
+    for (const point of points) {
+      if (typeof point[key] === "number") break;
+      point[key] = first;
+    }
+  }
 }
 
 function withMarketProbabilities(
-  input: NonNullable<Game["probabilities"]>,
+  inputPoints: NonNullable<Game["probabilities"]>,
   game: Game,
 ): NonNullable<Game["probabilities"]> {
+  let input = inputPoints;
   const useRealCover = hasRealSeries(input, "homeCoverProbability");
   const useRealOver = hasRealSeries(input, "overProbability");
+  if (useRealCover || useRealOver) {
+    input = input.map((point) => ({ ...point }));
+    for (const [real, key] of [
+      [useRealCover, "homeCoverProbability"],
+      [useRealOver, "overProbability"],
+    ] as const) {
+      if (!real) continue;
+      fillSeriesGaps(input, key);
+      // ESPN's first record is a 50/50 pregame placeholder; its graph starts at the next value.
+      if (input.length > 1 && input[0][key] === 0.5 && input[1][key] !== 0.5) input[0][key] = input[1][key];
+    }
+  }
   const homeSpread = homeSpreadFromLine(game.spread, game);
   const totalLine = game.total > 0 ? game.total : undefined;
   const count = input.length;
@@ -1056,7 +1083,7 @@ function withMarketProbabilities(
     if (typeof point.awayScore === "number") lastAway = Math.max(lastAway ?? 0, point.awayScore);
     if (typeof point.homeScore === "number") lastHome = Math.max(lastHome ?? 0, point.homeScore);
     const next = { ...point };
-    let estimated = false;
+    const estimatedMarkets: ("cover" | "over")[] = [];
 
     // Fraction of regulation remaining; fall back to even spacing if ESPN omits secondsLeft.
     const rawFraction =
@@ -1087,7 +1114,7 @@ function withMarketProbabilities(
         }
         if (mu !== undefined) {
           next.homeCoverProbability = normalCdf((mu + homeSpread) / sigma);
-          estimated = true;
+          estimatedMarkets.push("cover");
         }
       }
     }
@@ -1103,10 +1130,11 @@ function withMarketProbabilities(
         const blendedRate = playedFraction > 0.15 ? 0.75 * totalLine + 0.25 * observedRate : totalLine;
         const expectedFinal = scoredSoFar + blendedRate * fraction;
         next.overProbability = 1 - normalCdf((totalLine - expectedFinal) / sigma);
-        estimated = true;
+        estimatedMarkets.push("over");
       }
     }
-    next.probabilitySource = useRealCover && useRealOver ? "espn" : estimated ? "estimated" : undefined;
+    next.estimatedMarkets = estimatedMarkets.length ? estimatedMarkets : undefined;
+    next.probabilitySource = estimatedMarkets.length ? "estimated" : useRealCover || useRealOver ? "espn" : undefined;
     return next;
   });
 
@@ -1191,9 +1219,13 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
     // The Core API collection can contain a different number/order of records;
     // merging both arrays by index creates mismatched plays and a misleading
     // Moneyline curve. Join market fields by play ID only, never by array index.
+    // ESPN's records carry no playId field: the play is only named in their $ref URLs
+    // (".../plays/<id>" and ".../probabilities/<id>"), so read the id from there.
+    const refId = (ref: unknown): string | undefined =>
+      typeof ref === "string" ? /\/(?:plays|probabilities)\/(\d+)/.exec(ref)?.[1] : undefined;
     const coreByPlayId = new Map<string, any>();
     for (const record of coreProbabilityItems) {
-      const id = String(record?.playId ?? record?.play?.id ?? "");
+      const id = String(record?.playId ?? record?.play?.id ?? refId(record?.play?.$ref) ?? refId(record?.$ref) ?? "");
       if (id) coreByPlayId.set(id, record);
     }
 
@@ -1243,7 +1275,7 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
           homeWinProbability: asProbability(point?.homeWinPercentage),
           homeCoverProbability: asProbability(point?.spreadCoverProbHome ?? point?.homeSpreadCoverProbability),
           overProbability: asProbability(point?.totalOverProb ?? point?.overProbability),
-          playId: String(point?.playId ?? point?.id ?? "") || undefined,
+          playId: String(point?.playId ?? point?.id ?? refId(point?.play?.$ref) ?? refId(point?.$ref) ?? "") || undefined,
           quarter: Number(point?.period ?? point?.quarter) || undefined,
           clock: String(point?.clock?.displayValue ?? point?.clock ?? "") || undefined,
           down: Number(point?.down) || undefined,
