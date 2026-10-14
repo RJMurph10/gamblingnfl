@@ -237,7 +237,7 @@ function elapsedGameSeconds(point: GameProbabilityPoint): number | undefined {
 
 /**
  * ESPN-style probability graph: away team on top, home team on the bottom, 50% in the middle.
- * The line is dotted in the away color while the away team is ahead and solid in the home
+ * The line is drawn in the away color while the away team is ahead and in the home
  * color while the home team is ahead. Hover/touch shows the play, score and clock.
  */
 function ProbabilityGraph({
@@ -335,8 +335,7 @@ function ProbabilityGraph({
 
   const ordinal = (n?: number) => (n === 1 ? "1st" : n === 2 ? "2nd" : n === 3 ? "3rd" : n ? `${n}th` : "");
   const headerRow = (kind: "top" | "bottom", pct: number) => {
-    const dotted = kind === "top";
-    const color = kind === "top" ? topColor : bottomColor;
+        const color = kind === "top" ? topColor : bottomColor;
     const team = kind === "top" ? away : home;
     const label = isTotal ? (kind === "top" ? "Over" : "Under") : team.abbr;
     return (
@@ -349,7 +348,7 @@ function ProbabilityGraph({
           </span>
           <span
             className="inline-block h-0 w-6 border-t-2"
-            style={{ borderColor: color, borderStyle: dotted ? "dotted" : "solid" }}
+            style={{ borderColor: color, borderStyle: "solid" }}
           />
         </div>
         <span className="font-disp text-2xl font-bold tabular-nums">{pct}%</span>
@@ -382,18 +381,18 @@ function ProbabilityGraph({
             <rect x={plotLeft} y={midY} width={plotWidth} height={plotBottom - midY} />
           </clipPath>
         </defs>
-        {/* Dotted grid: five horizontal lines and a line at each quarter boundary. */}
+        {/* Grid: five horizontal lines and a line at each quarter boundary. */}
         {[0, 0.25, 0.5, 0.75, 1].map((t) => (
-          <line key={t} x1={plotLeft} x2={plotRight} y1={plotTop + t * plotHeight} y2={plotTop + t * plotHeight} stroke="currentColor" strokeOpacity="0.3" strokeDasharray="1 4" />
+          <line key={t} x1={plotLeft} x2={plotRight} y1={plotTop + t * plotHeight} y2={plotTop + t * plotHeight} stroke="currentColor" strokeOpacity="0.25" />
         ))}
         {[0, ...quarterLines].map((x) => (
-          <line key={x} x1={x} x2={x} y1={plotTop} y2={plotBottom} stroke="currentColor" strokeOpacity="0.3" strokeDasharray="1 4" />
+          <line key={x} x1={x} x2={x} y1={plotTop} y2={plotBottom} stroke="currentColor" strokeOpacity="0.25" />
         ))}
         {/* Shaded area between the line and 50%: away color above, home color below. */}
         <path d={areaPath} fill={topColor} fillOpacity="0.16" clipPath={`url(#${uid}-top)`} />
         <path d={areaPath} fill={bottomColor} fillOpacity="0.16" clipPath={`url(#${uid}-bottom)`} />
-        {/* Away team ahead: dotted line. Home team ahead: solid line. */}
-        <path d={linePath} fill="none" stroke={topColor} strokeWidth="2" strokeDasharray="2 2" clipPath={`url(#${uid}-top)`} />
+        {/* Away team ahead: away color. Home team ahead: home color. */}
+        <path d={linePath} fill="none" stroke={topColor} strokeWidth="2" clipPath={`url(#${uid}-top)`} />
         <path d={linePath} fill="none" stroke={bottomColor} strokeWidth="2" clipPath={`url(#${uid}-bottom)`} />
         {hoverIndex !== null ? (
           <g>
