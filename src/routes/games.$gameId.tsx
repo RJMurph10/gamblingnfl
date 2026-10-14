@@ -658,15 +658,9 @@ function GamePage() {
 
   return (
     <>
-      <PageTitle
-        eyebrow=""
-        title={`${away.abbr} @ ${home.abbr}`}
-        aside={
-          weatherQuery.data && game.status !== "final" ? (
-            <GameWeatherCard weather={weatherQuery.data} />
-          ) : undefined
-        }
-      />
+      {weatherQuery.data && game.status !== "final" ? (
+        <PageTitle eyebrow="" title="" aside={<GameWeatherCard weather={weatherQuery.data} />} />
+      ) : null}
 
       {/* Traditional NFL Score Box */}
       <Panel className="p-4 sm:p-6">
