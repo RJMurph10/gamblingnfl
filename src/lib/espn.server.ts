@@ -52,6 +52,62 @@ async function fetchJson(url: string): Promise<any> {
   return res.json();
 }
 
+/**
+ * ESPN Core list endpoints are paginated and commonly return $ref-only items.
+ * Fetch every probability page and dereference its records so the market
+ * probability fields are actually available to the game mapper.
+ */
+async function fetchAllCoreProbabilityItems(eventId: string): Promise<any[]> {
+  const firstUrl = `${CORE_ODDS}/${eventId}/competitions/${eventId}/probabilities?limit=100`;
+  const items: any[] = [];
+  const visited = new Set<string>();
+  let nextUrl: string | undefined = firstUrl;
+  let pageCount = 0;
+
+  while (nextUrl && !visited.has(nextUrl) && pageCount < 30) {
+    visited.add(nextUrl);
+    pageCount += 1;
+    let page: any;
+    try {
+      page = await fetchJson(nextUrl);
+    } catch {
+      break;
+    }
+
+    const pageItems = Array.isArray(page?.items) ? page.items : [];
+    items.push(...pageItems);
+
+    const nextRef = page?.pageIndex != null && page?.pageCount != null &&
+      Number(page.pageIndex) + 1 < Number(page.pageCount)
+      ? `${CORE_ODDS}/${eventId}/competitions/${eventId}/probabilities?limit=100&page=${Number(page.pageIndex) + 1}`
+      : undefined;
+    const advertisedNext = typeof page?.next === "string"
+      ? page.next
+      : typeof page?.links?.next?.href === "string"
+        ? page.links.next.href
+        : undefined;
+    nextUrl = advertisedNext || nextRef;
+  }
+
+  // Resolve references concurrently in small batches to avoid serial latency
+  // and avoid overwhelming ESPN's public endpoint.
+  const resolved: any[] = [];
+  for (let i = 0; i < items.length; i += 20) {
+    const batch = items.slice(i, i + 20);
+    const values = await Promise.all(batch.map(async (item: any) => {
+      const ref = typeof item?.$ref === "string" ? item.$ref : undefined;
+      if (!ref) return item;
+      try {
+        return await fetchJson(ref);
+      } catch {
+        return item;
+      }
+    }));
+    resolved.push(...values);
+  }
+  return resolved;
+}
+
 /** Fetch historical spread/total from ESPN when the scoreboard omits it. */
 type HistoricalOdds = { spread?: string; total?: number };
 const historicalOddsCache = new Map<string, { at: number; value: HistoricalOdds }>();
@@ -908,11 +964,9 @@ function mapBoxScore(
 export async function fetchGameDetail(eventId: string): Promise<Game | null> {
   return cached(`game-${eventId}`, async () => {
     const d = await fetchJson(`${SUMMARY}?event=${eventId}`);
-    // ESPN publishes per-play win probabilities in the summary and may expose
-    // spread-cover / total-over probabilities through its Core API.
-    const coreProbabilities = await fetchJson(
-      `${CORE_ODDS}/${eventId}/competitions/${eventId}/probabilities?limit=400`,
-    ).catch(() => null);
+    // ESPN summary data supplies win probability; Core probability records
+    // supply spread-cover / total-over fields when ESPN publishes them.
+    const coreProbabilityItems = await fetchAllCoreProbabilityItems(eventId);
     const comp = d?.header?.competitions?.[0];
     if (!comp) return null;
     const week = d?.header?.week ?? 0;
@@ -923,30 +977,21 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
     if (!base) return null;
 
     const summaryProbabilities = Array.isArray(d?.winprobability) ? d.winprobability : [];
-    // ESPN Core API list endpoints can return $ref-only items rather than the
-    // actual probability records. Resolve those references before reading the
-    // market probability fields; otherwise Spread and Total silently appear empty.
-    const rawCoreProbabilityItems = Array.isArray(coreProbabilities?.items) ? coreProbabilities.items : [];
-    const coreProbabilityItems = await Promise.all(
-      rawCoreProbabilityItems.map(async (item: any) => {
-        const ref = typeof item?.$ref === "string" ? item.$ref : undefined;
-        if (!ref) return item;
-        try {
-          return await fetchJson(ref);
-        } catch {
-          return item;
-        }
-      }),
-    );
     const summaryPlays = [
       ...(Array.isArray(d?.drives?.previous) ? d.drives.previous : []),
       ...(d?.drives?.current ? [d.drives.current] : []),
     ].flatMap((drive: any) => Array.isArray(drive?.plays) ? drive.plays : []);
+    const coreByPlayId = new Map<string, any>();
+    for (const item of coreProbabilityItems) {
+      const id = String(item?.playId ?? item?.play?.id ?? item?.play?.$ref?.match?.(/plays\/(\d+)/)?.[1] ?? "");
+      if (id) coreByPlayId.set(id, item);
+    }
     const probabilityCount = Math.max(summaryProbabilities.length, coreProbabilityItems.length);
     if (probabilityCount > 0) {
       base.probabilities = Array.from({ length: probabilityCount }, (_, index) => {
         const summaryPoint = summaryProbabilities[index] ?? {};
-        const corePoint = coreProbabilityItems[index] ?? {};
+        const summaryId = String(summaryPoint.playId ?? summaryPoint.id ?? "");
+        const corePoint = (summaryId ? coreByPlayId.get(summaryId) : undefined) ?? coreProbabilityItems[index] ?? {};
         const pointId = String(corePoint.playId ?? summaryPoint.playId ?? corePoint.id ?? summaryPoint.id ?? "");
         const matchingPlay = (pointId ? summaryPlays.find((play: any) => String(play?.id ?? play?.playId ?? "") === pointId) : undefined) ?? summaryPlays[index] ?? {};
         const asProbability = (value: unknown): number | undefined => {
@@ -958,28 +1003,8 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
         };
         return {
           homeWinProbability: asProbability(summaryPoint.homeWinPercentage ?? corePoint.homeWinPercentage),
-          homeCoverProbability: asProbability(
-            corePoint.spreadCoverProbHome ??
-            corePoint.homeSpreadCoverProbability ??
-            corePoint.spreadCoverProbabilityHome ??
-            corePoint.homeCoverProbability ??
-            corePoint.spread?.homeCoverProbability ??
-            corePoint.probabilities?.homeCover ??
-            summaryPoint.spreadCoverProbHome ??
-            summaryPoint.homeSpreadCoverProbability ??
-            summaryPoint.homeCoverProbability
-          ),
-          overProbability: asProbability(
-            corePoint.totalOverProb ??
-            corePoint.overProbability ??
-            corePoint.totalOverProbability ??
-            corePoint.overProb ??
-            corePoint.total?.overProbability ??
-            corePoint.probabilities?.over ??
-            summaryPoint.totalOverProb ??
-            summaryPoint.overProbability ??
-            summaryPoint.totalOverProbability
-          ),
+          homeCoverProbability: asProbability(corePoint.spreadCoverProbHome ?? corePoint.homeSpreadCoverProbability),
+          overProbability: asProbability(corePoint.totalOverProb ?? corePoint.overProbability),
           playId: pointId || String(matchingPlay?.id ?? "") || undefined,
           quarter: Number(corePoint.period ?? corePoint.quarter ?? summaryPoint.period ?? summaryPoint.quarter ?? matchingPlay?.period?.number ?? matchingPlay?.period) || undefined,
           clock: String(corePoint.clock?.displayValue ?? corePoint.clock ?? summaryPoint.clock?.displayValue ?? summaryPoint.clock ?? matchingPlay?.clock?.displayValue ?? matchingPlay?.clock ?? "") || undefined,
