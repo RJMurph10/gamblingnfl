@@ -944,8 +944,28 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
         };
         return {
           homeWinProbability: asProbability(summaryPoint.homeWinPercentage ?? corePoint.homeWinPercentage),
-          homeCoverProbability: asProbability(corePoint.spreadCoverProbHome ?? corePoint.homeSpreadCoverProbability),
-          overProbability: asProbability(corePoint.totalOverProb ?? corePoint.overProbability),
+          homeCoverProbability: asProbability(
+            corePoint.spreadCoverProbHome ??
+            corePoint.homeSpreadCoverProbability ??
+            corePoint.spreadCoverProbabilityHome ??
+            corePoint.homeCoverProbability ??
+            corePoint.spread?.homeCoverProbability ??
+            corePoint.probabilities?.homeCover ??
+            summaryPoint.spreadCoverProbHome ??
+            summaryPoint.homeSpreadCoverProbability ??
+            summaryPoint.homeCoverProbability
+          ),
+          overProbability: asProbability(
+            corePoint.totalOverProb ??
+            corePoint.overProbability ??
+            corePoint.totalOverProbability ??
+            corePoint.overProb ??
+            corePoint.total?.overProbability ??
+            corePoint.probabilities?.over ??
+            summaryPoint.totalOverProb ??
+            summaryPoint.overProbability ??
+            summaryPoint.totalOverProbability
+          ),
           playId: pointId || String(matchingPlay?.id ?? "") || undefined,
           quarter: Number(corePoint.period ?? corePoint.quarter ?? summaryPoint.period ?? summaryPoint.quarter ?? matchingPlay?.period?.number ?? matchingPlay?.period) || undefined,
           clock: String(corePoint.clock?.displayValue ?? corePoint.clock ?? summaryPoint.clock?.displayValue ?? summaryPoint.clock ?? matchingPlay?.clock?.displayValue ?? matchingPlay?.clock ?? "") || undefined,
