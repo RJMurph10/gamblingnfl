@@ -1065,13 +1065,22 @@ function withMarketProbabilities(
 
     if (!useRealCover) {
       next.homeCoverProbability = undefined;
-      if (homeSpread !== undefined && typeof point.homeWinProbability === "number") {
-        // Margin ~ Normal(mu, sigma). ESPN's win probability pins mu; the line then gives cover odds.
+      if (homeSpread !== undefined) {
         const sigma = 13.5 * Math.sqrt(fraction);
-        const p = Math.max(0.001, Math.min(0.999, point.homeWinProbability));
-        const mu = sigma * normalInverse(p);
-        next.homeCoverProbability = normalCdf((mu + homeSpread) / sigma);
-        estimated = true;
+        if (lastAway !== undefined && lastHome !== undefined) {
+          // Expected final margin = current margin + the pregame edge for the time left.
+          // As the clock runs down, the actual score margin dominates (a 21-point deficit
+          // late in the 4th is nowhere near covering a small spread).
+          const margin = lastHome - lastAway;
+          const expectedFinalMargin = margin + fraction * -homeSpread;
+          next.homeCoverProbability = normalCdf((expectedFinalMargin + homeSpread) / sigma);
+          estimated = true;
+        } else if (typeof point.homeWinProbability === "number") {
+          // No score for this sample: fall back to ESPN's win probability.
+          const p = Math.max(0.001, Math.min(0.999, point.homeWinProbability));
+          next.homeCoverProbability = normalCdf((sigma * normalInverse(p) + homeSpread) / sigma);
+          estimated = true;
+        }
       }
     }
     if (!useRealOver) {
