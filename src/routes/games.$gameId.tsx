@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -212,209 +212,231 @@ function LiveFieldTrack({
   );
 }
 
-type ProbabilityKey = "homeWinProbability" | "homeCoverProbability" | "overProbability";
+type ProbabilityKey = "homeWinProbability" | "homeCoverProbability";
 
+const QUARTER_LABELS = ["", "1st", "2nd", "3rd", "4th", "OT"];
+
+function clockToSeconds(clock?: string): number | undefined {
+  if (!clock) return undefined;
+  const match = clock.match(/^(\d+):(\d{2})/);
+  if (match) return Number(match[1]) * 60 + Number(match[2]);
+  const seconds = Number(clock);
+  return Number.isFinite(seconds) ? seconds : undefined;
+}
+
+/** Seconds of game time elapsed at a probability sample (overtime continues past 3600). */
+function elapsedGameSeconds(point: GameProbabilityPoint): number | undefined {
+  const clock = clockToSeconds(point.clock);
+  if (point.quarter && clock !== undefined) {
+    if (point.quarter <= 4) return (point.quarter - 1) * 900 + (900 - Math.min(clock, 900));
+    return 3600 + (point.quarter - 5) * 600 + (600 - Math.min(clock, 600));
+  }
+  if (typeof point.secondsLeft === "number") return Math.max(0, 3600 - point.secondsLeft);
+  return undefined;
+}
+
+/**
+ * ESPN-style probability graph: away team on top, home team on the bottom, 50% in the middle.
+ * The line is dotted in the away color while the away team is ahead and solid in the home
+ * color while the home team is ahead. Hover/touch shows the play, score and clock.
+ */
 function ProbabilityGraph({
   points,
   probabilityKey,
-  values,
-  highColor,
-  lowColor,
-  highLabel,
-  lowLabel,
   away,
   home,
-  favoriteSide = "home",
-  pregame = false,
+  unavailableText,
 }: {
-  pregame?: boolean;
   points: GameProbabilityPoint[];
   probabilityKey: ProbabilityKey;
-  values: Array<number | undefined>;
-  highColor: string;
-  lowColor: string;
-  highLabel: string;
-  lowLabel: string;
-  away?: Team;
-  home?: Team;
-  favoriteSide?: "home" | "away";
+  away: Team;
+  home: Team;
+  unavailableText: string;
 }) {
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
-  // ESPN stores win/cover probability from the home team's perspective.
-  // Normalize team markets to the pregame favorite's perspective exactly once.
-  const graphValues = probabilityKey === "overProbability"
-    ? values
-    : values.map((value) => typeof value === "number"
-      ? (favoriteSide === "home" ? value : 1 - value)
-      : undefined);
-  const graphHighColor = probabilityKey === "overProbability" ? "#16a34a" : (favoriteSide === "home" ? highColor : lowColor);
-  const graphLowColor = probabilityKey === "overProbability" ? "#dc2626" : (favoriteSide === "home" ? lowColor : highColor);
-  const graphHighLabel = probabilityKey === "overProbability" ? highLabel : `${favoriteSide === "home" ? home?.name : away?.name}${probabilityKey === "homeCoverProbability" ? " Cover" : ""}`;
-  const graphLowLabel = probabilityKey === "overProbability" ? lowLabel : `${favoriteSide === "home" ? away?.name : home?.name}${probabilityKey === "homeCoverProbability" ? " Cover" : ""}`;
-  const graphHighTeam = favoriteSide === "home" ? home : away;
-  const graphLowTeam = favoriteSide === "home" ? away : home;
-  const valid = graphValues.map((v, i) => typeof v === "number" ? i : -1).filter((i) => i >= 0);
-  if (!valid.length) {
+  const svgRef = useRef<SVGSVGElement | null>(null);
+  const uid = useId().replace(/:/g, "");
+
+  const usable = points
+    .map((point, index) => ({ point, index, value: point[probabilityKey] }))
+    .filter((entry): entry is { point: GameProbabilityPoint; index: number; value: number } => typeof entry.value === "number");
+
+  if (usable.length < 2) {
     return (
       <div className="mt-4 rounded-lg border border-line/10 bg-panel2/30 px-4 py-10 text-center">
-        <p className="font-semibold">{pregame ? "Probabilities appear once the game starts" : "Probability history unavailable"}</p>
-        <p className="mx-auto mt-2 max-w-lg text-sm text-mute">
-          {pregame
-            ? "Live win, spread and total probabilities will populate here during the game."
-            : "This probability series is unavailable because the game data or pregame market line is missing."}
-        </p>
+        <p className="font-semibold">Not available yet</p>
+        <p className="mx-auto mt-2 max-w-lg text-sm text-mute">{unavailableText}</p>
       </div>
     );
   }
 
-  const hasEstimatedMarketValues = probabilityKey !== "homeWinProbability" && points.some((point) => point.probabilitySource === "estimated");
-  const width = 1000;
-  const height = 320;
-  const left = 62;
-  const right = 18;
-  const top = 20;
-  const bottom = 42;
-  const plotWidth = width - left - right;
-  const plotHeight = height - top - bottom;
-  const xFor = (index: number) => left + (graphValues.length <= 1 ? plotWidth / 2 : (index / (graphValues.length - 1)) * plotWidth);
-  const yFor = (value: number) => top + (1 - Math.max(0, Math.min(1, value))) * plotHeight;
-  const baseline = yFor(0.5);
-  const segments = graphValues.slice(0, -1).map((value, index) => {
-    const next = graphValues[index + 1];
-    if (typeof value !== "number" || typeof next !== "number") return null;
-    return { index, value, next, color: (value + next) / 2 >= 0.5 ? graphHighColor : graphLowColor };
-  }).filter((segment): segment is { index: number; value: number; next: number; color: string } => segment !== null);
-  const selected = hoverIndex === null ? null : points[hoverIndex];
-  const selectedValue = hoverIndex === null ? undefined : graphValues[hoverIndex];
-  // Use the selected chart's actual probability. For Total, this is the
-  // Over probability; values below 50% mean Under is the more likely outcome.
-  const selectedBadgeValue = selectedValue;
-  const selectedBadgeTeam = typeof selectedBadgeValue === "number"
-    ? (selectedBadgeValue >= 0.5 ? graphHighTeam : graphLowTeam)
-    : undefined;
-  const pointClock = selected?.clock ? ` ${selected.clock}` : "";
+  // Layout (viewBox units).
+  const width = 640;
+  const height = 240;
+  const plotLeft = 0;
+  const plotRight = 596;
+  const plotTop = 10;
+  const plotBottom = 206;
+  const plotWidth = plotRight - plotLeft;
+  const plotHeight = plotBottom - plotTop;
+  const midY = plotTop + plotHeight / 2;
+
+  // X positions follow game time, so a live game fills in from the left like ESPN's.
+  let running = 0;
+  const elapsed = usable.map((entry, i) => {
+    const raw = elapsedGameSeconds(entry.point);
+    const fallback = (i / Math.max(1, usable.length - 1)) * 3600;
+    running = Math.max(running, raw ?? fallback);
+    return running;
+  });
+  const domain = Math.max(3600, elapsed[elapsed.length - 1] || 3600);
+  const xFor = (seconds: number) => plotLeft + (seconds / domain) * plotWidth;
+  // value is the home probability: 0 = away certain (top), 1 = home certain (bottom).
+  const yFor = (value: number) => plotTop + Math.max(0, Math.min(1, value)) * plotHeight;
+
+  const coords = usable.map((entry, i) => ({ x: xFor(elapsed[i]), y: yFor(entry.value) }));
+  const linePath = coords.map((c, i) => `${i === 0 ? "M" : "L"}${c.x.toFixed(2)},${c.y.toFixed(2)}`).join(" ");
+  const areaPath = `M${coords[0].x.toFixed(2)},${midY} ${coords.map((c) => `L${c.x.toFixed(2)},${c.y.toFixed(2)}`).join(" ")} L${coords[coords.length - 1].x.toFixed(2)},${midY} Z`;
+
+  const quarterTicks = [0, 1, 2, 3].map((q) => ({ label: QUARTER_LABELS[q + 1], x: xFor(q * 900 + 450) }));
+  const hasOvertime = domain > 3600;
+  if (hasOvertime) quarterTicks.push({ label: "OT", x: xFor(3600 + (domain - 3600) / 2) });
+  const quarterLines = [1, 2, 3, 4].map((q) => xFor(q * 900));
+
+  const activeEntry = hoverIndex === null ? usable[usable.length - 1] : usable[hoverIndex];
+  const homePct = Math.round(activeEntry.value * 100);
+  const awayPct = 100 - homePct;
+  const selected = hoverIndex === null ? null : usable[hoverIndex].point;
+
+  const handleMove = (clientX: number) => {
+    const svg = svgRef.current;
+    if (!svg) return;
+    const rect = svg.getBoundingClientRect();
+    const px = ((clientX - rect.left) / rect.width) * width;
+    let best = 0;
+    let bestDistance = Infinity;
+    coords.forEach((c, i) => {
+      const distance = Math.abs(c.x - px);
+      if (distance < bestDistance) {
+        bestDistance = distance;
+        best = i;
+      }
+    });
+    setHoverIndex(best);
+  };
+
+  const ordinal = (n?: number) => (n === 1 ? "1st" : n === 2 ? "2nd" : n === 3 ? "3rd" : n ? `${n}th` : "");
+  const headerRow = (team: Team, pct: number, dotted: boolean) => (
+    <div className="flex items-center justify-between gap-3">
+      <div className="flex items-center gap-2">
+        <TeamLogo team={team} className="size-8" />
+        <span className="font-mono text-sm font-semibold">{team.abbr}</span>
+        <span
+          className="inline-block h-0 w-6 border-t-2"
+          style={{ borderColor: team.color, borderStyle: dotted ? "dotted" : "solid" }}
+        />
+      </div>
+      <span className="font-disp text-2xl font-bold tabular-nums">{pct}%</span>
+    </div>
+  );
+
+  const estimated = probabilityKey === "homeCoverProbability" && points.some((p) => p.probabilitySource === "estimated");
 
   return (
-    <div className="mt-4 rounded-lg border border-line/10 bg-panel2/20 p-2 sm:p-4">
-      <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex flex-wrap items-center gap-3 text-xs font-medium">
-          {probabilityKey === "overProbability" ? (
-            <>
-              <span className="inline-flex items-center gap-1.5 font-semibold text-white"><span>Over</span><span className="inline-block h-0.5 w-5 bg-green-600" /></span>
-              <span className="inline-flex items-center gap-1.5 font-semibold text-white"><span>Under</span><span className="inline-block h-0.5 w-5 bg-red-600" /></span>
-            </>
-          ) : (
-            <>
-              {away && <span className="inline-flex items-center gap-1.5"><TeamLogo team={graphLowTeam ?? away} className="size-5" /><span className="inline-block h-0.5 w-5" style={{ backgroundColor: graphLowColor }} /></span>}
-              {home && <span className="inline-flex items-center gap-1.5"><TeamLogo team={graphHighTeam ?? home} className="size-5" /><span className="inline-block h-0.5 w-5" style={{ backgroundColor: graphHighColor }} /></span>}
-              {!away && <span className="inline-flex items-center gap-1.5"><span className="inline-block size-2.5 rounded-full" style={{ backgroundColor: graphHighColor }} />{highLabel}</span>}
-              {!home && <span className="inline-flex items-center gap-1.5"><span className="inline-block size-2.5 rounded-full" style={{ backgroundColor: graphLowColor }} />{lowLabel}</span>}
-            </>
-          )}
-        </div>
-        <div className="flex flex-wrap items-center justify-end gap-2 font-mono text-xs tabular-nums">
-          {(() => {
-            const latest = graphValues[graphValues.length - 1] ?? 0;
-            const showHigh = latest >= 0.5;
-            const probability = Math.round(Math.max(latest, 1 - latest) * 100);
-            const team = showHigh ? graphHighTeam : graphLowTeam;
-            return (
-              <span
-                className={`inline-flex items-center gap-1.5 font-semibold rounded-full px-3 py-1.5 text-white ${probabilityKey === "overProbability" ? (showHigh ? "bg-green-600" : "bg-red-600") : ""}`}
-                style={probabilityKey === "overProbability" ? undefined : { backgroundColor: showHigh ? graphHighColor : graphLowColor }}
-              >
-                {probabilityKey === "overProbability" ? (
-                  <span>{showHigh ? "Over" : "Under"}</span>
-                ) : team ? <TeamLogo team={team} className="size-5" /> : null}
-                <span>{probability}%</span>
-              </span>
-            );
-          })()}
-        </div>
-      </div>
-      <svg viewBox={`0 0 ${width} ${height}`} className="block w-full touch-pan-x" role="img" aria-label={`${probabilityKey} probability over the game`} onMouseLeave={() => setHoverIndex(null)}>
-        {[0, 0.5, 1].map((tick) => {
-          const y = yFor(tick);
-          return <g key={tick}><line x1={left} x2={width - right} y1={y} y2={y} stroke="currentColor" strokeOpacity={tick === 0.5 ? 0.35 : 0.12} strokeDasharray={tick === 0.5 ? "5 4" : "4 5"} /><text x={left - 12} y={y + 4} textAnchor="end" fontSize="14" fill="currentColor" opacity="0.65">{Math.round(tick * 100)}%</text></g>;
-        })}
-        <line x1={left} x2={left} y1={top} y2={height - bottom} stroke="currentColor" strokeOpacity="0.2" />
-        <line x1={left} x2={width - right} y1={height - bottom} y2={height - bottom} stroke="currentColor" strokeOpacity="0.2" />
-        {segments.map(({ index, value, next, color }) => {
-          const x1 = xFor(index), x2 = xFor(index + 1), y1 = yFor(value), y2 = yFor(next);
-          const area = `${x1},${baseline} ${x1},${y1} ${x2},${y2} ${x2},${baseline}`;
-          return <g key={index}><polygon points={area} fill={color} fillOpacity="0.14" /><line x1={x1} y1={y1} x2={x2} y2={y2} stroke={color} strokeWidth="4" strokeLinecap="round" /></g>;
-        })}
-        {hoverIndex !== null && typeof graphValues[hoverIndex] === "number" ? <line x1={xFor(hoverIndex)} x2={xFor(hoverIndex)} y1={top} y2={height - bottom} stroke="currentColor" strokeOpacity="0.45" strokeDasharray="3 4" /> : null}
-        {graphValues.map((value, index) => typeof value === "number" ? <circle key={index} cx={xFor(index)} cy={yFor(value)} r={hoverIndex === index ? 6 : 2.4} fill={(value >= 0.5 ? graphHighColor : graphLowColor)} stroke="currentColor" strokeOpacity={hoverIndex === index ? 0.7 : 0} strokeWidth="1.5" onMouseEnter={() => setHoverIndex(index)} onFocus={() => setHoverIndex(index)} tabIndex={0} role="button" aria-label={`Play ${index + 1}, ${Math.round(value * 100)} percent`} /> : null)}
-        {[1, 2, 3, 4].map((quarter) => {
-          const quarterIndexes = points.map((point, index) => point.quarter === quarter ? index : -1).filter((index) => index >= 0);
-          if (!quarterIndexes.length) return null;
-          const centerIndex = (quarterIndexes[0] + quarterIndexes[quarterIndexes.length - 1]) / 2;
-          return <text key={quarter} x={xFor(centerIndex)} y={height - 12} textAnchor="middle" fontSize="14" fill="currentColor" opacity="0.75">{["", "1st", "2nd", "3rd", "4th"][quarter]}</text>;
-        })}
-        <text x={left} y={height - 28} fontSize="11" fill="currentColor" opacity="0.55">Kickoff</text>
-        <text x={width - right} y={height - 28} textAnchor="end" fontSize="11" fill="currentColor" opacity="0.55">Final</text>
+    <div className="mt-4">
+      {headerRow(away, awayPct, true)}
+      <svg
+        ref={svgRef}
+        viewBox={`0 0 ${width} ${height}`}
+        className="mt-1 block w-full touch-pan-y select-none"
+        role="img"
+        aria-label={probabilityKey === "homeWinProbability" ? "Win probability over the game" : "Cover probability over the game"}
+        onMouseMove={(event) => handleMove(event.clientX)}
+        onMouseLeave={() => setHoverIndex(null)}
+        onTouchStart={(event) => handleMove(event.touches[0].clientX)}
+        onTouchMove={(event) => handleMove(event.touches[0].clientX)}
+        onTouchEnd={() => setHoverIndex(null)}
+      >
+        <defs>
+          <clipPath id={`${uid}-top`}>
+            <rect x={plotLeft} y={plotTop} width={plotWidth} height={midY - plotTop} />
+          </clipPath>
+          <clipPath id={`${uid}-bottom`}>
+            <rect x={plotLeft} y={midY} width={plotWidth} height={plotBottom - midY} />
+          </clipPath>
+        </defs>
+        {/* Dotted grid: five horizontal lines and a line at each quarter boundary. */}
+        {[0, 0.25, 0.5, 0.75, 1].map((t) => (
+          <line key={t} x1={plotLeft} x2={plotRight} y1={plotTop + t * plotHeight} y2={plotTop + t * plotHeight} stroke="currentColor" strokeOpacity="0.3" strokeDasharray="1 4" />
+        ))}
+        {[0, ...quarterLines].map((x) => (
+          <line key={x} x1={x} x2={x} y1={plotTop} y2={plotBottom} stroke="currentColor" strokeOpacity="0.3" strokeDasharray="1 4" />
+        ))}
+        {/* Shaded area between the line and 50%: away color above, home color below. */}
+        <path d={areaPath} fill={away.color} fillOpacity="0.16" clipPath={`url(#${uid}-top)`} />
+        <path d={areaPath} fill={home.color} fillOpacity="0.16" clipPath={`url(#${uid}-bottom)`} />
+        {/* Away team ahead: dotted line. Home team ahead: solid line. */}
+        <path d={linePath} fill="none" stroke={away.color} strokeWidth="2" strokeDasharray="2 2" clipPath={`url(#${uid}-top)`} />
+        <path d={linePath} fill="none" stroke={home.color} strokeWidth="2" clipPath={`url(#${uid}-bottom)`} />
+        {hoverIndex !== null ? (
+          <g>
+            <line x1={coords[hoverIndex].x} x2={coords[hoverIndex].x} y1={plotTop} y2={plotBottom} stroke="currentColor" strokeOpacity="0.5" />
+            <circle cx={coords[hoverIndex].x} cy={coords[hoverIndex].y} r="4.5" fill={usable[hoverIndex].value < 0.5 ? away.color : home.color} stroke="white" strokeWidth="1.5" />
+          </g>
+        ) : null}
+        {/* Axis labels: 100 / 50 / 100 on the right, quarters along the bottom. */}
+        {[
+          { y: plotTop, label: "100" },
+          { y: midY, label: "50" },
+          { y: plotBottom, label: "100" },
+        ].map((tick) => (
+          <text key={`${tick.y}-${tick.label}`} x={plotRight + 8} y={tick.y} dy="0.35em" fontSize="12" fill="currentColor" opacity="0.6">
+            {tick.label}
+          </text>
+        ))}
+        {quarterTicks.map((tick) => (
+          <text key={tick.label} x={tick.x} y={plotBottom + 18} textAnchor="middle" fontSize="12" fill="currentColor" opacity="0.7">
+            {tick.label}
+          </text>
+        ))}
       </svg>
-      {hasEstimatedMarketValues && (
-        <p className="mt-2 text-xs text-mute">Spread and total are model estimates based on the live score, game clock, and pregame line—not official ESPN cover/total probabilities.</p>
-      )}
-      {selected ? (
-        <div className="mt-2 rounded-lg border border-line/10 bg-panel p-3">
-          <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-mono text-mute">
-            <span className="inline-flex items-center gap-1.5 rounded-lg border border-line/40 px-2 py-1">
-              {away && <span className="inline-flex items-center gap-1.5"><TeamLogo team={away} className="size-5" /><span>{selected?.awayScore ?? "—"}</span></span>}
-              <span className="text-faint">—</span>
-              <span className="whitespace-nowrap text-foreground">
-                {selected.quarter ? `${["", "1st", "2nd", "3rd", "4th", "OT"][selected.quarter] ?? `Q${selected.quarter}`} ` : ""}
-                {selected.clock ?? "—"}
-              </span>
-              <span className="text-faint">—</span>
-              {home && <span className="inline-flex items-center gap-1.5"><span>{selected?.homeScore ?? "—"}</span><TeamLogo team={home} className="size-5" /></span>}
-            </span>
-            {typeof selectedBadgeValue === "number" ? (
-              <span
-                className={`inline-flex items-center gap-1.5 rounded-full px-2 py-1 font-semibold text-white ${probabilityKey === "overProbability" ? (selectedBadgeValue >= 0.5 ? "bg-green-600" : "bg-red-600") : ""}`}
-                style={probabilityKey === "overProbability" ? undefined : { backgroundColor: selectedBadgeValue >= 0.5 ? graphHighColor : graphLowColor }}
-                aria-live="polite"
-              >
-                {probabilityKey === "overProbability" ? (
-                  <span>{selectedBadgeValue >= 0.5 ? "Over" : "Under"}</span>
-                ) : selectedBadgeTeam ? <TeamLogo team={selectedBadgeTeam} className="size-5" /> : null}
-                <span>{Math.round(Math.max(selectedBadgeValue, 1 - selectedBadgeValue) * 100)}%</span>
-              </span>
-            ) : null}
-          </div>
-          {(selected.down || selected.distance || selected.yardLine) ? (
-            <div className="mt-2 flex flex-wrap items-center gap-2 text-sm font-semibold">
-              <span>{selected.down ? `${selected.down}${selected.down === 1 ? "st" : selected.down === 2 ? "nd" : selected.down === 3 ? "rd" : "th"} & ${selected.distance ?? "—"}` : "Down and distance"}</span>
-              {selected.yardLine ? (() => {
-                const rawSpot = String(selected.yardLine).trim();
-                const teamSpot = rawSpot.match(/^([A-Za-z]{2,4})\s+(?:at\s*)?(\d{1,2})$/i);
-                const numberSpot = rawSpot.match(/^(?:at\s*)?(\d{1,3})$/i);
-                const abbr = teamSpot?.[1]?.toUpperCase();
-                const rawYard = Number(teamSpot?.[2] ?? numberSpot?.[1]);
-                const spotTeam = abbr
-                  ? (away?.abbr.toUpperCase() === abbr ? away : home?.abbr.toUpperCase() === abbr ? home : undefined)
-                  : undefined;
-                if (rawYard === 50) return <span className="font-medium text-mute">Ball is on 50</span>;
-                if (spotTeam && Number.isFinite(rawYard)) {
-                  const ownYard = rawYard > 50 ? 100 - rawYard : rawYard;
-                  return <span className="inline-flex items-center gap-1.5"><span>Ball at</span><TeamLogo team={spotTeam} className="size-5" /><span>{ownYard}</span></span>;
-                }
-                // ESPN sometimes provides a field-wide 0–100 spot without a team abbreviation.
-                // Show the field-side logo alongside the normalized own-side yard number.
-                if (numberSpot && Number.isFinite(rawYard)) {
-                  const ownYard = rawYard > 50 ? 100 - rawYard : rawYard;
-                  const fieldSideTeam = rawYard > 50 ? home : away;
-                  return <span className="inline-flex items-center gap-1.5"><span>Ball at</span><TeamLogo team={fieldSideTeam ?? selectedBadgeTeam ?? away} className="size-5" /><span>{ownYard}</span></span>;
-                }
-                return <span className="font-medium text-mute">Ball at {rawSpot.replace(/^at\s*/i, "")}</span>;
-              })() : null}
+      {headerRow(home, homePct, false)}
+      <div className="mt-3 min-h-16 rounded-lg border border-line/10 bg-panel2/20 p-3 text-sm">
+        {selected ? (
+          <>
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <p className="font-semibold">
+                  {selected.down
+                    ? `${ordinal(selected.down)} & ${selected.distance ?? "—"}${selected.yardLine ? ` at ${selected.yardLine}` : ""}`
+                    : "Game event"}
+                </p>
+                <p className="font-mono text-xs text-mute">
+                  {selected.clock ?? "—"} - {QUARTER_LABELS[selected.quarter ?? 0] ?? ""}
+                </p>
+              </div>
+              <div className="flex gap-4 text-center font-mono">
+                <div>
+                  <p className="font-semibold">{selected.awayScore ?? "—"}</p>
+                  <p className="text-xs text-mute">{away.abbr}</p>
+                </div>
+                <div>
+                  <p className="font-semibold">{selected.homeScore ?? "—"}</p>
+                  <p className="text-xs text-mute">{home.abbr}</p>
+                </div>
+              </div>
             </div>
-          ) : null}
-          <p className="mt-1 text-sm leading-relaxed">{selected.playText || `Play-level probability sample ${hoverIndex! + 1}. ESPN did not provide a play description for this point.`}</p>
-        </div>
-      ) : <p className="mt-2 text-[11px] text-mute">Hover or focus a point to inspect the play and probability. {points.length} ESPN data points.</p>}
+            {selected.playText ? <p className="mt-2 text-mute">{selected.playText}</p> : null}
+          </>
+        ) : (
+          <p className="text-xs text-mute">Hover or touch the graph to see each play.</p>
+        )}
+      </div>
+      {estimated ? (
+        <p className="mt-2 text-xs text-mute">
+          Cover probability is a model estimate from ESPN&apos;s win probability, the score, the clock and the pregame spread.
+        </p>
+      ) : null}
     </div>
   );
 }
@@ -428,15 +450,6 @@ function MarketSpreadLabel({ spread, away, home }: { spread: string; away: Team;
   const points = Number(match[2]);
   const formatted = points === 0 ? "PK" : `${points > 0 ? "+" : ""}${points}`;
   return <span className="inline-flex items-center gap-1.5"><TeamLogo team={team} className="size-5" /><span>{formatted}</span></span>;
-}
-
-function favoriteSideFromSpread(spread: string, away: Team, home: Team): "home" | "away" {
-  const match = spread.match(/^([A-Za-z]+)\s*([+-]?\d+(?:\.\d+)?)/);
-  if (!match) return "home";
-  const abbreviation = match[1].toUpperCase();
-  if (abbreviation === away.abbr.toUpperCase()) return "away";
-  if (abbreviation === home.abbr.toUpperCase()) return "home";
-  return "home";
 }
 
 function GamePage() {
@@ -556,7 +569,7 @@ function GamePage() {
     if (game?.status === "live" && activeGameTab === "information") setActiveGameTab("gamecast");
   }, [game?.status, activeGameTab]);
   const [activeMarketTab, setActiveMarketTab] =
-    useState<"moneyline" | "spread" | "total">("moneyline");
+    useState<"winprob" | "cover">("winprob");
 
   if (isLoading) {
     return (
@@ -1240,63 +1253,33 @@ function GamePage() {
             <section className="mt-6 space-y-4">
               <Panel>
                 <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div>
-                    <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">Market probabilities</h2>
-                    <p className="label-mono mt-1">Play-by-play probability trends · ESPN data</p>
-                  </div>
+                  <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">Probabilities</h2>
                   <div className="text-right text-xs text-mute">
                     <div className="flex items-center justify-end gap-1.5">Spread: <span className="font-mono font-semibold text-foreground"><MarketSpreadLabel spread={game.spread} away={away} home={home} /></span></div>
-                    <div className="mt-1">Total: <span className="font-mono font-semibold text-foreground">{game.total || "—"}</span></div>
                   </div>
                 </div>
-                <div className="mt-5 grid grid-cols-3 rounded-lg border border-line/10 p-1" role="tablist" aria-label="Market probability type">
-                  {([ ["moneyline", "Moneyline"], ["spread", "Spread"], ["total", "Total"] ] as const).map(([tab, label]) => (
+                <div className="mt-4 grid grid-cols-2 gap-1 rounded-lg border border-line/10 p-1" role="tablist" aria-label="Probability type">
+                  {([["winprob", "Win Probability"], ["cover", "Cover Probability"]] as const).map(([tab, label]) => (
                     <button key={tab} type="button" role="tab" aria-selected={activeMarketTab === tab} onClick={() => setActiveMarketTab(tab)} className={`rounded-md px-2 py-2.5 font-disp text-xs font-semibold uppercase tracking-wider transition-colors sm:text-sm ${activeMarketTab === tab ? "bg-acc text-black" : "text-mute hover:bg-line/5 hover:text-foreground"}`}>
-                      {tab === "moneyline" ? "MoneyLine" : label}
+                      {label}
                     </button>
                   ))}
                 </div>
-                {activeMarketTab === "moneyline" ? (
-                  <ProbabilityGraph
-                    points={game.probabilities ?? []}
-                    probabilityKey="homeWinProbability"
-                    values={(game.probabilities ?? []).map((point) => point.homeWinProbability)}
-                    highColor={home.color}
-                    lowColor={away.color}
-                    highLabel={home.name}
-                    lowLabel={away.name}
-                    favoriteSide={favoriteSideFromSpread(game.spread, away, home)}
-                    pregame={game.status === "scheduled"}
-                    away={away}
-                    home={home}
-                  />
-                ) : activeMarketTab === "spread" ? (
+                {activeMarketTab === "cover" ? (
                   <ProbabilityGraph
                     points={game.probabilities ?? []}
                     probabilityKey="homeCoverProbability"
-                    values={(game.probabilities ?? []).map((point) => point.homeCoverProbability)}
-                    highColor={home.color}
-                    lowColor={away.color}
-                    highLabel={`${home.name} Cover`}
-                    lowLabel={`${away.name} Cover`}
-                    favoriteSide={favoriteSideFromSpread(game.spread, away, home)}
-                    pregame={game.status === "scheduled"}
                     away={away}
                     home={home}
+                    unavailableText="Cover probability needs the game's pregame spread and play-by-play probabilities, which aren't available for this game."
                   />
                 ) : (
                   <ProbabilityGraph
                     points={game.probabilities ?? []}
-                    probabilityKey="overProbability"
-                    values={(game.probabilities ?? []).map((point) => point.overProbability)}
-                    highColor="#22c55e"
-                    lowColor="#ef4444"
-                    highLabel="Over"
-                    lowLabel="Under"
-                    favoriteSide={favoriteSideFromSpread(game.spread, away, home)}
-                    pregame={game.status === "scheduled"}
+                    probabilityKey="homeWinProbability"
                     away={away}
                     home={home}
+                    unavailableText="ESPN hasn't published win probabilities for this game yet."
                   />
                 )}
               </Panel>
