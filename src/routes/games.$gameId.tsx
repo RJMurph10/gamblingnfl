@@ -236,6 +236,51 @@ function elapsedGameSeconds(point: GameProbabilityPoint): number | undefined {
 }
 
 /**
+ * Smooth monotone cubic curve through the points (no overshoot), like ESPN's graphs,
+ * instead of straight segments between every play.
+ */
+function smoothSegments(points: { x: number; y: number }[]): string {
+  const n = points.length;
+  if (n < 2) return "";
+  const dx: number[] = [];
+  const slope: number[] = [];
+  for (let i = 0; i < n - 1; i++) {
+    const w = points[i + 1].x - points[i].x;
+    dx.push(w);
+    slope.push(w === 0 ? 0 : (points[i + 1].y - points[i].y) / w);
+  }
+  const tangent: number[] = new Array(n).fill(0);
+  tangent[0] = slope[0];
+  tangent[n - 1] = slope[n - 2];
+  for (let i = 1; i < n - 1; i++) {
+    tangent[i] = slope[i - 1] * slope[i] <= 0 ? 0 : (slope[i - 1] + slope[i]) / 2;
+  }
+  for (let i = 0; i < n - 1; i++) {
+    if (slope[i] === 0) {
+      tangent[i] = 0;
+      tangent[i + 1] = 0;
+      continue;
+    }
+    const a = tangent[i] / slope[i];
+    const b = tangent[i + 1] / slope[i];
+    const sum = a * a + b * b;
+    if (sum > 9) {
+      const tau = 3 / Math.sqrt(sum);
+      tangent[i] = tau * a * slope[i];
+      tangent[i + 1] = tau * b * slope[i];
+    }
+  }
+  let d = "";
+  for (let i = 0; i < n - 1; i++) {
+    const p0 = points[i];
+    const p1 = points[i + 1];
+    const third = dx[i] / 3;
+    d += ` C${(p0.x + third).toFixed(2)},${(p0.y + tangent[i] * third).toFixed(2)} ${(p1.x - third).toFixed(2)},${(p1.y - tangent[i + 1] * third).toFixed(2)} ${p1.x.toFixed(2)},${p1.y.toFixed(2)}`;
+  }
+  return d;
+}
+
+/**
  * ESPN-style probability graph: away team on top, home team on the bottom, 50% in the middle.
  * The line is drawn in the away color while the away team is ahead and in the home
  * color while the home team is ahead. Hover/touch shows the play, score and clock.
@@ -303,8 +348,9 @@ function ProbabilityGraph({
   const yFor = (value: number) => plotTop + Math.max(0, Math.min(1, value)) * plotHeight;
 
   const coords = usable.map((entry, i) => ({ x: xFor(elapsed[i]), y: yFor(entry.value) }));
-  const linePath = coords.map((c, i) => `${i === 0 ? "M" : "L"}${c.x.toFixed(2)},${c.y.toFixed(2)}`).join(" ");
-  const areaPath = `M${coords[0].x.toFixed(2)},${midY} ${coords.map((c) => `L${c.x.toFixed(2)},${c.y.toFixed(2)}`).join(" ")} L${coords[coords.length - 1].x.toFixed(2)},${midY} Z`;
+  const curve = smoothSegments(coords);
+  const linePath = `M${coords[0].x.toFixed(2)},${coords[0].y.toFixed(2)}${curve}`;
+  const areaPath = `M${coords[0].x.toFixed(2)},${midY} L${coords[0].x.toFixed(2)},${coords[0].y.toFixed(2)}${curve} L${coords[coords.length - 1].x.toFixed(2)},${midY} Z`;
 
   const quarterTicks = [0, 1, 2, 3].map((q) => ({ label: QUARTER_LABELS[q + 1], x: xFor(q * 900 + 450) }));
   const hasOvertime = domain > 3600;
