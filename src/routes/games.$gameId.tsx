@@ -410,7 +410,8 @@ function ProbabilityGraph({
     );
   };
 
-  const estimated = probabilityKey !== "homeWinProbability" && points.some((p) => p.probabilitySource === "estimated");
+  const estimatedMarket = probabilityKey === "overProbability" ? "over" : "cover";
+  const estimated = probabilityKey !== "homeWinProbability" && points.some((p) => p.estimatedMarkets?.includes(estimatedMarket));
 
   return (
     <div className="mt-4">
