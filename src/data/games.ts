@@ -73,6 +73,8 @@ export interface GameProbabilityPoint {
   overProbability?: number;
   /** Marks market values derived from the app model rather than supplied by ESPN. */
   probabilitySource?: "espn" | "estimated";
+  /** Seconds left in regulation when this sample was taken (ESPN's win-probability feed). */
+  secondsLeft?: number;
   /** Play context attached to this probability sample when ESPN supplies it. */
   playId?: string;
   quarter?: number;
