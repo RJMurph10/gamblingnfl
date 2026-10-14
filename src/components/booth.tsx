@@ -323,9 +323,11 @@ export function PageTitle({
             {eyebrow}
           </p>
         ) : null}
-        <h1 className="font-disp text-3xl font-bold uppercase leading-none tracking-tight sm:text-4xl">
-          {title}
-        </h1>
+        {title ? (
+          <h1 className="font-disp text-3xl font-bold uppercase leading-none tracking-tight sm:text-4xl">
+            {title}
+          </h1>
+        ) : null}
       </div>
       {aside}
     </div>
