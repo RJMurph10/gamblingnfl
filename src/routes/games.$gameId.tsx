@@ -656,7 +656,6 @@ function GamePage() {
     <>
       <PageTitle
         eyebrow=""
-        title={`${away.abbr} @ ${home.abbr}`}
         aside={
           weatherQuery.data && game.status !== "final" ? (
             <GameWeatherCard weather={weatherQuery.data} />
