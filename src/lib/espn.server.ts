@@ -53,20 +53,20 @@ async function fetchJson(url: string): Promise<any> {
 }
 
 /**
- * ESPN Core list endpoints are paginated and commonly return $ref-only items.
- * Fetch every probability page and dereference its records so the market
- * probability fields are actually available to the game mapper.
+ * ESPN Core probability records are paginated even when a large `limit` is
+ * requested. Read all pages; otherwise the market series can be truncated to
+ * the first page and Spread/Total appear empty while MoneyLine still works
+ * from the separate summary feed.
  */
 async function fetchAllCoreProbabilityItems(eventId: string): Promise<any[]> {
-  const firstUrl = `${CORE_ODDS}/${eventId}/competitions/${eventId}/probabilities?limit=100`;
-  const items: any[] = [];
+  const baseUrl = `${CORE_ODDS}/${eventId}/competitions/${eventId}/probabilities`;
+  const collected: any[] = [];
   const visited = new Set<string>();
-  let nextUrl: string | undefined = firstUrl;
-  let pageCount = 0;
+  let nextUrl: string | undefined = `${baseUrl}?limit=100`;
+  let pageNumber = 1;
 
-  while (nextUrl && !visited.has(nextUrl) && pageCount < 30) {
+  while (nextUrl && !visited.has(nextUrl) && pageNumber <= 30) {
     visited.add(nextUrl);
-    pageCount += 1;
     let page: any;
     try {
       page = await fetchJson(nextUrl);
@@ -75,25 +75,35 @@ async function fetchAllCoreProbabilityItems(eventId: string): Promise<any[]> {
     }
 
     const pageItems = Array.isArray(page?.items) ? page.items : [];
-    items.push(...pageItems);
+    if (!pageItems.length) break;
+    collected.push(...pageItems);
 
-    const nextRef = page?.pageIndex != null && page?.pageCount != null &&
-      Number(page.pageIndex) + 1 < Number(page.pageCount)
-      ? `${CORE_ODDS}/${eventId}/competitions/${eventId}/probabilities?limit=100&page=${Number(page.pageIndex) + 1}`
-      : undefined;
     const advertisedNext = typeof page?.next === "string"
       ? page.next
       : typeof page?.links?.next?.href === "string"
         ? page.links.next.href
         : undefined;
-    nextUrl = advertisedNext || nextRef;
+    const total = Number(page?.count);
+    const hasMoreByCount = Number.isFinite(total) && total > collected.length;
+    const hasMoreByPageCount = page?.pageIndex != null && page?.pageCount != null &&
+      Number(page.pageIndex) + 1 < Number(page.pageCount);
+    const hasMoreByFullPage = pageItems.length >= 100;
+    if (advertisedNext) {
+      nextUrl = advertisedNext;
+    } else if (hasMoreByCount || hasMoreByPageCount || hasMoreByFullPage) {
+      const nextPage = page?.pageIndex != null ? Number(page.pageIndex) + 1 : pageNumber + 1;
+      nextUrl = `${baseUrl}?limit=100&page=${nextPage}`;
+    } else {
+      nextUrl = undefined;
+    }
+    pageNumber += 1;
   }
 
-  // Resolve references concurrently in small batches to avoid serial latency
-  // and avoid overwhelming ESPN's public endpoint.
+  // Some ESPN list responses contain references instead of expanded records.
+  // Resolve those so the mapper can read spreadCoverProbHome / totalOverProb.
   const resolved: any[] = [];
-  for (let i = 0; i < items.length; i += 20) {
-    const batch = items.slice(i, i + 20);
+  for (let i = 0; i < collected.length; i += 20) {
+    const batch = collected.slice(i, i + 20);
     const values = await Promise.all(batch.map(async (item: any) => {
       const ref = typeof item?.$ref === "string" ? item.$ref : undefined;
       if (!ref) return item;
@@ -964,9 +974,9 @@ function mapBoxScore(
 export async function fetchGameDetail(eventId: string): Promise<Game | null> {
   return cached(`game-${eventId}`, async () => {
     const d = await fetchJson(`${SUMMARY}?event=${eventId}`);
-    // ESPN summary data supplies win probability; Core probability records
-    // supply spread-cover / total-over fields when ESPN publishes them.
-    const coreProbabilityItems = await fetchAllCoreProbabilityItems(eventId);
+    // ESPN publishes per-play win probabilities in the summary and may expose
+    // spread-cover / total-over probabilities through its Core API.
+    const coreProbabilityItems = await fetchAllCoreProbabilityItems(eventId).catch(() => []);
     const comp = d?.header?.competitions?.[0];
     if (!comp) return null;
     const week = d?.header?.week ?? 0;
@@ -981,17 +991,11 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
       ...(Array.isArray(d?.drives?.previous) ? d.drives.previous : []),
       ...(d?.drives?.current ? [d.drives.current] : []),
     ].flatMap((drive: any) => Array.isArray(drive?.plays) ? drive.plays : []);
-    const coreByPlayId = new Map<string, any>();
-    for (const item of coreProbabilityItems) {
-      const id = String(item?.playId ?? item?.play?.id ?? item?.play?.$ref?.match?.(/plays\/(\d+)/)?.[1] ?? "");
-      if (id) coreByPlayId.set(id, item);
-    }
     const probabilityCount = Math.max(summaryProbabilities.length, coreProbabilityItems.length);
     if (probabilityCount > 0) {
       base.probabilities = Array.from({ length: probabilityCount }, (_, index) => {
         const summaryPoint = summaryProbabilities[index] ?? {};
-        const summaryId = String(summaryPoint.playId ?? summaryPoint.id ?? "");
-        const corePoint = (summaryId ? coreByPlayId.get(summaryId) : undefined) ?? coreProbabilityItems[index] ?? {};
+        const corePoint = coreProbabilityItems[index] ?? {};
         const pointId = String(corePoint.playId ?? summaryPoint.playId ?? corePoint.id ?? summaryPoint.id ?? "");
         const matchingPlay = (pointId ? summaryPlays.find((play: any) => String(play?.id ?? play?.playId ?? "") === pointId) : undefined) ?? summaryPlays[index] ?? {};
         const asProbability = (value: unknown): number | undefined => {
