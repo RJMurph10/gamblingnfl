@@ -496,7 +496,7 @@ function mapEvent(event: any, week: number): Game | null {
       home: homeQ.length ? homeQ : [0, 0, 0, 0],
     },
     spread: odds?.details ?? "—",
-    total: typeof odds?.overUnder === "number" ? odds.overUnder : 0,
+    total: optionalNumber(odds?.overUnder) ?? optionalNumber(odds?.overUnder?.value) ?? 0,
     drives: [],
     stats: { away: zeroStats(), home: zeroStats() },
     boxScore: [],
@@ -1068,6 +1068,27 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
       const historicalOdds = await fetchHistoricalOdds(eventId);
       if (base.spread === "—" && historicalOdds.spread) base.spread = historicalOdds.spread;
       if (!base.total && typeof historicalOdds.total === "number") base.total = historicalOdds.total;
+    }
+
+    // Market lines may only be available from the scoreboard or historical-odds
+    // fallback, both of which are merged after the play-probability feed above.
+    // Recompute missing market series now that the final pregame lines are known.
+    if (base.probabilities?.length) {
+      const hasNonZeroProbability = (key: "homeCoverProbability" | "overProbability") =>
+        base.probabilities!.some((point) => typeof point[key] === "number" && point[key]! > 0);
+      const hasEspnCover = hasNonZeroProbability("homeCoverProbability");
+      const hasEspnTotal = hasNonZeroProbability("overProbability");
+      const homeAbbr = teamById(base.homeTeamId)?.abbr ?? "";
+      const awayAbbr = teamById(base.awayTeamId)?.abbr ?? "";
+      base.probabilities = base.probabilities.map((point) => {
+        const estimated = estimateMarketProbabilities(point, base, homeAbbr, awayAbbr);
+        return {
+          ...point,
+          homeCoverProbability: hasEspnCover ? point.homeCoverProbability : estimated.homeCoverProbability,
+          overProbability: hasEspnTotal ? point.overProbability : estimated.overProbability,
+          probabilitySource: hasEspnCover && hasEspnTotal ? "espn" as const : "estimated" as const,
+        };
+      });
     }
 
     // Direct fallback from live summary drive if scoreboard hasn't synced
