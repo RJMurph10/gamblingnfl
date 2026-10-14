@@ -1049,6 +1049,8 @@ function withMarketProbabilities(
 
   let lastAway: number | undefined;
   let lastHome: number | undefined;
+  // Samples where the total points already exceed the line: Over is certain (100%), like ESPN.
+  const overResolved: boolean[] = [];
   const out = input.map((point, index) => {
     // Scores only ever go up; ignore stale or out-of-order values from play matching.
     if (typeof point.awayScore === "number") lastAway = Math.max(lastAway ?? 0, point.awayScore);
@@ -1067,18 +1069,24 @@ function withMarketProbabilities(
       next.homeCoverProbability = undefined;
       if (homeSpread !== undefined) {
         const sigma = 13.5 * Math.sqrt(fraction);
-        if (lastAway !== undefined && lastHome !== undefined) {
-          // Expected final margin = current margin + the pregame edge for the time left.
-          // As the clock runs down, the actual score margin dominates (a 21-point deficit
-          // late in the 4th is nowhere near covering a small spread).
-          const margin = lastHome - lastAway;
-          const expectedFinalMargin = margin + fraction * -homeSpread;
-          next.homeCoverProbability = normalCdf((expectedFinalMargin + homeSpread) / sigma);
-          estimated = true;
-        } else if (typeof point.homeWinProbability === "number") {
-          // No score for this sample: fall back to ESPN's win probability.
-          const p = Math.max(0.001, Math.min(0.999, point.homeWinProbability));
-          next.homeCoverProbability = normalCdf((sigma * normalInverse(p) + homeSpread) / sigma);
+        const hasWinProbability = typeof point.homeWinProbability === "number";
+        const hasScore = lastAway !== undefined && lastHome !== undefined;
+        // Expected final margin implied by ESPN's win probability: smooth, like the moneyline graph.
+        const p = hasWinProbability ? Math.max(0.0005, Math.min(0.9995, point.homeWinProbability as number)) : undefined;
+        const muFromWinProbability = p !== undefined ? sigma * normalInverse(p) : undefined;
+        // Expected final margin from the actual score plus the pregame edge for the time left.
+        const muFromScore = hasScore ? lastHome! - lastAway! + fraction * -homeSpread : undefined;
+        let mu: number | undefined;
+        if (muFromWinProbability !== undefined && muFromScore !== undefined && p !== undefined) {
+          // Win probability saturates near 0/1 (a 21-point lead looks like "99.9%"), which would
+          // understate the margin, so fade to the real score margin only at the extremes.
+          const weightScore = Math.max(0, Math.min(1, (Math.abs(p - 0.5) - 0.35) / 0.14));
+          mu = (1 - weightScore) * muFromWinProbability + weightScore * muFromScore;
+        } else {
+          mu = muFromWinProbability ?? muFromScore;
+        }
+        if (mu !== undefined) {
+          next.homeCoverProbability = normalCdf((mu + homeSpread) / sigma);
           estimated = true;
         }
       }
@@ -1089,6 +1097,7 @@ function withMarketProbabilities(
         const sigma = 13 * Math.sqrt(fraction);
         // Remaining points: mostly the pregame total's pace, nudged toward the pace seen so far.
         const scoredSoFar = lastAway + lastHome;
+        if (scoredSoFar > totalLine) overResolved[index] = true;
         const playedFraction = 1 - fraction;
         const observedRate = playedFraction > 0.15 ? scoredSoFar / playedFraction : totalLine;
         const blendedRate = playedFraction > 0.15 ? 0.75 * totalLine + 0.25 * observedRate : totalLine;
@@ -1102,6 +1111,34 @@ function withMarketProbabilities(
   });
 
   // Finished games: the last sample resolves to the actual result against the line.
+  // Smooth the estimated series so they move like ESPN's moneyline curve instead of
+  // jumping at every scoring play (centered moving average; endpoints stay untouched).
+  const smooth = (key: "homeCoverProbability" | "overProbability") => {
+    const raw = out.map((point) => point[key]);
+    const radius = 3;
+    out.forEach((point, i) => {
+      const value = raw[i];
+      if (typeof value !== "number" || i === 0 || i === out.length - 1) return;
+      let sum = 0;
+      let weight = 0;
+      for (let j = Math.max(0, i - radius); j <= Math.min(out.length - 1, i + radius); j++) {
+        const neighbor = raw[j];
+        if (typeof neighbor !== "number") continue;
+        const w = radius + 1 - Math.abs(j - i);
+        sum += neighbor * w;
+        weight += w;
+      }
+      if (weight > 0) point[key] = sum / weight;
+    });
+  };
+  if (!useRealCover) smooth("homeCoverProbability");
+  if (!useRealOver) {
+    smooth("overProbability");
+    out.forEach((point, i) => {
+      if (overResolved[i]) point.overProbability = 1;
+    });
+  }
+
   const sumQuarters = (values?: number[]) => (Array.isArray(values) ? values.reduce((a, b) => a + (Number(b) || 0), 0) : 0);
   const officialAway = sumQuarters(game.quarters?.away);
   const officialHome = sumQuarters(game.quarters?.home);
