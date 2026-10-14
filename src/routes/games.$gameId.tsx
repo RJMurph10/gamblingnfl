@@ -335,7 +335,8 @@ function ProbabilityGraph({
 
   const ordinal = (n?: number) => (n === 1 ? "1st" : n === 2 ? "2nd" : n === 3 ? "3rd" : n ? `${n}th` : "");
   const headerRow = (kind: "top" | "bottom", pct: number) => {
-        const color = kind === "top" ? topColor : bottomColor;
+        const dotted = kind === "top";
+    const color = kind === "top" ? topColor : bottomColor;
     const team = kind === "top" ? away : home;
     const label = isTotal ? (kind === "top" ? "Over" : "Under") : team.abbr;
     return (
@@ -348,7 +349,7 @@ function ProbabilityGraph({
           </span>
           <span
             className="inline-block h-0 w-6 border-t-2"
-            style={{ borderColor: color, borderStyle: "solid" }}
+            style={{ borderColor: color, borderStyle: dotted ? "dotted" : "solid" }}
           />
         </div>
         <span className="font-disp text-2xl font-bold tabular-nums">{pct}%</span>
@@ -383,17 +384,19 @@ function ProbabilityGraph({
         </defs>
         {/* Grid: five horizontal lines and a line at each quarter boundary. */}
         {[0, 0.25, 0.5, 0.75, 1].map((t) => (
-          <line key={t} x1={plotLeft} x2={plotRight} y1={plotTop + t * plotHeight} y2={plotTop + t * plotHeight} stroke="currentColor" strokeOpacity="0.25" />
+          <line key={t} x1={plotLeft} x2={plotRight} y1={plotTop + t * plotHeight} y2={plotTop + t * plotHeight} stroke="currentColor" strokeOpacity="0.3" strokeDasharray="1 4" />
         ))}
         {[0, ...quarterLines].map((x) => (
-          <line key={x} x1={x} x2={x} y1={plotTop} y2={plotBottom} stroke="currentColor" strokeOpacity="0.25" />
+          <line key={x} x1={x} x2={x} y1={plotTop} y2={plotBottom} stroke="currentColor" strokeOpacity="0.3" strokeDasharray="1 4" />
         ))}
         {/* Shaded area between the line and 50%: away color above, home color below. */}
         <path d={areaPath} fill={topColor} fillOpacity="0.16" clipPath={`url(#${uid}-top)`} />
         <path d={areaPath} fill={bottomColor} fillOpacity="0.16" clipPath={`url(#${uid}-bottom)`} />
         {/* Away team ahead: away color. Home team ahead: home color. */}
-        <path d={linePath} fill="none" stroke={topColor} strokeWidth="2" clipPath={`url(#${uid}-top)`} />
+        <path d={linePath} fill="none" stroke={topColor} strokeWidth="2" strokeDasharray="2 2" clipPath={`url(#${uid}-top)`} />
         <path d={linePath} fill="none" stroke={bottomColor} strokeWidth="2" clipPath={`url(#${uid}-bottom)`} />
+        {/* Thick solid border around the whole graph. */}
+        <rect x={plotLeft} y={plotTop} width={plotWidth} height={plotHeight} fill="none" stroke="currentColor" strokeOpacity="0.7" strokeWidth="3" />
         {hoverIndex !== null ? (
           <g>
             <line x1={coords[hoverIndex].x} x2={coords[hoverIndex].x} y1={plotTop} y2={plotBottom} stroke="currentColor" strokeOpacity="0.5" />
