@@ -267,6 +267,7 @@ function ProbabilityGraph({
     );
   }
 
+  const hasEstimatedMarketValues = probabilityKey !== "homeWinProbability" && points.some((point) => point.probabilitySource === "estimated");
   const width = 1000;
   const height = 320;
   const left = 62;
@@ -354,6 +355,9 @@ function ProbabilityGraph({
         <text x={left} y={height - 28} fontSize="11" fill="currentColor" opacity="0.55">Kickoff</text>
         <text x={width - right} y={height - 28} textAnchor="end" fontSize="11" fill="currentColor" opacity="0.55">Final</text>
       </svg>
+      {hasEstimatedMarketValues && (
+        <p className="mt-2 text-xs text-mute">Spread and total are model estimates based on the live score, game clock, and pregame line—not official ESPN cover/total probabilities.</p>
+      )}
       {selected ? (
         <div className="mt-2 rounded-lg border border-line/10 bg-panel p-3">
           <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-mono text-mute">
@@ -656,6 +660,7 @@ function GamePage() {
     <>
       <PageTitle
         eyebrow=""
+        title={`${away.abbr} @ ${home.abbr}`}
         aside={
           weatherQuery.data && game.status !== "final" ? (
             <GameWeatherCard weather={weatherQuery.data} />
