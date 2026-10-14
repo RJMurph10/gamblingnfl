@@ -21,78 +21,13 @@ const optionalNumber = (value: unknown): number | undefined => {
   const parsed = typeof value === "number" ? value : Number(value);
   return Number.isFinite(parsed) ? parsed : undefined;
 };
-/**
- * Fallback estimate for cover/total probabilities when ESPN's public NFL feed
- * only supplies win probability. This is deliberately labelled estimated: the
- * proprietary ESPN Analytics cover/total model is not exposed by that feed.
- */
-function estimateMarketProbabilities(point: any, game: Game, homeAbbr: string, awayAbbr: string) {
-  const parseHomeExpectedMargin = (): number => {
-    const line = String(game.spread ?? "");
-    const match = line.match(/\b([A-Z]{2,3})\s*([+-]?\d+(?:\.\d+)?)/i);
-    if (!match) return 0;
-    const team = match[1].toUpperCase();
-    const value = Number(match[2]);
-    if (!Number.isFinite(value)) return 0;
-    if (team === homeAbbr.toUpperCase()) return -value;
-    if (team === awayAbbr.toUpperCase()) return value;
-    return 0;
-  };
-  const normalCdf = (z: number): number => {
-    const sign = z < 0 ? -1 : 1;
-    const x = Math.abs(z) / Math.sqrt(2);
-    const t = 1 / (1 + 0.3275911 * x);
-    const polynomial = (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592);
-    const erf = 1 - polynomial * t * Math.exp(-x * x);
-    return Math.max(0, Math.min(1, 0.5 * (1 + sign * erf)));
-  };
-  const normalInv = (probability: number): number => {
-    const p = Math.max(0.0001, Math.min(0.9999, probability));
-    let low = -6;
-    let high = 6;
-    for (let i = 0; i < 48; i++) {
-      const mid = (low + high) / 2;
-      if (normalCdf(mid) < p) low = mid;
-      else high = mid;
-    }
-    return (low + high) / 2;
-  };
-
-  const quarter = Math.max(1, Number(point.quarter) || 1);
-  const clockMatch = String(point.clock ?? "").match(/(\d{1,2}):(\d{2})/);
-  const clockSeconds = clockMatch ? Number(clockMatch[1]) * 60 + Number(clockMatch[2]) : 900;
-  const secondsRemaining = quarter <= 4
-    ? Math.max(0, Math.min(3600, (4 - (quarter - 1)) * 900 - (900 - clockSeconds)))
-    : 0;
-  const remaining = Math.max(0, Math.min(1, secondsRemaining / 3600));
-  const homeScore = Number.isFinite(Number(point.homeScore)) ? Number(point.homeScore) : 0;
-  const awayScore = Number.isFinite(Number(point.awayScore)) ? Number(point.awayScore) : 0;
-  const currentMargin = homeScore - awayScore;
-  const currentTotal = homeScore + awayScore;
-  const marketExpectedMargin = parseHomeExpectedMargin();
-  const marginSd = Math.max(0.25, 13.5 * Math.sqrt(remaining));
-
-  // ESPN's win-probability series reflects more game state than score/clock
-  // alone. Convert it to an implied final-margin estimate, then blend it with
-  // the market's pregame expected margin so a noisy WP point cannot dominate.
-  const wp = Number(point.homeWinProbability);
-  const baselineFinalMargin = currentMargin + marketExpectedMargin * remaining;
-  const wpImpliedFinalMargin = Number.isFinite(wp) && remaining > 0.015
-    ? normalInv(wp) * marginSd
-    : currentMargin;
-  const projectedFinalMargin = remaining <= 0.015
-    ? currentMargin
-    : 0.7 * wpImpliedFinalMargin + 0.3 * baselineFinalMargin;
-  const homeCoverProbability = normalCdf((projectedFinalMargin - marketExpectedMargin) / marginSd);
-
-  const totalLine = Number(game.total);
-  const totalSd = Math.max(0.25, 16 * Math.sqrt(remaining));
-  const projectedFinalTotal = currentTotal + (Number.isFinite(totalLine) && totalLine > 0 ? totalLine * remaining : 0);
-  const overProbability = Number.isFinite(totalLine) && totalLine > 0
-    ? (remaining <= 0.015 ? (currentTotal > totalLine ? 1 : currentTotal < totalLine ? 0 : 0.5) : normalCdf((projectedFinalTotal - totalLine) / totalSd))
-    : undefined;
-
-  return { homeCoverProbability, overProbability };
+/** Normalize ESPN probability fields to the 0–1 range without inventing values. */
+function asProbability(value: unknown): number | undefined {
+  if (value === undefined || value === null || value === "") return undefined;
+  const number = typeof value === "number" ? value : Number(value);
+  if (!Number.isFinite(number)) return undefined;
+  const normalized = number > 1 ? number / 100 : number;
+  return Math.max(0, Math.min(1, normalized));
 }
 
 const SEASON = 2026;
@@ -1049,43 +984,74 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
       ...(Array.isArray(d?.drives?.previous) ? d.drives.previous : []),
       ...(d?.drives?.current ? [d.drives.current] : []),
     ].flatMap((drive: any) => Array.isArray(drive?.plays) ? drive.plays : []);
-    const probabilityCount = Math.max(summaryProbabilities.length, coreProbabilityItems.length);
-    if (probabilityCount > 0) {
-      base.probabilities = Array.from({ length: probabilityCount }, (_, index) => {
-        const summaryPoint = summaryProbabilities[index] ?? {};
-        const corePoint = coreProbabilityItems[index] ?? {};
-        const pointId = String(corePoint.playId ?? summaryPoint.playId ?? corePoint.id ?? summaryPoint.id ?? "");
-        const matchingPlay = (pointId ? summaryPlays.find((play: any) => String(play?.id ?? play?.playId ?? "") === pointId) : undefined) ?? summaryPlays[index] ?? {};
-        const asProbability = (value: unknown): number | undefined => {
-          if (value === undefined || value === null || value === "") return undefined;
-          const number = typeof value === "number" ? value : Number(value);
-          if (!Number.isFinite(number)) return undefined;
-          const normalized = number > 1 ? number / 100 : number;
-          return Math.max(0, Math.min(1, normalized));
-        };
+
+    // Keep ESPN's summary win-probability history as the canonical timeline.
+    // The Core API collection can contain a different number/order of records;
+    // merging both arrays by index creates mismatched plays and a misleading
+    // Moneyline curve. Join market fields by play ID only, never by array index.
+    const coreByPlayId = new Map<string, any>();
+    for (const record of coreProbabilityItems) {
+      const id = String(record?.playId ?? record?.play?.id ?? "");
+      if (id) coreByPlayId.set(id, record);
+    }
+
+    // secondsLeft decreases as the game progresses, so descending order plots
+    // the game from kickoff to final whistle even if ESPN changes feed ordering.
+    const orderedSummary = [...summaryProbabilities].sort((a: any, b: any) => {
+      const aSeconds = optionalNumber(a?.secondsLeft);
+      const bSeconds = optionalNumber(b?.secondsLeft);
+      if (aSeconds === undefined || bSeconds === undefined) return 0;
+      return bSeconds - aSeconds;
+    });
+
+    if (orderedSummary.length > 0) {
+      base.probabilities = orderedSummary.map((summaryPoint: any) => {
+        const pointId = String(summaryPoint?.playId ?? summaryPoint?.id ?? "");
+        const corePoint = pointId ? coreByPlayId.get(pointId) ?? {} : {};
+        const matchingPlay = pointId
+          ? summaryPlays.find((play: any) => String(play?.id ?? play?.playId ?? "") === pointId)
+          : undefined;
+
         return {
-          homeWinProbability: asProbability(summaryPoint.homeWinPercentage ?? corePoint.homeWinPercentage),
-          homeCoverProbability: asProbability(corePoint.spreadCoverProbHome ?? corePoint.homeSpreadCoverProbability),
-          overProbability: asProbability(corePoint.totalOverProb ?? corePoint.overProbability),
-          playId: pointId || String(matchingPlay?.id ?? "") || undefined,
-          quarter: Number(corePoint.period ?? corePoint.quarter ?? summaryPoint.period ?? summaryPoint.quarter ?? matchingPlay?.period?.number ?? matchingPlay?.period) || undefined,
-          clock: String(corePoint.clock?.displayValue ?? corePoint.clock ?? summaryPoint.clock?.displayValue ?? summaryPoint.clock ?? matchingPlay?.clock?.displayValue ?? matchingPlay?.clock ?? "") || undefined,
-          down: Number(corePoint.down ?? summaryPoint.down ?? matchingPlay?.start?.down ?? matchingPlay?.down) || undefined,
-          distance: Number(corePoint.distance ?? summaryPoint.distance ?? matchingPlay?.start?.distance ?? matchingPlay?.distance) || undefined,
-          yardLine: String(corePoint.yardLine ?? corePoint.start?.yardLine ?? summaryPoint.yardLine ?? matchingPlay?.start?.yardLine ?? matchingPlay?.end?.yardLine ?? "") || undefined,
-          awayScore: optionalNumber(corePoint.awayScore ?? corePoint.scoreAway ?? summaryPoint.awayScore ?? summaryPoint.scoreAway ?? matchingPlay?.awayScore ?? matchingPlay?.start?.team?.score),
-          homeScore: optionalNumber(corePoint.homeScore ?? corePoint.scoreHome ?? summaryPoint.homeScore ?? summaryPoint.scoreHome ?? matchingPlay?.homeScore),
-          playText: String(corePoint.text ?? corePoint.playText ?? summaryPoint.text ?? summaryPoint.playText ?? matchingPlay?.text ?? matchingPlay?.shortText ?? "") || undefined,
+          homeWinProbability: asProbability(summaryPoint?.homeWinPercentage),
+          homeCoverProbability: asProbability(corePoint?.spreadCoverProbHome ?? corePoint?.homeSpreadCoverProbability),
+          overProbability: asProbability(corePoint?.totalOverProb ?? corePoint?.overProbability),
+          playId: pointId || undefined,
+          quarter: Number(summaryPoint?.period ?? summaryPoint?.quarter ?? matchingPlay?.period?.number ?? matchingPlay?.period) || undefined,
+          clock: String(summaryPoint?.clock?.displayValue ?? summaryPoint?.clock ?? matchingPlay?.clock?.displayValue ?? matchingPlay?.clock ?? "") || undefined,
+          down: Number(summaryPoint?.down ?? matchingPlay?.start?.down ?? matchingPlay?.down) || undefined,
+          distance: Number(summaryPoint?.distance ?? matchingPlay?.start?.distance ?? matchingPlay?.distance) || undefined,
+          yardLine: String(summaryPoint?.yardLine ?? matchingPlay?.start?.yardLine ?? matchingPlay?.end?.yardLine ?? "") || undefined,
+          awayScore: optionalNumber(summaryPoint?.awayScore ?? summaryPoint?.scoreAway ?? matchingPlay?.awayScore),
+          homeScore: optionalNumber(summaryPoint?.homeScore ?? summaryPoint?.scoreHome ?? matchingPlay?.homeScore),
+          playText: String(summaryPoint?.text ?? summaryPoint?.playText ?? matchingPlay?.text ?? matchingPlay?.shortText ?? "") || undefined,
+          probabilitySource: (corePoint?.spreadCoverProbHome !== undefined || corePoint?.homeSpreadCoverProbability !== undefined || corePoint?.totalOverProb !== undefined || corePoint?.overProbability !== undefined)
+            ? "espn" as const
+            : undefined,
         };
-      }).filter((point) => point.homeWinProbability !== undefined || point.homeCoverProbability !== undefined || point.overProbability !== undefined);
-      // Never substitute a locally generated estimate for ESPN's market data.
-      // This keeps the plotted values faithful to ESPN whenever the feed has them.
-      base.probabilities = base.probabilities.map((point) => ({
-        ...point,
-        probabilitySource: point.homeCoverProbability !== undefined || point.overProbability !== undefined
-          ? "espn" as const
-          : undefined,
-      }));
+      }).filter((point: any) => point.homeWinProbability !== undefined || point.homeCoverProbability !== undefined || point.overProbability !== undefined);
+    } else if (coreProbabilityItems.length > 0) {
+      // Fallback only when ESPN's summary endpoint has no win-probability
+      // history. Sort Core records by their sequence number, but do not invent
+      // missing probabilities or combine unrelated records by array position.
+      base.probabilities = [...coreProbabilityItems]
+        .sort((a: any, b: any) => Number(a?.sequenceNumber ?? 0) - Number(b?.sequenceNumber ?? 0))
+        .map((point: any) => ({
+          homeWinProbability: asProbability(point?.homeWinPercentage),
+          homeCoverProbability: asProbability(point?.spreadCoverProbHome ?? point?.homeSpreadCoverProbability),
+          overProbability: asProbability(point?.totalOverProb ?? point?.overProbability),
+          playId: String(point?.playId ?? point?.id ?? "") || undefined,
+          quarter: Number(point?.period ?? point?.quarter) || undefined,
+          clock: String(point?.clock?.displayValue ?? point?.clock ?? "") || undefined,
+          down: Number(point?.down) || undefined,
+          distance: Number(point?.distance) || undefined,
+          yardLine: String(point?.yardLine ?? point?.start?.yardLine ?? "") || undefined,
+          awayScore: optionalNumber(point?.awayScore ?? point?.scoreAway),
+          homeScore: optionalNumber(point?.homeScore ?? point?.scoreHome),
+          playText: String(point?.text ?? point?.playText ?? "") || undefined,
+          probabilitySource: "espn" as const,
+        }))
+        .filter((point: any) => point.homeWinProbability !== undefined || point.homeCoverProbability !== undefined || point.overProbability !== undefined);
     }
 
     // The summary header omits quarter linescores and venue; merge them from
@@ -1129,38 +1095,17 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
       if (!base.total && typeof historicalOdds.total === "number") base.total = historicalOdds.total;
     }
 
-    // Use ESPN's actual market probabilities when populated. The public NFL feed
-    // often omits those fields, so estimate only the missing market series after
-    // the final closing spread/total have been merged. Estimates are explicitly
-    // labelled and must not be mistaken for ESPN Analytics' proprietary values.
+    // Do not synthesize cover/total probabilities from score, clock, or a
+    // closing line. ESPN's public feed does not consistently publish those
+    // markets; leaving them unavailable is more accurate than displaying a
+    // fabricated curve as if it were historical market probability.
     if (base.probabilities?.length) {
-      const homeAbbr = teamById(base.homeTeamId)?.abbr ?? "";
-      const awayAbbr = teamById(base.awayTeamId)?.abbr ?? "";
-
-      // ESPN's public feed can be sparse: a market field may exist for only
-      // some probability records. Select the ESPN value per point, not per
-      // entire series, otherwise one populated record leaves the rest of the
-      // graph undefined and the line disappears. Zero is a valid probability.
-      base.probabilities = base.probabilities.map((point) => {
-        const estimated = estimateMarketProbabilities(point, base, homeAbbr, awayAbbr);
-        const hasEspnCoverAtPoint = typeof point.homeCoverProbability === "number" && Number.isFinite(point.homeCoverProbability);
-        const hasEspnTotalAtPoint = typeof point.overProbability === "number" && Number.isFinite(point.overProbability);
-        const homeCoverProbability = hasEspnCoverAtPoint
-          ? point.homeCoverProbability
-          : estimated.homeCoverProbability;
-        const overProbability = hasEspnTotalAtPoint
-          ? point.overProbability
-          : estimated.overProbability;
-        const usedEstimate = (!hasEspnCoverAtPoint && typeof homeCoverProbability === "number")
-          || (!hasEspnTotalAtPoint && typeof overProbability === "number");
-
-        return {
-          ...point,
-          homeCoverProbability,
-          overProbability,
-          probabilitySource: usedEstimate ? "estimated" as const : "espn" as const,
-        };
-      });
+      base.probabilities = base.probabilities.map((point) => ({
+        ...point,
+        probabilitySource: point.homeCoverProbability !== undefined || point.overProbability !== undefined
+          ? "espn" as const
+          : undefined,
+      }));
     }
 
     // Direct fallback from live summary drive if scoreboard hasn't synced
