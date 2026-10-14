@@ -212,7 +212,7 @@ function LiveFieldTrack({
   );
 }
 
-type ProbabilityKey = "homeWinProbability" | "homeCoverProbability";
+type ProbabilityKey = "homeWinProbability" | "homeCoverProbability" | "overProbability";
 
 const QUARTER_LABELS = ["", "1st", "2nd", "3rd", "4th", "OT"];
 
@@ -246,20 +246,28 @@ function ProbabilityGraph({
   away,
   home,
   unavailableText,
+  totalLine,
 }: {
   points: GameProbabilityPoint[];
   probabilityKey: ProbabilityKey;
   away: Team;
   home: Team;
   unavailableText: string;
+  totalLine?: number;
 }) {
+  // Win/cover graphs: away on top, home on the bottom. Total graph: Over on top, Under on the bottom.
+  const isTotal = probabilityKey === "overProbability";
+  const topColor = isTotal ? "#16a34a" : away.color;
+  const bottomColor = isTotal ? "#dc2626" : home.color;
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
   const svgRef = useRef<SVGSVGElement | null>(null);
   const uid = useId().replace(/:/g, "");
 
   const usable = points
-    .map((point, index) => ({ point, index, value: point[probabilityKey] }))
-    .filter((entry): entry is { point: GameProbabilityPoint; index: number; value: number } => typeof entry.value === "number");
+    .map((point, index) => ({ point, index, raw: point[probabilityKey] }))
+    .filter((entry): entry is { point: GameProbabilityPoint; index: number; raw: number } => typeof entry.raw === "number")
+    // value = probability of the bottom side (home team, or Under for totals); 0 = top side certain.
+    .map((entry) => ({ point: entry.point, index: entry.index, value: isTotal ? 1 - entry.raw : entry.raw }));
 
   if (usable.length < 2) {
     return (
@@ -326,31 +334,40 @@ function ProbabilityGraph({
   };
 
   const ordinal = (n?: number) => (n === 1 ? "1st" : n === 2 ? "2nd" : n === 3 ? "3rd" : n ? `${n}th` : "");
-  const headerRow = (team: Team, pct: number, dotted: boolean) => (
-    <div className="flex items-center justify-between gap-3">
-      <div className="flex items-center gap-2">
-        <TeamLogo team={team} className="size-8" />
-        <span className="font-mono text-sm font-semibold">{team.abbr}</span>
-        <span
-          className="inline-block h-0 w-6 border-t-2"
-          style={{ borderColor: team.color, borderStyle: dotted ? "dotted" : "solid" }}
-        />
+  const headerRow = (kind: "top" | "bottom", pct: number) => {
+    const dotted = kind === "top";
+    const color = kind === "top" ? topColor : bottomColor;
+    const team = kind === "top" ? away : home;
+    const label = isTotal ? (kind === "top" ? "Over" : "Under") : team.abbr;
+    return (
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          {isTotal ? null : <TeamLogo team={team} className="size-8" />}
+          <span className="font-mono text-sm font-semibold">
+            {label}
+            {isTotal && totalLine ? ` ${totalLine}` : ""}
+          </span>
+          <span
+            className="inline-block h-0 w-6 border-t-2"
+            style={{ borderColor: color, borderStyle: dotted ? "dotted" : "solid" }}
+          />
+        </div>
+        <span className="font-disp text-2xl font-bold tabular-nums">{pct}%</span>
       </div>
-      <span className="font-disp text-2xl font-bold tabular-nums">{pct}%</span>
-    </div>
-  );
+    );
+  };
 
-  const estimated = probabilityKey === "homeCoverProbability" && points.some((p) => p.probabilitySource === "estimated");
+  const estimated = probabilityKey !== "homeWinProbability" && points.some((p) => p.probabilitySource === "estimated");
 
   return (
     <div className="mt-4">
-      {headerRow(away, awayPct, true)}
+      {headerRow("top", awayPct)}
       <svg
         ref={svgRef}
         viewBox={`0 0 ${width} ${height}`}
         className="mt-1 block w-full touch-pan-y select-none"
         role="img"
-        aria-label={probabilityKey === "homeWinProbability" ? "Win probability over the game" : "Cover probability over the game"}
+        aria-label={probabilityKey === "homeWinProbability" ? "Win probability over the game" : probabilityKey === "homeCoverProbability" ? "Cover probability over the game" : "Total probability over the game"}
         onMouseMove={(event) => handleMove(event.clientX)}
         onMouseLeave={() => setHoverIndex(null)}
         onTouchStart={(event) => handleMove(event.touches[0].clientX)}
@@ -373,15 +390,15 @@ function ProbabilityGraph({
           <line key={x} x1={x} x2={x} y1={plotTop} y2={plotBottom} stroke="currentColor" strokeOpacity="0.3" strokeDasharray="1 4" />
         ))}
         {/* Shaded area between the line and 50%: away color above, home color below. */}
-        <path d={areaPath} fill={away.color} fillOpacity="0.16" clipPath={`url(#${uid}-top)`} />
-        <path d={areaPath} fill={home.color} fillOpacity="0.16" clipPath={`url(#${uid}-bottom)`} />
+        <path d={areaPath} fill={topColor} fillOpacity="0.16" clipPath={`url(#${uid}-top)`} />
+        <path d={areaPath} fill={bottomColor} fillOpacity="0.16" clipPath={`url(#${uid}-bottom)`} />
         {/* Away team ahead: dotted line. Home team ahead: solid line. */}
-        <path d={linePath} fill="none" stroke={away.color} strokeWidth="2" strokeDasharray="2 2" clipPath={`url(#${uid}-top)`} />
-        <path d={linePath} fill="none" stroke={home.color} strokeWidth="2" clipPath={`url(#${uid}-bottom)`} />
+        <path d={linePath} fill="none" stroke={topColor} strokeWidth="2" strokeDasharray="2 2" clipPath={`url(#${uid}-top)`} />
+        <path d={linePath} fill="none" stroke={bottomColor} strokeWidth="2" clipPath={`url(#${uid}-bottom)`} />
         {hoverIndex !== null ? (
           <g>
             <line x1={coords[hoverIndex].x} x2={coords[hoverIndex].x} y1={plotTop} y2={plotBottom} stroke="currentColor" strokeOpacity="0.5" />
-            <circle cx={coords[hoverIndex].x} cy={coords[hoverIndex].y} r="4.5" fill={usable[hoverIndex].value < 0.5 ? away.color : home.color} stroke="white" strokeWidth="1.5" />
+            <circle cx={coords[hoverIndex].x} cy={coords[hoverIndex].y} r="4.5" fill={usable[hoverIndex].value < 0.5 ? topColor : bottomColor} stroke="white" strokeWidth="1.5" />
           </g>
         ) : null}
         {/* Axis labels: 100 / 50 / 100 on the right, quarters along the bottom. */}
@@ -400,7 +417,7 @@ function ProbabilityGraph({
           </text>
         ))}
       </svg>
-      {headerRow(home, homePct, false)}
+      {headerRow("bottom", homePct)}
       <div className="mt-3 min-h-16 rounded-lg border border-line/10 bg-panel2/20 p-3 text-sm">
         {selected ? (
           <>
@@ -434,7 +451,9 @@ function ProbabilityGraph({
       </div>
       {estimated ? (
         <p className="mt-2 text-xs text-mute">
-          Cover probability is a model estimate from ESPN&apos;s win probability, the score, the clock and the pregame spread.
+          {isTotal
+            ? "Total probability is a model estimate from the score, the clock and the pregame over/under."
+            : "Cover probability is a model estimate from ESPN's win probability, the score, the clock and the pregame spread."}
         </p>
       ) : null}
     </div>
@@ -569,7 +588,7 @@ function GamePage() {
     if (game?.status === "live" && activeGameTab === "information") setActiveGameTab("gamecast");
   }, [game?.status, activeGameTab]);
   const [activeMarketTab, setActiveMarketTab] =
-    useState<"winprob" | "cover">("winprob");
+    useState<"winprob" | "cover" | "total">("winprob");
 
   if (isLoading) {
     return (
@@ -1256,16 +1275,26 @@ function GamePage() {
                   <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">Probabilities</h2>
                   <div className="text-right text-xs text-mute">
                     <div className="flex items-center justify-end gap-1.5">Spread: <span className="font-mono font-semibold text-foreground"><MarketSpreadLabel spread={game.spread} away={away} home={home} /></span></div>
+                    <div className="mt-1">Total: <span className="font-mono font-semibold text-foreground">{game.total || "—"}</span></div>
                   </div>
                 </div>
-                <div className="mt-4 grid grid-cols-2 gap-1 rounded-lg border border-line/10 p-1" role="tablist" aria-label="Probability type">
-                  {([["winprob", "Win Probability"], ["cover", "Cover Probability"]] as const).map(([tab, label]) => (
+                <div className="mt-4 grid grid-cols-3 gap-1 rounded-lg border border-line/10 p-1" role="tablist" aria-label="Probability type">
+                  {([["winprob", "Win Probability"], ["cover", "Cover Probability"], ["total", "Total"]] as const).map(([tab, label]) => (
                     <button key={tab} type="button" role="tab" aria-selected={activeMarketTab === tab} onClick={() => setActiveMarketTab(tab)} className={`rounded-md px-2 py-2.5 font-disp text-xs font-semibold uppercase tracking-wider transition-colors sm:text-sm ${activeMarketTab === tab ? "bg-acc text-black" : "text-mute hover:bg-line/5 hover:text-foreground"}`}>
                       {label}
                     </button>
                   ))}
                 </div>
-                {activeMarketTab === "cover" ? (
+                {activeMarketTab === "total" ? (
+                  <ProbabilityGraph
+                    points={game.probabilities ?? []}
+                    probabilityKey="overProbability"
+                    away={away}
+                    home={home}
+                    totalLine={game.total || undefined}
+                    unavailableText="Total probability needs the game's pregame over/under and play-by-play scores, which aren't available for this game."
+                  />
+                ) : activeMarketTab === "cover" ? (
                   <ProbabilityGraph
                     points={game.probabilities ?? []}
                     probabilityKey="homeCoverProbability"
