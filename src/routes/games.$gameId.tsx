@@ -335,7 +335,7 @@ function ProbabilityGraph({
 
   const ordinal = (n?: number) => (n === 1 ? "1st" : n === 2 ? "2nd" : n === 3 ? "3rd" : n ? `${n}th` : "");
   const headerRow = (kind: "top" | "bottom", pct: number) => {
-        const dotted = kind === "top";
+        const dotted = kind === "top" && !isTotal;
     const color = kind === "top" ? topColor : bottomColor;
     const team = kind === "top" ? away : home;
     const label = isTotal ? (kind === "top" ? "Over" : "Under") : team.abbr;
@@ -393,10 +393,10 @@ function ProbabilityGraph({
         <path d={areaPath} fill={topColor} fillOpacity="0.16" clipPath={`url(#${uid}-top)`} />
         <path d={areaPath} fill={bottomColor} fillOpacity="0.16" clipPath={`url(#${uid}-bottom)`} />
         {/* Away team ahead: away color. Home team ahead: home color. */}
-        <path d={linePath} fill="none" stroke={topColor} strokeWidth="2" strokeDasharray="2 2" clipPath={`url(#${uid}-top)`} />
+        <path d={linePath} fill="none" stroke={topColor} strokeWidth="2" strokeDasharray={isTotal ? undefined : "2 2"} clipPath={`url(#${uid}-top)`} />
         <path d={linePath} fill="none" stroke={bottomColor} strokeWidth="2" clipPath={`url(#${uid}-bottom)`} />
-        {/* Thick solid border around the whole graph. */}
-        <rect x={plotLeft} y={plotTop} width={plotWidth} height={plotHeight} fill="none" stroke="currentColor" strokeOpacity="0.7" strokeWidth="3" />
+        {/* Border around the whole graph: same weight and shade as the tab bar border. */}
+        <rect x={plotLeft} y={plotTop} width={plotWidth} height={plotHeight} rx="8" fill="none" className="stroke-line/10" strokeWidth="1" vectorEffect="non-scaling-stroke" />
         {hoverIndex !== null ? (
           <g>
             <line x1={coords[hoverIndex].x} x2={coords[hoverIndex].x} y1={plotTop} y2={plotBottom} stroke="currentColor" strokeOpacity="0.5" />
