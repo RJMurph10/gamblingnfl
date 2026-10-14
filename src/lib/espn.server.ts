@@ -1134,21 +1134,31 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
     // the final closing spread/total have been merged. Estimates are explicitly
     // labelled and must not be mistaken for ESPN Analytics' proprietary values.
     if (base.probabilities?.length) {
-      const hasNonZero = (key: "homeCoverProbability" | "overProbability") =>
-        base.probabilities!.some((point) => typeof point[key] === "number" && point[key]! > 0);
-      const hasEspnCover = hasNonZero("homeCoverProbability");
-      const hasEspnTotal = hasNonZero("overProbability");
       const homeAbbr = teamById(base.homeTeamId)?.abbr ?? "";
       const awayAbbr = teamById(base.awayTeamId)?.abbr ?? "";
+
+      // ESPN's public feed can be sparse: a market field may exist for only
+      // some probability records. Select the ESPN value per point, not per
+      // entire series, otherwise one populated record leaves the rest of the
+      // graph undefined and the line disappears. Zero is a valid probability.
       base.probabilities = base.probabilities.map((point) => {
         const estimated = estimateMarketProbabilities(point, base, homeAbbr, awayAbbr);
-        const homeCoverProbability = hasEspnCover ? point.homeCoverProbability : estimated.homeCoverProbability;
-        const overProbability = hasEspnTotal ? point.overProbability : estimated.overProbability;
+        const hasEspnCoverAtPoint = typeof point.homeCoverProbability === "number" && Number.isFinite(point.homeCoverProbability);
+        const hasEspnTotalAtPoint = typeof point.overProbability === "number" && Number.isFinite(point.overProbability);
+        const homeCoverProbability = hasEspnCoverAtPoint
+          ? point.homeCoverProbability
+          : estimated.homeCoverProbability;
+        const overProbability = hasEspnTotalAtPoint
+          ? point.overProbability
+          : estimated.overProbability;
+        const usedEstimate = (!hasEspnCoverAtPoint && typeof homeCoverProbability === "number")
+          || (!hasEspnTotalAtPoint && typeof overProbability === "number");
+
         return {
           ...point,
           homeCoverProbability,
           overProbability,
-          probabilitySource: hasEspnCover && hasEspnTotal ? "espn" as const : "estimated" as const,
+          probabilitySource: usedEstimate ? "estimated" as const : "espn" as const,
         };
       });
     }
