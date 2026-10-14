@@ -302,9 +302,9 @@ function ProbabilityGraph({
 }) {
   // Win/cover graphs: away on top, home on the bottom. Total graph: Over on top, Under on the bottom.
   const isTotal = probabilityKey === "overProbability";
-  // ESPN draws the Total graph as a single neutral "Over" series, not in team colors.
-  const topColor = isTotal ? "currentColor" : away.color;
-  const bottomColor = isTotal ? "currentColor" : home.color;
+  // Total graph: Over is green (top), Under is red (bottom).
+  const topColor = isTotal ? "#16a34a" : away.color;
+  const bottomColor = isTotal ? "#dc2626" : home.color;
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
   const svgRef = useRef<SVGSVGElement | null>(null);
   const uid = useId().replace(/:/g, "");
@@ -386,7 +386,7 @@ function ProbabilityGraph({
     const dotted = false;
     const color = kind === "top" ? topColor : bottomColor;
     const team = kind === "top" ? away : home;
-    const label = isTotal ? "Over" : team.abbr;
+    const label = isTotal ? (kind === "top" ? "Over" : "Under") : team.abbr;
     return (
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-2">
@@ -399,7 +399,10 @@ function ProbabilityGraph({
         </div>
         <div className="flex items-center gap-2">
           {isTotal && totalLine ? (
-            <span className="rounded border border-line/10 px-1.5 py-0.5 font-mono text-xs text-mute">o{totalLine}</span>
+            <span className="rounded border border-line/10 px-1.5 py-0.5 font-mono text-xs text-mute">
+              {kind === "top" ? "o" : "u"}
+              {totalLine}
+            </span>
           ) : null}
           <span className="font-disp text-2xl font-bold tabular-nums">{pct}%</span>
         </div>
@@ -469,7 +472,7 @@ function ProbabilityGraph({
           </text>
         ))}
       </svg>
-      {isTotal ? null : headerRow("bottom", homePct)}
+      {headerRow("bottom", homePct)}
       <div className="mt-3 min-h-16 rounded-lg border border-line/10 bg-panel2/20 p-3 text-sm">
         {selected ? (
           <>
@@ -640,8 +643,7 @@ function GamePage() {
     if (game?.status === "live" && activeGameTab === "information") setActiveGameTab("gamecast");
   }, [game?.status, activeGameTab]);
   const [activeMarketTab, setActiveMarketTab] =
-    useState<"winprob" | "cover">("winprob");
-  const [coverMarket, setCoverMarket] = useState<"spread" | "total">("spread");
+    useState<"moneyline" | "cover" | "total">("moneyline");
 
   if (isLoading) {
     return (
@@ -1331,45 +1333,30 @@ function GamePage() {
                     <div className="mt-1">Total: <span className="font-mono font-semibold text-foreground">{game.total || "—"}</span></div>
                   </div>
                 </div>
-                <div className="mt-4 grid grid-cols-2 gap-1 rounded-lg border border-line/10 p-1" role="tablist" aria-label="Probability type">
-                  {([["winprob", "Win Probability"], ["cover", "Cover Probability"]] as const).map(([tab, label]) => (
+                <div className="mt-4 grid grid-cols-3 gap-1 rounded-lg border border-line/10 p-1" role="tablist" aria-label="Probability type">
+                  {([["moneyline", "Moneyline"], ["cover", "Cover"], ["total", "Total"]] as const).map(([tab, label]) => (
                     <button key={tab} type="button" role="tab" aria-selected={activeMarketTab === tab} onClick={() => setActiveMarketTab(tab)} className={`rounded-md px-2 py-2.5 font-disp text-xs font-semibold uppercase tracking-wider transition-colors sm:text-sm ${activeMarketTab === tab ? "bg-acc text-black" : "text-mute hover:bg-line/5 hover:text-foreground"}`}>
                       {label}
                     </button>
                   ))}
                 </div>
-                {activeMarketTab === "cover" ? (
-                  <>
-                    <div className="mt-4">
-                      <select
-                        aria-label="Select Bet Type"
-                        value={coverMarket}
-                        onChange={(event) => setCoverMarket(event.target.value as "spread" | "total")}
-                        className="rounded-md border border-line/10 bg-panel2/30 px-3 py-2 text-sm font-semibold"
-                      >
-                        <option value="spread">Spread</option>
-                        <option value="total">Total</option>
-                      </select>
-                    </div>
-                    {coverMarket === "total" ? (
-                      <ProbabilityGraph
-                        points={game.probabilities ?? []}
-                        probabilityKey="overProbability"
-                        away={away}
-                        home={home}
-                        totalLine={game.total || undefined}
-                        unavailableText="Total probability needs the game's pregame over/under and play-by-play scores, which aren't available for this game."
-                      />
-                    ) : (
-                      <ProbabilityGraph
-                        points={game.probabilities ?? []}
-                        probabilityKey="homeCoverProbability"
-                        away={away}
-                        home={home}
-                        unavailableText="Cover probability needs the game's pregame spread and play-by-play probabilities, which aren't available for this game."
-                      />
-                    )}
-                  </>
+                {activeMarketTab === "total" ? (
+                  <ProbabilityGraph
+                    points={game.probabilities ?? []}
+                    probabilityKey="overProbability"
+                    away={away}
+                    home={home}
+                    totalLine={game.total || undefined}
+                    unavailableText="Total probability needs the game's pregame over/under and play-by-play scores, which aren't available for this game."
+                  />
+                ) : activeMarketTab === "cover" ? (
+                  <ProbabilityGraph
+                    points={game.probabilities ?? []}
+                    probabilityKey="homeCoverProbability"
+                    away={away}
+                    home={home}
+                    unavailableText="Cover probability needs the game's pregame spread and play-by-play probabilities, which aren't available for this game."
+                  />
                 ) : (
                   <ProbabilityGraph
                     points={game.probabilities ?? []}
