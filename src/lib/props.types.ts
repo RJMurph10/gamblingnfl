@@ -69,4 +69,11 @@ export interface GamePropBoard {
   priced: boolean;
   offers: LivePropOffer[];
   fetchedAt: number;
+  /** What ESPN returned, shown when the board is empty so problems are easy to spot. */
+  diagnostics?: {
+    providersTried: string[];
+    itemCount: number;
+    sampleTypes: string[];
+    error?: string;
+  };
 }
