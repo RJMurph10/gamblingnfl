@@ -202,6 +202,14 @@ export function DraftKingsPropsBoard({ game, away, home }: DraftKingsPropsBoardP
               ESPN hasn&apos;t published DraftKings player props for this game. They usually appear closer to kickoff
               and this board refreshes on its own.
             </p>
+            {board?.diagnostics ? (
+              <p className="mx-auto mt-3 max-w-lg break-words rounded-md border border-white/10 bg-black/20 px-3 py-2 text-left font-mono text-[10px] text-mute">
+                ESPN check · providers tried: {board.diagnostics.providersTried.join(", ") || "none"} · items returned:{" "}
+                {board.diagnostics.itemCount}
+                {board.diagnostics.sampleTypes.length ? ` · types: ${board.diagnostics.sampleTypes.join(", ")}` : ""}
+                {board.diagnostics.error ? ` · error: ${board.diagnostics.error}` : ""}
+              </p>
+            ) : null}
           </div>
         ) : (
           <>
