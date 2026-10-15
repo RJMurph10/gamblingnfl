@@ -8,7 +8,7 @@
  */
 
 import type { GamePropBoard } from "@/lib/props.types";
-import { athleteIdOf, buildPropOffers, type PropPerson } from "@/lib/props.parse";
+import { athleteIdOf, buildPropOffers, sampleTdItem, type PropPerson } from "@/lib/props.parse";
 import type { BoxScoreLine, Drive, DriveResult, Game, TeamGameStats } from "@/data/games";
 import { gameScore } from "@/data/games";
 import { teamByAbbr, teamById, teams } from "@/data/teams";
@@ -2334,6 +2334,7 @@ export async function fetchGameProps(
         }
       }
       diagnostics.itemCount = items.length;
+      diagnostics.sampleTd = sampleTdItem(items);
       diagnostics.sampleTypes = [...new Set(items.map((x) => String(x?.type?.name ?? x?.type?.displayName ?? x?.name ?? "?")))].slice(0, 12);
 
       const [awayRoster, homeRoster] = await Promise.all([fetchTeamRoster(awayAbbr), fetchTeamRoster(homeAbbr)]);
