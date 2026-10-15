@@ -1082,10 +1082,6 @@ function GamePage() {
                 Team statistics
               </h2>
 
-              <p className="label-mono">
-                {away.abbr} left · {home.abbr} right
-              </p>
-
               <div className="mt-4">
                 <StatComparison game={game} />
               </div>
