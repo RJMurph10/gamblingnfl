@@ -352,6 +352,11 @@ function ProbabilityGraph({
   });
   const domain = Math.max(3600, elapsed[elapsed.length - 1] || 3600);
   const xFor = (seconds: number) => plotLeft + (seconds / domain) * plotWidth;
+  // When Over is locked early, keep the normal game-time scale and end the
+  // chart frame at that exact point instead of leaving an empty bordered tail.
+  const graphRight = isTotal && usable[usable.length - 1]?.raw >= 1
+    ? Math.max(plotLeft + 24, xFor(elapsed[elapsed.length - 1]))
+    : plotRight;
   // value is the home probability: 0 = away certain (top), 1 = home certain (bottom).
   const yFor = (value: number) => plotTop + Math.max(0, Math.min(1, value)) * plotHeight;
 
@@ -360,11 +365,18 @@ function ProbabilityGraph({
   const linePath = `M${coords[0].x.toFixed(2)},${coords[0].y.toFixed(2)}${curve}`;
   const areaPath = `M${coords[0].x.toFixed(2)},${midY} L${coords[0].x.toFixed(2)},${coords[0].y.toFixed(2)}${curve} L${coords[coords.length - 1].x.toFixed(2)},${midY} Z`;
 
-  const quarterTicks = [0, 1, 2, 3].map((q) => ({ label: QUARTER_LABELS[q + 1], x: xFor(q * 900 + 450) }));
+  const quarterTicks = [0, 1, 2, 3]
+    .map((q) => ({ label: QUARTER_LABELS[q + 1], x: xFor(q * 900 + 450) }))
+    .filter((tick) => tick.x < graphRight);
   const hasOvertime = domain > 3600;
-  if (hasOvertime) quarterTicks.push({ label: "OT", x: xFor(3600 + (domain - 3600) / 2) });
-  // Interior quarter dividers only; the outer edges are the border. The 4th/OT divider appears only in overtime games.
-  const quarterLines = (hasOvertime ? [1, 2, 3, 4] : [1, 2, 3]).map((q) => xFor(q * 900));
+  if (hasOvertime) {
+    const overtimeTick = { label: "OT", x: xFor(3600 + (domain - 3600) / 2) };
+    if (overtimeTick.x < graphRight) quarterTicks.push(overtimeTick);
+  }
+  // Interior quarter dividers only; the outer edge is the border. The 4th/OT divider appears only in overtime games.
+  const quarterLines = (hasOvertime ? [1, 2, 3, 4] : [1, 2, 3])
+    .map((q) => xFor(q * 900))
+    .filter((x) => x < graphRight);
 
   const activeEntry = hoverIndex === null ? usable[usable.length - 1] : usable[hoverIndex];
   const homePct = Math.round(activeEntry.value * 100);
@@ -445,7 +457,7 @@ function ProbabilityGraph({
         </defs>
         {/* Keep only the 50% horizontal reference line; retain quarter boundaries. */}
         {[0.5].map((t) => (
-          <line key={t} x1={plotLeft} x2={plotRight} y1={plotTop + t * plotHeight} y2={plotTop + t * plotHeight} stroke="currentColor" strokeOpacity="0.3" strokeDasharray="1 4" />
+          <line key={t} x1={plotLeft} x2={graphRight} y1={plotTop + t * plotHeight} y2={plotTop + t * plotHeight} stroke="currentColor" strokeOpacity="0.3" strokeDasharray="1 4" />
         ))}
         {quarterLines.map((x) => (
           <line key={x} x1={x} x2={x} y1={plotTop} y2={plotBottom} stroke="currentColor" strokeOpacity="0.3" strokeDasharray="1 4" />
@@ -457,7 +469,7 @@ function ProbabilityGraph({
         <path d={linePath} fill="none" stroke={topColor} strokeWidth="2" clipPath={`url(#${uid}-top)`} />
         <path d={linePath} fill="none" stroke={bottomColor} strokeWidth="2" clipPath={`url(#${uid}-bottom)`} />
         {/* Border around the whole graph: same weight and shade as the tab bar border. */}
-        <rect x={plotLeft} y={plotTop} width={plotWidth} height={plotHeight} rx="8" fill="none" className="stroke-line/10" strokeWidth="1" vectorEffect="non-scaling-stroke" />
+        <rect x={plotLeft} y={plotTop} width={graphRight - plotLeft} height={plotHeight} rx="8" fill="none" className="stroke-line/10" strokeWidth="1" vectorEffect="non-scaling-stroke" />
         {hoverIndex !== null ? (
           <g>
             <line x1={coords[hoverIndex].x} x2={coords[hoverIndex].x} y1={plotTop} y2={plotBottom} stroke="currentColor" strokeOpacity="0.5" />
@@ -470,7 +482,7 @@ function ProbabilityGraph({
           { y: midY, label: "50" },
           { y: plotBottom, label: "100" },
         ].map((tick) => (
-          <text key={`${tick.y}-${tick.label}`} x={plotRight + 8} y={tick.y} dy="0.35em" fontSize="12" fill="currentColor" opacity="0.6">
+          <text key={`${tick.y}-${tick.label}`} x={graphRight + 8} y={tick.y} dy="0.35em" fontSize="12" fill="currentColor" opacity="0.6">
             {tick.label}
           </text>
         ))}
