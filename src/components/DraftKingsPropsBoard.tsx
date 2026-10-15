@@ -1,9 +1,16 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { type Game } from "@/data/games";
 import { type Team } from "@/data/teams";
 import { TeamLogo } from "@/components/booth";
-
-type PropCategory = "td-scorers" | "passing" | "rushing" | "receiving";
+import {
+  type PropCategory,
+  type TDMarket,
+  type PassingMetric,
+  type RushingMetric,
+  type ReceivingMetric,
+  type PlayerPropLine,
+  type TDScorerLine,
+} from "@/lib/props.types";
 
 interface DraftKingsPropsBoardProps {
   game: Game;
@@ -14,185 +21,257 @@ interface DraftKingsPropsBoardProps {
 export function DraftKingsPropsBoard({ game, away, home }: DraftKingsPropsBoardProps) {
   const [category, setCategory] = useState<PropCategory>("td-scorers");
   const [teamFilter, setTeamFilter] = useState<"all" | "away" | "home">("all");
+  const [tdMarket, setTdMarket] = useState<TDMarket>("all");
+  const [passingMetric, setPassingMetric] = useState<PassingMetric>("yards");
+  const [rushingMetric, setRushingMetric] = useState<RushingMetric>("yards");
+  const [receivingMetric, setReceivingMetric] = useState<ReceivingMetric>("yards");
 
-  // Sub-market pill selections within each category
-  const [tdMarket, setTdMarket] = useState<"all" | "anytime" | "first" | "multi">("all");
-  const [passingMetric, setPassingMetric] = useState<"yards" | "tds" | "completions" | "ints">("yards");
-  const [rushingMetric, setRushingMetric] = useState<"yards" | "attempts" | "longest">("yards");
-  const [receivingMetric, setReceivingMetric] = useState<"yards" | "receptions" | "longest">("yards");
+  const isLive = game.status === "live" || game.status === "halftime";
+  const isFinal = game.status === "final";
+  const isOT = (game.period ?? 0) > 4;
 
-  // Sample DraftKings prop lines aligned with the matchup rosters
-  const tdScorerRows = [
-    { name: "Kenneth Walker III", team: away.abbr, pos: "RB", first: "+450", anytime: "-110", multi: "+475" },
-    { name: "Javonte Williams", team: home.abbr, pos: "RB", first: "+550", anytime: "+125", multi: "+650" },
-    { name: "DK Metcalf", team: away.abbr, pos: "WR", first: "+600", anytime: "+145", multi: "+750" },
-    { name: "Courtland Sutton", team: home.abbr, pos: "WR", first: "+700", anytime: "+165", multi: "+900" },
-    { name: "Jaxon Smith-Njigba", team: away.abbr, pos: "WR", first: "+800", anytime: "+195", multi: "+1100" },
-    { name: "Zach Charbonnet", team: away.abbr, pos: "RB", first: "+950", anytime: "+225", multi: "+1300" },
-    { name: "Bo Nix", team: home.abbr, pos: "QB", first: "+1200", anytime: "+280", multi: "+1800" },
-    { name: "Geno Smith", team: away.abbr, pos: "QB", first: "+1600", anytime: "+425", multi: "+2800" },
-    { name: "Noah Fant", team: away.abbr, pos: "TE", first: "+1400", anytime: "+340", multi: "+2200" },
-    { name: "Greg Dulcich", team: home.abbr, pos: "TE", first: "+1500", anytime: "+360", multi: "+2400" },
-  ].filter((p) => {
-    if (teamFilter === "away") return p.team === away.abbr;
-    if (teamFilter === "home") return p.team === home.abbr;
-    return true;
-  });
+  // Extract recorded box-score stats from the game if available (live or final)
+  const playerStatsMap = useMemo(() => {
+    const map = new Map<string, { passYds: number; rushYds: number; recYds: number; tds: number }>();
+    const statsList = game.playerStats || [];
+    for (const p of statsList) {
+      map.set(p.name.toLowerCase(), {
+        passYds: p.passYds ?? 0,
+        rushYds: p.rushYds ?? 0,
+        recYds: p.recYds ?? 0,
+        tds: p.touchdowns ?? 0,
+      });
+    }
+    return map;
+  }, [game.playerStats]);
 
-  const passingRows = [
-    {
-      name: "Geno Smith",
-      team: away.abbr,
-      pos: "QB",
-      metric: passingMetric,
-      line: passingMetric === "yards" ? "238.5" : passingMetric === "tds" ? "1.5" : passingMetric === "completions" ? "21.5" : "0.5",
-      overOdds: passingMetric === "yards" ? "-115" : passingMetric === "tds" ? "-130" : "-110",
-      underOdds: passingMetric === "yards" ? "-115" : passingMetric === "tds" ? "+100" : "-120",
-    },
-    {
-      name: "Bo Nix",
-      team: home.abbr,
-      pos: "QB",
-      metric: passingMetric,
-      line: passingMetric === "yards" ? "208.5" : passingMetric === "tds" ? "1.5" : passingMetric === "completions" ? "19.5" : "0.5",
-      overOdds: passingMetric === "yards" ? "-115" : passingMetric === "tds" ? "+125" : "-115",
-      underOdds: passingMetric === "yards" ? "-115" : passingMetric === "tds" ? "-160" : "-115",
-    },
-  ].filter((p) => {
-    if (teamFilter === "away") return p.team === away.abbr;
-    if (teamFilter === "home") return p.team === home.abbr;
-    return true;
-  });
+  // Generate dynamic player rows based on team rosters or recorded game players
+  const tdScorerRows: TDScorerLine[] = useMemo(() => {
+    const list: TDScorerLine[] = [];
+    const offensivePlayers = (game.playerStats || []).filter(
+      (p) => ["QB", "RB", "WR", "TE", "FB"].includes(p.position) || (p.rushYds || 0) > 0 || (p.recYds || 0) > 0
+    );
 
-  const rushingRows = [
-    {
-      name: "Kenneth Walker III",
-      team: away.abbr,
-      pos: "RB",
-      line: rushingMetric === "yards" ? "68.5" : rushingMetric === "attempts" ? "15.5" : "15.5",
-      overOdds: "-115",
-      underOdds: "-115",
-    },
-    {
-      name: "Javonte Williams",
-      team: home.abbr,
-      pos: "RB",
-      line: rushingMetric === "yards" ? "52.5" : rushingMetric === "attempts" ? "12.5" : "13.5",
-      overOdds: "-110",
-      underOdds: "-120",
-    },
-    {
-      name: "Zach Charbonnet",
-      team: away.abbr,
-      pos: "RB",
-      line: rushingMetric === "yards" ? "28.5" : rushingMetric === "attempts" ? "6.5" : "10.5",
-      overOdds: "-115",
-      underOdds: "-115",
-    },
-    {
-      name: "Jaleel McLaughlin",
-      team: home.abbr,
-      pos: "RB",
-      line: rushingMetric === "yards" ? "24.5" : rushingMetric === "attempts" ? "5.5" : "9.5",
-      overOdds: "-105",
-      underOdds: "-125",
-    },
-    {
-      name: "Bo Nix",
-      team: home.abbr,
-      pos: "QB",
-      line: rushingMetric === "yards" ? "22.5" : rushingMetric === "attempts" ? "4.5" : "11.5",
-      overOdds: "-115",
-      underOdds: "-115",
-    },
-  ].filter((p) => {
-    if (teamFilter === "away") return p.team === away.abbr;
-    if (teamFilter === "home") return p.team === home.abbr;
-    return true;
-  });
+    // If no stats yet (scheduled), generate standard key offensive starters
+    const source = offensivePlayers.length > 0 ? offensivePlayers : [
+      { name: "Starting RB", team: away.abbr, position: "RB" },
+      { name: "Starting WR1", team: away.abbr, position: "WR" },
+      { name: "Starting QB", team: away.abbr, position: "QB" },
+      { name: "Starting RB", team: home.abbr, position: "RB" },
+      { name: "Starting WR1", team: home.abbr, position: "WR" },
+      { name: "Starting QB", team: home.abbr, position: "QB" },
+    ];
 
-  const receivingRows = [
-    {
-      name: "DK Metcalf",
-      team: away.abbr,
-      pos: "WR",
-      line: receivingMetric === "yards" ? "64.5" : receivingMetric === "receptions" ? "5.5" : "23.5",
-      overOdds: "-115",
-      underOdds: "-115",
-    },
-    {
-      name: "Courtland Sutton",
-      team: home.abbr,
-      pos: "WR",
-      line: receivingMetric === "yards" ? "51.5" : receivingMetric === "receptions" ? "4.5" : "20.5",
-      overOdds: "-115",
-      underOdds: "-115",
-    },
-    {
-      name: "Jaxon Smith-Njigba",
-      team: away.abbr,
-      pos: "WR",
-      line: receivingMetric === "yards" ? "48.5" : receivingMetric === "receptions" ? "4.5" : "18.5",
-      overOdds: "-110",
-      underOdds: "-120",
-    },
-    {
-      name: "Tyler Lockett",
-      team: away.abbr,
-      pos: "WR",
-      line: receivingMetric === "yards" ? "38.5" : receivingMetric === "receptions" ? "3.5" : "16.5",
-      overOdds: "-115",
-      underOdds: "-115",
-    },
-    {
-      name: "Josh Reynolds",
-      team: home.abbr,
-      pos: "WR",
-      line: receivingMetric === "yards" ? "32.5" : receivingMetric === "receptions" ? "2.5" : "15.5",
-      overOdds: "-115",
-      underOdds: "-115",
-    },
-  ].filter((p) => {
-    if (teamFilter === "away") return p.team === away.abbr;
-    if (teamFilter === "home") return p.team === home.abbr;
-    return true;
-  });
+    for (const p of source) {
+      const stats = playerStatsMap.get(p.name.toLowerCase());
+      const tds = stats?.tds ?? 0;
+      list.push({
+        playerId: p.name,
+        playerName: p.name,
+        teamAbbr: p.team || away.abbr,
+        position: p.position || "OFF",
+        firstOdds: "+450",
+        anytimeOdds: p.position === "RB" ? "+110" : p.position === "WR" ? "+145" : "+350",
+        multiOdds: "+650",
+        scoredTD: tds > 0,
+        tdCount: tds,
+      });
+    }
+
+    return list.filter((r) => {
+      if (teamFilter === "away") return r.teamAbbr === away.abbr;
+      if (teamFilter === "home") return r.teamAbbr === home.abbr;
+      return true;
+    });
+  }, [game.playerStats, playerStatsMap, teamFilter, away.abbr, home.abbr]);
+
+  // Dynamic Passing lines
+  const passingRows: PlayerPropLine[] = useMemo(() => {
+    const qbs = (game.playerStats || []).filter((p) => p.position === "QB");
+    const source = qbs.length > 0 ? qbs : [
+      { name: `${away.name} QB`, team: away.abbr, position: "QB" },
+      { name: `${home.name} QB`, team: home.abbr, position: "QB" },
+    ];
+
+    return source
+      .map((p) => {
+        const stats = playerStatsMap.get(p.name.toLowerCase());
+        const current = stats?.passYds ?? 0;
+        const line = 238.5;
+        let result: "over" | "under" | "pending" = "pending";
+        if (isFinal) {
+          result = current > line ? "over" : "under";
+        }
+
+        return {
+          playerId: p.name,
+          playerName: p.name,
+          teamAbbr: p.team || away.abbr,
+          position: "QB",
+          metric: "Passing Yards",
+          line,
+          overOdds: "-115",
+          underOdds: "-115",
+          currentStat: isLive || isFinal ? current : undefined,
+          result,
+        };
+      })
+      .filter((r) => (teamFilter === "away" ? r.teamAbbr === away.abbr : teamFilter === "home" ? r.teamAbbr === home.abbr : true));
+  }, [game.playerStats, playerStatsMap, teamFilter, away, home, isLive, isFinal]);
+
+  // Dynamic Rushing lines
+  const rushingRows: PlayerPropLine[] = useMemo(() => {
+    const rbs = (game.playerStats || []).filter((p) => ["RB", "FB"].includes(p.position) || (p.rushYds || 0) > 0);
+    const source = rbs.length > 0 ? rbs : [
+      { name: `${away.name} RB1`, team: away.abbr, position: "RB" },
+      { name: `${home.name} RB1`, team: home.abbr, position: "RB" },
+    ];
+
+    return source
+      .map((p) => {
+        const stats = playerStatsMap.get(p.name.toLowerCase());
+        const current = stats?.rushYds ?? 0;
+        const line = 64.5;
+        let result: "over" | "under" | "pending" = "pending";
+        if (isFinal) result = current > line ? "over" : "under";
+
+        return {
+          playerId: p.name,
+          playerName: p.name,
+          teamAbbr: p.team || away.abbr,
+          position: p.position || "RB",
+          metric: "Rushing Yards",
+          line,
+          overOdds: "-110",
+          underOdds: "-120",
+          currentStat: isLive || isFinal ? current : undefined,
+          result,
+        };
+      })
+      .filter((r) => (teamFilter === "away" ? r.teamAbbr === away.abbr : teamFilter === "home" ? r.teamAbbr === home.abbr : true));
+  }, [game.playerStats, playerStatsMap, teamFilter, away, home, isLive, isFinal]);
+
+  // Dynamic Receiving lines
+  const receivingRows: PlayerPropLine[] = useMemo(() => {
+    const wrs = (game.playerStats || []).filter((p) => ["WR", "TE"].includes(p.position) || (p.recYds || 0) > 0);
+    const source = wrs.length > 0 ? wrs : [
+      { name: `${away.name} WR1`, team: away.abbr, position: "WR" },
+      { name: `${home.name} WR1`, team: home.abbr, position: "WR" },
+    ];
+
+    return source
+      .map((p) => {
+        const stats = playerStatsMap.get(p.name.toLowerCase());
+        const current = stats?.recYds ?? 0;
+        const line = 54.5;
+        let result: "over" | "under" | "pending" = "pending";
+        if (isFinal) result = current > line ? "over" : "under";
+
+        return {
+          playerId: p.name,
+          playerName: p.name,
+          teamAbbr: p.team || away.abbr,
+          position: p.position || "WR",
+          metric: "Receiving Yards",
+          line,
+          overOdds: "-115",
+          underOdds: "-115",
+          currentStat: isLive || isFinal ? current : undefined,
+          result,
+        };
+      })
+      .filter((r) => (teamFilter === "away" ? r.teamAbbr === away.abbr : teamFilter === "home" ? r.teamAbbr === home.abbr : true));
+  }, [game.playerStats, playerStatsMap, teamFilter, away, home, isLive, isFinal]);
 
   return (
-    <div className="overflow-hidden rounded-xl border border-line/10 bg-[#0e141b] shadow-2xl">
-      {/* DraftKings Header Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#1c2734] bg-[#121922] px-4 py-3">
+    <div className="rounded-xl border border-white/10 bg-[#0d141c] overflow-hidden shadow-2xl">
+      {/* DraftKings Sportsbook Banner */}
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 bg-[#121c27] px-4 py-3">
         <div className="flex items-center gap-2.5">
-          <span className="flex h-6 w-6 items-center justify-center rounded bg-[#55b843] font-mono text-xs font-black text-black">
+          <div className="flex size-7 items-center justify-center rounded bg-[#50b848] font-disp font-black text-black text-xs shadow-md">
             DK
-          </span>
-          <span className="font-disp text-sm font-bold uppercase tracking-wider text-white">
-            DraftKings Sportsbook Player Props
-          </span>
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="font-disp text-sm font-bold uppercase tracking-wider text-white">
+                DraftKings Sportsbook
+              </span>
+              <span className="rounded bg-[#50b848]/20 px-1.5 py-0.2 font-mono text-[10px] font-bold text-[#50b848] uppercase tracking-wider">
+                Props
+              </span>
+            </div>
+            <p className="text-[11px] text-mute">
+              {isFinal
+                ? "Official Game Results · Markets Closed"
+                : isOT
+                ? "Overtime In-Play · Live Props Active"
+                : isLive
+                ? `Live In-Play (${game.clock || "Q" + (game.period || "")})`
+                : "Live Consensus Market Odds"}
+            </p>
+          </div>
         </div>
-        <span className="font-mono text-[11px] uppercase tracking-wider text-[#7e8f9f]">
-          {game.status === "live" ? "Live Lines" : "Consensus Market Odds"}
-        </span>
+
+        {/* Live Quarter / Settlement Badge */}
+        {isLive && (
+          <div className="flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-mono font-bold text-emerald-400">
+            <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
+            {game.status === "halftime" ? "HALFTIME" : isOT ? "OVERTIME" : `Q${game.period} ${game.clock || ""}`}
+          </div>
+        )}
+        {isFinal && (
+          <div className="rounded-md border border-line/30 bg-surface/50 px-2.5 py-1 text-xs font-mono font-bold text-mute uppercase">
+            Market Closed · Final
+          </div>
+        )}
+
+        {/* Team filter pills */}
+        <div className="flex items-center gap-1 rounded-lg bg-black/40 p-1 border border-white/10">
+          {(["all", "away", "home"] as const).map((filter) => (
+            <button
+              key={filter}
+              type="button"
+              onClick={() => setTeamFilter(filter)}
+              className={`flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-md transition-colors ${
+                teamFilter === filter
+                  ? "bg-[#1c2936] text-white shadow-sm border border-[#50b848]/40"
+                  : "text-mute hover:text-foreground"
+              }`}
+            >
+              {filter === "all" ? (
+                "All"
+              ) : filter === "away" ? (
+                <>
+                  <TeamLogo team={away} size="sm" />
+                  <span>{away.abbr}</span>
+                </>
+              ) : (
+                <>
+                  <TeamLogo team={home} size="sm" />
+                  <span>{home.abbr}</span>
+                </>
+              )}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {/* Main Category Sub-tabs */}
-      <div className="flex items-center gap-1.5 overflow-x-auto border-b border-[#1c2734] bg-[#0c1117] p-2">
-        {(
-          [
-            ["td-scorers", "TD Scorers"],
-            ["passing", "Passing"],
-            ["rushing", "Rushing"],
-            ["receiving", "Receiving"],
-          ] as const
-        ).map(([id, label]) => (
+      {/* Sub-Category Pills: TD Scorers · Passing · Rushing · Receiving */}
+      <div className="flex border-b border-white/10 bg-[#0f1722] p-1.5 gap-1.5 overflow-x-auto">
+        {[
+          ["td-scorers", "TD Scorers"],
+          ["passing", "Passing"],
+          ["rushing", "Rushing"],
+          ["receiving", "Receiving"],
+        ].map(([key, label]) => (
           <button
-            key={id}
+            key={key}
             type="button"
-            onClick={() => setCategory(id)}
-            className={`whitespace-nowrap rounded-md px-3.5 py-1.5 font-disp text-xs font-bold uppercase tracking-wider transition-colors ${
-              category === id
-                ? "bg-[#55b843] text-black shadow-sm"
-                : "text-[#8ea2b4] hover:bg-[#16212d] hover:text-white"
+            onClick={() => setCategory(key as PropCategory)}
+            className={`whitespace-nowrap px-4 py-2 text-xs font-disp uppercase tracking-wider font-bold rounded-lg transition-all ${
+              category === key
+                ? "bg-[#50b848] text-black shadow-md shadow-[#50b848]/20"
+                : "bg-surface/30 text-mute hover:bg-surface hover:text-foreground border border-white/5"
             }`}
           >
             {label}
@@ -200,263 +279,177 @@ export function DraftKingsPropsBoard({ game, away, home }: DraftKingsPropsBoardP
         ))}
       </div>
 
-      {/* Filter Row: Team Toggle & Metric Sub-Pills */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#18232f] bg-[#101720] px-4 py-2.5">
-        {/* Metric Selector depending on category */}
-        <div className="flex flex-wrap items-center gap-1.5">
-          {category === "td-scorers" && (
-            <>
-              {(
-                [
-                  ["all", "All Markets"],
+      {/* Category Content */}
+      <div className="p-4">
+        {category === "td-scorers" ? (
+          <div>
+            {/* TD Market Sub-Filter */}
+            <div className="mb-4 flex items-center justify-between">
+              <div className="flex gap-1.5">
+                {[
+                  ["all", "All TD Markets"],
                   ["anytime", "Anytime TD"],
                   ["first", "First TD"],
                   ["multi", "2+ TDs"],
-                ] as const
-              ).map(([m, label]) => (
-                <button
-                  key={m}
-                  type="button"
-                  onClick={() => setTdMarket(m)}
-                  className={`rounded-full px-2.5 py-1 font-mono text-[11px] font-semibold transition-colors ${
-                    tdMarket === m
-                      ? "bg-[#253545] text-white ring-1 ring-[#55b843]"
-                      : "bg-[#141d27] text-[#7e8f9f] hover:text-white"
-                  }`}
-                >
-                  {label}
-                </button>
-              ))}
-            </>
-          )}
-
-          {category === "passing" && (
-            <>
-              {(
-                [
-                  ["yards", "Passing Yards"],
-                  ["tds", "Passing Touchdowns"],
-                  ["completions", "Completions"],
-                  ["ints", "Interceptions"],
-                ] as const
-              ).map(([metric, label]) => (
-                <button
-                  key={metric}
-                  type="button"
-                  onClick={() => setPassingMetric(metric)}
-                  className={`rounded-full px-2.5 py-1 font-mono text-[11px] font-semibold transition-colors ${
-                    passingMetric === metric
-                      ? "bg-[#253545] text-white ring-1 ring-[#55b843]"
-                      : "bg-[#141d27] text-[#7e8f9f] hover:text-white"
-                  }`}
-                >
-                  {label}
-                </button>
-              ))}
-            </>
-          )}
-
-          {category === "rushing" && (
-            <>
-              {(
-                [
-                  ["yards", "Rushing Yards"],
-                  ["attempts", "Rush Attempts"],
-                  ["longest", "Longest Rush"],
-                ] as const
-              ).map(([metric, label]) => (
-                <button
-                  key={metric}
-                  type="button"
-                  onClick={() => setRushingMetric(metric)}
-                  className={`rounded-full px-2.5 py-1 font-mono text-[11px] font-semibold transition-colors ${
-                    rushingMetric === metric
-                      ? "bg-[#253545] text-white ring-1 ring-[#55b843]"
-                      : "bg-[#141d27] text-[#7e8f9f] hover:text-white"
-                  }`}
-                >
-                  {label}
-                </button>
-              ))}
-            </>
-          )}
-
-          {category === "receiving" && (
-            <>
-              {(
-                [
-                  ["yards", "Receiving Yards"],
-                  ["receptions", "Receptions"],
-                  ["longest", "Longest Reception"],
-                ] as const
-              ).map(([metric, label]) => (
-                <button
-                  key={metric}
-                  type="button"
-                  onClick={() => setReceivingMetric(metric)}
-                  className={`rounded-full px-2.5 py-1 font-mono text-[11px] font-semibold transition-colors ${
-                    receivingMetric === metric
-                      ? "bg-[#253545] text-white ring-1 ring-[#55b843]"
-                      : "bg-[#141d27] text-[#7e8f9f] hover:text-white"
-                  }`}
-                >
-                  {label}
-                </button>
-              ))}
-            </>
-          )}
-        </div>
-
-        {/* Team Filters */}
-        <div className="flex items-center gap-1">
-          <span className="mr-1 font-mono text-[11px] uppercase tracking-wider text-[#617384]">
-            Team:
-          </span>
-          {(
-            [
-              ["all", "All"],
-              ["away", away.abbr],
-              ["home", home.abbr],
-            ] as const
-          ).map(([f, label]) => (
-            <button
-              key={f}
-              type="button"
-              onClick={() => setTeamFilter(f)}
-              className={`rounded px-2 py-0.5 font-disp text-xs font-bold uppercase tracking-wider transition-colors ${
-                teamFilter === f
-                  ? "bg-[#1f2d3a] text-[#55b843] border border-[#55b843]/40"
-                  : "bg-transparent text-[#7e8f9f] hover:text-white"
-              }`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Content Area */}
-      <div className="p-3">
-        {category === "td-scorers" ? (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left font-mono text-sm">
-              <thead>
-                <tr className="border-b border-[#1c2734] text-[11px] uppercase tracking-wider text-[#7e8f9f]">
-                  <th className="py-2 pl-3 font-disp font-semibold">Player</th>
-                  {(tdMarket === "all" || tdMarket === "first") && (
-                    <th className="py-2 text-center font-disp font-semibold">First TD</th>
-                  )}
-                  {(tdMarket === "all" || tdMarket === "anytime") && (
-                    <th className="py-2 text-center font-disp font-semibold">Anytime TD</th>
-                  )}
-                  {(tdMarket === "all" || tdMarket === "multi") && (
-                    <th className="py-2 text-center font-disp font-semibold">2+ TDs</th>
-                  )}
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[#16212c]">
-                {tdScorerRows.map((p, idx) => (
-                  <tr key={idx} className="hover:bg-[#131b24] transition-colors">
-                    <td className="py-3 pl-3">
-                      <div className="font-disp font-bold text-white text-base leading-tight">
-                        {p.name}
-                      </div>
-                      <div className="text-[11px] text-[#7e8f9f] uppercase tracking-wider">
-                        {p.pos} · {p.team}
-                      </div>
-                    </td>
-                    {(tdMarket === "all" || tdMarket === "first") && (
-                      <td className="py-2 px-1 text-center">
-                        <button
-                          type="button"
-                          className="h-10 w-24 rounded-md border border-[#2a3c50] bg-[#16222f] font-mono text-sm font-bold text-white shadow-sm transition hover:border-[#55b843] hover:bg-[#1c2c3e]"
-                        >
-                          {p.first}
-                        </button>
-                      </td>
-                    )}
-                    {(tdMarket === "all" || tdMarket === "anytime") && (
-                      <td className="py-2 px-1 text-center">
-                        <button
-                          type="button"
-                          className="h-10 w-24 rounded-md border border-[#2a3c50] bg-[#16222f] font-mono text-sm font-bold text-white shadow-sm transition hover:border-[#55b843] hover:bg-[#1c2c3e]"
-                        >
-                          {p.anytime}
-                        </button>
-                      </td>
-                    )}
-                    {(tdMarket === "all" || tdMarket === "multi") && (
-                      <td className="py-2 px-1 text-center">
-                        <button
-                          type="button"
-                          className="h-10 w-24 rounded-md border border-[#2a3c50] bg-[#16222f] font-mono text-sm font-bold text-white shadow-sm transition hover:border-[#55b843] hover:bg-[#1c2c3e]"
-                        >
-                          {p.multi}
-                        </button>
-                      </td>
-                    )}
-                  </tr>
+                ].map(([key, label]) => (
+                  <button
+                    key={key}
+                    type="button"
+                    onClick={() => setTdMarket(key as TDMarket)}
+                    className={`px-3 py-1 text-[11px] font-semibold rounded-md transition-all ${
+                      tdMarket === key
+                        ? "bg-[#1f2d3d] text-white border border-[#50b848]/50"
+                        : "bg-surface/20 text-mute hover:text-foreground"
+                    }`}
+                  >
+                    {label}
+                  </button>
                 ))}
-              </tbody>
-            </table>
+              </div>
+              <span className="text-[11px] text-mute font-mono">American Odds</span>
+            </div>
+
+            {/* TD Scorers Table */}
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead>
+                  <tr className="border-b border-white/10 text-[10px] font-disp uppercase tracking-wider text-mute">
+                    <th className="py-2 px-3">Player</th>
+                    {(tdMarket === "all" || tdMarket === "first") && <th className="py-2 px-2 text-center">First TD</th>}
+                    {(tdMarket === "all" || tdMarket === "anytime") && <th className="py-2 px-2 text-center">Anytime TD</th>}
+                    {(tdMarket === "all" || tdMarket === "multi") && <th className="py-2 px-2 text-center">2+ TDs</th>}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-white/5">
+                  {tdScorerRows.map((player) => (
+                    <tr key={player.playerId} className="hover:bg-white/[0.02] transition-colors">
+                      <td className="py-2.5 px-3">
+                        <div className="font-bold text-white flex items-center gap-1.5">
+                          {player.playerName}
+                          {player.scoredTD && (
+                            <span className="rounded bg-[#50b848]/20 px-1.5 py-0.2 font-mono text-[9px] font-bold text-[#50b848]">
+                              TD HIT ({player.tdCount})
+                            </span>
+                          )}
+                        </div>
+                        <div className="text-[11px] text-mute">
+                          {player.position} · {player.teamAbbr}
+                        </div>
+                      </td>
+
+                      {(tdMarket === "all" || tdMarket === "first") && (
+                        <td className="py-2.5 px-2 text-center">
+                          <button
+                            disabled={isFinal}
+                            className="w-20 rounded-md border border-white/10 bg-[#16222f] hover:border-[#50b848]/50 py-1.5 font-mono text-xs font-bold text-[#50b848] transition-all disabled:opacity-50"
+                          >
+                            {player.firstOdds}
+                          </button>
+                        </td>
+                      )}
+
+                      {(tdMarket === "all" || tdMarket === "anytime") && (
+                        <td className="py-2.5 px-2 text-center">
+                          <button
+                            disabled={isFinal}
+                            className={`w-20 rounded-md border py-1.5 font-mono text-xs font-bold transition-all disabled:opacity-60 ${
+                              player.scoredTD
+                                ? "border-[#50b848] bg-[#50b848]/20 text-[#50b848]"
+                                : "border-white/10 bg-[#16222f] hover:border-[#50b848]/50 text-[#50b848]"
+                            }`}
+                          >
+                            {player.scoredTD ? "HIT" : player.anytimeOdds}
+                          </button>
+                        </td>
+                      )}
+
+                      {(tdMarket === "all" || tdMarket === "multi") && (
+                        <td className="py-2.5 px-2 text-center">
+                          <button
+                            disabled={isFinal}
+                            className="w-20 rounded-md border border-white/10 bg-[#16222f] hover:border-[#50b848]/50 py-1.5 font-mono text-xs font-bold text-[#50b848] transition-all disabled:opacity-50"
+                          >
+                            {player.multiOdds}
+                          </button>
+                        </td>
+                      )}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         ) : (
-          /* 2-Way Over / Under Betting Board (Passing, Rushing, Receiving) */
-          <div className="overflow-x-auto">
-            <table className="w-full text-left font-mono text-sm">
-              <thead>
-                <tr className="border-b border-[#1c2734] text-[11px] uppercase tracking-wider text-[#7e8f9f]">
-                  <th className="py-2 pl-3 font-disp font-semibold">Player</th>
-                  <th className="py-2 text-center font-disp font-semibold w-32">Over</th>
-                  <th className="py-2 text-center font-disp font-semibold w-32">Under</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[#16212c]">
-                {(category === "passing"
-                  ? passingRows
-                  : category === "rushing"
-                  ? rushingRows
-                  : receivingRows
-                ).map((row, idx) => (
-                  <tr key={idx} className="hover:bg-[#131b24] transition-colors">
-                    <td className="py-3 pl-3">
-                      <div className="font-disp font-bold text-white text-base leading-tight">
-                        {row.name}
+          /* Passing / Rushing / Receiving Over-Under Board */
+          <div>
+            <div className="mb-3 flex items-center justify-between text-[11px] text-mute">
+              <span>{category.toUpperCase()} YARDAGE OVER / UNDER</span>
+              <span className="font-mono">Odds: -115 standard</span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {(category === "passing" ? passingRows : category === "rushing" ? rushingRows : receivingRows).map(
+                (row) => (
+                  <div
+                    key={row.playerId}
+                    className="flex items-center justify-between rounded-lg border border-white/10 bg-[#121c27] p-3 hover:border-white/20 transition-all"
+                  >
+                    <div>
+                      <div className="font-bold text-white text-sm">{row.playerName}</div>
+                      <div className="text-[11px] text-mute">
+                        {row.position} · {row.teamAbbr} · {row.metric}
                       </div>
-                      <div className="text-[11px] text-[#7e8f9f] uppercase tracking-wider">
-                        {row.pos} · {row.team}
-                      </div>
-                    </td>
-                    <td className="py-2 px-1 text-center">
+
+                      {/* Live In-Game Stat Progress */}
+                      {row.currentStat !== undefined && (
+                        <div className="mt-1 flex items-center gap-2">
+                          <span className="font-mono text-xs font-bold text-white">
+                            {row.currentStat} / {row.line} yds
+                          </span>
+                          {row.result === "over" && (
+                            <span className="rounded bg-[#50b848]/20 px-1 py-0.2 font-mono text-[9px] font-bold text-[#50b848]">
+                              OVER HIT
+                            </span>
+                          )}
+                          {row.result === "under" && (
+                            <span className="rounded bg-rose-500/20 px-1 py-0.2 font-mono text-[9px] font-bold text-rose-400">
+                              UNDER HIT
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Over / Under DraftKings Betting Buttons */}
+                    <div className="flex items-center gap-2">
                       <button
-                        type="button"
-                        className="flex h-11 w-full max-w-[140px] mx-auto flex-col items-center justify-center rounded-md border border-[#2a3c50] bg-[#16222f] shadow-sm transition hover:border-[#55b843] hover:bg-[#1c2c3e]"
+                        disabled={isFinal}
+                        className={`flex flex-col items-center justify-center w-20 rounded-md border py-1.5 px-2 transition-all disabled:opacity-60 ${
+                          row.result === "over"
+                            ? "border-[#50b848] bg-[#50b848]/20"
+                            : "border-white/10 bg-[#172330] hover:border-[#50b848]/50"
+                        }`}
                       >
-                        <span className="font-mono text-xs font-bold text-white">
-                          O {row.line}
-                        </span>
-                        <span className="font-mono text-[11px] text-[#55b843]">
-                          {row.overOdds}
-                        </span>
+                        <span className="font-mono text-xs font-bold text-white">O {row.line}</span>
+                        <span className="font-mono text-[10px] text-[#50b848]">{row.overOdds}</span>
                       </button>
-                    </td>
-                    <td className="py-2 px-1 text-center">
+
                       <button
-                        type="button"
-                        className="flex h-11 w-full max-w-[140px] mx-auto flex-col items-center justify-center rounded-md border border-[#2a3c50] bg-[#16222f] shadow-sm transition hover:border-[#55b843] hover:bg-[#1c2c3e]"
+                        disabled={isFinal}
+                        className={`flex flex-col items-center justify-center w-20 rounded-md border py-1.5 px-2 transition-all disabled:opacity-60 ${
+                          row.result === "under"
+                            ? "border-[#50b848] bg-[#50b848]/20"
+                            : "border-white/10 bg-[#172330] hover:border-[#50b848]/50"
+                        }`}
                       >
-                        <span className="font-mono text-xs font-bold text-white">
-                          U {row.line}
-                        </span>
-                        <span className="font-mono text-[11px] text-[#55b843]">
-                          {row.underOdds}
-                        </span>
+                        <span className="font-mono text-xs font-bold text-white">U {row.line}</span>
+                        <span className="font-mono text-[10px] text-[#50b848]">{row.underOdds}</span>
                       </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                    </div>
+                  </div>
+                )
+              )}
+            </div>
           </div>
         )}
       </div>
