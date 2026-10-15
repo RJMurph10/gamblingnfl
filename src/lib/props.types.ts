@@ -79,5 +79,7 @@ export interface GamePropBoard {
     error?: string;
     /** True when the browser fetched ESPN directly because the server was refused. */
     viaBrowser?: boolean;
+    /** One raw touchdown-scorer item, so we can see where ESPN puts the price. */
+    sampleTd?: string;
   };
 }
