@@ -1,3 +1,4 @@
+
 @import "tailwindcss" source(none);
 @source "../src";
 @import "tw-animate-css";
@@ -102,6 +103,15 @@
     color: var(--color-ink);
     font-family: var(--font-body);
     -webkit-font-smoothing: antialiased;
+  }
+
+  /*
+   * Fix dotted/slashed zeros in monospace numbers.
+   * Keep JetBrains Mono; disable its slashed-zero feature.
+   */
+  .font-mono {
+    font-variant-numeric: normal;
+    font-feature-settings: "zero" 0;
   }
 
   /* stadium-night ambient wash */
