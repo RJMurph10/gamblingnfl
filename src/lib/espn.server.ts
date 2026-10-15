@@ -1174,7 +1174,10 @@ function withMarketProbabilities(
           totalLine - currentTotal <= 2 && secondsRemaining !== undefined &&
           secondsRemaining > 0 && secondsRemaining <= 120
         ) {
-          next.overProbability = Math.min(0.99, next.overProbability ?? 0.99);
+          // At this point, a score within two points of the total late in the
+          // fourth quarter should not inherit a stale ESPN 0% Over / 100% Under.
+          // Keep the estimate at 99% Over, while never claiming certainty.
+          next.overProbability = 0.99;
           if (!estimatedMarkets.includes("over")) estimatedMarkets.push("over");
         }
       }
@@ -1233,7 +1236,8 @@ function withMarketProbabilities(
           point.probabilitySource = "estimated";
         }
         if (scoreTotal <= totalLine && totalLine - scoreTotal <= 2 && remaining !== undefined && remaining > 0 && remaining <= 120) {
-          point.overProbability = Math.min(0.99, point.overProbability ?? 0.99);
+          // Reapply after smoothing; do not preserve a stale 0% Over estimate.
+          point.overProbability = 0.99;
           point.estimatedMarkets = [...(point.estimatedMarkets ?? []), ...(point.estimatedMarkets?.includes("over") ? [] : ["over" as const])];
           point.probabilitySource = "estimated";
         }
