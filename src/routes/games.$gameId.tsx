@@ -19,7 +19,7 @@ import {
 } from "@/components/booth";
 import { gameScore, type BoxScoreLine, type Game, type GameProbabilityPoint } from "@/data/games";
 import { teamById, type Team } from "@/data/teams";
-import { getGameWeather, getLiveGame } from "@/lib/espn.functions";
+import { getGameWeather, getLiveGame, getTeamSeasonAverages } from "@/lib/espn.functions";
 import { GameWeatherCard } from "@/components/GameWeatherCard";
 import { showGameStatistics } from "@/lib/game-visibility";
 import { DraftKingsPropsBoard } from "@/components/DraftKingsPropsBoard";
@@ -631,6 +631,16 @@ function GamePage() {
     retry: 2,
   });
 
+  const { data: seasonAverages } = useQuery({
+    queryKey: ["team-season-averages", game?.awayTeamId, game?.homeTeamId],
+    queryFn: () => getTeamSeasonAverages({
+      data: { awayTeamId: game!.awayTeamId, homeTeamId: game!.homeTeamId },
+    }),
+    enabled: Boolean(game?.status === "scheduled" && game.awayTeamId && game.homeTeamId),
+    staleTime: 5 * 60 * 1000,
+    retry: 1,
+  });
+
   /*
    * Weather:
    *
@@ -1083,7 +1093,7 @@ function GamePage() {
               </h2>
 
               <div className="mt-4">
-                <StatComparison game={game} />
+                <StatComparison game={game.status === "scheduled" && seasonAverages ? { ...game, stats: { away: seasonAverages.away, home: seasonAverages.home } } : game} />
               </div>
             </Panel>
           </div>
@@ -1431,6 +1441,29 @@ function GamePage() {
             </section>
           ) : null}
             </>
+          ) : activeGameTab === "stats" ? (
+            /* Upcoming games: use each team's season-to-date per-game averages. */
+            <section className="mt-6">
+              <div className="grid gap-6 lg:grid-cols-12">
+                <Panel className="lg:col-span-7">
+                  <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">
+                    Team statistics
+                  </h2>
+                  <p className="label-mono mt-1">Season averages per game</p>
+                  <div className="mt-4">
+                    {seasonAverages ? (
+                      <StatComparison
+                        game={{ ...game, stats: { away: seasonAverages.away, home: seasonAverages.home } }}
+                      />
+                    ) : (
+                      <p className="py-4 text-center font-mono text-[11px] uppercase tracking-wider text-faint">
+                        Loading season averages…
+                      </p>
+                    )}
+                  </div>
+                </Panel>
+              </div>
+            </section>
           ) : activeGameTab === "markets" ? (
             <section className="mt-6">
               <MatchupPredictor game={game} away={away} home={home} />
