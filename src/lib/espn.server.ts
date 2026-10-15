@@ -7,6 +7,7 @@
  * the user's own Supabase tables are populated.
  */
 
+import type { GamePropBoard, LivePropOffer } from "@/lib/props.types";
 import type { BoxScoreLine, Drive, DriveResult, Game, TeamGameStats } from "@/data/games";
 import { gameScore } from "@/data/games";
 import { teamByAbbr, teamById, teams } from "@/data/teams";
@@ -2029,4 +2030,147 @@ export async function fetchTeamDepthChart(teamAbbr: string): Promise<TeamDepthCh
       return { offense: [], defense: [], specialTeams: [] };
     }
   }, ROSTER_CACHE_TTL_MS);
+}
+
+
+/* ---------- player props (DraftKings via ESPN core odds feed) ---------- */
+
+const PROP_PROVIDER_ID = 100; // DraftKings on ESPN's core odds feed
+
+function decimalToAmerican(decimal: number): string {
+  if (!(decimal > 1)) return "";
+  const value = decimal >= 2 ? Math.round((decimal - 1) * 100) : Math.round(-100 / (decimal - 1));
+  return value > 0 ? `+${value}` : `${value}`;
+}
+
+/** Reads a price object ({ american, decimal, value }) into American odds text. */
+function priceToAmerican(price: any): string | undefined {
+  if (price === undefined || price === null) return undefined;
+  const american = price?.american ?? price?.alternateDisplayValue;
+  if (typeof american === "string" && /^[+-]?\d+$/.test(american.trim())) {
+    const text = american.trim();
+    return /^\d/.test(text) ? `+${text}` : text;
+  }
+  const decimal = Number(price?.decimal ?? price?.value ?? (typeof price === "number" ? price : NaN));
+  return Number.isFinite(decimal) && decimal > 1 ? decimalToAmerican(decimal) : undefined;
+}
+
+function classifyProp(
+  baseName: string,
+): { category: LivePropOffer["category"]; market: string; yes?: boolean } | null {
+  const n = baseName.toLowerCase();
+  if (/first.*(touchdown|td)/.test(n)) return { category: "td", market: "First TD", yes: true };
+  if (/(2|two)\+?.*(touchdown|td)|multiple.*touchdown/.test(n)) return { category: "td", market: "2+ TDs", yes: true };
+  if (/anytime.*(touchdown|td)|touchdown scorer/.test(n)) return { category: "td", market: "Anytime TD", yes: true };
+  if (/rushing \+ receiving yards/.test(n)) return { category: "rushing", market: "Rush + Rec Yards" };
+  if (/passing/.test(n)) return { category: "passing", market: baseName.replace(/touchdowns?/i, "TDs") };
+  if (/rushing|carries/.test(n)) return { category: "rushing", market: baseName };
+  if (/receiving|receptions|catches/.test(n)) return { category: "receiving", market: baseName };
+  return null;
+}
+
+/** Real prop lines and prices for one game, straight from ESPN's DraftKings prop feed. */
+export async function fetchGameProps(
+  eventId: string,
+  awayAbbr: string,
+  homeAbbr: string,
+): Promise<GamePropBoard> {
+  return cached(
+    `props-${eventId}`,
+    async () => {
+      const base = `${CORE_ODDS}/${eventId}/competitions/${eventId}/odds/${PROP_PROVIDER_ID}/propBets`;
+      const items: any[] = [];
+      try {
+        const first = await fetchJson(`${base}?limit=1000&page=1`);
+        items.push(...(Array.isArray(first?.items) ? first.items : []));
+        const pageCount = Math.min(Number(first?.pageCount) || 1, 10);
+        for (let page = 2; page <= pageCount; page++) {
+          const next = await fetchJson(`${base}?limit=1000&page=${page}`);
+          items.push(...(Array.isArray(next?.items) ? next.items : []));
+        }
+      } catch {
+        return { available: false, priced: false, offers: [], fetchedAt: Date.now() };
+      }
+
+      const [awayRoster, homeRoster] = await Promise.all([fetchTeamRoster(awayAbbr), fetchTeamRoster(homeAbbr)]);
+      const people = new Map<string, { name: string; position: string; headshot?: string; team: string }>();
+      for (const p of awayRoster) people.set(p.id, { name: p.name, position: p.position, headshot: p.headshot, team: awayAbbr });
+      for (const p of homeRoster) people.set(p.id, { name: p.name, position: p.position, headshot: p.headshot, team: homeAbbr });
+
+      // Athletes missing from the rosters (practice squad, new signings): look them up once.
+      const missing = [
+        ...new Set(
+          items
+            .map((x) => /\/athletes\/(\d+)/.exec(x?.athlete?.$ref ?? "")?.[1])
+            .filter((id): id is string => Boolean(id) && !people.has(id as string)),
+        ),
+      ].slice(0, 30);
+      await Promise.all(
+        missing.map(async (id) => {
+          try {
+            const athlete = await cached(
+              `athlete-${id}`,
+              () => fetchJson(`https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/athletes/${id}`),
+              ROSTER_CACHE_TTL_MS,
+            );
+            if (athlete?.displayName) {
+              people.set(id, {
+                name: athlete.displayName,
+                position: athlete?.position?.abbreviation ?? "",
+                headshot: athlete?.headshot?.href,
+                team: "",
+              });
+            }
+          } catch {
+            // leave the player out
+          }
+        }),
+      );
+
+      const offers: LivePropOffer[] = [];
+      const seen = new Set<string>();
+      for (const x of items) {
+        const typeName = String(x?.type?.name ?? x?.name ?? "");
+        const isMilestone = /milestones?$/i.test(typeName);
+        const kindInfo = classifyProp(typeName.replace(/\s*milestones?$/i, ""));
+        const athleteId = /\/athletes\/(\d+)/.exec(x?.athlete?.$ref ?? "")?.[1];
+        if (!kindInfo || !athleteId) continue;
+        const person = people.get(athleteId);
+        if (!person?.name) continue;
+
+        const line = Number(x?.current?.target?.value ?? x?.current?.target?.displayValue);
+        const overPrice = priceToAmerican(x?.current?.over ?? x?.odds?.over ?? x?.odds?.decimal ?? x?.odds);
+        const underPrice = priceToAmerican(x?.current?.under ?? x?.odds?.under);
+        const yes = Boolean(kindInfo.yes);
+        const hasLine = Number.isFinite(line) && line > 0;
+        if (!yes && !hasLine) continue;
+        const kind: LivePropOffer["kind"] = yes ? "yes" : underPrice && !isMilestone ? "over-under" : isMilestone ? "milestone" : "over-under";
+
+        const key = `${athleteId}|${kindInfo.market}|${yes ? 0 : line}|${kind}`;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        offers.push({
+          playerId: athleteId,
+          playerName: person.name,
+          teamAbbr: person.team,
+          position: person.position,
+          headshot: person.headshot,
+          category: kindInfo.category,
+          market: kindInfo.market,
+          kind,
+          line: yes ? undefined : line,
+          overOdds: overPrice,
+          underOdds: underPrice,
+        });
+      }
+
+      return {
+        available: offers.length > 0,
+        priced: offers.some((o) => o.overOdds || o.underOdds),
+        offers,
+        fetchedAt: Date.now(),
+      };
+    },
+    15_000,
+  );
 }
