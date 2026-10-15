@@ -215,8 +215,8 @@ export function DraftKingsPropsBoard({ game, away, home }: DraftKingsPropsBoardP
           <>
             {!board.priced ? (
               <p className="mb-3 rounded-md border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-[11px] text-amber-300">
-                ESPN lists these props, but DraftKings hasn&apos;t posted prices for them yet. Lines are shown with
-                &quot;—&quot; until prices appear.
+                These are DraftKings&apos; current lines from ESPN, with where each line opened. ESPN&apos;s feed doesn&apos;t
+                include the over/under prices.
               </p>
             ) : null}
 
@@ -364,7 +364,23 @@ export function DraftKingsPropsBoard({ game, away, home }: DraftKingsPropsBoardP
                                 </div>
                               ) : null}
                             </div>
-                            {rows[0].kind === "over-under" ? (
+                            {rows[0].kind === "over-under" && rows[0].overOdds === undefined && rows[0].underOdds === undefined ? (
+                              <div className="flex shrink-0 flex-col items-center justify-center rounded-md border border-white/10 bg-[#172330] px-3 py-1.5">
+                                <span className="font-mono text-[9px] uppercase tracking-wider text-mute">Line</span>
+                                <span className="font-mono text-sm font-bold text-white">{rows[0].line}</span>
+                                {rows[0].openLine !== undefined && rows[0].openLine !== rows[0].line ? (
+                                  <span
+                                    className={`font-mono text-[10px] ${
+                                      (rows[0].line ?? 0) > rows[0].openLine ? "text-[#50b848]" : "text-rose-400"
+                                    }`}
+                                  >
+                                    opened {rows[0].openLine}
+                                  </span>
+                                ) : (
+                                  <span className="font-mono text-[10px] text-mute">no move</span>
+                                )}
+                              </div>
+                            ) : rows[0].kind === "over-under" ? (
                               <div className="flex items-center gap-2 shrink-0">
                                 <div className="flex flex-col items-center justify-center w-20 rounded-md border border-white/10 bg-[#172330] py-1.5 px-2">
                                   <span className="font-mono text-xs font-bold text-white">O {rows[0].line}</span>
