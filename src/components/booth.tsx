@@ -45,12 +45,8 @@ export function GameInformation({ game, away, home }: { game: Game; away: Team; 
   if (game.venue && game.venue !== "TBD") rows.push({ label: "Venue", value: game.venue });
   if (game.location && game.location !== "TBD") rows.push({ label: "Location", value: game.location });
   if (info?.capacity) rows.push({ label: "Capacity", value: info.capacity.toLocaleString() });
-  if (isScheduled && info?.surface) rows.push({ label: "Surface", value: info.surface });
   if (info?.broadcast) rows.push({ label: "TV", value: info.broadcast });
   if (isFinal && info?.attendance) rows.push({ label: "Attendance", value: info.attendance.toLocaleString() });
-  if (isScheduled && game.spread && game.spread !== "—" && game.total > 0) {
-    rows.push({ label: "Line", value: `${game.spread} · O/U ${game.total}` });
-  }
   return (
     <Panel padded={false}>
       <div className="border-b border-line/10 px-4 py-3">
