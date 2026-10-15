@@ -4,7 +4,7 @@ import { type Game } from "@/data/games";
 import { type Team } from "@/data/teams";
 import { TeamLogo } from "@/components/booth";
 import { getGameProps, getPropPeople } from "@/lib/espn.functions";
-import { athleteIdOf, buildPropOffers, type PropPerson } from "@/lib/props.parse";
+import { athleteIdOf, buildPropOffers, sampleTdItem, type PropPerson } from "@/lib/props.parse";
 import { type PropCategory, type LivePropOffer, type GamePropBoard } from "@/lib/props.types";
 
 interface DraftKingsPropsBoardProps {
@@ -78,6 +78,7 @@ async function loadPropsInBrowser(
       itemCount: items.length,
       sampleTypes: [...new Set(items.map((x) => String(x?.type?.name ?? "?")))].slice(0, 12),
       viaBrowser: true,
+      sampleTd: sampleTdItem(items),
       error: serverBoard.diagnostics?.error ? `server: ${serverBoard.diagnostics.error}` : undefined,
     },
   };
@@ -98,7 +99,6 @@ function groupOffers(offers: LivePropOffer[]) {
 export function DraftKingsPropsBoard({ game, away, home }: DraftKingsPropsBoardProps) {
   const [category, setCategory] = useState<PropCategory>("td-scorers");
   const [teamFilter, setTeamFilter] = useState<"all" | "away" | "home">("all");
-  const [tdMarket, setTdMarket] = useState<"all" | "anytime" | "first" | "multi">("all");
   const [marketFilter, setMarketFilter] = useState<string>("");
 
   const isLive = game.status === "live" || game.status === "halftime";
@@ -311,30 +311,7 @@ export function DraftKingsPropsBoard({ game, away, home }: DraftKingsPropsBoardP
 
             {category === "td-scorers" ? (
               <div>
-                <div className="mb-4 flex items-center justify-between">
-                  <div className="flex flex-wrap gap-1.5">
-                    {(
-                      [
-                        ["all", "All TD Markets"],
-                        ["anytime", "Anytime TD"],
-                        ["first", "First TD"],
-                        ["multi", "2+ TDs"],
-                      ] as const
-                    ).map(([key, label]) => (
-                      <button
-                        key={key}
-                        type="button"
-                        onClick={() => setTdMarket(key)}
-                        className={`px-3 py-1 text-[11px] font-semibold rounded-md transition-all ${
-                          tdMarket === key
-                            ? "bg-[#1f2d3d] text-white border border-[#50b848]/50"
-                            : "bg-surface/20 text-mute hover:text-foreground"
-                        }`}
-                      >
-                        {label}
-                      </button>
-                    ))}
-                  </div>
+                <div className="mb-3 flex justify-end">
                   <span className="text-[11px] text-mute font-mono">American Odds</span>
                 </div>
 
@@ -346,9 +323,9 @@ export function DraftKingsPropsBoard({ game, away, home }: DraftKingsPropsBoardP
                       <thead>
                         <tr className="border-b border-white/10 text-[10px] font-disp uppercase tracking-wider text-mute">
                           <th className="py-2 px-3">Player</th>
-                          {(tdMarket === "all" || tdMarket === "first") && <th className="py-2 px-2 text-center">First TD</th>}
-                          {(tdMarket === "all" || tdMarket === "anytime") && <th className="py-2 px-2 text-center">Anytime TD</th>}
-                          {(tdMarket === "all" || tdMarket === "multi") && <th className="py-2 px-2 text-center">2+ TDs</th>}
+                          <th className="py-2 px-2 text-center">First TD</th>
+                          <th className="py-2 px-2 text-center">Anytime TD</th>
+                          <th className="py-2 px-2 text-center">2+ TDs</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-white/5">
@@ -381,15 +358,9 @@ export function DraftKingsPropsBoard({ game, away, home }: DraftKingsPropsBoardP
                                   {row.offer.position} · {row.offer.teamAbbr}
                                 </div>
                               </td>
-                              {(tdMarket === "all" || tdMarket === "first") && (
-                                <td className="py-2.5 px-2 text-center">{cell(row.first)}</td>
-                              )}
-                              {(tdMarket === "all" || tdMarket === "anytime") && (
-                                <td className="py-2.5 px-2 text-center">{cell(row.anytime, scored)}</td>
-                              )}
-                              {(tdMarket === "all" || tdMarket === "multi") && (
-                                <td className="py-2.5 px-2 text-center">{cell(row.multi)}</td>
-                              )}
+                              <td className="py-2.5 px-2 text-center">{cell(row.first)}</td>
+                              <td className="py-2.5 px-2 text-center">{cell(row.anytime, scored)}</td>
+                              <td className="py-2.5 px-2 text-center">{cell(row.multi)}</td>
                             </tr>
                           );
                         })}
@@ -397,6 +368,14 @@ export function DraftKingsPropsBoard({ game, away, home }: DraftKingsPropsBoardP
                     </table>
                   </div>
                 )}
+                {tdRows.length > 0 && !tdRows.some((r) => r.first || r.anytime || r.multi) && board.diagnostics?.sampleTd ? (
+                  <details className="mt-3 text-[11px] text-mute">
+                    <summary className="cursor-pointer">No touchdown prices came through · show what ESPN sent</summary>
+                    <pre className="mt-2 max-h-48 overflow-auto whitespace-pre-wrap break-all rounded-md border border-white/10 bg-black/20 p-2 font-mono text-[10px]">
+                      {board.diagnostics.sampleTd}
+                    </pre>
+                  </details>
+                ) : null}
               </div>
             ) : (
               <div>
