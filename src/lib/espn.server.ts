@@ -1140,6 +1140,31 @@ function withMarketProbabilities(
         estimatedMarkets.push("over");
       }
     }
+    // Late-game total safeguard: when the score is at most two points below
+    // the posted total with two minutes or less remaining, the Over is highly
+    // favored because even a safety clears many half-point totals. ESPN's
+    // public feed can contain stale/placeholder total probabilities (including
+    // 0% Over); do not let those values display as 100% Under in this situation.
+    const currentTotal = lastAway !== undefined && lastHome !== undefined
+      ? lastAway + lastHome
+      : undefined;
+    const secondsRemaining = typeof point.secondsLeft === "number"
+      ? point.secondsLeft
+      : typeof point.quarter === "number" && typeof point.clock === "string"
+        ? (() => {
+            const m = point.clock.match(/(\d+):([0-5]\d)/);
+            return m ? (point.quarter < 4 ? (4 - point.quarter) * 900 : 0) + Number(m[1]) * 60 + Number(m[2]) : undefined;
+          })()
+        : undefined;
+    if (
+      totalLine !== undefined && currentTotal !== undefined &&
+      currentTotal <= totalLine && totalLine - currentTotal <= 2 &&
+      secondsRemaining !== undefined && secondsRemaining > 0 && secondsRemaining <= 120
+    ) {
+      next.overProbability = 0.99;
+      if (!estimatedMarkets.includes("over")) estimatedMarkets.push("over");
+    }
+
     next.estimatedMarkets = estimatedMarkets.length ? estimatedMarkets : undefined;
     next.probabilitySource = estimatedMarkets.length ? "estimated" : useRealCover || useRealOver ? "espn" : undefined;
     return next;
@@ -1173,6 +1198,22 @@ function withMarketProbabilities(
       if (overResolved[i]) point.overProbability = 1;
     });
   }
+  // Reapply the late-game near-total rule after smoothing; the final displayed
+  // series must not revert to 100% Under from a stale ESPN probability sample.
+  out.forEach((point) => {
+    const scoreTotal = typeof point.awayScore === "number" && typeof point.homeScore === "number"
+      ? point.awayScore + point.homeScore
+      : undefined;
+    const remaining = typeof point.secondsLeft === "number" ? point.secondsLeft : undefined;
+    if (
+      totalLine !== undefined && scoreTotal !== undefined && scoreTotal <= totalLine &&
+      totalLine - scoreTotal <= 2 && remaining !== undefined && remaining > 0 && remaining <= 120
+    ) {
+      point.overProbability = 0.99;
+      point.estimatedMarkets = [...(point.estimatedMarkets ?? []), ...(point.estimatedMarkets?.includes("over") ? [] : ["over" as const])];
+      point.probabilitySource = "estimated";
+    }
+  });
 
   const sumQuarters = (values?: number[]) => (Array.isArray(values) ? values.reduce((a, b) => a + (Number(b) || 0), 0) : 0);
   const officialAway = sumQuarters(game.quarters?.away);
