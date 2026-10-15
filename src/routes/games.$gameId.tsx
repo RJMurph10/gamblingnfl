@@ -315,11 +315,38 @@ function ProbabilityGraph({
     // value = probability of the bottom side (home team, or Under for totals); 0 = top side certain.
     .map((entry) => ({ point: entry.point, index: entry.index, raw: entry.raw, value: isTotal ? 1 - entry.raw : entry.raw }));
 
-  // Once Over is mathematically locked at 100%, stop the totals graph at that
-  // exact play instead of drawing a flat 100% line through the rest of the game.
+  // Stop the Total graph at the first mathematically decisive point.
+  // Over is locked once the actual combined score exceeds the total line.
+  // Under can also be locked during NFL overtime when even a deliberately
+  // generous upper bound of 24 additional OT points cannot reach the line.
+  // (24 is the maximum under the current NFL OT scoring sequence: both teams
+  // can each score a TD + 2, then the next score can be another TD + 2.)
   if (isTotal) {
-    const overLockedIndex = usable.findIndex((entry) => entry.raw >= 1);
-    if (overLockedIndex >= 0) usable.splice(overLockedIndex + 1);
+    const overLockedIndex = usable.findIndex((entry) => {
+      const score = (entry.point.awayScore ?? 0) + (entry.point.homeScore ?? 0);
+      return score > (totalLine ?? Number.POSITIVE_INFINITY);
+    });
+    const underLockedIndex = totalLine === undefined ? -1 : usable.findIndex((entry) => {
+      const quarter = entry.point.quarter ?? 0;
+      const awayScore = entry.point.awayScore;
+      const homeScore = entry.point.homeScore;
+      if (quarter < 5 || typeof awayScore !== "number" || typeof homeScore !== "number") return false;
+      return awayScore + homeScore + 24 < totalLine;
+    });
+
+    // Prefer whichever decisive condition occurs first. Force the endpoint to
+    // the mathematically correct 100% side even if ESPN's probability is stale.
+    const decisiveIndex = [overLockedIndex, underLockedIndex]
+      .filter((index) => index >= 0)
+      .sort((a, b) => a - b)[0];
+    if (decisiveIndex !== undefined) {
+      const decisive = usable[decisiveIndex];
+      const score = (decisive.point.awayScore ?? 0) + (decisive.point.homeScore ?? 0);
+      const overIsLocked = totalLine !== undefined && score > totalLine;
+      decisive.raw = overIsLocked ? 1 : 0;
+      decisive.value = overIsLocked ? 0 : 1;
+      usable.splice(decisiveIndex + 1);
+    }
   }
 
   if (usable.length < 2) {
