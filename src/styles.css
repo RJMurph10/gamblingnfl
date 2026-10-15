@@ -50,7 +50,7 @@
 
   --font-disp: "Barlow Condensed", system-ui, sans-serif;
   --font-body: "Inter", system-ui, sans-serif;
-  --font-mono: "Courier Prime", "Courier New", monospace;
+  --font-mono: "Inter", system-ui, sans-serif;
 }
 
 :root {
@@ -86,6 +86,12 @@
   --border: oklch(0.912 0.008 247 / 10%);
   --input: oklch(0.912 0.008 247 / 12%);
   --ring: var(--acc);
+}
+
+@layer utilities {
+  .font-mono {
+    font-variant-numeric: tabular-nums;
+  }
 }
 
 @layer base {
