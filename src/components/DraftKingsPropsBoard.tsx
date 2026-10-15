@@ -3,13 +3,84 @@ import { useQuery } from "@tanstack/react-query";
 import { type Game } from "@/data/games";
 import { type Team } from "@/data/teams";
 import { TeamLogo } from "@/components/booth";
-import { getGameProps } from "@/lib/espn.functions";
+import { getGameProps, getPropPeople } from "@/lib/espn.functions";
+import { athleteIdOf, buildPropOffers, type PropPerson } from "@/lib/props.parse";
 import { type PropCategory, type LivePropOffer, type GamePropBoard } from "@/lib/props.types";
 
 interface DraftKingsPropsBoardProps {
   game: Game;
   away: Team;
   home: Team;
+}
+
+const athleteCache = new Map<string, PropPerson | null>();
+
+/**
+ * Fallback when ESPN refuses the server's request (403): fetch the prop feed straight from the
+ * visitor's browser, then label athletes with the team rosters from the server.
+ */
+async function loadPropsInBrowser(
+  eventId: string,
+  awayAbbr: string,
+  homeAbbr: string,
+  serverBoard: GamePropBoard,
+): Promise<GamePropBoard> {
+  const id = eventId.replace(/^espn-/, "");
+  const base = `https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/events/${id}/competitions/${id}/odds/100/propBets`;
+  const items: any[] = [];
+  const first = await fetch(`${base}?limit=400&page=1`);
+  if (!first.ok) throw new Error(`browser fetch failed [${first.status}]`);
+  const firstJson = await first.json();
+  items.push(...(Array.isArray(firstJson?.items) ? firstJson.items : []));
+  const pages = Math.min(Number(firstJson?.pageCount) || 1, 10);
+  const rest = await Promise.all(
+    Array.from({ length: Math.max(0, pages - 1) }, (_, i) =>
+      fetch(`${base}?limit=400&page=${i + 2}`).then((r) => (r.ok ? r.json() : { items: [] })),
+    ),
+  );
+  for (const page of rest) items.push(...(Array.isArray(page?.items) ? page.items : []));
+
+  const roster = await getPropPeople({ data: { awayAbbr, homeAbbr } });
+  const people = new Map<string, PropPerson>();
+  for (const p of roster) people.set(p.id, { name: p.name, position: p.position, headshot: p.headshot, team: p.team });
+
+  // Athletes missing from the rosters: look them up directly (remembered between refreshes).
+  const missing = [...new Set(items.map(athleteIdOf).filter((x): x is string => Boolean(x) && !people.has(x as string)))].slice(0, 100);
+  await Promise.all(
+    missing.map(async (athleteId) => {
+      if (!athleteCache.has(athleteId)) {
+        try {
+          const res = await fetch(`https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/athletes/${athleteId}`);
+          const athlete = res.ok ? await res.json() : null;
+          athleteCache.set(
+            athleteId,
+            athlete?.displayName
+              ? { name: athlete.displayName, position: athlete?.position?.abbreviation ?? "", headshot: athlete?.headshot?.href, team: "" }
+              : null,
+          );
+        } catch {
+          athleteCache.set(athleteId, null);
+        }
+      }
+      const person = athleteCache.get(athleteId);
+      if (person) people.set(athleteId, person);
+    }),
+  );
+
+  const offers = buildPropOffers(items, people);
+  return {
+    available: offers.length > 0,
+    priced: offers.some((o) => o.overOdds || o.underOdds),
+    offers,
+    fetchedAt: Date.now(),
+    diagnostics: {
+      providersTried: ["100 (browser)"],
+      itemCount: items.length,
+      sampleTypes: [...new Set(items.map((x) => String(x?.type?.name ?? "?")))].slice(0, 12),
+      viaBrowser: true,
+      error: serverBoard.diagnostics?.error ? `server: ${serverBoard.diagnostics.error}` : undefined,
+    },
+  };
 }
 
 /** Group offers so each player/market shows its over-under or its milestone ladder together. */
@@ -37,8 +108,26 @@ export function DraftKingsPropsBoard({ game, away, home }: DraftKingsPropsBoardP
   // Real DraftKings lines from ESPN; refreshed while the game is upcoming or live.
   const propsQuery = useQuery<GamePropBoard>({
     queryKey: ["game-props", game.id, away.abbr, home.abbr],
-    queryFn: () => getGameProps({ data: { eventId: String(game.id), awayAbbr: away.abbr, homeAbbr: home.abbr } }),
-    refetchInterval: isLive ? 15_000 : isFinal ? false : 60_000,
+    queryFn: async () => {
+      const serverBoard = await getGameProps({
+        data: { eventId: String(game.id), awayAbbr: away.abbr, homeAbbr: home.abbr },
+      });
+      // ESPN sometimes refuses the server (403); the visitor's own browser is not refused.
+      if (serverBoard.available || !serverBoard.diagnostics?.error) return serverBoard;
+      try {
+        return await loadPropsInBrowser(String(game.id), away.abbr, home.abbr, serverBoard);
+      } catch (error) {
+        return {
+          ...serverBoard,
+          diagnostics: {
+            ...serverBoard.diagnostics!,
+            error: `${serverBoard.diagnostics!.error} · browser: ${error instanceof Error ? error.message : String(error)}`,
+          },
+        };
+      }
+    },
+    refetchInterval: (query) =>
+      query.state.data?.diagnostics?.viaBrowser ? 60_000 : isLive ? 15_000 : isFinal ? false : 60_000,
     staleTime: 10_000,
   });
   const board = propsQuery.data;
