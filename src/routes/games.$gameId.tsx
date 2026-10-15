@@ -347,6 +347,11 @@ function ProbabilityGraph({
       decisive.value = overIsLocked ? 0 : 1;
       usable.splice(decisiveIndex + 1);
     }
+  } else {
+    // Moneyline and spread: once either side reaches exactly 100%, end the
+    // plotted series there so the graph border finishes at the same point.
+    const lockedIndex = usable.findIndex((entry) => entry.raw <= 0 || entry.raw >= 1);
+    if (lockedIndex >= 0) usable.splice(lockedIndex + 1);
   }
 
   if (usable.length < 2) {
@@ -379,9 +384,14 @@ function ProbabilityGraph({
   });
   const domain = Math.max(3600, elapsed[elapsed.length - 1] || 3600);
   const xFor = (seconds: number) => plotLeft + (seconds / domain) * plotWidth;
-  // When Over is locked early, keep the normal game-time scale and end the
-  // chart frame at that exact point instead of leaving an empty bordered tail.
-  const graphRight = isTotal && usable[usable.length - 1]?.raw >= 1
+  // When any graph reaches a decisive 100% endpoint, end the border there
+  // instead of leaving an empty bordered tail. Total can lock on Over (raw 1)
+  // or Under (raw 0); moneyline/spread can lock for either team (raw 0 or 1).
+  const finalRaw = usable[usable.length - 1]?.raw;
+  const graphIsLocked = isTotal
+    ? finalRaw === 0 || finalRaw >= 1
+    : finalRaw <= 0 || finalRaw >= 1;
+  const graphRight = graphIsLocked
     ? Math.max(plotLeft + 24, xFor(elapsed[elapsed.length - 1]))
     : plotRight;
   // value is the home probability: 0 = away certain (top), 1 = home certain (bottom).
