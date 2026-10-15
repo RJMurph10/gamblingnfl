@@ -436,8 +436,8 @@ function ProbabilityGraph({
             <rect x={plotLeft} y={midY} width={plotWidth} height={plotBottom - midY} />
           </clipPath>
         </defs>
-        {/* Grid: five horizontal lines and a line at each quarter boundary. */}
-        {[0.25, 0.5, 0.75].map((t) => (
+        {/* Keep only the 50% horizontal reference line; retain quarter boundaries. */}
+        {[0.5].map((t) => (
           <line key={t} x1={plotLeft} x2={plotRight} y1={plotTop + t * plotHeight} y2={plotTop + t * plotHeight} stroke="currentColor" strokeOpacity="0.3" strokeDasharray="1 4" />
         ))}
         {quarterLines.map((x) => (
