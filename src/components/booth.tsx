@@ -746,6 +746,7 @@ interface StatDef {
 }
 
 const num = (v: number | undefined) => v ?? 0;
+const formatStatNumber = (v: number) => Number.isInteger(v) ? String(v) : v.toFixed(1);
 
 /** made/attempts stat shown as a percentage, e.g. "42% (5/12)". */
 function pctStat(
@@ -763,7 +764,7 @@ function pctStat(
     value: pct,
     happened,
     text: (s) =>
-      att(s) > 0 ? `${pct(s)}% (${made(s)}/${att(s)})` : happened(s) ? `${pct(s)}%` : "—",
+      att(s) > 0 ? `${pct(s)}% (${formatStatNumber(made(s))}/${formatStatNumber(att(s))})` : happened(s) ? `${pct(s)}%` : "—",
   };
 }
 
@@ -783,7 +784,7 @@ const statDefs: StatDef[] = [
     happened: (s) => num(s.fieldGoalAttempts) > 0 || num(s.fieldGoalsMade) > 0,
     text: (s) =>
       num(s.fieldGoalAttempts) > 0
-        ? `${num(s.fieldGoalsMade)}/${num(s.fieldGoalAttempts)}`
+        ? `${formatStatNumber(num(s.fieldGoalsMade))}/${formatStatNumber(num(s.fieldGoalAttempts))}`
         : String(num(s.fieldGoalsMade)),
   },
   { label: "Total yards", value: (s) => s.totalYards },
@@ -918,7 +919,7 @@ export function StatComparison({ game }: { game: Game }) {
             const h = row.value(homeStats);
             const max = row.percent ? 100 : Math.max(a, h, 1);
             const width = (v: number) => `${Math.min(100, Math.max(v > 0 ? 3 : 0, (v / max) * 100))}%`;
-            const fmt = (s: TeamGameStats, v: number) => (row.text ? row.text(s) : String(v));
+            const fmt = (s: TeamGameStats, v: number) => (row.text ? row.text(s) : formatStatNumber(v));
             return (
               <div key={row.label}>
                 <div className="mb-1 grid grid-cols-[1fr_auto_1fr] items-baseline gap-2 font-mono text-[11px]">
