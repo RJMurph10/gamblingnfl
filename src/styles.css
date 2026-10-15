@@ -50,7 +50,7 @@
 
   --font-disp: "Barlow Condensed", system-ui, sans-serif;
   --font-body: "Inter", system-ui, sans-serif;
-  --font-mono: "Roboto Mono", ui-monospace, monospace;
+  --font-mono: "Courier Prime", "Courier New", monospace;
 }
 
 :root {
