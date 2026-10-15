@@ -2273,6 +2273,8 @@ export async function fetchGameProps(
   awayAbbr: string,
   homeAbbr: string,
 ): Promise<GamePropBoard> {
+  // Game ids in the app look like "espn-401872995"; ESPN's feed wants the bare number.
+  eventId = eventId.replace(/^espn-/, "");
   return cached(
     `props-${eventId}`,
     async () => {
