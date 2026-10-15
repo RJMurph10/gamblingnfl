@@ -20,14 +20,63 @@ export function decimalToAmerican(decimal: number): string {
 
 /** Reads a price object ({ american, decimal, value }) into American odds text. */
 export function priceToAmerican(price: any): string | undefined {
-  if (price === undefined || price === null) return undefined;
-  const american = price?.american ?? price?.alternateDisplayValue;
-  if (typeof american === "string" && /^[+-]?\d+$/.test(american.trim())) {
-    const text = american.trim();
-    return /^\d/.test(text) ? `+${text}` : text;
+  if (price === undefined || price === null || price === "") return undefined;
+  const fromAmericanText = (text: string): string | undefined => {
+    const t = text.trim();
+    if (!/^[+-]?\d+$/.test(t)) return undefined;
+    return /^\d/.test(t) ? `+${t}` : t;
+  };
+  if (typeof price === "string") return fromAmericanText(price);
+  if (typeof price === "number") {
+    // Whole numbers of 100+ are already American odds; small numbers are decimal odds.
+    if (Math.abs(price) >= 100) return price > 0 ? `+${Math.round(price)}` : `${Math.round(price)}`;
+    return price > 1 ? decimalToAmerican(price) : undefined;
   }
-  const decimal = Number(price?.decimal ?? price?.value ?? (typeof price === "number" ? price : NaN));
+  const american = price?.american ?? price?.americanOdds ?? price?.alternateDisplayValue ?? price?.displayValue;
+  if (typeof american === "string" || typeof american === "number") {
+    const text = fromAmericanText(String(american));
+    if (text) return text;
+  }
+  const decimal = Number(price?.decimal ?? price?.value);
   return Number.isFinite(decimal) && decimal > 1 ? decimalToAmerican(decimal) : undefined;
+}
+
+/** Looks through a prop item for any American / decimal price field ESPN may use. */
+export function findPropPrice(x: any): string | undefined {
+  const candidates = [
+    x?.current?.over,
+    x?.current?.yes,
+    x?.current?.moneyline,
+    x?.current?.odds,
+    x?.current?.price,
+    x?.odds?.over,
+    x?.odds?.yes,
+    x?.odds,
+    x?.moneyline,
+    x?.price,
+    x?.over,
+    x?.yes,
+  ];
+  for (const candidate of candidates) {
+    const price = priceToAmerican(candidate);
+    if (price) return price;
+  }
+  // Last resort: any key that looks like American odds anywhere inside the item.
+  const seen = new Set<any>();
+  const walk = (node: any, depth: number): string | undefined => {
+    if (!node || typeof node !== "object" || depth > 4 || seen.has(node)) return undefined;
+    seen.add(node);
+    for (const [key, value] of Object.entries(node)) {
+      if (/american/i.test(key)) {
+        const price = priceToAmerican(value);
+        if (price) return price;
+      }
+      const found = walk(value, depth + 1);
+      if (found) return found;
+    }
+    return undefined;
+  };
+  return walk(x, 0);
 }
 
 /** "Total Passing Yards (incl. overtime)" -> "Passing Yards" */
@@ -73,7 +122,7 @@ export function buildPropOffers(items: any[], people: Map<string, PropPerson>): 
 
         const line = Number(x?.current?.target?.value ?? x?.current?.target?.displayValue);
         const openLine = Number(x?.open?.target?.value ?? x?.open?.target?.displayValue);
-        const overPrice = priceToAmerican(x?.current?.over ?? x?.odds?.over ?? x?.odds?.decimal ?? x?.odds);
+        const overPrice = findPropPrice(x);
         const underPrice = priceToAmerican(x?.current?.under ?? x?.odds?.under);
         const yes = Boolean(kindInfo.yes);
         const hasLine = Number.isFinite(line) && line > 0;
@@ -100,4 +149,15 @@ export function buildPropOffers(items: any[], people: Map<string, PropPerson>): 
       }
 
   return offers;
+}
+
+/** One raw touchdown-scorer item, for diagnosing where ESPN puts the price. */
+export function sampleTdItem(items: any[]): string | undefined {
+  const item = items.find((x) => {
+    const name = String(x?.type?.name ?? x?.name ?? "");
+    return classifyProp(name.replace(/\s*milestones?$/i, ""))?.category === "td";
+  });
+  if (!item) return undefined;
+  const { competition: _c, provider: _p, ...rest } = item as Record<string, unknown>;
+  return JSON.stringify(rest).slice(0, 1500);
 }
