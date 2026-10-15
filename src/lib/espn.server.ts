@@ -2235,6 +2235,29 @@ export async function fetchTeamDepthChart(teamAbbr: string): Promise<TeamDepthCh
 
 const PROP_PROVIDER_ID = 100; // DraftKings on ESPN's core odds feed
 
+/** ESPN's prop feed rejects unfamiliar clients (403), so ask like a browser does. */
+async function fetchPropsJson(url: string): Promise<any> {
+  const headers = {
+    "User-Agent":
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+    Accept: "application/json, text/plain, */*",
+    "Accept-Language": "en-US,en;q=0.9",
+    Referer: "https://www.espn.com/",
+    Origin: "https://www.espn.com",
+  };
+  let lastStatus = 0;
+  for (const candidate of [url, url.replace(/^https:/, "http:")]) {
+    try {
+      const res = await fetch(candidate, { headers });
+      if (res.ok) return res.json();
+      lastStatus = res.status;
+    } catch {
+      // try the next form of the URL
+    }
+  }
+  throw new Error(`ESPN prop feed failed [${lastStatus || "network"}] for ${url}`);
+}
+
 function decimalToAmerican(decimal: number): string {
   if (!(decimal > 1)) return "";
   const value = decimal >= 2 ? Math.round((decimal - 1) * 100) : Math.round(-100 / (decimal - 1));
@@ -2253,17 +2276,30 @@ function priceToAmerican(price: any): string | undefined {
   return Number.isFinite(decimal) && decimal > 1 ? decimalToAmerican(decimal) : undefined;
 }
 
+/** "Total Passing Yards (incl. overtime)" -> "Passing Yards" */
+function cleanMarketName(name: string): string {
+  return name
+    .replace(/\s*\(incl\.? overtime\)/i, "")
+    .replace(/^total\s+/i, "")
+    .replace(/\bplus\b/i, "+")
+    .replace(/touchdowns?/i, "TDs")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 function classifyProp(
   baseName: string,
 ): { category: LivePropOffer["category"]; market: string; yes?: boolean } | null {
   const n = baseName.toLowerCase();
+  const market = cleanMarketName(baseName);
   if (/first.*(touchdown|td)/.test(n)) return { category: "td", market: "First TD", yes: true };
   if (/(2|two)\+?.*(touchdown|td)|multiple.*touchdown/.test(n)) return { category: "td", market: "2+ TDs", yes: true };
-  if (/anytime.*(touchdown|td)|touchdown scorer/.test(n)) return { category: "td", market: "Anytime TD", yes: true };
-  if (/rushing \+ receiving yards/.test(n)) return { category: "rushing", market: "Rush + Rec Yards" };
-  if (/passing/.test(n)) return { category: "passing", market: baseName.replace(/touchdowns?/i, "TDs") };
-  if (/rushing|carries/.test(n)) return { category: "rushing", market: baseName };
-  if (/receiving|receptions|catches/.test(n)) return { category: "receiving", market: baseName };
+  if (/anytime.*(touchdown|td)|touchdown scorer|to score.*touchdown|score a touchdown/.test(n)) {
+    return { category: "td", market: "Anytime TD", yes: true };
+  }
+  if (/passing|pass completions|completion/.test(n)) return { category: "passing", market };
+  if (/rushing|carries|longest rush/.test(n)) return { category: "rushing", market };
+  if (/receiving|receptions|catches|longest reception/.test(n)) return { category: "receiving", market };
   return null;
 }
 
@@ -2288,11 +2324,11 @@ export async function fetchGameProps(
       const loadProvider = async (providerId: string): Promise<any[]> => {
         const base = `${CORE_ODDS}/${eventId}/competitions/${eventId}/odds/${providerId}/propBets`;
         const collected: any[] = [];
-        const first = await fetchJson(`${base}?limit=400&page=1`);
+        const first = await fetchPropsJson(`${base}?limit=400&page=1`);
         collected.push(...(Array.isArray(first?.items) ? first.items : []));
         const pageCount = Math.min(Number(first?.pageCount) || 1, 10);
         for (let page = 2; page <= pageCount; page++) {
-          const next = await fetchJson(`${base}?limit=400&page=${page}`);
+          const next = await fetchPropsJson(`${base}?limit=400&page=${page}`);
           collected.push(...(Array.isArray(next?.items) ? next.items : []));
         }
         // $ref-only items: resolve them (cached, so each prop is fetched once per minute).
@@ -2304,7 +2340,7 @@ export async function fetchGameProps(
             await Promise.all(
               refs.slice(start, start + 20).map(async (ref) => {
                 try {
-                  resolved.set(ref, await cached(`propref-${ref}`, () => fetchJson(ref), 60_000));
+                  resolved.set(ref, await cached(`propref-${ref}`, () => fetchPropsJson(ref), 60_000));
                 } catch {
                   // skip this prop
                 }
@@ -2391,6 +2427,7 @@ export async function fetchGameProps(
         if (!person?.name) continue;
 
         const line = Number(x?.current?.target?.value ?? x?.current?.target?.displayValue);
+        const openLine = Number(x?.open?.target?.value ?? x?.open?.target?.displayValue);
         const overPrice = priceToAmerican(x?.current?.over ?? x?.odds?.over ?? x?.odds?.decimal ?? x?.odds);
         const underPrice = priceToAmerican(x?.current?.under ?? x?.odds?.under);
         const yes = Boolean(kindInfo.yes);
@@ -2411,6 +2448,7 @@ export async function fetchGameProps(
           market: kindInfo.market,
           kind,
           line: yes ? undefined : line,
+          openLine: !yes && Number.isFinite(openLine) ? openLine : undefined,
           overOdds: overPrice,
           underOdds: underPrice,
         });
