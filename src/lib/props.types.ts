@@ -77,5 +77,7 @@ export interface GamePropBoard {
     itemCount: number;
     sampleTypes: string[];
     error?: string;
+    /** True when the browser fetched ESPN directly because the server was refused. */
+    viaBrowser?: boolean;
   };
 }
