@@ -1077,8 +1077,11 @@ function withMarketProbabilities(
 
   let lastAway: number | undefined;
   let lastHome: number | undefined;
-  // Samples where the total points already exceed the line: Over is certain (100%), like ESPN.
+  // Once the combined score clears the total line, Over is mathematically locked.
+  // Latch that state chronologically so stale/missing score snapshots cannot make
+  // the Total curve flip back to Under later in the game.
   const overResolved: boolean[] = [];
+  let totalAlreadyOver = false;
   const out = input.map((point, index) => {
     // Scores only ever go up; ignore stale or out-of-order values from play matching.
     if (typeof point.awayScore === "number") lastAway = Math.max(lastAway ?? 0, point.awayScore);
@@ -1125,12 +1128,15 @@ function withMarketProbabilities(
         const sigma = 13 * Math.sqrt(fraction);
         // Remaining points: mostly the pregame total's pace, nudged toward the pace seen so far.
         const scoredSoFar = lastAway + lastHome;
-        if (scoredSoFar > totalLine) overResolved[index] = true;
+        if (scoredSoFar > totalLine) totalAlreadyOver = true;
+        overResolved[index] = totalAlreadyOver;
         const playedFraction = 1 - fraction;
         const observedRate = playedFraction > 0.15 ? scoredSoFar / playedFraction : totalLine;
         const blendedRate = playedFraction > 0.15 ? 0.75 * totalLine + 0.25 * observedRate : totalLine;
         const expectedFinal = scoredSoFar + blendedRate * fraction;
-        next.overProbability = 1 - normalCdf((totalLine - expectedFinal) / sigma);
+        next.overProbability = totalAlreadyOver
+          ? 1
+          : 1 - normalCdf((totalLine - expectedFinal) / sigma);
         estimatedMarkets.push("over");
       }
     }
