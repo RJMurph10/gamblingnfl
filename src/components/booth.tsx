@@ -140,7 +140,6 @@ export function SeasonLeaders({ game, away, home }: { game: Game; away: Team; ho
     <Panel padded={false}>
       <div className="border-b border-line/10 px-4 py-3">
         <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">Season leaders</h2>
-        <p className="label-mono mt-1">Cumulative stats from this season</p>
       </div>
       <div className="px-3 sm:px-5">
         <div className="grid grid-cols-[minmax(0,1fr)_112px_minmax(0,1fr)] items-center gap-2 border-b border-line/10 py-3 font-mono text-[10px] uppercase tracking-wider text-faint sm:grid-cols-[minmax(0,1fr)_160px_minmax(0,1fr)]">
