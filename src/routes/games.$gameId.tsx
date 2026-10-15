@@ -22,6 +22,7 @@ import { teamById, type Team } from "@/data/teams";
 import { getGameWeather, getLiveGame } from "@/lib/espn.functions";
 import { GameWeatherCard } from "@/components/GameWeatherCard";
 import { showGameStatistics } from "@/lib/game-visibility";
+import { DraftKingsPropsBoard } from "@/components/DraftKingsPropsBoard";
 
 export const Route = createFileRoute("/games/$gameId")({
   loader: () => {
@@ -1369,21 +1370,10 @@ function GamePage() {
               </Panel>
             </section>
           ) : null}
+                    {/* Live / Finished games Props tab */}
           {activeGameTab === "props" ? (
             <section className="mt-6">
-              <Panel>
-                <div className="flex items-center justify-between border-b border-line/10 pb-3">
-                  <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">
-                    Props
-                  </h2>
-                  <span className="font-mono text-xs uppercase tracking-wider text-mute">
-                    {game.status === "live" ? "Live Props" : "Results"}
-                  </span>
-                </div>
-                <div className="py-8 text-center text-sm text-mute">
-                  Props board placeholder — ready for your filters and display rules.
-                </div>
-              </Panel>
+              <DraftKingsPropsBoard game={game} away={away} home={home} />
             </section>
           ) : null}
             </>
@@ -1392,20 +1382,9 @@ function GamePage() {
               <MatchupPredictor game={game} away={away} home={home} />
             </section>
           ) : activeGameTab === "props" ? (
+            /* Upcoming / Scheduled games Props tab */
             <section className="mt-6">
-              <Panel>
-                <div className="flex items-center justify-between border-b border-line/10 pb-3">
-                  <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">
-                    Props
-                  </h2>
-                  <span className="font-mono text-xs uppercase tracking-wider text-mute">
-                    Projections
-                  </span>
-                </div>
-                <div className="py-8 text-center text-sm text-mute">
-                  Props board placeholder — ready for your filters and display rules.
-                </div>
-              </Panel>
+              <DraftKingsPropsBoard game={game} away={away} home={home} />
             </section>
           ) : activeGameTab === "gamecast" ? (
             <section className="mt-6">
