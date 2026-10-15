@@ -1331,9 +1331,55 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
       if (!base.total && typeof historicalOdds.total === "number") base.total = historicalOdds.total;
     }
 
-    // Spread and total probabilities. Use ESPN's own series when it publishes real
-    // (non-zero) values; otherwise derive them from ESPN's win probability, the
-    // live score, the clock and the closing line, and flag them as estimates.
+    // Repair missing/stale score snapshots before estimating market probabilities.
+    // ESPN's win-probability points sometimes carry a default 0-0 score even late
+    // in a game. Rebuild those snapshots from the summary's official scoring plays,
+    // using period + game clock, so a bad 0-0 point cannot poison the Total curve.
+    if (base.probabilities?.length && Array.isArray(d?.scoringPlays) && d.scoringPlays.length) {
+      const parseClockSeconds = (value: unknown): number | undefined => {
+        const text = String(value ?? "").trim();
+        const match = /^(\d{1,2}):(\d{2})$/.exec(text);
+        if (!match) return undefined;
+        return Number(match[1]) * 60 + Number(match[2]);
+      };
+      const elapsedSeconds = (periodValue: unknown, clockValue: unknown): number | undefined => {
+        const period = Number(periodValue);
+        const clockSeconds = parseClockSeconds(clockValue);
+        if (!Number.isFinite(period) || period < 1 || clockSeconds === undefined) return undefined;
+        return (Math.max(1, period) - 1) * 900 + (900 - clockSeconds);
+      };
+      const scoringSnapshots = d.scoringPlays.map((play: any) => {
+        const period = play?.period?.number ?? play?.period ?? play?.periodNumber;
+        const clock = play?.clock?.displayValue ?? play?.clock ?? play?.time;
+        const elapsed = elapsedSeconds(period, clock);
+        const awayScore = optionalNumber(play?.awayScore ?? play?.scoreAway);
+        const homeScore = optionalNumber(play?.homeScore ?? play?.scoreHome);
+        return { elapsed, awayScore, homeScore };
+      }).filter((item: any) => item.elapsed !== undefined && item.awayScore !== undefined && item.homeScore !== undefined)
+        .sort((a: any, b: any) => a.elapsed - b.elapsed);
+
+      if (scoringSnapshots.length) {
+        base.probabilities = base.probabilities.map((point) => {
+          const pointElapsed = typeof point.secondsLeft === "number"
+            ? Math.max(0, 3600 - point.secondsLeft)
+            : elapsedSeconds(point.quarter, point.clock);
+          const hasCredibleScore = typeof point.awayScore === "number" && typeof point.homeScore === "number" &&
+            (point.awayScore > 0 || point.homeScore > 0 || (pointElapsed !== undefined && pointElapsed < 60));
+          if (hasCredibleScore || pointElapsed === undefined) return point;
+          let snapshot: typeof scoringSnapshots[number] | undefined;
+          for (const candidate of scoringSnapshots) {
+            if (candidate.elapsed <= pointElapsed) snapshot = candidate;
+            else break;
+          }
+          if (!snapshot) return point;
+          return { ...point, awayScore: snapshot.awayScore, homeScore: snapshot.homeScore };
+        });
+      }
+    }
+
+    // Spread and total probabilities. Never let default/stale 0-0 score snapshots
+    // feed the total estimate; the recovered score history above is used where ESPN
+    // omits valid scores. Estimated curves remain explicitly marked as estimates.
     if (base.probabilities?.length) {
       base.probabilities = withMarketProbabilities(base.probabilities, base);
     }
