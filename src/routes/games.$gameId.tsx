@@ -516,7 +516,7 @@ function ProbabilityGraph({
           </text>
         ))}
         {quarterTicks.map((tick) => (
-          <text key={tick.label} x={tick.x} y={plotBottom + 18} textAnchor="middle" fontSize="12" fill="currentColor" opacity="0.7">
+          <text key={tick.label} x={tick.x} y={plotBottom + 18} textAnchor={tick.label === QUARTER_LABELS[1] ? "start" : "middle"} fontSize="12" fill="currentColor" opacity="0.7">
             {tick.label}
           </text>
         ))}
