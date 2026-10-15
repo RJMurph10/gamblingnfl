@@ -2276,19 +2276,71 @@ export async function fetchGameProps(
   return cached(
     `props-${eventId}`,
     async () => {
-      const base = `${CORE_ODDS}/${eventId}/competitions/${eventId}/odds/${PROP_PROVIDER_ID}/propBets`;
-      const items: any[] = [];
-      try {
-        const first = await fetchJson(`${base}?limit=1000&page=1`);
-        items.push(...(Array.isArray(first?.items) ? first.items : []));
+      const diagnostics: NonNullable<GamePropBoard["diagnostics"]> = {
+        providersTried: [],
+        itemCount: 0,
+        sampleTypes: [],
+      };
+
+      // Pull every page of a provider's propBets. Items may be inline or $ref-only.
+      const loadProvider = async (providerId: string): Promise<any[]> => {
+        const base = `${CORE_ODDS}/${eventId}/competitions/${eventId}/odds/${providerId}/propBets`;
+        const collected: any[] = [];
+        const first = await fetchJson(`${base}?limit=400&page=1`);
+        collected.push(...(Array.isArray(first?.items) ? first.items : []));
         const pageCount = Math.min(Number(first?.pageCount) || 1, 10);
         for (let page = 2; page <= pageCount; page++) {
-          const next = await fetchJson(`${base}?limit=1000&page=${page}`);
-          items.push(...(Array.isArray(next?.items) ? next.items : []));
+          const next = await fetchJson(`${base}?limit=400&page=${page}`);
+          collected.push(...(Array.isArray(next?.items) ? next.items : []));
         }
-      } catch {
-        return { available: false, priced: false, offers: [], fetchedAt: Date.now() };
+        // $ref-only items: resolve them (cached, so each prop is fetched once per minute).
+        const needsResolve = collected.filter((x) => x && !x.type && typeof x.$ref === "string");
+        if (needsResolve.length > 0) {
+          const resolved = new Map<string, any>();
+          const refs = needsResolve.map((x) => String(x.$ref)).slice(0, 900);
+          for (let start = 0; start < refs.length; start += 20) {
+            await Promise.all(
+              refs.slice(start, start + 20).map(async (ref) => {
+                try {
+                  resolved.set(ref, await cached(`propref-${ref}`, () => fetchJson(ref), 60_000));
+                } catch {
+                  // skip this prop
+                }
+              }),
+            );
+          }
+          return collected
+            .map((x) => (x && !x.type && typeof x.$ref === "string" ? resolved.get(String(x.$ref)) : x))
+            .filter(Boolean);
+        }
+        return collected;
+      };
+
+      // DraftKings (100) first; if that is empty, discover the providers ESPN lists for this game.
+      let items: any[] = [];
+      const providerIds: string[] = [String(PROP_PROVIDER_ID)];
+      for (let i = 0; i < providerIds.length && items.length === 0 && i < 4; i++) {
+        const id = providerIds[i];
+        diagnostics.providersTried.push(id);
+        try {
+          items = await loadProvider(id);
+        } catch (error) {
+          diagnostics.error = error instanceof Error ? error.message : String(error);
+        }
+        if (i === 0 && items.length === 0) {
+          try {
+            const list = await fetchJson(`${CORE_ODDS}/${eventId}/competitions/${eventId}/odds`);
+            for (const entry of Array.isArray(list?.items) ? list.items : []) {
+              const pid = String(entry?.provider?.id ?? "");
+              if (pid && !providerIds.includes(pid)) providerIds.push(pid);
+            }
+          } catch {
+            // no provider list
+          }
+        }
       }
+      diagnostics.itemCount = items.length;
+      diagnostics.sampleTypes = [...new Set(items.map((x) => String(x?.type?.name ?? x?.type?.displayName ?? x?.name ?? "?")))].slice(0, 12);
 
       const [awayRoster, homeRoster] = await Promise.all([fetchTeamRoster(awayAbbr), fetchTeamRoster(homeAbbr)]);
       const people = new Map<string, { name: string; position: string; headshot?: string; team: string }>();
@@ -2299,10 +2351,10 @@ export async function fetchGameProps(
       const missing = [
         ...new Set(
           items
-            .map((x) => /\/athletes\/(\d+)/.exec(x?.athlete?.$ref ?? "")?.[1])
+            .map((x) => /\/athletes\/(\d+)/.exec(x?.athlete?.$ref ?? "")?.[1] ?? (x?.athlete?.id ? String(x.athlete.id) : undefined))
             .filter((id): id is string => Boolean(id) && !people.has(id as string)),
         ),
-      ].slice(0, 30);
+      ].slice(0, 150);
       await Promise.all(
         missing.map(async (id) => {
           try {
@@ -2328,10 +2380,10 @@ export async function fetchGameProps(
       const offers: LivePropOffer[] = [];
       const seen = new Set<string>();
       for (const x of items) {
-        const typeName = String(x?.type?.name ?? x?.name ?? "");
+        const typeName = String(x?.type?.name ?? x?.type?.displayName ?? x?.type?.text ?? x?.displayName ?? x?.name ?? "");
         const isMilestone = /milestones?$/i.test(typeName);
         const kindInfo = classifyProp(typeName.replace(/\s*milestones?$/i, ""));
-        const athleteId = /\/athletes\/(\d+)/.exec(x?.athlete?.$ref ?? "")?.[1];
+        const athleteId = /\/athletes\/(\d+)/.exec(x?.athlete?.$ref ?? "")?.[1] ?? (x?.athlete?.id ? String(x.athlete.id) : undefined);
         if (!kindInfo || !athleteId) continue;
         const person = people.get(athleteId);
         if (!person?.name) continue;
@@ -2367,6 +2419,7 @@ export async function fetchGameProps(
         priced: offers.some((o) => o.overOdds || o.underOdds),
         offers,
         fetchedAt: Date.now(),
+        diagnostics,
       };
     },
     15_000,
