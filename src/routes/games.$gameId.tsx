@@ -392,13 +392,15 @@ function ProbabilityGraph({
   const linePath = `M${coords[0].x.toFixed(2)},${coords[0].y.toFixed(2)}${curve}`;
   const areaPath = `M${coords[0].x.toFixed(2)},${midY} L${coords[0].x.toFixed(2)},${coords[0].y.toFixed(2)}${curve} L${coords[coords.length - 1].x.toFixed(2)},${midY} Z`;
 
+  // Quarter labels sit on their starting boundaries: Q1 at the left border,
+  // Q2/Q3/Q4 at the first three dotted dividers, and OT at the fourth divider.
   const quarterTicks = [0, 1, 2, 3]
-    .map((q) => ({ label: QUARTER_LABELS[q + 1], x: xFor(q * 900 + 450) }))
-    .filter((tick) => tick.x < graphRight);
+    .map((q) => ({ label: QUARTER_LABELS[q + 1], x: xFor(q * 900) }))
+    .filter((tick) => tick.x <= graphRight);
   const hasOvertime = domain > 3600;
   if (hasOvertime) {
-    const overtimeTick = { label: "OT", x: xFor(3600 + (domain - 3600) / 2) };
-    if (overtimeTick.x < graphRight) quarterTicks.push(overtimeTick);
+    const overtimeTick = { label: "OT", x: xFor(3600) };
+    if (overtimeTick.x <= graphRight) quarterTicks.push(overtimeTick);
   }
   // Interior quarter dividers only; the outer edge is the border. The 4th/OT divider appears only in overtime games.
   const quarterLines = (hasOvertime ? [1, 2, 3, 4] : [1, 2, 3])
