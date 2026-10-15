@@ -1,4 +1,3 @@
-
 import { useEffect, useId, useRef, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
@@ -637,7 +636,7 @@ function GamePage() {
   const [selectedTeamTab, setSelectedTeamTab] =
     useState<"offense" | "defense">("offense");
   const [activeGameTab, setActiveGameTab] =
-    useState<"gamecast" | "stats" | "markets" | "information">("gamecast");
+    useState<"gamecast" | "stats" | "markets" | "props" | "information">("gamecast");
 
   // The Information tab isn't offered during live games; fall back to Gamecast if a game goes live.
   useEffect(() => {
@@ -972,13 +971,14 @@ function GamePage() {
         <>
           {showGameStatistics(game.status) ? (
             <nav
-              className={`mt-6 grid border-b border-line/15 ${game.status === "live" ? "grid-cols-3" : "grid-cols-4"}`}
+              className={`mt-6 grid border-b border-line/15 ${game.status === "live" ? "grid-cols-4" : "grid-cols-5"}`}
               aria-label="Game details tabs"
             >
               {([
                 ["gamecast", "Gamecast"],
                 ["stats", "Stats"],
                 ["markets", "Markets"],
+                ["props", "Props"],
                 ...(game.status !== "live" ? ([["information", "Information"]] as const) : []),
               ] as const).map(([tab, label]) => (
                 <button
@@ -1133,7 +1133,6 @@ function GamePage() {
 
           {/* Drive by drive */}
           <section className={`mt-6 ${showGameStatistics(game.status) && activeGameTab !== "gamecast" ? "hidden" : ""}`}>
-
             <Panel padded={false}>
               <div className="flex items-center justify-between border-b border-line/10 px-4 py-3">
                 <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">
@@ -1370,10 +1369,43 @@ function GamePage() {
               </Panel>
             </section>
           ) : null}
+          {activeGameTab === "props" ? (
+            <section className="mt-6">
+              <Panel>
+                <div className="flex items-center justify-between border-b border-line/10 pb-3">
+                  <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">
+                    Props
+                  </h2>
+                  <span className="font-mono text-xs uppercase tracking-wider text-mute">
+                    {game.status === "live" ? "Live Props" : "Results"}
+                  </span>
+                </div>
+                <div className="py-8 text-center text-sm text-mute">
+                  Props board placeholder — ready for your filters and display rules.
+                </div>
+              </Panel>
+            </section>
+          ) : null}
             </>
           ) : activeGameTab === "markets" ? (
             <section className="mt-6">
               <MatchupPredictor game={game} away={away} home={home} />
+            </section>
+          ) : activeGameTab === "props" ? (
+            <section className="mt-6">
+              <Panel>
+                <div className="flex items-center justify-between border-b border-line/10 pb-3">
+                  <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">
+                    Props
+                  </h2>
+                  <span className="font-mono text-xs uppercase tracking-wider text-mute">
+                    Projections
+                  </span>
+                </div>
+                <div className="py-8 text-center text-sm text-mute">
+                  Props board placeholder — ready for your filters and display rules.
+                </div>
+              </Panel>
             </section>
           ) : activeGameTab === "gamecast" ? (
             <section className="mt-6">
