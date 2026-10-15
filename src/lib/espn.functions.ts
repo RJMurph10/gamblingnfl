@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import {
   fetchGameDetail,
+  fetchGameProps,
   fetchSchedule,
   fetchTeamDepthChart,
   fetchTeamRosterForPage,
@@ -155,3 +156,17 @@ export const getGameWeather = createServerFn({
       data,
     );
   });
+
+export const getGameProps = createServerFn({
+  method: "GET",
+})
+  .inputValidator((data) =>
+    z
+      .object({
+        eventId: z.string(),
+        awayAbbr: z.string(),
+        homeAbbr: z.string(),
+      })
+      .parse(data),
+  )
+  .handler(async ({ data }) => fetchGameProps(data.eventId, data.awayAbbr, data.homeAbbr));
