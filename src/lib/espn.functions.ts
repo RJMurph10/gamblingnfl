@@ -3,6 +3,7 @@ import { z } from "zod";
 import {
   fetchGameDetail,
   fetchGameProps,
+  fetchPropPeople,
   fetchSchedule,
   fetchTeamDepthChart,
   fetchTeamRosterForPage,
@@ -177,3 +178,9 @@ export const getGameProps = createServerFn({
       .parse(data),
   )
   .handler(async ({ data }) => fetchGameProps(data.eventId, data.awayAbbr, data.homeAbbr));
+
+export const getPropPeople = createServerFn({
+  method: "GET",
+})
+  .inputValidator((data) => z.object({ awayAbbr: z.string(), homeAbbr: z.string() }).parse(data))
+  .handler(async ({ data }) => fetchPropPeople(data.awayAbbr, data.homeAbbr));
