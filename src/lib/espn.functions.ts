@@ -8,6 +8,7 @@ import {
   fetchTeamRosterForPage,
   fetchTeamSeasonStats,
   fetchTeamOverviewStats,
+  fetchTeamSeasonAverages,
   fetchLeagueTeamOverviewStats,
   fetchPlayerProfile,
 } from "./espn.server";
@@ -44,6 +45,12 @@ export const getTeamOverviewStats = createServerFn({
 })
   .inputValidator((data) => z.object({ teamId: z.string() }).parse(data))
   .handler(async ({ data }) => fetchTeamOverviewStats(data.teamId));
+
+export const getTeamSeasonAverages = createServerFn({
+  method: "GET",
+})
+  .inputValidator((data) => z.object({ awayTeamId: z.string(), homeTeamId: z.string() }).parse(data))
+  .handler(async ({ data }) => fetchTeamSeasonAverages(data.awayTeamId, data.homeTeamId));
 
 export const getLeagueTeamOverviewStats = createServerFn({
   method: "GET",
