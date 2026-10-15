@@ -313,7 +313,14 @@ function ProbabilityGraph({
     .map((point, index) => ({ point, index, raw: point[probabilityKey] }))
     .filter((entry): entry is { point: GameProbabilityPoint; index: number; raw: number } => typeof entry.raw === "number")
     // value = probability of the bottom side (home team, or Under for totals); 0 = top side certain.
-    .map((entry) => ({ point: entry.point, index: entry.index, value: isTotal ? 1 - entry.raw : entry.raw }));
+    .map((entry) => ({ point: entry.point, index: entry.index, raw: entry.raw, value: isTotal ? 1 - entry.raw : entry.raw }));
+
+  // Once Over is mathematically locked at 100%, stop the totals graph at that
+  // exact play instead of drawing a flat 100% line through the rest of the game.
+  if (isTotal) {
+    const overLockedIndex = usable.findIndex((entry) => entry.raw >= 1);
+    if (overLockedIndex >= 0) usable.splice(overLockedIndex + 1);
+  }
 
   if (usable.length < 2) {
     return (
