@@ -1875,6 +1875,81 @@ export async function fetchTeamOverviewStats(teamId: string): Promise<TeamOvervi
   }, 10 * 60 * 1000);
 }
 
+/**
+ * Builds per-game season averages for both teams in an upcoming matchup.
+ * Rate stats use season-to-date makes/attempts; count and yardage stats are
+ * averaged per completed game. Uses the same ESPN game summaries as box scores.
+ */
+export async function fetchTeamSeasonAverages(
+  awayTeamId: string,
+  homeTeamId: string,
+): Promise<{ away: TeamGameStats; home: TeamGameStats; gamesPlayed: { away: number; home: number } }> {
+  const key = `team-season-averages-${awayTeamId}-${homeTeamId}`;
+  return cached(key, async () => {
+    const schedule = await fetchSchedule();
+    const teamIds = new Set([awayTeamId, homeTeamId]);
+    const completed = schedule.filter(
+      (game) => game.status === "final" && (teamIds.has(game.awayTeamId) || teamIds.has(game.homeTeamId)),
+    );
+    const details = await Promise.all(
+      completed.map((game) => fetchGameDetail(game.id.replace(/^espn-/, ""))),
+    );
+
+    const numericKeys: (keyof TeamGameStats)[] = [
+      "totalYards", "passYards", "rushYards", "firstDowns", "turnovers", "penalties",
+      "touchdowns", "passingTouchdowns", "rushingTouchdowns", "fieldGoalsMade", "fieldGoalAttempts",
+      "thirdDownMade", "thirdDownAtt", "fourthDownMade", "fourthDownAtt", "redZoneMade", "redZoneAtt",
+      "extraPointsMade", "extraPointAttempts", "penaltyYards", "sacks", "defensiveTouchdowns",
+      "interceptions", "forcedFumbles", "tacklesForLoss", "passesDefended", "qbHits",
+    ];
+    const averageFor = (teamId: string) => {
+      const totals: Record<string, number> = Object.fromEntries(numericKeys.map((key) => [key, 0]));
+      let gamesPlayed = 0;
+      let possessionSeconds = 0;
+      for (const game of details) {
+        if (!game || game.status !== "final") continue;
+        const isAway = game.awayTeamId === teamId;
+        const isHome = game.homeTeamId === teamId;
+        if (!isAway && !isHome) continue;
+        const stats = isAway ? game.stats.away : game.stats.home;
+        gamesPlayed++;
+        for (const key of numericKeys) totals[key] += Number(stats[key] ?? 0) || 0;
+        const time = String(stats.timeOfPossession ?? "00:00").match(/^(\d+):(\d{2})$/);
+        if (time) possessionSeconds += Number(time[1]) * 60 + Number(time[2]);
+      }
+      const divisor = Math.max(1, gamesPlayed);
+      const avg = (key: keyof TeamGameStats) => Math.round(((totals[String(key)] ?? 0) / divisor) * 10) / 10;
+      const thirdTotalAtt = totals.thirdDownAtt ?? 0;
+      const thirdTotalMade = totals.thirdDownMade ?? 0;
+      const averageSeconds = Math.round(possessionSeconds / divisor);
+      const minutes = Math.floor(averageSeconds / 60);
+      const seconds = averageSeconds % 60;
+      const stats: TeamGameStats = {
+        totalYards: avg("totalYards"),
+        passYards: avg("passYards"),
+        rushYards: avg("rushYards"),
+        firstDowns: avg("firstDowns"),
+        thirdDownPct: thirdTotalAtt > 0 ? Math.round((thirdTotalMade / thirdTotalAtt) * 100) : 0,
+        turnovers: avg("turnovers"),
+        penalties: avg("penalties"),
+        timeOfPossession: `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`,
+      };
+      for (const key of numericKeys) {
+        if (key === "totalYards" || key === "passYards" || key === "rushYards" || key === "firstDowns" || key === "turnovers" || key === "penalties") continue;
+        (stats as any)[key] = avg(key);
+      }
+      // Ensure the 3rd-down rate is calculated from the season's combined attempts,
+      // not from rounded display averages.
+      stats.thirdDownPct = thirdTotalAtt > 0 ? Math.round((thirdTotalMade / thirdTotalAtt) * 100) : 0;
+      return { stats, gamesPlayed };
+    };
+
+    const away = averageFor(awayTeamId);
+    const home = averageFor(homeTeamId);
+    return { away: away.stats, home: home.stats, gamesPlayed: { away: away.gamesPlayed, home: home.gamesPlayed } };
+  }, 5 * 60 * 1000);
+}
+
 export interface LeagueTeamOverviewRow {
   teamId: string;
   teamAbbr: string;
