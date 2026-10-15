@@ -164,7 +164,7 @@ function UpcomingGames({ games: all }: { games: Game[] }) {
         aside={
           active ? (
             <span className="font-mono text-[10px] uppercase tracking-wider text-mute">
-              Wk {active.week} · {active.dateLabel} · {active.games.length}{" "}
+              Wk {active.week} · {active.games.length}{" "}
               {active.games.length === 1 ? "game" : "games"}
             </span>
           ) : null
