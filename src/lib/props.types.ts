@@ -43,3 +43,30 @@ export interface TDScorerLine {
   firstTDScorer?: boolean;
   tdCount?: number;
 }
+
+/** One real DraftKings prop offer from ESPN's core odds feed. */
+export interface LivePropOffer {
+  playerId: string;
+  playerName: string;
+  teamAbbr: string;
+  position: string;
+  headshot?: string;
+  category: "td" | "passing" | "rushing" | "receiving";
+  /** e.g. "Passing Yards", "Anytime TD", "First TD", "2+ TDs". */
+  market: string;
+  /** over-under: a line with two prices; milestone: "N+" with one price; yes: a one-price yes/no market. */
+  kind: "over-under" | "milestone" | "yes";
+  line?: number;
+  /** American odds. Over/Yes/milestone price. */
+  overOdds?: string;
+  underOdds?: string;
+}
+
+export interface GamePropBoard {
+  /** True when ESPN returned any props for this game. */
+  available: boolean;
+  /** True when at least one offer has a posted price. */
+  priced: boolean;
+  offers: LivePropOffer[];
+  fetchedAt: number;
+}
