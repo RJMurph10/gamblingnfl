@@ -57,6 +57,8 @@ export interface LivePropOffer {
   /** over-under: a line with two prices; milestone: "N+" with one price; yes: a one-price yes/no market. */
   kind: "over-under" | "milestone" | "yes";
   line?: number;
+  /** Where the line opened, when ESPN reports it. */
+  openLine?: number;
   /** American odds. Over/Yes/milestone price. */
   overOdds?: string;
   underOdds?: string;
