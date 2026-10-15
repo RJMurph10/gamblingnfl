@@ -1156,13 +1156,28 @@ function withMarketProbabilities(
             return m ? (point.quarter < 4 ? (4 - point.quarter) * 900 : 0) + Number(m[1]) * 60 + Number(m[2]) : undefined;
           })()
         : undefined;
-    if (
-      totalLine !== undefined && currentTotal !== undefined &&
-      currentTotal <= totalLine && totalLine - currentTotal <= 2 &&
-      secondsRemaining !== undefined && secondsRemaining > 0 && secondsRemaining <= 120
-    ) {
-      next.overProbability = 0.99;
-      if (!estimatedMarkets.includes("over")) estimatedMarkets.push("over");
+    if (totalLine !== undefined && currentTotal !== undefined) {
+      if (currentTotal > totalLine) {
+        // Once the points already scored exceed the total, the Over is locked.
+        next.overProbability = 1;
+        totalAlreadyOver = true;
+        overResolved[index] = true;
+      } else {
+        // Never show 100% Over before the total has actually been exceeded.
+        // Numerical CDF rounding and stale ESPN market samples can otherwise
+        // produce 1.0 while the game is still mathematically able to finish Under.
+        if (typeof next.overProbability === "number" && next.overProbability > 0.99) {
+          next.overProbability = 0.99;
+          if (!estimatedMarkets.includes("over")) estimatedMarkets.push("over");
+        }
+        if (
+          totalLine - currentTotal <= 2 && secondsRemaining !== undefined &&
+          secondsRemaining > 0 && secondsRemaining <= 120
+        ) {
+          next.overProbability = Math.min(0.99, next.overProbability ?? 0.99);
+          if (!estimatedMarkets.includes("over")) estimatedMarkets.push("over");
+        }
+      }
     }
 
     next.estimatedMarkets = estimatedMarkets.length ? estimatedMarkets : undefined;
@@ -1205,13 +1220,24 @@ function withMarketProbabilities(
       ? point.awayScore + point.homeScore
       : undefined;
     const remaining = typeof point.secondsLeft === "number" ? point.secondsLeft : undefined;
-    if (
-      totalLine !== undefined && scoreTotal !== undefined && scoreTotal <= totalLine &&
-      totalLine - scoreTotal <= 2 && remaining !== undefined && remaining > 0 && remaining <= 120
-    ) {
-      point.overProbability = 0.99;
-      point.estimatedMarkets = [...(point.estimatedMarkets ?? []), ...(point.estimatedMarkets?.includes("over") ? [] : ["over" as const])];
-      point.probabilitySource = "estimated";
+    if (totalLine !== undefined && scoreTotal !== undefined) {
+      if (scoreTotal > totalLine) {
+        // A score above the line makes Over certain, including after smoothing.
+        point.overProbability = 1;
+      } else {
+        // The probability must remain below 100% until the score itself clears
+        // the line. Apply this after smoothing too, so it cannot reintroduce 1.0.
+        if (typeof point.overProbability === "number" && point.overProbability > 0.99) {
+          point.overProbability = 0.99;
+          point.estimatedMarkets = [...(point.estimatedMarkets ?? []), ...(point.estimatedMarkets?.includes("over") ? [] : ["over" as const])];
+          point.probabilitySource = "estimated";
+        }
+        if (scoreTotal <= totalLine && totalLine - scoreTotal <= 2 && remaining !== undefined && remaining > 0 && remaining <= 120) {
+          point.overProbability = Math.min(0.99, point.overProbability ?? 0.99);
+          point.estimatedMarkets = [...(point.estimatedMarkets ?? []), ...(point.estimatedMarkets?.includes("over") ? [] : ["over" as const])];
+          point.probabilitySource = "estimated";
+        }
+      }
     }
   });
 
