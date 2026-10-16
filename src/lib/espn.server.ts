@@ -864,7 +864,9 @@ function mapBoxScore(
   posMap?: Map<string, string>,
 ): BoxScoreLine[] {
   const lines: BoxScoreLine[] = [];
-  const wanted = new Set(["passing", "rushing", "receiving", "defensive", "interceptions"]);
+  const wanted = new Set(["passing", "rushing", "receiving", "defensive", "interceptions", "fumbles"]);
+  // Every raw stat ESPN reports for a player, across all of their groups (used for the RB table).
+  const rawStats = new Map<string, Record<string, string>>();
 
   for (const teamBlock of players ?? []) {
     const teamId = teamByAbbr(teamBlock?.team?.abbreviation ?? "")?.id;
@@ -883,6 +885,15 @@ function mapBoxScore(
           const idx = keys.indexOf(name);
           return idx >= 0 ? vals[idx] : undefined;
         };
+        // Remember each raw value so the page can show detailed columns (CAR, RUYDS, TGT, FL, ...).
+        const rawKey = `${teamId}:${ath.id ?? String(ath.displayName).toLowerCase()}`;
+        const rawForPlayer = rawStats.get(rawKey) ?? {};
+        keys.forEach((key, index) => {
+          if (vals[index] !== undefined) rawForPlayer[key] = String(vals[index]);
+        });
+        rawStats.set(rawKey, rawForPlayer);
+        // The fumbles group only supplies extra numbers; it never creates a player row on its own.
+        if (group.name === "fumbles") continue;
         const pick = (...names: string[]) =>
           names
             .map(getVal)
@@ -961,6 +972,11 @@ function mapBoxScore(
       }
     }
   }
+  for (const line of lines) {
+    const raw = rawStats.get(`${line.teamId}:${line.playerId ?? line.name.toLowerCase()}`);
+    if (raw) line.stats = raw;
+  }
+
   // ESPN exposes one athlete in multiple groups (for example, a QB in
   // passing + rushing or an RB in rushing + receiving). Collapse those
   // records into one player row so a player is never listed twice.
@@ -1719,6 +1735,43 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
       base.homeTeamId,
       posMap,
     );
+
+    // Yards after catch is not in ESPN's box score, so ask ESPN's per-player game stats
+    // for finished games' running backs. Anything missing simply shows as "—".
+    if (base.status === "final") {
+      const espnTeamIds = new Map<string, string>();
+      for (const block of d?.boxscore?.players ?? []) {
+        const ourId = teamByAbbr(block?.team?.abbreviation ?? "")?.id;
+        if (ourId && block?.team?.id) espnTeamIds.set(ourId, String(block.team.id));
+      }
+      await Promise.all(
+        base.boxScore
+          .filter((line) => line.position === "RB" && line.playerId && line.stats)
+          .map(async (line) => {
+            const espnTeamId = espnTeamIds.get(line.teamId);
+            if (!espnTeamId) return;
+            try {
+              const stats = await cached(
+                `yac-${eventId}-${line.playerId}`,
+                () =>
+                  fetchJson(
+                    `${CORE_ODDS}/${eventId}/competitions/${eventId}/competitors/${espnTeamId}/roster/${line.playerId}/statistics/0`,
+                  ),
+                HISTORICAL_ODDS_CACHE_TTL_MS,
+              );
+              for (const category of stats?.splits?.categories ?? []) {
+                for (const stat of category?.stats ?? []) {
+                  if (/yardsaftercatch|yac/i.test(String(stat?.name ?? "")) && stat?.value !== undefined) {
+                    line.stats!.yardsAfterCatch = String(Math.round(Number(stat.value)));
+                  }
+                }
+              }
+            } catch {
+              // leave YAC blank for this player
+            }
+          }),
+      );
+    }
     return base;
   });
 }
