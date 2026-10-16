@@ -1321,6 +1321,23 @@ function formatRushingPlay(text: string): string {
  * Formats completed passing yard plays by removing directional indicators
  * ("short right", "deep left", "short middle", etc.) while leaving touchdowns untouched.
  */
+/**
+ * Incomplete passes: "S.Darnold pass incomplete short left to A.Barner [M.Roach]." becomes
+ * "S.Darnold pass incomplete to A.Barner." The bracketed pass defender is kept as data
+ * (returned separately) but not shown in the play text.
+ */
+function formatIncompletePass(text: string): { text: string; defender?: string } {
+  if (!/\bpass\s+incomplete\b/i.test(text) || /\bintercept/i.test(text)) return { text };
+  const defender = text.match(/\[([^\]]+)\]/)?.[1]?.trim();
+  const cleaned = text
+    .replace(/\s*\[[^\]]*\]/g, "")
+    .replace(/\bpass\s+incomplete(?:\s+(?:short|deep|intermediate))?(?:\s+(?:left|right|middle))?/i, "pass incomplete")
+    .replace(/\s{2,}/g, " ")
+    .replace(/\s+([.,;])/g, "$1")
+    .trim();
+  return { text: cleaned, defender };
+}
+
 function formatPassingPlay(text: string): string {
   // Preserve touchdowns without modification
   if (/\b(?:touchdown|td)\b/i.test(text)) return text;
@@ -1656,7 +1673,8 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
           .trim();
         if (!cleanedText) return;
 
-        const text = formatPassingPlay(formatRushingPlay(cleanedText));
+        const incomplete = formatIncompletePass(cleanedText);
+        const text = formatPassingPlay(formatRushingPlay(incomplete.text));
 
         const header = String(
           play?.start?.downDistanceText ?? play?.start?.shortDownDistanceText ?? "",
@@ -1668,6 +1686,7 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
           teamId: teamByAbbr(play?.team?.abbreviation ?? "")?.id ?? driveTeamId,
           header: header || undefined,
           text,
+          defender: incomplete.defender,
           scoring: Boolean(play?.scoringPlay),
         });
       });
