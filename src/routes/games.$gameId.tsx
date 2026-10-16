@@ -574,6 +574,63 @@ function ProbabilityGraph({
   );
 }
 
+
+/** Detailed quarterback box score: passing production plus rushing and turnovers. */
+function QuarterbackStatsTable({ lines }: { lines: BoxScoreLine[] }) {
+  const num = (value: string | undefined) => {
+    const n = Number(String(value ?? "").replace(/,/g, ""));
+    return Number.isFinite(n) ? n : 0;
+  };
+  const columns = [
+    ["C/ATT", "Completions / attempts"],
+    ["PYDS", "Passing yards"],
+    ["PYAC", "Passing yards after catch"],
+    ["PTD", "Passing touchdowns"],
+    ["INT", "Interceptions thrown"],
+    ["CAR", "Rushing attempts"],
+    ["RUYDS", "Rushing yards"],
+    ["RUTD", "Rushing touchdowns"],
+    ["SACK", "Sacks taken"],
+    ["FL", "Fumbles lost"],
+  ] as const;
+  const rowFor = (line: BoxScoreLine) => {
+    const st = line.stats;
+    const pair = String(st?.["completions/passingAttempts"] ?? "").match(/(\d+)\s*[-/]\s*(\d+)/);
+    const completions = pair ? Number(pair[1]) : num(st?.completions);
+    const attempts = pair ? Number(pair[2]) : num(st?.passingAttempts);
+    return [
+      st?.["completions/passingAttempts"] ?? (attempts ? `${completions}/${attempts}` : "—"),
+      st?.passingYards !== undefined ? num(st.passingYards) : "—",
+      st?.yardsAfterCatch !== undefined ? num(st.yardsAfterCatch) : "—",
+      st?.passingTouchdowns !== undefined ? num(st.passingTouchdowns) : "—",
+      st?.interceptions !== undefined ? num(st.interceptions) : "—",
+      st?.rushingAttempts !== undefined ? num(st.rushingAttempts) : 0,
+      st?.rushingYards !== undefined ? num(st.rushingYards) : 0,
+      st?.rushingTouchdowns !== undefined ? num(st.rushingTouchdowns) : 0,
+      st?.sacks !== undefined ? num(st.sacks) : "—",
+      st?.fumblesLost !== undefined ? num(st.fumblesLost) : "—",
+    ] as const;
+  };
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full min-w-[760px] text-sm">
+        <thead><tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
+          <th className="px-4 py-2 font-normal">Quarterbacks</th>
+          {columns.map(([abbr, title]) => <th key={abbr} title={title} className="px-2 py-2 text-right font-normal">{abbr}</th>)}
+        </tr></thead>
+        <tbody className="divide-y divide-line/5">
+          {lines.map((line, idx) => <tr key={`${line.name}-${idx}`} className="hover:bg-line/5">
+            <td className="max-w-[180px] truncate px-4 py-2.5 font-medium">
+              {line.playerId ? <Link to="/players/$playerId" params={{ playerId: line.playerId }} className="hover:text-acc">{line.name}</Link> : line.name}
+            </td>
+            {rowFor(line).map((value, i) => <td key={columns[i][0]} className="px-2 py-2.5 text-right font-mono text-xs tabular-nums text-mute">{value}</td>)}
+          </tr>)}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 /** Detailed running back box score: totals plus rushing and receiving splits. */
 function RunningBackStatsTable({ lines }: { lines: BoxScoreLine[] }) {
   const num = (value: string | undefined) => {
@@ -975,11 +1032,12 @@ function GamePage() {
         ? homeOffense
         : homeDefense;
 
-  // Running backs, wide receivers, and tight ends get detailed tables; other positions keep the single stat line.
+  // Quarterbacks, running backs, wide receivers, and tight ends get detailed tables; other positions keep the single stat line.
+  const qbLines = selectedTeamTab === "offense" ? selectedTeamLines.filter((l) => l.position.toUpperCase() === "QB") : [];
   const rbLines = selectedTeamTab === "offense" ? selectedTeamLines.filter((l) => l.position.toUpperCase() === "RB") : [];
   const wrLines = selectedTeamTab === "offense" ? selectedTeamLines.filter((l) => l.position.toUpperCase() === "WR") : [];
   const teLines = selectedTeamTab === "offense" ? selectedTeamLines.filter((l) => l.position.toUpperCase() === "TE") : [];
-  const detailedLines = [...rbLines, ...wrLines, ...teLines];
+  const detailedLines = [...qbLines, ...rbLines, ...wrLines, ...teLines];
   const otherLines = selectedTeamLines.filter((l) => !detailedLines.includes(l));
 
   const selectedTeamData =
@@ -1504,14 +1562,15 @@ function GamePage() {
                 </p>
               ) : (
                 <>
-                {rbLines.length > 0 ? <RunningBackStatsTable lines={rbLines} /> : null}
+                {qbLines.length > 0 ? <QuarterbackStatsTable lines={qbLines} /> : null}
+                {rbLines.length > 0 ? <div className={`${qbLines.length > 0 ? "border-t border-line/10" : ""}`}><RunningBackStatsTable lines={rbLines} /></div> : null}
                 {wrLines.length > 0 ? (
-                  <div className={`${rbLines.length > 0 ? "border-t border-line/10" : ""}`}>
+                  <div className={`${qbLines.length > 0 || rbLines.length > 0 ? "border-t border-line/10" : ""}`}>
                     <ReceivingStatsTable lines={wrLines} title="Wide receivers" />
                   </div>
                 ) : null}
                 {teLines.length > 0 ? (
-                  <div className={`${rbLines.length > 0 || wrLines.length > 0 ? "border-t border-line/10" : ""}`}>
+                  <div className={`${qbLines.length > 0 || rbLines.length > 0 || wrLines.length > 0 ? "border-t border-line/10" : ""}`}>
                     <ReceivingStatsTable lines={teLines} title="Tight ends" />
                   </div>
                 ) : null}
