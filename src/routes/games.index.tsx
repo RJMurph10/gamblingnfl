@@ -1,8 +1,8 @@
 
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { PageTitle, Panel, PanelHeader, SampleBadge, SpreadBadge, TeamLogo } from "@/components/booth";
-import { gameScore, games as sampleGames, weeks as sampleWeeks, type Game } from "@/data/games";
+import { PageTitle, Panel, PanelHeader, SpreadBadge, TeamLogo } from "@/components/booth";
+import { gameScore, type Game } from "@/data/games";
 import { teamById } from "@/data/teams";
 import { getLiveSchedule } from "@/lib/espn.functions";
 
@@ -36,7 +36,11 @@ function localKickoff(game: Game): string {
 }
 
 function GamesPage() {
-  const { data: liveGames } = useQuery({
+  const {
+    data: liveGames,
+    isLoading: scheduleLoading,
+    isError: scheduleError,
+  } = useQuery({
     queryKey: ["live-schedule"],
     queryFn: () => getLiveSchedule(),
     // Recheck the ESPN schedule periodically so newly released lines appear
@@ -46,11 +50,10 @@ function GamesPage() {
     retry: 1,
   });
 
-  const live = liveGames && liveGames.length > 0;
-  const games = live ? liveGames : sampleGames;
-  const weeks = live
-    ? Array.from(new Set(games.map((g) => g.week))).sort((a, b) => b - a)
-    : sampleWeeks;
+  // Do not fall back to fake/local fixtures when the ESPN feed is empty or fails.
+  const games: Game[] = liveGames ?? [];
+  const live = games.length > 0;
+  const weeks = Array.from(new Set(games.map((g) => g.week))).sort((a, b) => b - a);
 
   const marketClass = (game: Game, side: "spread" | "total") => {
     if (game.status !== "final") return "text-faint";
@@ -78,11 +81,21 @@ function GamesPage() {
   return (
     <>
       <PageTitle
-        eyebrow={live ? "2026 Season · Live data" : "Schedule"}
+        eyebrow={live ? "2026 Season · Live data" : "Live ESPN schedule"}
         title="Games"
-        aside={live ? undefined : <SampleBadge />}
       />
       <div className="space-y-4">
+        {!live && (
+          <Panel>
+            <p className="text-center font-mono text-xs text-mute">
+              {scheduleLoading
+                ? "Loading games from ESPN…"
+                : scheduleError
+                  ? "Could not load games from ESPN. Try refreshing shortly."
+                  : "No games are currently available from ESPN. Sample games are disabled."}
+            </p>
+          </Panel>
+        )}
         {weeks.map((week) => (
           <Panel key={week} padded={false}>
             <PanelHeader
