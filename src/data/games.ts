@@ -62,7 +62,7 @@ export interface BoxScoreLine {
   teamId: string;
   statLine: string;
   category?: "offense" | "defense";
-  /** Raw ESPN box-score values by stat key (rushingAttempts, receivingYards, fumblesLost, ...). */
+  /** Raw ESPN box-score values by stat key (rushingAttempts, receivingYards, receivingTargets, longReception, fumblesLost, yardsAfterCatch, ...). */
   stats?: Record<string, string>;
 }
 
