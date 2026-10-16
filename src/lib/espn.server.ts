@@ -1271,9 +1271,36 @@ function withMarketProbabilities(
 }
 /**
  * Formats live rushing play descriptions to "[Player] [yardage] rush",
- * while preserving passing plays, sacks, penalties, touchdowns, and special teams.
+ * formats rushing touchdowns to "[Player] [yardage] TD run" with the PAT on the next line,
+ * and strips eligibility notes, direct snap notes, and Center/Holder credits.
  */
 function formatRushingPlay(text: string): string {
+  // Check for rushing touchdowns (excluding passing and turnover plays)
+  if (/\b(?:touchdown|td)\b/i.test(text) && !/\b(?:pass|passed|sacked|interception|intercepted)\b/i.test(text)) {
+    // 1. Strip pre-play notes (e.g. "A.Palczewski reported in as eligible." and "Direct snap to R.Harvey.")
+    let cleaned = text
+      .replace(/^[A-Z]\.[A-Za-z'-]+\s+reported\s+in\s+as\s+eligible\.?\s*/i, "")
+      .replace(/^Direct\s+snap\s+to\s+[A-Z]\.[A-Za-z'-]+\.?\s*/i, "")
+      .trim();
+
+    // 2. Strip Center and Holder personnel credits
+    cleaned = cleaned.replace(/,?\s*(?:Center|Holder)-[A-Z]\.[A-Za-z'-]+/gi, "").trim();
+
+    // 3. Match "[Player] [direction] for [X yards], TOUCHDOWN. [PAT text]"
+    const tdMatch = cleaned.match(
+      /^(.*?)\s+(?:(?:right|left)\s+(?:tackle|guard|end)|up\s+the\s+middle|middle|rush(?:es)?)\s+for\s+(no gain|loss of \d+\s*(?:yards?|yds?)|-?\d+\s*(?:yards?|yds?))\s*,\s*(?:TOUCHDOWN|TD)\.?(?:\s*(.*))?$/i
+    );
+
+    if (tdMatch) {
+      const player = tdMatch[1].trim();
+      const yards = tdMatch[2].trim().replace(/\byards\b/i, "yard");
+      const pat = tdMatch[3]?.trim().replace(/\.+$/, "");
+      const tdLine = `${player} ${yards} TD run.`;
+      return pat ? `${tdLine}\n${pat}.` : tdLine;
+    }
+  }
+
+  // Preserve other play types (passing, penalties, field goals, etc.)
   if (/\b(?:touchdown|td|pass|passed|sacked|penalty|kneel|spike|punt|field goal|fg|kickoff|extra point)\b/i.test(text)) {
     return text;
   }
