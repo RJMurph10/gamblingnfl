@@ -14,7 +14,7 @@ import {
   TeamMark,
   marketResultClass,
 } from "@/components/booth";
-import { gameScore, games, type Game } from "@/data/games";
+import { gameScore, type Game } from "@/data/games";
 import { players } from "@/data/players";
 import { teamById, teams } from "@/data/teams";
 import { getLiveSchedule } from "@/lib/espn.functions";
@@ -246,7 +246,11 @@ export const Route = createFileRoute("/")({
 });
 
 function Dashboard() {
-  const { data: liveGames } = useQuery({
+  const {
+    data: liveGames,
+    isLoading: scheduleLoading,
+    isError: scheduleError,
+  } = useQuery({
     queryKey: ["live-schedule"],
     queryFn: () => getLiveSchedule(),
     refetchInterval: 1_500, // refresh score and scoring transition together
@@ -254,8 +258,9 @@ function Dashboard() {
     retry: 1,
   });
 
-  const isLive = !!liveGames && liveGames.length > 0;
-  const source = isLive ? liveGames : games;
+  // Never substitute the hardcoded sample schedule when ESPN is unavailable.
+  const source: Game[] = liveGames ?? [];
+  const isLive = source.length > 0;
   const toTimestamp = (g: (typeof source)[number]) => {
     if (g.kickoffIso) return new Date(g.kickoffIso).getTime();
     const d = g.date?.replace(/^[A-Za-z]+,\s*/, "") || "";
@@ -353,9 +358,19 @@ function Dashboard() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-line/5">
-                  {recent.map((g) => (
-                    <GameRow key={g.id} game={g} />
-                  ))}
+                  {recent.length > 0 ? (
+                    recent.map((g) => <GameRow key={g.id} game={g} />)
+                  ) : (
+                    <tr>
+                      <td colSpan={6} className="px-4 py-6 text-center font-mono text-xs text-mute">
+                        {scheduleLoading
+                          ? "Loading games from ESPN…"
+                          : scheduleError
+                            ? "Could not load games from ESPN. Try refreshing shortly."
+                            : "No completed NFL games are currently available from ESPN."}
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
