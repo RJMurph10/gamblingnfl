@@ -1032,21 +1032,6 @@ export function marketResultClass(
   return { spread, total };
 }
 
-/** "Timeout #2 by SEA at 01:16." -> "Timeout [SEA logo] at 01:16" */
-function timeoutLine(text: string): ReactNode | null {
-  const match = text.match(/^Timeout\s*(?:#\d+)?\s*(?:by\s+)?([A-Z]{2,4})\s+at\s+(\d{1,2}:\d{2})\.?$/i);
-  if (!match) return null;
-  const alias: Record<string, string> = { LA: "LAR", WAS: "WSH", JAC: "JAX", OAK: "LV" };
-  const abbr = match[1].toUpperCase();
-  const team = teamByAbbr(alias[abbr] ?? abbr);
-  if (!team) return null;
-  return (
-    <span className="inline-flex items-center gap-1.5">
-      Timeout <TeamLogo team={team} className="size-5" /> at {match[2]}
-    </span>
-  );
-}
-
 /** Replace field-position text like "BAL 25" or "LA 5" with the team's logo + yard line. */
 function withFieldLogos(text: string): ReactNode {
   const alias: Record<string, string> = { LA: "LAR", WAS: "WSH", JAC: "JAX", OAK: "LV" };
@@ -1123,10 +1108,6 @@ export function PlayByPlay({ plays }: { plays: PlayByPlayItem[] }) {
                     <div className="font-mono text-xs font-semibold text-foreground">{withFieldLogos(play.header)}</div>
                   ) : null}
                   {(() => {
-                    const timeout = timeoutLine(play.text);
-                    if (timeout) {
-                      return <div className="text-sm text-mute">{timeout}</div>;
-                    }
                     const { main, detail } = splitPlayDetail(play.text);
                     return (
                       <>
