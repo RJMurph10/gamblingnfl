@@ -1737,7 +1737,7 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
     );
 
     // Yards after catch is not in ESPN's box score, so ask ESPN's per-player game stats
-    // for finished games' running backs, wide receivers, and tight ends. Anything missing shows as "—".
+    // for finished games' quarterbacks, running backs, wide receivers, and tight ends. Anything missing shows as "—".
     if (base.status === "final") {
       const espnTeamIds = new Map<string, string>();
       for (const block of d?.boxscore?.players ?? []) {
@@ -1746,7 +1746,7 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
       }
       await Promise.all(
         base.boxScore
-          .filter((line) => (line.position === "RB" || line.position === "WR" || line.position === "TE") && line.playerId && line.stats)
+          .filter((line) => (line.position === "QB" || line.position === "RB" || line.position === "WR" || line.position === "TE") && line.playerId && line.stats)
           .map(async (line) => {
             const espnTeamId = espnTeamIds.get(line.teamId);
             if (!espnTeamId) return;
