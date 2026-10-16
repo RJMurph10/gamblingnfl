@@ -99,6 +99,8 @@ export interface PlayByPlayItem {
   /** Down & distance + spot, e.g. "2nd & 10 at BAL 25". */
   header?: string;
   text: string;
+  /** Pass defender credited on an incomplete pass (the "[M.Roach]" part). Stored, not displayed. */
+  defender?: string;
   scoring?: boolean;
 }
 
