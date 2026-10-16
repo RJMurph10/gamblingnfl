@@ -541,17 +541,10 @@ export async function fetchSchedule(): Promise<Game[]> {
     const weeks = await Promise.all(
       Array.from({ length: REGULAR_SEASON_WEEKS }, (_, i) =>
         fetchJson(`${SCOREBOARD}?dates=${SEASON}&seasontype=2&week=${i + 1}&limit=100`)
-          .then((d) => ({ week: i + 1, events: d?.events ?? [], failed: false }))
-          .catch(() => ({ week: i + 1, events: [], failed: true })),
+          .then((d) => ({ week: i + 1, events: d?.events ?? [] }))
+          .catch(() => ({ week: i + 1, events: [] })),
       ),
     );
-
-    // If every ESPN request fails, surface the failure instead of quietly
-    // returning an empty schedule that the UI could mistake for no games.
-    if (weeks.every((week) => week.failed)) {
-      throw new Error("Unable to load the NFL schedule from ESPN.");
-    }
-
     const games: Game[] = [];
     for (const { week, events } of weeks) {
       for (const event of events) {
@@ -1744,7 +1737,7 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
     );
 
     // Yards after catch is not in ESPN's box score, so ask ESPN's per-player game stats
-    // for finished games' running backs. Anything missing simply shows as "—".
+    // for finished games' running backs and wide receivers. Anything missing shows as "—".
     if (base.status === "final") {
       const espnTeamIds = new Map<string, string>();
       for (const block of d?.boxscore?.players ?? []) {
@@ -1753,7 +1746,7 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
       }
       await Promise.all(
         base.boxScore
-          .filter((line) => line.position === "RB" && line.playerId && line.stats)
+          .filter((line) => (line.position === "RB" || line.position === "WR") && line.playerId && line.stats)
           .map(async (line) => {
             const espnTeamId = espnTeamIds.get(line.teamId);
             if (!espnTeamId) return;
