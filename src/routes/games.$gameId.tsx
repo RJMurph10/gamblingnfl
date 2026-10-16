@@ -672,6 +672,85 @@ function MarketSpreadLabel({ spread, away, home }: { spread: string; away: Team;
   return <span className="inline-flex items-center gap-1.5"><TeamLogo team={team} className="size-5" /><span>{formatted}</span></span>;
 }
 
+/** Detailed wide receiver box score: receiving totals first, then rushing splits. */
+function WideReceiverStatsTable({ lines }: { lines: BoxScoreLine[] }) {
+  const num = (value: string | undefined) => {
+    const n = Number(String(value ?? "").replace(/,/g, ""));
+    return Number.isFinite(n) ? n : 0;
+  };
+  const columns = [
+    ["YDS", "Total yards (receiving + rushing)"],
+    ["TD", "Total touchdowns"],
+    ["REC", "Receptions"],
+    ["REYDS", "Receiving yards"],
+    ["YAC", "Yards after catch"],
+    ["RETD", "Receiving touchdowns"],
+    ["RELNG", "Longest reception"],
+    ["TGT", "Targets"],
+    ["CAR", "Rushing attempts"],
+    ["RUYDS", "Rushing yards"],
+    ["RUTD", "Rushing touchdowns"],
+    ["FL", "Fumbles lost"],
+  ] as const;
+  const rowFor = (line: BoxScoreLine) => {
+    const st = line.stats;
+    const rec = num(st?.receptions);
+    const reYds = num(st?.receivingYards);
+    const reTd = num(st?.receivingTouchdowns);
+    const car = num(st?.rushingAttempts);
+    const ruYds = num(st?.rushingYards);
+    const ruTd = num(st?.rushingTouchdowns);
+    return [
+      reYds + ruYds,
+      reTd + ruTd,
+      rec,
+      reYds,
+      st?.yardsAfterCatch !== undefined ? num(st.yardsAfterCatch) : "—",
+      reTd,
+      st?.longReception !== undefined ? num(st.longReception) : "—",
+      st?.receivingTargets !== undefined ? num(st.receivingTargets) : "—",
+      car,
+      ruYds,
+      ruTd,
+      st?.fumblesLost !== undefined ? num(st.fumblesLost) : "—",
+    ] as const;
+  };
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full min-w-[760px] text-sm">
+        <thead>
+          <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
+            <th className="px-4 py-2 font-normal">Wide receivers</th>
+            {columns.map(([abbr, title]) => (
+              <th key={abbr} title={title} className="px-2 py-2 text-right font-normal">
+                {abbr}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-line/5">
+          {lines.map((line, idx) => (
+            <tr key={`${line.name}-${idx}`} className="hover:bg-line/5">
+              <td className="max-w-[180px] truncate px-4 py-2.5 font-medium">
+                {line.playerId ? (
+                  <Link to="/players/$playerId" params={{ playerId: line.playerId }} className="hover:text-acc">
+                    {line.name}
+                  </Link>
+                ) : line.name}
+              </td>
+              {rowFor(line).map((value, i) => (
+                <td key={columns[i][0]} className="px-2 py-2.5 text-right font-mono text-xs tabular-nums text-mute">
+                  {value}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 function GamePage() {
   const { gameId } = Route.useParams();
 
@@ -896,9 +975,11 @@ function GamePage() {
         ? homeOffense
         : homeDefense;
 
-  // Running backs get the detailed table; everyone else keeps the single stat line.
+  // Running backs and wide receivers get detailed tables; other positions keep the single stat line.
   const rbLines = selectedTeamTab === "offense" ? selectedTeamLines.filter((l) => l.position === "RB") : [];
-  const otherLines = selectedTeamLines.filter((l) => !rbLines.includes(l));
+  const wrLines = selectedTeamTab === "offense" ? selectedTeamLines.filter((l) => l.position === "WR") : [];
+  const detailedLines = [...rbLines, ...wrLines];
+  const otherLines = selectedTeamLines.filter((l) => !detailedLines.includes(l));
 
   const selectedTeamData =
     selectedTeam === "away" ? away : home;
@@ -1423,8 +1504,13 @@ function GamePage() {
               ) : (
                 <>
                 {rbLines.length > 0 ? <RunningBackStatsTable lines={rbLines} /> : null}
+                {wrLines.length > 0 ? (
+                  <div className={`${rbLines.length > 0 ? "border-t border-line/10" : ""}`}>
+                    <WideReceiverStatsTable lines={wrLines} />
+                  </div>
+                ) : null}
                 {otherLines.length > 0 ? (
-                <div className={`overflow-x-auto ${rbLines.length > 0 ? "border-t border-line/10" : ""}`}>
+                <div className={`overflow-x-auto ${detailedLines.length > 0 ? "border-t border-line/10" : ""}`}>
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
