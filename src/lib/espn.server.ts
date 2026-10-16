@@ -1269,6 +1269,29 @@ function withMarketProbabilities(
   }
   return out;
 }
+/**
+ * Formats live rushing play descriptions to "[Player] [yardage] rush",
+ * while preserving passing plays, sacks, penalties, touchdowns, and special teams.
+ */
+function formatRushingPlay(text: string): string {
+  if (/\b(?:touchdown|td|pass|passed|sacked|penalty|kneel|spike|punt|field goal|fg|kickoff|extra point)\b/i.test(text)) {
+    return text;
+  }
+
+  const match = text.match(
+    /^(.*?)\s+(?:(?:right|left)\s+(?:tackle|guard|end)|up\s+the\s+middle|middle|rush(?:es)?)\s+for\s+(no gain|loss of \d+\s*(?:yards?|yds?)|-?\d+\s*(?:yards?|yds?))(?:\s*,\s*|\s*)(.*)$/i
+  );
+  if (!match) return text;
+
+  const player = match[1].trim();
+  const yards = match[2].trim().replace(/\byards\b/i, "yard");
+  const rest = match[3]?.trim().replace(/\.+$/, "") ?? "";
+  const dot = text.endsWith(".") ? "." : "";
+  return rest ? `${player} ${yards} rush ${rest}${dot}` : `${player} ${yards} rush${dot}`;
+}
+
+/** Full game detail (quarters, drives, team stats, box score) for one event. */
+export async function fetchGameDetail(eventId: string): Promise<Game | null> {
 
 /** Full game detail (quarters, drives, team stats, box score) for one event. */
 export async function fetchGameDetail(eventId: string): Promise<Game | null> {
@@ -1579,8 +1602,8 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
         if (/\bend\s+(of\s+)?(the\s+)?(\d(st|nd|rd|th)\s+)?(quarter|q\d)\b|\bend\s+quarter\b/i.test(rawText)) return;
         // Drop official timeouts entirely.
         if (/\bofficial\s+time[\s-]?outs?\b/i.test(rawText)) return;
-        // Remove the "(Shotgun)" formation tag but keep the rest of the play.
-        const text = rawText
+                // Remove the "(Shotgun)" formation tag but keep the rest of the play.
+        const cleanedText = rawText
           .replace(/\(\s*no huddle\s*,\s*shotgun\s*\)/gi, "(No Huddle)")
           .replace(/\(\s*shotgun\s*,\s*no huddle\s*\)/gi, "(No Huddle)")
           .replace(/\(\s*shotgun\s*\)/gi, "")
@@ -1593,7 +1616,10 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
           .replace(/\s{2,}/g, " ")
           .replace(/\s+([.,;])/g, "$1")
           .trim();
-        if (!text) return;
+        if (!cleanedText) return;
+
+        const text = formatRushingPlay(cleanedText);
+
         const header = String(
           play?.start?.downDistanceText ?? play?.start?.shortDownDistanceText ?? "",
         ).trim();
