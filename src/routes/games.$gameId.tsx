@@ -574,6 +574,93 @@ function ProbabilityGraph({
   );
 }
 
+/** Detailed running back box score: totals plus rushing and receiving splits. */
+function RunningBackStatsTable({ lines }: { lines: BoxScoreLine[] }) {
+  const num = (value: string | undefined) => {
+    const n = Number(String(value ?? "").replace(/,/g, ""));
+    return Number.isFinite(n) ? n : 0;
+  };
+  const columns = [
+    ["YDS", "Total yards (rushing + receiving)"],
+    ["TD", "Total touchdowns"],
+    ["CAR", "Rushing attempts"],
+    ["RUYDS", "Rushing yards"],
+    ["RUTD", "Rushing touchdowns"],
+    ["RULNG", "Longest rush"],
+    ["REC", "Receptions"],
+    ["REYDS", "Receiving yards"],
+    ["YAC", "Yards after catch"],
+    ["RETD", "Receiving touchdowns"],
+    ["RELNG", "Longest reception"],
+    ["TGT", "Targets"],
+    ["FL", "Fumbles lost"],
+  ] as const;
+  const rowFor = (line: BoxScoreLine) => {
+    const st = line.stats;
+    // Older data without raw stats: read what we can from the text stat line.
+    const text = line.statLine;
+    const fromText = (pattern: RegExp) => Number(text.match(pattern)?.[1]?.replace(/,/g, "") ?? 0);
+    const car = st ? num(st.rushingAttempts) : fromText(/(\d+)\s+car\b/i);
+    const ruYds = st ? num(st.rushingYards) : fromText(/\bcar\b\s*,?\s*(-?[0-9,]+)\s+yds/i);
+    const ruTd = st ? num(st.rushingTouchdowns) : fromText(/\bcar\b[^·]*?(\d+)\s+TD/i);
+    const rec = st ? num(st.receptions) : fromText(/(\d+)\s+rec\b/i);
+    const reYds = st ? num(st.receivingYards) : fromText(/\brec\b\s*,?\s*(-?[0-9,]+)\s+yds/i);
+    const reTd = st ? num(st.receivingTouchdowns) : fromText(/\brec\b[^·]*?(\d+)\s+TD/i);
+    const yac = st?.yardsAfterCatch;
+    return [
+      ruYds + reYds,
+      ruTd + reTd,
+      car,
+      ruYds,
+      ruTd,
+      st ? num(st.longRushing) : "—",
+      rec,
+      reYds,
+      yac !== undefined ? num(yac) : "—",
+      reTd,
+      st ? num(st.longReception) : "—",
+      st ? num(st.receivingTargets) : "—",
+      st ? num(st.fumblesLost) : "—",
+    ] as const;
+  };
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full min-w-[760px] text-sm">
+        <thead>
+          <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
+            <th className="px-4 py-2 font-normal">Running backs</th>
+            {columns.map(([abbr, title]) => (
+              <th key={abbr} title={title} className="px-2 py-2 text-right font-normal">
+                {abbr}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-line/5">
+          {lines.map((line, idx) => (
+            <tr key={`${line.name}-${idx}`} className="hover:bg-line/5">
+              <td className="max-w-[180px] truncate px-4 py-2.5 font-medium">
+                {line.playerId ? (
+                  <Link to="/players/$playerId" params={{ playerId: line.playerId }} className="hover:text-acc">
+                    {line.name}
+                  </Link>
+                ) : (
+                  line.name
+                )}
+              </td>
+              {rowFor(line).map((value, i) => (
+                <td key={columns[i][0]} className="px-2 py-2.5 text-right font-mono text-xs tabular-nums text-mute">
+                  {value}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 function MarketSpreadLabel({ spread, away, home }: { spread: string; away: Team; home: Team }) {
   const match = spread.match(/^([A-Za-z]+)\s*([+-]?\d+(?:\.\d+)?)/);
   if (!match) return <span>{spread || "—"}</span>;
@@ -808,6 +895,10 @@ function GamePage() {
       : selectedTeamTab === "offense"
         ? homeOffense
         : homeDefense;
+
+  // Running backs get the detailed table; everyone else keeps the single stat line.
+  const rbLines = selectedTeamTab === "offense" ? selectedTeamLines.filter((l) => l.position === "RB") : [];
+  const otherLines = selectedTeamLines.filter((l) => !rbLines.includes(l));
 
   const selectedTeamData =
     selectedTeam === "away" ? away : home;
@@ -1330,7 +1421,10 @@ function GamePage() {
                   No {selectedTeamTab} stats recorded
                 </p>
               ) : (
-                <div className="overflow-x-auto">
+                <>
+                {rbLines.length > 0 ? <RunningBackStatsTable lines={rbLines} /> : null}
+                {otherLines.length > 0 ? (
+                <div className={`overflow-x-auto ${rbLines.length > 0 ? "border-t border-line/10" : ""}`}>
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
@@ -1349,7 +1443,7 @@ function GamePage() {
                     </thead>
 
                     <tbody className="divide-y divide-line/5">
-                      {selectedTeamLines.map(
+                      {otherLines.map(
                         (line, idx) => (
                           <tr
                             key={`${line.name}-${line.position}-${idx}`}
@@ -1385,6 +1479,8 @@ function GamePage() {
                     </tbody>
                   </table>
                 </div>
+                ) : null}
+                </>
               )}
             </Panel>
           </section>
