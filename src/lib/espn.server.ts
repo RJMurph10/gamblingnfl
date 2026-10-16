@@ -1289,10 +1289,6 @@ function formatRushingPlay(text: string): string {
   const dot = text.endsWith(".") ? "." : "";
   return rest ? `${player} ${yards} rush ${rest}${dot}` : `${player} ${yards} rush${dot}`;
 }
-
-/** Full game detail (quarters, drives, team stats, box score) for one event. */
-export async function fetchGameDetail(eventId: string): Promise<Game | null> {
-
 /** Full game detail (quarters, drives, team stats, box score) for one event. */
 export async function fetchGameDetail(eventId: string): Promise<Game | null> {
   return cached(`game-${eventId}`, async () => {
