@@ -541,10 +541,17 @@ export async function fetchSchedule(): Promise<Game[]> {
     const weeks = await Promise.all(
       Array.from({ length: REGULAR_SEASON_WEEKS }, (_, i) =>
         fetchJson(`${SCOREBOARD}?dates=${SEASON}&seasontype=2&week=${i + 1}&limit=100`)
-          .then((d) => ({ week: i + 1, events: d?.events ?? [] }))
-          .catch(() => ({ week: i + 1, events: [] })),
+          .then((d) => ({ week: i + 1, events: d?.events ?? [], failed: false }))
+          .catch(() => ({ week: i + 1, events: [], failed: true })),
       ),
     );
+
+    // If every ESPN request fails, surface the failure instead of quietly
+    // returning an empty schedule that the UI could mistake for no games.
+    if (weeks.every((week) => week.failed)) {
+      throw new Error("Unable to load the NFL schedule from ESPN.");
+    }
+
     const games: Game[] = [];
     for (const { week, events } of weeks) {
       for (const event of events) {
