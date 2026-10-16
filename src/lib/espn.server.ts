@@ -1315,6 +1315,19 @@ function formatRushingPlay(text: string): string {
   const rest = match[3]?.trim().replace(/\.+$/, "") ?? "";
   const dot = text.endsWith(".") ? "." : "";
   return rest ? `${player} ${yards} rush ${rest}${dot}` : `${player} ${yards} rush${dot}`;
+  /**
+ * Formats completed passing yard plays by removing directional indicators
+ * ("short right", "deep left", "short middle", etc.) while leaving touchdowns untouched.
+ */
+function formatPassingPlay(text: string): string {
+  // Preserve touchdowns without modification
+  if (/\b(?:touchdown|td)\b/i.test(text)) return text;
+  if (!/\bpass\b/i.test(text)) return text;
+
+  return text
+    .replace(/\bpass\s+(?:short|deep)\s+(?:right|left|middle)\s+to\b/gi, "pass to")
+    .replace(/\bpass\s+(?:short|deep)\s+(?:right|left|middle)\b/gi, "pass");
+}
 }
 /** Full game detail (quarters, drives, team stats, box score) for one event. */
 export async function fetchGameDetail(eventId: string): Promise<Game | null> {
@@ -1641,7 +1654,7 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
           .trim();
         if (!cleanedText) return;
 
-        const text = formatRushingPlay(cleanedText);
+        const text = formatPassingPlay(formatRushingPlay(cleanedText));
 
         const header = String(
           play?.start?.downDistanceText ?? play?.start?.shortDownDistanceText ?? "",
