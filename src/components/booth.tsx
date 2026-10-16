@@ -1111,7 +1111,7 @@ export function PlayByPlay({ plays }: { plays: PlayByPlayItem[] }) {
                     const { main, detail } = splitPlayDetail(play.text);
                     return (
                       <>
-                        <div className={`text-sm ${play.scoring ? "font-semibold" : "text-mute"}`}>{main}</div>
+                        <div className={`text-sm ${play.scoring ? "font-semibold" : "text-mute"} whitespace-pre-line`}>{main}</div>
                         {detail ? <div className="text-xs text-faint">{detail}</div> : null}
                       </>
                     );
