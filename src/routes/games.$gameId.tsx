@@ -672,8 +672,8 @@ function MarketSpreadLabel({ spread, away, home }: { spread: string; away: Team;
   return <span className="inline-flex items-center gap-1.5"><TeamLogo team={team} className="size-5" /><span>{formatted}</span></span>;
 }
 
-/** Detailed wide receiver box score: receiving totals first, then rushing splits. */
-function WideReceiverStatsTable({ lines }: { lines: BoxScoreLine[] }) {
+/** Detailed receiving box score: receiving totals first, then rushing splits. */
+function ReceivingStatsTable({ lines, title }: { lines: BoxScoreLine[]; title: string }) {
   const num = (value: string | undefined) => {
     const n = Number(String(value ?? "").replace(/,/g, ""));
     return Number.isFinite(n) ? n : 0;
@@ -720,7 +720,7 @@ function WideReceiverStatsTable({ lines }: { lines: BoxScoreLine[] }) {
       <table className="w-full min-w-[760px] text-sm">
         <thead>
           <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
-            <th className="px-4 py-2 font-normal">Wide receivers</th>
+            <th className="px-4 py-2 font-normal">{title}</th>
             {columns.map(([abbr, title]) => (
               <th key={abbr} title={title} className="px-2 py-2 text-right font-normal">
                 {abbr}
@@ -975,10 +975,11 @@ function GamePage() {
         ? homeOffense
         : homeDefense;
 
-  // Running backs and wide receivers get detailed tables; other positions keep the single stat line.
-  const rbLines = selectedTeamTab === "offense" ? selectedTeamLines.filter((l) => l.position === "RB") : [];
-  const wrLines = selectedTeamTab === "offense" ? selectedTeamLines.filter((l) => l.position === "WR") : [];
-  const detailedLines = [...rbLines, ...wrLines];
+  // Running backs, wide receivers, and tight ends get detailed tables; other positions keep the single stat line.
+  const rbLines = selectedTeamTab === "offense" ? selectedTeamLines.filter((l) => l.position.toUpperCase() === "RB") : [];
+  const wrLines = selectedTeamTab === "offense" ? selectedTeamLines.filter((l) => l.position.toUpperCase() === "WR") : [];
+  const teLines = selectedTeamTab === "offense" ? selectedTeamLines.filter((l) => l.position.toUpperCase() === "TE") : [];
+  const detailedLines = [...rbLines, ...wrLines, ...teLines];
   const otherLines = selectedTeamLines.filter((l) => !detailedLines.includes(l));
 
   const selectedTeamData =
@@ -1506,7 +1507,12 @@ function GamePage() {
                 {rbLines.length > 0 ? <RunningBackStatsTable lines={rbLines} /> : null}
                 {wrLines.length > 0 ? (
                   <div className={`${rbLines.length > 0 ? "border-t border-line/10" : ""}`}>
-                    <WideReceiverStatsTable lines={wrLines} />
+                    <ReceivingStatsTable lines={wrLines} title="Wide receivers" />
+                  </div>
+                ) : null}
+                {teLines.length > 0 ? (
+                  <div className={`${rbLines.length > 0 || wrLines.length > 0 ? "border-t border-line/10" : ""}`}>
+                    <ReceivingStatsTable lines={teLines} title="Tight ends" />
                   </div>
                 ) : null}
                 {otherLines.length > 0 ? (
