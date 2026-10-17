@@ -66,6 +66,8 @@ export interface BoxScoreLine {
   category?: "offense" | "defense";
   /** Raw ESPN box-score values by stat key (rushingAttempts, receivingYards, receivingTargets, longReception, fumblesLost, yardsAfterCatch, ...). */
   stats?: Record<string, string>;
+  /** Distances of made field goals for this kicker, collected from the full game's drive plays. */
+  fieldGoalDistances?: number[];
 }
 
 export interface GameProbabilityPoint {
