@@ -1050,7 +1050,8 @@ function GamePage() {
   const wrLines = selectedTeamTab === "offense" ? selectedTeamLines.filter((l) => l.position.toUpperCase() === "WR") : [];
   const teLines = selectedTeamTab === "offense" ? selectedTeamLines.filter((l) => l.position.toUpperCase() === "TE") : [];
   const kickerLines = selectedTeamTab === "offense" ? selectedTeamLines.filter((l) => l.position.toUpperCase() === "K") : [];
-  const detailedLines = [...qbLines, ...rbLines, ...wrLines, ...teLines, ...kickerLines];
+  const punterLines = selectedTeamTab === "offense" ? selectedTeamLines.filter((l) => l.position.toUpperCase() === "P") : [];
+  const detailedLines = [...qbLines, ...rbLines, ...wrLines, ...teLines, ...kickerLines, ...punterLines];
   const abbreviatePosition = (position: string | undefined) => {
     const value = (position ?? "").trim();
     const normalized = value.toUpperCase().replace(/[._-]+/g, " ").replace(/\s+/g, " ");
@@ -1059,7 +1060,7 @@ function GamePage() {
       "FULLBACK": "FB", "WIDE RECEIVER": "WR", "TIGHT END": "TE",
       "OFFENSIVE TACKLE": "OT", "OFFENSIVE GUARD": "OG", "CENTER": "C",
       "OFFENSIVE LINE": "OL", "PK": "K", "KICKER": "K", "PLACEKICKER": "K",
-      "PUNTER": "P", "LONG SNAPPER": "LS", "RETURN SPECIALIST": "RS",
+      "P": "P", "PUNTER": "P", "LONG SNAPPER": "LS", "RETURN SPECIALIST": "RS",
       "DEFENSIVE END": "DE", "DEFENSIVE TACKLE": "DT", "LINEBACKER": "LB",
       "CORNERBACK": "CB", "SAFETY": "S", "DEFENSIVE BACK": "DB",
     };
@@ -1662,6 +1663,59 @@ function GamePage() {
                                 {cell(bucket(30, 39))}
                                 {cell(bucket(40, 49))}
                                 {cell(fieldGoals.filter((distance) => distance >= 50).length)}
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                ) : null}
+                {punterLines.length > 0 ? (
+                  <div className={`${detailedLines.length > punterLines.length ? "border-t border-line/10" : ""}`}>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
+                            <th className="w-[28%] px-4 py-2 font-normal">P</th>
+                            <th className="px-2 py-2 font-normal">PUNT</th>
+                            <th className="px-2 py-2 font-normal">AVG</th>
+                            <th className="px-2 py-2 font-normal">LNG</th>
+                            <th className="px-2 py-2 font-normal">PUYDS</th>
+                            <th className="px-2 py-2 font-normal">P20</th>
+                            <th className="px-2 py-2 font-normal">PTB</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-line/5">
+                          {punterLines.map((line, idx) => {
+                            const raw = line.stats ?? {};
+                            const number = (...keys: string[]) => {
+                              for (const key of keys) {
+                                const value = raw[key];
+                                if (value !== undefined && value !== null && value !== "") {
+                                  const parsed = Number(String(value).replace(/,/g, ""));
+                                  if (Number.isFinite(parsed)) return parsed;
+                                }
+                              }
+                              return 0;
+                            };
+                            const punts = number("punts", "puntAttempts", "puntsAttempted");
+                            const puntYards = number("puntYards", "puntingYards", "grossPuntYards");
+                            const avgRaw = number("grossAvg", "grossAverage", "yardsPerPunt", "averagePuntYards");
+                            const average = avgRaw || (punts > 0 ? puntYards / punts : 0);
+                            const longest = number("longestPunt", "longPunt", "longest");
+                            const inside20 = number("puntsInside20", "puntsInsideThe20", "inside20");
+                            const touchbacks = number("puntTouchbacks", "puntingTouchbacks", "touchbacks");
+                            const cell = (value: string | number) => <td className="px-2 py-2.5 whitespace-nowrap font-mono text-xs tabular-nums text-mute">{value}</td>;
+                            return (
+                              <tr key={`${line.name}-${idx}`} className="hover:bg-line/5">
+                                <td className="max-w-[240px] px-4 py-2.5 font-medium"><PlayerNameCell line={line} /></td>
+                                {cell(punts)}
+                                {cell(average ? average.toFixed(1) : "0.0")}
+                                {cell(longest)}
+                                {cell(puntYards)}
+                                {cell(inside20)}
+                                {cell(touchbacks)}
                               </tr>
                             );
                           })}
