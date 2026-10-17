@@ -1878,7 +1878,7 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
       // ESPN often exposes YAC for receivers but not the QB. When exactly one
       // quarterback attempted a pass for a team, use that team's receiver YAC total
       // as the QB's passing-YAC total; never assign a team total to multiple QBs.
-      for (const teamId of [awayTeamId, homeTeamId]) {
+      for (const teamId of [base.awayTeamId, base.homeTeamId]) {
         const qbs = base.boxScore.filter((line) => line.teamId === teamId && line.position === "QB" && line.stats && Number(String(line.stats.passingAttempts ?? line.stats["completions/passingAttempts"] ?? "0").match(/(?:\d+\s*[-/]\s*)?(\d+)/)?.[1] ?? 0) > 0);
         if (qbs.length !== 1) continue;
         const qb = qbs[0];
