@@ -12,6 +12,7 @@ import { teams, teamByAbbr } from "@/data/teams";
 import { fetchSchedule, fetchTeamRoster } from "./espn.server";
 
 const SUMMARY = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary";
+const CORE_ODDS = "https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/events";
 const TOTALS_TTL_MS = 10 * 60 * 1000;
 const GAME_TTL_MS = 6 * 60 * 60 * 1000;
 const BATCH_SIZE = 8;
@@ -185,6 +186,51 @@ export function extractGameRecords(
   });
 }
 
+/**
+ * ESPN's summary box score omits YAC, which the game matchup page retrieves
+ * from the Core per-player statistics endpoint. Enrich the same per-game
+ * records with that same value so player profiles don't disagree with games.
+ */
+async function addMatchupPageYac(
+  eventId: string,
+  summary: any,
+  records: GameRecord[],
+): Promise<void> {
+  const espnTeamIds = new Map<string, string>();
+  for (const block of summary?.boxscore?.players ?? []) {
+    const ourTeamId = teamByAbbr(block?.team?.abbreviation ?? "")?.id;
+    if (ourTeamId && block?.team?.id) espnTeamIds.set(ourTeamId, String(block.team.id));
+  }
+
+  await Promise.all(records
+    .filter((record) => ["QB", "RB", "WR", "TE"].includes(record.posHint.toUpperCase()))
+    .map(async (record) => {
+      const espnTeamId = espnTeamIds.get(record.teamId);
+      if (!espnTeamId) return;
+      try {
+        const stats = await memoize(`matchup-yac-${eventId}-${record.id}`, GAME_TTL_MS, async () => {
+          const url = `${CORE_ODDS}/${eventId}/competitions/${eventId}/competitors/${espnTeamId}/roster/${record.id}/statistics/0`;
+          const response = await fetch(url, { headers: { "User-Agent": "GamblingNFL/1.0" } });
+          if (!response.ok) throw new Error(`ESPN player statistics failed [${response.status}]`);
+          return response.json();
+        });
+        for (const category of (stats as any)?.splits?.categories ?? []) {
+          for (const stat of category?.stats ?? []) {
+            if (/yardsaftercatch|yac/i.test(String(stat?.name ?? "")) && stat?.value !== undefined) {
+              const yac = Math.round(num(stat.value));
+              // The matchup page calls this field `yardsAfterCatch`; retain that
+              // exact field name in the per-game profile stats as well.
+              record.flat.yardsAfterCatch = yac;
+              break;
+            }
+          }
+        }
+      } catch {
+        // Match the game page's behavior: if ESPN doesn't return YAC, leave it absent.
+      }
+    }));
+}
+
 /* ---------- league totals ---------- */
 
 const MAX_KEYS = new Set(["fgLong", "puntLong"]);
@@ -208,6 +254,7 @@ export function buildLeaguePlayers(
       a.games += 1;
       a.teamId = rec.teamId; // games arrive oldest first, so this ends on the latest team
       for (const [key, value] of Object.entries(rec.flat)) {
+        if (key === "yardsAfterCatch") continue; // a per-game detail, not a league total field
         a.flat[key] = MAX_KEYS.has(key) ? Math.max(a.flat[key] ?? 0, value) : (a.flat[key] ?? 0) + value;
       }
     }
@@ -251,15 +298,22 @@ export function buildLeaguePlayers(
 
 /* ---------- ESPN fetching ---------- */
 
+async function fetchGameSummary(eventId: string): Promise<any> {
+  return memoize(`league-summary-${eventId}`, GAME_TTL_MS, async () => {
+    const res = await fetch(`${SUMMARY}?event=${eventId}`, {
+      headers: { "User-Agent": "GamblingNFL/1.0" },
+    });
+    // Throwing (instead of returning []) keeps a failed fetch from being cached.
+    if (!res.ok) throw new Error(`ESPN summary failed [${res.status}]`);
+    return res.json();
+  });
+}
+
 async function fetchGameRecords(eventId: string): Promise<GameRecord[]> {
   try {
     return await memoize(`league-game-${eventId}`, GAME_TTL_MS, async () => {
-      const res = await fetch(`${SUMMARY}?event=${eventId}`, {
-        headers: { "User-Agent": "GamblingNFL/1.0" },
-      });
-      // Throwing (instead of returning []) keeps a failed fetch from being cached.
-      if (!res.ok) throw new Error(`ESPN summary failed [${res.status}]`);
-      return extractGameRecords(await res.json(), (abbr) => teamByAbbr(abbr)?.id);
+      const summary = await fetchGameSummary(eventId);
+      return extractGameRecords(summary, (abbr) => teamByAbbr(abbr)?.id);
     });
   } catch {
     return [];
@@ -314,9 +368,9 @@ export interface PlayerGameLogEntry {
 
 /**
  * Every finished game a player recorded a stat in, oldest first, with the
- * full stat line for that game. Pass the player's current team to look at
- * that team's games first (much faster); if nothing turns up (traded
- * players) every game is checked.
+ * full stat line for that game. Pass the player's current team to look at that
+ * team's games first (much faster); if nothing turns up (traded players) every
+ * game is checked.
  */
 export async function fetchPlayerGameLog(
   playerId: string,
@@ -333,9 +387,21 @@ export async function fetchPlayerGameLog(
         const records = await Promise.all(
           batch.map((g) => fetchGameRecords(g.id.replace(/^espn-/, ""))),
         );
-        batch.forEach((game, idx) => {
+        await Promise.all(batch.map(async (game, idx) => {
           const rec = records[idx].find((r) => r.id === playerId);
           if (!rec) return;
+          // Add the same YAC value the game matchup page requests, but only
+          // for this player's row so scanning the league doesn't fan out into
+          // hundreds of unnecessary per-athlete requests.
+          try {
+            await addMatchupPageYac(
+              game.id.replace(/^espn-/, ""),
+              await fetchGameSummary(game.id.replace(/^espn-/, "")),
+              [rec],
+            );
+          } catch {
+            // Keep the rest of the game log available if ESPN's YAC endpoint fails.
+          }
           const score = gameScore(game);
           out.push({
             gameId: game.id,
@@ -347,7 +413,7 @@ export async function fetchPlayerGameLog(
             overtime: game.quarters.away.length > 4 || game.quarters.home.length > 4,
             stats: rec.flat,
           });
-        });
+        }));
       }
       return out;
     };
