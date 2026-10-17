@@ -864,7 +864,7 @@ function mapBoxScore(
   posMap?: Map<string, string>,
 ): BoxScoreLine[] {
   const lines: BoxScoreLine[] = [];
-  const wanted = new Set(["passing", "rushing", "receiving", "defensive", "interceptions", "fumbles"]);
+  const wanted = new Set(["passing", "rushing", "receiving", "defensive", "interceptions", "fumbles", "kicking"]);
   // Every raw stat ESPN reports for a player, across all of their groups (used for the RB table).
   const rawStats = new Map<string, Record<string, string>>();
 
@@ -912,6 +912,9 @@ function mapBoxScore(
         } else if (group.name === "receiving") {
           statLine = `${pick("receptions")} rec, ${pick("receivingYards")} yds, ${pick("receivingTouchdowns")} TD`;
           category = "offense";
+        } else if (group.name === "kicking") {
+          statLine = `${pick("fieldGoalsMade/fieldGoalAttempts")} FG, ${pick("extraPointsMade/extraPointAttempts")} XP`;
+          category = "offense";
         } else if (group.name === "defensive") {
           const tkl = getVal("totalTackles") ?? "0";
           const solo = getVal("soloTackles");
@@ -953,7 +956,9 @@ function mapBoxScore(
                   ? "DEF"
                   : group.name === "interceptions"
                     ? "DB"
-                    : "ATH");
+                    : group.name === "kicking"
+                      ? "K"
+                      : "ATH");
 
         pos = pos.toUpperCase();
         if (pos === "PASSING") pos = "QB";
@@ -965,7 +970,7 @@ function mapBoxScore(
         // reports defensive stats for them. Keep their defensive stat line below
         // by merging the records, but never let the defensive group move them
         // into the defense category.
-        const isOffensiveSkillPosition = ["QB", "RB", "FB", "WR", "TE"].includes(pos);
+        const isOffensiveSkillPosition = ["QB", "RB", "FB", "WR", "TE", "K"].includes(pos) || group.name === "kicking";
         if (isOffensiveSkillPosition) category = "offense";
 
         lines.push({
@@ -1753,6 +1758,30 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
       base.homeTeamId,
       posMap,
     );
+
+    // Collect every made field-goal distance from the full drive feed for kicker range stats.
+    // This intentionally uses driveRows rather than the shortened play-by-play list shown in the UI.
+    for (const kicker of base.boxScore.filter((line) => line.position === "K")) {
+      const distances: number[] = [];
+      for (const drive of driveRows) {
+        const driveTeamId = teamByAbbr(drive?.team?.abbreviation ?? "")?.id;
+        for (const play of (Array.isArray(drive?.plays) ? drive.plays : [])) {
+          const text = String(play?.text ?? play?.shortText ?? "").trim();
+          if (!/field goal/i.test(text) || /missed|no good|blocked|failed/i.test(text)) continue;
+          const playTeamId = teamByAbbr(play?.team?.abbreviation ?? "")?.id ?? driveTeamId;
+          if (playTeamId !== kicker.teamId) continue;
+          if (text.toLowerCase().includes(kicker.name.toLowerCase()) === false) {
+            const teamKickers = base.boxScore.filter((line) => line.teamId === kicker.teamId && line.position === "K");
+            if (teamKickers.length !== 1) continue;
+          }
+          const match = text.match(/\b(\d{1,2})\s*(?:-?yard|yds?)\b/i)
+            ?? text.match(/field goal\s+(?:is\s+)?good\s+from\s+(?:the\s+)?(\d{1,2})/i);
+          const distance = Number(match?.[1] ?? 0);
+          if (distance > 0 && distance <= 70) distances.push(distance);
+        }
+      }
+      kicker.fieldGoalDistances = distances;
+    }
 
     // Yards after catch is not in ESPN's box score, so ask ESPN's per-player game stats
     // for finished games' quarterbacks, running backs, wide receivers, and tight ends. Anything missing shows as "—".
