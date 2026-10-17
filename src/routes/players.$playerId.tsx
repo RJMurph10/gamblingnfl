@@ -259,6 +259,9 @@ function GameLog({
 
   // Core columns always show; the rest only when some game has a value.
   const cols = columnsFor(position).filter((c) => c.core || log.some((e) => c.raw(e.stats) !== 0));
+  // Quarterbacks use one flat stat-header row (C/ATT, PYDS, PYAC, etc.),
+  // rather than the extra Passing/Rushing group headings.
+  const flatHeaders = (ALIASES[position.toUpperCase()] ?? position.toUpperCase()) === "QB";
   const groups: { name: string; span: number }[] = [];
   for (const c of cols) {
     const last = groups[groups.length - 1];
@@ -273,7 +276,7 @@ function GameLog({
     <div className="overflow-x-auto">
       <table className="w-full min-w-[640px] text-sm">
         <thead className="font-mono text-[10px] uppercase tracking-wider text-faint">
-          {groups.length > 0 ? (
+          {groups.length > 0 && !flatHeaders ? (
             <tr>
               <th rowSpan={2} className="px-4 py-2 text-left align-bottom font-normal">
                 Wk
@@ -293,7 +296,7 @@ function GameLog({
             </tr>
           ) : null}
           <tr>
-            {groups.length === 0 ? (
+            {groups.length === 0 || flatHeaders ? (
               <>
                 <th className="px-4 py-2 text-left font-normal">Wk</th>
                 <th className="px-2 py-2 text-center font-normal">Matchup</th>
@@ -304,7 +307,7 @@ function GameLog({
                 key={`${c.group}-${c.label}`}
                 title={c.title}
                 className={`px-2 py-2 text-right font-normal ${
-                  firstOfGroup.has(c) ? "border-l border-line/10" : ""
+                  !flatHeaders && firstOfGroup.has(c) ? "border-l border-line/10" : ""
                 }`}
               >
                 {c.label}
@@ -349,7 +352,7 @@ function GameLog({
                   <td
                     key={`${c.group}-${c.label}`}
                     className={`px-2 py-2.5 text-right font-mono tabular-nums ${
-                      firstOfGroup.has(c) ? "border-l border-line/10" : ""
+                      !flatHeaders && firstOfGroup.has(c) ? "border-l border-line/10" : ""
                     }`}
                   >
                     {c.text ? c.text(e.stats) : fmt(c.raw(e.stats))}
