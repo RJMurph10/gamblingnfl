@@ -776,14 +776,14 @@ function ReceivingStatsTable({ lines, title }: { lines: BoxScoreLine[]; title: s
       reTd + ruTd,
       rec,
       reYds,
-      st?.yardsAfterCatch !== undefined ? num(st.yardsAfterCatch) : "—",
+      st?.yardsAfterCatch !== undefined ? num(st.yardsAfterCatch) : 0,
       reTd,
-      st?.longReception !== undefined ? num(st.longReception) : "—",
-      st?.receivingTargets !== undefined ? num(st.receivingTargets) : "—",
+      st?.longReception !== undefined ? num(st.longReception) : 0,
+      st?.receivingTargets !== undefined ? num(st.receivingTargets) : 0,
       car,
       ruYds,
       ruTd,
-      st?.fumblesLost !== undefined ? num(st.fumblesLost) : "—",
+      st?.fumblesLost !== undefined ? num(st.fumblesLost) : 0,
     ] as const;
   };
   return (
