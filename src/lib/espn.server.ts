@@ -965,6 +965,9 @@ function mapBoxScore(
         if (pos === "RUSHING") pos = "RB";
         if (pos === "RECEIVING") pos = "WR";
         if (pos === "DEFENSIVE") pos = "DEF";
+        // ESPN commonly labels placekickers as PK; normalize them so the
+        // frontend renders the dedicated kicker table rather than the generic row.
+        if (pos === "PK" || pos === "PLACEKICKER" || pos === "KICKER") pos = "K";
 
         // Offensive skill players belong on the offense tab even when ESPN also
         // reports defensive stats for them. Keep their defensive stat line below
