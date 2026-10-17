@@ -226,28 +226,106 @@ function PlayerPage() {
         <StatCard label="Rec Yards" value={s.receivingYards.toLocaleString()} note={`${recYpg.toFixed(1)} per game`} />
       </div>
 
-      <div className="mt-6 grid gap-5 lg:grid-cols-2">
+      <div className="mt-6 grid gap-5">
+        <div className="grid gap-5 lg:grid-cols-2">
+          <SeasonTable log={log} loading={logLoading} position={player.position} mode="totals" />
+          <SeasonTable log={log} loading={logLoading} position={player.position} mode="averages" />
+        </div>
         <Panel padded={false}>
-          <PanelHeader title="Season totals" aside={<span className="label-mono">ESPN · 2026</span>} />
-          <div className="grid grid-cols-2 divide-x divide-y divide-line/5 sm:grid-cols-3">
-            <Metric label="Completions" value={`${s.completions}/${s.passingAttempts}`} />
-            <Metric label="Pass TD" value={s.passingTouchdowns} />
-            <Metric label="INT" value={s.interceptions} />
-            <Metric label="Rush" value={s.rushingAttempts} />
-            <Metric label="Rush TD" value={s.rushingTouchdowns} />
-            <Metric label="Receptions" value={s.receptions} />
-            <Metric label="Rec TD" value={s.receivingTouchdowns} />
-            <Metric label="Tackles" value={s.totalTackles} />
-            <Metric label="Sacks" value={s.sacks} />
-          </div>
-        </Panel>
-
-        <Panel padded={false} className="lg:col-span-2">
           <PanelHeader title="Game log" aside={<span className="label-mono">2026 season</span>} />
           <GameLog log={log} loading={logLoading} position={player.position} />
         </Panel>
       </div>
     </>
+  );
+}
+
+function SeasonTable({
+  log,
+  loading,
+  position,
+  mode,
+}: {
+  log: PlayerGameLogEntry[] | undefined;
+  loading: boolean;
+  position: string;
+  mode: "totals" | "averages";
+}) {
+  const title = mode === "totals" ? "Season totals" : "Season averages";
+  if (loading || !log) {
+    return (
+      <Panel padded={false}>
+        <PanelHeader title={title} aside={<span className="label-mono">2026 season</span>} />
+        <p className="px-4 py-6 font-mono text-[11px] uppercase tracking-wider text-faint">Loading season stats…</p>
+      </Panel>
+    );
+  }
+  if (log.length === 0) {
+    return (
+      <Panel padded={false}>
+        <PanelHeader title={title} aside={<span className="label-mono">2026 season</span>} />
+        <p className="px-4 py-6 font-mono text-[11px] uppercase tracking-wider text-faint">No season stats available yet.</p>
+      </Panel>
+    );
+  }
+
+  const cols = columnsFor(position).filter((c) => c.core || log.some((e) => c.raw(e.stats) !== 0));
+  const games = log.length;
+  const sum = (pick: (stats: Stats) => number) => log.reduce((total, entry) => total + pick(entry.stats), 0);
+  const max = (pick: (stats: Stats) => number) => log.reduce((value, entry) => Math.max(value, pick(entry.stats)), 0);
+  const perGame = (value: number) => (games > 0 ? value / games : 0);
+  const valueFor = (c: Col) => {
+    const label = c.label;
+    const totalsValue = () => {
+      if (label === "C/ATT") return `${sum((st) => firstStat(st, "pc", "passing.completions"))}/${sum((st) => firstStat(st, "pa", "passing.passingAttempts"))}`;
+      if (label === "FG%") return `${sum((st) => g(st, "fgm"))}/${sum((st) => g(st, "fga"))}`;
+      if (label === "XP%") return `${sum((st) => g(st, "xpm"))}/${sum((st) => g(st, "xpa"))}`;
+      if (label === "AVG") {
+        const punts = sum((st) => firstStat(st, "punting.punts", "punts"));
+        const yards = sum((st) => firstStat(st, "punting.puntYards", "puntYards", "puyds"));
+        return punts > 0 ? (yards / punts).toFixed(1) : "—";
+      }
+      if (label === "LNG" || label === "RULNG" || label === "RELNG") return fmt(max(c.raw));
+      return fmt(sum(c.raw));
+    };
+    if (mode === "totals") return totalsValue();
+
+    if (label === "C/ATT") {
+      return `${perGame(sum((st) => firstStat(st, "pc", "passing.completions"))).toFixed(1)}/${perGame(sum((st) => firstStat(st, "pa", "passing.passingAttempts"))).toFixed(1)}`;
+    }
+    if (label === "FG%") return `${perGame(sum((st) => g(st, "fgm"))).toFixed(1)}/${perGame(sum((st) => g(st, "fga"))).toFixed(1)}`;
+    if (label === "XP%") return `${perGame(sum((st) => g(st, "xpm"))).toFixed(1)}/${perGame(sum((st) => g(st, "xpa"))).toFixed(1)}`;
+    if (label === "AVG") return totalsValue();
+    if (label === "LNG" || label === "RULNG" || label === "RELNG") return fmt(perGame(sum(c.raw)));
+    return fmt(perGame(sum(c.raw)));
+  };
+
+  return (
+    <Panel padded={false}>
+      <PanelHeader title={title} aside={<span className="label-mono">{games} games · 2026</span>} />
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[520px] text-sm">
+          <thead className="font-mono text-[10px] uppercase tracking-wider text-faint">
+            <tr>
+              {cols.map((c) => (
+                <th key={`${c.group}-${c.label}`} title={c.title} className="px-2 py-2 text-right font-normal first:pl-4 last:pr-4">
+                  {c.label}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            <tr className="border-t border-line/5">
+              {cols.map((c) => (
+                <td key={`${c.group}-${c.label}`} className="px-2 py-3 text-right font-mono tabular-nums first:pl-4 last:pr-4">
+                  {valueFor(c)}
+                </td>
+              ))}
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </Panel>
   );
 }
 
@@ -384,10 +462,6 @@ function GameLog({
       </table>
     </div>
   );
-}
-
-function Metric({ label, value }: { label: string; value: string | number }) {
-  return <div className="p-4"><div className="label-mono">{label}</div><div className="mt-1 font-disp text-xl font-semibold tabular-nums">{value}</div></div>;
 }
 
 function Chip({ label, value }: { label: string; value: string | number }) {
