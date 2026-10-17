@@ -623,16 +623,16 @@ function QuarterbackStatsTable({ lines }: { lines: BoxScoreLine[] }) {
     const completions = pair ? Number(pair[1]) : num(st?.completions);
     const attempts = pair ? Number(pair[2]) : num(st?.passingAttempts);
     return [
-      st?.["completions/passingAttempts"] ?? (attempts ? `${completions}/${attempts}` : "—"),
-      st?.passingYards !== undefined ? num(st.passingYards) : "—",
-      st?.yardsAfterCatch !== undefined ? num(st.yardsAfterCatch) : "—",
-      st?.passingTouchdowns !== undefined ? num(st.passingTouchdowns) : "—",
-      st?.interceptions !== undefined ? num(st.interceptions) : "—",
+      st?.["completions/passingAttempts"] ?? (`${completions}/${attempts}`),
+      st?.passingYards !== undefined ? num(st.passingYards) : 0,
+      st?.yardsAfterCatch !== undefined ? num(st.yardsAfterCatch) : 0,
+      st?.passingTouchdowns !== undefined ? num(st.passingTouchdowns) : 0,
+      st?.interceptions !== undefined ? num(st.interceptions) : 0,
       st?.rushingAttempts !== undefined ? num(st.rushingAttempts) : 0,
       st?.rushingYards !== undefined ? num(st.rushingYards) : 0,
       st?.rushingTouchdowns !== undefined ? num(st.rushingTouchdowns) : 0,
-      st?.sacks !== undefined ? num(st.sacks) : "—",
-      st?.fumblesLost !== undefined ? num(st.fumblesLost) : "—",
+      st?.sacks !== undefined ? num(st.sacks) : 0,
+      st?.fumblesLost !== undefined ? num(st.fumblesLost) : 0,
     ] as const;
   };
   return (
@@ -692,14 +692,14 @@ function RunningBackStatsTable({ lines }: { lines: BoxScoreLine[] }) {
       car,
       ruYds,
       ruTd,
-      st ? num(st.longRushing) : "—",
+      st ? num(st.longRushing) : 0,
       rec,
       reYds,
-      yac !== undefined ? num(yac) : "—",
+      yac !== undefined ? num(yac) : 0,
       reTd,
-      st ? num(st.longReception) : "—",
-      st ? num(st.receivingTargets) : "—",
-      st ? num(st.fumblesLost) : "—",
+      st ? num(st.longReception) : 0,
+      st ? num(st.receivingTargets) : 0,
+      st ? num(st.fumblesLost) : 0,
     ] as const;
   };
   return (
