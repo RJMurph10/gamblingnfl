@@ -57,6 +57,8 @@ export interface TeamGameStats {
 
 export interface BoxScoreLine {
   playerId?: string;
+  /** Player jersey number when supplied by ESPN. */
+  jersey?: string;
   name: string;
   position: string;
   teamId: string;
@@ -109,6 +111,8 @@ export interface PlayByPlayItem {
 /** One team's season leader in a category (cumulative stats for the season). */
 export interface SeasonLeader {
   playerId?: string;
+  /** Player jersey number when supplied by ESPN. */
+  jersey?: string;
   name: string;
   position?: string;
   /** Main stat value, e.g. "2,174". */
