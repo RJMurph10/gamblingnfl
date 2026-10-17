@@ -1605,14 +1605,11 @@ function GamePage() {
                   <div className={detailedLines.length > 0 ? "border-t border-line/10" : ""}>
                     {defensePositionGroups.map(({ position, lines }, groupIndex) => (
                       <div key={position} className={groupIndex > 0 ? "border-t border-line/10" : ""}>
-                        <div className="bg-panel2/50 px-4 py-2 font-disp text-xs font-semibold uppercase tracking-wider text-mute">
-                          {position}
-                        </div>
                         <div className="overflow-x-auto">
                           <table className="w-full text-sm">
                             <thead>
                               <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
-                                <th className="w-[60%] px-4 py-2 font-normal">Player</th>
+                                <th className="w-[60%] px-4 py-2 font-normal">{position}</th>
                                 <th className="w-[40%] px-4 py-2 font-normal">Stat line</th>
                               </tr>
                             </thead>
