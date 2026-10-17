@@ -58,17 +58,17 @@ const quarterback = (): Col[] => [
 
 const rushing = (core: boolean): Col[] => [
   { group: "Rushing", label: "CAR", title: "Carries", core, raw: (s) => g(s, "rushing.rushingAttempts") },
-  { group: "Rushing", label: "YDS", title: "Rushing yards", core, raw: (s) => g(s, "rushing.rushingYards") },
-  { group: "Rushing", label: "AVG", title: "Yards per carry", core, raw: (s) => g(s, "rushing.rushingAttempts"), text: (s) => avg(g(s, "rushing.rushingYards"), g(s, "rushing.rushingAttempts")) },
-  { group: "Rushing", label: "TD", title: "Rushing touchdowns", core, raw: (s) => g(s, "rushing.rushingTouchdowns") },
+  { group: "Rushing", label: "RUYDS", title: "Rushing yards", core, raw: (s) => firstStat(s, "rushing.rushingYards", "rushingYards", "ruyds") },
+  { group: "Rushing", label: "RUAVG", title: "Yards per carry", core, raw: (s) => firstStat(s, "rushing.rushingAttempts", "rushingAttempts", "car"), text: (s) => avg(firstStat(s, "rushing.rushingYards", "rushingYards", "ruyds"), firstStat(s, "rushing.rushingAttempts", "rushingAttempts", "car")) },
+  { group: "Rushing", label: "RUTD", title: "Rushing touchdowns", core, raw: (s) => firstStat(s, "rushing.rushingTouchdowns", "rushingTouchdowns", "rutd") },
 ];
 
 const receiving = (core: boolean): Col[] => [
   { group: "Receiving", label: "REC", title: "Receptions", core, raw: (s) => g(s, "receiving.receptions") },
   { group: "Receiving", label: "TGT", title: "Targets", raw: (s) => g(s, "receiving.receivingTargets") },
-  { group: "Receiving", label: "YDS", title: "Receiving yards", core, raw: (s) => g(s, "receiving.receivingYards") },
-  { group: "Receiving", label: "AVG", title: "Yards per catch", core, raw: (s) => g(s, "receiving.receptions"), text: (s) => avg(g(s, "receiving.receivingYards"), g(s, "receiving.receptions")) },
-  { group: "Receiving", label: "TD", title: "Receiving touchdowns", core, raw: (s) => g(s, "receiving.receivingTouchdowns") },
+  { group: "Receiving", label: "RECYDS", title: "Receiving yards", core, raw: (s) => firstStat(s, "receiving.receivingYards", "receivingYards", "recyds") },
+  { group: "Receiving", label: "RECAVG", title: "Yards per catch", core, raw: (s) => firstStat(s, "receiving.receptions", "receptions", "rec"), text: (s) => avg(firstStat(s, "receiving.receivingYards", "receivingYards", "recyds"), firstStat(s, "receiving.receptions", "receptions", "rec")) },
+  { group: "Receiving", label: "RECTD", title: "Receiving touchdowns", core, raw: (s) => firstStat(s, "receiving.receivingTouchdowns", "receivingTouchdowns", "rectd") },
 ];
 
 const defense = (core: string[]): Col[] => {
@@ -259,9 +259,10 @@ function GameLog({
 
   // Core columns always show; the rest only when some game has a value.
   const cols = columnsFor(position).filter((c) => c.core || log.some((e) => c.raw(e.stats) !== 0));
-  // Quarterbacks use one flat stat-header row (C/ATT, PYDS, PYAC, etc.),
-  // rather than the extra Passing/Rushing group headings.
-  const flatHeaders = (ALIASES[position.toUpperCase()] ?? position.toUpperCase()) === "QB";
+  // Offensive skill players, kickers, and punters use one flat stat-header row.
+  // Keep matchup columns and rows unchanged; only remove the extra group-heading row.
+  const normalizedPosition = ALIASES[position.toUpperCase()] ?? position.toUpperCase();
+  const flatHeaders = ["QB", "RB", "WR", "TE", "PK", "P"].includes(normalizedPosition);
   const groups: { name: string; span: number }[] = [];
   for (const c of cols) {
     const last = groups[groups.length - 1];
