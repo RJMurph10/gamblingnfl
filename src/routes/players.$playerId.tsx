@@ -190,6 +190,8 @@ function PlayerPage() {
   const passYpg = s.gamesPlayed ? s.passingYards / s.gamesPlayed : 0;
   const rushYpg = s.gamesPlayed ? s.rushingYards / s.gamesPlayed : 0;
   const recYpg = s.gamesPlayed ? s.receivingYards / s.gamesPlayed : 0;
+  const offensivePositions = new Set(["QB", "RB", "FB", "WR", "TE", "OL", "OT", "OG", "G", "C", "T", "LT", "RT", "LG", "RG"]);
+  const isOffensivePlayer = offensivePositions.has(String(player.position ?? "").toUpperCase());
 
   return (
     <>
@@ -219,12 +221,14 @@ function PlayerPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatCard label="Games" value={String(s.gamesPlayed)} note="2026 season" />
-        <StatCard label="Pass Yards" value={s.passingYards.toLocaleString()} note={`${passYpg.toFixed(1)} per game`} />
-        <StatCard label="Rush Yards" value={s.rushingYards.toLocaleString()} note={`${rushYpg.toFixed(1)} per game`} />
-        <StatCard label="Rec Yards" value={s.receivingYards.toLocaleString()} note={`${recYpg.toFixed(1)} per game`} />
-      </div>
+      {!isOffensivePlayer ? (
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+          <StatCard label="Games" value={String(s.gamesPlayed)} note="2026 season" />
+          <StatCard label="Pass Yards" value={s.passingYards.toLocaleString()} note={`${passYpg.toFixed(1)} per game`} />
+          <StatCard label="Rush Yards" value={s.rushingYards.toLocaleString()} note={`${rushYpg.toFixed(1)} per game`} />
+          <StatCard label="Rec Yards" value={s.receivingYards.toLocaleString()} note={`${recYpg.toFixed(1)} per game`} />
+        </div>
+      ) : null}
 
       <div className="mt-6 grid gap-5">
         <div className="grid gap-5 lg:grid-cols-2">
