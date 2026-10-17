@@ -155,9 +155,12 @@ export function extractGameRecords(
             add(rec!.flat, "xpm", m);
             add(rec!.flat, "xpa", t);
           } else if (/long/i.test(key)) {
-            // Only the longest kick / punt is useful, and it is a max, not a sum.
+            // Longest-play stats must be retained per game just like the matchup page.
             if (groupName === "kicking" || groupName === "punting") {
               const target = groupName === "kicking" ? "fgLong" : "puntLong";
+              rec!.flat[target] = Math.max(rec!.flat[target] ?? 0, num(raw));
+            } else if (groupName === "rushing" || groupName === "receiving") {
+              const target = `${groupName}.${key}`;
               rec!.flat[target] = Math.max(rec!.flat[target] ?? 0, num(raw));
             }
           } else if (!key.includes("/")) {
@@ -202,6 +205,48 @@ async function addMatchupPageYac(
     if (ourTeamId && block?.team?.id) espnTeamIds.set(ourTeamId, String(block.team.id));
   }
 
+  // Keep kicker values identical to the matchup page: its FGYDS and distance
+  // buckets are calculated from made field-goal plays, not the summary box-score
+  // totals (which can omit individual kick distances).
+  const kickerRecords = records.filter((record) =>
+    ["K", "PK", "PLACEKICKER", "KICKER"].includes(record.posHint.toUpperCase()) || record.flat.fga !== undefined,
+  );
+  const madeFieldGoalsByPlayer = new Map<string, number[]>();
+  for (const drive of summary?.drives?.previous ?? []) {
+    const driveTeamId = teamByAbbr(drive?.team?.abbreviation ?? "")?.id;
+    for (const play of (Array.isArray(drive?.plays) ? drive.plays : [])) {
+      const text = String(play?.text ?? play?.shortText ?? "").trim();
+      if (!/field goal/i.test(text) || /missed|no good|blocked|failed/i.test(text)) continue;
+      const playTeamId = teamByAbbr(play?.team?.abbreviation ?? "")?.id ?? driveTeamId;
+      if (!playTeamId) continue;
+      const candidates = kickerRecords.filter((record) => record.teamId === playTeamId);
+      const namedKicker = candidates.find((record) => text.toLowerCase().includes(record.name.toLowerCase()));
+      const kicker = namedKicker ?? (candidates.length === 1 ? candidates[0] : undefined);
+      if (!kicker) continue;
+      const match = text.match(/\b(\d{1,2})\s*(?:-?yard|yds?)\b/i)
+        ?? text.match(/field goal\s+(?:is\s+)?good\s+from\s+(?:the\s+)?(\d{1,2})/i);
+      const distance = Number(match?.[1] ?? 0);
+      if (distance > 0 && distance <= 70) {
+        const distances = madeFieldGoalsByPlayer.get(kicker.id) ?? [];
+        distances.push(distance);
+        madeFieldGoalsByPlayer.set(kicker.id, distances);
+      }
+    }
+  }
+
+  for (const record of kickerRecords) {
+      const distances = madeFieldGoalsByPlayer.get(record.id) ?? [];
+      record.flat["matchup.fgLong"] = distances.length ? Math.max(...distances) : 0;
+      record.flat["matchup.fgYds"] = distances.reduce((sum, distance) => sum + distance, 0);
+      record.flat["matchup.fg0_19"] = distances.filter((distance) => distance < 20).length;
+      record.flat["matchup.fg20_29"] = distances.filter((distance) => distance >= 20 && distance <= 29).length;
+      record.flat["matchup.fg30_39"] = distances.filter((distance) => distance >= 30 && distance <= 39).length;
+      record.flat["matchup.fg40_49"] = distances.filter((distance) => distance >= 40 && distance <= 49).length;
+      record.flat["matchup.fg50plus"] = distances.filter((distance) => distance >= 50).length;
+  }
+
+  // ESPN's matchup page requests YAC from the Core per-player endpoint. Do the
+  // same for this player's completed game log so YAC isn't a different source.
   await Promise.all(records
     .filter((record) => ["QB", "RB", "WR", "TE"].includes(record.posHint.toUpperCase()))
     .map(async (record) => {
@@ -217,16 +262,13 @@ async function addMatchupPageYac(
         for (const category of (stats as any)?.splits?.categories ?? []) {
           for (const stat of category?.stats ?? []) {
             if (/yardsaftercatch|yac/i.test(String(stat?.name ?? "")) && stat?.value !== undefined) {
-              const yac = Math.round(num(stat.value));
-              // The matchup page calls this field `yardsAfterCatch`; retain that
-              // exact field name in the per-game profile stats as well.
-              record.flat.yardsAfterCatch = yac;
+              record.flat.yardsAfterCatch = Math.round(num(stat.value));
               break;
             }
           }
         }
       } catch {
-        // Match the game page's behavior: if ESPN doesn't return YAC, leave it absent.
+        // Matchup page leaves YAC absent when ESPN's Core endpoint fails.
       }
     }));
 }
@@ -254,7 +296,7 @@ export function buildLeaguePlayers(
       a.games += 1;
       a.teamId = rec.teamId; // games arrive oldest first, so this ends on the latest team
       for (const [key, value] of Object.entries(rec.flat)) {
-        if (key === "yardsAfterCatch") continue; // a per-game detail, not a league total field
+        if (key === "yardsAfterCatch" || key.startsWith("matchup.")) continue; // per-game display details, not league totals
         a.flat[key] = MAX_KEYS.has(key) ? Math.max(a.flat[key] ?? 0, value) : (a.flat[key] ?? 0) + value;
       }
     }
