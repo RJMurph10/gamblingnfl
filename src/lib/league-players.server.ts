@@ -154,6 +154,11 @@ export function extractGameRecords(
             const [m, t] = pair(raw);
             add(rec!.flat, "xpm", m);
             add(rec!.flat, "xpa", t);
+          } else if (/sack/i.test(key) && groupName === "passing") {
+            // ESPN commonly encodes sacks and sack yards together (e.g. "2-14").
+            // The first number is the number of times the QB was sacked.
+            const match = String(raw).match(/^\s*(\d+)/);
+            add(rec!.flat, "passing.sacks", match ? Number(match[1]) : num(raw));
           } else if (/long/i.test(key)) {
             // Longest-play stats must be retained per game just like the matchup page.
             if (groupName === "kicking" || groupName === "punting") {
