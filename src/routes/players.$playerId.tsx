@@ -38,13 +38,13 @@ const firstStat = (s: Stats, ...keys: string[]) => {
 const quarterback = (): Col[] => [
   { group: "QB", label: "C/ATT", title: "Completions / attempts", core: true, raw: (s) => firstStat(s, "pa", "passing.passingAttempts"), text: (s) => `${firstStat(s, "pc", "passing.completions")}/${firstStat(s, "pa", "passing.passingAttempts")}` },
   { group: "QB", label: "PYDS", title: "Passing yards", core: true, raw: (s) => firstStat(s, "passing.passingYards", "passingYards", "pyds") },
-  { group: "QB", label: "PYAC", title: "Passing yards after catch", core: true, raw: (s) => firstStat(s, "yardsAfterCatch", "passing.passingYardsAfterCatch", "passing.yardsAfterCatch", "passingYardsAfterCatch", "pyac") },
+  { group: "QB", label: "PYAC", title: "Passing yards after catch", core: true, raw: (s) => firstStat(s, "yardsAfterCatch", "passing.yardsAfterCatch", "passing.passingYardsAfterCatch", "passingYardsAfterCatch", "pyac") },
   { group: "QB", label: "PTD", title: "Passing touchdowns", core: true, raw: (s) => firstStat(s, "passing.passingTouchdowns", "passingTouchdowns", "ptd") },
   { group: "QB", label: "INT", title: "Interceptions thrown", core: true, raw: (s) => firstStat(s, "passing.interceptions", "interceptions", "int") },
   { group: "QB", label: "CAR", title: "Rushing attempts", core: true, raw: (s) => firstStat(s, "rushing.rushingAttempts", "rushingAttempts", "car") },
   { group: "QB", label: "RUYDS", title: "Rushing yards", core: true, raw: (s) => firstStat(s, "rushing.rushingYards", "rushingYards", "ruyds") },
   { group: "QB", label: "RUTD", title: "Rushing touchdowns", core: true, raw: (s) => firstStat(s, "rushing.rushingTouchdowns", "rushingTouchdowns", "rutd") },
-  { group: "QB", label: "SACK", title: "Sacks taken", core: true, raw: (s) => firstStat(s, "passing.sacks", "passing.sacksTaken", "sacks", "sack") },
+  { group: "QB", label: "SACK", title: "Times the quarterback was sacked", core: true, raw: (s) => firstStat(s, "passing.sacks", "passing.sacksTaken", "passing.sacks-sackedYards", "sacks", "sack") },
   { group: "QB", label: "FL", title: "Fumbles lost", core: true, raw: (s) => firstStat(s, "fumbles.fumblesLost", "fumblesLost", "lostFumbles", "fl") },
 ];
 
