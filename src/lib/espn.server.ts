@@ -56,6 +56,55 @@ async function cached<T>(
   return value;
 }
 
+/** Find yards-after-catch in ESPN Core stats, whose response shape varies by endpoint. */
+function extractYacValue(data: any): number | undefined {
+  const isYacName = (value: unknown) => /yards.?after.?catch|(?:^|[^a-z])yac(?:$|[^a-z])/i.test(String(value ?? ""));
+  const parse = (value: any): number | undefined => {
+    if (typeof value === "number" && Number.isFinite(value)) return value;
+    if (typeof value === "string") {
+      const n = Number(value.replace(/,/g, ""));
+      if (value.trim() !== "" && Number.isFinite(n)) return n;
+    }
+    if (value && typeof value === "object") {
+      for (const key of ["value", "displayValue", "total", "displayValueShort"]) {
+        const n = parse(value[key]);
+        if (n !== undefined) return n;
+      }
+    }
+    return undefined;
+  };
+  const visit = (node: any): number | undefined => {
+    if (!node || typeof node !== "object") return undefined;
+    if (Array.isArray(node)) {
+      for (const item of node) {
+        const found = visit(item);
+        if (found !== undefined) return found;
+      }
+      return undefined;
+    }
+    const name = node.name ?? node.abbreviation ?? node.shortDisplayName ?? node.displayName ?? node.label;
+    if (isYacName(name)) {
+      for (const key of ["value", "displayValue", "total", "displayValueShort"]) {
+        const found = parse(node[key]);
+        if (found !== undefined) return found;
+      }
+    }
+    for (const [key, value] of Object.entries(node)) {
+      if (isYacName(key)) {
+        const found = parse(value);
+        if (found !== undefined) return found;
+      }
+    }
+    for (const value of Object.values(node)) {
+      const found = visit(value);
+      if (found !== undefined) return found;
+    }
+    return undefined;
+  };
+  const result = visit(data);
+  return result === undefined ? undefined : Math.round(result);
+}
+
 async function fetchJson(url: string): Promise<any> {
   const res = await fetch(url, { headers: { "User-Agent": "GamblingNFL/1.0" } });
   if (!res.ok) throw new Error(`ESPN feed failed [${res.status}] for ${url}`);
@@ -889,7 +938,14 @@ function mapBoxScore(
         const rawKey = `${teamId}:${ath.id ?? String(ath.displayName).toLowerCase()}`;
         const rawForPlayer = rawStats.get(rawKey) ?? {};
         keys.forEach((key, index) => {
-          if (vals[index] !== undefined) rawForPlayer[key] = String(vals[index]);
+          if (vals[index] !== undefined) {
+            rawForPlayer[key] = String(vals[index]);
+            if (group.name === "passing" && /sack/i.test(key)) {
+              // ESPN may provide a combined "sacks-sackedYards" value such as "2-14".
+              const match = String(vals[index]).match(/^\s*(\d+)/);
+              rawForPlayer.sacks = match ? match[1] : String(Number(vals[index]) || 0);
+            }
+          }
         });
         rawStats.set(rawKey, rawForPlayer);
         // The fumbles group only supplies extra numbers; it never creates a player row on its own.
@@ -1812,18 +1868,26 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
                   ),
                 HISTORICAL_ODDS_CACHE_TTL_MS,
               );
-              for (const category of stats?.splits?.categories ?? []) {
-                for (const stat of category?.stats ?? []) {
-                  if (/yardsaftercatch|yac/i.test(String(stat?.name ?? "")) && stat?.value !== undefined) {
-                    line.stats!.yardsAfterCatch = String(Math.round(Number(stat.value)));
-                  }
-                }
-              }
+              const yac = extractYacValue(stats);
+              if (yac !== undefined) line.stats!.yardsAfterCatch = String(yac);
             } catch {
               // leave YAC blank for this player
             }
           }),
       );
+      // ESPN often exposes YAC for receivers but not the QB. When exactly one
+      // quarterback attempted a pass for a team, use that team's receiver YAC total
+      // as the QB's passing-YAC total; never assign a team total to multiple QBs.
+      for (const teamId of [awayTeamId, homeTeamId]) {
+        const qbs = base.boxScore.filter((line) => line.teamId === teamId && line.position === "QB" && line.stats && Number(String(line.stats.passingAttempts ?? line.stats["completions/passingAttempts"] ?? "0").match(/(?:\d+\s*[-/]\s*)?(\d+)/)?.[1] ?? 0) > 0);
+        if (qbs.length !== 1) continue;
+        const qb = qbs[0];
+        if (Number(qb.stats!.yardsAfterCatch ?? 0) > 0) continue;
+        const receiverYac = base.boxScore
+          .filter((line) => line.teamId === teamId && ["RB", "WR", "TE"].includes(line.position) && line.stats?.yardsAfterCatch !== undefined)
+          .reduce((sum, line) => sum + (Number(line.stats!.yardsAfterCatch) || 0), 0);
+        if (receiverYac > 0) qb.stats!.yardsAfterCatch = String(receiverYac);
+      }
     }
     return base;
   });
