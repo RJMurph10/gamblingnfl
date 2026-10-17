@@ -579,6 +579,9 @@ function ProbabilityGraph({
 function PlayerNameCell({ line, showHeadshot = true }: { line: BoxScoreLine; showHeadshot?: boolean }) {
   return (
     <div className="flex min-w-0 items-center gap-2.5">
+      {showHeadshot && line.jersey ? (
+        <span className="w-5 shrink-0 text-right font-mono text-xs tabular-nums text-mute">{line.jersey}</span>
+      ) : null}
       {showHeadshot && line.playerId ? (
         <img
           src={`https://a.espncdn.com/i/headshots/nfl/players/full/${line.playerId}.png`}
