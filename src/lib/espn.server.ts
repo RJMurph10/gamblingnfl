@@ -58,7 +58,13 @@ async function cached<T>(
 
 /** Find yards-after-catch in ESPN Core stats, whose response shape varies by endpoint. */
 function extractYacValue(data: any): number | undefined {
-  const isYacName = (value: unknown) => /yards.?after.?catch|(?:^|[^a-z])yac(?:$|[^a-z])/i.test(String(value ?? ""));
+  const isYacName = (value: unknown) => {
+    // ESPN uses both spaced labels ("Yards After Catch") and camelCase
+    // keys ("yardsAfterCatch" / "passingYardsAfterCatch"). Normalize first
+    // so the camelCase form is not accidentally missed by the old regex.
+    const normalized = String(value ?? "").toLowerCase().replace(/[^a-z0-9]/g, "");
+    return normalized.includes("yardsaftercatch") || normalized === "yac" || normalized.endsWith("yac");
+  };
   const parse = (value: any): number | undefined => {
     if (typeof value === "number" && Number.isFinite(value)) return value;
     if (typeof value === "string") {
