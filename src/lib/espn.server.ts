@@ -961,6 +961,13 @@ function mapBoxScore(
         if (pos === "RECEIVING") pos = "WR";
         if (pos === "DEFENSIVE") pos = "DEF";
 
+        // Offensive skill players belong on the offense tab even when ESPN also
+        // reports defensive stats for them. Keep their defensive stat line below
+        // by merging the records, but never let the defensive group move them
+        // into the defense category.
+        const isOffensiveSkillPosition = ["QB", "RB", "FB", "WR", "TE"].includes(pos);
+        if (isOffensiveSkillPosition) category = "offense";
+
         lines.push({
           playerId: ath.id ? String(ath.id) : undefined,
           name: ath.displayName,
@@ -997,9 +1004,18 @@ function mapBoxScore(
     }
     existing.statLine = statParts.join(" · ");
 
-    // A player with any defensive entry stays on the defense tab; otherwise
-    // preserve the offense classification.
-    if (line.category === "defense") existing.category = "defense";
+    // Offensive skill positions always remain on the offense tab, even when
+    // the same player has tackles, sacks, or other defensive stats. Their
+    // defensive stat line is still merged above and retained in the box score.
+    const offensivePositions = ["QB", "RB", "FB", "WR", "TE"];
+    if (offensivePositions.includes(existing.position.toUpperCase()) || offensivePositions.includes(line.position.toUpperCase())) {
+      existing.category = "offense";
+      if (!offensivePositions.includes(existing.position.toUpperCase()) && offensivePositions.includes(line.position.toUpperCase())) {
+        existing.position = line.position;
+      }
+    } else if (line.category === "defense") {
+      existing.category = "defense";
+    }
   }
 
   return Array.from(merged.values());
