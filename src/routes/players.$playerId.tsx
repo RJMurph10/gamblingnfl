@@ -46,7 +46,7 @@ const passing = (): Col[] => [
 const quarterback = (): Col[] => [
   { group: "Passing", label: "C/ATT", title: "Completions / attempts", core: true, raw: (s) => firstStat(s, "pc", "passing.completions"), text: (s) => `${firstStat(s, "pc", "passing.completions")}/${firstStat(s, "pa", "passing.passingAttempts")}` },
   { group: "Passing", label: "PYDS", title: "Passing yards", core: true, raw: (s) => firstStat(s, "passing.passingYards", "passingYards", "pyds") },
-  { group: "Passing", label: "PYAC", title: "Passing yards after catch", core: true, raw: (s) => firstStat(s, "passing.passingYardsAfterCatch", "passing.yardsAfterCatch", "passingYardsAfterCatch", "pyac") },
+  { group: "Passing", label: "PYAC", title: "Passing yards after catch", core: true, raw: (s) => firstStat(s, "yardsAfterCatch", "passing.passingYardsAfterCatch", "passing.yardsAfterCatch", "passingYardsAfterCatch", "pyac") },
   { group: "Passing", label: "PTD", title: "Passing touchdowns", core: true, raw: (s) => firstStat(s, "passing.passingTouchdowns", "passingTouchdowns", "ptd") },
   { group: "Passing", label: "INT", title: "Interceptions thrown", core: true, raw: (s) => firstStat(s, "passing.interceptions", "interceptions", "int") },
   { group: "Rushing", label: "CAR", title: "Rushing attempts", core: true, raw: (s) => firstStat(s, "rushing.rushingAttempts", "rushingAttempts", "car") },
