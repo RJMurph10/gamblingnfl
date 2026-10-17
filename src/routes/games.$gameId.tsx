@@ -642,7 +642,7 @@ function QuarterbackStatsTable({ lines }: { lines: BoxScoreLine[] }) {
     <div className="overflow-x-auto">
       <table className="w-full min-w-[760px] text-sm">
         <thead><tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
-          <th className="px-4 py-2 font-normal">Quarterbacks</th>
+          <th className="px-4 py-2 font-normal">QB</th>
           {columns.map(([abbr, title]) => <th key={abbr} title={title} className="px-2 py-2 text-right font-normal">{abbr}</th>)}
         </tr></thead>
         <tbody className="divide-y divide-line/5">
@@ -710,7 +710,7 @@ function RunningBackStatsTable({ lines }: { lines: BoxScoreLine[] }) {
       <table className="w-full min-w-[760px] text-sm">
         <thead>
           <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
-            <th className="px-4 py-2 font-normal">Running backs</th>
+            <th className="px-4 py-2 font-normal">RB</th>
             {columns.map(([abbr, title]) => (
               <th key={abbr} title={title} className="px-2 py-2 text-right font-normal">
                 {abbr}
@@ -1049,6 +1049,20 @@ function GamePage() {
   const wrLines = selectedTeamTab === "offense" ? selectedTeamLines.filter((l) => l.position.toUpperCase() === "WR") : [];
   const teLines = selectedTeamTab === "offense" ? selectedTeamLines.filter((l) => l.position.toUpperCase() === "TE") : [];
   const detailedLines = [...qbLines, ...rbLines, ...wrLines, ...teLines];
+  const abbreviatePosition = (position: string | undefined) => {
+    const value = (position ?? "").trim();
+    const normalized = value.toUpperCase().replace(/[._-]+/g, " ").replace(/\s+/g, " ");
+    const abbreviations: Record<string, string> = {
+      "QUARTERBACK": "QB", "RUNNING BACK": "RB", "HALFBACK": "HB",
+      "FULLBACK": "FB", "WIDE RECEIVER": "WR", "TIGHT END": "TE",
+      "OFFENSIVE TACKLE": "OT", "OFFENSIVE GUARD": "OG", "CENTER": "C",
+      "OFFENSIVE LINE": "OL", "KICKER": "K", "PLACEKICKER": "K",
+      "PUNTER": "P", "LONG SNAPPER": "LS", "RETURN SPECIALIST": "RS",
+      "DEFENSIVE END": "DE", "DEFENSIVE TACKLE": "DT", "LINEBACKER": "LB",
+      "CORNERBACK": "CB", "SAFETY": "S", "DEFENSIVE BACK": "DB",
+    };
+    return abbreviations[normalized] ?? value.toUpperCase();
+  };
   const otherLines = selectedTeamLines.filter((l) => !detailedLines.includes(l));
   const defensePositionOrder = ["DE", "DT", "NT", "DL", "EDGE", "OLB", "ILB", "LB", "CB", "S", "FS", "SS", "DB", "K", "P", "LS", "ATH"];
   const defensePositionGroups = selectedTeamTab === "defense"
@@ -1593,12 +1607,12 @@ function GamePage() {
                 {rbLines.length > 0 ? <div className={`${qbLines.length > 0 ? "border-t border-line/10" : ""}`}><RunningBackStatsTable lines={rbLines} /></div> : null}
                 {wrLines.length > 0 ? (
                   <div className={`${qbLines.length > 0 || rbLines.length > 0 ? "border-t border-line/10" : ""}`}>
-                    <ReceivingStatsTable lines={wrLines} title="Wide receivers" />
+                    <ReceivingStatsTable lines={wrLines} title="WR" />
                   </div>
                 ) : null}
                 {teLines.length > 0 ? (
                   <div className={`${qbLines.length > 0 || rbLines.length > 0 || wrLines.length > 0 ? "border-t border-line/10" : ""}`}>
-                    <ReceivingStatsTable lines={teLines} title="Tight ends" />
+                    <ReceivingStatsTable lines={teLines} title="TE" />
                   </div>
                 ) : null}
                 {selectedTeamTab === "defense" && defensePositionGroups.length > 0 ? (
@@ -1647,7 +1661,7 @@ function GamePage() {
                             <td className="max-w-[220px] px-4 py-2.5 font-medium">
                               <PlayerNameCell line={line} />
                             </td>
-                            <td className="px-2 py-2.5 font-mono text-mute">{line.position}</td>
+                            <td className="px-2 py-2.5 font-mono text-mute">{abbreviatePosition(line.position)}</td>
                             <td className="px-4 py-2.5 font-mono text-xs tabular-nums text-mute">{line.statLine}</td>
                           </tr>
                         ))}
