@@ -970,6 +970,7 @@ function mapBoxScore(
 
         lines.push({
           playerId: ath.id ? String(ath.id) : undefined,
+          jersey: String(ath.jersey ?? athlete?.jersey ?? "").trim() || undefined,
           name: ath.displayName,
           position: pos,
           teamId,
@@ -1003,6 +1004,7 @@ function mapBoxScore(
       statParts.push(line.statLine);
     }
     existing.statLine = statParts.join(" · ");
+    if (!existing.jersey && line.jersey) existing.jersey = line.jersey;
 
     // Offensive skill positions always remain on the offense tab, even when
     // the same player has tackles, sacks, or other defensive stats. Their
