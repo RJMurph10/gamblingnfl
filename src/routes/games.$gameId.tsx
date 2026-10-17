@@ -628,13 +628,23 @@ function QuarterbackStatsTable({ lines }: { lines: BoxScoreLine[] }) {
     return [
       st?.["completions/passingAttempts"] ?? (`${completions}/${attempts}`),
       st?.passingYards !== undefined ? num(st.passingYards) : 0,
-      st?.yardsAfterCatch !== undefined ? num(st.yardsAfterCatch) : 0,
+      st?.yardsAfterCatch !== undefined
+        ? num(st.yardsAfterCatch)
+        : st?.passingYardsAfterCatch !== undefined
+          ? num(st.passingYardsAfterCatch)
+          : st?.pyac !== undefined ? num(st.pyac) : 0,
       st?.passingTouchdowns !== undefined ? num(st.passingTouchdowns) : 0,
       st?.interceptions !== undefined ? num(st.interceptions) : 0,
       st?.rushingAttempts !== undefined ? num(st.rushingAttempts) : 0,
       st?.rushingYards !== undefined ? num(st.rushingYards) : 0,
       st?.rushingTouchdowns !== undefined ? num(st.rushingTouchdowns) : 0,
-      st?.sacks !== undefined ? num(st.sacks) : 0,
+      st?.sacks !== undefined
+        ? num(st.sacks)
+        : st?.sacksTaken !== undefined
+          ? num(st.sacksTaken)
+          : st?.["sacks-sackedYards"] !== undefined
+            ? Number(String(st["sacks-sackedYards"]).match(/^\s*(\d+)/)?.[1] ?? 0)
+            : 0,
       st?.fumblesLost !== undefined ? num(st.fumblesLost) : 0,
     ] as const;
   };
