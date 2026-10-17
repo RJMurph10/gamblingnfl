@@ -864,7 +864,7 @@ function mapBoxScore(
   posMap?: Map<string, string>,
 ): BoxScoreLine[] {
   const lines: BoxScoreLine[] = [];
-  const wanted = new Set(["passing", "rushing", "receiving", "defensive", "interceptions", "fumbles", "kicking"]);
+  const wanted = new Set(["passing", "rushing", "receiving", "defensive", "interceptions", "fumbles", "kicking", "punting"]);
   // Every raw stat ESPN reports for a player, across all of their groups (used for the RB table).
   const rawStats = new Map<string, Record<string, string>>();
 
@@ -958,7 +958,9 @@ function mapBoxScore(
                     ? "DB"
                     : group.name === "kicking"
                       ? "K"
-                      : "ATH");
+                      : group.name === "punting"
+                        ? "P"
+                        : "ATH");
 
         pos = pos.toUpperCase();
         if (pos === "PASSING") pos = "QB";
@@ -968,12 +970,13 @@ function mapBoxScore(
         // ESPN commonly labels placekickers as PK; normalize them so the
         // frontend renders the dedicated kicker table rather than the generic row.
         if (pos === "PK" || pos === "PLACEKICKER" || pos === "KICKER") pos = "K";
+        if (pos === "PUNTER") pos = "P";
 
         // Offensive skill players belong on the offense tab even when ESPN also
         // reports defensive stats for them. Keep their defensive stat line below
         // by merging the records, but never let the defensive group move them
         // into the defense category.
-        const isOffensiveSkillPosition = ["QB", "RB", "FB", "WR", "TE", "K"].includes(pos) || group.name === "kicking";
+        const isOffensiveSkillPosition = ["QB", "RB", "FB", "WR", "TE", "K", "P"].includes(pos) || group.name === "kicking" || group.name === "punting";
         if (isOffensiveSkillPosition) category = "offense";
 
         lines.push({
@@ -1017,7 +1020,7 @@ function mapBoxScore(
     // Offensive skill positions always remain on the offense tab, even when
     // the same player has tackles, sacks, or other defensive stats. Their
     // defensive stat line is still merged above and retained in the box score.
-    const offensivePositions = ["QB", "RB", "FB", "WR", "TE"];
+    const offensivePositions = ["QB", "RB", "FB", "WR", "TE", "K", "P"];
     if (offensivePositions.includes(existing.position.toUpperCase()) || offensivePositions.includes(line.position.toUpperCase())) {
       existing.category = "offense";
       if (!offensivePositions.includes(existing.position.toUpperCase()) && offensivePositions.includes(line.position.toUpperCase())) {
