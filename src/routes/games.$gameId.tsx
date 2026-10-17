@@ -1050,6 +1050,22 @@ function GamePage() {
   const teLines = selectedTeamTab === "offense" ? selectedTeamLines.filter((l) => l.position.toUpperCase() === "TE") : [];
   const detailedLines = [...qbLines, ...rbLines, ...wrLines, ...teLines];
   const otherLines = selectedTeamLines.filter((l) => !detailedLines.includes(l));
+  const defensePositionOrder = ["DE", "DT", "NT", "DL", "EDGE", "OLB", "ILB", "LB", "CB", "S", "FS", "SS", "DB", "K", "P", "LS", "ATH"];
+  const defensePositionGroups = selectedTeamTab === "defense"
+    ? [...new Set(otherLines.map((line) => line.position?.trim() || "DEF"))]
+        .sort((a, b) => {
+          const ai = defensePositionOrder.indexOf(a.toUpperCase());
+          const bi = defensePositionOrder.indexOf(b.toUpperCase());
+          if (ai === -1 && bi === -1) return a.localeCompare(b);
+          if (ai === -1) return 1;
+          if (bi === -1) return -1;
+          return ai - bi;
+        })
+        .map((position) => ({
+          position,
+          lines: otherLines.filter((line) => (line.position?.trim() || "DEF") === position),
+        }))
+    : [];
 
   const selectedTeamData =
     selectedTeam === "away" ? away : home;
@@ -1585,49 +1601,62 @@ function GamePage() {
                     <ReceivingStatsTable lines={teLines} title="Tight ends" />
                   </div>
                 ) : null}
-                {otherLines.length > 0 ? (
-                <div className={`overflow-x-auto ${detailedLines.length > 0 ? "border-t border-line/10" : ""}`}>
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
-                        <th className="w-[42%] px-4 py-2 font-normal">
-                          Player
-                        </th>
-
-                        <th className="w-[18%] px-2 py-2 font-normal">
-                          Pos
-                        </th>
-
-                        <th className="w-[40%] px-4 py-2 font-normal">
-                          Stat line
-                        </th>
-                      </tr>
-                    </thead>
-
-                    <tbody className="divide-y divide-line/5">
-                      {otherLines.map(
-                        (line, idx) => (
-                          <tr
-                            key={`${line.name}-${line.position}-${idx}`}
-                            className="hover:bg-line/5"
-                          >
+                {selectedTeamTab === "defense" && defensePositionGroups.length > 0 ? (
+                  <div className={detailedLines.length > 0 ? "border-t border-line/10" : ""}>
+                    {defensePositionGroups.map(({ position, lines }, groupIndex) => (
+                      <div key={position} className={groupIndex > 0 ? "border-t border-line/10" : ""}>
+                        <div className="bg-panel2/50 px-4 py-2 font-disp text-xs font-semibold uppercase tracking-wider text-mute">
+                          {position}
+                        </div>
+                        <div className="overflow-x-auto">
+                          <table className="w-full text-sm">
+                            <thead>
+                              <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
+                                <th className="w-[60%] px-4 py-2 font-normal">Player</th>
+                                <th className="w-[40%] px-4 py-2 font-normal">Stat line</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-line/5">
+                              {lines.map((line, idx) => (
+                                <tr key={`${line.name}-${line.position}-${idx}`} className="hover:bg-line/5">
+                                  <td className="max-w-[320px] px-4 py-2.5 font-medium">
+                                    <PlayerNameCell line={line} />
+                                  </td>
+                                  <td className="px-4 py-2.5 font-mono text-xs tabular-nums text-mute">
+                                    {line.statLine}
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : null}
+                {selectedTeamTab === "offense" && otherLines.length > 0 ? (
+                  <div className={`overflow-x-auto ${detailedLines.length > 0 ? "border-t border-line/10" : ""}`}>
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
+                          <th className="w-[42%] px-4 py-2 font-normal">Player</th>
+                          <th className="w-[18%] px-2 py-2 font-normal">Pos</th>
+                          <th className="w-[40%] px-4 py-2 font-normal">Stat line</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-line/5">
+                        {otherLines.map((line, idx) => (
+                          <tr key={`${line.name}-${line.position}-${idx}`} className="hover:bg-line/5">
                             <td className="max-w-[220px] px-4 py-2.5 font-medium">
-                              <PlayerNameCell line={line} showHeadshot={selectedTeamTab === "offense"} />
+                              <PlayerNameCell line={line} />
                             </td>
-
-                            <td className="px-2 py-2.5 font-mono text-mute">
-                              {line.position}
-                            </td>
-
-                            <td className="px-4 py-2.5 font-mono text-xs tabular-nums text-mute">
-                              {line.statLine}
-                            </td>
+                            <td className="px-2 py-2.5 font-mono text-mute">{line.position}</td>
+                            <td className="px-4 py-2.5 font-mono text-xs tabular-nums text-mute">{line.statLine}</td>
                           </tr>
-                        ),
-                      )}
-                    </tbody>
-                  </table>
-                </div>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 ) : null}
                 </>
               )}
