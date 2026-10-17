@@ -575,6 +575,30 @@ function ProbabilityGraph({
 }
 
 
+/** Player name cell with ESPN's official NFL headshot. */
+function PlayerNameCell({ line, showHeadshot = true }: { line: BoxScoreLine; showHeadshot?: boolean }) {
+  return (
+    <div className="flex min-w-0 items-center gap-2.5">
+      {showHeadshot && line.playerId ? (
+        <img
+          src={`https://a.espncdn.com/i/headshots/nfl/players/full/${line.playerId}.png`}
+          alt={`${line.name} headshot`}
+          loading="lazy"
+          className="size-8 shrink-0 rounded-full bg-panel2 object-cover"
+          onError={(event) => { event.currentTarget.style.visibility = "hidden"; }}
+        />
+      ) : null}
+      <span className="min-w-0 truncate">
+        {line.playerId ? (
+          <Link to="/players/$playerId" params={{ playerId: line.playerId }} className="hover:text-acc">
+            {line.name}
+          </Link>
+        ) : line.name}
+      </span>
+    </div>
+  );
+}
+
 /** Detailed quarterback box score: passing production plus rushing and turnovers. */
 function QuarterbackStatsTable({ lines }: { lines: BoxScoreLine[] }) {
   const num = (value: string | undefined) => {
@@ -620,9 +644,7 @@ function QuarterbackStatsTable({ lines }: { lines: BoxScoreLine[] }) {
         </tr></thead>
         <tbody className="divide-y divide-line/5">
           {lines.map((line, idx) => <tr key={`${line.name}-${idx}`} className="hover:bg-line/5">
-            <td className="max-w-[180px] truncate px-4 py-2.5 font-medium">
-              {line.playerId ? <Link to="/players/$playerId" params={{ playerId: line.playerId }} className="hover:text-acc">{line.name}</Link> : line.name}
-            </td>
+            <td className="max-w-[220px] px-4 py-2.5 font-medium"><PlayerNameCell line={line} /></td>
             {rowFor(line).map((value, i) => <td key={columns[i][0]} className="px-2 py-2.5 text-right font-mono text-xs tabular-nums text-mute">{value}</td>)}
           </tr>)}
         </tbody>
@@ -696,15 +718,7 @@ function RunningBackStatsTable({ lines }: { lines: BoxScoreLine[] }) {
         <tbody className="divide-y divide-line/5">
           {lines.map((line, idx) => (
             <tr key={`${line.name}-${idx}`} className="hover:bg-line/5">
-              <td className="max-w-[180px] truncate px-4 py-2.5 font-medium">
-                {line.playerId ? (
-                  <Link to="/players/$playerId" params={{ playerId: line.playerId }} className="hover:text-acc">
-                    {line.name}
-                  </Link>
-                ) : (
-                  line.name
-                )}
-              </td>
+              <td className="max-w-[220px] px-4 py-2.5 font-medium"><PlayerNameCell line={line} /></td>
               {rowFor(line).map((value, i) => (
                 <td key={columns[i][0]} className="px-2 py-2.5 text-right font-mono text-xs tabular-nums text-mute">
                   {value}
@@ -788,13 +802,7 @@ function ReceivingStatsTable({ lines, title }: { lines: BoxScoreLine[]; title: s
         <tbody className="divide-y divide-line/5">
           {lines.map((line, idx) => (
             <tr key={`${line.name}-${idx}`} className="hover:bg-line/5">
-              <td className="max-w-[180px] truncate px-4 py-2.5 font-medium">
-                {line.playerId ? (
-                  <Link to="/players/$playerId" params={{ playerId: line.playerId }} className="hover:text-acc">
-                    {line.name}
-                  </Link>
-                ) : line.name}
-              </td>
+              <td className="max-w-[220px] px-4 py-2.5 font-medium"><PlayerNameCell line={line} /></td>
               {rowFor(line).map((value, i) => (
                 <td key={columns[i][0]} className="px-2 py-2.5 text-right font-mono text-xs tabular-nums text-mute">
                   {value}
@@ -1600,21 +1608,8 @@ function GamePage() {
                             key={`${line.name}-${line.position}-${idx}`}
                             className="hover:bg-line/5"
                           >
-                            <td className="px-4 py-2.5 font-medium truncate max-w-[180px]">
-                              {line.playerId ? (
-                                <Link
-                                  to="/players/$playerId"
-                                  params={{
-                                    playerId:
-                                      line.playerId,
-                                  }}
-                                  className="hover:text-acc"
-                                >
-                                  {line.name}
-                                </Link>
-                              ) : (
-                                line.name
-                              )}
+                            <td className="max-w-[220px] px-4 py-2.5 font-medium">
+                              <PlayerNameCell line={line} showHeadshot={selectedTeamTab === "offense"} />
                             </td>
 
                             <td className="px-2 py-2.5 font-mono text-mute">
