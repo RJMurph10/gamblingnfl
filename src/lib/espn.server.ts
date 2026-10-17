@@ -1864,6 +1864,16 @@ export interface PlayerGameLogRow {
   tackles: number;
   sacks: number;
   touchdowns: number;
+  completions: number;
+  passingAttempts: number;
+  passingYards: number;
+  yardsAfterCatch: number;
+  passingTouchdowns: number;
+  interceptions: number;
+  rushingAttempts: number;
+  rushingYards: number;
+  rushingTouchdowns: number;
+  fumblesLost: number;
 }
 
 export interface PlayerProfile {
@@ -1954,6 +1964,16 @@ export async function fetchPlayerProfile(playerId: string): Promise<PlayerProfil
           receiving: p.receptions ? `${p.receptions} · ${p.receivingYards ?? 0} yds` : '—',
           tackles: p.totalTackles ?? 0, sacks: p.sacks ?? 0,
           touchdowns: (p.passingTouchdowns ?? 0) + (p.rushingTouchdowns ?? 0) + (p.receivingTouchdowns ?? 0),
+          completions: p.completions ?? 0,
+          passingAttempts: p.passingAttempts ?? 0,
+          passingYards: p.passingYards ?? 0,
+          yardsAfterCatch: p.yardsAfterCatch ?? 0,
+          passingTouchdowns: p.passingTouchdowns ?? 0,
+          interceptions: p.interceptions ?? 0,
+          rushingAttempts: p.rushingAttempts ?? 0,
+          rushingYards: p.rushingYards ?? 0,
+          rushingTouchdowns: p.rushingTouchdowns ?? 0,
+          fumblesLost: p.fumblesLost ?? p.fumbles ?? 0,
         });
       }
       gameLog.sort((a,b) => b.week - a.week);
