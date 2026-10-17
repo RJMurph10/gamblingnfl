@@ -79,6 +79,46 @@ const add = (flat: Record<string, number>, key: string, value: number) => {
   flat[key] = (flat[key] ?? 0) + value;
 };
 
+/** Find yards-after-catch despite ESPN Core response nesting/name variations. */
+function extractYacValue(data: any): number | undefined {
+  const isYacName = (value: unknown) => /yards.?after.?catch|(?:^|[^a-z])yac(?:$|[^a-z])/i.test(String(value ?? ""));
+  const parse = (value: any): number | undefined => {
+    if (typeof value === "number" && Number.isFinite(value)) return value;
+    if (typeof value === "string") {
+      const n = Number(value.replace(/,/g, ""));
+      if (value.trim() !== "" && Number.isFinite(n)) return n;
+    }
+    if (value && typeof value === "object") {
+      for (const key of ["value", "displayValue", "total", "displayValueShort"]) {
+        const n = parse(value[key]);
+        if (n !== undefined) return n;
+      }
+    }
+    return undefined;
+  };
+  const visit = (node: any): number | undefined => {
+    if (!node || typeof node !== "object") return undefined;
+    if (Array.isArray(node)) {
+      for (const item of node) { const found = visit(item); if (found !== undefined) return found; }
+      return undefined;
+    }
+    const name = node.name ?? node.abbreviation ?? node.shortDisplayName ?? node.displayName ?? node.label;
+    if (isYacName(name)) {
+      for (const key of ["value", "displayValue", "total", "displayValueShort"]) {
+        const found = parse(node[key]);
+        if (found !== undefined) return found;
+      }
+    }
+    for (const [key, value] of Object.entries(node)) {
+      if (isYacName(key)) { const found = parse(value); if (found !== undefined) return found; }
+    }
+    for (const value of Object.values(node)) { const found = visit(value); if (found !== undefined) return found; }
+    return undefined;
+  };
+  const result = visit(data);
+  return result === undefined ? undefined : Math.round(result);
+}
+
 /* ---------- one game's box score -> per-player records ---------- */
 
 interface GameRecord {
@@ -264,18 +304,27 @@ async function addMatchupPageYac(
           if (!response.ok) throw new Error(`ESPN player statistics failed [${response.status}]`);
           return response.json();
         });
-        for (const category of (stats as any)?.splits?.categories ?? []) {
-          for (const stat of category?.stats ?? []) {
-            if (/yardsaftercatch|yac/i.test(String(stat?.name ?? "")) && stat?.value !== undefined) {
-              record.flat.yardsAfterCatch = Math.round(num(stat.value));
-              break;
-            }
-          }
-        }
+        const yac = extractYacValue(stats);
+        if (yac !== undefined) record.flat.yardsAfterCatch = yac;
       } catch {
         // Matchup page leaves YAC absent when ESPN's Core endpoint fails.
       }
     }));
+
+  // Some ESPN feeds expose YAC on the receivers but omit it on the QB's own
+  // stats endpoint. If this team used exactly one QB with pass attempts, sum
+  // the receiving YAC for that game and attach it to that QB.
+  const teamIds = new Set(records.filter((r) => r.posHint.toUpperCase() === "QB").map((r) => r.teamId));
+  for (const teamId of teamIds) {
+    const qbs = records.filter((r) => r.teamId === teamId && r.posHint.toUpperCase() === "QB" && (r.flat.pa ?? 0) > 0);
+    if (qbs.length !== 1) continue;
+    const qb = qbs[0];
+    if ((qb.flat.yardsAfterCatch ?? 0) > 0) continue;
+    const receiverYac = records
+      .filter((r) => r.teamId === teamId && ["RB", "WR", "TE"].includes(r.posHint.toUpperCase()))
+      .reduce((sum, r) => sum + (r.flat.yardsAfterCatch ?? 0), 0);
+    if (receiverYac > 0) qb.flat.yardsAfterCatch = receiverYac;
+  }
 }
 
 /* ---------- league totals ---------- */
@@ -441,10 +490,13 @@ export async function fetchPlayerGameLog(
           // for this player's row so scanning the league doesn't fan out into
           // hundreds of unnecessary per-athlete requests.
           try {
+            const yacRecords = rec.posHint.toUpperCase() === "QB"
+              ? records[idx].filter((candidate) => candidate.teamId === rec.teamId && ["QB", "RB", "WR", "TE"].includes(candidate.posHint.toUpperCase()))
+              : [rec];
             await addMatchupPageYac(
               game.id.replace(/^espn-/, ""),
               await fetchGameSummary(game.id.replace(/^espn-/, "")),
-              [rec],
+              yacRecords,
             );
           } catch {
             // Keep the rest of the game log available if ESPN's YAC endpoint fails.
