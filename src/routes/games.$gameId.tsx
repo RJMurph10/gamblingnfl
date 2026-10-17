@@ -1011,6 +1011,7 @@ function GamePage() {
           "FB",
           "WR",
           "TE",
+          "K",
           "PASSING",
           "RUSHING",
           "RECEIVING",
@@ -1048,7 +1049,8 @@ function GamePage() {
   const rbLines = selectedTeamTab === "offense" ? selectedTeamLines.filter((l) => l.position.toUpperCase() === "RB") : [];
   const wrLines = selectedTeamTab === "offense" ? selectedTeamLines.filter((l) => l.position.toUpperCase() === "WR") : [];
   const teLines = selectedTeamTab === "offense" ? selectedTeamLines.filter((l) => l.position.toUpperCase() === "TE") : [];
-  const detailedLines = [...qbLines, ...rbLines, ...wrLines, ...teLines];
+  const kickerLines = selectedTeamTab === "offense" ? selectedTeamLines.filter((l) => l.position.toUpperCase() === "K") : [];
+  const detailedLines = [...qbLines, ...rbLines, ...wrLines, ...teLines, ...kickerLines];
   const abbreviatePosition = (position: string | undefined) => {
     const value = (position ?? "").trim();
     const normalized = value.toUpperCase().replace(/[._-]+/g, " ").replace(/\s+/g, " ");
@@ -1613,6 +1615,59 @@ function GamePage() {
                 {teLines.length > 0 ? (
                   <div className={`${qbLines.length > 0 || rbLines.length > 0 || wrLines.length > 0 ? "border-t border-line/10" : ""}`}>
                     <ReceivingStatsTable lines={teLines} title="TE" />
+                  </div>
+                ) : null}
+                {kickerLines.length > 0 ? (
+                  <div className={`${detailedLines.length > kickerLines.length ? "border-t border-line/10" : ""}`}>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
+                            <th className="w-[28%] px-4 py-2 font-normal">K</th>
+                            <th className="px-2 py-2 font-normal">FG%</th>
+                            <th className="px-2 py-2 font-normal">XP%</th>
+                            <th className="px-2 py-2 font-normal">LNG</th>
+                            <th className="px-2 py-2 font-normal">FGYDS</th>
+                            <th className="px-2 py-2 font-normal">0-19</th>
+                            <th className="px-2 py-2 font-normal">20-29</th>
+                            <th className="px-2 py-2 font-normal">30-39</th>
+                            <th className="px-2 py-2 font-normal">40-49</th>
+                            <th className="px-2 py-2 font-normal">50+</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-line/5">
+                          {kickerLines.map((line, idx) => {
+                            const raw = line.stats ?? {};
+                            const pair = (value: string | undefined): [number, number] => {
+                              const match = String(value ?? "0/0").match(/(\d+)\s*[-/]\s*(\d+)/);
+                              return match ? [Number(match[1]), Number(match[2])] : [0, 0];
+                            };
+                            const [fgMade, fgAtt] = pair(raw["fieldGoalsMade/fieldGoalAttempts"]);
+                            const [xpMade, xpAtt] = pair(raw["extraPointsMade/extraPointAttempts"]);
+                            const longRaw = Number(String(raw.longFieldGoalMade ?? "0").match(/\d+/)?.[0] ?? 0);
+                            const fieldGoals = line.fieldGoalDistances ?? [];
+                            const bucket = (min: number, max: number) => fieldGoals.filter((distance) => distance >= min && distance <= max).length;
+                            const fgyards = fieldGoals.reduce((sum, distance) => sum + distance, 0);
+                            const longest = Math.max(longRaw, ...fieldGoals, 0);
+                            const cell = (value: string | number) => <td className="px-2 py-2.5 whitespace-nowrap font-mono text-xs tabular-nums text-mute">{value}</td>;
+                            return (
+                              <tr key={`${line.name}-${idx}`} className="hover:bg-line/5">
+                                <td className="max-w-[240px] px-4 py-2.5 font-medium"><PlayerNameCell line={line} /></td>
+                                {cell(`${fgMade}/${fgAtt}`)}
+                                {cell(`${xpMade}/${xpAtt}`)}
+                                {cell(longest || 0)}
+                                {cell(fgyards)}
+                                {cell(bucket(0, 19))}
+                                {cell(bucket(20, 29))}
+                                {cell(bucket(30, 39))}
+                                {cell(bucket(40, 49))}
+                                {cell(fieldGoals.filter((distance) => distance >= 50).length)}
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 ) : null}
                 {selectedTeamTab === "defense" && defensePositionGroups.length > 0 ? (
