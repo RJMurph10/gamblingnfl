@@ -35,40 +35,77 @@ const firstStat = (s: Stats, ...keys: string[]) => {
   return 0;
 };
 
-const passing = (): Col[] => [
-  { group: "Passing", label: "C/ATT", title: "Completions / attempts", core: true, raw: (s) => g(s, "pa"), text: (s) => `${g(s, "pc")}/${g(s, "pa")}` },
-  { group: "Passing", label: "YDS", title: "Passing yards", core: true, raw: (s) => g(s, "passing.passingYards") },
-  { group: "Passing", label: "TD", title: "Passing touchdowns", core: true, raw: (s) => g(s, "passing.passingTouchdowns") },
-  { group: "Passing", label: "INT", title: "Interceptions thrown", core: true, raw: (s) => g(s, "passing.interceptions") },
-  { group: "Passing", label: "RTG", title: "Passer rating", raw: (s) => g(s, "passing.QBRating"), text: (s) => g(s, "passing.QBRating").toFixed(1) },
-];
-
 const quarterback = (): Col[] => [
-  { group: "Passing", label: "C/ATT", title: "Completions / attempts", core: true, raw: (s) => firstStat(s, "pc", "passing.completions"), text: (s) => `${firstStat(s, "pc", "passing.completions")}/${firstStat(s, "pa", "passing.passingAttempts")}` },
-  { group: "Passing", label: "PYDS", title: "Passing yards", core: true, raw: (s) => firstStat(s, "passing.passingYards", "passingYards", "pyds") },
-  { group: "Passing", label: "PYAC", title: "Passing yards after catch", core: true, raw: (s) => firstStat(s, "yardsAfterCatch", "passing.passingYardsAfterCatch", "passing.yardsAfterCatch", "passingYardsAfterCatch", "pyac") },
-  { group: "Passing", label: "PTD", title: "Passing touchdowns", core: true, raw: (s) => firstStat(s, "passing.passingTouchdowns", "passingTouchdowns", "ptd") },
-  { group: "Passing", label: "INT", title: "Interceptions thrown", core: true, raw: (s) => firstStat(s, "passing.interceptions", "interceptions", "int") },
-  { group: "Rushing", label: "CAR", title: "Rushing attempts", core: true, raw: (s) => firstStat(s, "rushing.rushingAttempts", "rushingAttempts", "car") },
-  { group: "Rushing", label: "RUYDS", title: "Rushing yards", core: true, raw: (s) => firstStat(s, "rushing.rushingYards", "rushingYards", "ruyds") },
-  { group: "Rushing", label: "RUTD", title: "Rushing touchdowns", core: true, raw: (s) => firstStat(s, "rushing.rushingTouchdowns", "rushingTouchdowns", "rutd") },
-  { group: "Passing", label: "SACK", title: "Times sacked", core: true, raw: (s) => firstStat(s, "passing.sacks", "passing.sacksTaken", "sacks", "sack") },
-  { group: "Passing", label: "FL", title: "Fumbles lost", core: true, raw: (s) => firstStat(s, "fumbles.fumblesLost", "fumblesLost", "lostFumbles", "fl") },
+  { group: "QB", label: "C/ATT", title: "Completions / attempts", core: true, raw: (s) => firstStat(s, "pa", "passing.passingAttempts"), text: (s) => `${firstStat(s, "pc", "passing.completions")}/${firstStat(s, "pa", "passing.passingAttempts")}` },
+  { group: "QB", label: "PYDS", title: "Passing yards", core: true, raw: (s) => firstStat(s, "passing.passingYards", "passingYards", "pyds") },
+  { group: "QB", label: "PYAC", title: "Passing yards after catch", core: true, raw: (s) => firstStat(s, "yardsAfterCatch", "passing.passingYardsAfterCatch", "passing.yardsAfterCatch", "passingYardsAfterCatch", "pyac") },
+  { group: "QB", label: "PTD", title: "Passing touchdowns", core: true, raw: (s) => firstStat(s, "passing.passingTouchdowns", "passingTouchdowns", "ptd") },
+  { group: "QB", label: "INT", title: "Interceptions thrown", core: true, raw: (s) => firstStat(s, "passing.interceptions", "interceptions", "int") },
+  { group: "QB", label: "CAR", title: "Rushing attempts", core: true, raw: (s) => firstStat(s, "rushing.rushingAttempts", "rushingAttempts", "car") },
+  { group: "QB", label: "RUYDS", title: "Rushing yards", core: true, raw: (s) => firstStat(s, "rushing.rushingYards", "rushingYards", "ruyds") },
+  { group: "QB", label: "RUTD", title: "Rushing touchdowns", core: true, raw: (s) => firstStat(s, "rushing.rushingTouchdowns", "rushingTouchdowns", "rutd") },
+  { group: "QB", label: "SACK", title: "Sacks taken", core: true, raw: (s) => firstStat(s, "passing.sacks", "passing.sacksTaken", "sacks", "sack") },
+  { group: "QB", label: "FL", title: "Fumbles lost", core: true, raw: (s) => firstStat(s, "fumbles.fumblesLost", "fumblesLost", "lostFumbles", "fl") },
 ];
 
-const rushing = (core: boolean): Col[] => [
-  { group: "Rushing", label: "CAR", title: "Carries", core, raw: (s) => g(s, "rushing.rushingAttempts") },
-  { group: "Rushing", label: "RUYDS", title: "Rushing yards", core, raw: (s) => firstStat(s, "rushing.rushingYards", "rushingYards", "ruyds") },
-  { group: "Rushing", label: "RUAVG", title: "Yards per carry", core, raw: (s) => firstStat(s, "rushing.rushingAttempts", "rushingAttempts", "car"), text: (s) => avg(firstStat(s, "rushing.rushingYards", "rushingYards", "ruyds"), firstStat(s, "rushing.rushingAttempts", "rushingAttempts", "car")) },
-  { group: "Rushing", label: "RUTD", title: "Rushing touchdowns", core, raw: (s) => firstStat(s, "rushing.rushingTouchdowns", "rushingTouchdowns", "rutd") },
+const rushingYards = (s: Stats) => firstStat(s, "rushing.rushingYards", "rushingYards", "ruyds");
+const rushingAttempts = (s: Stats) => firstStat(s, "rushing.rushingAttempts", "rushingAttempts", "car");
+const rushingTds = (s: Stats) => firstStat(s, "rushing.rushingTouchdowns", "rushingTouchdowns", "rutd");
+const receivingYards = (s: Stats) => firstStat(s, "receiving.receivingYards", "receivingYards", "recyds");
+const receptions = (s: Stats) => firstStat(s, "receiving.receptions", "receptions", "rec");
+const receivingTds = (s: Stats) => firstStat(s, "receiving.receivingTouchdowns", "receivingTouchdowns", "rectd");
+const totalFumblesLost = (s: Stats) => firstStat(s, "fumbles.fumblesLost", "fumblesLost", "lostFumbles", "fl");
+
+const runningBack = (): Col[] => [
+  { group: "RB", label: "YDS", title: "Total rushing and receiving yards", core: true, raw: (s) => rushingYards(s) + receivingYards(s) },
+  { group: "RB", label: "TD", title: "Total rushing and receiving touchdowns", core: true, raw: (s) => rushingTds(s) + receivingTds(s) },
+  { group: "RB", label: "CAR", title: "Rushing attempts", core: true, raw: rushingAttempts },
+  { group: "RB", label: "RUYDS", title: "Rushing yards", core: true, raw: rushingYards },
+  { group: "RB", label: "RUTD", title: "Rushing touchdowns", core: true, raw: rushingTds },
+  { group: "RB", label: "RULNG", title: "Longest rush", core: true, raw: (s) => firstStat(s, "rushing.longRushing", "rushing.longRush", "longRushing", "rulng") },
+  { group: "RB", label: "REC", title: "Receptions", core: true, raw: receptions },
+  { group: "RB", label: "REYDS", title: "Receiving yards", core: true, raw: receivingYards },
+  { group: "RB", label: "YAC", title: "Yards after catch", core: true, raw: (s) => g(s, "yardsAfterCatch") },
+  { group: "RB", label: "RETD", title: "Receiving touchdowns", core: true, raw: receivingTds },
+  { group: "RB", label: "RELNG", title: "Longest reception", core: true, raw: (s) => firstStat(s, "receiving.longReception", "longReception", "relng") },
+  { group: "RB", label: "TGT", title: "Targets", core: true, raw: (s) => firstStat(s, "receiving.receivingTargets", "receivingTargets", "tgt") },
+  { group: "RB", label: "FL", title: "Fumbles lost", core: true, raw: totalFumblesLost },
 ];
 
-const receiving = (core: boolean): Col[] => [
-  { group: "Receiving", label: "REC", title: "Receptions", core, raw: (s) => g(s, "receiving.receptions") },
-  { group: "Receiving", label: "TGT", title: "Targets", raw: (s) => g(s, "receiving.receivingTargets") },
-  { group: "Receiving", label: "RECYDS", title: "Receiving yards", core, raw: (s) => firstStat(s, "receiving.receivingYards", "receivingYards", "recyds") },
-  { group: "Receiving", label: "RECAVG", title: "Yards per catch", core, raw: (s) => firstStat(s, "receiving.receptions", "receptions", "rec"), text: (s) => avg(firstStat(s, "receiving.receivingYards", "receivingYards", "recyds"), firstStat(s, "receiving.receptions", "receptions", "rec")) },
-  { group: "Receiving", label: "RECTD", title: "Receiving touchdowns", core, raw: (s) => firstStat(s, "receiving.receivingTouchdowns", "receivingTouchdowns", "rectd") },
+const receiver = (): Col[] => [
+  { group: "WR/TE", label: "YDS", title: "Total receiving and rushing yards", core: true, raw: (s) => receivingYards(s) + rushingYards(s) },
+  { group: "WR/TE", label: "TD", title: "Total receiving and rushing touchdowns", core: true, raw: (s) => receivingTds(s) + rushingTds(s) },
+  { group: "WR/TE", label: "REC", title: "Receptions", core: true, raw: receptions },
+  { group: "WR/TE", label: "REYDS", title: "Receiving yards", core: true, raw: receivingYards },
+  { group: "WR/TE", label: "YAC", title: "Yards after catch", core: true, raw: (s) => g(s, "yardsAfterCatch") },
+  { group: "WR/TE", label: "RETD", title: "Receiving touchdowns", core: true, raw: receivingTds },
+  { group: "WR/TE", label: "RELNG", title: "Longest reception", core: true, raw: (s) => firstStat(s, "receiving.longReception", "longReception", "relng") },
+  { group: "WR/TE", label: "TGT", title: "Targets", core: true, raw: (s) => firstStat(s, "receiving.receivingTargets", "receivingTargets", "tgt") },
+  { group: "WR/TE", label: "CAR", title: "Rushing attempts", core: true, raw: rushingAttempts },
+  { group: "WR/TE", label: "RUYDS", title: "Rushing yards", core: true, raw: rushingYards },
+  { group: "WR/TE", label: "RUTD", title: "Rushing touchdowns", core: true, raw: rushingTds },
+  { group: "WR/TE", label: "FL", title: "Fumbles lost", core: true, raw: totalFumblesLost },
+];
+
+const kicking = (): Col[] => [
+  { group: "K", label: "FG%", title: "Field goals made / attempted", core: true, raw: (s) => g(s, "fga"), text: (s) => `${g(s, "fgm")}/${g(s, "fga")}` },
+  { group: "K", label: "XP%", title: "Extra points made / attempted", core: true, raw: (s) => g(s, "xpa"), text: (s) => `${g(s, "xpm")}/${g(s, "xpa")}` },
+  { group: "K", label: "LNG", title: "Longest made field goal", core: true, raw: (s) => firstStat(s, "matchup.fgLong", "fgLong", "kicking.longFieldGoalMade") },
+  { group: "K", label: "FGYDS", title: "Total yards from made field goals", core: true, raw: (s) => g(s, "matchup.fgYds") },
+  { group: "K", label: "0-19", title: "Made field goals from 0–19 yards", core: true, raw: (s) => g(s, "matchup.fg0_19") },
+  { group: "K", label: "20-29", title: "Made field goals from 20–29 yards", core: true, raw: (s) => g(s, "matchup.fg20_29") },
+  { group: "K", label: "30-39", title: "Made field goals from 30–39 yards", core: true, raw: (s) => g(s, "matchup.fg30_39") },
+  { group: "K", label: "40-49", title: "Made field goals from 40–49 yards", core: true, raw: (s) => g(s, "matchup.fg40_49") },
+  { group: "K", label: "50+", title: "Made field goals from 50+ yards", core: true, raw: (s) => g(s, "matchup.fg50plus") },
+];
+
+const punting = (): Col[] => [
+  { group: "P", label: "PUNT", title: "Punts", core: true, raw: (s) => firstStat(s, "punting.punts", "punts") },
+  { group: "P", label: "AVG", title: "Average punt yards", core: true, raw: (s) => firstStat(s, "punting.punts", "punts"), text: (s) => avg(firstStat(s, "punting.puntYards", "puntYards", "puyds"), firstStat(s, "punting.punts", "punts")) },
+  { group: "P", label: "LNG", title: "Longest punt", core: true, raw: (s) => firstStat(s, "puntLong", "punting.longPunt", "punting.longestPunt") },
+  { group: "P", label: "PUYDS", title: "Total punt yards", core: true, raw: (s) => firstStat(s, "punting.puntYards", "puntYards", "puyds") },
+  { group: "P", label: "P20", title: "Punts inside the 20", core: true, raw: (s) => firstStat(s, "punting.puntsInside20", "puntsInside20", "p20") },
+  { group: "P", label: "PTB", title: "Blocked punts", core: true, raw: (s) => firstStat(s, "punting.blockedPunts", "punting.puntsBlocked", "blockedPunts", "ptb") },
 ];
 
 const defense = (core: string[]): Col[] => {
@@ -83,28 +120,9 @@ const defense = (core: string[]): Col[] => {
     { key: "FF", group: "Defense", label: "FF", title: "Forced fumbles", raw: (s) => g(s, "defensive.forcedFumbles") },
     { key: "TD", group: "Defense", label: "TD", title: "Defensive touchdowns", raw: (s) => g(s, "dtd") },
   ];
-  // Keep the order given in `core`, then any other column that has data.
-  const ordered = [
-    ...core.map((k) => all.find((c) => c.key === k)!),
-    ...all.filter((c) => !core.includes(c.key)),
-  ];
+  const ordered = [...core.map((k) => all.find((c) => c.key === k)!), ...all.filter((c) => !core.includes(c.key))];
   return ordered.map((c) => ({ ...c, core: core.includes(c.key) }));
 };
-
-const kicking = (): Col[] => [
-  { group: "Kicking", label: "FG", title: "Field goals made / attempted", core: true, raw: (s) => g(s, "fga"), text: (s) => `${g(s, "fgm")}/${g(s, "fga")}` },
-  { group: "Kicking", label: "LNG", title: "Longest field goal", raw: (s) => g(s, "fgLong") },
-  { group: "Kicking", label: "XP", title: "Extra points made / attempted", core: true, raw: (s) => g(s, "xpa"), text: (s) => `${g(s, "xpm")}/${g(s, "xpa")}` },
-  { group: "Kicking", label: "PTS", title: "Kicking points", core: true, raw: (s) => g(s, "kicking.totalKickingPoints") || g(s, "fgm") * 3 + g(s, "xpm") },
-];
-
-const punting = (): Col[] => [
-  { group: "Punting", label: "PUNTS", title: "Punts", core: true, raw: (s) => g(s, "punting.punts") },
-  { group: "Punting", label: "YDS", title: "Punt yards", core: true, raw: (s) => g(s, "punting.puntYards") },
-  { group: "Punting", label: "AVG", title: "Average yards per punt", core: true, raw: (s) => g(s, "punting.punts"), text: (s) => avg(g(s, "punting.puntYards"), g(s, "punting.punts")) },
-  { group: "Punting", label: "LNG", title: "Longest punt", raw: (s) => g(s, "puntLong") },
-  { group: "Punting", label: "IN20", title: "Punts inside the 20", raw: (s) => g(s, "punting.puntsInside20") },
-];
 
 const ALIASES: Record<string, string> = {
   K: "PK", OLB: "LB", ILB: "LB", MLB: "LB", NT: "DT", DL: "DE", FS: "S", SS: "S", DB: "CB", HB: "RB", TB: "RB",
@@ -118,10 +136,10 @@ function columnsFor(position: string): Col[] {
       return quarterback();
     case "RB":
     case "FB":
-      return [...rushing(true), ...receiving(true)];
+      return runningBack();
     case "WR":
     case "TE":
-      return [...receiving(true), ...rushing(false)];
+      return receiver();
     case "DE":
     case "DT":
       return defense(["SCK", "TFL", "QBH", "TKL", "SOLO"]);
