@@ -1776,9 +1776,8 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
         if (/\bofficial\s+time[\s-]?outs?\b/i.test(rawText)) return;
                 // Remove the "(Shotgun)" formation tag but keep the rest of the play.
         const cleanedText = rawText
-          .replace(/\(\s*no huddle\s*,\s*shotgun\s*\)/gi, "(No Huddle)")
-          .replace(/\(\s*shotgun\s*,\s*no huddle\s*\)/gi, "(No Huddle)")
-          .replace(/\(\s*shotgun\s*\)/gi, "")
+          // Formation tags like "(No Huddle)", "(Shotgun)" and "(No Huddle, Shotgun)" are not shown.
+          .replace(/\(\s*(?:no[- ]huddle|shotgun)(?:\s*,\s*(?:no[- ]huddle|shotgun))*\s*\)\s*/gi, "")
           // Drop where the play ended ("to BUF 43", "ran ob at BUF 42", "sacked at BUF 12");
           // the next play's header already shows the new spot.
           .replace(/\s+to\s+(?:[A-Z]{2,4}\s+\d{1,2}|the\s+50)\b/g, "")
