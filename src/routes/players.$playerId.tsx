@@ -1,6 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+ximport { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { PageTitle, Panel, PanelHeader, StatCard, TeamLogo, TeamMark } from "@/components/booth";
+import { Panel, PanelHeader, StatCard, TeamLogo, TeamMark } from "@/components/booth";
 import { getPlayerGameLog, getPlayerProfile } from "@/lib/espn.functions";
 import type { PlayerProfile } from "@/lib/espn.server";
 import type { PlayerGameLogEntry } from "@/lib/league-players.server";
@@ -193,30 +193,100 @@ function PlayerPage() {
   const offensivePositions = new Set(["QB", "RB", "FB", "WR", "TE", "OL", "OT", "OG", "G", "C", "T", "LT", "RT", "LG", "RG"]);
   const isOffensivePlayer = offensivePositions.has(String(player.position ?? "").toUpperCase());
 
+  // Split name for stacked ESPN-style presentation: first name above, last name below
+  const nameParts = (player.name ?? "").trim().split(" ");
+  const firstName = player.firstName || (nameParts.length > 1 ? nameParts.slice(0, -1).join(" ") : "");
+  const lastName = player.lastName || (nameParts.length > 1 ? nameParts[nameParts.length - 1] : player.name ?? "");
+
+  // Format bio values
+  const htWt = [player.height, player.weight].filter(Boolean).join(", ") || "—";
+  const birthdate = player.birthDate
+    ? `${player.birthDate}${player.age ? ` (${player.age})` : ""}`
+    : player.age
+      ? `Age ${player.age}`
+      : "—";
+  const draftInfo = player.draft ?? "Undrafted";
+
   return (
     <>
-      <div className="mb-5 flex flex-wrap items-center gap-4">
-        <div className="grid size-20 shrink-0 place-items-center overflow-hidden rounded-xl bg-panel2 ring-1 ring-line/10">
-          {player.headshot ? <img src={player.headshot} alt={player.name} className="size-full object-cover" /> : null}
-        </div>
-        <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-4">
-            {team ? <TeamMark team={team} size="lg" /> : null}
-            <PageTitle
-              eyebrow={`${player.position} · #${player.jersey ?? "—"} · ${player.teamName}`}
-              title={player.name}
-            />
+      {/* ESPN-style Player Profile Header */}
+      <div className="mb-6 overflow-hidden rounded-2xl border border-line/10 bg-panel/60 backdrop-blur-md">
+        <div className="flex flex-col gap-6 p-5 sm:p-7 md:flex-row md:items-end md:justify-between">
+          {/* Left: Cutout Headshot + Stacked Name & Team line */}
+          <div className="flex flex-col gap-5 sm:flex-row sm:items-end">
+            {/* Cutout Headshot Box */}
+            <div className="relative h-44 w-36 shrink-0 self-center overflow-hidden rounded-xl border border-line/10 bg-panel2/80 sm:h-52 sm:w-40 sm:self-auto">
+              {player.headshot ? (
+                <img
+                  src={player.headshot}
+                  alt={player.name}
+                  className="size-full object-cover object-top"
+                />
+              ) : (
+                <div className="grid size-full place-items-center text-xs font-mono uppercase text-faint">
+                  No Image
+                </div>
+              )}
+            </div>
+
+            {/* Name + Team row */}
+            <div className="flex flex-col justify-end">
+              <div className="font-sans text-xl font-extrabold uppercase tracking-tight text-mute sm:text-2xl">
+                {firstName}
+              </div>
+              <div className="font-sans text-4xl font-black uppercase tracking-tight text-fg sm:text-5xl md:text-6xl">
+                {lastName}
+              </div>
+
+              {/* Team Logo, Name, Position, Jersey */}
+              <div className="mt-2.5 flex flex-wrap items-center gap-2 text-sm text-mute">
+                {team ? (
+                  <Link
+                    to="/teams/$teamId"
+                    params={{ teamId: team.id }}
+                    className="flex items-center gap-2 font-medium text-fg hover:text-acc"
+                  >
+                    <TeamLogo team={team} />
+                    <span>{player.teamName || team.name}</span>
+                  </Link>
+                ) : (
+                  <span>{player.teamName || "—"}</span>
+                )}
+                <span className="text-line/40">•</span>
+                <span className="font-mono font-bold text-fg">#{player.jersey ?? "—"}</span>
+                <span className="text-line/40">•</span>
+                <span className="font-mono uppercase font-semibold text-fg">{player.position}</span>
+              </div>
+            </div>
           </div>
-          <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
-            <Chip label="Age" value={player.age ?? "—"} />
-            <Chip label="Height" value={player.height ?? "—"} />
-            <Chip label="Weight" value={player.weight ?? "—"} />
-            <Chip label="Born" value={player.birthDate ?? "—"} />
-            <Chip label="Birthplace" value={player.birthPlace ?? "—"} />
-            <Chip label="College" value={player.college ?? "—"} />
-            <Chip label="Experience" value={player.experience != null ? `${player.experience} yrs` : "—"} />
-            <Chip label="Draft" value={player.draft ?? "Undrafted"} />
-            <Chip label="Status" value={player.status ?? "—"} />
+
+          {/* Right: Vertical Bio List */}
+          <div className="border-t border-line/10 pt-4 md:border-t-0 md:pt-0">
+            <ul className="flex flex-wrap gap-x-6 gap-y-3 md:flex-col md:gap-y-2 text-xs">
+              <li>
+                <span className="font-mono uppercase text-faint">HT/WT</span>
+                <div className="font-mono font-semibold text-fg text-sm">{htWt}</div>
+              </li>
+              <li>
+                <span className="font-mono uppercase text-faint">Birthdate</span>
+                <div className="font-medium text-fg text-sm">{birthdate}</div>
+              </li>
+              <li>
+                <span className="font-mono uppercase text-faint">College</span>
+                <div className="font-medium text-fg text-sm">{player.college || "—"}</div>
+              </li>
+              <li>
+                <span className="font-mono uppercase text-faint">Draft Info</span>
+                <div className="font-medium text-fg text-sm">{draftInfo}</div>
+              </li>
+              <li>
+                <span className="font-mono uppercase text-faint">Status</span>
+                <div className="flex items-center gap-1.5 font-semibold text-emerald-400 text-sm">
+                  <span className="size-1.5 rounded-full bg-emerald-400" />
+                  <span>{player.status || "Active"}</span>
+                </div>
+              </li>
+            </ul>
           </div>
         </div>
       </div>
@@ -465,14 +535,5 @@ function GameLog({
         </tbody>
       </table>
     </div>
-  );
-}
-
-function Chip({ label, value }: { label: string; value: string | number }) {
-  return (
-    <span className="text-xs">
-      <span className="label-mono mr-1.5">{label}</span>
-      <span className="font-medium">{value}</span>
-    </span>
   );
 }
