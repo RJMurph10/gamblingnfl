@@ -10,6 +10,7 @@
 import { gameScore } from "@/data/games";
 import { teams, teamByAbbr } from "@/data/teams";
 import { fetchSchedule, fetchTeamRoster } from "./espn.server";
+import { nflverseGameYac } from "./nflverse-yac.server";
 
 const SUMMARY = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary";
 const CORE_ODDS = "https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/events";
@@ -257,6 +258,7 @@ async function addMatchupPageYac(
   eventId: string,
   summary: any,
   records: GameRecord[],
+  week?: number,
 ): Promise<void> {
   const espnTeamIds = new Map<string, string>();
   for (const block of summary?.boxscore?.players ?? []) {
@@ -338,6 +340,23 @@ async function addMatchupPageYac(
       .filter((r) => r.teamId === teamId && ["RB", "WR", "TE"].includes(r.posHint.toUpperCase()))
       .reduce((sum, r) => sum + (r.flat.yardsAfterCatch ?? 0), 0);
     if (receiverYac > 0) qb.flat.yardsAfterCatch = receiverYac;
+  }
+
+  // nflverse publishes real yards after catch (PYAC for passers, YAC for receivers) once a
+  // game has been processed, usually the next morning. Prefer it over the estimates above.
+  if (week) {
+    await Promise.all(
+      records
+        .filter((record) => ["QB", "RB", "WR", "TE"].includes(record.posHint.toUpperCase()))
+        .map(async (record) => {
+          try {
+            const row = await nflverseGameYac(record.name, 2026, week);
+            if (row) record.flat.yardsAfterCatch = record.posHint.toUpperCase() === "QB" ? row.pyac : row.yac;
+          } catch {
+            // keep the earlier value
+          }
+        }),
+    );
   }
 }
 
@@ -511,6 +530,7 @@ export async function fetchPlayerGameLog(
               game.id.replace(/^espn-/, ""),
               await fetchGameSummary(game.id.replace(/^espn-/, "")),
               yacRecords,
+              game.week,
             );
           } catch {
             // Keep the rest of the game log available if ESPN's YAC endpoint fails.
