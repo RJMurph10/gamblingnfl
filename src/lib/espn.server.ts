@@ -1456,13 +1456,35 @@ function formatIncompletePass(text: string): { text: string; defender?: string }
 }
 
 function formatPassingPlay(text: string): string {
-  // Preserve touchdowns without modification
-  if (/\b(?:touchdown|td)\b/i.test(text)) return text;
   if (!/\bpass\b/i.test(text)) return text;
 
   return text
-    .replace(/\bpass\s+(?:short|deep)\s+(?:right|left|middle)\s+to\b/gi, "pass to")
-    .replace(/\bpass\s+(?:short|deep)\s+(?:right|left|middle)\b/gi, "pass");
+    .replace(/\bpass\s+(?:short|deep|intermediate)\s+(?:right|left|middle)\s+to\b/gi, "pass to")
+    .replace(/\bpass\s+(?:short|deep|intermediate)\s+(?:right|left|middle)\b/gi, "pass");
+}
+
+/**
+ * Completed passes: "[M.Crosby]" is the credited pass defender. Remove it from the shown text
+ * and return it separately so the data is kept.
+ */
+function stripPassDefender(text: string): { text: string; defender?: string } {
+  if (!/\bpass\b/i.test(text)) return { text };
+  const defender = text.match(/\[([^\]]+)\]/)?.[1]?.trim();
+  if (!defender) return { text };
+  return {
+    text: text
+      .replace(/\s*\[[^\]]*\]/g, "")
+      .replace(/\s{2,}/g, " ")
+      .replace(/\s+([.,;])/g, "$1")
+      .trim(),
+    defender,
+  };
+}
+
+/** Extra points: "T.Bass extra point is GOOD, Center-R.Ferguson, Holder-T.Doman." -> "T.Bass extra point is GOOD." */
+function formatExtraPoint(text: string): string {
+  // Player names contain periods ("R.Ferguson"), so cut ", Center-..." / ", Holder-..." segments by name.
+  return text.replace(/(\bextra point is good)(?:\s*,\s*(?:Center|Holder|Long Snapper)-[^,]+?(?=\s*,\s*(?:Center|Holder|Long Snapper)-|\.\s*$|\.\s+[A-Z]\.[A-Za-z]|$))+/gi, "$1");
 }
 
 /** Full game detail (quarters, drives, team stats, box score) for one event. */
@@ -1790,7 +1812,10 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
         if (!cleanedText) return;
 
         const incomplete = formatIncompletePass(cleanedText);
-        const text = formatMadeFieldGoal(formatPassingPlay(formatRushingPlay(incomplete.text)));
+        const defended = stripPassDefender(incomplete.text);
+        const text = formatExtraPoint(
+          formatMadeFieldGoal(formatPassingPlay(formatRushingPlay(defended.text))),
+        );
 
         const header = String(
           play?.start?.downDistanceText ?? play?.start?.shortDownDistanceText ?? "",
@@ -1802,7 +1827,7 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
           teamId: teamByAbbr(play?.team?.abbreviation ?? "")?.id ?? driveTeamId,
           header: header || undefined,
           text,
-          defender: incomplete.defender,
+          defender: incomplete.defender ?? defended.defender,
           scoring: Boolean(play?.scoringPlay),
         });
       });
