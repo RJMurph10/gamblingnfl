@@ -1,4 +1,4 @@
-ximport { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Panel, PanelHeader, StatCard, TeamLogo, TeamMark } from "@/components/booth";
 import { getPlayerGameLog, getPlayerProfile } from "@/lib/espn.functions";
