@@ -79,48 +79,56 @@ const add = (flat: Record<string, number>, key: string, value: number) => {
   flat[key] = (flat[key] ?? 0) + value;
 };
 
-/** Find yards-after-catch despite ESPN Core response nesting/name variations. */
+/** Find yards-after-catch in ESPN Core stats, specifically targeting the receiving category. */
 function extractYacValue(data: any): number | undefined {
-  const isYacName = (value: unknown) => {
-    // ESPN uses both spaced labels ("Yards After Catch") and camelCase
-    // keys ("yardsAfterCatch" / "passingYardsAfterCatch"). Normalize first
-    // so the camelCase form is not accidentally missed by the old regex.
-    const normalized = String(value ?? "").toLowerCase().replace(/[^a-z0-9]/g, "");
-    return normalized.includes("yardsaftercatch") || normalized === "yac" || normalized.endsWith("yac");
-  };
+  if (!data || typeof data !== "object") return undefined;
+
+  // 1. Target the receiving category splits first to avoid matching
+  // the placeholder passingYardsAfterCatch: 0.0 in the passing category.
+  const categories = data?.splits?.categories;
+  if (Array.isArray(categories)) {
+    const receivingCategory = categories.find((c: any) => c?.name === "receiving");
+    if (receivingCategory && Array.isArray(receivingCategory.stats)) {
+      const yacStat = receivingCategory.stats.find(
+        (s: any) => s?.name === "receivingYardsAfterCatch" || s?.name === "yardsAfterCatch",
+      );
+      if (yacStat?.value !== undefined && Number.isFinite(Number(yacStat.value))) {
+        return Math.round(Number(yacStat.value));
+      }
+    }
+  }
+
+  // 2. Fallback parse for alternative ESPN Core endpoint layouts
   const parse = (value: any): number | undefined => {
     if (typeof value === "number" && Number.isFinite(value)) return value;
     if (typeof value === "string") {
       const n = Number(value.replace(/,/g, ""));
       if (value.trim() !== "" && Number.isFinite(n)) return n;
     }
-    if (value && typeof value === "object") {
-      for (const key of ["value", "displayValue", "total", "displayValueShort"]) {
-        const n = parse(value[key]);
-        if (n !== undefined) return n;
-      }
-    }
     return undefined;
   };
+
   const visit = (node: any): number | undefined => {
     if (!node || typeof node !== "object") return undefined;
     if (Array.isArray(node)) {
-      for (const item of node) { const found = visit(item); if (found !== undefined) return found; }
-      return undefined;
-    }
-    const name = node.name ?? node.abbreviation ?? node.shortDisplayName ?? node.displayName ?? node.label;
-    if (isYacName(name)) {
-      for (const key of ["value", "displayValue", "total", "displayValueShort"]) {
-        const found = parse(node[key]);
+      for (const item of node) {
+        const found = visit(item);
         if (found !== undefined) return found;
       }
+      return undefined;
     }
-    for (const [key, value] of Object.entries(node)) {
-      if (isYacName(key)) { const found = parse(value); if (found !== undefined) return found; }
+    const name = String(node.name ?? node.displayName ?? "").toLowerCase();
+    if (name === "receivingyardsaftercatch" || (name.includes("yards after catch") && !name.includes("pass"))) {
+      const found = parse(node.value ?? node.displayValue);
+      if (found !== undefined) return found;
     }
-    for (const value of Object.values(node)) { const found = visit(value); if (found !== undefined) return found; }
+    for (const value of Object.values(node)) {
+      const found = visit(value);
+      if (found !== undefined) return found;
+    }
     return undefined;
   };
+
   const result = visit(data);
   return result === undefined ? undefined : Math.round(result);
 }
