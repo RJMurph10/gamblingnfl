@@ -8,6 +8,7 @@
  */
 
 import type { GamePropBoard } from "@/lib/props.types";
+import { nflverseGameYac } from "@/lib/nflverse-yac.server";
 import { athleteIdOf, buildPropOffers, sampleTdItem, type PropPerson } from "@/lib/props.parse";
 import type { BoxScoreLine, Drive, DriveResult, Game, TeamGameStats } from "@/data/games";
 import { gameScore } from "@/data/games";
@@ -1429,6 +1430,15 @@ function formatRushingPlay(text: string): string {
  * ("short right", "deep left", "short middle", etc.) while leaving touchdowns untouched.
  */
 /**
+ * Made field goals: "M.Gay 27 yard field goal is GOOD, Center-A.Ward, Holder-A.Cole." becomes
+ * "M.Gay 27 yard field goal". Missed field goals and everything else keep their original text.
+ */
+function formatMadeFieldGoal(text: string): string {
+  const match = text.match(/^(.*?\b\d{1,2}\s*(?:-?\s*yard|yd|yds)\s+field goal)\s+is\s+good\b/i);
+  return match ? match[1].trim() : text;
+}
+
+/**
  * Incomplete passes: "S.Darnold pass incomplete short left to A.Barner [M.Roach]." becomes
  * "S.Darnold pass incomplete to A.Barner." The bracketed pass defender is kept as data
  * (returned separately) but not shown in the play text.
@@ -1781,7 +1791,7 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
         if (!cleanedText) return;
 
         const incomplete = formatIncompletePass(cleanedText);
-        const text = formatPassingPlay(formatRushingPlay(incomplete.text));
+        const text = formatMadeFieldGoal(formatPassingPlay(formatRushingPlay(incomplete.text)));
 
         const header = String(
           play?.start?.downDistanceText ?? play?.start?.shortDownDistanceText ?? "",
@@ -1893,6 +1903,18 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
           .filter((line) => line.teamId === teamId && ["RB", "WR", "TE"].includes(line.position) && line.stats?.yardsAfterCatch !== undefined)
           .reduce((sum, line) => sum + (Number(line.stats!.yardsAfterCatch) || 0), 0);
         if (receiverYac > 0) qb.stats!.yardsAfterCatch = String(receiverYac);
+      }
+
+      // nflverse publishes real yards-after-catch numbers (PYAC for passers, YAC for receivers)
+      // after games finish. When it has a player, use its number over the estimates above.
+      for (const line of base.boxScore) {
+        if (!["QB", "RB", "WR", "TE"].includes(line.position) || !line.stats) continue;
+        try {
+          const row = await nflverseGameYac(line.name, SEASON, base.week);
+          if (row) line.stats.yardsAfterCatch = String(line.position === "QB" ? row.pyac : row.yac);
+        } catch {
+          // keep whatever ESPN-based value we have
+        }
       }
     }
     return base;
@@ -2019,6 +2041,16 @@ export async function fetchPlayerProfile(playerId: string): Promise<PlayerProfil
         const p = playerGroupStats(block, String(playerId));
         const participated = Object.keys(p).length > 0;
         if (!participated) continue;
+        // Real yards after catch from nflverse (PYAC for QBs, YAC for everyone else); 0 until it publishes.
+        try {
+          const nflverse = await nflverseGameYac(athlete.displayName, SEASON, game.week);
+          if (nflverse) {
+            const isQb = String(athlete.position?.abbreviation ?? '').toUpperCase() === 'QB';
+            p.yardsAfterCatch = isQb ? nflverse.pyac : nflverse.yac;
+          }
+        } catch {
+          // keep the value from the box score (none)
+        }
         season.gamesPlayed += 1;
         for (const key of Object.keys(p)) {
           if (key in season) (season as any)[key] += p[key];
