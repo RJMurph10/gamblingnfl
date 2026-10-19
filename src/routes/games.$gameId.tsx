@@ -1099,9 +1099,10 @@ function GamePage() {
 
   return (
     <>
-      {weatherQuery.data && game.status !== "final" ? (
+      {weatherQuery.data && game.status === "scheduled" ? (
         <PageTitle eyebrow="" title="" aside={<GameWeatherCard weather={weatherQuery.data} />} />
-      ) : null}
+        ) : null}
+
 
       {/* Traditional NFL Score Box */}
       <Panel className="p-4 sm:p-6">
