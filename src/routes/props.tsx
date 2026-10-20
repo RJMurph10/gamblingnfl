@@ -1,175 +1,171 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { PageTitle, Panel, PanelHeader, SampleBadge, StatCard } from "@/components/booth";
-import { players } from "@/data/players";
+import { useMemo, useState } from "react";
+import { createFileRoute } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { PageTitle, Panel, PanelHeader, TeamLogo } from "@/components/booth";
+import { GamePropAnalysis } from "@/components/GamePropAnalysis";
+import type { Game } from "@/data/games";
 import { teamById } from "@/data/teams";
+import { getLiveSchedule } from "@/lib/espn.functions";
+import { buildSlateDays, defaultSlateDay, pickSlateWeek } from "@/lib/prop-slate";
 
 export const Route = createFileRoute("/props")({
   head: () => ({
     meta: [
-      { title: "Prop Projections & Betting Models — GamblingNFL" },
+      { title: "Player Props — GamblingNFL" },
       {
         name: "description",
         content:
-          "Player prop projections versus market lines, plus the roadmap for game-level betting models built on imported NFL play-by-play data.",
+          "Game-by-game offensive player prop projections: pick a slate day, pick a game, and see projected stat ranges for both teams.",
       },
-      { property: "og:title", content: "Prop Projections & Betting Models — GamblingNFL" },
+      { property: "og:title", content: "Player Props — GamblingNFL" },
       {
         property: "og:description",
-        content: "Model-vs-market prop board and the planned betting prediction pipeline.",
+        content: "Projected offensive player stats and ranges for every game on the slate.",
       },
     ],
   }),
   component: PropsPage,
 });
 
-interface Row {
-  playerId: string;
-  name: string;
-  teamAbbr: string;
-  position: string;
-  market: string;
-  line: number;
-  projection: number;
+const kickoffTime = (iso?: string) =>
+  iso ? new Date(iso).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }) : "TBD";
+
+function GameCard({ game, selected, onSelect }: { game: Game; selected: boolean; onSelect: () => void }) {
+  const away = teamById(game.awayTeamId);
+  const home = teamById(game.homeTeamId);
+  if (!away || !home) return null;
+  const live = game.status === "live";
+  const final = game.status === "final";
+  return (
+    <button
+      type="button"
+      onClick={onSelect}
+      aria-pressed={selected}
+      className={`w-full rounded-lg border p-3 text-left transition-colors ${
+        selected
+          ? "border-acc/60 bg-acc/10 ring-1 ring-acc/30"
+          : "border-line/10 bg-panel2/30 hover:border-line/25 hover:bg-panel2/60"
+      }`}
+    >
+      <div className="flex items-center justify-between gap-2">
+        <div className="min-w-0 space-y-1.5">
+          {[away, home].map((team) => (
+            <div key={team.id} className="flex items-center gap-2">
+              <TeamLogo team={team} className="size-5" />
+              <span className="truncate text-sm font-semibold">{team.name}</span>
+            </div>
+          ))}
+        </div>
+        <div className="shrink-0 text-right">
+          <p suppressHydrationWarning className="font-mono text-xs font-semibold tabular-nums">
+            {kickoffTime(game.kickoffIso)}
+          </p>
+          <p
+            className={`mt-1 font-mono text-[10px] uppercase tracking-wider ${
+              live ? "text-loss" : final ? "text-faint" : "text-mute"
+            }`}
+          >
+            {live ? "Live" : final ? "Final" : "Upcoming"}
+          </p>
+        </div>
+      </div>
+    </button>
+  );
 }
 
 function PropsPage() {
-  const rows: Row[] = players.flatMap((p) => {
-    const team = teamById(p.teamId);
-    return p.projections.map((proj) => ({
-      playerId: p.id,
-      name: `${p.firstName} ${p.lastName}`,
-      teamAbbr: team?.abbr ?? "—",
-      position: p.position,
-      market: proj.market,
-      line: proj.line,
-      projection: proj.projection,
-    }));
+  const scheduleQuery = useQuery({
+    queryKey: ["live-schedule"],
+    queryFn: () => getLiveSchedule(),
+    refetchInterval: 30_000,
+    staleTime: 10_000,
+    retry: 1,
   });
 
-  const withEdge = rows
-    .map((r) => ({ ...r, edge: ((r.projection - r.line) / r.line) * 100 }))
-    .sort((a, b) => b.edge - a.edge);
+  // The real schedule only: never substitute sample games.
+  const games: Game[] = scheduleQuery.data ?? [];
+  const week = useMemo(() => pickSlateWeek(games), [games]);
+  const days = useMemo(() => buildSlateDays(games, week), [games, week]);
+
+  const [dayKey, setDayKey] = useState<string | null>(null);
+  const [gameId, setGameId] = useState<string | null>(null);
+
+  const activeDay = days.find((d) => d.key === dayKey) ?? defaultSlateDay(days);
+  // Changing the day falls back to that day's first game, never the previous matchup.
+  const selectedGame = activeDay?.games.find((g) => g.id === gameId) ?? activeDay?.games[0];
+  const away = selectedGame ? teamById(selectedGame.awayTeamId) : undefined;
+  const home = selectedGame ? teamById(selectedGame.homeTeamId) : undefined;
 
   return (
     <>
-      <PageTitle eyebrow="Betting research" title="Projections" aside={<SampleBadge />} />
+      <PageTitle eyebrow={week ? `Week ${week} · offensive projections` : "Offensive projections"} title="Player Props" />
 
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatCard label="Props modeled" value={String(rows.length)} note="sample board" />
-        <StatCard
-          label="Positive edges"
-          value={String(withEdge.filter((r) => r.edge > 0).length)}
-          note="model above line"
-          tone="win"
-        />
-        <StatCard
-          label="Best edge"
-          value={`+${withEdge[0]?.edge.toFixed(1) ?? "0.0"}`}
-          unit="%"
-          note={withEdge[0]?.market ?? "—"}
-          tone="win"
-        />
-        <StatCard label="Model version" value="v0" note="awaiting real data" />
-      </div>
-
-      <section className="mt-6">
-        <Panel padded={false}>
-          <PanelHeader
-            title="Player prop board"
-            aside={<span className="label-mono">model vs market</span>}
-          />
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[700px] text-sm">
-              <thead>
-                <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
-                  <th className="px-4 py-2 font-normal">Player</th>
-                  <th className="px-2 py-2 font-normal">Team</th>
-                  <th className="px-2 py-2 font-normal">Market</th>
-                  <th className="px-2 py-2 text-right font-normal">Line</th>
-                  <th className="px-2 py-2 text-right font-normal">Model</th>
-                  <th className="px-2 py-2 text-right font-normal">Edge</th>
-                  <th className="px-4 py-2 font-normal">Lean</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-line/5">
-                {withEdge.map((r) => (
-                  <tr key={`${r.playerId}-${r.market}`} className="hover:bg-line/5">
-                    <td className="px-4 py-2.5">
-                      <Link
-                        to="/players/$playerId"
-                        params={{ playerId: r.playerId }}
-                        className="font-medium hover:text-acc"
-                      >
-                        {r.name}
-                      </Link>
-                      <span className="ml-2 font-mono text-[10px] text-faint">{r.position}</span>
-                    </td>
-                    <td className="px-2 py-2.5 font-mono text-mute">{r.teamAbbr}</td>
-                    <td className="px-2 py-2.5 text-mute">{r.market}</td>
-                    <td className="px-2 py-2.5 text-right font-mono tabular-nums">{r.line}</td>
-                    <td className="px-2 py-2.5 text-right font-mono tabular-nums text-acc">
-                      {r.projection}
-                    </td>
-                    <td
-                      className={`px-2 py-2.5 text-right font-mono tabular-nums ${
-                        r.edge >= 0 ? "text-win" : "text-loss"
-                      }`}
-                    >
-                      {r.edge >= 0 ? "+" : ""}
-                      {r.edge.toFixed(1)}%
-                    </td>
-                    <td className="px-4 py-2.5">
-                      <span
-                        className={`rounded px-2 py-0.5 font-mono text-[10px] uppercase ${
-                          r.edge >= 0 ? "bg-win/15 text-win" : "bg-loss/15 text-loss"
-                        }`}
-                      >
-                        {r.edge >= 0 ? "over" : "under"}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </Panel>
-      </section>
-
-      <section className="mt-6 grid gap-6 lg:grid-cols-2">
+      {scheduleQuery.isLoading ? (
         <Panel>
-          <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">
-            Game prediction models
-          </h2>
-          <p className="label-mono">reserved for your own models</p>
-          <ul className="mt-4 space-y-2 text-sm text-mute">
-            <li>· Spread and total projections per game</li>
-            <li>· Win probability by quarter and drive state</li>
-            <li>· Closing-line value tracking per wager</li>
-            <li>· Backtest results by season, week, and market</li>
-          </ul>
-          <p className="mt-4 text-sm text-mute">
-            These panels stay empty until your model outputs land in the database — nothing here
-            is invented.
+          <p className="py-8 text-center font-mono text-xs text-mute">Loading the schedule…</p>
+        </Panel>
+      ) : days.length === 0 ? (
+        <Panel>
+          <p className="py-8 text-center font-mono text-xs text-mute">
+            {scheduleQuery.isError
+              ? "The schedule couldn't be loaded right now."
+              : "No games are scheduled for the current slate."}
           </p>
         </Panel>
-        <Panel>
-          <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">
-            Data pipeline
-          </h2>
-          <p className="label-mono">play-by-play → models → site</p>
-          <ol className="mt-4 space-y-2 text-sm text-mute">
-            <li>1 · Bulk-load play-by-play into the raw tables</li>
-            <li>2 · Run Python models from the <span className="font-mono text-acc">python/</span> folder</li>
-            <li>3 · Write outputs to the projection tables</li>
-            <li>4 · This site reads those tables directly</li>
-          </ol>
-          <p className="mt-4 text-sm text-mute">
-            The schema and import notes live in the project's{" "}
-            <span className="font-mono text-acc">supabase/schema.sql</span> and{" "}
-            <span className="font-mono text-acc">python/README.md</span>.
-          </p>
-        </Panel>
-      </section>
+      ) : (
+        <div className="space-y-6">
+          {/* Level 1 + 2: slate days and the selected day's games */}
+          <Panel padded={false}>
+            <PanelHeader
+              title="Slate"
+              aside={
+                activeDay ? (
+                  <span className="font-mono text-[10px] uppercase tracking-wider text-mute">
+                    {activeDay.dateLabel} · {activeDay.games.length} {activeDay.games.length === 1 ? "game" : "games"}
+                  </span>
+                ) : null
+              }
+            />
+            <div className="flex gap-2 overflow-x-auto px-4 py-3" role="tablist" aria-label="Slate day">
+              {days.map((day) => {
+                const active = day.key === activeDay?.key;
+                return (
+                  <button
+                    key={day.key}
+                    type="button"
+                    role="tab"
+                    aria-selected={active}
+                    onClick={() => {
+                      setDayKey(day.key);
+                      setGameId(null);
+                    }}
+                    className={`shrink-0 whitespace-nowrap rounded-full px-3 py-1 font-mono text-[11px] uppercase tracking-wider ring-1 ${
+                      active ? "bg-acc/10 text-acc ring-acc/25" : "bg-panel2 text-mute ring-line/10 hover:text-acc"
+                    }`}
+                  >
+                    {day.label}
+                  </button>
+                );
+              })}
+            </div>
+            <div className="grid gap-2 px-4 pb-4 sm:grid-cols-2 xl:grid-cols-3">
+              {activeDay?.games.map((game) => (
+                <GameCard
+                  key={game.id}
+                  game={game}
+                  selected={game.id === selectedGame?.id}
+                  onSelect={() => setGameId(game.id)}
+                />
+              ))}
+            </div>
+          </Panel>
+
+          {/* Level 3: the selected game's offensive projections */}
+          {selectedGame && away && home ? (
+            <GamePropAnalysis key={selectedGame.id} game={selectedGame} away={away} home={home} />
+          ) : null}
+        </div>
+      )}
     </>
   );
 }
