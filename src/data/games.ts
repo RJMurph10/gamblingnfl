@@ -141,6 +141,8 @@ export interface GameInfo {
   /** TV network(s), e.g. "NBC, Peacock". */
   broadcast?: string;
   officials?: { role?: string; name: string }[];
+  /** Forecast from ESPN's game information (AccuWeather), when ESPN lists one. */
+  weather?: { summary: string; link?: string; source?: string };
 }
 
 export interface Game {
