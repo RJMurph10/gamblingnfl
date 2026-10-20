@@ -4,6 +4,8 @@ import type { Team } from "@/data/teams";
 import type { Game, PlayByPlayItem, SeasonLeader, TeamGameStats } from "@/data/games";
 import { gameScore } from "@/data/games";
 import { teamByAbbr, teamById, teamLogo, teamLogoFallback } from "@/data/teams";
+import { useRunningGameClock } from "@/lib/use-running-game-clock";
+
 
 /* ---------- primitives ---------- */
 
@@ -1219,6 +1221,11 @@ export function GameRow({
     Boolean(game.clock?.toUpperCase().includes("OT"));
   const showOT = isOT && game.status !== "scheduled";
 
+  const runningClock = useRunningGameClock({
+    clock: game.clock,
+    status: game.status,
+  });
+
   return (
     <tr className="hover:bg-line/5">
       <td className="whitespace-nowrap px-4 py-2.5 font-mono text-mute">{formatNumericDate(game.date)}</td>
@@ -1239,8 +1246,9 @@ export function GameRow({
         />
       </td>
       <td className="whitespace-nowrap px-2 py-2.5 font-mono text-mute">
-        {game.status === "live" ? (game.clock ?? "Live") : game.location}
+        {game.status === "live" ? (runningClock || "Live") : game.location}
       </td>
+
       {showMarket ? (() => {
         const { spread: spreadClass, total: totalClass } = marketResultClass(game, away, home, perspectiveTeam);
         return (
