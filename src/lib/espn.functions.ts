@@ -18,6 +18,7 @@ import {
   fetchPlayerGameLog,
 } from "./league-players.server";
 import { fetchGameWeather } from "./weather.server";
+import { fetchGamePropPredictions } from "./prop-projections.server";
 
 export const getLiveSchedule = createServerFn({
   method: "GET",
@@ -184,3 +185,9 @@ export const getPropPeople = createServerFn({
 })
   .inputValidator((data) => z.object({ awayAbbr: z.string(), homeAbbr: z.string() }).parse(data))
   .handler(async ({ data }) => fetchPropPeople(data.awayAbbr, data.homeAbbr));
+
+export const getGamePropPredictions = createServerFn({
+  method: "GET",
+})
+  .inputValidator((data) => z.object({ gameId: z.string() }).parse(data))
+  .handler(async ({ data }) => fetchGamePropPredictions(data.gameId));
