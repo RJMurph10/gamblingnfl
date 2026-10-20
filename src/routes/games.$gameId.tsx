@@ -1,7 +1,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useRunningGameClock } from "@/lib/use-running-game-clock";
+import { isScoreOrKickoffPlay, useRunningGameClock } from "@/lib/use-running-game-clock";
 import {
   DriveTable,
   FootballIcon,
@@ -70,7 +70,12 @@ function LiveFieldTrack({
   if (game.status !== "live") return null;
   // At halftime the field is shown plain: no ball, line of scrimmage, first-down line or down banner.
   const isHalftime = /half/i.test(game.clock ?? "");
-  if (!isHalftime && !game.possession) return null;
+  // After a score (TD, FG, extra point) and through the kickoff there is no real line of
+  // scrimmage, so show the plain field until the next play is run.
+  const newestPlay = game.playByPlay?.[0];
+  const afterScore = Boolean(newestPlay?.scoring) || isScoreOrKickoffPlay(newestPlay?.text);
+  const plainField = isHalftime || afterScore;
+  if (!plainField && !game.possession) return null;
 
   const isAwayPossession = game.possession === "away";
   const possessingTeam = isAwayPossession ? away : home;
@@ -110,7 +115,7 @@ function LiveFieldTrack({
 
   return (
     <div className="mt-4 overflow-hidden rounded-lg border border-emerald-500/20 bg-[#091b11] p-3 shadow-inner">
-      {!isHalftime ? (
+      {!plainField ? (
         <>
         {/* Field status banner */}
         <div className="mb-2 flex items-center justify-between font-mono text-[11px] uppercase tracking-wider text-emerald-400">
@@ -166,7 +171,7 @@ function LiveFieldTrack({
           {/* 50 Yard Midfield Line */}
           <div className="absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-white/35" />
 
-          {!isHalftime ? (
+          {!plainField ? (
             <>
               {/* Yellow First Down Line */}
               <div
