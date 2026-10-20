@@ -365,6 +365,25 @@ function parseGameInfo(d: any): Game["info"] {
   const attendance = Number(gi?.attendance);
   const surface =
     typeof venue?.grass === "boolean" ? (venue.grass ? "Grass" : "Artificial turf") : undefined;
+  // ESPN's own weather line (sourced from AccuWeather), e.g. "61°, Cloudy".
+  const w = gi?.weather;
+  let weather: { summary: string; link?: string; source?: string } | undefined;
+  if (w) {
+    const temp = Number(w.temperature);
+    const high = Number(w.highTemperature);
+    const parts: string[] = [];
+    if (Number.isFinite(temp)) parts.push(`${Math.round(temp)}°`);
+    if (w.displayValue || w.conditionDescription) parts.push(String(w.displayValue ?? w.conditionDescription));
+    let summary = parts.join(", ");
+    if (summary && Number.isFinite(high) && high !== temp) summary += ` (High ${Math.round(high)}°)`;
+    if (summary) {
+      weather = {
+        summary,
+        link: w?.link?.href ? String(w.link.href) : undefined,
+        source: w?.link?.text ? String(w.link.text) : "AccuWeather",
+      };
+    }
+  }
   const broadcastNames: string[] = [];
   const broadcastSources: any[] = [
     ...(Array.isArray(d?.header?.competitions?.[0]?.broadcasts) ? d.header.competitions[0].broadcasts : []),
@@ -402,6 +421,7 @@ function parseGameInfo(d: any): Game["info"] {
   if (surface) info.surface = surface;
   if (broadcastNames.length) info.broadcast = broadcastNames.join(", ");
   if (officials.length) info.officials = officials;
+  if (weather) info.weather = weather;
   return Object.keys(info).length ? info : undefined;
 }
 
