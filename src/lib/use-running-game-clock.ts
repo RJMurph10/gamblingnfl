@@ -1,20 +1,32 @@
 import { useEffect, useState, useRef } from "react";
 
 /**
+ * True for scores, conversion attempts and kickoffs: after any of these the game clock is
+ * stopped until the next snap, and there is no real line of scrimmage on the field yet.
+ */
+export function isScoreOrKickoffPlay(playText?: string): boolean {
+  if (!playText) return false;
+  return /touchdown|field goal|extra point|two-point|2-point|conversion|safety|kicks off|kickoff|touchback|\bPAT\b/i.test(
+    playText,
+  );
+}
+
+/**
  * Checks if an NFL play description indicates the clock should be stopped.
  */
 function isClockStoppedByPlay(playText?: string): boolean {
   if (!playText) return false;
   const text = playText.toLowerCase();
 
+  // Scores (including the extra point that follows) and the kickoff after them
+  if (isScoreOrKickoffPlay(playText)) return true;
   // Incomplete pass
   if (text.includes("incomplete") || text.includes("pass incomplete")) return true;
   // Out of bounds
-  if (text.includes("out of bounds") || text.includes("ob")) return true;
+  if (text.includes("out of bounds") || /\b(?:ran|pushed) ob\b/.test(text)) return true;
   // Timeouts
   if (text.includes("timeout")) return true;
-  // Scoring plays & change of possession
-  if (text.includes("touchdown") || text.includes("field goal") || text.includes("safety")) return true;
+  // Change of possession
   if (text.includes("punts") || text.includes("intercepted") || text.includes("fumble")) return true;
   // Two-minute warning & official reviews
   if (text.includes("two-minute warning") || text.includes("under review")) return true;
