@@ -959,6 +959,14 @@ function GamePage() {
   const [activeMarketTab, setActiveMarketTab] =
     useState<"moneyline" | "cover" | "total">("moneyline");
 
+  // Hooks must run on every render, so this sits above the loading / missing-game early returns.
+  const lastPlay = game?.playByPlay?.[0]?.text;
+  const runningClock = useRunningGameClock({
+    clock: game?.clock,
+    status: game?.status ?? "scheduled",
+    lastPlayText: lastPlay,
+  });
+
   if (isLoading) {
     return (
       <PageTitle
@@ -1097,13 +1105,6 @@ function GamePage() {
 
   const selectedTeamData =
     selectedTeam === "away" ? away : home;
-
-  const lastPlay = game.playByPlay?.[0]?.text;
-  const runningClock = useRunningGameClock({
-    clock: game.clock,
-    status: game.status,
-    lastPlayText: lastPlay,
-  });
 
   return (
     <>
