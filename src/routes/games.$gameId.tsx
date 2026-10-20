@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useRunningGameClock } from "@/lib/use-running-game-clock";
 import {
   DriveTable,
   FootballIcon,
@@ -1097,6 +1098,13 @@ function GamePage() {
   const selectedTeamData =
     selectedTeam === "away" ? away : home;
 
+  const lastPlay = game.plays?.[game.plays.length - 1]?.text;
+  const runningClock = useRunningGameClock({
+    clock: game.clock,
+    status: game.status,
+    lastPlayText: lastPlay,
+  });
+
   return (
     <>
       {weatherQuery.data && game.status === "scheduled" ? (
@@ -1193,8 +1201,9 @@ function GamePage() {
 
                     <span className="flex items-center gap-1.5 font-mono text-xs sm:text-sm font-semibold tracking-wider text-emerald-400">
                       <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
-                      {game.clock ?? "Live"}
+                      {runningClock || "Live"}
                     </span>
+
 
                     {isHalftime && game.drives?.length
                       ? (() => {
