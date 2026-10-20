@@ -21,7 +21,6 @@ import {
 import { gameScore, type BoxScoreLine, type Game, type GameProbabilityPoint } from "@/data/games";
 import { teamById, type Team } from "@/data/teams";
 import { getGameWeather, getLiveGame, getTeamSeasonAverages } from "@/lib/espn.functions";
-import { GameWeatherCard } from "@/components/GameWeatherCard";
 import { showGameStatistics } from "@/lib/game-visibility";
 import { DraftKingsPropsBoard } from "@/components/DraftKingsPropsBoard";
 
@@ -1113,10 +1112,6 @@ function GamePage() {
 
   return (
     <>
-      {weatherQuery.data && game.status === "scheduled" ? (
-        <PageTitle eyebrow="" title="" aside={<GameWeatherCard weather={weatherQuery.data} />} />
-        ) : null}
-
 
       {/* Traditional NFL Score Box */}
       <Panel className="p-4 sm:p-6">
@@ -1366,7 +1361,7 @@ function GamePage() {
           {/* Tab content only appears once the game is live or finished. */}
           {activeGameTab === "information" && game.status !== "live" ? (
             <section className="mt-6">
-              <GameInformation game={game} away={away} home={home} />
+              <GameInformation game={game} away={away} home={home} weather={weatherQuery.data} />
             </section>
           ) : game.status !== "scheduled" ? (
             <>
