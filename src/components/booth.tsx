@@ -1213,6 +1213,13 @@ export function GameRow({
   const home = teamById(game.homeTeamId);
   const score = gameScore(game);
   const perspectiveTeam = perspectiveTeamId ? teamById(perspectiveTeamId) : undefined;
+
+  // Hooks must run on every render, so this sits above the early return below.
+  const runningClock = useRunningGameClock({
+    clock: game.clock,
+    status: game.status,
+  });
+
   if (!away || !home) return null;
 
   const isOT =
@@ -1220,11 +1227,6 @@ export function GameRow({
     (game.quarters?.home?.length ?? 0) > 4 ||
     Boolean(game.clock?.toUpperCase().includes("OT"));
   const showOT = isOT && game.status !== "scheduled";
-
-  const runningClock = useRunningGameClock({
-    clock: game.clock,
-    status: game.status,
-  });
 
   return (
     <tr className="hover:bg-line/5">
