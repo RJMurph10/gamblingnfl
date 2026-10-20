@@ -1098,7 +1098,7 @@ function GamePage() {
   const selectedTeamData =
     selectedTeam === "away" ? away : home;
 
-  const lastPlay = game.plays?.[game.plays.length - 1]?.text;
+  const lastPlay = game.playByPlay?.[0]?.text;
   const runningClock = useRunningGameClock({
     clock: game.clock,
     status: game.status,
