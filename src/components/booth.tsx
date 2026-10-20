@@ -1,6 +1,7 @@
 import { useState, type ReactNode, type SyntheticEvent } from "react";
 import { Link } from "@tanstack/react-router";
 import type { Team } from "@/data/teams";
+import type { GameWeather } from "@/lib/weather.server";
 import type { Game, PlayByPlayItem, SeasonLeader, TeamGameStats } from "@/data/games";
 import { gameScore } from "@/data/games";
 import { teamByAbbr, teamById, teamLogo, teamLogoFallback } from "@/data/teams";
@@ -26,7 +27,17 @@ function VenueImage({ urls, alt }: { urls: string[]; alt: string }) {
 }
 
 /** Information tab: stadium photo, kickoff, venue, location, TV, attendance, officials. */
-export function GameInformation({ game, away, home }: { game: Game; away: Team; home: Team }) {
+export function GameInformation({
+  game,
+  away,
+  home,
+  weather,
+}: {
+  game: Game;
+  away: Team;
+  home: Team;
+  weather?: GameWeather | null;
+}) {
   const info = game.info;
   const isScheduled = game.status === "scheduled";
   const isFinal = game.status === "final";
@@ -48,6 +59,42 @@ export function GameInformation({ game, away, home }: { game: Game; away: Team; 
   if (game.location && game.location !== "TBD") rows.push({ label: "Location", value: game.location });
   if (info?.capacity) rows.push({ label: "Capacity", value: info.capacity.toLocaleString() });
   if (info?.broadcast) rows.push({ label: "TV", value: info.broadcast });
+  // Weather, like ESPN's Game Information: ESPN's own AccuWeather line when it has one,
+  // otherwise our forecast. Upcoming games only.
+  if (isScheduled) {
+    if (info?.weather) {
+      rows.push({
+        label: "Weather",
+        value: (
+          <span>
+            {info.weather.summary}
+            {info.weather.link ? (
+              <>
+                {" · "}
+                <a
+                  href={info.weather.link}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-acc underline-offset-2 hover:underline"
+                >
+                  {info.weather.source ?? "AccuWeather"}
+                </a>
+              </>
+            ) : null}
+          </span>
+        ),
+      });
+    } else if (weather && weather.condition.toLowerCase() !== "weather unavailable") {
+      rows.push({
+        label: "Weather",
+        value: weather.isIndoor
+          ? `Indoor stadium${weather.temperature != null ? `, ${weather.temperature}°` : ""}`
+          : `${weather.temperature != null ? `${weather.temperature}°, ` : ""}${weather.condition}${
+              weather.high != null && weather.low != null ? ` (High ${weather.high}° · Low ${weather.low}°)` : ""
+            }`,
+      });
+    }
+  }
   if (isFinal && info?.attendance) rows.push({ label: "Attendance", value: info.attendance.toLocaleString() });
   return (
     <Panel padded={false}>
