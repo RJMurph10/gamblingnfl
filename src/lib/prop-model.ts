@@ -5,7 +5,8 @@
  * job can share them. The UI never calculates projections: it only displays stored ones.
  */
 
-export type PropCategory = "passing" | "rushing" | "receiving" | "receptions" | "other" | "kicking" | "punting";
+export type PropCategory =
+  "passing" | "rushing" | "receiving" | "receptions" | "other" | "kicking" | "punting";
 
 /** How a statistic behaves, which decides how its projected range is built. */
 export type PropStatKind = "yards" | "long" | "count" | "touchdowns";
@@ -61,7 +62,8 @@ export const PROP_MARKETS: PropMarketDef[] = [
   { key: "punt_long", label: "Longest punt", category: "punting", kind: "long" },
 ];
 
-export const marketByKey = (key: string): PropMarketDef | undefined => PROP_MARKETS.find((m) => m.key === key);
+export const marketByKey = (key: string): PropMarketDef | undefined =>
+  PROP_MARKETS.find((m) => m.key === key);
 
 export const marketsForCategory = (category: PropCategory): PropMarketDef[] =>
   PROP_MARKETS.filter((m) => m.category === category);
@@ -70,7 +72,9 @@ export const marketsForCategory = (category: PropCategory): PropMarketDef[] =>
 export const OFFENSIVE_POSITIONS = ["QB", "RB", "FB", "WR", "TE"] as const;
 
 export const isOffensivePosition = (position?: string): boolean =>
-  OFFENSIVE_POSITIONS.includes(String(position ?? "").toUpperCase() as (typeof OFFENSIVE_POSITIONS)[number]);
+  OFFENSIVE_POSITIONS.includes(
+    String(position ?? "").toUpperCase() as (typeof OFFENSIVE_POSITIONS)[number],
+  );
 
 /** Players the props page covers: offensive skill players plus kickers and punters. */
 export const PROP_PLAYER_POSITIONS = [...OFFENSIVE_POSITIONS, "K", "P"] as const;
@@ -80,23 +84,28 @@ export const PROP_PLAYER_POSITIONS = [...OFFENSIVE_POSITIONS, "K", "P"] as const
  * (place kicker); the props page shows them as "K".
  */
 export const normalizePropPosition = (position?: string): string => {
-  const p = String(position ?? "").trim().toUpperCase();
+  const p = String(position ?? "")
+    .trim()
+    .toUpperCase();
   if (p === "PK" || p === "KICKER" || p === "PLACEKICKER") return "K";
   if (p === "PUNTER") return "P";
   return p;
 };
 
 export const isPropPlayerPosition = (position?: string): boolean =>
-  PROP_PLAYER_POSITIONS.includes(normalizePropPosition(position) as (typeof PROP_PLAYER_POSITIONS)[number]);
+  PROP_PLAYER_POSITIONS.includes(
+    normalizePropPosition(position) as (typeof PROP_PLAYER_POSITIONS)[number],
+  );
 
 /**
  * Which positions each prop category belongs to, like a sportsbook board: passing props are for
- * quarterbacks only (a receiver's trick-play pass doesn't make him a passing prop), receiving props
+ * quarterbacks only (a receiver's trick-play pass doesn't make him a passing prop), rushing props
+ * are for quarterbacks and running backs (no end-arounds), receiving props
  * are for backs, receivers and tight ends, kicking for kickers and punting for punters.
  */
 const CATEGORY_POSITIONS: Record<PropCategory, readonly string[]> = {
   passing: ["QB"],
-  rushing: ["QB", "RB", "FB", "WR", "TE"],
+  rushing: ["QB", "RB", "FB"],
   receiving: ["RB", "FB", "WR", "TE"],
   receptions: ["RB", "FB", "WR", "TE"],
   other: ["QB", "RB", "FB", "WR", "TE"],
@@ -178,7 +187,10 @@ export interface EvaluatedPrediction {
   actual: number;
 }
 
-export function evaluatePrediction(p: { projected: number; lower: number; upper: number }, actual: number) {
+export function evaluatePrediction(
+  p: { projected: number; lower: number; upper: number },
+  actual: number,
+) {
   return {
     absError: Math.abs(actual - p.projected),
     inRange: actual >= p.lower && actual <= p.upper,
