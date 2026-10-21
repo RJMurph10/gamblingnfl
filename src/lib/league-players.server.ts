@@ -8,9 +8,11 @@
  */
 
 import { gameScore } from "@/data/games";
-import { teams, teamByAbbr } from "@/data/teams";
+import { teams, teamByAbbr, teamById } from "@/data/teams";
 import { fetchSchedule, fetchTeamRoster } from "./espn.server";
 import { nflverseGameYac } from "./nflverse-yac.server";
+import { buildPlayerAnalytics, type GamePropAnalytics, type PlayerGameInput } from "./prop-analytics";
+import { isPropPlayerPosition, normalizePropPosition } from "./prop-model";
 
 const SUMMARY = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary";
 const CORE_ODDS = "https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/events";
@@ -556,5 +558,68 @@ export async function fetchPlayerGameLog(
       : [];
     if (log.length === 0) log = await scan(finals);
     return log.sort((a, b) => a.week - b.week);
+  });
+}
+
+/**
+ * Prop analytics for both teams in a matchup: every offensive player, kicker and punter on
+ * the current rosters, with per-game results from each completed 2026 game for that team.
+ * Reuses the cached per-game box-score records, so it adds no new ESPN requests after the
+ * first load.
+ */
+export async function fetchGamePropAnalytics(awayAbbr: string, homeAbbr: string): Promise<GamePropAnalytics> {
+  const abbrs = [awayAbbr.toUpperCase(), homeAbbr.toUpperCase()];
+  return memoize(`prop-analytics-${abbrs.join("-")}`, TOTALS_TTL_MS, async () => {
+    const [schedule, ...rosters] = await Promise.all([
+      fetchSchedule(),
+      ...abbrs.map((abbr) => fetchTeamRoster(abbr)),
+    ]);
+    const finals = schedule.filter((g) => g.status === "final");
+    const players: GamePropAnalytics["players"] = [];
+    const gamesScanned: Record<string, number> = {};
+
+    await Promise.all(
+      abbrs.map(async (abbr, teamIndex) => {
+        const team = teamByAbbr(abbr);
+        if (!team) return;
+        const teamGames = finals.filter((g) => g.homeTeamId === team.id || g.awayTeamId === team.id);
+        gamesScanned[abbr] = teamGames.length;
+
+        const byPlayer = new Map<string, PlayerGameInput[]>();
+        for (let i = 0; i < teamGames.length; i += BATCH_SIZE) {
+          const batch = teamGames.slice(i, i + BATCH_SIZE);
+          const records = await Promise.all(batch.map((g) => fetchGameRecords(g.id.replace(/^espn-/, ""))));
+          batch.forEach((game, idx) => {
+            const home = game.homeTeamId === team.id;
+            const opponent = teamById(home ? game.awayTeamId : game.homeTeamId)?.abbr ?? "";
+            for (const rec of records[idx]) {
+              if (rec.teamId !== team.id) continue;
+              const list = byPlayer.get(rec.id) ?? [];
+              list.push({ gameId: game.id, week: game.week, opponent, home, flat: rec.flat });
+              byPlayer.set(rec.id, list);
+            }
+          });
+        }
+
+        // Current roster decides who is listed (and their position); the box scores supply the numbers.
+        for (const person of rosters[teamIndex]) {
+          if (!isPropPlayerPosition(person.position)) continue;
+          const games = byPlayer.get(person.id) ?? [];
+          const analytics = buildPlayerAnalytics(
+            {
+              id: person.id,
+              name: person.name,
+              teamAbbr: abbr,
+              position: normalizePropPosition(person.position),
+              headshot: person.headshot,
+            },
+            games,
+          );
+          if (Object.keys(analytics.markets).length > 0) players.push(analytics);
+        }
+      }),
+    );
+
+    return { players, gamesScanned };
   });
 }
