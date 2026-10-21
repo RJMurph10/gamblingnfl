@@ -1,8 +1,8 @@
 import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { PageTitle, Panel, PanelHeader, TeamLogo } from "@/components/booth";
-import { GamePropAnalysis } from "@/components/GamePropAnalysis";
+import { PageTitle, Panel, PanelHeader } from "@/components/booth";
+import { GamePropAnalysis, TeamLink } from "@/components/GamePropAnalysis";
 import type { Game } from "@/data/games";
 import { teamById } from "@/data/teams";
 import { getLiveSchedule } from "@/lib/espn.functions";
@@ -15,12 +15,12 @@ export const Route = createFileRoute("/props")({
       {
         name: "description",
         content:
-          "Game-by-game offensive player prop projections: pick a slate day, pick a game, and see projected stat ranges for both teams.",
+          "Game-by-game player prop projections: pick a slate day, pick a game, and see projected stat ranges for both teams.",
       },
       { property: "og:title", content: "Player Props — GamblingNFL" },
       {
         property: "og:description",
-        content: "Projected offensive player stats and ranges for every game on the slate.",
+        content: "Projected player stats and ranges for every game on the slate.",
       },
     ],
   }),
@@ -37,11 +37,18 @@ function GameCard({ game, selected, onSelect }: { game: Game; selected: boolean;
   const live = game.status === "live";
   const final = game.status === "final";
   return (
-    <button
-      type="button"
+    <div
+      role="button"
+      tabIndex={0}
       onClick={onSelect}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          onSelect();
+        }
+      }}
       aria-pressed={selected}
-      className={`w-full rounded-lg border p-3 text-left transition-colors ${
+      className={`w-full cursor-pointer rounded-lg border p-3 text-left transition-colors ${
         selected
           ? "border-acc/60 bg-acc/10 ring-1 ring-acc/30"
           : "border-line/10 bg-panel2/30 hover:border-line/25 hover:bg-panel2/60"
@@ -51,7 +58,7 @@ function GameCard({ game, selected, onSelect }: { game: Game; selected: boolean;
         <div className="min-w-0 space-y-1.5">
           {[away, home].map((team) => (
             <div key={team.id} className="flex items-center gap-2">
-              <TeamLogo team={team} className="size-5" />
+              <TeamLink team={team} className="size-5" />
               <span className="truncate text-sm font-semibold">{team.name}</span>
             </div>
           ))}
@@ -69,7 +76,7 @@ function GameCard({ game, selected, onSelect }: { game: Game; selected: boolean;
           </p>
         </div>
       </div>
-    </button>
+    </div>
   );
 }
 
@@ -98,7 +105,7 @@ function PropsPage() {
 
   return (
     <>
-      <PageTitle eyebrow={week ? `Week ${week} · offensive projections` : "Offensive projections"} title="Player Props" />
+      <PageTitle eyebrow={week ? `Week ${week} · player projections` : "Player projections"} title="Player Props" />
 
       {scheduleQuery.isLoading ? (
         <Panel>
