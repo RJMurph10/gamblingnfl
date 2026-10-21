@@ -4,7 +4,21 @@ import { Link } from "@tanstack/react-router";
 import { Panel, TeamLogo } from "@/components/booth";
 import type { Game } from "@/data/games";
 import type { Team } from "@/data/teams";
-import { getGamePropAnalytics, getGamePropPredictions, getPropPeople } from "@/lib/espn.functions";
+import {
+  getGamePropAnalytics,
+  getGamePropPredictions,
+  getPropAvailability,
+  getPropPeople,
+} from "@/lib/espn.functions";
+import {
+  STARTER_SLOTS,
+  availabilityOf,
+  availabilityTag,
+  isRuledOut,
+  selectStarters,
+  type Availability,
+  type LineupCandidate,
+} from "@/lib/prop-lineup";
 import {
   analyticsRowsForCategory,
   trendOf,
@@ -97,6 +111,9 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<"value" | "recent" | "name">("value");
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
+  // Sportsbook-style board: projected starters only, with ruled-out players hidden.
+  const [lineup, setLineup] = useState<"starters" | "all">("starters");
+  const [showOut, setShowOut] = useState(false);
 
   // Real players for both teams (the same ESPN rosters the rest of the site uses).
   const rosterQuery = useQuery({
@@ -125,6 +142,23 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
     for (const p of analyticsPlayers) map.set(p.id, p);
     return map;
   }, [analyticsPlayers]);
+
+  // Injury report + depth chart for this game.
+  const availabilityQuery = useQuery({
+    queryKey: ["prop-availability", game.id, away.abbr, home.abbr],
+    queryFn: () =>
+      getPropAvailability({ data: { eventId: game.id, awayAbbr: away.abbr, homeAbbr: home.abbr } }),
+    staleTime: 5 * 60_000,
+    refetchInterval: game.status === "final" ? false : 10 * 60_000,
+    retry: 1,
+  });
+  const availabilityById = useMemo(() => {
+    const map = new Map<string, { status?: string; detail?: string; depthRank?: number }>();
+    for (const p of availabilityQuery.data?.players ?? [])
+      map.set(p.id, { status: p.injuryStatus, detail: p.injuryDetail, depthRank: p.depthRank });
+    return map;
+  }, [availabilityQuery.data]);
+  const availabilityFor = (id: string): Availability => availabilityOf(availabilityById.get(id)?.status);
 
   const people = useMemo(() => {
     const map = new Map<string, { id: string; name: string; position: string; team: string; headshot?: string }>();
@@ -185,13 +219,59 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [predictions, people, away.abbr, home.abbr]);
 
+  // Projected starters per team: depth chart order (then recent workload), skipping anyone ruled out.
+  const { starters, healthyStarters } = useMemo(() => {
+    const usageOf = (id: string) => {
+      const m = analyticsById.get(id)?.markets ?? {};
+      const l3 = (key: string) => m[key]?.last3 ?? 0;
+      return l3("pass_att") + l3("rush_att") + l3("targets") + l3("fg_made") + l3("xp_made") + l3("punts");
+    };
+    const candidates: LineupCandidate[] = [];
+    const seen = new Set<string>();
+    const add = (id: string, teamAbbr: string, position: string) => {
+      if (seen.has(id) || !isPropPlayerPosition(position) || !sideOf(teamAbbr)) return;
+      seen.add(id);
+      const a = availabilityById.get(id);
+      candidates.push({ id, teamAbbr, position, depthRank: a?.depthRank, injuryStatus: a?.status, usage: usageOf(id) });
+    };
+    for (const p of people.values()) add(p.id, p.team, p.position);
+    for (const p of analyticsPlayers) add(p.id, p.teamAbbr, p.position);
+    return {
+      starters: selectStarters(candidates),
+      // Who would start if everyone were healthy, so "show injured" can bring back ruled-out starters.
+      healthyStarters: selectStarters(candidates.map((c) => ({ ...c, injuryStatus: undefined }))),
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [people, analyticsPlayers, analyticsById, availabilityById, away.abbr, home.abbr]);
+  const lineupKnown = starters.size > 0;
+  const isListed = (id: string) => {
+    const out = isRuledOut(availabilityFor(id));
+    if (out && !showOut) return false;
+    if (lineup === "all" || !lineupKnown) return true;
+    return starters.has(id) || (showOut && out && healthyStarters.has(id));
+  };
+  const injuryTagFor = (id: string) => {
+    const a = availabilityById.get(id);
+    const tag = availabilityTag(availabilityOf(a?.status));
+    return tag ? { tag, status: a?.status ?? "", detail: a?.detail, out: tag !== "Q" } : undefined;
+  };
+  const hiddenOut = useMemo(
+    () =>
+      [...availabilityById.entries()].filter(
+        ([id, a]) => isRuledOut(availabilityOf(a.status)) && (people.get(id) ? isPropPlayerPosition(people.get(id)!.position) : false),
+      ).length,
+    [availabilityById, people],
+  );
+
   const needle = search.trim().toLowerCase();
-  const matchesFilters = (name: string, side: "away" | "home") =>
-    (teamFilter === "all" || teamFilter === side) && (!needle || name.toLowerCase().includes(needle));
+  const matchesFilters = (name: string, side: "away" | "home", id?: string) =>
+    (teamFilter === "all" || teamFilter === side) &&
+    (!needle || name.toLowerCase().includes(needle)) &&
+    (!id || isListed(id));
 
   const categoryRows = rows.filter((r) => r.market.category === category);
   const shownRows = categoryRows
-    .filter((r) => (marketKey === "all" || r.market.key === marketKey) && matchesFilters(r.name, r.side))
+    .filter((r) => (marketKey === "all" || r.market.key === marketKey) && matchesFilters(r.name, r.side, r.playerId))
     .sort((a, b) =>
       sort === "name"
         ? a.name.localeCompare(b.name) || a.market.label.localeCompare(b.market.label)
@@ -211,7 +291,7 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
     .filter(
       (r) =>
         (marketKey === "all" || r.summary.key === marketKey) &&
-        matchesFilters(r.player.name, sideOfAbbr(r.player.teamAbbr)),
+        matchesFilters(r.player.name, sideOfAbbr(r.player.teamAbbr), r.player.id),
     )
     .sort((a, b) =>
       sort === "name"
@@ -224,12 +304,12 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
     );
   const countFor = (cat: PropCategory) =>
     hasProjections
-      ? rows.filter((r) => r.market.category === cat).length
-      : analyticsRowsForCategory(analyticsPlayers, cat).length;
+      ? rows.filter((r) => r.market.category === cat && isListed(r.playerId)).length
+      : analyticsRowsForCategory(analyticsPlayers, cat).filter((r) => isListed(r.player.id)).length;
   const marketCount = (key: string) =>
     hasProjections
-      ? categoryRows.filter((r) => r.market.key === key).length
-      : categoryAnalytics.filter((r) => r.summary.key === key).length;
+      ? categoryRows.filter((r) => r.market.key === key && isListed(r.playerId)).length
+      : categoryAnalytics.filter((r) => r.summary.key === key && isListed(r.player.id)).length;
   const scanned = analyticsQuery.data?.gamesScanned ?? {};
   const toggle = (id: string) =>
     setExpanded((current) => {
@@ -404,6 +484,56 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
             </select>
           ) : null}
         </div>
+
+        {/* Sportsbook-style lineup filter */}
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex gap-1" role="group" aria-label="Which players to list">
+            {(
+              [
+                ["starters", "Starters"],
+                ["all", "All players"],
+              ] as const
+            ).map(([key, label]) => (
+              <button
+                key={key}
+                type="button"
+                aria-pressed={lineup === key}
+                onClick={() => setLineup(key)}
+                className={`rounded-md px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider ring-1 ${
+                  lineup === key ? "bg-acc/10 text-acc ring-acc/25" : "bg-panel2 text-mute ring-line/10 hover:text-acc"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          <button
+            type="button"
+            aria-pressed={showOut}
+            onClick={() => setShowOut((v) => !v)}
+            className={`rounded-md px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider ring-1 ${
+              showOut ? "bg-loss/10 text-loss ring-loss/25" : "bg-panel2 text-mute ring-line/10 hover:text-acc"
+            }`}
+          >
+            {showOut ? "Showing ruled out" : "Show ruled out"}
+            {hiddenOut ? <span className="ml-1.5 text-faint">{hiddenOut}</span> : null}
+          </button>
+          <p className="text-[11px] text-faint">
+            {lineup === "starters" && lineupKnown
+              ? `Per team: ${Object.entries(STARTER_SLOTS)
+                  .filter(([, n]) => n > 0)
+                  .map(([pos, n]) => (n > 1 ? `${n} ${pos}` : pos))
+                  .join(" · ")}. `
+              : ""}
+            {availabilityQuery.isLoading
+              ? "Loading injury report…"
+              : availabilityQuery.data
+                ? `${availabilityQuery.data.sources.depthChart ? "ESPN depth chart" : "Recent usage (no depth chart)"}${
+                    availabilityQuery.data.sources.injuryReport ? " + injury report" : " · no injury report posted"
+                  }. Out, Doubtful and IR players are hidden unless shown.`
+                : "Injury report unavailable — nobody is hidden for injury."}
+          </p>
+        </div>
       </div>
 
       {/* Projection rows (real saved predictions only) */}
@@ -446,6 +576,7 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
                             {row.name}
                           </Link>
                           <span className="ml-2 font-mono text-[10px] text-faint">{row.position}</span>
+                          <InjuryTag info={injuryTagFor(row.playerId)} />
                         </td>
                         <td className="px-2 py-2.5 font-mono text-mute">{row.teamAbbr}</td>
                         <td className="px-2 py-2.5 text-mute">{row.market.label}</td>
@@ -507,6 +638,7 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
         )
       ) : hasAnalytics ? (
         <AnalyticsTable
+          tagFor={injuryTagFor}
           rows={shownAnalytics}
           categoryLabel={PROP_CATEGORIES.find((c) => c.key === category)?.label ?? ""}
           expanded={expanded}
@@ -516,7 +648,8 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
         <p className="px-4 pb-6 text-center font-mono text-xs text-mute">Loading players…</p>
       ) : (
         <PlayerList
-          players={offensivePlayers.filter((p) => matchesFilters(p.name, sideOf(p.team)!))}
+          players={offensivePlayers.filter((p) => matchesFilters(p.name, sideOf(p.team)!, p.id))}
+          tagFor={injuryTagFor}
           away={away}
           home={home}
           loadFailed={rosterQuery.isError || offensivePlayers.length === 0}
@@ -547,8 +680,10 @@ function PlayerList({
   away,
   home,
   loadFailed,
+  tagFor,
 }: {
   players: { id: string; name: string; position: string; team: string }[];
+  tagFor: (id: string) => InjuryTagInfo | undefined;
   away: Team;
   home: Team;
   loadFailed: boolean;
@@ -578,6 +713,7 @@ function PlayerList({
                 <Link to="/players/$playerId" params={{ playerId: player.id }} className="font-medium hover:text-acc">
                   {player.name}
                 </Link>
+                <InjuryTag info={tagFor(player.id)} />
               </td>
               <td className="px-2 py-2.5">
                 <span className="inline-flex items-center gap-1.5 font-mono text-mute">
@@ -667,7 +803,9 @@ function AnalyticsTable({
   categoryLabel,
   expanded,
   toggle,
+  tagFor,
 }: {
+  tagFor: (id: string) => InjuryTagInfo | undefined;
   rows: { player: PlayerPropAnalytics; summary: MarketSummary }[];
   categoryLabel: string;
   expanded: Set<string>;
@@ -714,6 +852,7 @@ function AnalyticsTable({
                       {player.name}
                     </Link>
                     <span className="ml-2 font-mono text-[10px] text-faint">{player.position}</span>
+                    <InjuryTag info={tagFor(player.id)} />
                   </td>
                   <td className="px-2 py-2.5 font-mono text-mute">{player.teamAbbr}</td>
                   <td className="px-2 py-2.5 text-mute">{market?.label ?? summary.key}</td>
@@ -772,5 +911,31 @@ function AnalyticsTable({
         </tbody>
       </table>
     </div>
+  );
+}
+
+/* ---------- injury tags ---------- */
+
+interface InjuryTagInfo {
+  tag: string;
+  status: string;
+  detail?: string;
+  /** Out / Doubtful / IR (red) vs Questionable (neutral). */
+  out: boolean;
+}
+
+function InjuryTag({ info }: { info?: InjuryTagInfo }) {
+  if (!info) return null;
+  const title = `${info.status}${info.detail ? ` · ${info.detail}` : ""}`;
+  return (
+    <span
+      title={title}
+      aria-label={title}
+      className={`ml-2 rounded px-1.5 py-0.5 font-mono text-[9px] font-semibold uppercase tracking-wider ring-1 ${
+        info.out ? "bg-loss/15 text-loss ring-loss/30" : "bg-panel2 text-foreground ring-line/25"
+      }`}
+    >
+      {info.tag}
+    </span>
   );
 }
