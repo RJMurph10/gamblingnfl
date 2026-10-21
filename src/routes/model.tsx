@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { PageTitle, Panel, PanelHeader, StatCard, TeamLogo } from "@/components/booth";
+import { MatchupLink, PageTitle, Panel, PanelHeader, StatCard, TeamLogo } from "@/components/booth";
 import { gameScore, type Game } from "@/data/games";
 import { teamById } from "@/data/teams";
 import { getLiveSchedule } from "@/lib/espn.functions";
@@ -45,7 +45,7 @@ const oddsText = (o: number) => (o > 0 ? `+${o}` : String(o));
 const lineText = (n: number) => (n === 0 ? "PK" : n > 0 ? `+${n}` : String(n));
 const one = (n: number) => (Math.round(n * 10) / 10).toFixed(1);
 
-/** "CHI -3.5", "NE +3.5", "Over 44.5", "CHI ML" */
+/** Plain-text pick, e.g. "CHI -3.5", "Over 44.5", "CHI ML" (used for tooltips and screen readers). */
 function pickLabel(pick: ModelPick, game: Game): string {
   const home = teamById(game.homeTeamId);
   const away = teamById(game.awayTeamId);
@@ -53,6 +53,20 @@ function pickLabel(pick: ModelPick, game: Game): string {
   if (pick.market === "spread") return `${team?.abbr ?? ""} ${lineText(pick.line ?? 0)}`;
   if (pick.market === "total") return `${pick.side === "over" ? "Over" : "Under"} ${pick.line}`;
   return `${team?.abbr ?? ""} ML`;
+}
+
+/** Pick as shown: team logo + line for spreads ("[logo] +7.5"), logo + ML, or "Over 44.5". */
+function PickLabel({ pick, game }: { pick: ModelPick; game: Game }) {
+  if (pick.market === "total") return <span>{pickLabel(pick, game)}</span>;
+  const team = teamById(pick.side === "home" ? game.homeTeamId : game.awayTeamId);
+  if (!team) return <span>{pickLabel(pick, game)}</span>;
+  return (
+    <span className="inline-flex items-center gap-1" title={`${team.city} ${team.name}`}>
+      <TeamLogo team={team} className="size-4" />
+      <span className="sr-only">{team.abbr} </span>
+      {pick.market === "spread" ? lineText(pick.line ?? 0) : "ML"}
+    </span>
+  );
 }
 
 const edgeText = (pick: ModelPick) =>
@@ -65,25 +79,45 @@ function recordText(r: MarketRecord) {
   return `${r.wins}-${r.losses}${r.pushes ? `-${r.pushes}` : ""}`;
 }
 
-function Matchup({ game, withScore = false }: { game: Game; withScore?: boolean }) {
+function Matchup({ game }: { game: Game }) {
+  const away = teamById(game.awayTeamId);
+  const home = teamById(game.homeTeamId);
+  if (!away || !home) return null;
+  return (
+    <Link
+      to="/games/$gameId"
+      params={{ gameId: game.id }}
+      title={`${away.city} ${away.name} @ ${home.city} ${home.name}`}
+      aria-label={`${away.city} ${away.name} at ${home.city} ${home.name}`}
+      className="inline-flex items-center gap-2 whitespace-nowrap font-medium transition-opacity hover:opacity-80"
+    >
+      <TeamLogo team={away} className="size-6" />
+      <span className="text-faint">@</span>
+      <TeamLogo team={home} className="size-6" />
+    </Link>
+  );
+}
+
+function HomeLogo({ game }: { game: Game }) {
+  const home = teamById(game.homeTeamId);
+  return home ? <TeamLogo team={home} className="size-4" /> : null;
+}
+
+/** Finals exactly like the dashboard's Recent games: score [logo] @ [logo] score. */
+function FinalMatchup({ game }: { game: Game }) {
   const away = teamById(game.awayTeamId);
   const home = teamById(game.homeTeamId);
   if (!away || !home) return null;
   const score = gameScore(game);
   return (
-    <Link
-      to="/games/$gameId"
-      params={{ gameId: game.id }}
-      className="inline-flex items-center gap-1.5 whitespace-nowrap font-medium hover:text-acc"
-    >
-      <TeamLogo team={away} className="size-4" />
-      {away.abbr}
-      {withScore ? <span className="font-mono tabular-nums text-mute">{score.away}</span> : null}
-      <span className="text-faint">@</span>
-      <TeamLogo team={home} className="size-4" />
-      {home.abbr}
-      {withScore ? <span className="font-mono tabular-nums text-mute">{score.home}</span> : null}
-    </Link>
+    <MatchupLink
+      game={game}
+      away={away}
+      home={home}
+      awayScore={score.away}
+      homeScore={score.home}
+      showOT={game.quarters.away.length > 4 || game.quarters.home.length > 4}
+    />
   );
 }
 
@@ -98,7 +132,7 @@ function PickChip({ pick, game }: { pick: ModelPick; game: Game }) {
       <span className="text-[9px] uppercase tracking-wider text-acc/70">
         {MARKET_LABEL[pick.market]}
       </span>
-      {pickLabel(pick, game)}
+      <PickLabel pick={pick} game={game} />
       <span className="text-mute">{oddsText(pick.odds)}</span>
     </span>
   );
@@ -159,7 +193,7 @@ function ModelPage() {
     staleTime: 10_000,
     retry: 1,
   });
-  const games: Game[] = scheduleQuery.data ?? [];
+  const games: Game[] = useMemo(() => scheduleQuery.data ?? [], [scheduleQuery.data]);
   const rows = useMemo(() => runModel(games), [games]);
   const summary = useMemo(() => summarizeModel(rows), [rows]);
   const [market, setMarket] = useState<Market | "all">("all");
@@ -299,9 +333,12 @@ function ModelPage() {
                               : "TBD"}
                         </td>
                         <td className="px-2 py-2.5 text-right font-mono tabular-nums">
-                          {row.prediction
-                            ? lineText(Math.round(row.prediction.homeLine * 2) / 2)
-                            : "—"}
+                          <span className="inline-flex items-center gap-1 align-middle">
+                            <HomeLogo game={row.game} />
+                            {row.prediction
+                              ? lineText(Math.round(row.prediction.homeLine * 2) / 2)
+                              : "—"}
+                          </span>
                           <span className="ml-1 text-[11px] text-faint">
                             mkt {row.marketHomeLine === null ? "—" : lineText(row.marketHomeLine)}
                           </span>
@@ -372,7 +409,7 @@ function ModelPage() {
                     <thead>
                       <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
                         <th className="px-4 py-2 font-normal">Wk</th>
-                        <th className="px-2 py-2 font-normal">Final</th>
+                        <th className="px-2 py-2 text-center font-normal">Final</th>
                         <th className="px-2 py-2 font-normal">Pick</th>
                         <th className="px-2 py-2 text-right font-normal">Odds</th>
                         <th className="px-2 py-2 text-right font-normal">Edge</th>
@@ -384,14 +421,14 @@ function ModelPage() {
                       {(showAll ? graded : graded.slice(0, GRADED_PAGE)).map(({ pick, row }) => (
                         <tr key={`${row.game.id}-${pick.market}`} className="hover:bg-line/5">
                           <td className="px-4 py-2.5 font-mono text-mute">{pick.week}</td>
-                          <td className="px-2 py-2.5">
-                            <Matchup game={row.game} withScore />
+                          <td className="px-2 py-2.5 text-center">
+                            <FinalMatchup game={row.game} />
                           </td>
                           <td className="px-2 py-2.5 font-mono">
                             <span className="mr-1.5 text-[9px] uppercase tracking-wider text-faint">
                               {MARKET_LABEL[pick.market]}
                             </span>
-                            {pickLabel(pick, row.game)}
+                            <PickLabel pick={pick} game={row.game} />
                           </td>
                           <td className="px-2 py-2.5 text-right font-mono tabular-nums text-mute">
                             {oddsText(pick.odds)}
