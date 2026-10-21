@@ -471,6 +471,43 @@ function formatClock(raw: string | undefined): string {
   return m ? `${m[2].trim()} ${m[1].trim()}` : raw;
 }
 
+/** Compact labels for networks/streamers whose ESPN names are long. */
+const BROADCAST_LABELS: Record<string, string> = {
+  "prime video": "AMZN",
+  "amazon prime video": "AMZN",
+  amazon: "AMZN",
+  "nfl network": "NFLN",
+  "nfl net": "NFLN",
+  "espn/abc": "ESPN/ABC",
+  "youtube": "YouTube",
+};
+
+/**
+ * National TV network or streaming service for a scoreboard competition,
+ * e.g. "AMZN" for Prime Video games or "CBS" / "FOX" on Sundays.
+ */
+function parseBroadcast(comp: any): string | undefined {
+  const names: string[] = [];
+  const push = (raw: unknown) => {
+    const name = String(raw ?? "").trim();
+    if (!name) return;
+    const label = BROADCAST_LABELS[name.toLowerCase()] ?? name;
+    if (!names.includes(label)) names.push(label);
+  };
+  const broadcasts: any[] = Array.isArray(comp?.broadcasts) ? comp.broadcasts : [];
+  // Prefer national listings; fall back to whatever ESPN lists.
+  const national = broadcasts.filter((b) => !b?.market || b.market === "national");
+  for (const b of national.length ? national : broadcasts) {
+    for (const n of Array.isArray(b?.names) ? b.names : []) push(n);
+  }
+  if (!names.length) {
+    const geo: any[] = Array.isArray(comp?.geoBroadcasts) ? comp.geoBroadcasts : [];
+    const geoNational = geo.filter((g) => !g?.market?.type || g.market.type === "National");
+    for (const g of geoNational.length ? geoNational : geo) push(g?.media?.shortName);
+  }
+  return names.length ? names.join(" · ") : undefined;
+}
+
 function mapEvent(event: any, week: number): Game | null {
   const comp = event?.competitions?.[0];
   if (!comp) return null;
@@ -597,6 +634,7 @@ function mapEvent(event: any, week: number): Game | null {
     status: mapStatus(comp.status?.type),
     venue: comp.venue?.fullName ?? "TBD",
     location: formatLocation(comp.venue),
+    broadcast: parseBroadcast(comp),
     awayTeamId: awayTeam.id,
     homeTeamId: homeTeam.id,
     quarters: {
