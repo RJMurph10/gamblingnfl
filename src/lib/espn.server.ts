@@ -194,8 +194,17 @@ async function fetchCoreProbabilityRecords(eventId: string): Promise<any[]> {
 }
 
 /** Fetch historical spread/total from ESPN when the scoreboard omits it. */
-type HistoricalOdds = { spread?: string; total?: number };
+type HistoricalOdds = { spread?: string; total?: number; prices?: Game["odds"] };
 const historicalOddsCache = new Map<string, { at: number; value: HistoricalOdds }>();
+
+/** Fills prices missing from `base` with ones from `extra` (first provider wins). */
+function mergeOdds(base: Game["odds"], extra: Game["odds"]): Game["odds"] {
+  if (!extra) return base;
+  return { ...extra, ...(base ?? {}) };
+}
+
+const hasMoneylines = (odds?: Game["odds"]) =>
+  odds?.homeMoneyline !== undefined && odds?.awayMoneyline !== undefined;
 
 async function loadHistoricalOdds(eventId: string): Promise<HistoricalOdds> {
   const result: HistoricalOdds = {};
@@ -209,12 +218,13 @@ async function loadHistoricalOdds(eventId: string): Promise<HistoricalOdds> {
       if (result.total === undefined && typeof odds?.overUnder === "number") {
         result.total = odds.overUnder;
       }
+      result.prices = mergeOdds(result.prices, parseGameOdds(odds));
     }
   } catch {
     // fall through to the summary feed
   }
-  // 2) Game summary "pickcenter" keeps the closing line for finished games.
-  if (!result.spread || result.total === undefined) {
+  // 2) Game summary "pickcenter" keeps the closing line (and prices) for finished games.
+  if (!result.spread || result.total === undefined || !hasMoneylines(result.prices)) {
     try {
       const summary = await fetchJson(`${SUMMARY}?event=${eventId}`);
       for (const pick of Array.isArray(summary?.pickcenter) ? summary.pickcenter : []) {
@@ -224,6 +234,7 @@ async function loadHistoricalOdds(eventId: string): Promise<HistoricalOdds> {
         if (result.total === undefined && typeof pick?.overUnder === "number") {
           result.total = pick.overUnder;
         }
+        result.prices = mergeOdds(result.prices, parseGameOdds(pick));
       }
     } catch {
       // leave whatever we found
@@ -471,6 +482,36 @@ function formatClock(raw: string | undefined): string {
   return m ? `${m[2].trim()} ${m[1].trim()}` : raw;
 }
 
+/** "-175", "+145", "EVEN", -110 -> number; anything else -> undefined. */
+function americanOdds(raw: unknown): number | undefined {
+  if (raw === null || raw === undefined) return undefined;
+  if (typeof raw === "number") return Number.isFinite(raw) && Math.abs(raw) >= 100 ? raw : undefined;
+  const text = String(raw).trim();
+  if (/^even$/i.test(text)) return 100;
+  const n = Number(text.replace(/^\+/, ""));
+  return Number.isFinite(n) && Math.abs(n) >= 100 ? n : undefined;
+}
+
+/**
+ * Moneyline, spread and total prices from a scoreboard odds entry. Handles ESPN's newer shape
+ * (moneyline.home.close.odds, pointSpread..., total.over...) and the older one
+ * (homeTeamOdds.moneyLine, spreadOdds, overOdds/underOdds). Closing prices win over opening.
+ */
+function parseGameOdds(odds: any): Game["odds"] {
+  if (!odds) return undefined;
+  const pick = (node: any) => americanOdds(node?.close?.odds ?? node?.current?.odds ?? node?.open?.odds);
+  const out: NonNullable<Game["odds"]> = {
+    homeMoneyline: pick(odds?.moneyline?.home) ?? americanOdds(odds?.homeTeamOdds?.moneyLine),
+    awayMoneyline: pick(odds?.moneyline?.away) ?? americanOdds(odds?.awayTeamOdds?.moneyLine),
+    homeSpreadOdds: pick(odds?.pointSpread?.home) ?? americanOdds(odds?.homeTeamOdds?.spreadOdds),
+    awaySpreadOdds: pick(odds?.pointSpread?.away) ?? americanOdds(odds?.awayTeamOdds?.spreadOdds),
+    overOdds: pick(odds?.total?.over) ?? americanOdds(odds?.overOdds),
+    underOdds: pick(odds?.total?.under) ?? americanOdds(odds?.underOdds),
+  };
+  for (const key of Object.keys(out) as (keyof typeof out)[]) if (out[key] === undefined) delete out[key];
+  return Object.keys(out).length ? out : undefined;
+}
+
 /** Compact labels for networks/streamers whose ESPN names are long. */
 const BROADCAST_LABELS: Record<string, string> = {
   "prime video": "AMZN",
@@ -635,6 +676,7 @@ function mapEvent(event: any, week: number): Game | null {
     venue: comp.venue?.fullName ?? "TBD",
     location: formatLocation(comp.venue),
     broadcast: parseBroadcast(comp),
+    odds: parseGameOdds(odds),
     awayTeamId: awayTeam.id,
     homeTeamId: homeTeam.id,
     quarters: {
@@ -746,8 +788,10 @@ export async function fetchSchedule(): Promise<Game[]> {
 
     // Keep the pregame spread/total available after kickoff if the live
     // scoreboard drops the odds fields. Historical odds are also used for finals.
+    // Finals also need moneylines and prices so the model's picks can be graded in units.
     const missingOddsGames = games.filter(
-      (game) => game.status !== "scheduled" && (game.spread === "—" || !game.total),
+      (game) =>
+        game.status !== "scheduled" && (game.spread === "—" || !game.total || !hasMoneylines(game.odds)),
     );
     if (missingOddsGames.length) {
       await Promise.all(
@@ -755,6 +799,7 @@ export async function fetchSchedule(): Promise<Game[]> {
           const odds = await fetchHistoricalOdds(game.id.replace(/^espn-/, ""));
           if (game.spread === "—" && odds.spread) game.spread = odds.spread;
           if (!game.total && typeof odds.total === "number") game.total = odds.total;
+          if (odds.prices) game.odds = mergeOdds(game.odds, odds.prices);
         }),
       );
     }
