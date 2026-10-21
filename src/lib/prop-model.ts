@@ -75,8 +75,19 @@ export const isOffensivePosition = (position?: string): boolean =>
 /** Players the props page covers: offensive skill players plus kickers and punters. */
 export const PROP_PLAYER_POSITIONS = [...OFFENSIVE_POSITIONS, "K", "P"] as const;
 
+/**
+ * Normalizes position labels from different feeds. ESPN rosters call kickers "PK"
+ * (place kicker); the props page shows them as "K".
+ */
+export const normalizePropPosition = (position?: string): string => {
+  const p = String(position ?? "").trim().toUpperCase();
+  if (p === "PK" || p === "KICKER" || p === "PLACEKICKER") return "K";
+  if (p === "PUNTER") return "P";
+  return p;
+};
+
 export const isPropPlayerPosition = (position?: string): boolean =>
-  PROP_PLAYER_POSITIONS.includes(String(position ?? "").toUpperCase() as (typeof PROP_PLAYER_POSITIONS)[number]);
+  PROP_PLAYER_POSITIONS.includes(normalizePropPosition(position) as (typeof PROP_PLAYER_POSITIONS)[number]);
 
 /* ---------- projected ranges ---------- */
 
