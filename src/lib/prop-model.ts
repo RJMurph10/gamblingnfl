@@ -89,6 +89,37 @@ export const normalizePropPosition = (position?: string): string => {
 export const isPropPlayerPosition = (position?: string): boolean =>
   PROP_PLAYER_POSITIONS.includes(normalizePropPosition(position) as (typeof PROP_PLAYER_POSITIONS)[number]);
 
+/**
+ * Which positions each prop category belongs to, like a sportsbook board: passing props are for
+ * quarterbacks only (a receiver's trick-play pass doesn't make him a passing prop), receiving props
+ * are for backs, receivers and tight ends, kicking for kickers and punting for punters.
+ */
+const CATEGORY_POSITIONS: Record<PropCategory, readonly string[]> = {
+  passing: ["QB"],
+  rushing: ["QB", "RB", "FB", "WR", "TE"],
+  receiving: ["RB", "FB", "WR", "TE"],
+  receptions: ["RB", "FB", "WR", "TE"],
+  other: ["QB", "RB", "FB", "WR", "TE"],
+  kicking: ["K"],
+  punting: ["P"],
+};
+
+/** Combined props in "Other" that need a specific position. */
+const MARKET_POSITIONS: Record<string, readonly string[]> = {
+  pass_rush_yds: ["QB"],
+  pass_rush_tds: ["QB"],
+  rush_rec_yds: ["RB", "FB", "WR", "TE"],
+};
+
+/** True when a player at this position should have this prop on the board. */
+export function isMarketForPosition(marketKey: string, position?: string): boolean {
+  const market = marketByKey(marketKey);
+  if (!market) return false;
+  const pos = normalizePropPosition(position);
+  const allowed = MARKET_POSITIONS[marketKey] ?? CATEGORY_POSITIONS[market.category];
+  return allowed.includes(pos);
+}
+
 /* ---------- projected ranges ---------- */
 
 /** Increment this when the range rules change, so saved predictions stay comparable. */
