@@ -12,6 +12,7 @@ import {
   fetchTeamSeasonAverages,
   fetchLeagueTeamOverviewStats,
   fetchPlayerProfile,
+  fetchPropAvailability,
 } from "./espn.server";
 import {
   fetchGamePropAnalytics,
@@ -198,3 +199,11 @@ export const getGamePropAnalytics = createServerFn({
 })
   .inputValidator((data) => z.object({ awayAbbr: z.string(), homeAbbr: z.string() }).parse(data))
   .handler(async ({ data }) => fetchGamePropAnalytics(data.awayAbbr, data.homeAbbr));
+
+export const getPropAvailability = createServerFn({
+  method: "GET",
+})
+  .inputValidator((data) =>
+    z.object({ eventId: z.string(), awayAbbr: z.string(), homeAbbr: z.string() }).parse(data),
+  )
+  .handler(async ({ data }) => fetchPropAvailability(data.eventId, data.awayAbbr, data.homeAbbr));
