@@ -18,6 +18,8 @@ import { gameScore, type Game } from "@/data/games";
 import { players } from "@/data/players";
 import { teamById, teams } from "@/data/teams";
 import { getLiveSchedule } from "@/lib/espn.functions";
+import { runModel, summarizeModel, unitsText } from "@/lib/game-model";
+import { buildSeasonPulse, changeTone, weekChangeText } from "@/lib/season-pulse";
 
 /* ---------- Live games: row without date/time, clock first ---------- */
 
@@ -276,6 +278,20 @@ function Dashboard() {
   // Hide the Down column when every live game is at halftime.
   const showLiveDownColumn = live.some((g) => !/half/i.test(g.clock ?? ""));
 
+  // Season Pulse: the model's record and units (flat 1u), plus the league's average total.
+  const pulse = useMemo(() => buildSeasonPulse(source), [source]);
+  const model = useMemo(() => summarizeModel(runModel(source)), [source]);
+  const prev = model.previous;
+  const pctChange = (now: number | null, before: number | null | undefined) =>
+    now !== null && before !== null && before !== undefined ? Math.round((now - before) * 10) / 10 : null;
+  const winChange = pctChange(model.overall.winPct, prev?.overall.winPct);
+  const coverChange = pctChange(model.byMarket.spread.winPct, prev?.byMarket.spread.winPct);
+  const unitsChange = prev ? Math.round((model.overall.units - prev.overall.units) * 100) / 100 : null;
+  const fmt = (v: number | null) => (v === null ? "—" : v.toFixed(1));
+  const rec = (r: { wins: number; losses: number; pushes: number }) =>
+    `${r.wins}-${r.losses}${r.pushes ? `-${r.pushes}` : ""}`;
+  const note = (...parts: (string | undefined)[]) => parts.filter(Boolean).join(" · ");
+
   const topPlayers = [...players].sort((a, b) => b.season.yards - a.season.yards).slice(0, 5);
 
   return (
@@ -284,14 +300,69 @@ function Dashboard() {
         <PageTitle
           eyebrow={isLive ? "Home dashboard · 2026 live schedule" : "Home dashboard"}
           title="Season Pulse"
-          aside={<SampleBadge />}
+          aside={isLive ? undefined : <SampleBadge />}
         />
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-          <StatCard label="Win rate" value="54.2" unit="%" note="▲ 2.1 wk/wk" tone="win" />
-          <StatCard label="Avg total" value="47.8" note="o/u line 45.5" />
-          <StatCard label="Cover %" value="51.7" unit="%" note="▼ 0.6 wk/wk" tone="loss" />
-          <StatCard label="Model edge" value="+3.4" unit="pts" note="▲ 0.9 wk/wk" tone="win" />
+          <StatCard
+            label="Win rate · model"
+            value={fmt(model.overall.winPct)}
+            unit={model.overall.winPct === null ? undefined : "%"}
+            note={scheduleLoading ? "Loading…" : note(weekChangeText(winChange), `${rec(model.overall)} all picks`)}
+            tone={changeTone(winChange)}
+          />
+          <StatCard
+            label="Avg total"
+            value={fmt(pulse.avgTotal.value)}
+            note={
+              scheduleLoading
+                ? "Loading…"
+                : pulse.avgTotalLine !== null
+                  ? `o/u line ${pulse.avgTotalLine.toFixed(1)}`
+                  : `${pulse.avgTotal.sample} games`
+            }
+            tone={
+              pulse.avgTotal.value !== null && pulse.avgTotalLine !== null
+                ? pulse.avgTotal.value > pulse.avgTotalLine
+                  ? "win"
+                  : pulse.avgTotal.value < pulse.avgTotalLine
+                    ? "loss"
+                    : "mute"
+                : "mute"
+            }
+          />
+          <StatCard
+            label="Cover % · model"
+            value={fmt(model.byMarket.spread.winPct)}
+            unit={model.byMarket.spread.winPct === null ? undefined : "%"}
+            note={
+              scheduleLoading ? "Loading…" : note(weekChangeText(coverChange), `${rec(model.byMarket.spread)} ATS`)
+            }
+            tone={changeTone(coverChange)}
+          />
+          <StatCard
+            label="Model edge"
+            value={unitsText(model.overall.units)}
+            note={
+              scheduleLoading
+                ? "Loading…"
+                : note(
+                    unitsChange === null
+                      ? undefined
+                      : `${unitsChange > 0 ? "▲" : unitsChange < 0 ? "▼" : "—"} ${Math.abs(unitsChange).toFixed(2)}u wk/wk`,
+                    model.overall.roi === null ? "No graded picks yet" : `ROI ${model.overall.roi > 0 ? "+" : ""}${model.overall.roi.toFixed(1)}%`,
+                  )
+            }
+            tone={model.overall.units > 0 ? "win" : model.overall.units < 0 ? "loss" : "mute"}
+          />
         </div>
+        {pulse.throughWeek !== null ? (
+          <p className="mt-2 font-mono text-[10px] uppercase tracking-wider text-faint">
+            Through week {pulse.throughWeek} · flat 1u per pick at closing ESPN odds ·{" "}
+            <Link to="/model" className="text-acc">
+              Model picks →
+            </Link>
+          </p>
+        ) : null}
       </section>
 
       <div className="grid gap-6 lg:grid-cols-12">
@@ -409,9 +480,12 @@ function Dashboard() {
           <PanelHeader
             title="Player leaders"
             aside={
-              <Link to="/players" className="font-mono text-[11px] text-acc">
-                Search players →
-              </Link>
+              <span className="flex items-center gap-3">
+                <SampleBadge />
+                <Link to="/players" className="font-mono text-[11px] text-acc">
+                  Search players →
+                </Link>
+              </span>
             }
           />
           <div className="overflow-x-auto">
