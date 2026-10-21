@@ -5,7 +5,7 @@
  * job can share them. The UI never calculates projections: it only displays stored ones.
  */
 
-export type PropCategory = "passing" | "rushing" | "receiving" | "receptions" | "other";
+export type PropCategory = "passing" | "rushing" | "receiving" | "receptions" | "other" | "kicking" | "punting";
 
 /** How a statistic behaves, which decides how its projected range is built. */
 export type PropStatKind = "yards" | "long" | "count" | "touchdowns";
@@ -24,6 +24,8 @@ export const PROP_CATEGORIES: { key: PropCategory; label: string }[] = [
   { key: "receiving", label: "Receiving" },
   { key: "receptions", label: "Receptions" },
   { key: "other", label: "Other" },
+  { key: "kicking", label: "Kicking" },
+  { key: "punting", label: "Punting" },
 ];
 
 export const PROP_MARKETS: PropMarketDef[] = [
@@ -48,6 +50,15 @@ export const PROP_MARKETS: PropMarketDef[] = [
   { key: "pass_rush_yds", label: "Passing + rushing yards", category: "other", kind: "yards" },
   { key: "rush_rec_yds", label: "Rushing + receiving yards", category: "other", kind: "yards" },
   { key: "pass_rush_tds", label: "Passing + rushing TDs", category: "other", kind: "touchdowns" },
+
+  { key: "fg_made", label: "Field goals made", category: "kicking", kind: "count" },
+  { key: "xp_made", label: "Extra points made", category: "kicking", kind: "count" },
+  { key: "kick_pts", label: "Kicking points", category: "kicking", kind: "count" },
+  { key: "fg_long", label: "Longest field goal", category: "kicking", kind: "long" },
+
+  { key: "punts", label: "Punts", category: "punting", kind: "count" },
+  { key: "punt_yds", label: "Punting yards", category: "punting", kind: "yards" },
+  { key: "punt_long", label: "Longest punt", category: "punting", kind: "long" },
 ];
 
 export const marketByKey = (key: string): PropMarketDef | undefined => PROP_MARKETS.find((m) => m.key === key);
@@ -55,11 +66,17 @@ export const marketByKey = (key: string): PropMarketDef | undefined => PROP_MARK
 export const marketsForCategory = (category: PropCategory): PropMarketDef[] =>
   PROP_MARKETS.filter((m) => m.category === category);
 
-/** This first version covers offensive skill players only. */
+/** Offensive skill players. */
 export const OFFENSIVE_POSITIONS = ["QB", "RB", "FB", "WR", "TE"] as const;
 
 export const isOffensivePosition = (position?: string): boolean =>
   OFFENSIVE_POSITIONS.includes(String(position ?? "").toUpperCase() as (typeof OFFENSIVE_POSITIONS)[number]);
+
+/** Players the props page covers: offensive skill players plus kickers and punters. */
+export const PROP_PLAYER_POSITIONS = [...OFFENSIVE_POSITIONS, "K", "P"] as const;
+
+export const isPropPlayerPosition = (position?: string): boolean =>
+  PROP_PLAYER_POSITIONS.includes(String(position ?? "").toUpperCase() as (typeof PROP_PLAYER_POSITIONS)[number]);
 
 /* ---------- projected ranges ---------- */
 
