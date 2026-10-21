@@ -14,6 +14,7 @@ import {
   fetchPlayerProfile,
 } from "./espn.server";
 import {
+  fetchGamePropAnalytics,
   fetchLeaguePlayers,
   fetchPlayerGameLog,
 } from "./league-players.server";
@@ -191,3 +192,9 @@ export const getGamePropPredictions = createServerFn({
 })
   .inputValidator((data) => z.object({ gameId: z.string() }).parse(data))
   .handler(async ({ data }) => fetchGamePropPredictions(data.gameId));
+
+export const getGamePropAnalytics = createServerFn({
+  method: "GET",
+})
+  .inputValidator((data) => z.object({ awayAbbr: z.string(), homeAbbr: z.string() }).parse(data))
+  .handler(async ({ data }) => fetchGamePropAnalytics(data.awayAbbr, data.homeAbbr));
