@@ -6,7 +6,7 @@
  * projection: every number is an average, high or low of games that actually happened.
  */
 
-import { PROP_MARKETS, type PropCategory } from "./prop-model";
+import { PROP_MARKETS, isMarketForPosition, type PropCategory } from "./prop-model";
 
 /** One played game for one player: the flat box-score stats plus the game context. */
 export interface PlayerGameInput {
@@ -201,6 +201,8 @@ export function buildPlayerAnalytics(
 ): PlayerPropAnalytics {
   const markets: Record<string, MarketSummary> = {};
   for (const market of PROP_MARKETS) {
+    // Only the props a book would offer for his position (no passing props for a receiver).
+    if (!isMarketForPosition(market.key, player.position)) continue;
     const summary = summarizeMarket(market.key, games);
     if (summary) markets[market.key] = summary;
   }
