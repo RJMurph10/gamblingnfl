@@ -4,15 +4,23 @@ import { Link } from "@tanstack/react-router";
 import { Panel, TeamLogo } from "@/components/booth";
 import type { Game } from "@/data/games";
 import type { Team } from "@/data/teams";
-import { getGamePropPredictions, getPropPeople } from "@/lib/espn.functions";
+import { getGamePropAnalytics, getGamePropPredictions, getPropPeople } from "@/lib/espn.functions";
+import {
+  analyticsRowsForCategory,
+  trendOf,
+  type MarketSummary,
+  type PlayerPropAnalytics,
+} from "@/lib/prop-analytics";
 import {
   PROP_CATEGORIES,
+  PROP_MARKETS,
   RANGE_COVERAGE_TARGET,
   RANGE_METHOD_NOTE,
   formatProjection,
   isPropPlayerPosition,
   marketByKey,
   marketsForCategory,
+  normalizePropPosition,
   type PropCategory,
   type PropMarketDef,
 } from "@/lib/prop-model";
@@ -38,6 +46,8 @@ interface ProjectionRow {
 }
 
 const POSITION_ORDER = ["QB", "RB", "FB", "WR", "TE", "K", "P"];
+
+const marketOrder = (key: string) => PROP_MARKETS.findIndex((m) => m.key === key);
 
 const kickoffText = (iso?: string) =>
   iso
@@ -85,7 +95,7 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
   const [marketKey, setMarketKey] = useState<string>("all");
   const [teamFilter, setTeamFilter] = useState<"all" | "away" | "home">("all");
   const [search, setSearch] = useState("");
-  const [sort, setSort] = useState<"projection" | "name">("projection");
+  const [sort, setSort] = useState<"value" | "recent" | "name">("value");
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
 
   // Real players for both teams (the same ESPN rosters the rest of the site uses).
@@ -101,6 +111,20 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
     refetchInterval: game.status === "live" ? 60_000 : 5 * 60_000,
     staleTime: 30_000,
   });
+
+  // Real results from completed games for both teams (season averages, last 3, highs/lows).
+  const analyticsQuery = useQuery({
+    queryKey: ["prop-analytics", away.abbr, home.abbr],
+    queryFn: () => getGamePropAnalytics({ data: { awayAbbr: away.abbr, homeAbbr: home.abbr } }),
+    staleTime: 10 * 60_000,
+    retry: 1,
+  });
+  const analyticsPlayers = useMemo(() => analyticsQuery.data?.players ?? [], [analyticsQuery.data]);
+  const analyticsById = useMemo(() => {
+    const map = new Map<string, PlayerPropAnalytics>();
+    for (const p of analyticsPlayers) map.set(p.id, p);
+    return map;
+  }, [analyticsPlayers]);
 
   const people = useMemo(() => {
     const map = new Map<string, { id: string; name: string; position: string; team: string; headshot?: string }>();
@@ -118,7 +142,7 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
         .sort(
           (a, b) =>
             Number(sideOf(a.team) === "home") - Number(sideOf(b.team) === "home") ||
-            POSITION_ORDER.indexOf(a.position.toUpperCase()) - POSITION_ORDER.indexOf(b.position.toUpperCase()) ||
+            POSITION_ORDER.indexOf(normalizePropPosition(a.position)) - POSITION_ORDER.indexOf(normalizePropPosition(b.position)) ||
             a.name.localeCompare(b.name),
         ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -132,7 +156,7 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
       const market = marketByKey(p.stat);
       if (!market) continue;
       const person = people.get(p.playerId);
-      const position = person?.position ?? p.position ?? "";
+      const position = normalizePropPosition(person?.position ?? p.position ?? "");
       if (!isPropPlayerPosition(position)) continue;
       const teamAbbr = person?.team || p.teamAbbr || "";
       const side = sideOf(teamAbbr);
@@ -175,6 +199,38 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
     );
 
   const hasProjections = predictions?.status === "ready" && rows.length > 0;
+  const hasAnalytics = !hasProjections && analyticsPlayers.length > 0;
+  const showTabs = hasProjections || hasAnalytics;
+
+  const sideOfAbbr = (abbr: string) => sideOf(abbr) ?? "away";
+  const categoryAnalytics = useMemo(
+    () => analyticsRowsForCategory(analyticsPlayers, category),
+    [analyticsPlayers, category],
+  );
+  const shownAnalytics = categoryAnalytics
+    .filter(
+      (r) =>
+        (marketKey === "all" || r.summary.key === marketKey) &&
+        matchesFilters(r.player.name, sideOfAbbr(r.player.teamAbbr)),
+    )
+    .sort((a, b) =>
+      sort === "name"
+        ? a.player.name.localeCompare(b.player.name) || marketOrder(a.summary.key) - marketOrder(b.summary.key)
+        : // Different props have different units, so group by prop before ranking players.
+          marketOrder(a.summary.key) - marketOrder(b.summary.key) ||
+          (sort === "recent"
+          ? b.summary.last3 - a.summary.last3 || a.player.name.localeCompare(b.player.name)
+          : b.summary.avg - a.summary.avg || a.player.name.localeCompare(b.player.name)),
+    );
+  const countFor = (cat: PropCategory) =>
+    hasProjections
+      ? rows.filter((r) => r.market.category === cat).length
+      : analyticsRowsForCategory(analyticsPlayers, cat).length;
+  const marketCount = (key: string) =>
+    hasProjections
+      ? categoryRows.filter((r) => r.market.key === key).length
+      : categoryAnalytics.filter((r) => r.summary.key === key).length;
+  const scanned = analyticsQuery.data?.gamesScanned ?? {};
   const toggle = (id: string) =>
     setExpanded((current) => {
       const next = new Set(current);
@@ -214,12 +270,24 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
             <p className="text-mute">Loading projections for this game…</p>
           ) : (
             <>
-              <p className="font-semibold">Model projections aren&apos;t available for this game yet.</p>
+              <p className="font-semibold">
+                {hasAnalytics ? "Player analytics · 2026 results" : "Model projections aren\u2019t available for this game yet."}
+              </p>
               <p className="mt-1 text-mute">
-                {predictions?.message ??
-                  "No projections have been saved for this matchup."}{" "}
-                Real players for both teams (offense, kickers and punters) are listed below; projected stats and ranges will appear here
-                once the model saves them before kickoff. Nothing on this page is estimated or made up.
+                {hasAnalytics ? (
+                  <>
+                    Real results from completed games this season — {away.abbr} {scanned[away.abbr] ?? 0} games,{" "}
+                    {home.abbr} {scanned[home.abbr] ?? 0} games — for offense, kickers and punters. Model projections
+                    and ranges will replace this view once they&apos;re saved before kickoff.
+                  </>
+                ) : analyticsQuery.isLoading ? (
+                  "Loading player analytics from this season\u2019s box scores\u2026"
+                ) : (
+                  <>
+                    {predictions?.message ?? "No projections have been saved for this matchup."} Real players for both
+                    teams (offense, kickers and punters) are listed below. Nothing on this page is estimated or made up.
+                  </>
+                )}
               </p>
             </>
           )}
@@ -228,11 +296,11 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
 
       {/* Controls */}
       <div className="space-y-3 px-4 py-3">
-        {hasProjections ? (
+        {showTabs ? (
           <>
             <div className="flex gap-1 overflow-x-auto" role="tablist" aria-label="Prop category">
               {PROP_CATEGORIES.map((c) => {
-                const count = rows.filter((r) => r.market.category === c.key).length;
+                const count = countFor(c.key);
                 const active = c.key === category;
                 return (
                   <button
@@ -266,14 +334,15 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
                 All
               </button>
               {marketsForCategory(category).map((market) => {
-                const count = categoryRows.filter((r) => r.market.key === market.key).length;
+                const count = marketCount(market.key);
                 const active = marketKey === market.key;
+                const emptyLabel = hasProjections ? "not modeled" : "no data";
                 return (
                   <button
                     key={market.key}
                     type="button"
                     disabled={count === 0}
-                    title={count === 0 ? "Not modeled for this game yet" : undefined}
+                    title={count === 0 ? (hasProjections ? "Not modeled for this game yet" : "No player has this stat yet") : undefined}
                     onClick={() => setMarketKey(market.key)}
                     className={`rounded-full px-2.5 py-1 font-mono text-[10px] uppercase tracking-wider ring-1 ${
                       active
@@ -284,7 +353,7 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
                     }`}
                   >
                     {market.label}
-                    {count === 0 ? " · not modeled" : ` · ${count}`}
+                    {count === 0 ? ` · ${emptyLabel}` : ` · ${count}`}
                   </button>
                 );
               })}
@@ -322,14 +391,15 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
               </button>
             ))}
           </div>
-          {hasProjections ? (
+          {showTabs ? (
             <select
               value={sort}
-              onChange={(event) => setSort(event.target.value as "projection" | "name")}
+              onChange={(event) => setSort(event.target.value as "value" | "recent" | "name")}
               aria-label="Sort"
               className={inputClass}
             >
-              <option value="projection">Sort: projected stat</option>
+              <option value="value">{hasProjections ? "Sort: projected stat" : "Sort: season average"}</option>
+              {hasAnalytics ? <option value="recent">Sort: last 3 games</option> : null}
               <option value="name">Sort: player A–Z</option>
             </select>
           ) : null}
@@ -413,6 +483,7 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
                                 <span className="text-faint">Saved: </span>
                                 {row.createdAt ? new Date(row.createdAt).toLocaleString() : "—"}
                               </p>
+                              <AnalyticsLine summary={analyticsById.get(row.playerId)?.markets[row.market.key]} />
                               <p>
                                 <span className="text-faint">Result: </span>
                                 {evaluated
@@ -434,7 +505,14 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
             </table>
           </div>
         )
-      ) : rosterQuery.isLoading ? (
+      ) : hasAnalytics ? (
+        <AnalyticsTable
+          rows={shownAnalytics}
+          categoryLabel={PROP_CATEGORIES.find((c) => c.key === category)?.label ?? ""}
+          expanded={expanded}
+          toggle={toggle}
+        />
+      ) : rosterQuery.isLoading || analyticsQuery.isLoading ? (
         <p className="px-4 pb-6 text-center font-mono text-xs text-mute">Loading players…</p>
       ) : (
         <PlayerList
@@ -446,8 +524,18 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
       )}
 
       <p className="border-t border-line/10 px-4 py-3 text-[11px] text-faint">
-        Ranges follow one fixed rule per statistic ({RANGE_METHOD_NOTE}) The goal is for about{" "}
-        {Math.round(RANGE_COVERAGE_TARGET * 100)}% of actual results to land inside the range.
+        {hasAnalytics ? (
+          <>
+            Season averages, last-3 averages, medians, highs and lows come from ESPN box scores of this team&apos;s completed 2026
+            games. Longest-play stats only count games with at least one such play. These are past results, not projections or
+            sportsbook lines.
+          </>
+        ) : (
+          <>
+            Ranges follow one fixed rule per statistic ({RANGE_METHOD_NOTE}) The goal is for about{" "}
+            {Math.round(RANGE_COVERAGE_TARGET * 100)}% of actual results to land inside the range.
+          </>
+        )}
       </p>
     </Panel>
   );
@@ -497,12 +585,190 @@ function PlayerList({
                   {player.team}
                 </span>
               </td>
-              <td className="px-2 py-2.5 font-mono text-mute">{player.position}</td>
+              <td className="px-2 py-2.5 font-mono text-mute">{normalizePropPosition(player.position)}</td>
               <td className="px-4 py-2.5 text-right font-mono text-[11px] uppercase tracking-wider text-faint">
                 Awaiting model
               </td>
             </tr>
           ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+/* ---------- analytics (real results from completed games) ---------- */
+
+const statText = (key: string, value: number) => {
+  const market = marketByKey(key);
+  if (!market) return String(value);
+  return market.kind === "yards" || market.kind === "long" ? String(Math.round(value)) : value.toFixed(1);
+};
+
+const wholeText = (value: number) => (Number.isInteger(value) ? String(value) : value.toFixed(1));
+
+function TrendMark({ summary }: { summary: MarketSummary }) {
+  const trend = trendOf(summary);
+  if (trend === "flat") return null;
+  return (
+    <span
+      className={`ml-1 text-[10px] ${trend === "up" ? "text-win" : "text-loss"}`}
+      title={trend === "up" ? "Last 3 games well above season average" : "Last 3 games well below season average"}
+      aria-label={trend === "up" ? "trending up" : "trending down"}
+    >
+      {trend === "up" ? "▲" : "▼"}
+    </span>
+  );
+}
+
+/** One-line season context shown inside an expanded projection row. */
+function AnalyticsLine({ summary }: { summary?: MarketSummary }) {
+  if (!summary) return null;
+  return (
+    <p>
+      <span className="text-faint">This season: </span>
+      {statText(summary.key, summary.avg)} avg · {statText(summary.key, summary.last3)} last 3 · high{" "}
+      {wholeText(summary.high)} · {summary.games} games
+    </p>
+  );
+}
+
+/** Week-by-week bars for one market, oldest game first. */
+function GameLogBars({ summary }: { summary: MarketSummary }) {
+  const max = Math.max(summary.high, 1);
+  return (
+    <div className="flex items-end gap-1.5 overflow-x-auto pb-1" role="img" aria-label="Game-by-game results">
+      {summary.log.map((g) => {
+        const pct = Math.max(4, Math.round((g.value / max) * 100));
+        const above = g.value >= summary.avg;
+        return (
+          <div key={`${g.week}-${g.opponent}`} className="flex w-10 shrink-0 flex-col items-center gap-1">
+            <span className="font-mono text-[10px] tabular-nums text-foreground">{wholeText(g.value)}</span>
+            <div className="flex h-16 w-full items-end rounded-sm bg-panel2/60">
+              <div
+                className={`w-full rounded-sm ${above ? "bg-acc/70" : "bg-line/25"}`}
+                style={{ height: `${pct}%` }}
+              />
+            </div>
+            <span className="font-mono text-[9px] uppercase text-faint">W{g.week}</span>
+            <span className="font-mono text-[9px] uppercase text-mute">
+              {g.home ? "" : "@"}
+              {g.opponent}
+            </span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function AnalyticsTable({
+  rows,
+  categoryLabel,
+  expanded,
+  toggle,
+}: {
+  rows: { player: PlayerPropAnalytics; summary: MarketSummary }[];
+  categoryLabel: string;
+  expanded: Set<string>;
+  toggle: (id: string) => void;
+}) {
+  if (rows.length === 0) {
+    return (
+      <p className="px-4 py-8 text-center font-mono text-xs text-mute">
+        No {categoryLabel.toLowerCase()} stats match these filters.
+      </p>
+    );
+  }
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full min-w-[720px] text-sm">
+        <thead>
+          <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
+            <th className="px-4 py-2 font-normal">Player</th>
+            <th className="px-2 py-2 font-normal">Team</th>
+            <th className="px-2 py-2 font-normal">Prop</th>
+            <th className="px-2 py-2 text-right font-normal" title="Season per-game average">Avg</th>
+            <th className="px-2 py-2 text-right font-normal" title="Average of the last three games">Last 3</th>
+            <th className="px-2 py-2 text-right font-normal">Median</th>
+            <th className="px-2 py-2 text-right font-normal" title="Season low – high">Low–High</th>
+            <th className="px-4 py-2 text-right font-normal" title="Games counted">GP</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-line/5">
+          {rows.map(({ player, summary }) => {
+            const id = `a-${player.id}-${summary.key}`;
+            const open = expanded.has(id);
+            const market = marketByKey(summary.key);
+            const kicking = market?.category === "kicking" ? player.kicking : undefined;
+            return (
+              <Fragment key={id}>
+                <tr onClick={() => toggle(id)} className="cursor-pointer hover:bg-line/5" aria-expanded={open}>
+                  <td className="px-4 py-2.5">
+                    <Link
+                      to="/players/$playerId"
+                      params={{ playerId: player.id }}
+                      onClick={(event) => event.stopPropagation()}
+                      className="font-medium hover:text-acc"
+                    >
+                      {player.name}
+                    </Link>
+                    <span className="ml-2 font-mono text-[10px] text-faint">{player.position}</span>
+                  </td>
+                  <td className="px-2 py-2.5 font-mono text-mute">{player.teamAbbr}</td>
+                  <td className="px-2 py-2.5 text-mute">{market?.label ?? summary.key}</td>
+                  <td className="px-2 py-2.5 text-right font-mono text-base font-bold tabular-nums text-acc">
+                    {statText(summary.key, summary.avg)}
+                  </td>
+                  <td className="px-2 py-2.5 text-right font-mono tabular-nums">
+                    {statText(summary.key, summary.last3)}
+                    <TrendMark summary={summary} />
+                  </td>
+                  <td className="px-2 py-2.5 text-right font-mono tabular-nums text-mute">
+                    {statText(summary.key, summary.median)}
+                  </td>
+                  <td className="px-2 py-2.5 text-right font-mono tabular-nums text-mute">
+                    <span className="rounded bg-panel2 px-2 py-0.5">
+                      {wholeText(summary.low)}–{wholeText(summary.high)}
+                    </span>
+                  </td>
+                  <td className="px-4 py-2.5 text-right font-mono tabular-nums text-faint">{summary.games}</td>
+                </tr>
+                {open ? (
+                  <tr className="bg-panel2/30">
+                    <td colSpan={8} className="space-y-3 px-4 py-3 text-xs text-mute">
+                      <GameLogBars summary={summary} />
+                      <div className="grid gap-x-6 gap-y-1 sm:grid-cols-2">
+                        <p>
+                          <span className="text-faint">Season total: </span>
+                          {wholeText(summary.total)} in {summary.games} games
+                        </p>
+                        <p>
+                          <span className="text-faint">At or above average: </span>
+                          {summary.log.filter((g) => g.value >= summary.avg).length} of {summary.games} games
+                        </p>
+                        {kicking ? (
+                          <>
+                            <p>
+                              <span className="text-faint">Field goals: </span>
+                              {kicking.fgm}/{kicking.fga}
+                              {kicking.fga ? ` (${Math.round((kicking.fgm / kicking.fga) * 100)}%)` : ""}
+                              {kicking.longest ? ` · long ${kicking.longest}` : ""}
+                            </p>
+                            <p>
+                              <span className="text-faint">Extra points: </span>
+                              {kicking.xpm}/{kicking.xpa}
+                              {kicking.xpa ? ` (${Math.round((kicking.xpm / kicking.xpa) * 100)}%)` : ""}
+                            </p>
+                          </>
+                        ) : null}
+                      </div>
+                    </td>
+                  </tr>
+                ) : null}
+              </Fragment>
+            );
+          })}
         </tbody>
       </table>
     </div>
