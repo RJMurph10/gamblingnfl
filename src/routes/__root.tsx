@@ -19,6 +19,7 @@ const nav = [
   { to: "/players", label: "Players" },
   { to: "/games", label: "Games" },
   { to: "/props", label: "Props" },
+  { to: "/model", label: "Model" },
 ] as const;
 
 function SiteHeader() {
