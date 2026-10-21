@@ -5,6 +5,7 @@ import {
   evaluatePrediction,
   formatProjection,
   isOffensivePosition,
+  isPropPlayerPosition,
   summarizeEvaluations,
 } from "@/lib/prop-model";
 
@@ -71,6 +72,13 @@ describe("accuracy tracking", () => {
 
   it("returns empty results when nothing has been evaluated", () => {
     expect(summarizeEvaluations([]).overall).toEqual({ count: 0, mae: null, coverage: null });
+  });
+});
+
+describe("players covered by the props page", () => {
+  it("adds kickers and punters to the offensive skill positions", () => {
+    for (const position of ["QB", "RB", "FB", "WR", "TE", "K", "P", "p"]) expect(isPropPlayerPosition(position)).toBe(true);
+    for (const position of ["LB", "CB", "S", "DE", "OL", undefined]) expect(isPropPlayerPosition(position)).toBe(false);
   });
 });
 
