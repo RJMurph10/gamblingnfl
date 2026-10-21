@@ -10,7 +10,7 @@ import {
   RANGE_COVERAGE_TARGET,
   RANGE_METHOD_NOTE,
   formatProjection,
-  isOffensivePosition,
+  isPropPlayerPosition,
   marketByKey,
   marketsForCategory,
   type PropCategory,
@@ -37,7 +37,7 @@ interface ProjectionRow {
   inRange?: boolean | null;
 }
 
-const POSITION_ORDER = ["QB", "RB", "FB", "WR", "TE"];
+const POSITION_ORDER = ["QB", "RB", "FB", "WR", "TE", "K", "P"];
 
 const kickoffText = (iso?: string) =>
   iso
@@ -49,6 +49,22 @@ const kickoffText = (iso?: string) =>
         minute: "2-digit",
       })
     : "Kickoff time TBD";
+
+/** Team logo that opens the team's page. */
+export function TeamLink({ team, className = "size-5" }: { team: Team; className?: string }) {
+  return (
+    <Link
+      to="/teams/$teamId"
+      params={{ teamId: team.id }}
+      onClick={(event) => event.stopPropagation()}
+      aria-label={`${team.city} ${team.name} team page`}
+      title={`${team.city} ${team.name}`}
+      className="inline-flex shrink-0 rounded-sm outline-none ring-acc/40 transition-transform hover:scale-110 focus-visible:ring-2"
+    >
+      <TeamLogo team={team} className={className} />
+    </Link>
+  );
+}
 
 function StatusBadge({ game }: { game: Game }) {
   const live = game.status === "live";
@@ -98,7 +114,7 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
   const offensivePlayers = useMemo(
     () =>
       [...people.values()]
-        .filter((p) => isOffensivePosition(p.position) && sideOf(p.team))
+        .filter((p) => isPropPlayerPosition(p.position) && sideOf(p.team))
         .sort(
           (a, b) =>
             Number(sideOf(a.team) === "home") - Number(sideOf(b.team) === "home") ||
@@ -117,7 +133,7 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
       if (!market) continue;
       const person = people.get(p.playerId);
       const position = person?.position ?? p.position ?? "";
-      if (!isOffensivePosition(position)) continue;
+      if (!isPropPlayerPosition(position)) continue;
       const teamAbbr = person?.team || p.teamAbbr || "";
       const side = sideOf(teamAbbr);
       // Never show a player who is not on one of this game's two teams.
@@ -176,7 +192,7 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
       {/* Matchup header */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line/10 px-4 py-4">
         <div className="flex items-center gap-3">
-          <TeamLogo team={away} className="size-10" />
+          <TeamLink team={away} className="size-10" />
           <div>
             <h2 className="font-disp text-xl font-semibold uppercase tracking-tight sm:text-2xl">
               {away.name} <span className="text-mute">@</span> {home.name}
@@ -186,7 +202,7 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
               {game.venue && game.venue !== "TBD" ? ` · ${game.venue}` : ""}
             </p>
           </div>
-          <TeamLogo team={home} className="size-10" />
+          <TeamLink team={home} className="size-10" />
         </div>
         <StatusBadge game={game} />
       </div>
@@ -202,7 +218,7 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
               <p className="mt-1 text-mute">
                 {predictions?.message ??
                   "No projections have been saved for this matchup."}{" "}
-                Real offensive players for both teams are listed below; projected stats and ranges will appear here
+                Real players for both teams (offense, kickers and punters) are listed below; projected stats and ranges will appear here
                 once the model saves them before kickoff. Nothing on this page is estimated or made up.
               </p>
             </>
@@ -477,7 +493,7 @@ function PlayerList({
               </td>
               <td className="px-2 py-2.5">
                 <span className="inline-flex items-center gap-1.5 font-mono text-mute">
-                  <TeamLogo team={player.team === away.abbr ? away : home} className="size-4" />
+                  <TeamLink team={player.team === away.abbr ? away : home} className="size-4" />
                   {player.team}
                 </span>
               </td>
