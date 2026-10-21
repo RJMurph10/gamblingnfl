@@ -2403,6 +2403,20 @@ export interface LiveRosterPlayer {
   headshot?: string;
   college?: string;
   experience?: number;
+  /** ESPN injury / roster status when the player isn't simply active, e.g. "Questionable", "Injured Reserve". */
+  injuryStatus?: string;
+}
+
+/** Injury designation from an ESPN roster athlete, or a non-active roster status (IR, PUP, suspended). */
+function rosterInjuryStatus(item: any): string | undefined {
+  const injuries: any[] = Array.isArray(item?.injuries) ? item.injuries : [];
+  for (const injury of injuries) {
+    const status = injury?.status ?? injury?.type?.description ?? injury?.type?.name;
+    if (status) return String(status);
+  }
+  const rosterStatus = String(item?.status?.name ?? item?.status?.type ?? "").trim();
+  if (rosterStatus && !/^active$/i.test(rosterStatus)) return rosterStatus;
+  return undefined;
 }
 
 /** Fetches real active team roster from ESPN with 1-hour caching. */
@@ -2432,6 +2446,7 @@ export async function fetchTeamRoster(teamAbbr: string): Promise<LiveRosterPlaye
               college: item.college?.name,
               experience:
                 typeof item.experience?.years === "number" ? item.experience.years : undefined,
+              injuryStatus: rosterInjuryStatus(item),
             });
           }
         }
@@ -2781,4 +2796,93 @@ export async function fetchPropPeople(awayAbbr: string, homeAbbr: string) {
     ...awayRoster.map((p) => ({ id: p.id, name: p.name, position: p.position, headshot: p.headshot, team: awayAbbr })),
     ...homeRoster.map((p) => ({ id: p.id, name: p.name, position: p.position, headshot: p.headshot, team: homeAbbr })),
   ];
+}
+
+/** One player's availability for a game: injury designation plus where the depth chart has him. */
+export interface PropAvailabilityPlayer {
+  id: string;
+  teamAbbr: string;
+  /** e.g. "Questionable", "Out", "Injured Reserve"; undefined when ESPN lists nothing. */
+  injuryStatus?: string;
+  /** Short injury detail, e.g. "Ankle". */
+  injuryDetail?: string;
+  /** 1 = first on the depth chart at his position; undefined when not on the chart. */
+  depthRank?: number;
+}
+
+export interface PropAvailability {
+  players: PropAvailabilityPlayer[];
+  /** Which sources answered, so the page can say when the injury report or depth chart is missing. */
+  sources: { injuryReport: boolean; depthChart: boolean };
+}
+
+/**
+ * Who is expected to play: ESPN's game injury report (summary) and roster injury tags, plus the
+ * offensive / special-teams depth chart order for each team.
+ */
+export async function fetchPropAvailability(
+  eventId: string,
+  awayAbbr: string,
+  homeAbbr: string,
+): Promise<PropAvailability> {
+  const abbrs = [awayAbbr.toUpperCase(), homeAbbr.toUpperCase()];
+  const id = eventId.replace(/^espn-/, "");
+  return cached(
+    `prop-availability-${id}-${abbrs.join("-")}`,
+    async () => {
+      const [summary, rosters, charts] = await Promise.all([
+        fetchJson(`${SUMMARY}?event=${id}`).catch(() => null),
+        Promise.all(abbrs.map((abbr) => fetchTeamRoster(abbr))),
+        Promise.all(abbrs.map((abbr) => fetchTeamDepthChart(abbr))),
+      ]);
+
+      const byId = new Map<string, PropAvailabilityPlayer>();
+      const entry = (playerId: string, teamAbbr: string) => {
+        const existing = byId.get(playerId);
+        if (existing) return existing;
+        const created: PropAvailabilityPlayer = { id: playerId, teamAbbr };
+        byId.set(playerId, created);
+        return created;
+      };
+
+      // Roster injury tags (season-long designations such as IR).
+      abbrs.forEach((abbr, i) => {
+        for (const p of rosters[i]) if (p.injuryStatus) entry(p.id, abbr).injuryStatus = p.injuryStatus;
+      });
+
+      // The game's injury report is the most specific source, so it wins.
+      let injuryReport = rosters.some((r) => r.some((p) => p.injuryStatus));
+      for (const block of Array.isArray(summary?.injuries) ? summary.injuries : []) {
+        const abbr = String(block?.team?.abbreviation ?? "").toUpperCase();
+        if (!abbrs.includes(abbr)) continue;
+        for (const injury of Array.isArray(block?.injuries) ? block.injuries : []) {
+          const athleteId = injury?.athlete?.id;
+          const status = injury?.status ?? injury?.type?.description;
+          if (!athleteId || !status) continue;
+          injuryReport = true;
+          const e = entry(String(athleteId), abbr);
+          e.injuryStatus = String(status);
+          const detail = injury?.details?.type ?? injury?.details?.location;
+          if (detail) e.injuryDetail = String(detail);
+        }
+      }
+
+      // Depth chart order: lowest rank across every slot of the same position wins
+      // (three WR slots each list their own starter at rank 1).
+      let depthChart = false;
+      abbrs.forEach((abbr, i) => {
+        for (const slot of [...charts[i].offense, ...charts[i].specialTeams]) {
+          for (const p of slot.players) {
+            depthChart = true;
+            const e = entry(p.id, abbr);
+            const rank = Number.isFinite(p.rank) && p.rank > 0 ? p.rank : 99;
+            e.depthRank = e.depthRank === undefined ? rank : Math.min(e.depthRank, rank);
+          }
+        }
+      });
+
+      return { players: [...byId.values()], sources: { injuryReport, depthChart } };
+    },
+    10 * 60 * 1000,
+  );
 }
