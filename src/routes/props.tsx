@@ -72,7 +72,7 @@ function GameCard({ game, selected, onSelect }: { game: Game; selected: boolean;
               live ? "text-loss" : final ? "text-faint" : "text-mute"
             }`}
           >
-            {live ? "Live" : final ? "Final" : "Upcoming"}
+            {live ? "Live" : final ? "Final" : (game.broadcast ?? game.info?.broadcast ?? "Upcoming")}
           </p>
         </div>
       </div>
