@@ -177,6 +177,8 @@ export interface Game {
   homeRecord?: string;
   possessionText?: string;
   distance?: number;
+  /** Short TV network / streaming label from the scoreboard, e.g. "AMZN", "CBS", "FOX". */
+  broadcast?: string;
   /** Venue, TV, attendance and officials for the Information tab. */
   info?: GameInfo;
   /** Pregame season leaders (cumulative stats this season) for each team. */
