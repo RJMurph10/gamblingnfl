@@ -31,6 +31,7 @@ import {
   RANGE_COVERAGE_TARGET,
   RANGE_METHOD_NOTE,
   formatProjection,
+  isMarketForPosition,
   isPropPlayerPosition,
   marketByKey,
   marketsForCategory,
@@ -192,6 +193,8 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
       const person = people.get(p.playerId);
       const position = normalizePropPosition(person?.position ?? p.position ?? "");
       if (!isPropPlayerPosition(position)) continue;
+      // Same position rules as the analytics: e.g. passing props are for quarterbacks only.
+      if (!isMarketForPosition(market.key, position)) continue;
       const teamAbbr = person?.team || p.teamAbbr || "";
       const side = sideOf(teamAbbr);
       // Never show a player who is not on one of this game's two teams.
