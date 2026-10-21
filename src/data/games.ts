@@ -145,6 +145,16 @@ export interface GameInfo {
   weather?: { summary: string; link?: string; source?: string };
 }
 
+/** American odds for a game's markets, e.g. homeMoneyline -175, awayMoneyline +145. */
+export interface GameOdds {
+  homeMoneyline?: number;
+  awayMoneyline?: number;
+  homeSpreadOdds?: number;
+  awaySpreadOdds?: number;
+  overOdds?: number;
+  underOdds?: number;
+}
+
 export interface Game {
   id: string;
   week: number;
@@ -177,6 +187,8 @@ export interface Game {
   homeRecord?: string;
   possessionText?: string;
   distance?: number;
+  /** Closing (or latest) prices from ESPN's scoreboard, American odds. Missing when ESPN lists none. */
+  odds?: GameOdds;
   /** Short TV network / streaming label from the scoreboard, e.g. "AMZN", "CBS", "FOX". */
   broadcast?: string;
   /** Venue, TV, attendance and officials for the Information tab. */
