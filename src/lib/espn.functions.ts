@@ -12,6 +12,7 @@ import {
   fetchTeamSeasonAverages,
   fetchLeagueTeamOverviewStats,
   fetchPlayerProfile,
+  fetchPriorSeasonResults,
   fetchPropAvailability,
 } from "./espn.server";
 import {
@@ -40,9 +41,7 @@ export const getLiveGame = createServerFn({
       .parse(data),
   )
   .handler(async ({ data }) => {
-    return fetchGameDetail(
-      data.eventId,
-    );
+    return fetchGameDetail(data.eventId);
   });
 
 export const getTeamOverviewStats = createServerFn({
@@ -54,7 +53,9 @@ export const getTeamOverviewStats = createServerFn({
 export const getTeamSeasonAverages = createServerFn({
   method: "GET",
 })
-  .inputValidator((data) => z.object({ awayTeamId: z.string(), homeTeamId: z.string() }).parse(data))
+  .inputValidator((data) =>
+    z.object({ awayTeamId: z.string(), homeTeamId: z.string() }).parse(data),
+  )
   .handler(async ({ data }) => fetchTeamSeasonAverages(data.awayTeamId, data.homeTeamId));
 
 export const getLeagueTeamOverviewStats = createServerFn({
@@ -71,11 +72,7 @@ export const getTeamSeasonStats = createServerFn({
       })
       .parse(data),
   )
-  .handler(async ({ data }) =>
-    fetchTeamSeasonStats(
-      data.teamAbbr,
-    ),
-  );
+  .handler(async ({ data }) => fetchTeamSeasonStats(data.teamAbbr));
 
 export const getTeamRoster = createServerFn({
   method: "GET",
@@ -87,11 +84,7 @@ export const getTeamRoster = createServerFn({
       })
       .parse(data),
   )
-  .handler(async ({ data }) =>
-    fetchTeamRosterForPage(
-      data.teamAbbr,
-    ),
-  );
+  .handler(async ({ data }) => fetchTeamRosterForPage(data.teamAbbr));
 
 export const getTeamDepthChart = createServerFn({
   method: "GET",
@@ -103,11 +96,7 @@ export const getTeamDepthChart = createServerFn({
       })
       .parse(data),
   )
-  .handler(async ({ data }) =>
-    fetchTeamDepthChart(
-      data.teamAbbr,
-    ),
-  );
+  .handler(async ({ data }) => fetchTeamDepthChart(data.teamAbbr));
 
 export const getPlayerProfile = createServerFn({
   method: "GET",
@@ -119,11 +108,7 @@ export const getPlayerProfile = createServerFn({
       })
       .parse(data),
   )
-  .handler(async ({ data }) =>
-    fetchPlayerProfile(
-      data.playerId,
-    ),
-  );
+  .handler(async ({ data }) => fetchPlayerProfile(data.playerId));
 
 export const getLeaguePlayers = createServerFn({
   method: "GET",
@@ -142,12 +127,7 @@ export const getPlayerGameLog = createServerFn({
       })
       .parse(data),
   )
-  .handler(async ({ data }) =>
-    fetchPlayerGameLog(
-      data.playerId,
-      data.teamId,
-    ),
-  );
+  .handler(async ({ data }) => fetchPlayerGameLog(data.playerId, data.teamId));
 
 export const getGameWeather = createServerFn({
   method: "GET",
@@ -164,9 +144,7 @@ export const getGameWeather = createServerFn({
       .parse(data),
   )
   .handler(async ({ data }) => {
-    return fetchGameWeather(
-      data,
-    );
+    return fetchGameWeather(data);
   });
 
 export const getGameProps = createServerFn({
@@ -216,4 +194,11 @@ export const getGamePropProjections = createServerFn({
   .inputValidator((data) =>
     z.object({ eventId: z.string(), awayAbbr: z.string(), homeAbbr: z.string() }).parse(data),
   )
-  .handler(async ({ data }) => fetchGamePropProjections(data.eventId, data.awayAbbr, data.homeAbbr));
+  .handler(async ({ data }) =>
+    fetchGamePropProjections(data.eventId, data.awayAbbr, data.homeAbbr),
+  );
+
+/** Last season's final scores, so the models start the season with a head start. */
+export const getPriorSeasonResults = createServerFn({
+  method: "GET",
+}).handler(async () => fetchPriorSeasonResults());
