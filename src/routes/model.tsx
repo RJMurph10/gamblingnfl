@@ -15,6 +15,7 @@ import {
   type ModelPick,
 } from "@/lib/game-model";
 import { getNflHistory } from "@/lib/history.functions";
+import { WatchList } from "@/components/WatchList";
 import { pastSeasonRuns, runModelWithHistory, type HistoryGame } from "@/lib/model-history";
 
 export const Route = createFileRoute("/model")({
@@ -261,16 +262,23 @@ function ModelPage() {
     retry: 1,
   });
   const priorSeason = useMemo(() => priorQuery.data ?? [], [priorQuery.data]);
-  // Calibrated on every past season too, so its trust in itself rests on ~800 graded games.
-  // Past seasons' scores and closing lines (nflverse), so the model's trust in itself rests on
-  // hundreds of graded games and the track record covers every season since 2023.
+  // Results since 2022 (nflverse): past seasons calibrate the model, so its trust in itself
+  // rests on hundreds of graded games; this season's rows carry recorded kickoff weather.
   const historyQuery = useQuery({
     queryKey: ["nfl-history"],
     queryFn: () => getNflHistory(),
-    staleTime: 12 * 60 * 60_000,
+    staleTime: 60 * 60_000,
     retry: 1,
   });
-  const history: HistoryGame[] = useMemo(() => historyQuery.data ?? [], [historyQuery.data]);
+  const allHistory: HistoryGame[] = useMemo(
+    () => historyQuery.data?.games ?? [],
+    [historyQuery.data],
+  );
+  const currentSeason = historyQuery.data?.currentSeason ?? 0;
+  const history = useMemo(
+    () => allHistory.filter((h) => h.season < currentSeason),
+    [allHistory, currentSeason],
+  );
   const rows = useMemo(
     () => runModelWithHistory(games, priorSeason, history),
     [games, priorSeason, history],
@@ -427,6 +435,15 @@ function ModelPage() {
               under are its lean on every game against the closing line.
             </p>
           </Panel>
+
+          {currentSeason ? (
+            <WatchList
+              history={allHistory}
+              currentSeason={currentSeason}
+              schedule={games}
+              nextWeek={nextWeek}
+            />
+          ) : null}
 
           <Panel padded={false}>
             <PanelHeader
