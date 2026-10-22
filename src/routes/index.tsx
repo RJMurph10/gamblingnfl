@@ -301,6 +301,7 @@ function Dashboard() {
       : null;
   const winChange = pctChange(model.overall.winPct, prev?.overall.winPct);
   const coverChange = pctChange(model.byMarket.spread.winPct, prev?.byMarket.spread.winPct);
+  const totalChange = pctChange(model.byMarket.total.winPct, prev?.byMarket.total.winPct);
   const unitsChange = prev
     ? Math.round((model.overall.units - prev.overall.units) * 100) / 100
     : null;
@@ -332,24 +333,21 @@ function Dashboard() {
             tone={changeTone(winChange)}
           />
           <StatCard
-            label="Avg total"
-            value={fmt(pulse.avgTotal.value)}
+            label="Totals · model"
+            value={fmt(model.byMarket.total.winPct)}
+            unit={model.byMarket.total.winPct === null ? undefined : "%"}
             note={
               scheduleLoading
                 ? "Loading…"
-                : pulse.avgTotalLine !== null
-                  ? `o/u line ${pulse.avgTotalLine.toFixed(1)}`
-                  : `${pulse.avgTotal.sample} games`
+                : note(
+                    weekChangeText(totalChange),
+                    `${rec(model.byMarket.total)} O/U`,
+                    pulse.avgTotal.value !== null && pulse.avgTotalLine !== null
+                      ? `games avg ${pulse.avgTotal.value.toFixed(1)} vs line ${pulse.avgTotalLine.toFixed(1)}`
+                      : undefined,
+                  )
             }
-            tone={
-              pulse.avgTotal.value !== null && pulse.avgTotalLine !== null
-                ? pulse.avgTotal.value > pulse.avgTotalLine
-                  ? "win"
-                  : pulse.avgTotal.value < pulse.avgTotalLine
-                    ? "loss"
-                    : "mute"
-                : "mute"
-            }
+            tone={changeTone(totalChange)}
           />
           <StatCard
             label="Cover % · model"
