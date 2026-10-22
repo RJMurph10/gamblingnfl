@@ -246,7 +246,10 @@ export interface ModelPick {
   side: "home" | "away" | "over" | "under";
   /** The line bet: home-perspective spread for "home", away-perspective for "away", or the total. */
   line?: number;
-  odds: number;
+  /** American odds; missing when ESPN lists no price (record counts, units don't). */
+  odds?: number;
+  /** A best bet: the model sees a real edge here, not just a lean. */
+  best: boolean;
   /** Points (spread/total) or probability (moneyline) by which the model beats the market. */
   edge: number;
   /** Model's win probability for moneyline picks. */
@@ -289,6 +292,9 @@ export interface GameModelRow {
   skipped?: string;
   marketHomeLine: number | null;
   marketTotal: number | null;
+  /** The model's call on every market for this game (winner, spread side, over/under). */
+  predictions: ModelPick[];
+  /** Best bets: the predictions where it sees a real edge. */
   picks: ModelPick[];
 }
 
@@ -307,102 +313,115 @@ function grade(pick: Omit<ModelPick, "result" | "units">, game: Game): ModelPick
     margin = pick.side === "home" ? s.home - s.away : s.away - s.home;
   }
   const stake = MODEL_SETTINGS.stake;
+  if (pick.odds === undefined)
+    return { ...pick, result: margin > 0 ? "win" : margin < 0 ? "loss" : "push", units: 0 };
   if (margin > 0) return { ...pick, result: "win", units: stake * payout(pick.odds) };
   if (margin < 0) return { ...pick, result: "loss", units: -stake };
   return { ...pick, result: "push", units: 0 };
 }
 
-/** Model picks for one game given a prediction and the market. */
-export function picksForGame(game: Game, p: GamePrediction, raw: GamePrediction = p): ModelPick[] {
-  const picks: ModelPick[] = [];
+/**
+ * The model's call on every market for one game: which side covers, over or under, and who wins.
+ * `p` is the line the model bets on (market-anchored); `raw` is its own ratings-only view, used
+ * to break ties when the anchored line sits exactly on the market and for the sanity caps.
+ * Calls with a real edge (and inside the guardrails) are flagged as best bets.
+ */
+export function predictionsForGame(
+  game: Game,
+  p: GamePrediction,
+  raw: GamePrediction = p,
+): ModelPick[] {
+  const out: ModelPick[] = [];
   const base = { gameId: game.id, week: game.week };
   const odds = game.odds ?? {};
+  const sign = (x: number) => (x > 1e-9 ? 1 : x < -1e-9 ? -1 : 0);
 
   const mLine = homeLine(game);
   if (mLine !== null) {
     // Positive edge -> the home side is the value (model expects home to do better than the line).
     const edge = mLine - p.homeLine;
-    // The sanity cap looks at the model's own disagreement: a huge gap means missing news.
-    if (
+    const lean = sign(edge) || sign(mLine - raw.homeLine) || (mLine <= 0 ? 1 : -1);
+    const side = lean > 0 ? "home" : "away";
+    const best =
       Math.abs(edge) >= MODEL_SETTINGS.spreadEdgePts &&
-      Math.abs(mLine - raw.homeLine) <= MODEL_SETTINGS.maxSpreadDisagreementPts
-    ) {
-      const side = edge > 0 ? "home" : "away";
-      picks.push(
-        grade(
-          {
-            ...base,
-            market: "spread",
-            side,
-            line: side === "home" ? mLine : -mLine,
-            odds:
-              (side === "home" ? odds.homeSpreadOdds : odds.awaySpreadOdds) ??
-              MODEL_SETTINGS.defaultPrice,
-            edge: Math.abs(edge),
-          },
-          game,
-        ),
-      );
-    }
+      // The sanity cap looks at the model's own disagreement: a huge gap means missing news.
+      Math.abs(mLine - raw.homeLine) <= MODEL_SETTINGS.maxSpreadDisagreementPts;
+    out.push(
+      grade(
+        {
+          ...base,
+          market: "spread",
+          side,
+          line: side === "home" ? mLine : -mLine,
+          odds:
+            (side === "home" ? odds.homeSpreadOdds : odds.awaySpreadOdds) ??
+            MODEL_SETTINGS.defaultPrice,
+          edge: Math.abs(edge),
+          best,
+        },
+        game,
+      ),
+    );
   }
 
   if (game.total > 0) {
     const edge = p.total - game.total;
-    if (
+    const lean = sign(edge) || sign(raw.total - game.total) || 1;
+    const side = lean > 0 ? "over" : "under";
+    const best =
       Math.abs(edge) >= MODEL_SETTINGS.totalEdgePts &&
-      Math.abs(raw.total - game.total) <= MODEL_SETTINGS.maxTotalDisagreementPts
-    ) {
-      const side = edge > 0 ? "over" : "under";
-      picks.push(
-        grade(
-          {
-            ...base,
-            market: "total",
-            side,
-            line: game.total,
-            odds: (side === "over" ? odds.overOdds : odds.underOdds) ?? MODEL_SETTINGS.defaultPrice,
-            edge: Math.abs(edge),
-          },
-          game,
-        ),
-      );
-    }
+      Math.abs(raw.total - game.total) <= MODEL_SETTINGS.maxTotalDisagreementPts;
+    out.push(
+      grade(
+        {
+          ...base,
+          market: "total",
+          side,
+          line: game.total,
+          odds: (side === "over" ? odds.overOdds : odds.underOdds) ?? MODEL_SETTINGS.defaultPrice,
+          edge: Math.abs(edge),
+          best,
+        },
+        game,
+      ),
+    );
   }
 
+  // Winner: the team the model expects to win (ties go to the market favorite).
+  const homeWins =
+    p.homeWinProb > 0.5 || (p.homeWinProb === 0.5 && (mLine === null ? true : mLine <= 0));
+  const side = homeWins ? "home" : "away";
+  const winProb = homeWins ? p.homeWinProb : 1 - p.homeWinProb;
+  const price = homeWins ? odds.homeMoneyline : odds.awayMoneyline;
+  let edge = 0;
+  let best = false;
   if (odds.homeMoneyline !== undefined && odds.awayMoneyline !== undefined) {
     // Remove the bookmaker's margin so the two implied probabilities add to 1.
     const ih = impliedProb(odds.homeMoneyline);
     const ia = impliedProb(odds.awayMoneyline);
     const fairHome = ih / (ih + ia);
-    const homeEdge = p.homeWinProb - fairHome;
-    if (
-      Math.abs(homeEdge) >= MODEL_SETTINGS.moneylineEdgeProb &&
-      Math.abs(raw.homeWinProb - fairHome) <= MODEL_SETTINGS.maxMoneylineDisagreementProb
-    ) {
-      const side = homeEdge > 0 ? "home" : "away";
-      const price = side === "home" ? odds.homeMoneyline : odds.awayMoneyline;
-      const winProb = side === "home" ? p.homeWinProb : 1 - p.homeWinProb;
-      // Only back a team on the moneyline if the model expects it to win.
-      if (
-        Math.abs(price) <= MODEL_SETTINGS.moneylineMaxOdds &&
-        winProb > MODEL_SETTINGS.moneylineMinWinProb
-      )
-        picks.push(
-          grade(
-            {
-              ...base,
-              market: "moneyline",
-              side,
-              odds: side === "home" ? odds.homeMoneyline : odds.awayMoneyline,
-              edge: Math.abs(homeEdge),
-              modelProb: side === "home" ? p.homeWinProb : 1 - p.homeWinProb,
-            },
-            game,
-          ),
-        );
-    }
+    const fairSide = homeWins ? fairHome : 1 - fairHome;
+    const rawSide = homeWins ? raw.homeWinProb : 1 - raw.homeWinProb;
+    edge = winProb - fairSide;
+    best =
+      edge >= MODEL_SETTINGS.moneylineEdgeProb &&
+      Math.abs(rawSide - fairSide) <= MODEL_SETTINGS.maxMoneylineDisagreementProb &&
+      winProb > MODEL_SETTINGS.moneylineMinWinProb &&
+      price !== undefined &&
+      Math.abs(price) <= MODEL_SETTINGS.moneylineMaxOdds;
   }
-  return picks;
+  out.push(
+    grade(
+      { ...base, market: "moneyline", side, odds: price, edge, modelProb: winProb, best },
+      game,
+    ),
+  );
+  return out;
+}
+
+/** Best bets only: the calls where the model sees a real edge. */
+export function picksForGame(game: Game, p: GamePrediction, raw: GamePrediction = p): ModelPick[] {
+  return predictionsForGame(game, p, raw).filter((pick) => pick.best);
 }
 
 /**
@@ -527,6 +546,7 @@ export function runModel(schedule: Game[], priorSeason: PriorResult[] = []): Gam
           game,
           marketHomeLine,
           marketTotal,
+          predictions: [],
           picks: [],
           skipped: "Not enough games played yet",
         });
@@ -534,7 +554,8 @@ export function runModel(schedule: Game[], priorSeason: PriorResult[] = []): Gam
       }
       const modelPrediction = predictGame(ratings, game.homeTeamId, game.awayTeamId);
       const prediction = anchorToMarket(game, modelPrediction, calibration);
-      // Live games keep their pregame picks but aren't graded until final.
+      // Live games keep their pregame calls but aren't graded until final.
+      const predictions = predictionsForGame(game, prediction, modelPrediction);
       rows.push({
         game,
         prediction,
@@ -542,7 +563,8 @@ export function runModel(schedule: Game[], priorSeason: PriorResult[] = []): Gam
         calibration,
         marketHomeLine,
         marketTotal,
-        picks: picksForGame(game, prediction, modelPrediction),
+        predictions,
+        picks: predictions.filter((pick) => pick.best),
       });
     }
   }
@@ -592,8 +614,15 @@ function record(picks: ModelPick[]): MarketRecord {
 
 const MARKETS: Market[] = ["spread", "total", "moneyline"];
 
-export function summarizeModel(rows: GameModelRow[]): ModelSummary {
-  const picks = rows.flatMap((r) => r.picks);
+/**
+ * Record and units. "predictions" grades the model's call on every game (the dashboard numbers);
+ * "bets" grades only the best bets.
+ */
+export function summarizeModel(
+  rows: GameModelRow[],
+  kind: "predictions" | "bets" = "predictions",
+): ModelSummary {
+  const picks = rows.flatMap((r) => (kind === "bets" ? r.picks : r.predictions));
   const by = (list: ModelPick[]) =>
     Object.fromEntries(
       MARKETS.map((m) => [m, record(list.filter((p) => p.market === m))]),
