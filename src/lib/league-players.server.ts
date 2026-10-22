@@ -9,10 +9,18 @@
 
 import { gameScore } from "@/data/games";
 import { teams, teamByAbbr, teamById } from "@/data/teams";
-import { fetchSchedule, fetchTeamRoster } from "./espn.server";
+import {
+  CURRENT_SEASON,
+  fetchPriorSeasonResults,
+  fetchPropAvailability,
+  fetchSchedule,
+  fetchTeamRoster,
+} from "./espn.server";
 import { nflverseGameYac } from "./nflverse-yac.server";
 import {
+  MARKET_SOURCES,
   buildPlayerAnalytics,
+  summarizeMarket,
   type GamePropAnalytics,
   type PlayerGameInput,
 } from "./prop-analytics";
@@ -20,15 +28,21 @@ import { fitRatings, predictGame, type TeamRatings } from "./game-model";
 import {
   backtestStat,
   buildWeekContext,
+  opportunityFor,
+  opportunityShares,
   projectStat,
   summarizeAccuracy,
   PROJECTION_SETTINGS,
   type BacktestPoint,
   type GamePropProjections,
+  type LastSeasonLine,
   type LeagueRecord,
+  type OpportunityShares,
   type PlayerStatModel,
+  type TeamGameLine,
   type WeekContext,
 } from "./player-projection-model";
+import { availabilityOf, isRuledOut } from "./prop-lineup";
 import {
   isPropPlayerPosition,
   marketByKey,
@@ -705,6 +719,112 @@ export async function fetchGamePropAnalytics(
 
 /* ---------------- player prop projections ---------------- */
 
+const CORE_NFL = "https://sports.core.api.espn.com/v2/sports/football/leagues/nfl";
+
+/** ESPN season-stat names -> the box-score keys the prop markets read. */
+const SEASON_STAT_KEYS: Record<string, string> = {
+  "passing.completions": "pc",
+  "passing.passingAttempts": "pa",
+  "passing.passingYards": "passing.passingYards",
+  "passing.passingTouchdowns": "passing.passingTouchdowns",
+  "passing.interceptions": "passing.interceptions",
+  "rushing.rushingAttempts": "rushing.rushingAttempts",
+  "rushing.rushingYards": "rushing.rushingYards",
+  "rushing.rushingTouchdowns": "rushing.rushingTouchdowns",
+  "receiving.receptions": "receiving.receptions",
+  "receiving.receivingYards": "receiving.receivingYards",
+  "receiving.receivingTouchdowns": "receiving.receivingTouchdowns",
+  "receiving.receivingTargets": "receiving.receivingTargets",
+  "kicking.fieldGoalsMade": "fgm",
+  "kicking.fieldGoalAttempts": "fga",
+  "kicking.extraPointsMade": "xpm",
+  "kicking.extraPointAttempts": "xpa",
+  "kicking.totalKickingPoints": "kicking.totalKickingPoints",
+  "punting.punts": "punting.punts",
+  "punting.puntYards": "punting.puntYards",
+};
+
+/** Stat groups: if any marker stat was recorded, every stat in the group counts (zeros included). */
+const LAST_SEASON_GROUPS: [string[], string[]][] = [
+  [
+    ["pa"],
+    ["pc", "pa", "passing.passingYards", "passing.passingTouchdowns", "passing.interceptions"],
+  ],
+  [
+    ["rushing.rushingAttempts"],
+    ["rushing.rushingAttempts", "rushing.rushingYards", "rushing.rushingTouchdowns"],
+  ],
+  [
+    ["receiving.receivingTargets", "receiving.receptions"],
+    [
+      "receiving.receptions",
+      "receiving.receivingYards",
+      "receiving.receivingTouchdowns",
+      "receiving.receivingTargets",
+    ],
+  ],
+  [
+    ["fga", "xpa"],
+    ["fgm", "fga", "xpm", "xpa", "kicking.totalKickingPoints"],
+  ],
+  [["punting.punts"], ["punting.punts", "punting.puntYards"]],
+];
+
+/** Turns ESPN athlete season statistics into per-game numbers by prop key. */
+export function lastSeasonLinesFrom(data: any): Record<string, LastSeasonLine> {
+  const categories: any[] = Array.isArray(data?.splits?.categories) ? data.splits.categories : [];
+  const totals: Record<string, number> = {};
+  let gamesPlayed = 0;
+  for (const cat of categories) {
+    for (const stat of Array.isArray(cat?.stats) ? cat.stats : []) {
+      const value = Number(stat?.value);
+      if (!Number.isFinite(value)) continue;
+      if (stat?.name === "gamesPlayed") gamesPlayed = Math.max(gamesPlayed, value);
+      const key = SEASON_STAT_KEYS[`${cat?.name}.${stat?.name}`];
+      if (key) totals[key] = value;
+    }
+  }
+  const lines: Record<string, LastSeasonLine> = {};
+  if (gamesPlayed <= 0) return lines;
+  const flat: Record<string, number> = {};
+  for (const [markers, keys] of LAST_SEASON_GROUPS) {
+    if (!markers.some((k) => (totals[k] ?? 0) > 0)) continue;
+    for (const k of keys) flat[k] = (totals[k] ?? 0) / gamesPlayed;
+  }
+  for (const key of Object.keys(MARKET_SOURCES)) {
+    if (marketByKey(key)?.kind === "long") continue;
+    const summary = summarizeMarket(key, [
+      { gameId: "", week: 0, opponent: "", home: false, flat },
+    ]);
+    if (summary) lines[key] = { perGame: summary.log[0].value, games: gamesPlayed };
+  }
+  return lines;
+}
+
+/**
+ * A player's per-game numbers from last regular season (ESPN athlete season stats), by prop key.
+ * Works for players who changed teams. Empty for rookies or if ESPN has nothing.
+ */
+async function fetchLastSeasonLines(playerId: string): Promise<Record<string, LastSeasonLine>> {
+  const season = CURRENT_SEASON - 1;
+  try {
+    return await memoize(`last-season-${season}-${playerId}`, GAME_TTL_MS * 2, async () => {
+      for (const suffix of ["/statistics/0", "/statistics"]) {
+        const res = await fetch(
+          `${CORE_NFL}/seasons/${season}/types/2/athletes/${playerId}${suffix}`,
+          {
+            headers: { "User-Agent": "GamblingNFL/1.0" },
+          },
+        );
+        if (res.ok) return lastSeasonLinesFrom(await res.json());
+      }
+      return {};
+    });
+  } catch {
+    return {};
+  }
+}
+
 /**
  * Model projections for every prop on the board for one game, plus how accurate the same model
  * has been on these players' earlier games. Uses only games played before this game's week.
@@ -716,9 +836,11 @@ export async function fetchGamePropProjections(
 ): Promise<GamePropProjections> {
   const id = eventId.replace(/^espn-/, "");
   return memoize(`prop-projections-${id}`, TOTALS_TTL_MS, async () => {
-    const [schedule, analytics] = await Promise.all([
+    const [schedule, analytics, priorSeason, availability] = await Promise.all([
       fetchSchedule(),
       fetchGamePropAnalytics(awayAbbr, homeAbbr),
+      fetchPriorSeasonResults().catch(() => []),
+      fetchPropAvailability(eventId, awayAbbr, homeAbbr).catch(() => null),
     ]);
     const finals = schedule.filter((g) => g.status === "final");
     const target = schedule.find((g) => g.id === `espn-${id}`);
@@ -759,7 +881,14 @@ export async function fetchGamePropProjections(
     const ratingsCache = new Map<number, TeamRatings>();
     const ratingsFor = (w: number) => {
       let r = ratingsCache.get(w);
-      if (!r) ratingsCache.set(w, (r = fitRatings(finals.filter((g) => g.week < w))));
+      if (!r)
+        ratingsCache.set(
+          w,
+          (r = fitRatings(
+            finals.filter((g) => g.week < w),
+            priorSeason,
+          )),
+        );
       return r;
     };
     /** Team's expected points in this game ÷ its average points so far (1 = a normal game). */
@@ -782,7 +911,68 @@ export async function fetchGamePropProjections(
       return (home ? p.homePoints : p.awayPoints) / avg;
     };
 
+    // Last season's per-game numbers for every player on the board (small batches).
+    const lastSeason = new Map<string, Record<string, LastSeasonLine>>();
+    for (let i = 0; i < analytics.players.length; i += 10) {
+      const batch = analytics.players.slice(i, i + 10);
+      const lines = await Promise.all(batch.map((p) => fetchLastSeasonLines(p.id)));
+      batch.forEach((p, idx) => lastSeason.set(p.id, lines[idx]));
+    }
+
+    // Usage: each team's box scores by week, for target / carry shares.
+    const teamWeeks = new Map<string, Map<number, TeamGameLine[]>>();
+    for (const r of records) {
+      const weeks = teamWeeks.get(r.team) ?? new Map<number, TeamGameLine[]>();
+      const lines = weeks.get(r.week) ?? [];
+      lines.push({ playerId: r.playerId, position: r.position, flat: r.flat });
+      weeks.set(r.week, lines);
+      teamWeeks.set(r.team, weeks);
+    }
+    const recentFor = (team: string, w: number) =>
+      [...(teamWeeks.get(team)?.entries() ?? [])]
+        .filter(([wk]) => wk < w)
+        .sort((a, b) => a[0] - b[0])
+        .map(([, lines]) => lines);
+    // This game: teammates the injury report rules out.
+    const ruledOut = new Set(
+      (availability?.players ?? [])
+        .filter((a) => isRuledOut(availabilityOf(a.injuryStatus)))
+        .map((a) => a.id),
+    );
+    const sharesNow = new Map<string, Map<string, OpportunityShares>>();
+    const sharesForNow = (team: string) => {
+      let m = sharesNow.get(team);
+      if (!m) sharesNow.set(team, (m = opportunityShares(recentFor(team, week), ruledOut)));
+      return m;
+    };
+    // Past games: anyone with a recent share who didn't play that game was out.
+    const sharesPast = new Map<string, Map<string, OpportunityShares>>();
+    const sharesForPast = (team: string, w: number) => {
+      const key = `${team}|${w}`;
+      let m = sharesPast.get(key);
+      if (!m) {
+        const recent = recentFor(team, w);
+        const played = new Set((teamWeeks.get(team)?.get(w) ?? []).map((l) => l.playerId));
+        const out = new Set(
+          recent
+            .slice(-4)
+            .flat()
+            .map((l) => l.playerId)
+            .filter((id) => !played.has(id)),
+        );
+        sharesPast.set(key, (m = opportunityShares(recent, out)));
+      }
+      return m;
+    };
+    const sumFlat = (games: PlayerGameInput[]) => {
+      const total: Record<string, number> = {};
+      for (const g of games.slice(-4))
+        for (const [k, v] of Object.entries(g.flat)) total[k] = (total[k] ?? 0) + v;
+      return total;
+    };
+
     const players: GamePropProjections["players"] = {};
+    const usage: GamePropProjections["usage"] = {};
     const allPoints: { category: PropCategory; point: BacktestPoint }[] = [];
     for (const p of analytics.players) {
       const opponent =
@@ -799,9 +989,20 @@ export async function fetchGamePropProjections(
         }));
       const prior = games.filter((g) => g.week < week);
       const script = scriptRatio(p.teamAbbr, opponent, isHome, week);
+      const shares = sharesForNow(p.teamAbbr).get(p.id);
+      const recentFlat = sumFlat(prior);
+      const last = lastSeason.get(p.id) ?? {};
+      usage[p.id] = {
+        targetShare: Math.round((shares?.targetShare ?? 0) * 1000) / 1000,
+        carryShare: Math.round((shares?.carryShare ?? 0) * 1000) / 1000,
+        ruledOut: ruledOut.has(p.id),
+      };
       const byKey: Record<string, PlayerStatModel> = {};
       for (const key of Object.keys(p.markets)) {
-        const projection = projectStat(key, p.position, prior, contextFor(week), opponent, script);
+        const projection = projectStat(key, p.position, prior, contextFor(week), opponent, script, {
+          lastSeason: last[key],
+          opportunity: opportunityFor(key, shares, recentFlat),
+        });
         const history = backtestStat(
           key,
           p.position,
@@ -809,6 +1010,13 @@ export async function fetchGamePropProjections(
           contextFor,
           (g) => scriptRatio(p.teamAbbr, g.opponent, g.home, g.week),
           week,
+          last[key],
+          (g) =>
+            opportunityFor(
+              key,
+              sharesForPast(p.teamAbbr, g.week).get(p.id),
+              sumFlat(games.filter((x) => x.week < g.week)),
+            ),
         );
         byKey[key] = { projection, accuracy: summarizeAccuracy(history), history };
         const category = marketByKey(key)?.category;
@@ -827,6 +1035,8 @@ export async function fetchGamePropProjections(
       week,
       modelVersion: PROJECTION_SETTINGS.version,
       players,
+      usage,
+      lastSeasonPlayers: [...lastSeason.values()].filter((l) => Object.keys(l).length > 0).length,
       accuracy: { overall: summarizeAccuracy(allPoints.map((x) => x.point)), byCategory },
     };
   });
