@@ -299,7 +299,8 @@ function Dashboard() {
     now !== null && before !== null && before !== undefined
       ? Math.round((now - before) * 10) / 10
       : null;
-  const winChange = pctChange(model.overall.winPct, prev?.overall.winPct);
+  const winner = model.byMarket.moneyline;
+  const winChange = pctChange(winner.winPct, prev?.byMarket.moneyline.winPct);
   const coverChange = pctChange(model.byMarket.spread.winPct, prev?.byMarket.spread.winPct);
   const totalChange = pctChange(model.byMarket.total.winPct, prev?.byMarket.total.winPct);
   const unitsChange = prev
@@ -323,12 +324,12 @@ function Dashboard() {
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
           <StatCard
             label="Win rate · model"
-            value={fmt(model.overall.winPct)}
-            unit={model.overall.winPct === null ? undefined : "%"}
+            value={fmt(winner.winPct)}
+            unit={winner.winPct === null ? undefined : "%"}
             note={
               scheduleLoading
                 ? "Loading…"
-                : note(weekChangeText(winChange), `${rec(model.overall)} all picks`)
+                : note(weekChangeText(winChange), `${rec(winner)} picking winners`)
             }
             tone={changeTone(winChange)}
           />
