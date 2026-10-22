@@ -20,7 +20,7 @@ import { teamById, teams } from "@/data/teams";
 import { getLiveSchedule, getPriorSeasonResults } from "@/lib/espn.functions";
 import { summarizeModel, unitsText } from "@/lib/game-model";
 import { getNflHistory } from "@/lib/history.functions";
-import { runModelWithHistory, type HistoryGame } from "@/lib/model-history";
+import { readHistory, runModelWithHistory } from "@/lib/model-history";
 import { buildSeasonPulse, changeTone, weekChangeText } from "@/lib/season-pulse";
 
 /* ---------- Live games: row without date/time, clock first ---------- */
@@ -296,16 +296,15 @@ function Dashboard() {
   });
   const priorSeason = useMemo(() => priorQuery.data ?? [], [priorQuery.data]);
   const historyQuery = useQuery({
-    queryKey: ["nfl-history"],
+    queryKey: ["nfl-history-v2"],
     queryFn: () => getNflHistory(),
     staleTime: 60 * 60_000,
     retry: 1,
   });
-  const history: HistoryGame[] = useMemo(
-    () =>
-      (historyQuery.data?.games ?? []).filter((h) => h.season < historyQuery.data!.currentSeason),
-    [historyQuery.data],
-  );
+  const history = useMemo(() => {
+    const { games, currentSeason } = readHistory(historyQuery.data);
+    return games.filter((h) => h.season < currentSeason);
+  }, [historyQuery.data]);
   const modelRows = useMemo(
     () => runModelWithHistory(source, priorSeason, history),
     [source, priorSeason, history],
