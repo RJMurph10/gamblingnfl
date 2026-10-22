@@ -40,6 +40,8 @@ export const PROJECTION_SETTINGS = {
   lastSeasonPriorGames: 3,
   /** Share of the starting point that comes from last season (the rest from the position average). */
   lastSeasonShare: 0.8,
+  /** A game where he played less than this share is read as this share (avoids huge rescaling). */
+  minGameShare: 0.5,
   /** Limits on the injury opportunity boost (a teammate out). */
   opportunityClamp: [1, 1.5] as const,
 } as const;
@@ -56,7 +58,18 @@ export interface LeagueRecord {
   /** Position (any feed's wording; normalized internally). */
   position: string;
   flat: Record<string, number>;
+  /**
+   * False for a game where he wasn't in a real role (a QB who wasn't his team's main passer, a
+   * skill player with only a touch or two). Those games don't count toward position averages.
+   */
+  primary?: boolean;
 }
+
+/** A player's role this week. */
+export type PlayerRole = "starter" | "rotation" | "backup";
+
+/** Positions where one player takes (nearly) all the snaps: the backup projects to zero. */
+export const SINGLE_ROLE_POSITIONS = new Set(["QB", "K", "P"]);
 
 /** Defenses are compared by position group: backs (RB/FB), receivers, tight ends, QBs. */
 export const positionGroup = (position: string) => {
@@ -125,6 +138,15 @@ export function buildWeekContext(records: LeagueRecord[], week: number): WeekCon
 
     for (const { key, value, defense } of valuesOf(r)) {
       const pmKey = `${group}|${key}`;
+      if (r.primary === false) {
+        // Mop-up / relief games still count for the defense, not for the position average.
+        if (defense) {
+          const k = `${r.opponent}|${group}|${key}`;
+          allowed.set(k, (allowed.get(k) ?? 0) + value);
+          leagueAllowed.set(pmKey, (leagueAllowed.get(pmKey) ?? 0) + value);
+        }
+        continue;
+      }
       const pm = positionMean.get(pmKey);
       if (pm) {
         pm.sum += value;
@@ -199,6 +221,8 @@ export interface StatProjection {
   lastSeason?: number;
   /** Earlier games the projection is built on. */
   games: number;
+  /** Starter, rotation player, or backup (backups at QB/K/P project to zero). */
+  role: PlayerRole;
 }
 
 /** A player's last-season per-game average in one stat. */
@@ -211,6 +235,8 @@ export interface ProjectOptions {
   lastSeason?: LastSeasonLine;
   /** Multiplier for vacated opportunity (e.g. 1.2 when a teammate's targets are up for grabs). */
   opportunity?: number;
+  /** His role this week; defaults to starter. */
+  role?: PlayerRole;
 }
 
 /** Stats driven by touches or targets, which grow when a teammate's share opens up. */
@@ -248,32 +274,72 @@ export function projectStat(
     Number.isFinite(options.lastSeason.perGame)
       ? options.lastSeason
       : undefined;
+  const role: PlayerRole = options.role ?? "starter";
+  const defense = defenseFactor(ctx, opponent, position, key);
+  const script = scriptMultiplier(key, teamScriptRatio);
+
+  // A backup QB / kicker / punter only plays if something unusual happens: project zero.
+  if (role === "backup") {
+    return {
+      projected: 0,
+      lower: 0,
+      upper: 0,
+      form: 0,
+      defense,
+      script,
+      opportunity: 1,
+      games: summary?.games ?? 0,
+      role,
+    };
+  }
+
+  const pm = ctx.positionMean.get(`${positionGroup(position)}|${key}`);
   const minGames = last ? PROJECTION_SETTINGS.minGamesWithLastSeason : PROJECTION_SETTINGS.minGames;
-  if (!summary || summary.games < minGames) return undefined;
+  const enough = !!summary && summary.games >= minGames;
+  // A starter at QB/K/P with no starts yet (a backup promoted this week) still gets a projection
+  // from last season or the position average for starters.
+  const priorOnly =
+    !enough && role === "starter" && SINGLE_ROLE_POSITIONS.has(normalizePropPosition(position));
+  if (!enough && !(priorOnly && (last || (pm && pm.n)))) return undefined;
 
   // Recency-weighted form: the latest game counts 1, one game earlier 0.79, three earlier 0.5...
-  const values = summary.log.map((g) => g.value);
+  const values = enough ? summary!.log.map((g) => g.value) : [];
+  // A partial game (he left early, or split snaps) counts as a per-full-game rate at reduced
+  // weight: 1 TD in 75% of a game reads as 1.33 a game, weighted 0.75.
+  const shareByWeek = new Map(priorGames.map((g) => [g.week, g.share]));
+  const shares = enough
+    ? summary!.log.map((g) => {
+        const sh = shareByWeek.get(g.week);
+        return sh !== undefined && Number.isFinite(sh)
+          ? Math.min(1, Math.max(PROJECTION_SETTINGS.minGameShare, sh))
+          : 1;
+      })
+    : [];
   const decay = Math.pow(0.5, 1 / PROJECTION_SETTINGS.halfLifeGames);
   let num = 0;
   let den = 0;
   values.forEach((v, i) => {
-    const w = Math.pow(decay, values.length - 1 - i);
-    num += w * v;
+    const w = Math.pow(decay, values.length - 1 - i) * shares[i];
+    num += w * (v / shares[i]);
     den += w;
   });
   // Starting point the early games are pulled toward: mostly his own last season when we have
   // it, otherwise the average for his position.
-  const pm = ctx.positionMean.get(`${positionGroup(position)}|${key}`);
-  const positionAvg = pm && pm.n ? pm.sum / pm.n : num / den;
+  const ownAvg = den > 0 ? num / den : 0;
+  const positionAvg = pm && pm.n ? pm.sum / pm.n : ownAvg;
   const share = PROJECTION_SETTINGS.lastSeasonShare;
-  const prior = last ? share * last.perGame + (1 - share) * positionAvg : positionAvg;
+  // Rotation players aren't pulled toward the starters' average; their own (zero-filled)
+  // history is the best guide to how much they play.
+  const prior = last
+    ? share * last.perGame + (1 - share) * (role === "rotation" ? ownAvg : positionAvg)
+    : role === "rotation"
+      ? ownAvg
+      : positionAvg;
   const k = last
     ? PROJECTION_SETTINGS.lastSeasonPriorGames
     : PROJECTION_SETTINGS.positionPriorGames;
   const form = (num + k * prior) / (den + k);
 
-  const defense = defenseFactor(ctx, opponent, position, key);
-  const script = scriptMultiplier(key, teamScriptRatio);
   const [oLo, oHi] = PROJECTION_SETTINGS.opportunityClamp;
   const opportunity = VOLUME_STATS.has(key)
     ? Math.min(oHi, Math.max(oLo, Number.isFinite(options.opportunity) ? options.opportunity! : 1))
@@ -289,7 +355,8 @@ export function projectStat(
     script: Math.round(script * 100) / 100,
     opportunity: Math.round(opportunity * 100) / 100,
     lastSeason: last ? Math.round(last.perGame * 10) / 10 : undefined,
-    games: summary.games,
+    games: enough ? summary!.games : 0,
+    role,
   };
 }
 
@@ -340,6 +407,7 @@ export function backtestStat(
   beforeWeek: number,
   lastSeason?: LastSeasonLine,
   opportunityFor?: (game: PlayerGameInput) => number,
+  role: PlayerRole = "starter",
 ): BacktestPoint[] {
   const points: BacktestPoint[] = [];
   const ordered = [...games].filter((g) => g.week < beforeWeek).sort((a, b) => a.week - b.week);
@@ -354,7 +422,7 @@ export function backtestStat(
       contextFor(game.week),
       game.opponent,
       scriptFor(game),
-      { lastSeason, opportunity: opportunityFor?.(game) },
+      { lastSeason, opportunity: opportunityFor?.(game), role },
     );
     if (!p) continue;
     points.push({
@@ -384,6 +452,10 @@ export interface PlayerUsage {
   targetShare: number;
   carryShare: number;
   ruledOut: boolean;
+  /** Starter, rotation player or backup this week. */
+  role: PlayerRole;
+  /** For a backup at QB/K/P: who's starting ahead of him. */
+  starterName?: string;
 }
 
 export interface GamePropProjections {
