@@ -15,7 +15,7 @@ import { homeLine } from "./season-pulse";
 /* ---------------- settings (tune here) ---------------- */
 
 export const MODEL_SETTINGS = {
-  version: "gnfl-ratings-v2",
+  version: "gnfl-anchored-v3",
   /**
    * Last season's games count this much each (vs 1 for this season), so week 1 starts from last
    * year's ratings and this season's results take over as they come in.
@@ -31,12 +31,24 @@ export const MODEL_SETTINGS = {
    * games count at their reduced weight, so with last season loaded the model can bet from week 1.
    */
   minGamesPerTeam: 2,
-  /** Spread pick when the model line differs from the market by at least this many points. */
-  spreadEdgePts: 2.5,
-  /** Total pick when the model total differs from the market total by at least this many points. */
-  totalEdgePts: 3,
-  /** Moneyline pick when the model's win probability beats the no-vig price by this much (0–1). */
-  moneylineEdgeProb: 0.05,
+  /**
+   * Bets are judged on the market-anchored line (market + learned weight × model disagreement).
+   * Spread pick when that line is at least this many points off the market...
+   */
+  spreadEdgePts: 1.5,
+  /** ...total pick when the anchored total is this many points off the market total... */
+  totalEdgePts: 1.5,
+  /** ...moneyline pick when the anchored win probability beats the no-vig price by this much. */
+  moneylineEdgeProb: 0.03,
+  /**
+   * How much evidence (in games) the learned market weight needs before it moves off zero. Until
+   * the model's disagreements have actually predicted results, it trusts the market.
+   */
+  calibrationPriorGames: 40,
+  /** Typical squared disagreement (points²) used to scale that evidence. */
+  calibrationScale: 16,
+  /** Limit on the learned scoring bias for totals (points). */
+  maxTotalBias: 2.5,
   /** Skip moneylines longer than this either way (no +400 long shots or -400 favorites). */
   moneylineMaxOdds: 250,
   /**
@@ -244,9 +256,35 @@ export interface ModelPick {
   units: number;
 }
 
+/**
+ * What the model has learned from earlier weeks about its own disagreements with the market:
+ * weight 0 = its disagreements haven't predicted anything (trust the market), 1 = fully trust it.
+ */
+export interface MarketCalibration {
+  spreadWeight: number;
+  totalWeight: number;
+  /** Points games have been finishing above (+) or below (−) the closing totals. */
+  totalBias: number;
+  /**
+   * How much the model's ratings squeeze games toward a tie (or totals toward average) compared
+   * with the market: 1.4 means market lines are 40% wider. Its lines are stretched back by this
+   * before comparing, so "closer than the market" stops reading as a reason to take the underdog.
+   */
+  spreadScale: number;
+  totalScale: number;
+  /** Average closing total, the center the totals scale stretches around. */
+  totalCenter: number;
+  /** Graded earlier games behind the calibration. */
+  samples: number;
+}
+
 export interface GameModelRow {
   game: Game;
+  /** The line the model bets on: the market, moved by the learned weight toward the model. */
   prediction?: GamePrediction;
+  /** The model's own ratings-only prediction, before anchoring to the market. */
+  modelPrediction?: GamePrediction;
+  calibration?: MarketCalibration;
   /** Why there is no prediction (early season, no line, ...). */
   skipped?: string;
   marketHomeLine: number | null;
@@ -275,7 +313,7 @@ function grade(pick: Omit<ModelPick, "result" | "units">, game: Game): ModelPick
 }
 
 /** Model picks for one game given a prediction and the market. */
-export function picksForGame(game: Game, p: GamePrediction): ModelPick[] {
+export function picksForGame(game: Game, p: GamePrediction, raw: GamePrediction = p): ModelPick[] {
   const picks: ModelPick[] = [];
   const base = { gameId: game.id, week: game.week };
   const odds = game.odds ?? {};
@@ -284,9 +322,10 @@ export function picksForGame(game: Game, p: GamePrediction): ModelPick[] {
   if (mLine !== null) {
     // Positive edge -> the home side is the value (model expects home to do better than the line).
     const edge = mLine - p.homeLine;
+    // The sanity cap looks at the model's own disagreement: a huge gap means missing news.
     if (
       Math.abs(edge) >= MODEL_SETTINGS.spreadEdgePts &&
-      Math.abs(edge) <= MODEL_SETTINGS.maxSpreadDisagreementPts
+      Math.abs(mLine - raw.homeLine) <= MODEL_SETTINGS.maxSpreadDisagreementPts
     ) {
       const side = edge > 0 ? "home" : "away";
       picks.push(
@@ -311,7 +350,7 @@ export function picksForGame(game: Game, p: GamePrediction): ModelPick[] {
     const edge = p.total - game.total;
     if (
       Math.abs(edge) >= MODEL_SETTINGS.totalEdgePts &&
-      Math.abs(edge) <= MODEL_SETTINGS.maxTotalDisagreementPts
+      Math.abs(raw.total - game.total) <= MODEL_SETTINGS.maxTotalDisagreementPts
     ) {
       const side = edge > 0 ? "over" : "under";
       picks.push(
@@ -338,7 +377,7 @@ export function picksForGame(game: Game, p: GamePrediction): ModelPick[] {
     const homeEdge = p.homeWinProb - fairHome;
     if (
       Math.abs(homeEdge) >= MODEL_SETTINGS.moneylineEdgeProb &&
-      Math.abs(homeEdge) <= MODEL_SETTINGS.maxMoneylineDisagreementProb
+      Math.abs(raw.homeWinProb - fairHome) <= MODEL_SETTINGS.maxMoneylineDisagreementProb
     ) {
       const side = homeEdge > 0 ? "home" : "away";
       const price = side === "home" ? odds.homeMoneyline : odds.awayMoneyline;
@@ -366,7 +405,107 @@ export function picksForGame(game: Game, p: GamePrediction): ModelPick[] {
   return picks;
 }
 
-/** Walk-forward run over the whole schedule: predictions, picks and grades for every game. */
+/**
+ * Learns, from earlier graded games only, how much the model's disagreements with the closing
+ * line actually predicted the result (ridge regression toward 0 = "trust the market"), plus how
+ * far games have been finishing above or below the totals.
+ */
+export function calibrateToMarket(history: GameModelRow[]): MarketCalibration {
+  const K = MODEL_SETTINGS.calibrationPriorGames * MODEL_SETTINGS.calibrationScale;
+  const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
+  const spreads: { model: number; market: number; actual: number }[] = [];
+  const totals: { model: number; market: number; actual: number }[] = [];
+  for (const row of history) {
+    const raw = row.modelPrediction;
+    if (!raw || row.game.status !== "final") continue;
+    const s = gameScore(row.game);
+    if (row.marketHomeLine !== null)
+      spreads.push({ model: -raw.homeLine, market: -row.marketHomeLine, actual: s.home - s.away });
+    if (row.marketTotal !== null)
+      totals.push({ model: raw.total, market: row.marketTotal, actual: s.home + s.away });
+  }
+
+  // Compression: how much wider the market's lines are than the model's (shrunk toward 1).
+  const scaleOf = (pairs: { model: number; market: number }[], center: number) => {
+    let mm = 0;
+    let me = 0;
+    for (const p of pairs) {
+      mm += (p.model - center) ** 2;
+      me += (p.model - center) * (p.market - center);
+    }
+    const prior = MODEL_SETTINGS.calibrationPriorGames * MODEL_SETTINGS.calibrationScale;
+    return clamp((me + prior) / (mm + prior), 1, 2.5);
+  };
+  const spreadScale = scaleOf(spreads, 0);
+  const totalCenter = totals.length
+    ? totals.reduce((sum, t) => sum + t.market, 0) / totals.length
+    : 44;
+  const totalScale = scaleOf(totals, totalCenter);
+
+  // Weight: how much the (stretched) disagreement predicted the result, shrunk toward 0.
+  let sxy = 0;
+  let sxx = 0;
+  for (const p of spreads) {
+    const x = p.model * spreadScale - p.market;
+    sxy += x * (p.actual - p.market);
+    sxx += x * x;
+  }
+  const spreadWeight = clamp(sxy / (sxx + K), 0, 1);
+
+  const bias = clamp(
+    totals.reduce((sum, t) => sum + (t.actual - t.market), 0) /
+      (totals.length + MODEL_SETTINGS.calibrationPriorGames),
+    -MODEL_SETTINGS.maxTotalBias,
+    MODEL_SETTINGS.maxTotalBias,
+  );
+  let txy = 0;
+  let txx = 0;
+  for (const t of totals) {
+    const x = totalCenter + (t.model - totalCenter) * totalScale - t.market;
+    txy += x * (t.actual - t.market - bias);
+    txx += x * x;
+  }
+  const totalWeight = clamp(txy / (txx + K), 0, 1);
+  return {
+    spreadWeight,
+    totalWeight,
+    totalBias: bias,
+    spreadScale,
+    totalScale,
+    totalCenter,
+    samples: Math.max(spreads.length, totals.length),
+  };
+}
+
+/** The line the model bets on: the market, moved toward the model by the learned weights. */
+export function anchorToMarket(
+  game: Game,
+  raw: GamePrediction,
+  cal: MarketCalibration,
+): GamePrediction {
+  const mLine = homeLine(game);
+  const marketMargin = mLine === null ? -raw.homeLine : -mLine;
+  const weight = mLine === null ? 1 : cal.spreadWeight;
+  const stretchedMargin = -raw.homeLine * cal.spreadScale;
+  const margin = marketMargin + weight * (stretchedMargin - marketMargin);
+  const stretchedTotal = cal.totalCenter + (raw.total - cal.totalCenter) * cal.totalScale;
+  const total =
+    game.total > 0
+      ? game.total + cal.totalBias + cal.totalWeight * (stretchedTotal - game.total)
+      : raw.total;
+  return {
+    homePoints: (total + margin) / 2,
+    awayPoints: (total - margin) / 2,
+    homeLine: -margin,
+    total,
+    homeWinProb: normalCdf(margin / MODEL_SETTINGS.marginSd),
+  };
+}
+
+/**
+ * Walk-forward run over the whole schedule: predictions, picks and grades for every game. Each
+ * week's ratings AND its market calibration use only earlier weeks, so the record is honest.
+ */
 export function runModel(schedule: Game[], priorSeason: PriorResult[] = []): GameModelRow[] {
   const finals = schedule.filter((g) => g.status === "final");
   const weeks = [...new Set(schedule.map((g) => g.week))].sort((a, b) => a - b);
@@ -376,6 +515,7 @@ export function runModel(schedule: Game[], priorSeason: PriorResult[] = []): Gam
       finals.filter((g) => g.week < week),
       priorSeason,
     );
+    const calibration = calibrateToMarket(rows.filter((r) => r.game.week < week));
     for (const game of schedule.filter((g) => g.week === week)) {
       const marketHomeLine = homeLine(game);
       const marketTotal = game.total > 0 ? game.total : null;
@@ -392,14 +532,17 @@ export function runModel(schedule: Game[], priorSeason: PriorResult[] = []): Gam
         });
         continue;
       }
-      const prediction = predictGame(ratings, game.homeTeamId, game.awayTeamId);
+      const modelPrediction = predictGame(ratings, game.homeTeamId, game.awayTeamId);
+      const prediction = anchorToMarket(game, modelPrediction, calibration);
       // Live games keep their pregame picks but aren't graded until final.
       rows.push({
         game,
         prediction,
+        modelPrediction,
+        calibration,
         marketHomeLine,
         marketTotal,
-        picks: picksForGame(game, prediction),
+        picks: picksForGame(game, prediction, modelPrediction),
       });
     }
   }
