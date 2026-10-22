@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { MatchupLink, PageTitle, Panel, PanelHeader, StatCard, TeamLogo } from "@/components/booth";
 import { gameScore, type Game } from "@/data/games";
 import { teamById } from "@/data/teams";
-import { getLiveSchedule } from "@/lib/espn.functions";
+import { getLiveSchedule, getPriorSeasonResults } from "@/lib/espn.functions";
 import {
   MODEL_SETTINGS,
   runModel,
@@ -194,7 +194,15 @@ function ModelPage() {
     retry: 1,
   });
   const games: Game[] = useMemo(() => scheduleQuery.data ?? [], [scheduleQuery.data]);
-  const rows = useMemo(() => runModel(games), [games]);
+  // Last season's scores give the model a head start in the first weeks.
+  const priorQuery = useQuery({
+    queryKey: ["prior-season-results"],
+    queryFn: () => getPriorSeasonResults(),
+    staleTime: 12 * 60 * 60_000,
+    retry: 1,
+  });
+  const priorSeason = useMemo(() => priorQuery.data ?? [], [priorQuery.data]);
+  const rows = useMemo(() => runModel(games, priorSeason), [games, priorSeason]);
   const summary = useMemo(() => summarizeModel(rows), [rows]);
   const [market, setMarket] = useState<Market | "all">("all");
   const [showAll, setShowAll] = useState(false);
