@@ -34,6 +34,11 @@ export interface HistoryGame {
   homeSpreadOdds: number | null;
   overOdds: number | null;
   underOdds: number | null;
+  /** "outdoors", "open", "dome" or "closed" (retractable roof). */
+  roof: string;
+  /** Kickoff temperature (°F) and wind (mph) for outdoor games; null when not recorded. */
+  temp: number | null;
+  wind: number | null;
 }
 
 const blankStats = (): TeamGameStats => ({
