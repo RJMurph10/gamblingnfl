@@ -16,6 +16,7 @@ import {
 } from "./espn.server";
 import {
   fetchGamePropAnalytics,
+  fetchGamePropProjections,
   fetchLeaguePlayers,
   fetchPlayerGameLog,
 } from "./league-players.server";
@@ -207,3 +208,12 @@ export const getPropAvailability = createServerFn({
     z.object({ eventId: z.string(), awayAbbr: z.string(), homeAbbr: z.string() }).parse(data),
   )
   .handler(async ({ data }) => fetchPropAvailability(data.eventId, data.awayAbbr, data.homeAbbr));
+
+/** Model projections for every prop in one game, with the model's season accuracy. */
+export const getGamePropProjections = createServerFn({
+  method: "GET",
+})
+  .inputValidator((data) =>
+    z.object({ eventId: z.string(), awayAbbr: z.string(), homeAbbr: z.string() }).parse(data),
+  )
+  .handler(async ({ data }) => fetchGamePropProjections(data.eventId, data.awayAbbr, data.homeAbbr));
