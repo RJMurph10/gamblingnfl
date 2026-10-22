@@ -16,7 +16,7 @@ import {
 } from "@/lib/game-model";
 import { getNflHistory } from "@/lib/history.functions";
 import { WatchList } from "@/components/WatchList";
-import { pastSeasonRuns, runModelWithHistory, type HistoryGame } from "@/lib/model-history";
+import { pastSeasonRuns, readHistory, runModelWithHistory } from "@/lib/model-history";
 
 export const Route = createFileRoute("/model")({
   head: () => ({
@@ -265,16 +265,15 @@ function ModelPage() {
   // Results since 2022 (nflverse): past seasons calibrate the model, so its trust in itself
   // rests on hundreds of graded games; this season's rows carry recorded kickoff weather.
   const historyQuery = useQuery({
-    queryKey: ["nfl-history"],
+    queryKey: ["nfl-history-v2"],
     queryFn: () => getNflHistory(),
     staleTime: 60 * 60_000,
     retry: 1,
   });
-  const allHistory: HistoryGame[] = useMemo(
-    () => historyQuery.data?.games ?? [],
+  const { games: allHistory, currentSeason } = useMemo(
+    () => readHistory(historyQuery.data),
     [historyQuery.data],
   );
-  const currentSeason = historyQuery.data?.currentSeason ?? 0;
   const history = useMemo(
     () => allHistory.filter((h) => h.season < currentSeason),
     [allHistory, currentSeason],
