@@ -21,7 +21,7 @@ import {
 } from "./prop-model";
 
 export const PROJECTION_SETTINGS = {
-  version: "gnfl-props-v1",
+  version: "gnfl-props-v2",
   /** Recency weighting: a game this many games ago counts half as much as the latest one. */
   halfLifeGames: 3,
   /** How strongly early-season form is pulled toward the position average (in games). */
@@ -33,6 +33,15 @@ export const PROJECTION_SETTINGS = {
   scriptClamp: [0.8, 1.25] as const,
   /** Projections (and accuracy tests) need at least this many earlier games in the stat. */
   minGames: 2,
+  /** With last season's numbers as a starting point, one game this season is enough. */
+  minGamesWithLastSeason: 1,
+  /** Last season needs this many games to count, and is worth this many games of evidence. */
+  lastSeasonMinGames: 4,
+  lastSeasonPriorGames: 3,
+  /** Share of the starting point that comes from last season (the rest from the position average). */
+  lastSeasonShare: 0.8,
+  /** Limits on the injury opportunity boost (a teammate out). */
+  opportunityClamp: [1, 1.5] as const,
 } as const;
 
 /* ---------------- league context (defense + position averages) ---------------- */
@@ -184,9 +193,37 @@ export interface StatProjection {
   form: number;
   defense: number;
   script: number;
+  /** Extra opportunity because teammates are out (1 = none). */
+  opportunity: number;
+  /** Last season's per-game number used as the starting point, when there was one. */
+  lastSeason?: number;
   /** Earlier games the projection is built on. */
   games: number;
 }
+
+/** A player's last-season per-game average in one stat. */
+export interface LastSeasonLine {
+  perGame: number;
+  games: number;
+}
+
+export interface ProjectOptions {
+  lastSeason?: LastSeasonLine;
+  /** Multiplier for vacated opportunity (e.g. 1.2 when a teammate's targets are up for grabs). */
+  opportunity?: number;
+}
+
+/** Stats driven by touches or targets, which grow when a teammate's share opens up. */
+export const VOLUME_STATS = new Set([
+  "rush_yds",
+  "rush_att",
+  "rush_tds",
+  "rec_yds",
+  "rec_tds",
+  "receptions",
+  "targets",
+  "rush_rec_yds",
+]);
 
 /**
  * Projection for one player and stat, from his earlier games (all before the target game).
@@ -199,11 +236,20 @@ export function projectStat(
   ctx: WeekContext,
   opponent: string,
   teamScriptRatio: number,
+  options: ProjectOptions = {},
 ): StatProjection | undefined {
   const market = marketByKey(key);
   if (!market || !MARKET_SOURCES[key] || !isMarketForPosition(key, position)) return undefined;
   const summary = summarizeMarket(key, priorGames);
-  if (!summary || summary.games < PROJECTION_SETTINGS.minGames) return undefined;
+  const last =
+    options.lastSeason &&
+    market.kind !== "long" &&
+    options.lastSeason.games >= PROJECTION_SETTINGS.lastSeasonMinGames &&
+    Number.isFinite(options.lastSeason.perGame)
+      ? options.lastSeason
+      : undefined;
+  const minGames = last ? PROJECTION_SETTINGS.minGamesWithLastSeason : PROJECTION_SETTINGS.minGames;
+  if (!summary || summary.games < minGames) return undefined;
 
   // Recency-weighted form: the latest game counts 1, one game earlier 0.79, three earlier 0.5...
   const values = summary.log.map((g) => g.value);
@@ -215,14 +261,24 @@ export function projectStat(
     num += w * v;
     den += w;
   });
+  // Starting point the early games are pulled toward: mostly his own last season when we have
+  // it, otherwise the average for his position.
   const pm = ctx.positionMean.get(`${positionGroup(position)}|${key}`);
-  const prior = pm && pm.n ? pm.sum / pm.n : num / den;
-  const k = PROJECTION_SETTINGS.positionPriorGames;
+  const positionAvg = pm && pm.n ? pm.sum / pm.n : num / den;
+  const share = PROJECTION_SETTINGS.lastSeasonShare;
+  const prior = last ? share * last.perGame + (1 - share) * positionAvg : positionAvg;
+  const k = last
+    ? PROJECTION_SETTINGS.lastSeasonPriorGames
+    : PROJECTION_SETTINGS.positionPriorGames;
   const form = (num + k * prior) / (den + k);
 
   const defense = defenseFactor(ctx, opponent, position, key);
   const script = scriptMultiplier(key, teamScriptRatio);
-  const projected = Math.max(0, form * defense * script);
+  const [oLo, oHi] = PROJECTION_SETTINGS.opportunityClamp;
+  const opportunity = VOLUME_STATS.has(key)
+    ? Math.min(oHi, Math.max(oLo, Number.isFinite(options.opportunity) ? options.opportunity! : 1))
+    : 1;
+  const projected = Math.max(0, form * defense * script * opportunity);
   const range = computeRange(market.kind, projected);
   return {
     projected: Math.round(projected * 10) / 10,
@@ -231,6 +287,8 @@ export function projectStat(
     form: Math.round(form * 10) / 10,
     defense: Math.round(defense * 100) / 100,
     script: Math.round(script * 100) / 100,
+    opportunity: Math.round(opportunity * 100) / 100,
+    lastSeason: last ? Math.round(last.perGame * 10) / 10 : undefined,
     games: summary.games,
   };
 }
@@ -280,6 +338,8 @@ export function backtestStat(
   contextFor: (week: number) => WeekContext,
   scriptFor: (game: PlayerGameInput) => number,
   beforeWeek: number,
+  lastSeason?: LastSeasonLine,
+  opportunityFor?: (game: PlayerGameInput) => number,
 ): BacktestPoint[] {
   const points: BacktestPoint[] = [];
   const ordered = [...games].filter((g) => g.week < beforeWeek).sort((a, b) => a.week - b.week);
@@ -294,6 +354,7 @@ export function backtestStat(
       contextFor(game.week),
       game.opponent,
       scriptFor(game),
+      { lastSeason, opportunity: opportunityFor?.(game) },
     );
     if (!p) continue;
     points.push({
@@ -318,14 +379,140 @@ export interface PlayerStatModel {
   history: BacktestPoint[];
 }
 
+/** A player's recent usage on his team, and whether he's ruled out for this game. */
+export interface PlayerUsage {
+  targetShare: number;
+  carryShare: number;
+  ruledOut: boolean;
+}
+
 export interface GamePropProjections {
   week: number;
   modelVersion: string;
   /** By player id, then prop key. */
   players: Record<string, Record<string, PlayerStatModel>>;
+  /** Recent target / carry shares by player id. */
+  usage: Record<string, PlayerUsage>;
+  /** Players with last season's numbers loaded as a starting point. */
+  lastSeasonPlayers: number;
   /** Season accuracy across every player and stat on this page. */
   accuracy: {
     overall: AccuracySummary;
     byCategory: Partial<Record<PropCategory, AccuracySummary>>;
   };
+}
+
+/* ---------------- usage & injuries ---------------- */
+
+/** One player's box score in one of his team's recent games. */
+export interface TeamGameLine {
+  playerId: string;
+  position: string;
+  flat: Record<string, number>;
+}
+
+export interface OpportunityShares {
+  /** Share of the team's targets / carries over its recent games, 0–1. */
+  targetShare: number;
+  carryShare: number;
+  /** Multipliers for this game once ruled-out teammates' shares are handed out (1 = no change). */
+  targets: number;
+  carries: number;
+}
+
+export const OPPORTUNITY_SETTINGS = {
+  /** How many of the team's most recent games define each player's share. */
+  recentGames: 4,
+  /** Share of vacated targets that goes to the same position group (the rest to everyone). */
+  samePositionShare: 0.6,
+} as const;
+
+const targetsOf = (f: Record<string, number>) => f["receiving.receivingTargets"] ?? 0;
+const carriesOf = (f: Record<string, number>) => f["rushing.rushingAttempts"] ?? 0;
+
+/**
+ * Each player's recent share of his team's targets and carries, and how much it grows when
+ * teammates are out: a vacated share goes mostly to the same position (WR to WRs, RB to RBs) and
+ * otherwise to everyone, in proportion to their own shares.
+ */
+export function opportunityShares(
+  recentGames: TeamGameLine[][],
+  outIds: Set<string>,
+): Map<string, OpportunityShares> {
+  const totals = { targets: 0, carries: 0 };
+  const byPlayer = new Map<string, { position: string; targets: number; carries: number }>();
+  for (const game of recentGames.slice(-OPPORTUNITY_SETTINGS.recentGames)) {
+    for (const line of game) {
+      const t = targetsOf(line.flat);
+      const c = carriesOf(line.flat);
+      totals.targets += t;
+      totals.carries += c;
+      const p = byPlayer.get(line.playerId) ?? {
+        position: positionGroup(line.position),
+        targets: 0,
+        carries: 0,
+      };
+      p.targets += t;
+      p.carries += c;
+      byPlayer.set(line.playerId, p);
+    }
+  }
+
+  const multipliers = (kind: "targets" | "carries") => {
+    const total = totals[kind];
+    const result = new Map<string, number>();
+    if (total <= 0) return result;
+    const share = (id: string) => (byPlayer.get(id)?.[kind] ?? 0) / total;
+    const active = [...byPlayer.keys()].filter((id) => !outIds.has(id) && share(id) > 0);
+    const vacated = [...byPlayer.keys()].filter((id) => outIds.has(id));
+    const vacatedAll = vacated.reduce((s, id) => s + share(id), 0);
+    const activeAll = active.reduce((s, id) => s + share(id), 0);
+    // Carries mostly belong to backs: a QB doesn't pick up a running back's carries.
+    const sameShare = kind === "carries" ? 1 : OPPORTUNITY_SETTINGS.samePositionShare;
+    for (const id of active) {
+      const mine = share(id);
+      const group = byPlayer.get(id)!.position;
+      const vacatedSame = vacated
+        .filter((v) => byPlayer.get(v)!.position === group)
+        .reduce((s, v) => s + share(v), 0);
+      const activeSame = active
+        .filter((a) => byPlayer.get(a)!.position === group)
+        .reduce((s, a) => s + share(a), 0);
+      const gain =
+        (activeSame > 0 ? (sameShare * vacatedSame * mine) / activeSame : 0) +
+        (activeAll > 0 ? ((1 - sameShare) * vacatedAll * mine) / activeAll : 0);
+      result.set(id, (mine + gain) / mine);
+    }
+    return result;
+  };
+
+  const t = multipliers("targets");
+  const c = multipliers("carries");
+  const out = new Map<string, OpportunityShares>();
+  for (const [id, p] of byPlayer) {
+    out.set(id, {
+      targetShare: totals.targets ? p.targets / totals.targets : 0,
+      carryShare: totals.carries ? p.carries / totals.carries : 0,
+      targets: t.get(id) ?? 1,
+      carries: c.get(id) ?? 1,
+    });
+  }
+  return out;
+}
+
+/** Which multiplier a stat uses: targets for receiving stats, carries for rushing, a blend for both. */
+export function opportunityFor(
+  key: string,
+  shares: OpportunityShares | undefined,
+  flat?: Record<string, number>,
+) {
+  if (!shares || !VOLUME_STATS.has(key)) return 1;
+  if (key.startsWith("rush_") && key !== "rush_rec_yds") return shares.carries;
+  if (key === "rush_rec_yds") {
+    const rush = flat?.["rushing.rushingYards"] ?? 0;
+    const rec = flat?.["receiving.receivingYards"] ?? 0;
+    const w = rush + rec > 0 ? rush / (rush + rec) : 0.5;
+    return w * shares.carries + (1 - w) * shares.targets;
+  }
+  return shares.targets;
 }
