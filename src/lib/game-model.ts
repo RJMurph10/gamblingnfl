@@ -39,6 +39,16 @@ export const MODEL_SETTINGS = {
   moneylineEdgeProb: 0.05,
   /** Skip moneylines longer than this either way (no +400 long shots or -400 favorites). */
   moneylineMaxOdds: 250,
+  /**
+   * Credibility guardrails. A moneyline pick must be the team the model expects to WIN (no
+   * "the price is nice but they probably lose" underdog bets). And when the model disagrees with
+   * the market by more than these amounts it is almost certainly missing news (an injury, a QB
+   * change), so it passes instead of betting the long shot.
+   */
+  moneylineMinWinProb: 0.5,
+  maxSpreadDisagreementPts: 7,
+  maxTotalDisagreementPts: 8,
+  maxMoneylineDisagreementProb: 0.15,
   /** Standard deviation of NFL final margins, used for win probability. */
   marginSd: 13.5,
   /** Price used when ESPN lists no price for a spread or total. */
@@ -274,7 +284,10 @@ export function picksForGame(game: Game, p: GamePrediction): ModelPick[] {
   if (mLine !== null) {
     // Positive edge -> the home side is the value (model expects home to do better than the line).
     const edge = mLine - p.homeLine;
-    if (Math.abs(edge) >= MODEL_SETTINGS.spreadEdgePts) {
+    if (
+      Math.abs(edge) >= MODEL_SETTINGS.spreadEdgePts &&
+      Math.abs(edge) <= MODEL_SETTINGS.maxSpreadDisagreementPts
+    ) {
       const side = edge > 0 ? "home" : "away";
       picks.push(
         grade(
@@ -296,7 +309,10 @@ export function picksForGame(game: Game, p: GamePrediction): ModelPick[] {
 
   if (game.total > 0) {
     const edge = p.total - game.total;
-    if (Math.abs(edge) >= MODEL_SETTINGS.totalEdgePts) {
+    if (
+      Math.abs(edge) >= MODEL_SETTINGS.totalEdgePts &&
+      Math.abs(edge) <= MODEL_SETTINGS.maxTotalDisagreementPts
+    ) {
       const side = edge > 0 ? "over" : "under";
       picks.push(
         grade(
@@ -320,10 +336,18 @@ export function picksForGame(game: Game, p: GamePrediction): ModelPick[] {
     const ia = impliedProb(odds.awayMoneyline);
     const fairHome = ih / (ih + ia);
     const homeEdge = p.homeWinProb - fairHome;
-    if (Math.abs(homeEdge) >= MODEL_SETTINGS.moneylineEdgeProb) {
+    if (
+      Math.abs(homeEdge) >= MODEL_SETTINGS.moneylineEdgeProb &&
+      Math.abs(homeEdge) <= MODEL_SETTINGS.maxMoneylineDisagreementProb
+    ) {
       const side = homeEdge > 0 ? "home" : "away";
       const price = side === "home" ? odds.homeMoneyline : odds.awayMoneyline;
-      if (Math.abs(price) <= MODEL_SETTINGS.moneylineMaxOdds)
+      const winProb = side === "home" ? p.homeWinProb : 1 - p.homeWinProb;
+      // Only back a team on the moneyline if the model expects it to win.
+      if (
+        Math.abs(price) <= MODEL_SETTINGS.moneylineMaxOdds &&
+        winProb > MODEL_SETTINGS.moneylineMinWinProb
+      )
         picks.push(
           grade(
             {
