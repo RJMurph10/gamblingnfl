@@ -1,107 +1,169 @@
-import { describe, expect, it } from "vitest";
-import {
-  anchorToMarket,
-  fitRatings,
-  impliedProb,
-  predictGame,
-  type MarketCalibration,
-} from "@/lib/game-model";
-import { historyGameToGame, pastSeasonRuns, type HistoryGame } from "@/lib/model-history";
-import { parseHistoryCsv } from "@/lib/nfl-history.server";
-import { homeLine } from "@/lib/season-pulse";
+/**
+ * Past seasons for the game model: turns past games (final scores + closing lines, loaded from
+ * nflverse by getNflHistory) into games, runs the same walk-forward model over each season, and
+ * hands the graded rows to the current season's market calibration.
+ *
+ * Pure (browser- and server-safe); runs are memoized per history list.
+ */
 
-const game = (over: Partial<HistoryGame> = {}): HistoryGame => ({
-  season: 2025,
-  week: 6,
-  espnId: 1,
-  date: "2025-10-12",
-  away: "WSH",
-  home: "SF",
-  awayScore: 20,
-  homeScore: 27,
-  homeFavoredBy: 7.5,
-  total: 47.5,
-  awayMoneyline: 310,
-  homeMoneyline: -395,
-  awaySpreadOdds: -110,
-  homeSpreadOdds: -110,
-  overOdds: -110,
-  underOdds: -110,
-  roof: "outdoors",
-  temp: 60,
-  wind: 5,
-  ...over,
+import type { Game, TeamGameStats } from "@/data/games";
+import { teamByAbbr } from "@/data/teams";
+import { runModel, type GameModelRow, type PriorResult } from "./game-model";
+
+/** One finished past game with its closing lines. */
+export interface HistoryGame {
+  season: number;
+  week: number;
+  /** ESPN game id. */
+  espnId: number;
+  /** Game date, YYYY-MM-DD. */
+  date: string;
+  /** Team abbreviations. */
+  away: string;
+  home: string;
+  awayScore: number;
+  homeScore: number;
+  /** Closing spread: points the HOME team is favored by (negative = home is the underdog). */
+  homeFavoredBy: number | null;
+  /** Closing over/under. */
+  total: number | null;
+  /** Closing American odds (null when not listed). */
+  awayMoneyline: number | null;
+  homeMoneyline: number | null;
+  awaySpreadOdds: number | null;
+  homeSpreadOdds: number | null;
+  overOdds: number | null;
+  underOdds: number | null;
+  /** "outdoors", "open", "dome" or "closed" (retractable roof). */
+  roof: string;
+  /** Kickoff temperature (°F) and wind (mph) for outdoor games; null when not recorded. */
+  temp: number | null;
+  wind: number | null;
+}
+
+const blankStats = (): TeamGameStats => ({
+  totalYards: 0,
+  passYards: 0,
+  rushYards: 0,
+  firstDowns: 0,
+  thirdDownPct: 0,
+  turnovers: 0,
+  penalties: 0,
+  timeOfPossession: "",
 });
 
-const CSV = [
-  "game_id,season,game_type,week,gameday,away_team,away_score,home_team,home_score,stadium,espn,spread_line,total_line,away_moneyline,home_moneyline,away_spread_odds,home_spread_odds,over_odds,under_odds",
-  '2025_06_WAS_SF,2025,REG,6,2025-10-12,WAS,20,SF,27,"Levi\'s Stadium, Santa Clara",401772001,7.5,47.5,310,-395,-118,-102,-110,-110',
-  "2025_06_LA_SEA,2025,REG,6,2025-10-12,LA,24,SEA,21,Lumen Field,401772002,-1.5,44,NA,NA,NA,NA,NA,NA",
-  "2025_19_X_Y,2025,WC,19,2026-01-10,BUF,30,KC,27,Arrowhead,401772003,2.5,48,,,,,,",
-  "2026_01_BUF_KC,2026,REG,1,2026-09-10,BUF,NA,KC,NA,Arrowhead,401872001,2.5,48,,,,,,",
-].join("\n");
+const opt = (n: number | null) => (n === null ? undefined : n);
 
-describe("past seasons from nflverse", () => {
-  it("reads finished regular-season games and the site's team abbreviations", () => {
-    const games = parseHistoryCsv(CSV, 2022, 2025);
-    expect(games).toHaveLength(2); // playoff game and 2026 skipped
-    expect(games[0]).toMatchObject({
-      away: "WSH",
-      home: "SF",
-      espnId: 401772001,
-      homeFavoredBy: 7.5,
+/** One past game as a finished game the model can read. Undefined if a team is unknown. */
+export function historyGameToGame(h: HistoryGame): Game | undefined {
+  const away = teamByAbbr(h.away);
+  const home = teamByAbbr(h.home);
+  if (!away || !home) return undefined;
+  // The site writes lines as "FAV -x".
+  const fav = h.homeFavoredBy;
+  const spread =
+    fav === null
+      ? "—"
+      : fav === 0
+        ? "PK"
+        : fav > 0
+          ? `${home.abbr} -${fav}`
+          : `${away.abbr} -${-fav}`;
+  return {
+    id: `h${h.season}-${h.espnId}`,
+    week: h.week,
+    date: h.date,
+    kickoff: h.date,
+    status: "final",
+    venue: "",
+    location: "",
+    awayTeamId: away.id,
+    homeTeamId: home.id,
+    quarters: { away: [h.awayScore], home: [h.homeScore] },
+    spread,
+    total: h.total ?? 0,
+    drives: [],
+    stats: { away: blankStats(), home: blankStats() },
+    boxScore: [],
+    odds: {
+      awayMoneyline: opt(h.awayMoneyline),
+      homeMoneyline: opt(h.homeMoneyline),
+      awaySpreadOdds: opt(h.awaySpreadOdds),
+      homeSpreadOdds: opt(h.homeSpreadOdds),
+      overOdds: opt(h.overOdds),
+      underOdds: opt(h.underOdds),
+    },
+  };
+}
+
+/** Finished games of one past season, in week order. */
+export function historySeasonGames(history: HistoryGame[], season: number): Game[] {
+  return history
+    .filter((h) => h.season === season)
+    .map(historyGameToGame)
+    .filter((g): g is Game => g !== undefined)
+    .sort((a, b) => a.week - b.week);
+}
+
+/** One season's final scores in the shape the ratings use as a prior. */
+export function seasonResults(history: HistoryGame[], season: number): PriorResult[] {
+  return history
+    .filter((h) => h.season === season)
+    .flatMap((h) => {
+      const away = teamByAbbr(h.away);
+      const home = teamByAbbr(h.home);
+      return away && home
+        ? [
+            {
+              homeTeamId: home.id,
+              awayTeamId: away.id,
+              homeScore: h.homeScore,
+              awayScore: h.awayScore,
+            },
+          ]
+        : [];
     });
-    expect(games[1]).toMatchObject({ away: "LAR", homeFavoredBy: -1.5, homeMoneyline: null });
-  });
+}
 
-  it("turns a past game into a finished game with the closing line", () => {
-    const g = historyGameToGame(game())!;
-    expect(g.status).toBe("final");
-    expect(homeLine(g)).toBe(-7.5);
-    expect(g.odds?.homeMoneyline).toBe(-395);
-    expect(homeLine(historyGameToGame(game({ homeFavoredBy: -3 }))!)).toBe(3);
-  });
+export interface SeasonRun {
+  season: number;
+  rows: GameModelRow[];
+}
 
-  it("replays each past season walk-forward, calibrating on the seasons before it", () => {
-    const seasons = [2022, 2023, 2024];
-    const history = seasons.flatMap((season) =>
-      Array.from({ length: 6 }, (_, w) => [
-        game({ season, week: w + 1, espnId: season * 100 + w * 2, away: "WSH", home: "SF" }),
-        game({
-          season,
-          week: w + 1,
-          espnId: season * 100 + w * 2 + 1,
-          away: "SF",
-          home: "WSH",
-          homeFavoredBy: -7.5,
-        }),
-      ]).flat(),
-    );
-    const runs = pastSeasonRuns(history);
-    expect(runs.map((r) => r.season)).toEqual([2023, 2024]);
-    const firstCalibration = (season: number) =>
-      runs.find((r) => r.season === season)!.rows.find((r) => r.calibration)!.calibration!.samples;
-    expect(firstCalibration(2024)).toBeGreaterThan(firstCalibration(2023));
-  });
-});
+const runs = new WeakMap<HistoryGame[], SeasonRun[]>();
 
-describe("win probability", () => {
-  it("equals the moneyline market's no-vig price when the model has earned no trust", () => {
-    const g = historyGameToGame(game())!;
-    const raw = predictGame(fitRatings([]), g.homeTeamId, g.awayTeamId);
-    const cal: MarketCalibration = {
-      spreadWeight: 0,
-      totalWeight: 0,
-      totalBias: 0,
-      spreadScale: 1,
-      totalScale: 1,
-      totalCenter: 44,
-      samples: 800,
-    };
-    const p = anchorToMarket(g, raw, cal);
-    const ih = impliedProb(-395);
-    const ia = impliedProb(310);
-    expect(p.homeWinProb).toBeCloseTo(ih / (ih + ia), 6);
-    expect(p.homeLine).toBe(-7.5);
-  });
-});
+/**
+ * The model run over every past season that has the season before it available as a prior
+ * (the first season only serves as a prior). Each season calibrates on the seasons before it,
+ * exactly as the current one does, so the records are honest walk-forward tests.
+ */
+export function pastSeasonRuns(history: HistoryGame[]): SeasonRun[] {
+  const hit = runs.get(history);
+  if (hit) return hit;
+  const seasons = [...new Set(history.map((h) => h.season))].sort((a, b) => a - b);
+  const out: SeasonRun[] = [];
+  for (const season of seasons.slice(1)) {
+    const past = out.flatMap((r) => r.rows);
+    out.push({
+      season,
+      rows: runModel(historySeasonGames(history, season), seasonResults(history, season - 1), past),
+    });
+  }
+  runs.set(history, out);
+  return out;
+}
+
+/**
+ * The current season, calibrated on every past season. Without history (still loading, or
+ * GitHub unreachable) it runs on this season alone, as before.
+ */
+export function runModelWithHistory(
+  schedule: Game[],
+  priorSeason: PriorResult[],
+  history: HistoryGame[],
+): GameModelRow[] {
+  const past = pastSeasonRuns(history).flatMap((r) => r.rows);
+  const last = Math.max(0, ...history.map((h) => h.season));
+  const prior = priorSeason.length ? priorSeason : seasonResults(history, last);
+  return runModel(schedule, prior, past);
+}
