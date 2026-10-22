@@ -7,6 +7,7 @@ import type { Team } from "@/data/teams";
 import {
   getGamePropAnalytics,
   getGamePropPredictions,
+  getGamePropProjections,
   getPropAvailability,
   getPropPeople,
 } from "@/lib/espn.functions";
@@ -19,6 +20,7 @@ import {
   type Availability,
   type LineupCandidate,
 } from "@/lib/prop-lineup";
+import type { PlayerStatModel } from "@/lib/player-projection-model";
 import {
   analyticsRowsForCategory,
   trendOf,
@@ -110,7 +112,7 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
   const [marketKey, setMarketKey] = useState<string>("all");
   const [teamFilter, setTeamFilter] = useState<"all" | "away" | "home">("all");
   const [search, setSearch] = useState("");
-  const [sort, setSort] = useState<"value" | "recent" | "name">("value");
+  const [sort, setSort] = useState<"model" | "value" | "recent" | "name">("model");
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   // Sportsbook-style board: projected starters only, with ruled-out players hidden.
   const [lineup, setLineup] = useState<"starters" | "all">("starters");
@@ -137,6 +139,18 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
     staleTime: 10 * 60_000,
     retry: 1,
   });
+  // Model projections for every prop in this game, with the model's season accuracy.
+  const projectionsQuery = useQuery({
+    queryKey: ["prop-projections", game.id, away.abbr, home.abbr],
+    queryFn: () =>
+      getGamePropProjections({
+        data: { eventId: game.id, awayAbbr: away.abbr, homeAbbr: home.abbr },
+      }),
+    staleTime: 10 * 60_000,
+    retry: 1,
+  });
+  const modelFor = (playerId: string, key: string): PlayerStatModel | undefined =>
+    projectionsQuery.data?.players[playerId]?.[key];
   const analyticsPlayers = useMemo(() => analyticsQuery.data?.players ?? [], [analyticsQuery.data]);
   const analyticsById = useMemo(() => {
     const map = new Map<string, PlayerPropAnalytics>();
@@ -159,10 +173,14 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
       map.set(p.id, { status: p.injuryStatus, detail: p.injuryDetail, depthRank: p.depthRank });
     return map;
   }, [availabilityQuery.data]);
-  const availabilityFor = (id: string): Availability => availabilityOf(availabilityById.get(id)?.status);
+  const availabilityFor = (id: string): Availability =>
+    availabilityOf(availabilityById.get(id)?.status);
 
   const people = useMemo(() => {
-    const map = new Map<string, { id: string; name: string; position: string; team: string; headshot?: string }>();
+    const map = new Map<
+      string,
+      { id: string; name: string; position: string; team: string; headshot?: string }
+    >();
     for (const p of rosterQuery.data ?? []) map.set(p.id, p);
     return map;
   }, [rosterQuery.data]);
@@ -177,7 +195,8 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
         .sort(
           (a, b) =>
             Number(sideOf(a.team) === "home") - Number(sideOf(b.team) === "home") ||
-            POSITION_ORDER.indexOf(normalizePropPosition(a.position)) - POSITION_ORDER.indexOf(normalizePropPosition(b.position)) ||
+            POSITION_ORDER.indexOf(normalizePropPosition(a.position)) -
+              POSITION_ORDER.indexOf(normalizePropPosition(b.position)) ||
             a.name.localeCompare(b.name),
         ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -227,7 +246,14 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
     const usageOf = (id: string) => {
       const m = analyticsById.get(id)?.markets ?? {};
       const l3 = (key: string) => m[key]?.last3 ?? 0;
-      return l3("pass_att") + l3("rush_att") + l3("targets") + l3("fg_made") + l3("xp_made") + l3("punts");
+      return (
+        l3("pass_att") +
+        l3("rush_att") +
+        l3("targets") +
+        l3("fg_made") +
+        l3("xp_made") +
+        l3("punts")
+      );
     };
     const candidates: LineupCandidate[] = [];
     const seen = new Set<string>();
@@ -235,7 +261,14 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
       if (seen.has(id) || !isPropPlayerPosition(position) || !sideOf(teamAbbr)) return;
       seen.add(id);
       const a = availabilityById.get(id);
-      candidates.push({ id, teamAbbr, position, depthRank: a?.depthRank, injuryStatus: a?.status, usage: usageOf(id) });
+      candidates.push({
+        id,
+        teamAbbr,
+        position,
+        depthRank: a?.depthRank,
+        injuryStatus: a?.status,
+        usage: usageOf(id),
+      });
     };
     for (const p of people.values()) add(p.id, p.team, p.position);
     for (const p of analyticsPlayers) add(p.id, p.teamAbbr, p.position);
@@ -261,7 +294,9 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
   const hiddenOut = useMemo(
     () =>
       [...availabilityById.entries()].filter(
-        ([id, a]) => isRuledOut(availabilityOf(a.status)) && (people.get(id) ? isPropPlayerPosition(people.get(id)!.position) : false),
+        ([id, a]) =>
+          isRuledOut(availabilityOf(a.status)) &&
+          (people.get(id) ? isPropPlayerPosition(people.get(id)!.position) : false),
       ).length,
     [availabilityById, people],
   );
@@ -274,7 +309,11 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
 
   const categoryRows = rows.filter((r) => r.market.category === category);
   const shownRows = categoryRows
-    .filter((r) => (marketKey === "all" || r.market.key === marketKey) && matchesFilters(r.name, r.side, r.playerId))
+    .filter(
+      (r) =>
+        (marketKey === "all" || r.market.key === marketKey) &&
+        matchesFilters(r.name, r.side, r.playerId),
+    )
     .sort((a, b) =>
       sort === "name"
         ? a.name.localeCompare(b.name) || a.market.label.localeCompare(b.market.label)
@@ -298,12 +337,18 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
     )
     .sort((a, b) =>
       sort === "name"
-        ? a.player.name.localeCompare(b.player.name) || marketOrder(a.summary.key) - marketOrder(b.summary.key)
+        ? a.player.name.localeCompare(b.player.name) ||
+          marketOrder(a.summary.key) - marketOrder(b.summary.key)
         : // Different props have different units, so group by prop before ranking players.
           marketOrder(a.summary.key) - marketOrder(b.summary.key) ||
-          (sort === "recent"
-          ? b.summary.last3 - a.summary.last3 || a.player.name.localeCompare(b.player.name)
-          : b.summary.avg - a.summary.avg || a.player.name.localeCompare(b.player.name)),
+          (sort === "model"
+            ? (modelFor(b.player.id, b.summary.key)?.projection?.projected ?? -1) -
+                (modelFor(a.player.id, a.summary.key)?.projection?.projected ?? -1) ||
+              b.summary.avg - a.summary.avg ||
+              a.player.name.localeCompare(b.player.name)
+            : sort === "recent"
+              ? b.summary.last3 - a.summary.last3 || a.player.name.localeCompare(b.player.name)
+              : b.summary.avg - a.summary.avg || a.player.name.localeCompare(b.player.name)),
     );
   const countFor = (cat: PropCategory) =>
     hasProjections
@@ -336,7 +381,10 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
             <h2 className="font-disp text-xl font-semibold uppercase tracking-tight sm:text-2xl">
               {away.name} <span className="text-mute">@</span> {home.name}
             </h2>
-            <p suppressHydrationWarning className="font-mono text-[11px] uppercase tracking-wider text-mute">
+            <p
+              suppressHydrationWarning
+              className="font-mono text-[11px] uppercase tracking-wider text-mute"
+            >
               {kickoffText(game.kickoffIso)}
               {game.venue && game.venue !== "TBD" ? ` · ${game.venue}` : ""}
             </p>
@@ -354,21 +402,37 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
           ) : (
             <>
               <p className="font-semibold">
-                {hasAnalytics ? "Player analytics · 2026 results" : "Model projections aren\u2019t available for this game yet."}
+                {hasAnalytics
+                  ? "Player projections · model + 2026 results"
+                  : "Model projections aren\u2019t available for this game yet."}
               </p>
               <p className="mt-1 text-mute">
                 {hasAnalytics ? (
                   <>
-                    Real results from completed games this season — {away.abbr} {scanned[away.abbr] ?? 0} games,{" "}
-                    {home.abbr} {scanned[home.abbr] ?? 0} games — for offense, kickers and punters. Model projections
-                    and ranges will replace this view once they&apos;re saved before kickoff.
+                    The model projects each stat from recent form, this opponent&apos;s defense and
+                    the expected game script, using only games before this one ({away.abbr}{" "}
+                    {scanned[away.abbr] ?? 0} games, {home.abbr} {scanned[home.abbr] ?? 0} games
+                    played).{" "}
+                    {projectionsQuery.isLoading ? (
+                      "Loading projections\u2026"
+                    ) : projectionsQuery.data?.accuracy.overall.n ? (
+                      <span className="text-foreground">
+                        Season accuracy on these players:{" "}
+                        {projectionsQuery.data.accuracy.overall.inRangePct}% of results inside the
+                        range ({projectionsQuery.data.accuracy.overall.n} tested); results beat the
+                        projection {projectionsQuery.data.accuracy.overall.overPct}% of the time.
+                      </span>
+                    ) : projectionsQuery.isError ? (
+                      "Projections couldn\u2019t be loaded right now; season results are shown."
+                    ) : null}
                   </>
                 ) : analyticsQuery.isLoading ? (
                   "Loading player analytics from this season\u2019s box scores\u2026"
                 ) : (
                   <>
-                    {predictions?.message ?? "No projections have been saved for this matchup."} Real players for both
-                    teams (offense, kickers and punters) are listed below. Nothing on this page is estimated or made up.
+                    {predictions?.message ?? "No projections have been saved for this matchup."}{" "}
+                    Real players for both teams (offense, kickers and punters) are listed below.
+                    Nothing on this page is estimated or made up.
                   </>
                 )}
               </p>
@@ -400,7 +464,11 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
                     }`}
                   >
                     {c.label}
-                    <span className={`ml-1.5 font-mono text-[10px] ${active ? "text-black/60" : "text-faint"}`}>{count}</span>
+                    <span
+                      className={`ml-1.5 font-mono text-[10px] ${active ? "text-black/60" : "text-faint"}`}
+                    >
+                      {count}
+                    </span>
                   </button>
                 );
               })}
@@ -411,7 +479,9 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
                 type="button"
                 onClick={() => setMarketKey("all")}
                 className={`rounded-full px-2.5 py-1 font-mono text-[10px] uppercase tracking-wider ring-1 ${
-                  marketKey === "all" ? "bg-acc/10 text-acc ring-acc/25" : "bg-panel2 text-mute ring-line/10"
+                  marketKey === "all"
+                    ? "bg-acc/10 text-acc ring-acc/25"
+                    : "bg-panel2 text-mute ring-line/10"
                 }`}
               >
                 All
@@ -425,7 +495,13 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
                     key={market.key}
                     type="button"
                     disabled={count === 0}
-                    title={count === 0 ? (hasProjections ? "Not modeled for this game yet" : "No player has this stat yet") : undefined}
+                    title={
+                      count === 0
+                        ? hasProjections
+                          ? "Not modeled for this game yet"
+                          : "No player has this stat yet"
+                        : undefined
+                    }
                     onClick={() => setMarketKey(market.key)}
                     className={`rounded-full px-2.5 py-1 font-mono text-[10px] uppercase tracking-wider ring-1 ${
                       active
@@ -467,7 +543,9 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
                 aria-pressed={teamFilter === key}
                 onClick={() => setTeamFilter(key)}
                 className={`rounded-md px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider ring-1 ${
-                  teamFilter === key ? "bg-acc/10 text-acc ring-acc/25" : "bg-panel2 text-mute ring-line/10 hover:text-acc"
+                  teamFilter === key
+                    ? "bg-acc/10 text-acc ring-acc/25"
+                    : "bg-panel2 text-mute ring-line/10 hover:text-acc"
                 }`}
               >
                 {label}
@@ -477,11 +555,16 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
           {showTabs ? (
             <select
               value={sort}
-              onChange={(event) => setSort(event.target.value as "value" | "recent" | "name")}
+              onChange={(event) =>
+                setSort(event.target.value as "model" | "value" | "recent" | "name")
+              }
               aria-label="Sort"
               className={inputClass}
             >
-              <option value="value">{hasProjections ? "Sort: projected stat" : "Sort: season average"}</option>
+              {hasAnalytics ? <option value="model">Sort: model projection</option> : null}
+              <option value="value">
+                {hasProjections ? "Sort: projected stat" : "Sort: season average"}
+              </option>
               {hasAnalytics ? <option value="recent">Sort: last 3 games</option> : null}
               <option value="name">Sort: player A–Z</option>
             </select>
@@ -503,7 +586,9 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
                 aria-pressed={lineup === key}
                 onClick={() => setLineup(key)}
                 className={`rounded-md px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider ring-1 ${
-                  lineup === key ? "bg-acc/10 text-acc ring-acc/25" : "bg-panel2 text-mute ring-line/10 hover:text-acc"
+                  lineup === key
+                    ? "bg-acc/10 text-acc ring-acc/25"
+                    : "bg-panel2 text-mute ring-line/10 hover:text-acc"
                 }`}
               >
                 {label}
@@ -515,7 +600,9 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
             aria-pressed={showOut}
             onClick={() => setShowOut((v) => !v)}
             className={`rounded-md px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider ring-1 ${
-              showOut ? "bg-loss/10 text-loss ring-loss/25" : "bg-panel2 text-mute ring-line/10 hover:text-acc"
+              showOut
+                ? "bg-loss/10 text-loss ring-loss/25"
+                : "bg-panel2 text-mute ring-line/10 hover:text-acc"
             }`}
           >
             {showOut ? "Showing ruled out" : "Show ruled out"}
@@ -532,7 +619,9 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
               ? "Loading injury report…"
               : availabilityQuery.data
                 ? `${availabilityQuery.data.sources.depthChart ? "ESPN depth chart" : "Recent usage (no depth chart)"}${
-                    availabilityQuery.data.sources.injuryReport ? " + injury report" : " · no injury report posted"
+                    availabilityQuery.data.sources.injuryReport
+                      ? " + injury report"
+                      : " · no injury report posted"
                   }. Out, Doubtful and IR players are hidden unless shown.`
                 : "Injury report unavailable — nobody is hidden for injury."}
           </p>
@@ -543,7 +632,8 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
       {hasProjections ? (
         shownRows.length === 0 ? (
           <p className="px-4 py-8 text-center font-mono text-xs text-mute">
-            No {PROP_CATEGORIES.find((c) => c.key === category)?.label.toLowerCase()} projections match these filters.
+            No {PROP_CATEGORIES.find((c) => c.key === category)?.label.toLowerCase()} projections
+            match these filters.
           </p>
         ) : (
           <div className="overflow-x-auto">
@@ -555,7 +645,9 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
                   <th className="px-2 py-2 font-normal">Prop</th>
                   <th className="px-2 py-2 text-right font-normal">Projected</th>
                   <th className="px-2 py-2 text-right font-normal">Range</th>
-                  <th className="px-4 py-2 text-right font-normal">{finalGame ? "Result" : "Status"}</th>
+                  <th className="px-4 py-2 text-right font-normal">
+                    {finalGame ? "Result" : "Status"}
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-line/5">
@@ -578,7 +670,9 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
                           >
                             {row.name}
                           </Link>
-                          <span className="ml-2 font-mono text-[10px] text-faint">{row.position}</span>
+                          <span className="ml-2 font-mono text-[10px] text-faint">
+                            {row.position}
+                          </span>
                           <InjuryTag info={injuryTagFor(row.playerId)} />
                         </td>
                         <td className="px-2 py-2.5 font-mono text-mute">{row.teamAbbr}</td>
@@ -597,7 +691,9 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
                               {row.actual} · {row.inRange ? "in range" : "outside"}
                             </span>
                           ) : (
-                            <span className="text-faint">{finalGame ? "Pending" : "Locked pregame"}</span>
+                            <span className="text-faint">
+                              {finalGame ? "Pending" : "Locked pregame"}
+                            </span>
                           )}
                         </td>
                       </tr>
@@ -617,7 +713,9 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
                                 <span className="text-faint">Saved: </span>
                                 {row.createdAt ? new Date(row.createdAt).toLocaleString() : "—"}
                               </p>
-                              <AnalyticsLine summary={analyticsById.get(row.playerId)?.markets[row.market.key]} />
+                              <AnalyticsLine
+                                summary={analyticsById.get(row.playerId)?.markets[row.market.key]}
+                              />
                               <p>
                                 <span className="text-faint">Result: </span>
                                 {evaluated
@@ -642,6 +740,9 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
       ) : hasAnalytics ? (
         <AnalyticsTable
           tagFor={injuryTagFor}
+          modelFor={modelFor}
+          resultWeek={finalGame ? game.week : undefined}
+          modelLoading={projectionsQuery.isLoading}
           rows={shownAnalytics}
           categoryLabel={PROP_CATEGORIES.find((c) => c.key === category)?.label ?? ""}
           expanded={expanded}
@@ -662,9 +763,11 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
       <p className="border-t border-line/10 px-4 py-3 text-[11px] text-faint">
         {hasAnalytics ? (
           <>
-            Season averages, last-3 averages, medians, highs and lows come from ESPN box scores of this team&apos;s completed 2026
-            games. Longest-play stats only count games with at least one such play. These are past results, not projections or
-            sportsbook lines.
+            Proj = model projection = recent form (latest games weighted most, pulled toward the
+            position average early in the season) × opponent defense vs. that position × expected
+            game script. Range: {RANGE_METHOD_NOTE} Season figures come from ESPN box scores of
+            completed 2026 games; longest-play stats only count games with such a play. Not
+            sportsbook lines or advice.
           </>
         ) : (
           <>
@@ -694,7 +797,9 @@ function PlayerList({
   if (players.length === 0) {
     return (
       <p className="px-4 pb-6 text-center font-mono text-xs text-mute">
-        {loadFailed ? "The player list for these teams couldn't be loaded." : "No players match these filters."}
+        {loadFailed
+          ? "The player list for these teams couldn't be loaded."
+          : "No players match these filters."}
       </p>
     );
   }
@@ -713,7 +818,11 @@ function PlayerList({
           {players.map((player) => (
             <tr key={player.id} className="hover:bg-line/5">
               <td className="px-4 py-2.5">
-                <Link to="/players/$playerId" params={{ playerId: player.id }} className="font-medium hover:text-acc">
+                <Link
+                  to="/players/$playerId"
+                  params={{ playerId: player.id }}
+                  className="font-medium hover:text-acc"
+                >
                   {player.name}
                 </Link>
                 <InjuryTag info={tagFor(player.id)} />
@@ -724,7 +833,9 @@ function PlayerList({
                   {player.team}
                 </span>
               </td>
-              <td className="px-2 py-2.5 font-mono text-mute">{normalizePropPosition(player.position)}</td>
+              <td className="px-2 py-2.5 font-mono text-mute">
+                {normalizePropPosition(player.position)}
+              </td>
               <td className="px-4 py-2.5 text-right font-mono text-[11px] uppercase tracking-wider text-faint">
                 Awaiting model
               </td>
@@ -741,7 +852,9 @@ function PlayerList({
 const statText = (key: string, value: number) => {
   const market = marketByKey(key);
   if (!market) return String(value);
-  return market.kind === "yards" || market.kind === "long" ? String(Math.round(value)) : value.toFixed(1);
+  return market.kind === "yards" || market.kind === "long"
+    ? String(Math.round(value))
+    : value.toFixed(1);
 };
 
 const wholeText = (value: number) => (Number.isInteger(value) ? String(value) : value.toFixed(1));
@@ -752,7 +865,11 @@ function TrendMark({ summary }: { summary: MarketSummary }) {
   return (
     <span
       className={`ml-1 text-[10px] ${trend === "up" ? "text-win" : "text-loss"}`}
-      title={trend === "up" ? "Last 3 games well above season average" : "Last 3 games well below season average"}
+      title={
+        trend === "up"
+          ? "Last 3 games well above season average"
+          : "Last 3 games well below season average"
+      }
       aria-label={trend === "up" ? "trending up" : "trending down"}
     >
       {trend === "up" ? "▲" : "▼"}
@@ -766,8 +883,8 @@ function AnalyticsLine({ summary }: { summary?: MarketSummary }) {
   return (
     <p>
       <span className="text-faint">This season: </span>
-      {statText(summary.key, summary.avg)} avg · {statText(summary.key, summary.last3)} last 3 · high{" "}
-      {wholeText(summary.high)} · {summary.games} games
+      {statText(summary.key, summary.avg)} avg · {statText(summary.key, summary.last3)} last 3 ·
+      high {wholeText(summary.high)} · {summary.games} games
     </p>
   );
 }
@@ -776,13 +893,22 @@ function AnalyticsLine({ summary }: { summary?: MarketSummary }) {
 function GameLogBars({ summary }: { summary: MarketSummary }) {
   const max = Math.max(summary.high, 1);
   return (
-    <div className="flex items-end gap-1.5 overflow-x-auto pb-1" role="img" aria-label="Game-by-game results">
+    <div
+      className="flex items-end gap-1.5 overflow-x-auto pb-1"
+      role="img"
+      aria-label="Game-by-game results"
+    >
       {summary.log.map((g) => {
         const pct = Math.max(4, Math.round((g.value / max) * 100));
         const above = g.value >= summary.avg;
         return (
-          <div key={`${g.week}-${g.opponent}`} className="flex w-10 shrink-0 flex-col items-center gap-1">
-            <span className="font-mono text-[10px] tabular-nums text-foreground">{wholeText(g.value)}</span>
+          <div
+            key={`${g.week}-${g.opponent}`}
+            className="flex w-10 shrink-0 flex-col items-center gap-1"
+          >
+            <span className="font-mono text-[10px] tabular-nums text-foreground">
+              {wholeText(g.value)}
+            </span>
             <div className="flex h-16 w-full items-end rounded-sm bg-panel2/60">
               <div
                 className={`w-full rounded-sm ${above ? "bg-acc/70" : "bg-line/25"}`}
@@ -807,8 +933,15 @@ function AnalyticsTable({
   expanded,
   toggle,
   tagFor,
+  modelFor,
+  resultWeek,
+  modelLoading,
 }: {
   tagFor: (id: string) => InjuryTagInfo | undefined;
+  modelFor: (playerId: string, key: string) => PlayerStatModel | undefined;
+  /** Week of this game when it's final, to show the actual result next to the projection. */
+  resultWeek?: number;
+  modelLoading: boolean;
   rows: { player: PlayerPropAnalytics; summary: MarketSummary }[];
   categoryLabel: string;
   expanded: Set<string>;
@@ -823,17 +956,47 @@ function AnalyticsTable({
   }
   return (
     <div className="overflow-x-auto">
-      <table className="w-full min-w-[720px] text-sm">
+      <table className="w-full min-w-[860px] text-sm">
         <thead>
           <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
             <th className="px-4 py-2 font-normal">Player</th>
             <th className="px-2 py-2 font-normal">Team</th>
             <th className="px-2 py-2 font-normal">Prop</th>
-            <th className="px-2 py-2 text-right font-normal" title="Season per-game average">Avg</th>
-            <th className="px-2 py-2 text-right font-normal" title="Average of the last three games">Last 3</th>
-            <th className="px-2 py-2 text-right font-normal">Median</th>
-            <th className="px-2 py-2 text-right font-normal" title="Season low – high">Low–High</th>
-            <th className="px-4 py-2 text-right font-normal" title="Games counted">GP</th>
+            <th className="px-2 py-2 text-right font-normal" title="Model projection for this game">
+              Proj
+            </th>
+            <th
+              className="px-2 py-2 text-right font-normal"
+              title="Projected range of likely outcomes"
+            >
+              Range
+            </th>
+            {resultWeek !== undefined ? (
+              <th
+                className="px-2 py-2 text-right font-normal"
+                title="What actually happened in this game"
+              >
+                Actual
+              </th>
+            ) : null}
+            <th className="px-2 py-2 text-right font-normal" title="Season per-game average">
+              Avg
+            </th>
+            <th
+              className="px-2 py-2 text-right font-normal"
+              title="Average of the last three games"
+            >
+              Last 3
+            </th>
+            <th className="px-2 py-2 text-right font-normal" title="Season low – high">
+              Low–High
+            </th>
+            <th
+              className="px-4 py-2 text-right font-normal"
+              title="Model's hits inside its range on this player's earlier games"
+            >
+              Model hits
+            </th>
           </tr>
         </thead>
         <tbody className="divide-y divide-line/5">
@@ -842,9 +1005,20 @@ function AnalyticsTable({
             const open = expanded.has(id);
             const market = marketByKey(summary.key);
             const kicking = market?.category === "kicking" ? player.kicking : undefined;
+            const model = modelFor(player.id, summary.key);
+            const proj = model?.projection;
+            const actual =
+              resultWeek !== undefined
+                ? summary.log.find((g) => g.week === resultWeek)?.value
+                : undefined;
+            const columns = resultWeek !== undefined ? 10 : 9;
             return (
               <Fragment key={id}>
-                <tr onClick={() => toggle(id)} className="cursor-pointer hover:bg-line/5" aria-expanded={open}>
+                <tr
+                  onClick={() => toggle(id)}
+                  className="cursor-pointer hover:bg-line/5"
+                  aria-expanded={open}
+                >
                   <td className="px-4 py-2.5">
                     <Link
                       to="/players/$playerId"
@@ -860,6 +1034,31 @@ function AnalyticsTable({
                   <td className="px-2 py-2.5 font-mono text-mute">{player.teamAbbr}</td>
                   <td className="px-2 py-2.5 text-mute">{market?.label ?? summary.key}</td>
                   <td className="px-2 py-2.5 text-right font-mono text-base font-bold tabular-nums text-acc">
+                    {proj ? statText(summary.key, proj.projected) : modelLoading ? "…" : "—"}
+                  </td>
+                  <td className="px-2 py-2.5 text-right font-mono tabular-nums text-mute">
+                    {proj ? (
+                      <span className="rounded bg-panel2 px-2 py-0.5">
+                        {proj.lower}–{proj.upper}
+                      </span>
+                    ) : (
+                      "—"
+                    )}
+                  </td>
+                  {resultWeek !== undefined ? (
+                    <td
+                      className={`px-2 py-2.5 text-right font-mono tabular-nums ${
+                        actual === undefined || !proj
+                          ? "text-mute"
+                          : actual >= proj.lower && actual <= proj.upper
+                            ? "text-win"
+                            : "text-loss"
+                      }`}
+                    >
+                      {actual === undefined ? "—" : wholeText(actual)}
+                    </td>
+                  ) : null}
+                  <td className="px-2 py-2.5 text-right font-mono tabular-nums">
                     {statText(summary.key, summary.avg)}
                   </td>
                   <td className="px-2 py-2.5 text-right font-mono tabular-nums">
@@ -867,40 +1066,66 @@ function AnalyticsTable({
                     <TrendMark summary={summary} />
                   </td>
                   <td className="px-2 py-2.5 text-right font-mono tabular-nums text-mute">
-                    {statText(summary.key, summary.median)}
+                    {wholeText(summary.low)}–{wholeText(summary.high)}
                   </td>
-                  <td className="px-2 py-2.5 text-right font-mono tabular-nums text-mute">
-                    <span className="rounded bg-panel2 px-2 py-0.5">
-                      {wholeText(summary.low)}–{wholeText(summary.high)}
-                    </span>
+                  <td className="px-4 py-2.5 text-right font-mono tabular-nums text-faint">
+                    {model && model.history.length
+                      ? `${model.history.filter((h) => h.actual >= h.lower && h.actual <= h.upper).length}/${model.history.length}`
+                      : "—"}
                   </td>
-                  <td className="px-4 py-2.5 text-right font-mono tabular-nums text-faint">{summary.games}</td>
                 </tr>
                 {open ? (
                   <tr className="bg-panel2/30">
-                    <td colSpan={8} className="space-y-3 px-4 py-3 text-xs text-mute">
+                    <td colSpan={columns} className="space-y-3 px-4 py-3 text-xs text-mute">
+                      {proj ? (
+                        <p>
+                          <span className="text-faint">Model: </span>
+                          <span className="text-foreground">
+                            {statText(summary.key, proj.projected)}
+                          </span>{" "}
+                          = form {statText(summary.key, proj.form)} × opponent defense{" "}
+                          {proj.defense.toFixed(2)} × game script {proj.script.toFixed(2)} · built
+                          on {proj.games} earlier games
+                        </p>
+                      ) : (
+                        <p className="text-faint">
+                          No projection: the model needs at least 2 earlier games with this stat.
+                        </p>
+                      )}
+                      {model && model.history.length ? (
+                        <ModelHistory statKey={summary.key} model={model} />
+                      ) : null}
                       <GameLogBars summary={summary} />
                       <div className="grid gap-x-6 gap-y-1 sm:grid-cols-2">
+                        <p>
+                          <span className="text-faint">Median: </span>
+                          {statText(summary.key, summary.median)} · {summary.games} games
+                        </p>
                         <p>
                           <span className="text-faint">Season total: </span>
                           {wholeText(summary.total)} in {summary.games} games
                         </p>
                         <p>
                           <span className="text-faint">At or above average: </span>
-                          {summary.log.filter((g) => g.value >= summary.avg).length} of {summary.games} games
+                          {summary.log.filter((g) => g.value >= summary.avg).length} of{" "}
+                          {summary.games} games
                         </p>
                         {kicking ? (
                           <>
                             <p>
                               <span className="text-faint">Field goals: </span>
                               {kicking.fgm}/{kicking.fga}
-                              {kicking.fga ? ` (${Math.round((kicking.fgm / kicking.fga) * 100)}%)` : ""}
+                              {kicking.fga
+                                ? ` (${Math.round((kicking.fgm / kicking.fga) * 100)}%)`
+                                : ""}
                               {kicking.longest ? ` · long ${kicking.longest}` : ""}
                             </p>
                             <p>
                               <span className="text-faint">Extra points: </span>
                               {kicking.xpm}/{kicking.xpa}
-                              {kicking.xpa ? ` (${Math.round((kicking.xpm / kicking.xpa) * 100)}%)` : ""}
+                              {kicking.xpa
+                                ? ` (${Math.round((kicking.xpm / kicking.xpa) * 100)}%)`
+                                : ""}
                             </p>
                           </>
                         ) : null}
@@ -940,5 +1165,42 @@ function InjuryTag({ info }: { info?: InjuryTagInfo }) {
     >
       {info.tag}
     </span>
+  );
+}
+
+/* ---------- model vs actual ---------- */
+
+function ModelHistory({ statKey, model }: { statKey: string; model: PlayerStatModel }) {
+  const a = model.accuracy;
+  return (
+    <div>
+      <p className="mb-1.5">
+        <span className="text-faint">Model on his earlier games: </span>
+        {a.inRangePct ?? "—"}% inside the range · average miss {a.mae ?? "—"} · beat the projection{" "}
+        {a.overPct ?? "—"}% of the time
+      </p>
+      <div className="flex gap-1.5 overflow-x-auto pb-1">
+        {model.history.map((h) => {
+          const hit = h.actual >= h.lower && h.actual <= h.upper;
+          return (
+            <div
+              key={`${h.week}-${h.opponent}`}
+              className="w-[4.5rem] shrink-0 rounded-md bg-panel2/60 px-2 py-1.5 text-center ring-1 ring-line/10"
+              title={`Week ${h.week} vs ${h.opponent}: projected ${statText(statKey, h.projected)} (${h.lower}–${h.upper}), actual ${wholeText(h.actual)}`}
+            >
+              <p className="font-mono text-[9px] uppercase text-faint">
+                W{h.week} {h.opponent}
+              </p>
+              <p className={`font-mono text-sm tabular-nums ${hit ? "text-win" : "text-loss"}`}>
+                {wholeText(h.actual)}
+              </p>
+              <p className="font-mono text-[9px] tabular-nums text-mute">
+                proj {statText(statKey, h.projected)}
+              </p>
+            </div>
+          );
+        })}
+      </div>
+    </div>
   );
 }
