@@ -15,13 +15,21 @@ import { homeLine } from "./season-pulse";
 /* ---------------- settings (tune here) ---------------- */
 
 export const MODEL_SETTINGS = {
-  version: "gnfl-ratings-v1",
+  version: "gnfl-ratings-v2",
+  /**
+   * Last season's games count this much each (vs 1 for this season), so week 1 starts from last
+   * year's ratings and this season's results take over as they come in.
+   */
+  priorSeasonWeight: 0.3,
   /** Ridge shrinkage on team ratings, in "games of average play". Higher = more cautious early. */
   shrinkGames: 4,
   /** Home-field prior (points of margin) and how many games of evidence it is worth. */
   homeFieldPrior: 1.5,
   homeFieldPriorGames: 40,
-  /** Both teams need this many finished games before the model makes picks for them. */
+  /**
+   * Both teams need this many finished games before the model makes picks for them. Last season's
+   * games count at their reduced weight, so with last season loaded the model can bet from week 1.
+   */
   minGamesPerTeam: 2,
   /** Spread pick when the model line differs from the market by at least this many points. */
   spreadEdgePts: 2.5,
@@ -50,8 +58,18 @@ export interface TeamRatings {
   offense: Record<string, number>;
   /** Points a team allows above average (defense; lower is better), by team id. */
   defense: Record<string, number>;
-  /** Finished games per team in the fit. */
+  /** Finished games per team in the fit (last season's games count at their reduced weight). */
   games: Record<string, number>;
+  /** This season's finished games per team. */
+  currentGames: Record<string, number>;
+}
+
+/** A final score from an earlier season (same team ids as this season). */
+export interface PriorResult {
+  homeTeamId: string;
+  awayTeamId: string;
+  homeScore: number;
+  awayScore: number;
 }
 
 interface PointsObs {
@@ -60,21 +78,39 @@ interface PointsObs {
   /** +0.5 for the home team's points, -0.5 for the away team's, 0 at a neutral site. */
   home: number;
   points: number;
+  weight: number;
 }
 
 /**
- * Fits offense / defense ratings to final scores by ridge regression:
+ * Fits offense / defense ratings to final scores by weighted ridge regression:
  * points = mean + homeField * home + offense[team] + defense[opponent].
+ * Last season's results (if given) join at a reduced weight.
  */
-export function fitRatings(finals: Game[]): TeamRatings {
+export function fitRatings(finals: Game[], prior: PriorResult[] = []): TeamRatings {
   const obs: PointsObs[] = [];
   const games: Record<string, number> = {};
+  const currentGames: Record<string, number> = {};
+  const add = (
+    homeId: string,
+    awayId: string,
+    homePts: number,
+    awayPts: number,
+    weight: number,
+  ) => {
+    obs.push({ team: homeId, opp: awayId, home: 0.5, points: homePts, weight });
+    obs.push({ team: awayId, opp: homeId, home: -0.5, points: awayPts, weight });
+    games[homeId] = (games[homeId] ?? 0) + weight;
+    games[awayId] = (games[awayId] ?? 0) + weight;
+  };
   for (const g of finals) {
     const s = gameScore(g);
-    obs.push({ team: g.homeTeamId, opp: g.awayTeamId, home: 0.5, points: s.home });
-    obs.push({ team: g.awayTeamId, opp: g.homeTeamId, home: -0.5, points: s.away });
-    games[g.homeTeamId] = (games[g.homeTeamId] ?? 0) + 1;
-    games[g.awayTeamId] = (games[g.awayTeamId] ?? 0) + 1;
+    add(g.homeTeamId, g.awayTeamId, s.home, s.away, 1);
+    currentGames[g.homeTeamId] = (currentGames[g.homeTeamId] ?? 0) + 1;
+    currentGames[g.awayTeamId] = (currentGames[g.awayTeamId] ?? 0) + 1;
+  }
+  for (const r of prior) {
+    if (!Number.isFinite(r.homeScore) || !Number.isFinite(r.awayScore)) continue;
+    add(r.homeTeamId, r.awayTeamId, r.homeScore, r.awayScore, MODEL_SETTINGS.priorSeasonWeight);
   }
   const offense: Record<string, number> = {};
   const defense: Record<string, number> = {};
@@ -83,46 +119,52 @@ export function fitRatings(finals: Game[]): TeamRatings {
     defense[id] = 0;
   }
   if (obs.length === 0)
-    return { mean: 22, homeField: MODEL_SETTINGS.homeFieldPrior, offense, defense, games };
+    return {
+      mean: 22,
+      homeField: MODEL_SETTINGS.homeFieldPrior,
+      offense,
+      defense,
+      games,
+      currentGames,
+    };
 
-  let mean = obs.reduce((sum, o) => sum + o.points, 0) / obs.length;
+  const totalWeight = obs.reduce((sum, o) => sum + o.weight, 0);
+  let mean = obs.reduce((sum, o) => sum + o.weight * o.points, 0) / totalWeight;
   let homeField: number = MODEL_SETTINGS.homeFieldPrior;
   const lambda = MODEL_SETTINGS.shrinkGames;
   const predict = (o: PointsObs) => mean + homeField * o.home + offense[o.team] + defense[o.opp];
 
   for (let iter = 0; iter < 60; iter++) {
-    // Offense
     const offSum: Record<string, number> = {};
     const defSum: Record<string, number> = {};
     for (const o of obs)
-      offSum[o.team] = (offSum[o.team] ?? 0) + (o.points - predict(o) + offense[o.team]);
+      offSum[o.team] = (offSum[o.team] ?? 0) + o.weight * (o.points - predict(o) + offense[o.team]);
     for (const id of Object.keys(offense))
       offense[id] = (offSum[id] ?? 0) / ((games[id] ?? 0) + lambda);
-    // Defense
     for (const o of obs)
-      defSum[o.opp] = (defSum[o.opp] ?? 0) + (o.points - predict(o) + defense[o.opp]);
+      defSum[o.opp] = (defSum[o.opp] ?? 0) + o.weight * (o.points - predict(o) + defense[o.opp]);
     for (const id of Object.keys(defense))
       defense[id] = (defSum[id] ?? 0) / ((games[id] ?? 0) + lambda);
-    // Home field, pulled toward its prior: each game's margin carries it once (0.5 + 0.5).
-    // Each game contributes 0.5 to the denominator (two observations at ±0.5).
+    // Home field, pulled toward its prior. Each game contributes 0.5 to the denominator
+    // (two observations at ±0.5), times its weight.
     const priorWeight = MODEL_SETTINGS.homeFieldPriorGames * 0.5;
     let hfNum = MODEL_SETTINGS.homeFieldPrior * priorWeight;
     let hfDen: number = priorWeight;
     for (const o of obs) {
       if (o.home === 0) continue;
       const resid = o.points - (mean + offense[o.team] + defense[o.opp]);
-      hfNum += resid * o.home;
-      hfDen += o.home * o.home;
+      hfNum += o.weight * resid * o.home;
+      hfDen += o.weight * o.home * o.home;
     }
     homeField = hfNum / hfDen;
-    // League mean
     mean =
       obs.reduce(
-        (sum, o) => sum + (o.points - homeField * o.home - offense[o.team] - defense[o.opp]),
+        (sum, o) =>
+          sum + o.weight * (o.points - homeField * o.home - offense[o.team] - defense[o.opp]),
         0,
-      ) / obs.length;
+      ) / totalWeight;
   }
-  return { mean, homeField, offense, defense, games };
+  return { mean, homeField, offense, defense, games, currentGames };
 }
 
 /* ---------------- predictions ---------------- */
@@ -301,12 +343,15 @@ export function picksForGame(game: Game, p: GamePrediction): ModelPick[] {
 }
 
 /** Walk-forward run over the whole schedule: predictions, picks and grades for every game. */
-export function runModel(schedule: Game[]): GameModelRow[] {
+export function runModel(schedule: Game[], priorSeason: PriorResult[] = []): GameModelRow[] {
   const finals = schedule.filter((g) => g.status === "final");
   const weeks = [...new Set(schedule.map((g) => g.week))].sort((a, b) => a - b);
   const rows: GameModelRow[] = [];
   for (const week of weeks) {
-    const ratings = fitRatings(finals.filter((g) => g.week < week));
+    const ratings = fitRatings(
+      finals.filter((g) => g.week < week),
+      priorSeason,
+    );
     for (const game of schedule.filter((g) => g.week === week)) {
       const marketHomeLine = homeLine(game);
       const marketTotal = game.total > 0 ? game.total : null;
