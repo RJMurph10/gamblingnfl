@@ -14,8 +14,7 @@ import type { BoxScoreLine, Drive, DriveResult, Game, TeamGameStats } from "@/da
 import { gameScore } from "@/data/games";
 import { teamByAbbr, teamById, teams } from "@/data/teams";
 
-const SCOREBOARD =
-  "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard";
+const SCOREBOARD = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard";
 const SUMMARY = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary";
 const CORE_ODDS = "https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/events";
 
@@ -35,6 +34,8 @@ function asProbability(value: unknown): number | undefined {
 
 const SEASON = 2026;
 const REGULAR_SEASON_WEEKS = 18;
+/** The season the site covers (exported so other server modules can ask ESPN for last season). */
+export const CURRENT_SEASON = SEASON;
 const CACHE_TTL_MS = 1_500; // Keep live scoreboard and scoring transitions tightly synchronized
 const ROSTER_CACHE_TTL_MS = 60 * 60 * 1000; // 1-hour roster cache
 const HISTORICAL_ODDS_CACHE_TTL_MS = 24 * 60 * 60 * 1000; // historical game lines do not change
@@ -97,7 +98,10 @@ function extractYacValue(data: any): number | undefined {
     }
     // Only match receiving-specific YAC names in fallback inspection
     const name = String(node.name ?? node.displayName ?? "").toLowerCase();
-    if (name === "receivingyardsaftercatch" || (name.includes("yards after catch") && !name.includes("pass"))) {
+    if (
+      name === "receivingyardsaftercatch" ||
+      (name.includes("yards after catch") && !name.includes("pass"))
+    ) {
       const found = parse(node.value ?? node.displayValue);
       if (found !== undefined) return found;
     }
@@ -117,7 +121,6 @@ async function fetchJson(url: string): Promise<any> {
   if (!res.ok) throw new Error(`ESPN feed failed [${res.status}] for ${url}`);
   return res.json();
 }
-
 
 /**
  * ESPN Core API probability records. Items may be inline or $ref-only. Resolved
@@ -140,9 +143,12 @@ async function fetchProbabilityRef(url: string): Promise<any> {
 }
 
 const hasMarketFields = (record: any): boolean =>
-  [record?.spreadCoverProbHome, record?.homeSpreadCoverProbability, record?.totalOverProb, record?.overProbability].some(
-    (v) => typeof v === "number" && v > 0,
-  );
+  [
+    record?.spreadCoverProbHome,
+    record?.homeSpreadCoverProbability,
+    record?.totalOverProb,
+    record?.overProbability,
+  ].some((v) => typeof v === "number" && v > 0);
 
 async function fetchCoreProbabilityRecords(eventId: string): Promise<any[]> {
   const url = `${CORE_ODDS}/${eventId}/competitions/${eventId}/probabilities?limit=400&page=1`;
@@ -156,9 +162,15 @@ async function fetchCoreProbabilityRecords(eventId: string): Promise<any[]> {
   const rawItems: any[] = Array.isArray(collection?.items) ? [...collection.items] : [];
   const expectedCount = Number(collection?.count) || rawItems.length;
   const pageSize = Number(collection?.pageSize) || rawItems.length || 1;
-  for (let page = 2; rawItems.length < expectedCount && page <= Math.ceil(expectedCount / pageSize); page++) {
+  for (
+    let page = 2;
+    rawItems.length < expectedCount && page <= Math.ceil(expectedCount / pageSize);
+    page++
+  ) {
     try {
-      const next = await fetchJson(`${CORE_ODDS}/${eventId}/competitions/${eventId}/probabilities?limit=400&page=${page}`);
+      const next = await fetchJson(
+        `${CORE_ODDS}/${eventId}/competitions/${eventId}/probabilities?limit=400&page=${page}`,
+      );
       const items = Array.isArray(next?.items) ? next.items : [];
       if (!items.length) break;
       rawItems.push(...items);
@@ -167,8 +179,11 @@ async function fetchCoreProbabilityRecords(eventId: string): Promise<any[]> {
     }
   }
 
-  const refOnly = rawItems.filter((item) => typeof item?.$ref === "string" && item.$ref && item.homeWinPercentage === undefined);
-  if (refOnly.length === 0) return rawItems.filter((record) => record && typeof record === "object");
+  const refOnly = rawItems.filter(
+    (item) => typeof item?.$ref === "string" && item.$ref && item.homeWinPercentage === undefined,
+  );
+  if (refOnly.length === 0)
+    return rawItems.filter((record) => record && typeof record === "object");
 
   // $ref-only: probe three records (start, middle, end) before resolving everything.
   const probeIndexes = [0, Math.floor(refOnly.length / 2), refOnly.length - 1];
@@ -179,7 +194,8 @@ async function fetchCoreProbabilityRecords(eventId: string): Promise<any[]> {
   const refs: Array<{ index: number; url: string }> = [];
   rawItems.forEach((item, index) => {
     const ref = item?.$ref;
-    if (typeof ref === "string" && ref && item.homeWinPercentage === undefined) refs.push({ index, url: ref });
+    if (typeof ref === "string" && ref && item.homeWinPercentage === undefined)
+      refs.push({ index, url: ref });
     else records[index] = item;
   });
   const batchSize = 12;
@@ -357,7 +373,9 @@ function parseSeasonLeaders(
       row[side] = {
         playerId: athlete?.id ? String(athlete.id) : undefined,
         name: String(athlete.displayName),
-        position: athlete?.position?.abbreviation ? String(athlete.position.abbreviation) : undefined,
+        position: athlete?.position?.abbreviation
+          ? String(athlete.position.abbreviation)
+          : undefined,
         value: String(mainValue),
         unit: top?.mainStat?.label ? String(top.mainStat.label) : undefined,
         headshot: athlete?.headshot?.href ? String(athlete.headshot.href) : undefined,
@@ -384,9 +402,11 @@ function parseGameInfo(d: any): Game["info"] {
     const high = Number(w.highTemperature);
     const parts: string[] = [];
     if (Number.isFinite(temp)) parts.push(`${Math.round(temp)}°`);
-    if (w.displayValue || w.conditionDescription) parts.push(String(w.displayValue ?? w.conditionDescription));
+    if (w.displayValue || w.conditionDescription)
+      parts.push(String(w.displayValue ?? w.conditionDescription));
     let summary = parts.join(", ");
-    if (summary && Number.isFinite(high) && high !== temp) summary += ` (High ${Math.round(high)}°)`;
+    if (summary && Number.isFinite(high) && high !== temp)
+      summary += ` (High ${Math.round(high)}°)`;
     if (summary) {
       weather = {
         summary,
@@ -397,7 +417,9 @@ function parseGameInfo(d: any): Game["info"] {
   }
   const broadcastNames: string[] = [];
   const broadcastSources: any[] = [
-    ...(Array.isArray(d?.header?.competitions?.[0]?.broadcasts) ? d.header.competitions[0].broadcasts : []),
+    ...(Array.isArray(d?.header?.competitions?.[0]?.broadcasts)
+      ? d.header.competitions[0].broadcasts
+      : []),
     ...(Array.isArray(d?.broadcasts) ? d.broadcasts : []),
   ];
   for (const b of broadcastSources) {
@@ -413,9 +435,13 @@ function parseGameInfo(d: any): Game["info"] {
   // ESPN's Game Information photo is the *interior* shot that shows the field
   // (https://a.espncdn.com/i/venues/nfl/day/interior/<venueId>.jpg). The other venue
   // photos are exterior/entrance shots, so they are never used.
-  const images: any[] = (Array.isArray(venue?.images) ? venue.images : []).filter((img: any) => img?.href);
-  const relOf = (img: any): string[] => (Array.isArray(img?.rel) ? img.rel.map((r: any) => String(r)) : []);
-  const isInterior = (img: any) => /\/interior\//i.test(String(img.href)) || relOf(img).includes("interior");
+  const images: any[] = (Array.isArray(venue?.images) ? venue.images : []).filter(
+    (img: any) => img?.href,
+  );
+  const relOf = (img: any): string[] =>
+    Array.isArray(img?.rel) ? img.rel.map((r: any) => String(r)) : [];
+  const isInterior = (img: any) =>
+    /\/interior\//i.test(String(img.href)) || relOf(img).includes("interior");
   const isDay = (img: any) => /\/day\//i.test(String(img.href)) || relOf(img).includes("day");
   const interiorFromApi = images
     .filter(isInterior)
@@ -485,7 +511,8 @@ function formatClock(raw: string | undefined): string {
 /** "-175", "+145", "EVEN", -110 -> number; anything else -> undefined. */
 function americanOdds(raw: unknown): number | undefined {
   if (raw === null || raw === undefined) return undefined;
-  if (typeof raw === "number") return Number.isFinite(raw) && Math.abs(raw) >= 100 ? raw : undefined;
+  if (typeof raw === "number")
+    return Number.isFinite(raw) && Math.abs(raw) >= 100 ? raw : undefined;
   const text = String(raw).trim();
   if (/^even$/i.test(text)) return 100;
   const n = Number(text.replace(/^\+/, ""));
@@ -499,7 +526,8 @@ function americanOdds(raw: unknown): number | undefined {
  */
 function parseGameOdds(odds: any): Game["odds"] {
   if (!odds) return undefined;
-  const pick = (node: any) => americanOdds(node?.close?.odds ?? node?.current?.odds ?? node?.open?.odds);
+  const pick = (node: any) =>
+    americanOdds(node?.close?.odds ?? node?.current?.odds ?? node?.open?.odds);
   const out: NonNullable<Game["odds"]> = {
     homeMoneyline: pick(odds?.moneyline?.home) ?? americanOdds(odds?.homeTeamOdds?.moneyLine),
     awayMoneyline: pick(odds?.moneyline?.away) ?? americanOdds(odds?.awayTeamOdds?.moneyLine),
@@ -508,7 +536,8 @@ function parseGameOdds(odds: any): Game["odds"] {
     overOdds: pick(odds?.total?.over) ?? americanOdds(odds?.overOdds),
     underOdds: pick(odds?.total?.under) ?? americanOdds(odds?.underOdds),
   };
-  for (const key of Object.keys(out) as (keyof typeof out)[]) if (out[key] === undefined) delete out[key];
+  for (const key of Object.keys(out) as (keyof typeof out)[])
+    if (out[key] === undefined) delete out[key];
   return Object.keys(out).length ? out : undefined;
 }
 
@@ -520,7 +549,7 @@ const BROADCAST_LABELS: Record<string, string> = {
   "nfl network": "NFLN",
   "nfl net": "NFLN",
   "espn/abc": "ESPN/ABC",
-  "youtube": "YouTube",
+  youtube: "YouTube",
 };
 
 /**
@@ -581,7 +610,6 @@ function mapEvent(event: any, week: number): Game | null {
   let downDistance: string | undefined;
   let ballSpot: Game["ballSpot"];
   let scoringAlert: Game["scoringAlert"];
-
 
   const isHalftimeStatus =
     comp.status?.type?.name === "STATUS_HALFTIME" ||
@@ -691,121 +719,180 @@ function mapEvent(event: any, week: number): Game | null {
   };
 }
 
+/** One final score from last season, for the models' head start. */
+export interface PriorSeasonResult {
+  homeTeamId: string;
+  awayTeamId: string;
+  homeScore: number;
+  awayScore: number;
+  week: number;
+}
+
+/**
+ * Last regular season's final scores (2025 when this season is 2026). Finished seasons never
+ * change, so this is fetched once and kept for 12 hours.
+ */
+export async function fetchPriorSeasonResults(): Promise<PriorSeasonResult[]> {
+  return cached(
+    "prior-season-results",
+    async () => {
+      const weeks = await Promise.all(
+        Array.from({ length: REGULAR_SEASON_WEEKS }, (_, i) =>
+          fetchJson(`${SCOREBOARD}?dates=${SEASON - 1}&seasontype=2&week=${i + 1}&limit=100`)
+            .then((d) => ({ week: i + 1, events: d?.events ?? [] }))
+            .catch(() => ({ week: i + 1, events: [] as any[] })),
+        ),
+      );
+      const out: PriorSeasonResult[] = [];
+      for (const { week, events } of weeks) {
+        for (const event of events) {
+          const game = mapEvent(event, week);
+          if (!game || game.status !== "final") continue;
+          const score = gameScore(game);
+          out.push({
+            homeTeamId: game.homeTeamId,
+            awayTeamId: game.awayTeamId,
+            homeScore: score.home,
+            awayScore: score.away,
+            week,
+          });
+        }
+      }
+      return out;
+    },
+    12 * 60 * 60 * 1000,
+  );
+}
+
 /** Full 2026 regular-season schedule with results, grouped by week. */
 export async function fetchSchedule(): Promise<Game[]> {
-  return cached("schedule", async () => {
-    const weeks = await Promise.all(
-      Array.from({ length: REGULAR_SEASON_WEEKS }, (_, i) =>
-        fetchJson(`${SCOREBOARD}?dates=${SEASON}&seasontype=2&week=${i + 1}&limit=100`)
-          .then((d) => ({ week: i + 1, events: d?.events ?? [] }))
-          .catch(() => ({ week: i + 1, events: [] })),
-      ),
-    );
-    const games: Game[] = [];
-    for (const { week, events } of weeks) {
-      for (const event of events) {
-        const game = mapEvent(event, week);
-        if (game) games.push(game);
+  return cached(
+    "schedule",
+    async () => {
+      const weeks = await Promise.all(
+        Array.from({ length: REGULAR_SEASON_WEEKS }, (_, i) =>
+          fetchJson(`${SCOREBOARD}?dates=${SEASON}&seasontype=2&week=${i + 1}&limit=100`)
+            .then((d) => ({ week: i + 1, events: d?.events ?? [] }))
+            .catch(() => ({ week: i + 1, events: [] })),
+        ),
+      );
+      const games: Game[] = [];
+      for (const { week, events } of weeks) {
+        for (const event of events) {
+          const game = mapEvent(event, week);
+          if (game) games.push(game);
+        }
       }
-    }
 
-    // Build the scoring transition only from the scoring play that matches the
-    // scoreboard's CURRENT score. Never fall back to an old drive result: that
-    // can show a previous field goal after a newer touchdown.
-    const liveGames = games.filter((game) => game.status === "live");
-    await Promise.all(liveGames.map(async (game) => {
-      const eventId = game.id.replace(/^espn-/, "");
-      const summary = await cached(`live-scoring-${eventId}`, async () => {
-        try {
-          return await fetchJson(`${SUMMARY}?event=${eventId}`);
-        } catch {
-          return null;
-        }
-      }, 750);
-
-      const scoringPlays = Array.isArray(summary?.scoringPlays) ? summary.scoringPlays : [];
-      const currentScore = gameScore(game);
-      const asScore = (value: unknown): number | undefined => {
-        if (value === undefined || value === null || value === "") return undefined;
-        const parsed = Number(value);
-        return Number.isFinite(parsed) ? parsed : undefined;
-      };
-
-      // Search backward for the latest play whose resulting score agrees with
-      // the live scoreboard. This prevents stale scoring data from other plays
-      // or games from being displayed as the latest event.
-      for (let i = scoringPlays.length - 1; i >= 0; i--) {
-        const play = scoringPlays[i];
-        const playHomeScore = asScore(play?.homeScore);
-        const playAwayScore = asScore(play?.awayScore);
-        if (playHomeScore === undefined || playAwayScore === undefined) continue;
-        if (playHomeScore !== currentScore.home || playAwayScore !== currentScore.away) continue;
-
-        const playText = String(play?.text ?? play?.shortText ?? "");
-        const typeText = String(
-          play?.scoringType?.name ?? play?.type?.text ?? play?.type?.name ?? "",
-        );
-        const description = `${typeText} ${playText}`;
-        const type = /touchdown|\bTD\b/i.test(description)
-          ? "TD"
-          : /field goal|\bFG\b/i.test(description) && !/missed|no good|blocked|failed/i.test(description)
-            ? "FG"
-            : undefined;
-        if (!type) break;
-
-        // Prefer the actual scoreboard change over play.team. That correctly
-        // handles defensive fumble/interception-return touchdowns.
-        const previous = scoringPlays[i - 1];
-        const previousHomeScore = asScore(previous?.homeScore);
-        const previousAwayScore = asScore(previous?.awayScore);
-        let scoringTeamId: string | undefined;
-        if (previousHomeScore !== undefined && previousAwayScore !== undefined) {
-          const homeDelta = playHomeScore - previousHomeScore;
-          const awayDelta = playAwayScore - previousAwayScore;
-          if (homeDelta > 0 && awayDelta <= 0) scoringTeamId = game.homeTeamId;
-          else if (awayDelta > 0 && homeDelta <= 0) scoringTeamId = game.awayTeamId;
-        }
-        if (!scoringTeamId) {
-          const apiTeam = play?.team;
-          const team = teamByAbbr(String(apiTeam?.abbreviation ?? apiTeam?.shortDisplayName ?? ""));
-          if (team && (team.id === game.homeTeamId || team.id === game.awayTeamId)) {
-            scoringTeamId = team.id;
-          }
-        }
-        if (!scoringTeamId) break;
-
-        const yardsMatch = type === "FG"
-          ? description.match(/\b(\d{1,2})\s*(?:-?\s*(?:yard|yd)s?)\b/i)
-          : null;
-        game.scoringAlert = {
-          type,
-          teamId: scoringTeamId,
-          ...(yardsMatch ? { yards: Number(yardsMatch[1]) } : {}),
-        };
-        break;
-      }
-    }));
-
-    // Keep the pregame spread/total available after kickoff if the live
-    // scoreboard drops the odds fields. Historical odds are also used for finals.
-    // Finals also need moneylines and prices so the model's picks can be graded in units.
-    const missingOddsGames = games.filter(
-      (game) =>
-        game.status !== "scheduled" && (game.spread === "—" || !game.total || !hasMoneylines(game.odds)),
-    );
-    if (missingOddsGames.length) {
+      // Build the scoring transition only from the scoring play that matches the
+      // scoreboard's CURRENT score. Never fall back to an old drive result: that
+      // can show a previous field goal after a newer touchdown.
+      const liveGames = games.filter((game) => game.status === "live");
       await Promise.all(
-        missingOddsGames.map(async (game) => {
-          const odds = await fetchHistoricalOdds(game.id.replace(/^espn-/, ""));
-          if (game.spread === "—" && odds.spread) game.spread = odds.spread;
-          if (!game.total && typeof odds.total === "number") game.total = odds.total;
-          if (odds.prices) game.odds = mergeOdds(game.odds, odds.prices);
+        liveGames.map(async (game) => {
+          const eventId = game.id.replace(/^espn-/, "");
+          const summary = await cached(
+            `live-scoring-${eventId}`,
+            async () => {
+              try {
+                return await fetchJson(`${SUMMARY}?event=${eventId}`);
+              } catch {
+                return null;
+              }
+            },
+            750,
+          );
+
+          const scoringPlays = Array.isArray(summary?.scoringPlays) ? summary.scoringPlays : [];
+          const currentScore = gameScore(game);
+          const asScore = (value: unknown): number | undefined => {
+            if (value === undefined || value === null || value === "") return undefined;
+            const parsed = Number(value);
+            return Number.isFinite(parsed) ? parsed : undefined;
+          };
+
+          // Search backward for the latest play whose resulting score agrees with
+          // the live scoreboard. This prevents stale scoring data from other plays
+          // or games from being displayed as the latest event.
+          for (let i = scoringPlays.length - 1; i >= 0; i--) {
+            const play = scoringPlays[i];
+            const playHomeScore = asScore(play?.homeScore);
+            const playAwayScore = asScore(play?.awayScore);
+            if (playHomeScore === undefined || playAwayScore === undefined) continue;
+            if (playHomeScore !== currentScore.home || playAwayScore !== currentScore.away)
+              continue;
+
+            const playText = String(play?.text ?? play?.shortText ?? "");
+            const typeText = String(
+              play?.scoringType?.name ?? play?.type?.text ?? play?.type?.name ?? "",
+            );
+            const description = `${typeText} ${playText}`;
+            const type = /touchdown|\bTD\b/i.test(description)
+              ? "TD"
+              : /field goal|\bFG\b/i.test(description) &&
+                  !/missed|no good|blocked|failed/i.test(description)
+                ? "FG"
+                : undefined;
+            if (!type) break;
+
+            // Prefer the actual scoreboard change over play.team. That correctly
+            // handles defensive fumble/interception-return touchdowns.
+            const previous = scoringPlays[i - 1];
+            const previousHomeScore = asScore(previous?.homeScore);
+            const previousAwayScore = asScore(previous?.awayScore);
+            let scoringTeamId: string | undefined;
+            if (previousHomeScore !== undefined && previousAwayScore !== undefined) {
+              const homeDelta = playHomeScore - previousHomeScore;
+              const awayDelta = playAwayScore - previousAwayScore;
+              if (homeDelta > 0 && awayDelta <= 0) scoringTeamId = game.homeTeamId;
+              else if (awayDelta > 0 && homeDelta <= 0) scoringTeamId = game.awayTeamId;
+            }
+            if (!scoringTeamId) {
+              const apiTeam = play?.team;
+              const team = teamByAbbr(
+                String(apiTeam?.abbreviation ?? apiTeam?.shortDisplayName ?? ""),
+              );
+              if (team && (team.id === game.homeTeamId || team.id === game.awayTeamId)) {
+                scoringTeamId = team.id;
+              }
+            }
+            if (!scoringTeamId) break;
+
+            const yardsMatch =
+              type === "FG" ? description.match(/\b(\d{1,2})\s*(?:-?\s*(?:yard|yd)s?)\b/i) : null;
+            game.scoringAlert = {
+              type,
+              teamId: scoringTeamId,
+              ...(yardsMatch ? { yards: Number(yardsMatch[1]) } : {}),
+            };
+            break;
+          }
         }),
       );
-    }
 
-    return games;
-  }, 1_500);
+      // Keep the pregame spread/total available after kickoff if the live
+      // scoreboard drops the odds fields. Historical odds are also used for finals.
+      // Finals also need moneylines and prices so the model's picks can be graded in units.
+      const missingOddsGames = games.filter(
+        (game) =>
+          game.status !== "scheduled" &&
+          (game.spread === "—" || !game.total || !hasMoneylines(game.odds)),
+      );
+      if (missingOddsGames.length) {
+        await Promise.all(
+          missingOddsGames.map(async (game) => {
+            const odds = await fetchHistoricalOdds(game.id.replace(/^espn-/, ""));
+            if (game.spread === "—" && odds.spread) game.spread = odds.spread;
+            if (!game.total && typeof odds.total === "number") game.total = odds.total;
+            if (odds.prices) game.odds = mergeOdds(game.odds, odds.prices);
+          }),
+        );
+      }
+
+      return games;
+    },
+    1_500,
+  );
 }
 
 const DRIVE_RESULTS: Record<string, DriveResult> = {
@@ -914,8 +1001,7 @@ function mapTeamStats(stats: any[]): TeamGameStats {
     turnovers: statNum(stats, "turnovers"),
     penalties,
     penaltyYards,
-    timeOfPossession:
-      stats.find((x: any) => x.name === "possessionTime")?.displayValue ?? "00:00",
+    timeOfPossession: stats.find((x: any) => x.name === "possessionTime")?.displayValue ?? "00:00",
   };
 }
 
@@ -1006,7 +1092,13 @@ function addPlayerTotals(
     if (idx === undefined) continue;
     for (const [athleteIndex, athlete] of (group.athletes ?? []).entries()) {
       const value = Number(String(athlete?.stats?.[idx] ?? "0").replace(/,/g, "")) || 0;
-      const athleteId = String(athlete?.athlete?.id ?? athlete?.id ?? athlete?.athlete?.displayName ?? athlete?.displayName ?? `${groupName}-${athleteIndex}`);
+      const athleteId = String(
+        athlete?.athlete?.id ??
+          athlete?.id ??
+          athlete?.athlete?.displayName ??
+          athlete?.displayName ??
+          `${groupName}-${athleteIndex}`,
+      );
       // Some ESPN feeds repeat a defender in multiple groups. Keep the largest
       // value for that player instead of double-counting the same forced fumble.
       seenAthletes.set(athleteId, Math.max(seenAthletes.get(athleteId) ?? 0, value));
@@ -1023,7 +1115,16 @@ function mapBoxScore(
   posMap?: Map<string, string>,
 ): BoxScoreLine[] {
   const lines: BoxScoreLine[] = [];
-  const wanted = new Set(["passing", "rushing", "receiving", "defensive", "interceptions", "fumbles", "kicking", "punting"]);
+  const wanted = new Set([
+    "passing",
+    "rushing",
+    "receiving",
+    "defensive",
+    "interceptions",
+    "fumbles",
+    "kicking",
+    "punting",
+  ]);
   // Every raw stat ESPN reports for a player, across all of their groups (used for the RB table).
   const rawStats = new Map<string, Record<string, string>>();
 
@@ -1060,11 +1161,7 @@ function mapBoxScore(
         rawStats.set(rawKey, rawForPlayer);
         // The fumbles group only supplies extra numbers; it never creates a player row on its own.
         if (group.name === "fumbles") continue;
-        const pick = (...names: string[]) =>
-          names
-            .map(getVal)
-            .filter(Boolean)
-            .join(", ");
+        const pick = (...names: string[]) => names.map(getVal).filter(Boolean).join(", ");
 
         let statLine = "";
         let category: "offense" | "defense" = "offense";
@@ -1088,7 +1185,8 @@ function mapBoxScore(
           const pd = getVal("passesDefended");
           const tfl = getVal("tacklesForLoss");
           const parts: string[] = [];
-          if (tkl && tkl !== "0") parts.push(`${tkl} tkl${solo && solo !== "0" ? ` (${solo} solo)` : ""}`);
+          if (tkl && tkl !== "0")
+            parts.push(`${tkl} tkl${solo && solo !== "0" ? ` (${solo} solo)` : ""}`);
           if (sck && sck !== "0") parts.push(`${sck} sck`);
           if (pd && pd !== "0") parts.push(`${pd} PD`);
           if (tfl && tfl !== "0") parts.push(`${tfl} TFL`);
@@ -1142,7 +1240,10 @@ function mapBoxScore(
         // reports defensive stats for them. Keep their defensive stat line below
         // by merging the records, but never let the defensive group move them
         // into the defense category.
-        const isOffensiveSkillPosition = ["QB", "RB", "FB", "WR", "TE", "K", "P"].includes(pos) || group.name === "kicking" || group.name === "punting";
+        const isOffensiveSkillPosition =
+          ["QB", "RB", "FB", "WR", "TE", "K", "P"].includes(pos) ||
+          group.name === "kicking" ||
+          group.name === "punting";
         if (isOffensiveSkillPosition) category = "offense";
 
         lines.push({
@@ -1174,9 +1275,7 @@ function mapBoxScore(
       continue;
     }
 
-    const statParts = existing.statLine
-      .split(" · ")
-      .filter(Boolean);
+    const statParts = existing.statLine.split(" · ").filter(Boolean);
     if (line.statLine && !statParts.includes(line.statLine)) {
       statParts.push(line.statLine);
     }
@@ -1187,9 +1286,15 @@ function mapBoxScore(
     // the same player has tackles, sacks, or other defensive stats. Their
     // defensive stat line is still merged above and retained in the box score.
     const offensivePositions = ["QB", "RB", "FB", "WR", "TE", "K", "P"];
-    if (offensivePositions.includes(existing.position.toUpperCase()) || offensivePositions.includes(line.position.toUpperCase())) {
+    if (
+      offensivePositions.includes(existing.position.toUpperCase()) ||
+      offensivePositions.includes(line.position.toUpperCase())
+    ) {
       existing.category = "offense";
-      if (!offensivePositions.includes(existing.position.toUpperCase()) && offensivePositions.includes(line.position.toUpperCase())) {
+      if (
+        !offensivePositions.includes(existing.position.toUpperCase()) &&
+        offensivePositions.includes(line.position.toUpperCase())
+      ) {
         existing.position = line.position;
       }
     } else if (line.category === "defense") {
@@ -1207,7 +1312,8 @@ function normalCdf(x: number): number {
   const sign = x < 0 ? -1 : 1;
   const z = Math.abs(x) / Math.SQRT2;
   const t = 1 / (1 + 0.3275911 * z);
-  const poly = ((((1.061405429 * t - 1.453152027) * t + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t;
+  const poly =
+    ((((1.061405429 * t - 1.453152027) * t + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t;
   return 0.5 * (1 + sign * (1 - poly * Math.exp(-z * z)));
 }
 
@@ -1238,7 +1344,10 @@ function homeSpreadFromLine(spread: string, game: Game): number | undefined {
   return undefined;
 }
 
-function hasRealSeries(points: NonNullable<Game["probabilities"]>, key: "homeCoverProbability" | "overProbability") {
+function hasRealSeries(
+  points: NonNullable<Game["probabilities"]>,
+  key: "homeCoverProbability" | "overProbability",
+) {
   const numeric = points.map((p) => p[key]).filter((v): v is number => typeof v === "number");
   // Needs data for most plays, many distinct values and real movement. ESPN's real series
   // legitimately sit at 0 or 1 late in a game; placeholder series are flat (0 or 0.5).
@@ -1249,7 +1358,10 @@ function hasRealSeries(points: NonNullable<Game["probabilities"]>, key: "homeCov
 }
 
 /** Fill plays that ESPN left out by carrying the nearest known value across the gap. */
-function fillSeriesGaps(points: NonNullable<Game["probabilities"]>, key: "homeCoverProbability" | "overProbability") {
+function fillSeriesGaps(
+  points: NonNullable<Game["probabilities"]>,
+  key: "homeCoverProbability" | "overProbability",
+) {
   let last: number | undefined;
   for (const point of points) {
     if (typeof point[key] === "number") last = point[key];
@@ -1280,7 +1392,8 @@ function withMarketProbabilities(
       if (!real) continue;
       fillSeriesGaps(input, key);
       // ESPN's first record is a 50/50 pregame placeholder; its graph starts at the next value.
-      if (input.length > 1 && input[0][key] === 0.5 && input[1][key] !== 0.5) input[0][key] = input[1][key];
+      if (input.length > 1 && input[0][key] === 0.5 && input[1][key] !== 0.5)
+        input[0][key] = input[1][key];
     }
   }
   const homeSpread = homeSpreadFromLine(game.spread, game);
@@ -1303,7 +1416,9 @@ function withMarketProbabilities(
 
     // Fraction of regulation remaining; fall back to even spacing if ESPN omits secondsLeft.
     const rawFraction =
-      typeof point.secondsLeft === "number" ? point.secondsLeft / 3600 : 1 - index / Math.max(1, count - 1);
+      typeof point.secondsLeft === "number"
+        ? point.secondsLeft / 3600
+        : 1 - index / Math.max(1, count - 1);
     // Overtime is sudden death-ish: never treat it as "almost over" for the variance.
     const inOvertime = typeof point.quarter === "number" && point.quarter > 4;
     const fraction = Math.max(inOvertime ? 0.06 : 0.01, Math.min(1, rawFraction));
@@ -1315,7 +1430,9 @@ function withMarketProbabilities(
         const hasWinProbability = typeof point.homeWinProbability === "number";
         const hasScore = lastAway !== undefined && lastHome !== undefined;
         // Expected final margin implied by ESPN's win probability: smooth, like the moneyline graph.
-        const p = hasWinProbability ? Math.max(0.0005, Math.min(0.9995, point.homeWinProbability as number)) : undefined;
+        const p = hasWinProbability
+          ? Math.max(0.0005, Math.min(0.9995, point.homeWinProbability as number))
+          : undefined;
         const muFromWinProbability = p !== undefined ? sigma * normalInverse(p) : undefined;
         // Expected final margin from the actual score plus the pregame edge for the time left.
         const muFromScore = hasScore ? lastHome! - lastAway! + fraction * -homeSpread : undefined;
@@ -1344,7 +1461,8 @@ function withMarketProbabilities(
         overResolved[index] = totalAlreadyOver;
         const playedFraction = 1 - fraction;
         const observedRate = playedFraction > 0.15 ? scoredSoFar / playedFraction : totalLine;
-        const blendedRate = playedFraction > 0.15 ? 0.75 * totalLine + 0.25 * observedRate : totalLine;
+        const blendedRate =
+          playedFraction > 0.15 ? 0.75 * totalLine + 0.25 * observedRate : totalLine;
         const expectedFinal = scoredSoFar + blendedRate * fraction;
         next.overProbability = totalAlreadyOver
           ? 1
@@ -1357,17 +1475,21 @@ function withMarketProbabilities(
     // favored because even a safety clears many half-point totals. ESPN's
     // public feed can contain stale/placeholder total probabilities (including
     // 0% Over); do not let those values display as 100% Under in this situation.
-    const currentTotal = lastAway !== undefined && lastHome !== undefined
-      ? lastAway + lastHome
-      : undefined;
-    const secondsRemaining = typeof point.secondsLeft === "number"
-      ? point.secondsLeft
-      : typeof point.quarter === "number" && typeof point.clock === "string"
-        ? (() => {
-            const m = point.clock.match(/(\d+):([0-5]\d)/);
-            return m ? (point.quarter < 4 ? (4 - point.quarter) * 900 : 0) + Number(m[1]) * 60 + Number(m[2]) : undefined;
-          })()
-        : undefined;
+    const currentTotal =
+      lastAway !== undefined && lastHome !== undefined ? lastAway + lastHome : undefined;
+    const secondsRemaining =
+      typeof point.secondsLeft === "number"
+        ? point.secondsLeft
+        : typeof point.quarter === "number" && typeof point.clock === "string"
+          ? (() => {
+              const m = point.clock.match(/(\d+):([0-5]\d)/);
+              return m
+                ? (point.quarter < 4 ? (4 - point.quarter) * 900 : 0) +
+                    Number(m[1]) * 60 +
+                    Number(m[2])
+                : undefined;
+            })()
+          : undefined;
     if (totalLine !== undefined && currentTotal !== undefined) {
       if (currentTotal > totalLine) {
         // Once the points already scored exceed the total, the Over is locked.
@@ -1383,8 +1505,10 @@ function withMarketProbabilities(
           if (!estimatedMarkets.includes("over")) estimatedMarkets.push("over");
         }
         if (
-          totalLine - currentTotal <= 2 && secondsRemaining !== undefined &&
-          secondsRemaining > 0 && secondsRemaining <= 120
+          totalLine - currentTotal <= 2 &&
+          secondsRemaining !== undefined &&
+          secondsRemaining > 0 &&
+          secondsRemaining <= 120
         ) {
           // At this point, a score within two points of the total late in the
           // fourth quarter should not inherit a stale ESPN 0% Over / 100% Under.
@@ -1396,7 +1520,11 @@ function withMarketProbabilities(
     }
 
     next.estimatedMarkets = estimatedMarkets.length ? estimatedMarkets : undefined;
-    next.probabilitySource = estimatedMarkets.length ? "estimated" : useRealCover || useRealOver ? "espn" : undefined;
+    next.probabilitySource = estimatedMarkets.length
+      ? "estimated"
+      : useRealCover || useRealOver
+        ? "espn"
+        : undefined;
     return next;
   });
 
@@ -1431,9 +1559,10 @@ function withMarketProbabilities(
   // Reapply the late-game near-total rule after smoothing; the final displayed
   // series must not revert to 100% Under from a stale ESPN probability sample.
   out.forEach((point) => {
-    const scoreTotal = typeof point.awayScore === "number" && typeof point.homeScore === "number"
-      ? point.awayScore + point.homeScore
-      : undefined;
+    const scoreTotal =
+      typeof point.awayScore === "number" && typeof point.homeScore === "number"
+        ? point.awayScore + point.homeScore
+        : undefined;
     const remaining = typeof point.secondsLeft === "number" ? point.secondsLeft : undefined;
     if (totalLine !== undefined && scoreTotal !== undefined) {
       if (scoreTotal > totalLine) {
@@ -1444,20 +1573,33 @@ function withMarketProbabilities(
         // the line. Apply this after smoothing too, so it cannot reintroduce 1.0.
         if (typeof point.overProbability === "number" && point.overProbability > 0.99) {
           point.overProbability = 0.99;
-          point.estimatedMarkets = [...(point.estimatedMarkets ?? []), ...(point.estimatedMarkets?.includes("over") ? [] : ["over" as const])];
+          point.estimatedMarkets = [
+            ...(point.estimatedMarkets ?? []),
+            ...(point.estimatedMarkets?.includes("over") ? [] : ["over" as const]),
+          ];
           point.probabilitySource = "estimated";
         }
-        if (scoreTotal <= totalLine && totalLine - scoreTotal <= 2 && remaining !== undefined && remaining > 0 && remaining <= 120) {
+        if (
+          scoreTotal <= totalLine &&
+          totalLine - scoreTotal <= 2 &&
+          remaining !== undefined &&
+          remaining > 0 &&
+          remaining <= 120
+        ) {
           // Reapply after smoothing; do not preserve a stale 0% Over estimate.
           point.overProbability = 0.99;
-          point.estimatedMarkets = [...(point.estimatedMarkets ?? []), ...(point.estimatedMarkets?.includes("over") ? [] : ["over" as const])];
+          point.estimatedMarkets = [
+            ...(point.estimatedMarkets ?? []),
+            ...(point.estimatedMarkets?.includes("over") ? [] : ["over" as const]),
+          ];
           point.probabilitySource = "estimated";
         }
       }
     }
   });
 
-  const sumQuarters = (values?: number[]) => (Array.isArray(values) ? values.reduce((a, b) => a + (Number(b) || 0), 0) : 0);
+  const sumQuarters = (values?: number[]) =>
+    Array.isArray(values) ? values.reduce((a, b) => a + (Number(b) || 0), 0) : 0;
   const officialAway = sumQuarters(game.quarters?.away);
   const officialHome = sumQuarters(game.quarters?.home);
   if (game.status === "final" && out.length) {
@@ -1487,7 +1629,10 @@ function withMarketProbabilities(
  */
 function formatRushingPlay(text: string): string {
   // Check for rushing touchdowns (excluding passing and turnover plays)
-  if (/\b(?:touchdown|td)\b/i.test(text) && !/\b(?:pass|passed|sacked|interception|intercepted)\b/i.test(text)) {
+  if (
+    /\b(?:touchdown|td)\b/i.test(text) &&
+    !/\b(?:pass|passed|sacked|interception|intercepted)\b/i.test(text)
+  ) {
     // 1. Strip pre-play notes (e.g. "A.Palczewski reported in as eligible." and "Direct snap to R.Harvey.")
     let cleaned = text
       .replace(/^[A-Z]\.[A-Za-z'-]+\s+reported\s+in\s+as\s+eligible\.?\s*/i, "")
@@ -1499,7 +1644,7 @@ function formatRushingPlay(text: string): string {
 
     // 3. Match "[Player] [direction] for [X yards], TOUCHDOWN. [PAT text]"
     const tdMatch = cleaned.match(
-      /^(.*?)\s+(?:(?:right|left)\s+(?:tackle|guard|end)|up\s+the\s+middle|middle|rush(?:es)?)\s+for\s+(no gain|loss of \d+\s*(?:yards?|yds?)|-?\d+\s*(?:yards?|yds?))\s*,\s*(?:TOUCHDOWN|TD)\.?(?:\s*(.*))?$/i
+      /^(.*?)\s+(?:(?:right|left)\s+(?:tackle|guard|end)|up\s+the\s+middle|middle|rush(?:es)?)\s+for\s+(no gain|loss of \d+\s*(?:yards?|yds?)|-?\d+\s*(?:yards?|yds?))\s*,\s*(?:TOUCHDOWN|TD)\.?(?:\s*(.*))?$/i,
     );
 
     if (tdMatch) {
@@ -1512,12 +1657,16 @@ function formatRushingPlay(text: string): string {
   }
 
   // Preserve other play types (passing, penalties, field goals, etc.)
-  if (/\b(?:touchdown|td|pass|passed|sacked|penalty|kneel|spike|punt|field goal|fg|kickoff|extra point)\b/i.test(text)) {
+  if (
+    /\b(?:touchdown|td|pass|passed|sacked|penalty|kneel|spike|punt|field goal|fg|kickoff|extra point)\b/i.test(
+      text,
+    )
+  ) {
     return text;
   }
 
   const match = text.match(
-    /^(.*?)\s+(?:(?:right|left)\s+(?:tackle|guard|end)|up\s+the\s+middle|middle|rush(?:es)?)\s+for\s+(no gain|loss of \d+\s*(?:yards?|yds?)|-?\d+\s*(?:yards?|yds?))(?:\s*,\s*|\s*)(.*)$/i
+    /^(.*?)\s+(?:(?:right|left)\s+(?:tackle|guard|end)|up\s+the\s+middle|middle|rush(?:es)?)\s+for\s+(no gain|loss of \d+\s*(?:yards?|yds?)|-?\d+\s*(?:yards?|yds?))(?:\s*,\s*|\s*)(.*)$/i,
   );
   if (!match) return text;
 
@@ -1551,7 +1700,10 @@ function formatIncompletePass(text: string): { text: string; defender?: string }
   const defender = text.match(/\[([^\]]+)\]/)?.[1]?.trim();
   const cleaned = text
     .replace(/\s*\[[^\]]*\]/g, "")
-    .replace(/\bpass\s+incomplete(?:\s+(?:short|deep|intermediate))?(?:\s+(?:left|right|middle))?/i, "pass incomplete")
+    .replace(
+      /\bpass\s+incomplete(?:\s+(?:short|deep|intermediate))?(?:\s+(?:left|right|middle))?/i,
+      "pass incomplete",
+    )
     .replace(/\s{2,}/g, " ")
     .replace(/\s+([.,;])/g, "$1")
     .trim();
@@ -1587,7 +1739,10 @@ function stripPassDefender(text: string): { text: string; defender?: string } {
 /** Extra points: "T.Bass extra point is GOOD, Center-R.Ferguson, Holder-T.Doman." -> "T.Bass extra point is GOOD." */
 function formatExtraPoint(text: string): string {
   // Player names contain periods ("R.Ferguson"), so cut ", Center-..." / ", Holder-..." segments by name.
-  return text.replace(/(\bextra point is good)(?:\s*,\s*(?:Center|Holder|Long Snapper)-[^,]+?(?=\s*,\s*(?:Center|Holder|Long Snapper)-|\.\s*$|\.\s+[A-Z]\.[A-Za-z]|$))+/gi, "$1");
+  return text.replace(
+    /(\bextra point is good)(?:\s*,\s*(?:Center|Holder|Long Snapper)-[^,]+?(?=\s*,\s*(?:Center|Holder|Long Snapper)-|\.\s*$|\.\s+[A-Z]\.[A-Za-z]|$))+/gi,
+    "$1",
+  );
 }
 
 /** Full game detail (quarters, drives, team stats, box score) for one event. */
@@ -1624,7 +1779,13 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
       typeof ref === "string" ? /\/(?:plays|probabilities)\/(\d+)/.exec(ref)?.[1] : undefined;
     const coreByPlayId = new Map<string, any>();
     for (const record of coreProbabilityItems) {
-      const id = String(record?.playId ?? record?.play?.id ?? refId(record?.play?.$ref) ?? refId(record?.$ref) ?? "");
+      const id = String(
+        record?.playId ??
+          record?.play?.id ??
+          refId(record?.play?.$ref) ??
+          refId(record?.$ref) ??
+          "",
+      );
       if (id) coreByPlayId.set(id, record);
     }
 
@@ -1638,32 +1799,86 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
     });
 
     if (orderedSummary.length > 0) {
-      base.probabilities = orderedSummary.map((summaryPoint: any) => {
-        const pointId = String(summaryPoint?.playId ?? summaryPoint?.id ?? "");
-        const corePoint = pointId ? coreByPlayId.get(pointId) ?? {} : {};
-        const matchingPlay = pointId
-          ? summaryPlays.find((play: any) => String(play?.id ?? play?.playId ?? "") === pointId)
-          : undefined;
+      base.probabilities = orderedSummary
+        .map((summaryPoint: any) => {
+          const pointId = String(summaryPoint?.playId ?? summaryPoint?.id ?? "");
+          const corePoint = pointId ? (coreByPlayId.get(pointId) ?? {}) : {};
+          const matchingPlay = pointId
+            ? summaryPlays.find((play: any) => String(play?.id ?? play?.playId ?? "") === pointId)
+            : undefined;
 
-        return {
-          homeWinProbability: asProbability(summaryPoint?.homeWinPercentage),
-          homeCoverProbability: asProbability(corePoint?.spreadCoverProbHome ?? corePoint?.homeSpreadCoverProbability),
-          overProbability: asProbability(corePoint?.totalOverProb ?? corePoint?.overProbability),
-          secondsLeft: optionalNumber(summaryPoint?.secondsLeft),
-          playId: pointId || undefined,
-          quarter: Number(summaryPoint?.period ?? summaryPoint?.quarter ?? matchingPlay?.period?.number ?? matchingPlay?.period) || undefined,
-          clock: String(summaryPoint?.clock?.displayValue ?? summaryPoint?.clock ?? matchingPlay?.clock?.displayValue ?? matchingPlay?.clock ?? "") || undefined,
-          down: Number(summaryPoint?.down ?? matchingPlay?.start?.down ?? matchingPlay?.down) || undefined,
-          distance: Number(summaryPoint?.distance ?? matchingPlay?.start?.distance ?? matchingPlay?.distance) || undefined,
-          yardLine: String(summaryPoint?.yardLine ?? matchingPlay?.start?.yardLine ?? matchingPlay?.end?.yardLine ?? "") || undefined,
-          awayScore: optionalNumber(summaryPoint?.awayScore ?? summaryPoint?.scoreAway ?? matchingPlay?.awayScore ?? matchingPlay?.end?.awayScore),
-          homeScore: optionalNumber(summaryPoint?.homeScore ?? summaryPoint?.scoreHome ?? matchingPlay?.homeScore ?? matchingPlay?.end?.homeScore),
-          playText: String(summaryPoint?.text ?? summaryPoint?.playText ?? matchingPlay?.text ?? matchingPlay?.shortText ?? "") || undefined,
-          probabilitySource: (corePoint?.spreadCoverProbHome !== undefined || corePoint?.homeSpreadCoverProbability !== undefined || corePoint?.totalOverProb !== undefined || corePoint?.overProbability !== undefined)
-            ? "espn" as const
-            : undefined,
-        };
-      }).filter((point: any) => point.homeWinProbability !== undefined || point.homeCoverProbability !== undefined || point.overProbability !== undefined);
+          return {
+            homeWinProbability: asProbability(summaryPoint?.homeWinPercentage),
+            homeCoverProbability: asProbability(
+              corePoint?.spreadCoverProbHome ?? corePoint?.homeSpreadCoverProbability,
+            ),
+            overProbability: asProbability(corePoint?.totalOverProb ?? corePoint?.overProbability),
+            secondsLeft: optionalNumber(summaryPoint?.secondsLeft),
+            playId: pointId || undefined,
+            quarter:
+              Number(
+                summaryPoint?.period ??
+                  summaryPoint?.quarter ??
+                  matchingPlay?.period?.number ??
+                  matchingPlay?.period,
+              ) || undefined,
+            clock:
+              String(
+                summaryPoint?.clock?.displayValue ??
+                  summaryPoint?.clock ??
+                  matchingPlay?.clock?.displayValue ??
+                  matchingPlay?.clock ??
+                  "",
+              ) || undefined,
+            down:
+              Number(summaryPoint?.down ?? matchingPlay?.start?.down ?? matchingPlay?.down) ||
+              undefined,
+            distance:
+              Number(
+                summaryPoint?.distance ?? matchingPlay?.start?.distance ?? matchingPlay?.distance,
+              ) || undefined,
+            yardLine:
+              String(
+                summaryPoint?.yardLine ??
+                  matchingPlay?.start?.yardLine ??
+                  matchingPlay?.end?.yardLine ??
+                  "",
+              ) || undefined,
+            awayScore: optionalNumber(
+              summaryPoint?.awayScore ??
+                summaryPoint?.scoreAway ??
+                matchingPlay?.awayScore ??
+                matchingPlay?.end?.awayScore,
+            ),
+            homeScore: optionalNumber(
+              summaryPoint?.homeScore ??
+                summaryPoint?.scoreHome ??
+                matchingPlay?.homeScore ??
+                matchingPlay?.end?.homeScore,
+            ),
+            playText:
+              String(
+                summaryPoint?.text ??
+                  summaryPoint?.playText ??
+                  matchingPlay?.text ??
+                  matchingPlay?.shortText ??
+                  "",
+              ) || undefined,
+            probabilitySource:
+              corePoint?.spreadCoverProbHome !== undefined ||
+              corePoint?.homeSpreadCoverProbability !== undefined ||
+              corePoint?.totalOverProb !== undefined ||
+              corePoint?.overProbability !== undefined
+                ? ("espn" as const)
+                : undefined,
+          };
+        })
+        .filter(
+          (point: any) =>
+            point.homeWinProbability !== undefined ||
+            point.homeCoverProbability !== undefined ||
+            point.overProbability !== undefined,
+        );
     } else if (coreProbabilityItems.length > 0) {
       // Fallback only when ESPN's summary endpoint has no win-probability
       // history. Sort Core records by their sequence number, but do not invent
@@ -1672,9 +1887,14 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
         .sort((a: any, b: any) => Number(a?.sequenceNumber ?? 0) - Number(b?.sequenceNumber ?? 0))
         .map((point: any) => ({
           homeWinProbability: asProbability(point?.homeWinPercentage),
-          homeCoverProbability: asProbability(point?.spreadCoverProbHome ?? point?.homeSpreadCoverProbability),
+          homeCoverProbability: asProbability(
+            point?.spreadCoverProbHome ?? point?.homeSpreadCoverProbability,
+          ),
           overProbability: asProbability(point?.totalOverProb ?? point?.overProbability),
-          playId: String(point?.playId ?? point?.id ?? refId(point?.play?.$ref) ?? refId(point?.$ref) ?? "") || undefined,
+          playId:
+            String(
+              point?.playId ?? point?.id ?? refId(point?.play?.$ref) ?? refId(point?.$ref) ?? "",
+            ) || undefined,
           quarter: Number(point?.period ?? point?.quarter) || undefined,
           clock: String(point?.clock?.displayValue ?? point?.clock ?? "") || undefined,
           down: Number(point?.down) || undefined,
@@ -1685,7 +1905,12 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
           playText: String(point?.text ?? point?.playText ?? "") || undefined,
           probabilitySource: "espn" as const,
         }))
-        .filter((point: any) => point.homeWinProbability !== undefined || point.homeCoverProbability !== undefined || point.overProbability !== undefined);
+        .filter(
+          (point: any) =>
+            point.homeWinProbability !== undefined ||
+            point.homeCoverProbability !== undefined ||
+            point.overProbability !== undefined,
+        );
     }
 
     // The summary header omits quarter linescores and venue; merge them from
@@ -1726,7 +1951,8 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
     if (base.status !== "scheduled" && (base.spread === "—" || !base.total)) {
       const historicalOdds = await fetchHistoricalOdds(eventId);
       if (base.spread === "—" && historicalOdds.spread) base.spread = historicalOdds.spread;
-      if (!base.total && typeof historicalOdds.total === "number") base.total = historicalOdds.total;
+      if (!base.total && typeof historicalOdds.total === "number")
+        base.total = historicalOdds.total;
     }
 
     // Repair missing/stale score snapshots before estimating market probabilities.
@@ -1746,25 +1972,37 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
         if (!Number.isFinite(period) || period < 1 || clockSeconds === undefined) return undefined;
         return (Math.max(1, period) - 1) * 900 + (900 - clockSeconds);
       };
-      const scoringSnapshots = d.scoringPlays.map((play: any) => {
-        const period = play?.period?.number ?? play?.period ?? play?.periodNumber;
-        const clock = play?.clock?.displayValue ?? play?.clock ?? play?.time;
-        const elapsed = elapsedSeconds(period, clock);
-        const awayScore = optionalNumber(play?.awayScore ?? play?.scoreAway);
-        const homeScore = optionalNumber(play?.homeScore ?? play?.scoreHome);
-        return { elapsed, awayScore, homeScore };
-      }).filter((item: any) => item.elapsed !== undefined && item.awayScore !== undefined && item.homeScore !== undefined)
+      const scoringSnapshots = d.scoringPlays
+        .map((play: any) => {
+          const period = play?.period?.number ?? play?.period ?? play?.periodNumber;
+          const clock = play?.clock?.displayValue ?? play?.clock ?? play?.time;
+          const elapsed = elapsedSeconds(period, clock);
+          const awayScore = optionalNumber(play?.awayScore ?? play?.scoreAway);
+          const homeScore = optionalNumber(play?.homeScore ?? play?.scoreHome);
+          return { elapsed, awayScore, homeScore };
+        })
+        .filter(
+          (item: any) =>
+            item.elapsed !== undefined &&
+            item.awayScore !== undefined &&
+            item.homeScore !== undefined,
+        )
         .sort((a: any, b: any) => a.elapsed - b.elapsed);
 
       if (scoringSnapshots.length) {
         base.probabilities = base.probabilities.map((point) => {
-          const pointElapsed = typeof point.secondsLeft === "number"
-            ? Math.max(0, 3600 - point.secondsLeft)
-            : elapsedSeconds(point.quarter, point.clock);
-          const hasCredibleScore = typeof point.awayScore === "number" && typeof point.homeScore === "number" &&
-            (point.awayScore > 0 || point.homeScore > 0 || (pointElapsed !== undefined && pointElapsed < 60));
+          const pointElapsed =
+            typeof point.secondsLeft === "number"
+              ? Math.max(0, 3600 - point.secondsLeft)
+              : elapsedSeconds(point.quarter, point.clock);
+          const hasCredibleScore =
+            typeof point.awayScore === "number" &&
+            typeof point.homeScore === "number" &&
+            (point.awayScore > 0 ||
+              point.homeScore > 0 ||
+              (pointElapsed !== undefined && pointElapsed < 60));
           if (hasCredibleScore || pointElapsed === undefined) return point;
-          let snapshot: typeof scoringSnapshots[number] | undefined;
+          let snapshot: (typeof scoringSnapshots)[number] | undefined;
           for (const candidate of scoringSnapshots) {
             if (candidate.elapsed <= pointElapsed) snapshot = candidate;
             else break;
@@ -1793,9 +2031,12 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
       const lastPlay = plays[plays.length - 1];
       const endState = lastPlay?.end ?? lastPlay?.start;
       if (endState) {
-        if (!base.possessionText && endState.possessionText) base.possessionText = endState.possessionText;
-        if (!base.downDistance && endState.shortDownDistanceText) base.downDistance = endState.shortDownDistanceText;
-        if (typeof base.distance !== "number" && typeof endState.distance === "number") base.distance = endState.distance;
+        if (!base.possessionText && endState.possessionText)
+          base.possessionText = endState.possessionText;
+        if (!base.downDistance && endState.shortDownDistanceText)
+          base.downDistance = endState.shortDownDistanceText;
+        if (typeof base.distance !== "number" && typeof endState.distance === "number")
+          base.distance = endState.distance;
       }
     }
 
@@ -1806,7 +2047,9 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
       const fromSummary = parsePredictor(d?.predictor);
       const corePredictor = fromSummary
         ? null
-        : await fetchJson(`${CORE_ODDS}/${eventId}/competitions/${eventId}/predictor`).catch(() => null);
+        : await fetchJson(`${CORE_ODDS}/${eventId}/competitions/${eventId}/predictor`).catch(
+            () => null,
+          );
       const found = fromSummary ?? parsePredictor(corePredictor);
       if (found) base.predictor = found;
       base.seasonLeaders = parseSeasonLeaders(d?.leaders, base.awayTeamId, base.homeTeamId);
@@ -1850,14 +2093,17 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
       const current = d.drives.current;
       const lastPrevious = rawDrives[rawDrives.length - 1];
       const currentId = current?.id ?? current?.sequenceNumber ?? current?.start?.id;
-      const previousId = lastPrevious?.id ?? lastPrevious?.sequenceNumber ?? lastPrevious?.start?.id;
+      const previousId =
+        lastPrevious?.id ?? lastPrevious?.sequenceNumber ?? lastPrevious?.start?.id;
       if (!currentId || currentId !== previousId) driveRows.push(current);
     }
 
     const mapEspnDrive = (dr: any, index: number): Drive => {
       const teamId = teamByAbbr(dr?.team?.abbreviation ?? "")?.id ?? base.awayTeamId;
       const clock = (s: any) => {
-        const [m, sec] = String(s?.clock?.displayValue ?? "0:00").split(":").map(Number);
+        const [m, sec] = String(s?.clock?.displayValue ?? "0:00")
+          .split(":")
+          .map(Number);
         return (m || 0) * 60 + (sec || 0);
       };
       const topSec = Math.max(0, clock(dr?.start) - clock(dr?.end));
@@ -1896,13 +2142,21 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
       drivePlays.forEach((play: any, i: number) => {
         const rawText = String(play?.text ?? play?.shortText ?? "").trim();
         // Drop end-of-quarter marker plays entirely.
-        if (/\bend\s+(of\s+)?(the\s+)?(\d(st|nd|rd|th)\s+)?(quarter|q\d)\b|\bend\s+quarter\b/i.test(rawText)) return;
+        if (
+          /\bend\s+(of\s+)?(the\s+)?(\d(st|nd|rd|th)\s+)?(quarter|q\d)\b|\bend\s+quarter\b/i.test(
+            rawText,
+          )
+        )
+          return;
         // Drop official timeouts entirely.
         if (/\bofficial\s+time[\s-]?outs?\b/i.test(rawText)) return;
-                // Remove the "(Shotgun)" formation tag but keep the rest of the play.
+        // Remove the "(Shotgun)" formation tag but keep the rest of the play.
         const cleanedText = rawText
           // Formation tags like "(No Huddle)", "(Shotgun)" and "(No Huddle, Shotgun)" are not shown.
-          .replace(/\(\s*(?:no[- ]huddle|shotgun)(?:\s*,\s*(?:no[- ]huddle|shotgun))*\s*\)\s*/gi, "")
+          .replace(
+            /\(\s*(?:no[- ]huddle|shotgun)(?:\s*,\s*(?:no[- ]huddle|shotgun))*\s*\)\s*/gi,
+            "",
+          )
           // Drop where the play ended ("to BUF 43", "ran ob at BUF 42", "sacked at BUF 12");
           // the next play's header already shows the new spot.
           .replace(/\s+to\s+(?:[A-Z]{2,4}\s+\d{1,2}|the\s+50)\b/g, "")
@@ -1970,17 +2224,20 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
       const distances: number[] = [];
       for (const drive of driveRows) {
         const driveTeamId = teamByAbbr(drive?.team?.abbreviation ?? "")?.id;
-        for (const play of (Array.isArray(drive?.plays) ? drive.plays : [])) {
+        for (const play of Array.isArray(drive?.plays) ? drive.plays : []) {
           const text = String(play?.text ?? play?.shortText ?? "").trim();
           if (!/field goal/i.test(text) || /missed|no good|blocked|failed/i.test(text)) continue;
           const playTeamId = teamByAbbr(play?.team?.abbreviation ?? "")?.id ?? driveTeamId;
           if (playTeamId !== kicker.teamId) continue;
           if (text.toLowerCase().includes(kicker.name.toLowerCase()) === false) {
-            const teamKickers = base.boxScore.filter((line) => line.teamId === kicker.teamId && line.position === "K");
+            const teamKickers = base.boxScore.filter(
+              (line) => line.teamId === kicker.teamId && line.position === "K",
+            );
             if (teamKickers.length !== 1) continue;
           }
-          const match = text.match(/\b(\d{1,2})\s*(?:-?yard|yds?)\b/i)
-            ?? text.match(/field goal\s+(?:is\s+)?good\s+from\s+(?:the\s+)?(\d{1,2})/i);
+          const match =
+            text.match(/\b(\d{1,2})\s*(?:-?yard|yds?)\b/i) ??
+            text.match(/field goal\s+(?:is\s+)?good\s+from\s+(?:the\s+)?(\d{1,2})/i);
           const distance = Number(match?.[1] ?? 0);
           if (distance > 0 && distance <= 70) distances.push(distance);
         }
@@ -1998,7 +2255,15 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
       }
       await Promise.all(
         base.boxScore
-          .filter((line) => (line.position === "QB" || line.position === "RB" || line.position === "WR" || line.position === "TE") && line.playerId && line.stats)
+          .filter(
+            (line) =>
+              (line.position === "QB" ||
+                line.position === "RB" ||
+                line.position === "WR" ||
+                line.position === "TE") &&
+              line.playerId &&
+              line.stats,
+          )
           .map(async (line) => {
             const espnTeamId = espnTeamIds.get(line.teamId);
             if (!espnTeamId) return;
@@ -2022,12 +2287,27 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
       // quarterback attempted a pass for a team, use that team's receiver YAC total
       // as the QB's passing-YAC total; never assign a team total to multiple QBs.
       for (const teamId of [base.awayTeamId, base.homeTeamId]) {
-        const qbs = base.boxScore.filter((line) => line.teamId === teamId && line.position === "QB" && line.stats && Number(String(line.stats.passingAttempts ?? line.stats["completions/passingAttempts"] ?? "0").match(/(?:\d+\s*[-/]\s*)?(\d+)/)?.[1] ?? 0) > 0);
+        const qbs = base.boxScore.filter(
+          (line) =>
+            line.teamId === teamId &&
+            line.position === "QB" &&
+            line.stats &&
+            Number(
+              String(
+                line.stats.passingAttempts ?? line.stats["completions/passingAttempts"] ?? "0",
+              ).match(/(?:\d+\s*[-/]\s*)?(\d+)/)?.[1] ?? 0,
+            ) > 0,
+        );
         if (qbs.length !== 1) continue;
         const qb = qbs[0];
         if (Number(qb.stats!.yardsAfterCatch ?? 0) > 0) continue;
         const receiverYac = base.boxScore
-          .filter((line) => line.teamId === teamId && ["RB", "WR", "TE"].includes(line.position) && line.stats?.yardsAfterCatch !== undefined)
+          .filter(
+            (line) =>
+              line.teamId === teamId &&
+              ["RB", "WR", "TE"].includes(line.position) &&
+              line.stats?.yardsAfterCatch !== undefined,
+          )
           .reduce((sum, line) => sum + (Number(line.stats!.yardsAfterCatch) || 0), 0);
         if (receiverYac > 0) qb.stats!.yardsAfterCatch = String(receiverYac);
       }
@@ -2047,8 +2327,6 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
     return base;
   });
 }
-
-
 
 export interface PlayerProfileStat {
   gamesPlayed: number;
@@ -2120,23 +2398,48 @@ export interface PlayerProfile {
 }
 
 function emptyPlayerProfileStat(): PlayerProfileStat {
-  return { gamesPlayed: 0, passingAttempts: 0, completions: 0, passingYards: 0, passingTouchdowns: 0, interceptions: 0, rushingAttempts: 0, rushingYards: 0, rushingTouchdowns: 0, receptions: 0, receivingYards: 0, receivingTouchdowns: 0, totalTackles: 0, sacks: 0, tacklesForLoss: 0, passesDefended: 0, forcedFumbles: 0, fumbles: 0 };
+  return {
+    gamesPlayed: 0,
+    passingAttempts: 0,
+    completions: 0,
+    passingYards: 0,
+    passingTouchdowns: 0,
+    interceptions: 0,
+    rushingAttempts: 0,
+    rushingYards: 0,
+    rushingTouchdowns: 0,
+    receptions: 0,
+    receivingYards: 0,
+    receivingTouchdowns: 0,
+    totalTackles: 0,
+    sacks: 0,
+    tacklesForLoss: 0,
+    passesDefended: 0,
+    forcedFumbles: 0,
+    fumbles: 0,
+  };
 }
 
 function playerGroupStats(block: any, playerId: string) {
   const out: Record<string, number> = {};
   for (const group of block?.statistics ?? []) {
     const keys: string[] = group?.keys ?? [];
-    const athlete = (group?.athletes ?? []).find((x: any) => String(x?.athlete?.id ?? '') === playerId);
+    const athlete = (group?.athletes ?? []).find(
+      (x: any) => String(x?.athlete?.id ?? "") === playerId,
+    );
     if (!athlete) continue;
     keys.forEach((key, i) => {
       const raw = athlete?.stats?.[i];
-      if (raw === undefined || raw === null || raw === '-') return;
-      if (key === 'completions/passingAttempts') {
-        const [c,a] = parsePair(raw); out.completions = (out.completions ?? 0) + c; out.passingAttempts = (out.passingAttempts ?? 0) + a;
-      } else if (key === 'fieldGoalsMade/fieldGoalAttempts') {
-        const [m,a] = parsePair(raw); out.fieldGoalsMade = (out.fieldGoalsMade ?? 0) + m; out.fieldGoalAttempts = (out.fieldGoalAttempts ?? 0) + a;
-      } else if (key !== 'longFieldGoalMade') {
+      if (raw === undefined || raw === null || raw === "-") return;
+      if (key === "completions/passingAttempts") {
+        const [c, a] = parsePair(raw);
+        out.completions = (out.completions ?? 0) + c;
+        out.passingAttempts = (out.passingAttempts ?? 0) + a;
+      } else if (key === "fieldGoalsMade/fieldGoalAttempts") {
+        const [m, a] = parsePair(raw);
+        out.fieldGoalsMade = (out.fieldGoalsMade ?? 0) + m;
+        out.fieldGoalAttempts = (out.fieldGoalAttempts ?? 0) + a;
+      } else if (key !== "longFieldGoalMade") {
         out[key] = (out[key] ?? 0) + numericStat(raw);
       }
     });
@@ -2145,76 +2448,127 @@ function playerGroupStats(block: any, playerId: string) {
 }
 
 export async function fetchPlayerProfile(playerId: string): Promise<PlayerProfile | null> {
-  return cached(`player-profile-${playerId}`, async () => {
-    try {
-      const data = await fetchJson(`https://site.api.espn.com/apis/common/v3/sports/football/nfl/athletes/${encodeURIComponent(playerId)}`);
-      const athlete = data?.athlete ?? data;
-      if (!athlete?.id || !athlete?.displayName) return null;
-      const teamAbbr = String(athlete?.team?.abbreviation ?? athlete?.team?.shortDisplayName ?? '').toUpperCase();
-      const team = teamByAbbr(teamAbbr);
-      if (!team) return null;
-      const schedule = await fetchSchedule();
-      const games = schedule.filter((g) => g.status === 'final' && (g.homeTeamId === team.id || g.awayTeamId === team.id));
-      const season = emptyPlayerProfileStat();
-      const gameLog: PlayerGameLogRow[] = [];
-      const summaries = await Promise.all(games.map(async (game) => {
-        try { return { game, summary: await fetchJson(`${SUMMARY}?event=${game.id.replace(/^espn-/, '')}`) }; } catch { return null; }
-      }));
-      for (const item of summaries) {
-        if (!item) continue;
-        const { game, summary } = item;
-        const block = (summary?.boxscore?.players ?? []).find((b: any) => teamByAbbr(b?.team?.abbreviation ?? '')?.id === team.id);
-        if (!block) continue;
-        const p = playerGroupStats(block, String(playerId));
-        const participated = Object.keys(p).length > 0;
-        if (!participated) continue;
-        // Real yards after catch from nflverse (PYAC for QBs, YAC for everyone else); 0 until it publishes.
-        try {
-          const nflverse = await nflverseGameYac(athlete.displayName, SEASON, game.week);
-          if (nflverse) {
-            const isQb = String(athlete.position?.abbreviation ?? '').toUpperCase() === 'QB';
-            p.yardsAfterCatch = isQb ? nflverse.pyac : nflverse.yac;
+  return cached(
+    `player-profile-${playerId}`,
+    async () => {
+      try {
+        const data = await fetchJson(
+          `https://site.api.espn.com/apis/common/v3/sports/football/nfl/athletes/${encodeURIComponent(playerId)}`,
+        );
+        const athlete = data?.athlete ?? data;
+        if (!athlete?.id || !athlete?.displayName) return null;
+        const teamAbbr = String(
+          athlete?.team?.abbreviation ?? athlete?.team?.shortDisplayName ?? "",
+        ).toUpperCase();
+        const team = teamByAbbr(teamAbbr);
+        if (!team) return null;
+        const schedule = await fetchSchedule();
+        const games = schedule.filter(
+          (g) => g.status === "final" && (g.homeTeamId === team.id || g.awayTeamId === team.id),
+        );
+        const season = emptyPlayerProfileStat();
+        const gameLog: PlayerGameLogRow[] = [];
+        const summaries = await Promise.all(
+          games.map(async (game) => {
+            try {
+              return {
+                game,
+                summary: await fetchJson(`${SUMMARY}?event=${game.id.replace(/^espn-/, "")}`),
+              };
+            } catch {
+              return null;
+            }
+          }),
+        );
+        for (const item of summaries) {
+          if (!item) continue;
+          const { game, summary } = item;
+          const block = (summary?.boxscore?.players ?? []).find(
+            (b: any) => teamByAbbr(b?.team?.abbreviation ?? "")?.id === team.id,
+          );
+          if (!block) continue;
+          const p = playerGroupStats(block, String(playerId));
+          const participated = Object.keys(p).length > 0;
+          if (!participated) continue;
+          // Real yards after catch from nflverse (PYAC for QBs, YAC for everyone else); 0 until it publishes.
+          try {
+            const nflverse = await nflverseGameYac(athlete.displayName, SEASON, game.week);
+            if (nflverse) {
+              const isQb = String(athlete.position?.abbreviation ?? "").toUpperCase() === "QB";
+              p.yardsAfterCatch = isQb ? nflverse.pyac : nflverse.yac;
+            }
+          } catch {
+            // keep the value from the box score (none)
           }
-        } catch {
-          // keep the value from the box score (none)
+          season.gamesPlayed += 1;
+          for (const key of Object.keys(p)) {
+            if (key in season) (season as any)[key] += p[key];
+          }
+          const opponent =
+            game.homeTeamId === team.id ? teamById(game.awayTeamId) : teamById(game.homeTeamId);
+          const mine = game.homeTeamId === team.id ? gameScore(game).home : gameScore(game).away;
+          const theirs = game.homeTeamId === team.id ? gameScore(game).away : gameScore(game).home;
+          gameLog.push({
+            gameId: game.id,
+            week: game.week,
+            opponentId: opponent?.id ?? "",
+            opponentAbbr: opponent?.abbr ?? "—",
+            result: mine > theirs ? "W" : mine < theirs ? "L" : "T",
+            passing: p.passingAttempts
+              ? `${p.completions ?? 0}/${p.passingAttempts} · ${p.passingYards ?? 0} yds`
+              : "—",
+            rushing: p.rushingAttempts ? `${p.rushingAttempts} · ${p.rushingYards ?? 0} yds` : "—",
+            receiving: p.receptions ? `${p.receptions} · ${p.receivingYards ?? 0} yds` : "—",
+            tackles: p.totalTackles ?? 0,
+            sacks: p.sacks ?? 0,
+            touchdowns:
+              (p.passingTouchdowns ?? 0) +
+              (p.rushingTouchdowns ?? 0) +
+              (p.receivingTouchdowns ?? 0),
+            completions: p.completions ?? 0,
+            passingAttempts: p.passingAttempts ?? 0,
+            passingYards: p.passingYards ?? 0,
+            yardsAfterCatch: p.yardsAfterCatch ?? 0,
+            passingTouchdowns: p.passingTouchdowns ?? 0,
+            interceptions: p.interceptions ?? 0,
+            rushingAttempts: p.rushingAttempts ?? 0,
+            rushingYards: p.rushingYards ?? 0,
+            rushingTouchdowns: p.rushingTouchdowns ?? 0,
+            fumblesLost: p.fumblesLost ?? p.fumbles ?? 0,
+          });
         }
-        season.gamesPlayed += 1;
-        for (const key of Object.keys(p)) {
-          if (key in season) (season as any)[key] += p[key];
-        }
-        const opponent = game.homeTeamId === team.id ? teamById(game.awayTeamId) : teamById(game.homeTeamId);
-        const mine = game.homeTeamId === team.id ? gameScore(game).home : gameScore(game).away;
-        const theirs = game.homeTeamId === team.id ? gameScore(game).away : gameScore(game).home;
-        gameLog.push({
-          gameId: game.id, week: game.week, opponentId: opponent?.id ?? '', opponentAbbr: opponent?.abbr ?? '—',
-          result: mine > theirs ? 'W' : mine < theirs ? 'L' : 'T',
-          passing: p.passingAttempts ? `${p.completions ?? 0}/${p.passingAttempts} · ${p.passingYards ?? 0} yds` : '—',
-          rushing: p.rushingAttempts ? `${p.rushingAttempts} · ${p.rushingYards ?? 0} yds` : '—',
-          receiving: p.receptions ? `${p.receptions} · ${p.receivingYards ?? 0} yds` : '—',
-          tackles: p.totalTackles ?? 0, sacks: p.sacks ?? 0,
-          touchdowns: (p.passingTouchdowns ?? 0) + (p.rushingTouchdowns ?? 0) + (p.receivingTouchdowns ?? 0),
-          completions: p.completions ?? 0,
-          passingAttempts: p.passingAttempts ?? 0,
-          passingYards: p.passingYards ?? 0,
-          yardsAfterCatch: p.yardsAfterCatch ?? 0,
-          passingTouchdowns: p.passingTouchdowns ?? 0,
-          interceptions: p.interceptions ?? 0,
-          rushingAttempts: p.rushingAttempts ?? 0,
-          rushingYards: p.rushingYards ?? 0,
-          rushingTouchdowns: p.rushingTouchdowns ?? 0,
-          fumblesLost: p.fumblesLost ?? p.fumbles ?? 0,
-        });
+        gameLog.sort((a, b) => b.week - a.week);
+        return {
+          id: String(athlete.id),
+          name: athlete.displayName,
+          firstName: athlete.firstName,
+          lastName: athlete.lastName,
+          position: athlete.position?.abbreviation ?? athlete.position?.name ?? "ATH",
+          jersey: athlete.jersey,
+          teamId: team.id,
+          teamAbbr: team.abbr,
+          teamName: `${team.city} ${team.name}`,
+          headshot: athlete.headshot?.href,
+          age: athlete.age,
+          height: athlete.displayHeight,
+          weight: athlete.displayWeight,
+          college: athlete.college?.name,
+          experience:
+            athlete.experience?.years ??
+            (parseInt(String(athlete.displayExperience ?? "")) || undefined),
+          draft: athlete.displayDraft,
+          birthPlace: athlete.displayBirthPlace,
+          status: athlete.status?.name,
+          birthDate: athlete.displayDOB,
+          season,
+          gameLog,
+        };
+      } catch {
+        return null;
       }
-      gameLog.sort((a,b) => b.week - a.week);
-      return {
-        id: String(athlete.id), name: athlete.displayName, firstName: athlete.firstName, lastName: athlete.lastName,
-        position: athlete.position?.abbreviation ?? athlete.position?.name ?? 'ATH', jersey: athlete.jersey, teamId: team.id, teamAbbr: team.abbr, teamName: `${team.city} ${team.name}`,
-        headshot: athlete.headshot?.href, age: athlete.age, height: athlete.displayHeight, weight: athlete.displayWeight,
-        college: athlete.college?.name, experience: athlete.experience?.years ?? (parseInt(String(athlete.displayExperience ?? '')) || undefined),
-        draft: athlete.displayDraft, birthPlace: athlete.displayBirthPlace, status: athlete.status?.name, birthDate: athlete.displayDOB, season, gameLog,
-      };
-    } catch { return null; }
-  }, 10 * 60 * 1000);
+    },
+    10 * 60 * 1000,
+  );
 }
 
 export interface TeamOverviewStats {
@@ -2241,77 +2595,102 @@ export interface TeamOverviewStats {
 
 /** Aggregate season-to-date team metrics from completed ESPN game summaries. */
 export async function fetchTeamOverviewStats(teamId: string): Promise<TeamOverviewStats> {
-  return cached(`team-overview-${teamId}`, async () => {
-    const schedule = await fetchSchedule();
-    const completed = schedule.filter(
-      (game) => game.status === "final" && (game.homeTeamId === teamId || game.awayTeamId === teamId),
-    );
-    const totals = {
-      pointsFor: 0, pointsAgainst: 0, passingYards: 0, rushingYards: 0, totalYards: 0,
-      passingTouchdowns: 0, rushingTouchdowns: 0, touchdowns: 0, plays: 0,
-      turnovers: 0, opponentPassingYards: 0, opponentRushingYards: 0,
-      opponentTotalYards: 0, opponentPassingTouchdowns: 0,
-      opponentRushingTouchdowns: 0, opponentTouchdowns: 0,
-      sacks: 0, takeaways: 0, games: 0,
-    };
+  return cached(
+    `team-overview-${teamId}`,
+    async () => {
+      const schedule = await fetchSchedule();
+      const completed = schedule.filter(
+        (game) =>
+          game.status === "final" && (game.homeTeamId === teamId || game.awayTeamId === teamId),
+      );
+      const totals = {
+        pointsFor: 0,
+        pointsAgainst: 0,
+        passingYards: 0,
+        rushingYards: 0,
+        totalYards: 0,
+        passingTouchdowns: 0,
+        rushingTouchdowns: 0,
+        touchdowns: 0,
+        plays: 0,
+        turnovers: 0,
+        opponentPassingYards: 0,
+        opponentRushingYards: 0,
+        opponentTotalYards: 0,
+        opponentPassingTouchdowns: 0,
+        opponentRushingTouchdowns: 0,
+        opponentTouchdowns: 0,
+        sacks: 0,
+        takeaways: 0,
+        games: 0,
+      };
 
-    const details = await Promise.all(completed.map((game) => fetchGameDetail(game.id.replace(/^espn-/, ""))));
-    for (const game of details) {
-      if (!game || game.status !== "final") continue;
-      const isHome = game.homeTeamId === teamId;
-      const own = isHome ? game.stats.home : game.stats.away;
-      const opponent = isHome ? game.stats.away : game.stats.home;
-      const score = gameScore(game);
-      totals.pointsFor += isHome ? score.home : score.away;
-      totals.pointsAgainst += isHome ? score.away : score.home;
-      totals.totalYards += own.totalYards;
-      totals.passingYards += own.passYards;
-      totals.rushingYards += own.rushYards;
-      totals.passingTouchdowns += own.passingTouchdowns ?? 0;
-      totals.rushingTouchdowns += own.rushingTouchdowns ?? 0;
-      // TD is the full team scoring-TD total, not only offensive TDs. ESPN's
-      // per-game player totals include defensive and return touchdowns too.
-      // Keep PTD/RUTD as the offensive breakdown, and use the full TD field
-      // for the total column so it can correctly exceed PTD + RUTD.
-      totals.touchdowns += own.touchdowns ?? ((own.passingTouchdowns ?? 0) + (own.rushingTouchdowns ?? 0));
-      totals.plays += game.drives.filter((drive) => drive.teamId === teamId).reduce((sum, drive) => sum + Math.max(0, drive.plays), 0);
-      totals.turnovers += own.turnovers;
-      totals.opponentTotalYards += opponent.totalYards;
-      totals.opponentPassingYards += opponent.passYards;
-      totals.opponentRushingYards += opponent.rushYards;
-      totals.opponentPassingTouchdowns += opponent.passingTouchdowns ?? 0;
-      totals.opponentRushingTouchdowns += opponent.rushingTouchdowns ?? 0;
-      // Opponent TD includes offensive, defensive, and return scores allowed.
-      totals.opponentTouchdowns += opponent.touchdowns ?? ((opponent.passingTouchdowns ?? 0) + (opponent.rushingTouchdowns ?? 0));
-      totals.sacks += own.sacks ?? 0;
-      // Turnovers committed by the opponent are the defense's takeaways.
-      totals.takeaways += opponent.turnovers;
-      totals.games++;
-    }
+      const details = await Promise.all(
+        completed.map((game) => fetchGameDetail(game.id.replace(/^espn-/, ""))),
+      );
+      for (const game of details) {
+        if (!game || game.status !== "final") continue;
+        const isHome = game.homeTeamId === teamId;
+        const own = isHome ? game.stats.home : game.stats.away;
+        const opponent = isHome ? game.stats.away : game.stats.home;
+        const score = gameScore(game);
+        totals.pointsFor += isHome ? score.home : score.away;
+        totals.pointsAgainst += isHome ? score.away : score.home;
+        totals.totalYards += own.totalYards;
+        totals.passingYards += own.passYards;
+        totals.rushingYards += own.rushYards;
+        totals.passingTouchdowns += own.passingTouchdowns ?? 0;
+        totals.rushingTouchdowns += own.rushingTouchdowns ?? 0;
+        // TD is the full team scoring-TD total, not only offensive TDs. ESPN's
+        // per-game player totals include defensive and return touchdowns too.
+        // Keep PTD/RUTD as the offensive breakdown, and use the full TD field
+        // for the total column so it can correctly exceed PTD + RUTD.
+        totals.touchdowns +=
+          own.touchdowns ?? (own.passingTouchdowns ?? 0) + (own.rushingTouchdowns ?? 0);
+        totals.plays += game.drives
+          .filter((drive) => drive.teamId === teamId)
+          .reduce((sum, drive) => sum + Math.max(0, drive.plays), 0);
+        totals.turnovers += own.turnovers;
+        totals.opponentTotalYards += opponent.totalYards;
+        totals.opponentPassingYards += opponent.passYards;
+        totals.opponentRushingYards += opponent.rushYards;
+        totals.opponentPassingTouchdowns += opponent.passingTouchdowns ?? 0;
+        totals.opponentRushingTouchdowns += opponent.rushingTouchdowns ?? 0;
+        // Opponent TD includes offensive, defensive, and return scores allowed.
+        totals.opponentTouchdowns +=
+          opponent.touchdowns ??
+          (opponent.passingTouchdowns ?? 0) + (opponent.rushingTouchdowns ?? 0);
+        totals.sacks += own.sacks ?? 0;
+        // Turnovers committed by the opponent are the defense's takeaways.
+        totals.takeaways += opponent.turnovers;
+        totals.games++;
+      }
 
-    const games = Math.max(1, totals.games);
-    return {
-      gamesPlayed: totals.games,
-      ppg: totals.pointsFor / games,
-      passingYardsPerGame: totals.passingYards / games,
-      totalYardsPerGame: totals.totalYards / games,
-      rushingYardsPerGame: totals.rushingYards / games,
-      touchdowns: totals.touchdowns,
-      passingTouchdowns: totals.passingTouchdowns,
-      rushingTouchdowns: totals.rushingTouchdowns,
-      yardsPerPlay: totals.plays > 0 ? totals.totalYards / totals.plays : 0,
-      turnoversPerGame: totals.turnovers / games,
-      opponentPpg: totals.pointsAgainst / games,
-      opponentTotalYardsPerGame: totals.opponentTotalYards / games,
-      opponentPassingYardsPerGame: totals.opponentPassingYards / games,
-      opponentRushingYardsPerGame: totals.opponentRushingYards / games,
-      opponentTouchdowns: totals.opponentTouchdowns,
-      opponentPassingTouchdowns: totals.opponentPassingTouchdowns,
-      opponentRushingTouchdowns: totals.opponentRushingTouchdowns,
-      sacks: totals.sacks,
-      takeawaysPerGame: totals.takeaways / games,
-    };
-  }, 10 * 60 * 1000);
+      const games = Math.max(1, totals.games);
+      return {
+        gamesPlayed: totals.games,
+        ppg: totals.pointsFor / games,
+        passingYardsPerGame: totals.passingYards / games,
+        totalYardsPerGame: totals.totalYards / games,
+        rushingYardsPerGame: totals.rushingYards / games,
+        touchdowns: totals.touchdowns,
+        passingTouchdowns: totals.passingTouchdowns,
+        rushingTouchdowns: totals.rushingTouchdowns,
+        yardsPerPlay: totals.plays > 0 ? totals.totalYards / totals.plays : 0,
+        turnoversPerGame: totals.turnovers / games,
+        opponentPpg: totals.pointsAgainst / games,
+        opponentTotalYardsPerGame: totals.opponentTotalYards / games,
+        opponentPassingYardsPerGame: totals.opponentPassingYards / games,
+        opponentRushingYardsPerGame: totals.opponentRushingYards / games,
+        opponentTouchdowns: totals.opponentTouchdowns,
+        opponentPassingTouchdowns: totals.opponentPassingTouchdowns,
+        opponentRushingTouchdowns: totals.opponentRushingTouchdowns,
+        sacks: totals.sacks,
+        takeawaysPerGame: totals.takeaways / games,
+      };
+    },
+    10 * 60 * 1000,
+  );
 }
 
 /**
@@ -2322,71 +2701,118 @@ export async function fetchTeamOverviewStats(teamId: string): Promise<TeamOvervi
 export async function fetchTeamSeasonAverages(
   awayTeamId: string,
   homeTeamId: string,
-): Promise<{ away: TeamGameStats; home: TeamGameStats; gamesPlayed: { away: number; home: number } }> {
+): Promise<{
+  away: TeamGameStats;
+  home: TeamGameStats;
+  gamesPlayed: { away: number; home: number };
+}> {
   const key = `team-season-averages-${awayTeamId}-${homeTeamId}`;
-  return cached(key, async () => {
-    const schedule = await fetchSchedule();
-    const teamIds = new Set([awayTeamId, homeTeamId]);
-    const completed = schedule.filter(
-      (game) => game.status === "final" && (teamIds.has(game.awayTeamId) || teamIds.has(game.homeTeamId)),
-    );
-    const details = await Promise.all(
-      completed.map((game) => fetchGameDetail(game.id.replace(/^espn-/, ""))),
-    );
+  return cached(
+    key,
+    async () => {
+      const schedule = await fetchSchedule();
+      const teamIds = new Set([awayTeamId, homeTeamId]);
+      const completed = schedule.filter(
+        (game) =>
+          game.status === "final" && (teamIds.has(game.awayTeamId) || teamIds.has(game.homeTeamId)),
+      );
+      const details = await Promise.all(
+        completed.map((game) => fetchGameDetail(game.id.replace(/^espn-/, ""))),
+      );
 
-    const numericKeys: (keyof TeamGameStats)[] = [
-      "totalYards", "passYards", "rushYards", "firstDowns", "turnovers", "penalties",
-      "touchdowns", "passingTouchdowns", "rushingTouchdowns", "fieldGoalsMade", "fieldGoalAttempts",
-      "thirdDownMade", "thirdDownAtt", "fourthDownMade", "fourthDownAtt", "redZoneMade", "redZoneAtt",
-      "extraPointsMade", "extraPointAttempts", "penaltyYards", "sacks", "defensiveTouchdowns",
-      "interceptions", "forcedFumbles", "tacklesForLoss", "passesDefended", "qbHits",
-    ];
-    const averageFor = (teamId: string) => {
-      const totals: Record<string, number> = Object.fromEntries(numericKeys.map((key) => [key, 0]));
-      let gamesPlayed = 0;
-      let possessionSeconds = 0;
-      for (const game of details) {
-        if (!game || game.status !== "final") continue;
-        const isAway = game.awayTeamId === teamId;
-        const isHome = game.homeTeamId === teamId;
-        if (!isAway && !isHome) continue;
-        const stats = isAway ? game.stats.away : game.stats.home;
-        gamesPlayed++;
-        for (const key of numericKeys) totals[key] += Number(stats[key] ?? 0) || 0;
-        const time = String(stats.timeOfPossession ?? "00:00").match(/^(\d+):(\d{2})$/);
-        if (time) possessionSeconds += Number(time[1]) * 60 + Number(time[2]);
-      }
-      const divisor = Math.max(1, gamesPlayed);
-      const avg = (key: keyof TeamGameStats) => Math.round(((totals[String(key)] ?? 0) / divisor) * 10) / 10;
-      const thirdTotalAtt = totals.thirdDownAtt ?? 0;
-      const thirdTotalMade = totals.thirdDownMade ?? 0;
-      const averageSeconds = Math.round(possessionSeconds / divisor);
-      const minutes = Math.floor(averageSeconds / 60);
-      const seconds = averageSeconds % 60;
-      const stats: TeamGameStats = {
-        totalYards: avg("totalYards"),
-        passYards: avg("passYards"),
-        rushYards: avg("rushYards"),
-        firstDowns: avg("firstDowns"),
-        thirdDownPct: thirdTotalAtt > 0 ? Math.round((thirdTotalMade / thirdTotalAtt) * 100) : 0,
-        turnovers: avg("turnovers"),
-        penalties: avg("penalties"),
-        timeOfPossession: `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`,
+      const numericKeys: (keyof TeamGameStats)[] = [
+        "totalYards",
+        "passYards",
+        "rushYards",
+        "firstDowns",
+        "turnovers",
+        "penalties",
+        "touchdowns",
+        "passingTouchdowns",
+        "rushingTouchdowns",
+        "fieldGoalsMade",
+        "fieldGoalAttempts",
+        "thirdDownMade",
+        "thirdDownAtt",
+        "fourthDownMade",
+        "fourthDownAtt",
+        "redZoneMade",
+        "redZoneAtt",
+        "extraPointsMade",
+        "extraPointAttempts",
+        "penaltyYards",
+        "sacks",
+        "defensiveTouchdowns",
+        "interceptions",
+        "forcedFumbles",
+        "tacklesForLoss",
+        "passesDefended",
+        "qbHits",
+      ];
+      const averageFor = (teamId: string) => {
+        const totals: Record<string, number> = Object.fromEntries(
+          numericKeys.map((key) => [key, 0]),
+        );
+        let gamesPlayed = 0;
+        let possessionSeconds = 0;
+        for (const game of details) {
+          if (!game || game.status !== "final") continue;
+          const isAway = game.awayTeamId === teamId;
+          const isHome = game.homeTeamId === teamId;
+          if (!isAway && !isHome) continue;
+          const stats = isAway ? game.stats.away : game.stats.home;
+          gamesPlayed++;
+          for (const key of numericKeys) totals[key] += Number(stats[key] ?? 0) || 0;
+          const time = String(stats.timeOfPossession ?? "00:00").match(/^(\d+):(\d{2})$/);
+          if (time) possessionSeconds += Number(time[1]) * 60 + Number(time[2]);
+        }
+        const divisor = Math.max(1, gamesPlayed);
+        const avg = (key: keyof TeamGameStats) =>
+          Math.round(((totals[String(key)] ?? 0) / divisor) * 10) / 10;
+        const thirdTotalAtt = totals.thirdDownAtt ?? 0;
+        const thirdTotalMade = totals.thirdDownMade ?? 0;
+        const averageSeconds = Math.round(possessionSeconds / divisor);
+        const minutes = Math.floor(averageSeconds / 60);
+        const seconds = averageSeconds % 60;
+        const stats: TeamGameStats = {
+          totalYards: avg("totalYards"),
+          passYards: avg("passYards"),
+          rushYards: avg("rushYards"),
+          firstDowns: avg("firstDowns"),
+          thirdDownPct: thirdTotalAtt > 0 ? Math.round((thirdTotalMade / thirdTotalAtt) * 100) : 0,
+          turnovers: avg("turnovers"),
+          penalties: avg("penalties"),
+          timeOfPossession: `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`,
+        };
+        for (const key of numericKeys) {
+          if (
+            key === "totalYards" ||
+            key === "passYards" ||
+            key === "rushYards" ||
+            key === "firstDowns" ||
+            key === "turnovers" ||
+            key === "penalties"
+          )
+            continue;
+          (stats as any)[key] = avg(key);
+        }
+        // Ensure the 3rd-down rate is calculated from the season's combined attempts,
+        // not from rounded display averages.
+        stats.thirdDownPct =
+          thirdTotalAtt > 0 ? Math.round((thirdTotalMade / thirdTotalAtt) * 100) : 0;
+        return { stats, gamesPlayed };
       };
-      for (const key of numericKeys) {
-        if (key === "totalYards" || key === "passYards" || key === "rushYards" || key === "firstDowns" || key === "turnovers" || key === "penalties") continue;
-        (stats as any)[key] = avg(key);
-      }
-      // Ensure the 3rd-down rate is calculated from the season's combined attempts,
-      // not from rounded display averages.
-      stats.thirdDownPct = thirdTotalAtt > 0 ? Math.round((thirdTotalMade / thirdTotalAtt) * 100) : 0;
-      return { stats, gamesPlayed };
-    };
 
-    const away = averageFor(awayTeamId);
-    const home = averageFor(homeTeamId);
-    return { away: away.stats, home: home.stats, gamesPlayed: { away: away.gamesPlayed, home: home.gamesPlayed } };
-  }, 5 * 60 * 1000);
+      const away = averageFor(awayTeamId);
+      const home = averageFor(homeTeamId);
+      return {
+        away: away.stats,
+        home: home.stats,
+        gamesPlayed: { away: away.gamesPlayed, home: home.gamesPlayed },
+      };
+    },
+    5 * 60 * 1000,
+  );
 }
 
 export interface LeagueTeamOverviewRow {
@@ -2398,14 +2824,20 @@ export interface LeagueTeamOverviewRow {
 
 /** Return current overview metrics for all NFL teams so the UI can rank every stat live. */
 export async function fetchLeagueTeamOverviewStats(): Promise<LeagueTeamOverviewRow[]> {
-  return cached("league-team-overview-stats", async () => {
-    return Promise.all(teams.map(async (team) => ({
-      teamId: team.id,
-      teamAbbr: team.abbr,
-      teamName: `${team.city} ${team.name}`,
-      stats: await fetchTeamOverviewStats(team.id),
-    })));
-  }, 10 * 60 * 1000);
+  return cached(
+    "league-team-overview-stats",
+    async () => {
+      return Promise.all(
+        teams.map(async (team) => ({
+          teamId: team.id,
+          teamAbbr: team.abbr,
+          teamName: `${team.city} ${team.name}`,
+          stats: await fetchTeamOverviewStats(team.id),
+        })),
+      );
+    },
+    10 * 60 * 1000,
+  );
 }
 
 export interface TeamSeasonStatRow {
@@ -2419,7 +2851,11 @@ export interface TeamSeasonStatRow {
 
 export interface TeamSeasonStats {
   gamesPlayed: number;
-  offense: { passing: TeamSeasonStatRow[]; rushing: TeamSeasonStatRow[]; receiving: TeamSeasonStatRow[] };
+  offense: {
+    passing: TeamSeasonStatRow[];
+    rushing: TeamSeasonStatRow[];
+    receiving: TeamSeasonStatRow[];
+  };
   defense: TeamSeasonStatRow[];
   kicking: TeamSeasonStatRow[];
 }
@@ -2504,7 +2940,6 @@ export async function fetchTeamRoster(teamAbbr: string): Promise<LiveRosterPlaye
   );
 }
 
-
 function numericStat(value: unknown): number {
   if (typeof value === "number") return value;
   const n = Number(String(value ?? "").replace(/,/g, ""));
@@ -2522,7 +2957,14 @@ function teamSeasonPlayerId(athlete: any): string {
 function teamSeasonPosition(athlete: any, groupName: string): string {
   const pos = athlete?.position?.abbreviation;
   if (pos) return String(pos).toUpperCase();
-  const fallback: Record<string, string> = { passing: "QB", rushing: "RB", receiving: "WR", defensive: "DEF", interceptions: "DB", kicking: "K" };
+  const fallback: Record<string, string> = {
+    passing: "QB",
+    rushing: "RB",
+    receiving: "WR",
+    defensive: "DEF",
+    interceptions: "DB",
+    kicking: "K",
+  };
   return fallback[groupName] ?? "ATH";
 }
 
@@ -2533,110 +2975,156 @@ function teamSeasonPosition(athlete: any, groupName: string): string {
  */
 export async function fetchTeamSeasonStats(teamAbbr: string): Promise<TeamSeasonStats> {
   const abbr = teamAbbr.toUpperCase();
-  return cached(`team-season-stats-${abbr}`, async () => {
-    const schedule = await fetchSchedule();
-    const team = teamByAbbr(abbr);
-    if (!team) return { gamesPlayed: 0, offense: { passing: [], rushing: [], receiving: [] }, defense: [], kicking: [] };
+  return cached(
+    `team-season-stats-${abbr}`,
+    async () => {
+      const schedule = await fetchSchedule();
+      const team = teamByAbbr(abbr);
+      if (!team)
+        return {
+          gamesPlayed: 0,
+          offense: { passing: [], rushing: [], receiving: [] },
+          defense: [],
+          kicking: [],
+        };
 
-    const games = schedule.filter(
-      (g) => g.status === "final" && (g.homeTeamId === team.id || g.awayTeamId === team.id),
-    );
+      const games = schedule.filter(
+        (g) => g.status === "final" && (g.homeTeamId === team.id || g.awayTeamId === team.id),
+      );
 
-    const buckets = new Map<string, { id: string; name: string; position: string; stats: Record<string, number | string>; gameIds: Set<string> }>();
-    const summaries = await Promise.all(
-      games.map(async (game) => {
-        try {
-          return {
-            gameId: game.id,
-            summary: await fetchJson(`${SUMMARY}?event=${game.id.replace(/^espn-/, "")}`),
-          };
-        } catch {
-          return null;
+      const buckets = new Map<
+        string,
+        {
+          id: string;
+          name: string;
+          position: string;
+          stats: Record<string, number | string>;
+          gameIds: Set<string>;
         }
-      }),
-    );
-
-    for (const result of summaries) {
-      if (!result) continue;
-      const { gameId, summary } = result;
-      const blocks = summary?.boxscore?.players ?? [];
-      for (const block of blocks) {
-        if (teamByAbbr(block?.team?.abbreviation ?? "")?.id !== team.id) continue;
-        for (const group of block?.statistics ?? []) {
-          const groupName = String(group?.name ?? "");
-          if (!["passing", "rushing", "receiving", "defensive", "interceptions", "kicking"].includes(groupName)) continue;
-          const keys: string[] = group?.keys ?? [];
-          for (const athlete of group?.athletes ?? []) {
-            const a = athlete?.athlete;
-            if (!a?.displayName) continue;
-            const id = teamSeasonPlayerId(a);
-            const bucketKey = `${groupName}:${id}`;
-            const existing = buckets.get(bucketKey) ?? {
-              id,
-              name: a.displayName,
-              position: teamSeasonPosition(a, groupName),
-              stats: {},
-              gameIds: new Set<string>(),
+      >();
+      const summaries = await Promise.all(
+        games.map(async (game) => {
+          try {
+            return {
+              gameId: game.id,
+              summary: await fetchJson(`${SUMMARY}?event=${game.id.replace(/^espn-/, "")}`),
             };
-            if (!existing.gameIds.has(gameId)) {
-              existing.gameIds.add(gameId);
-              addStat(existing.stats, "gamesPlayed", 1);
-            }
-            keys.forEach((key, i) => {
-              const raw = athlete?.stats?.[i];
-              if (raw === undefined || raw === null || raw === "-") return;
-              // Preserve completion/attempt strings such as 18/27, while
-              // summing the individual numeric categories elsewhere.
-              if (key === "completions/passingAttempts" || key === "fieldGoalsMade/fieldGoalAttempts" || key === "extraPointsMade/extraPointAttempts") {
-                const parts = String(raw).split(/[\\/\\-]/).map(Number);
-                if (parts.length === 2 && parts.every(Number.isFinite)) {
-                  const madeKey = key === "completions/passingAttempts" ? "completions" : key.startsWith("field") ? "fieldGoalsMade" : "extraPointsMade";
-                  const attKey = key === "completions/passingAttempts" ? "passingAttempts" : key.startsWith("field") ? "fieldGoalAttempts" : "extraPointAttempts";
-                  addStat(existing.stats, madeKey, parts[0]);
-                  addStat(existing.stats, attKey, parts[1]);
-                }
-              } else if (key !== "longFieldGoalMade") {
-                addStat(existing.stats, key, raw);
+          } catch {
+            return null;
+          }
+        }),
+      );
+
+      for (const result of summaries) {
+        if (!result) continue;
+        const { gameId, summary } = result;
+        const blocks = summary?.boxscore?.players ?? [];
+        for (const block of blocks) {
+          if (teamByAbbr(block?.team?.abbreviation ?? "")?.id !== team.id) continue;
+          for (const group of block?.statistics ?? []) {
+            const groupName = String(group?.name ?? "");
+            if (
+              ![
+                "passing",
+                "rushing",
+                "receiving",
+                "defensive",
+                "interceptions",
+                "kicking",
+              ].includes(groupName)
+            )
+              continue;
+            const keys: string[] = group?.keys ?? [];
+            for (const athlete of group?.athletes ?? []) {
+              const a = athlete?.athlete;
+              if (!a?.displayName) continue;
+              const id = teamSeasonPlayerId(a);
+              const bucketKey = `${groupName}:${id}`;
+              const existing = buckets.get(bucketKey) ?? {
+                id,
+                name: a.displayName,
+                position: teamSeasonPosition(a, groupName),
+                stats: {},
+                gameIds: new Set<string>(),
+              };
+              if (!existing.gameIds.has(gameId)) {
+                existing.gameIds.add(gameId);
+                addStat(existing.stats, "gamesPlayed", 1);
               }
-            });
-            buckets.set(bucketKey, existing);
+              keys.forEach((key, i) => {
+                const raw = athlete?.stats?.[i];
+                if (raw === undefined || raw === null || raw === "-") return;
+                // Preserve completion/attempt strings such as 18/27, while
+                // summing the individual numeric categories elsewhere.
+                if (
+                  key === "completions/passingAttempts" ||
+                  key === "fieldGoalsMade/fieldGoalAttempts" ||
+                  key === "extraPointsMade/extraPointAttempts"
+                ) {
+                  const parts = String(raw)
+                    .split(/[\\/\\-]/)
+                    .map(Number);
+                  if (parts.length === 2 && parts.every(Number.isFinite)) {
+                    const madeKey =
+                      key === "completions/passingAttempts"
+                        ? "completions"
+                        : key.startsWith("field")
+                          ? "fieldGoalsMade"
+                          : "extraPointsMade";
+                    const attKey =
+                      key === "completions/passingAttempts"
+                        ? "passingAttempts"
+                        : key.startsWith("field")
+                          ? "fieldGoalAttempts"
+                          : "extraPointAttempts";
+                    addStat(existing.stats, madeKey, parts[0]);
+                    addStat(existing.stats, attKey, parts[1]);
+                  }
+                } else if (key !== "longFieldGoalMade") {
+                  addStat(existing.stats, key, raw);
+                }
+              });
+              buckets.set(bucketKey, existing);
+            }
           }
         }
       }
-    }
 
-    const rowsFor = (groupName: string) => Array.from(buckets.entries())
-      .filter(([key]) => key.startsWith(`${groupName}:`))
-      .map(([, row]) => ({
-        id: row.id,
-        name: row.name,
-        position: row.position,
-        stats: row.stats,
-      }))
-      .sort((a, b) => a.name.localeCompare(b.name));
+      const rowsFor = (groupName: string) =>
+        Array.from(buckets.entries())
+          .filter(([key]) => key.startsWith(`${groupName}:`))
+          .map(([, row]) => ({
+            id: row.id,
+            name: row.name,
+            position: row.position,
+            stats: row.stats,
+          }))
+          .sort((a, b) => a.name.localeCompare(b.name));
 
-    // The defensive group and interceptions group can contain the same player;
-    // merge those into one defensive row per player.
-    const defenseMap = new Map<string, TeamSeasonStatRow>();
-    for (const groupName of ["defensive", "interceptions"]) {
-      for (const row of rowsFor(groupName)) {
-        const existing = defenseMap.get(row.id) ?? { ...row, stats: {} };
-        for (const [key, value] of Object.entries(row.stats)) addStat(existing.stats, key, value);
-        defenseMap.set(row.id, existing);
+      // The defensive group and interceptions group can contain the same player;
+      // merge those into one defensive row per player.
+      const defenseMap = new Map<string, TeamSeasonStatRow>();
+      for (const groupName of ["defensive", "interceptions"]) {
+        for (const row of rowsFor(groupName)) {
+          const existing = defenseMap.get(row.id) ?? { ...row, stats: {} };
+          for (const [key, value] of Object.entries(row.stats)) addStat(existing.stats, key, value);
+          defenseMap.set(row.id, existing);
+        }
       }
-    }
 
-    return {
-      gamesPlayed: games.length,
-      offense: {
-        passing: rowsFor("passing"),
-        rushing: rowsFor("rushing"),
-        receiving: rowsFor("receiving"),
-      },
-      defense: Array.from(defenseMap.values()).sort((a, b) => a.name.localeCompare(b.name)),
-      kicking: rowsFor("kicking"),
-    };
-  }, 10 * 60 * 1000);
+      return {
+        gamesPlayed: games.length,
+        offense: {
+          passing: rowsFor("passing"),
+          rushing: rowsFor("rushing"),
+          receiving: rowsFor("receiving"),
+        },
+        defense: Array.from(defenseMap.values()).sort((a, b) => a.name.localeCompare(b.name)),
+        kicking: rowsFor("kicking"),
+      };
+    },
+    10 * 60 * 1000,
+  );
 }
 
 /** Fetches ESPN's current roster for the team. */
@@ -2647,43 +3135,50 @@ export async function fetchTeamRosterForPage(teamAbbr: string): Promise<LiveRost
 /** Fetches ESPN's current depth chart and normalizes its position groups. */
 export async function fetchTeamDepthChart(teamAbbr: string): Promise<TeamDepthChart> {
   const abbr = teamAbbr.toUpperCase();
-  return cached(`depthchart-${abbr}`, async () => {
-    try {
-      const data = await fetchJson(
-        `https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams/${abbr}/depthcharts`,
-      );
-      const output: TeamDepthChart = { offense: [], defense: [], specialTeams: [] };
-      const charts = data?.depthCharts ?? [];
-      const seen = new Set<string>();
-      for (const chart of charts) {
-        const chartName = String(chart?.name ?? "").toLowerCase();
-        const target = chartName.includes("special") ? output.specialTeams : chartName.includes("def") ? output.defense : output.offense;
-        for (const [key, value] of Object.entries(chart?.positions ?? {})) {
-          const v: any = value;
-          const position = v?.position?.name ?? key;
-          const abbreviation = v?.position?.abbreviation ?? key.toUpperCase();
-          const players = (v?.athletes ?? [])
-            .map((entry: any) => ({
-              rank: Number(entry?.rank ?? 1),
-              id: String(entry?.athlete?.id ?? entry?.athlete?.displayName ?? ""),
-              name: entry?.athlete?.displayName ?? "Unknown",
-              headshot: entry?.athlete?.headshot?.href,
-            }))
-            .filter((p: any) => p.id);
-          if (!players.length) continue;
-          const uniqueKey = `${chartName}:${key}`;
-          if (seen.has(uniqueKey)) continue;
-          seen.add(uniqueKey);
-          target.push({ key, position, abbreviation, players });
+  return cached(
+    `depthchart-${abbr}`,
+    async () => {
+      try {
+        const data = await fetchJson(
+          `https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams/${abbr}/depthcharts`,
+        );
+        const output: TeamDepthChart = { offense: [], defense: [], specialTeams: [] };
+        const charts = data?.depthCharts ?? [];
+        const seen = new Set<string>();
+        for (const chart of charts) {
+          const chartName = String(chart?.name ?? "").toLowerCase();
+          const target = chartName.includes("special")
+            ? output.specialTeams
+            : chartName.includes("def")
+              ? output.defense
+              : output.offense;
+          for (const [key, value] of Object.entries(chart?.positions ?? {})) {
+            const v: any = value;
+            const position = v?.position?.name ?? key;
+            const abbreviation = v?.position?.abbreviation ?? key.toUpperCase();
+            const players = (v?.athletes ?? [])
+              .map((entry: any) => ({
+                rank: Number(entry?.rank ?? 1),
+                id: String(entry?.athlete?.id ?? entry?.athlete?.displayName ?? ""),
+                name: entry?.athlete?.displayName ?? "Unknown",
+                headshot: entry?.athlete?.headshot?.href,
+              }))
+              .filter((p: any) => p.id);
+            if (!players.length) continue;
+            const uniqueKey = `${chartName}:${key}`;
+            if (seen.has(uniqueKey)) continue;
+            seen.add(uniqueKey);
+            target.push({ key, position, abbreviation, players });
+          }
         }
+        return output;
+      } catch {
+        return { offense: [], defense: [], specialTeams: [] };
       }
-      return output;
-    } catch {
-      return { offense: [], defense: [], specialTeams: [] };
-    }
-  }, ROSTER_CACHE_TTL_MS);
+    },
+    ROSTER_CACHE_TTL_MS,
+  );
 }
-
 
 /* ---------- player props (DraftKings via ESPN core odds feed) ---------- */
 
@@ -2749,7 +3244,10 @@ export async function fetchGameProps(
             await Promise.all(
               refs.slice(start, start + 20).map(async (ref) => {
                 try {
-                  resolved.set(ref, await cached(`propref-${ref}`, () => fetchPropsJson(ref), 60_000));
+                  resolved.set(
+                    ref,
+                    await cached(`propref-${ref}`, () => fetchPropsJson(ref), 60_000),
+                  );
                 } catch {
                   // skip this prop
                 }
@@ -2757,7 +3255,9 @@ export async function fetchGameProps(
             );
           }
           return collected
-            .map((x) => (x && !x.type && typeof x.$ref === "string" ? resolved.get(String(x.$ref)) : x))
+            .map((x) =>
+              x && !x.type && typeof x.$ref === "string" ? resolved.get(String(x.$ref)) : x,
+            )
             .filter(Boolean);
         }
         return collected;
@@ -2788,21 +3288,49 @@ export async function fetchGameProps(
       }
       diagnostics.itemCount = items.length;
       diagnostics.sampleTd = sampleTdItem(items);
-      diagnostics.sampleTypes = [...new Set(items.map((x) => String(x?.type?.name ?? x?.type?.displayName ?? x?.name ?? "?")))].slice(0, 12);
+      diagnostics.sampleTypes = [
+        ...new Set(
+          items.map((x) => String(x?.type?.name ?? x?.type?.displayName ?? x?.name ?? "?")),
+        ),
+      ].slice(0, 12);
 
-      const [awayRoster, homeRoster] = await Promise.all([fetchTeamRoster(awayAbbr), fetchTeamRoster(homeAbbr)]);
+      const [awayRoster, homeRoster] = await Promise.all([
+        fetchTeamRoster(awayAbbr),
+        fetchTeamRoster(homeAbbr),
+      ]);
       const people = new Map<string, PropPerson>();
-      for (const p of awayRoster) people.set(p.id, { name: p.name, position: p.position, headshot: p.headshot, team: awayAbbr });
-      for (const p of homeRoster) people.set(p.id, { name: p.name, position: p.position, headshot: p.headshot, team: homeAbbr });
+      for (const p of awayRoster)
+        people.set(p.id, {
+          name: p.name,
+          position: p.position,
+          headshot: p.headshot,
+          team: awayAbbr,
+        });
+      for (const p of homeRoster)
+        people.set(p.id, {
+          name: p.name,
+          position: p.position,
+          headshot: p.headshot,
+          team: homeAbbr,
+        });
 
       // Athletes missing from the rosters (practice squad, new signings): look them up once.
-      const missing = [...new Set(items.map(athleteIdOf).filter((id): id is string => Boolean(id) && !people.has(id as string)))].slice(0, 150);
+      const missing = [
+        ...new Set(
+          items
+            .map(athleteIdOf)
+            .filter((id): id is string => Boolean(id) && !people.has(id as string)),
+        ),
+      ].slice(0, 150);
       await Promise.all(
         missing.map(async (id) => {
           try {
             const athlete = await cached(
               `athlete-${id}`,
-              () => fetchJson(`https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/athletes/${id}`),
+              () =>
+                fetchJson(
+                  `https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/athletes/${id}`,
+                ),
               ROSTER_CACHE_TTL_MS,
             );
             if (athlete?.displayName) {
@@ -2833,13 +3361,27 @@ export async function fetchGameProps(
   );
 }
 
-
 /** Team-roster lookup so the browser can label prop athletes when it fetches ESPN directly. */
 export async function fetchPropPeople(awayAbbr: string, homeAbbr: string) {
-  const [awayRoster, homeRoster] = await Promise.all([fetchTeamRoster(awayAbbr), fetchTeamRoster(homeAbbr)]);
+  const [awayRoster, homeRoster] = await Promise.all([
+    fetchTeamRoster(awayAbbr),
+    fetchTeamRoster(homeAbbr),
+  ]);
   return [
-    ...awayRoster.map((p) => ({ id: p.id, name: p.name, position: p.position, headshot: p.headshot, team: awayAbbr })),
-    ...homeRoster.map((p) => ({ id: p.id, name: p.name, position: p.position, headshot: p.headshot, team: homeAbbr })),
+    ...awayRoster.map((p) => ({
+      id: p.id,
+      name: p.name,
+      position: p.position,
+      headshot: p.headshot,
+      team: awayAbbr,
+    })),
+    ...homeRoster.map((p) => ({
+      id: p.id,
+      name: p.name,
+      position: p.position,
+      headshot: p.headshot,
+      team: homeAbbr,
+    })),
   ];
 }
 
@@ -2892,7 +3434,8 @@ export async function fetchPropAvailability(
 
       // Roster injury tags (season-long designations such as IR).
       abbrs.forEach((abbr, i) => {
-        for (const p of rosters[i]) if (p.injuryStatus) entry(p.id, abbr).injuryStatus = p.injuryStatus;
+        for (const p of rosters[i])
+          if (p.injuryStatus) entry(p.id, abbr).injuryStatus = p.injuryStatus;
       });
 
       // The game's injury report is the most specific source, so it wins.
