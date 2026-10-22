@@ -17,7 +17,7 @@ import {
 import { gameScore, type Game } from "@/data/games";
 import { players } from "@/data/players";
 import { teamById, teams } from "@/data/teams";
-import { getLiveSchedule } from "@/lib/espn.functions";
+import { getLiveSchedule, getPriorSeasonResults } from "@/lib/espn.functions";
 import { runModel, summarizeModel, unitsText } from "@/lib/game-model";
 import { buildSeasonPulse, changeTone, weekChangeText } from "@/lib/season-pulse";
 
@@ -33,11 +33,7 @@ function LiveGameRow({ game, showDown }: { game: Game; showDown: boolean }) {
   const clockMatch = rawClock.match(/^(\d{1,2}:\d{2})\s*-\s*(.+)$/);
   const clock = clockMatch ? `${clockMatch[2]} ${clockMatch[1]}` : rawClock;
 
-  const { spread: spreadClass, total: totalClass } = marketResultClass(
-    game,
-    away,
-    home,
-  );
+  const { spread: spreadClass, total: totalClass } = marketResultClass(game, away, home);
   const isHalftime = /half/i.test(game.clock ?? "");
   // A TD/FG is only a brief substitute for the dash while ESPN has no
   // live down-and-distance to report. As soon as downs return, show them.
@@ -77,8 +73,12 @@ function LiveGameRow({ game, showDown }: { game: Game; showDown: boolean }) {
                   </>
                 ) : null}
               </span>
-            ) : "—"
-          ) : ""}
+            ) : (
+              "—"
+            )
+          ) : (
+            ""
+          )}
         </td>
       ) : null}
       <td className="px-2 py-2.5 text-center">
@@ -91,12 +91,16 @@ function LiveGameRow({ game, showDown }: { game: Game; showDown: boolean }) {
           showPossession
         />
       </td>
-      <td className={`whitespace-nowrap px-2 py-2.5 text-right font-mono tabular-nums ${spreadClass}`}>
+      <td
+        className={`whitespace-nowrap px-2 py-2.5 text-right font-mono tabular-nums ${spreadClass}`}
+      >
         <div className="flex items-center justify-end">
           <SpreadBadge spread={game.spread} away={away} home={home} />
         </div>
       </td>
-      <td className={`whitespace-nowrap px-4 py-2.5 text-right font-mono tabular-nums ${totalClass}`}>
+      <td
+        className={`whitespace-nowrap px-4 py-2.5 text-right font-mono tabular-nums ${totalClass}`}
+      >
         {game.total || "—"}
       </td>
     </tr>
@@ -240,7 +244,8 @@ export const Route = createFileRoute("/")({
       { property: "og:title", content: "Season Pulse — GamblingNFL dashboard" },
       {
         property: "og:description",
-        content: "Season metrics, live and upcoming games, recent results, team grid, and player leaders in one view.",
+        content:
+          "Season metrics, live and upcoming games, recent results, team grid, and player leaders in one view.",
       },
     ],
   }),
@@ -280,13 +285,25 @@ function Dashboard() {
 
   // Season Pulse: the model's record and units (flat 1u), plus the league's average total.
   const pulse = useMemo(() => buildSeasonPulse(source), [source]);
-  const model = useMemo(() => summarizeModel(runModel(source)), [source]);
+  // Last season's scores give the model a head start in the first weeks.
+  const priorQuery = useQuery({
+    queryKey: ["prior-season-results"],
+    queryFn: () => getPriorSeasonResults(),
+    staleTime: 12 * 60 * 60_000,
+    retry: 1,
+  });
+  const priorSeason = useMemo(() => priorQuery.data ?? [], [priorQuery.data]);
+  const model = useMemo(() => summarizeModel(runModel(source, priorSeason)), [source, priorSeason]);
   const prev = model.previous;
   const pctChange = (now: number | null, before: number | null | undefined) =>
-    now !== null && before !== null && before !== undefined ? Math.round((now - before) * 10) / 10 : null;
+    now !== null && before !== null && before !== undefined
+      ? Math.round((now - before) * 10) / 10
+      : null;
   const winChange = pctChange(model.overall.winPct, prev?.overall.winPct);
   const coverChange = pctChange(model.byMarket.spread.winPct, prev?.byMarket.spread.winPct);
-  const unitsChange = prev ? Math.round((model.overall.units - prev.overall.units) * 100) / 100 : null;
+  const unitsChange = prev
+    ? Math.round((model.overall.units - prev.overall.units) * 100) / 100
+    : null;
   const fmt = (v: number | null) => (v === null ? "—" : v.toFixed(1));
   const rec = (r: { wins: number; losses: number; pushes: number }) =>
     `${r.wins}-${r.losses}${r.pushes ? `-${r.pushes}` : ""}`;
@@ -307,7 +324,11 @@ function Dashboard() {
             label="Win rate · model"
             value={fmt(model.overall.winPct)}
             unit={model.overall.winPct === null ? undefined : "%"}
-            note={scheduleLoading ? "Loading…" : note(weekChangeText(winChange), `${rec(model.overall)} all picks`)}
+            note={
+              scheduleLoading
+                ? "Loading…"
+                : note(weekChangeText(winChange), `${rec(model.overall)} all picks`)
+            }
             tone={changeTone(winChange)}
           />
           <StatCard
@@ -335,7 +356,9 @@ function Dashboard() {
             value={fmt(model.byMarket.spread.winPct)}
             unit={model.byMarket.spread.winPct === null ? undefined : "%"}
             note={
-              scheduleLoading ? "Loading…" : note(weekChangeText(coverChange), `${rec(model.byMarket.spread)} ATS`)
+              scheduleLoading
+                ? "Loading…"
+                : note(weekChangeText(coverChange), `${rec(model.byMarket.spread)} ATS`)
             }
             tone={changeTone(coverChange)}
           />
@@ -349,7 +372,9 @@ function Dashboard() {
                     unitsChange === null
                       ? undefined
                       : `${unitsChange > 0 ? "▲" : unitsChange < 0 ? "▼" : "—"} ${Math.abs(unitsChange).toFixed(2)}u wk/wk`,
-                    model.overall.roi === null ? "No graded picks yet" : `ROI ${model.overall.roi > 0 ? "+" : ""}${model.overall.roi.toFixed(1)}%`,
+                    model.overall.roi === null
+                      ? "No graded picks yet"
+                      : `ROI ${model.overall.roi > 0 ? "+" : ""}${model.overall.roi.toFixed(1)}%`,
                   )
             }
             tone={model.overall.units > 0 ? "win" : model.overall.units < 0 ? "loss" : "mute"}
