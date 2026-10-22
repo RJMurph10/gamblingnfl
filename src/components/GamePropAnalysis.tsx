@@ -1035,10 +1035,22 @@ function AnalyticsTable({
                     </Link>
                     <span className="ml-2 font-mono text-[10px] text-faint">{player.position}</span>
                     <InjuryTag info={tagFor(player.id)} />
+                    {usageFor(player.id)?.role === "backup" ? (
+                      <span
+                        className="ml-2 rounded px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wider text-mute ring-1 ring-line/20"
+                        title={`Backup: plays only if ${usageFor(player.id)?.starterName ?? "the starter"} can't`}
+                      >
+                        Backup
+                      </span>
+                    ) : null}
                   </td>
                   <td className="px-2 py-2.5 font-mono text-mute">{player.teamAbbr}</td>
                   <td className="px-2 py-2.5 text-mute">{market?.label ?? summary.key}</td>
-                  <td className="px-2 py-2.5 text-right font-mono text-base font-bold tabular-nums text-acc">
+                  <td
+                    className={`px-2 py-2.5 text-right font-mono text-base font-bold tabular-nums ${
+                      proj?.role === "backup" ? "text-faint" : "text-acc"
+                    }`}
+                  >
                     {proj ? statText(summary.key, proj.projected) : modelLoading ? "…" : "—"}
                     {proj && (proj.opportunity ?? 1) > 1 ? (
                       <span
@@ -1108,6 +1120,29 @@ function AnalyticsTable({
                             : ""}
                         </p>
                       ) : null}
+                      {(() => {
+                        const u = usageFor(player.id);
+                        if (!u) return null;
+                        if (u.role === "backup")
+                          return (
+                            <p>
+                              <span className="text-faint">Role: </span>
+                              Backup — projected 0 because {u.starterName ?? "the starter"} is
+                              expected to play. If he&apos;s ruled out, this player becomes the
+                              starter and gets a full projection.
+                            </p>
+                          );
+                        if (u.role === "rotation")
+                          return (
+                            <p>
+                              <span className="text-faint">Role: </span>
+                              Rotation player — projected per team game, counting the weeks he
+                              didn&apos;t record a stat, so the number reflects how much he actually
+                              plays.
+                            </p>
+                          );
+                        return null;
+                      })()}
                       {(() => {
                         const u = usageFor(player.id);
                         if (!u || (!u.targetShare && !u.carryShare)) return null;
