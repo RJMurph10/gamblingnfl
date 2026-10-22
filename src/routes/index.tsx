@@ -18,7 +18,9 @@ import { gameScore, type Game } from "@/data/games";
 import { players } from "@/data/players";
 import { teamById, teams } from "@/data/teams";
 import { getLiveSchedule, getPriorSeasonResults } from "@/lib/espn.functions";
-import { runModel, summarizeModel, unitsText } from "@/lib/game-model";
+import { summarizeModel, unitsText } from "@/lib/game-model";
+import { getNflHistory } from "@/lib/history.functions";
+import { runModelWithHistory, type HistoryGame } from "@/lib/model-history";
 import { buildSeasonPulse, changeTone, weekChangeText } from "@/lib/season-pulse";
 
 /* ---------- Live games: row without date/time, clock first ---------- */
@@ -293,7 +295,20 @@ function Dashboard() {
     retry: 1,
   });
   const priorSeason = useMemo(() => priorQuery.data ?? [], [priorQuery.data]);
-  const model = useMemo(() => summarizeModel(runModel(source, priorSeason)), [source, priorSeason]);
+  const historyQuery = useQuery({
+    queryKey: ["nfl-history"],
+    queryFn: () => getNflHistory(),
+    staleTime: 12 * 60 * 60_000,
+    retry: 1,
+  });
+  const history: HistoryGame[] = useMemo(() => historyQuery.data ?? [], [historyQuery.data]);
+  const modelRows = useMemo(
+    () => runModelWithHistory(source, priorSeason, history),
+    [source, priorSeason, history],
+  );
+  // Accuracy cards grade every game; the units card follows the best bets (what it would bet).
+  const model = useMemo(() => summarizeModel(modelRows, "predictions"), [modelRows]);
+  const bets = useMemo(() => summarizeModel(modelRows, "bets"), [modelRows]);
   const prev = model.previous;
   const pctChange = (now: number | null, before: number | null | undefined) =>
     now !== null && before !== null && before !== undefined
@@ -303,8 +318,8 @@ function Dashboard() {
   const winChange = pctChange(winner.winPct, prev?.byMarket.moneyline.winPct);
   const coverChange = pctChange(model.byMarket.spread.winPct, prev?.byMarket.spread.winPct);
   const totalChange = pctChange(model.byMarket.total.winPct, prev?.byMarket.total.winPct);
-  const unitsChange = prev
-    ? Math.round((model.overall.units - prev.overall.units) * 100) / 100
+  const unitsChange = bets.previous
+    ? Math.round((bets.overall.units - bets.previous.overall.units) * 100) / 100
     : null;
   const fmt = (v: number | null) => (v === null ? "—" : v.toFixed(1));
   const rec = (r: { wins: number; losses: number; pushes: number }) =>
@@ -362,8 +377,8 @@ function Dashboard() {
             tone={changeTone(coverChange)}
           />
           <StatCard
-            label="Model edge"
-            value={unitsText(model.overall.units)}
+            label="Model edge · ★ best bets"
+            value={unitsText(bets.overall.units)}
             note={
               scheduleLoading
                 ? "Loading…"
@@ -371,12 +386,13 @@ function Dashboard() {
                     unitsChange === null
                       ? undefined
                       : `${unitsChange > 0 ? "▲" : unitsChange < 0 ? "▼" : "—"} ${Math.abs(unitsChange).toFixed(2)}u wk/wk`,
-                    model.overall.roi === null
-                      ? "No graded picks yet"
-                      : `ROI ${model.overall.roi > 0 ? "+" : ""}${model.overall.roi.toFixed(1)}%`,
+                    bets.overall.roi === null
+                      ? "No best bets graded yet"
+                      : `${rec(bets.overall)} · ROI ${bets.overall.roi > 0 ? "+" : ""}${bets.overall.roi.toFixed(1)}%`,
+                    `every game ${unitsText(model.overall.units)}`,
                   )
             }
-            tone={model.overall.units > 0 ? "win" : model.overall.units < 0 ? "loss" : "mute"}
+            tone={bets.overall.units > 0 ? "win" : bets.overall.units < 0 ? "loss" : "mute"}
           />
         </div>
         {pulse.throughWeek !== null ? (
