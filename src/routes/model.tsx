@@ -41,7 +41,7 @@ const MARKET_LABEL: Record<Market, string> = {
   moneyline: "Moneyline",
 };
 
-const oddsText = (o: number) => (o > 0 ? `+${o}` : String(o));
+const oddsText = (o?: number) => (o === undefined ? "—" : o > 0 ? `+${o}` : String(o));
 const lineText = (n: number) => (n === 0 ? "PK" : n > 0 ? `+${n}` : String(n));
 const one = (n: number) => (Math.round(n * 10) / 10).toFixed(1);
 
@@ -124,12 +124,17 @@ function FinalMatchup({ game }: { game: Game }) {
 function PickChip({ pick, game }: { pick: ModelPick; game: Game }) {
   return (
     <span
-      title={`${MARKET_LABEL[pick.market]} · edge ${edgeText(pick)}${
+      title={`${pick.best ? "Best bet · " : "Lean · "}${MARKET_LABEL[pick.market]} · edge ${edgeText(pick)}${
         pick.modelProb !== undefined ? ` · model ${(pick.modelProb * 100).toFixed(0)}%` : ""
       }`}
-      className="inline-flex items-center gap-1 rounded-md bg-acc/10 px-2 py-0.5 font-mono text-[11px] text-acc ring-1 ring-acc/25"
+      className={`inline-flex items-center gap-1 rounded-md px-2 py-0.5 font-mono text-[11px] ring-1 ${
+        pick.best ? "bg-acc/10 text-acc ring-acc/25" : "bg-panel2 text-mute ring-line/10"
+      }`}
     >
-      <span className="text-[9px] uppercase tracking-wider text-acc/70">
+      {pick.best ? <span aria-label="Best bet">★</span> : null}
+      <span
+        className={`text-[9px] uppercase tracking-wider ${pick.best ? "text-acc/70" : "text-faint"}`}
+      >
         {MARKET_LABEL[pick.market]}
       </span>
       <PickLabel pick={pick} game={game} />
@@ -203,13 +208,16 @@ function ModelPage() {
   });
   const priorSeason = useMemo(() => priorQuery.data ?? [], [priorQuery.data]);
   const rows = useMemo(() => runModel(games, priorSeason), [games, priorSeason]);
-  const summary = useMemo(() => summarizeModel(rows), [rows]);
+  // Every game's call (winner, spread side, over/under), and the best bets on their own.
+  const summary = useMemo(() => summarizeModel(rows, "predictions"), [rows]);
+  const bets = useMemo(() => summarizeModel(rows, "bets"), [rows]);
   const latestCalibration = useMemo(
     () => [...rows].reverse().find((r) => r.calibration)?.calibration,
     [rows],
   );
   const [market, setMarket] = useState<Market | "all">("all");
   const [showAll, setShowAll] = useState(false);
+  const [scope, setScope] = useState<"predictions" | "bets">("predictions");
   const GRADED_PAGE = 40;
 
   // Upcoming slate: the next week that still has games to play.
@@ -223,7 +231,9 @@ function ModelPage() {
 
   const graded: { pick: ModelPick; row: GameModelRow }[] = rows
     .flatMap((row) =>
-      row.picks.filter((p) => p.result !== "pending").map((pick) => ({ pick, row })),
+      (scope === "bets" ? row.picks : row.predictions)
+        .filter((p) => p.result !== "pending")
+        .map((pick) => ({ pick, row })),
     )
     .filter(({ pick }) => market === "all" || pick.market === market)
     .sort(
@@ -233,12 +243,17 @@ function ModelPage() {
     );
 
   const o = summary.overall;
+  const CARD_LABEL: Record<Market, string> = {
+    moneyline: "Winner · every game",
+    spread: "Against the spread",
+    total: "Over / under",
+  };
   const card = (m: Market) => {
     const r = summary.byMarket[m];
     return (
       <StatCard
         key={m}
-        label={MARKET_LABEL[m]}
+        label={CARD_LABEL[m]}
         value={recordText(r)}
         note={`${r.winPct === null ? "—" : `${one(r.winPct)}%`} · ${unitsText(r.units)}`}
         tone={r.units > 0 ? "win" : r.units < 0 ? "loss" : "mute"}
@@ -266,19 +281,20 @@ function ModelPage() {
         <div className="space-y-6">
           <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
             <StatCard
-              label="Units"
+              label="Units · every game"
               value={unitsText(o.units)}
               note={
                 o.roi === null ? "No graded picks yet" : `ROI ${o.roi > 0 ? "+" : ""}${one(o.roi)}%`
               }
               tone={o.units > 0 ? "win" : o.units < 0 ? "loss" : "mute"}
             />
+            {(["moneyline", "spread", "total"] as Market[]).map(card)}
             <StatCard
-              label="All picks"
-              value={recordText(o)}
-              note={`${o.winPct === null ? "—" : `${one(o.winPct)}% won`}${o.pending ? ` · ${o.pending} pending` : ""}`}
+              label="★ Best bets"
+              value={recordText(bets.overall)}
+              note={`${bets.overall.winPct === null ? "—" : `${one(bets.overall.winPct)}% won`} · ${unitsText(bets.overall.units)}`}
+              tone={bets.overall.units > 0 ? "win" : bets.overall.units < 0 ? "loss" : "mute"}
             />
-            {(["spread", "total", "moneyline"] as Market[]).map(card)}
           </div>
 
           {latestCalibration ? (
@@ -408,11 +424,9 @@ function ModelPage() {
                         <td className="px-4 py-2.5">
                           {row.skipped ? (
                             <span className="text-[11px] text-faint">{row.skipped}</span>
-                          ) : row.picks.length === 0 ? (
-                            <span className="text-[11px] text-faint">No edge — pass</span>
                           ) : (
                             <div className="flex flex-wrap gap-1.5">
-                              {row.picks.map((p) => (
+                              {row.predictions.map((p) => (
                                 <PickChip key={p.market} pick={p} game={row.game} />
                               ))}
                             </div>
@@ -430,7 +444,28 @@ function ModelPage() {
             <PanelHeader
               title="Graded picks"
               aside={
-                <div className="flex gap-1" role="group" aria-label="Filter by bet type">
+                <div className="flex flex-wrap gap-1" role="group" aria-label="Filter graded picks">
+                  {(
+                    [
+                      ["predictions", "Every game"],
+                      ["bets", "★ Best bets"],
+                    ] as const
+                  ).map(([key, label]) => (
+                    <button
+                      key={key}
+                      type="button"
+                      aria-pressed={scope === key}
+                      onClick={() => setScope(key)}
+                      className={`rounded-md px-2.5 py-1 font-mono text-[10px] uppercase tracking-wider ring-1 ${
+                        scope === key
+                          ? "bg-acc/10 text-acc ring-acc/25"
+                          : "bg-panel2 text-mute ring-line/10 hover:text-acc"
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                  <span className="mx-1 w-px self-stretch bg-line/10" aria-hidden />
                   {(["all", "spread", "total", "moneyline"] as const).map((m) => (
                     <button
                       key={m}
@@ -480,6 +515,15 @@ function ModelPage() {
                               {MARKET_LABEL[pick.market]}
                             </span>
                             <PickLabel pick={pick} game={row.game} />
+                            {pick.best ? (
+                              <span
+                                className="ml-1.5 text-acc"
+                                title="Best bet"
+                                aria-label="Best bet"
+                              >
+                                ★
+                              </span>
+                            ) : null}
                           </td>
                           <td className="px-2 py-2.5 text-right font-mono tabular-nums text-mute">
                             {oddsText(pick.odds)}
