@@ -41,6 +41,22 @@ export interface HistoryGame {
   wind: number | null;
 }
 
+/**
+ * Reads getNflHistory's result safely: { currentSeason, games }, an older bare list of games, or
+ * nothing at all (still loading / unreachable). Always returns a list.
+ */
+export function readHistory(data: unknown): { currentSeason: number; games: HistoryGame[] } {
+  if (Array.isArray(data)) return { currentSeason: 0, games: data as HistoryGame[] };
+  const d = data as { currentSeason?: unknown; games?: unknown } | null | undefined;
+  return {
+    currentSeason: typeof d?.currentSeason === "number" ? d.currentSeason : 0,
+    games: Array.isArray(d?.games) ? (d.games as HistoryGame[]) : [],
+  };
+}
+
+const asList = (history: unknown): HistoryGame[] =>
+  Array.isArray(history) ? (history as HistoryGame[]) : [];
+
 const blankStats = (): TeamGameStats => ({
   totalYards: 0,
   passYards: 0,
@@ -137,7 +153,8 @@ const runs = new WeakMap<HistoryGame[], SeasonRun[]>();
  * (the first season only serves as a prior). Each season calibrates on the seasons before it,
  * exactly as the current one does, so the records are honest walk-forward tests.
  */
-export function pastSeasonRuns(history: HistoryGame[]): SeasonRun[] {
+export function pastSeasonRuns(input: HistoryGame[]): SeasonRun[] {
+  const history = asList(input);
   const hit = runs.get(history);
   if (hit) return hit;
   const seasons = [...new Set(history.map((h) => h.season))].sort((a, b) => a - b);
@@ -160,8 +177,9 @@ export function pastSeasonRuns(history: HistoryGame[]): SeasonRun[] {
 export function runModelWithHistory(
   schedule: Game[],
   priorSeason: PriorResult[],
-  history: HistoryGame[],
+  input: HistoryGame[],
 ): GameModelRow[] {
+  const history = asList(input);
   const past = pastSeasonRuns(history).flatMap((r) => r.rows);
   const last = Math.max(0, ...history.map((h) => h.season));
   const prior = priorSeason.length ? priorSeason : seasonResults(history, last);
