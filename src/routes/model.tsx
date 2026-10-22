@@ -495,6 +495,15 @@ function ModelPage() {
                 than ±{MODEL_SETTINGS.moneylineMaxOdds}).
               </li>
               <li>
+                Guardrails: a moneyline pick is always the team the model expects to win — never an
+                underdog it thinks will lose just because the price looks good. And when the model
+                and the market disagree by more than {MODEL_SETTINGS.maxSpreadDisagreementPts}{" "}
+                points on the spread, {MODEL_SETTINGS.maxTotalDisagreementPts} on the total, or{" "}
+                {MODEL_SETTINGS.maxMoneylineDisagreementProb * 100} percentage points on win chance,
+                it passes: a gap that big usually means news the model can&apos;t see, like an
+                injury or a quarterback change.
+              </li>
+              <li>
                 Every pick risks {MODEL_SETTINGS.stake} unit at the closing ESPN price (
                 {MODEL_SETTINGS.defaultPrice} when no price is listed). Pushes return the stake.
                 Picks for upcoming games can change until kickoff as the lines move.
