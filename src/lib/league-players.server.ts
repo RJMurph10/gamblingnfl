@@ -33,16 +33,18 @@ import {
   projectStat,
   summarizeAccuracy,
   PROJECTION_SETTINGS,
+  SINGLE_ROLE_POSITIONS,
   type BacktestPoint,
   type GamePropProjections,
   type LastSeasonLine,
   type LeagueRecord,
   type OpportunityShares,
+  type PlayerRole,
   type PlayerStatModel,
   type TeamGameLine,
   type WeekContext,
 } from "./player-projection-model";
-import { availabilityOf, isRuledOut } from "./prop-lineup";
+import { availabilityOf, isRuledOut, selectStarters, type LineupCandidate } from "./prop-lineup";
 import {
   isPropPlayerPosition,
   marketByKey,
@@ -871,6 +873,28 @@ export async function fetchGamePropProjections(
       });
     }
 
+    // Which games were real roles: the team's main passer (most attempts) at QB, and skill
+    // players with at least a few touches. Relief and mop-up games don't set position averages.
+    const mainPasser = new Map<string, { id: string; pa: number }>();
+    const teamPassAttempts = new Map<string, number>();
+    for (const r of records) {
+      if (normalizePropPosition(r.position) !== "QB") continue;
+      const key = `${r.team}|${r.week}`;
+      const pa = r.flat.pa ?? 0;
+      teamPassAttempts.set(key, (teamPassAttempts.get(key) ?? 0) + pa);
+      if (pa > (mainPasser.get(key)?.pa ?? -1)) mainPasser.set(key, { id: r.playerId, pa });
+    }
+    const touches = (f: Record<string, number>) =>
+      (f["receiving.receivingTargets"] ?? 0) + (f["rushing.rushingAttempts"] ?? 0);
+    for (const r of records) {
+      const pos = normalizePropPosition(r.position);
+      if (pos === "QB")
+        r.primary =
+          mainPasser.get(`${r.team}|${r.week}`)?.id === r.playerId && (r.flat.pa ?? 0) >= 10;
+      else if (pos === "K" || pos === "P") r.primary = true;
+      else r.primary = touches(r.flat) >= 3;
+    }
+
     // Per-week league context and game-model ratings (only earlier games), built once each.
     const contexts = new Map<number, WeekContext>();
     const contextFor = (w: number) => {
@@ -906,9 +930,14 @@ export async function fetchGamePropProjections(
           return s + (g.homeTeamId === team.id ? sc.home : sc.away);
         }, 0) / prior.length;
       if (avg <= 0) return 1;
-      const r = ratingsFor(w);
-      const p = home ? predictGame(r, team.id, opp.id) : predictGame(r, opp.id, team.id);
-      return (home ? p.homePoints : p.awayPoints) / avg;
+      // Game script = only what's specific to this game. The opponent's defense is already its
+      // own factor, and the player's form already regresses toward average, so neither is
+      // repeated here. That leaves home vs. away, compared with the team's usual mix.
+      const half = ratingsFor(w).homeField / 2;
+      const pastHomeEdge =
+        prior.reduce((sum, g) => sum + (g.homeTeamId === team.id ? half : -half), 0) / prior.length;
+      const thisHomeEdge = home ? half : -half;
+      return (avg - pastHomeEdge + thisHomeEdge) / avg;
     };
 
     // Last season's per-game numbers for every player on the board (small batches).
@@ -971,6 +1000,60 @@ export async function fetchGamePropProjections(
       return total;
     };
 
+    // This week's roles, using the same starter rules as the page's "Starters" filter: depth chart
+    // order, the injury report, and recent usage as a tiebreaker.
+    const availabilityById = new Map((availability?.players ?? []).map((a) => [a.id, a]));
+    const candidates: LineupCandidate[] = analytics.players.map((p) => {
+      const a = availabilityById.get(p.id);
+      const shares = sharesForNow(p.teamAbbr).get(p.id);
+      const recentStarts = records.filter(
+        (r) =>
+          r.playerId === p.id &&
+          r.team === p.teamAbbr &&
+          r.week < week &&
+          r.week >= week - 4 &&
+          r.primary,
+      ).length;
+      const usageScore = SINGLE_ROLE_POSITIONS.has(p.position)
+        ? recentStarts
+        : ((shares?.targetShare ?? 0) + (shares?.carryShare ?? 0)) * 100;
+      return {
+        id: p.id,
+        teamAbbr: p.teamAbbr,
+        position: p.position,
+        depthRank: a?.depthRank,
+        injuryStatus: a?.injuryStatus,
+        usage: usageScore,
+      };
+    });
+    const starters = selectStarters(candidates);
+    const roleOf = (playerId: string, position: string): PlayerRole =>
+      starters.has(playerId)
+        ? "starter"
+        : SINGLE_ROLE_POSITIONS.has(position)
+          ? "backup"
+          : "rotation";
+    const starterAt = (team: string, position: string) =>
+      analytics.players.find(
+        (x) => x.teamAbbr === team && x.position === position && starters.has(x.id),
+      );
+
+    /** Marker stats that make a zero-stat week count (only for stat groups he has ever recorded). */
+    const zeroWeek = (games: PlayerGameInput[]) => {
+      const flat: Record<string, number> = {};
+      const ever = (k: string) => games.some((g) => g.flat[k] !== undefined);
+      if (ever("receiving.receivingTargets") || ever("receiving.receptions")) {
+        flat["receiving.receivingTargets"] = 0;
+        flat["receiving.receptions"] = 0;
+        flat["receiving.receivingYards"] = 0;
+      }
+      if (ever("rushing.rushingAttempts")) {
+        flat["rushing.rushingAttempts"] = 0;
+        flat["rushing.rushingYards"] = 0;
+      }
+      return flat;
+    };
+
     const players: GamePropProjections["players"] = {};
     const usage: GamePropProjections["usage"] = {};
     const allPoints: { category: PropCategory; point: BacktestPoint }[] = [];
@@ -978,15 +1061,45 @@ export async function fetchGamePropProjections(
       const opponent =
         p.teamAbbr === awayAbbr.toUpperCase() ? homeAbbr.toUpperCase() : awayAbbr.toUpperCase();
       const isHome = p.teamAbbr === homeAbbr.toUpperCase();
-      const games = records
-        .filter((r) => r.playerId === p.id && r.team === p.teamAbbr)
-        .map((r) => ({
-          gameId: `${r.week}`,
-          week: r.week,
-          opponent: r.opponent,
-          home: r.home,
-          flat: r.flat,
-        }));
+      const role = roleOf(p.id, p.position);
+      const singleRole = SINGLE_ROLE_POSITIONS.has(p.position);
+      const mine = records.filter((r) => r.playerId === p.id && r.team === p.teamAbbr);
+      // QB/K/P: only games where he was the one playing (no relief or garbage-time snaps).
+      // Rotation players: every team game since he first appeared, with zeros for quiet weeks,
+      // so a part-timer projects to his real per-game role.
+      let games: PlayerGameInput[] = (singleRole ? mine.filter((r) => r.primary) : mine).map(
+        (r) => {
+          // A QB who split a game (left hurt, sat late in a blowout) played only part of it.
+          const teamPa = teamPassAttempts.get(`${r.team}|${r.week}`) ?? 0;
+          const share = p.position === "QB" && teamPa > 0 ? (r.flat.pa ?? 0) / teamPa : undefined;
+          return {
+            gameId: `${r.week}`,
+            week: r.week,
+            opponent: r.opponent,
+            home: r.home,
+            flat: r.flat,
+            share,
+          };
+        },
+      );
+      if (role === "rotation" && games.length) {
+        const first = Math.min(...games.map((g) => g.week));
+        const have = new Set(games.map((g) => g.week));
+        const zero = zeroWeek(games);
+        for (const [wk, lines] of teamWeeks.get(p.teamAbbr) ?? []) {
+          if (wk < first || have.has(wk) || !lines.length) continue;
+          const sample = records.find((r) => r.team === p.teamAbbr && r.week === wk);
+          if (!sample) continue;
+          games.push({
+            gameId: `${wk}`,
+            week: wk,
+            opponent: sample.opponent,
+            home: sample.home,
+            flat: { ...zero },
+          });
+        }
+        games = games.sort((a, b) => a.week - b.week);
+      }
       const prior = games.filter((g) => g.week < week);
       const script = scriptRatio(p.teamAbbr, opponent, isHome, week);
       const shares = sharesForNow(p.teamAbbr).get(p.id);
@@ -996,12 +1109,15 @@ export async function fetchGamePropProjections(
         targetShare: Math.round((shares?.targetShare ?? 0) * 1000) / 1000,
         carryShare: Math.round((shares?.carryShare ?? 0) * 1000) / 1000,
         ruledOut: ruledOut.has(p.id),
+        role,
+        starterName: role === "backup" ? starterAt(p.teamAbbr, p.position)?.name : undefined,
       };
       const byKey: Record<string, PlayerStatModel> = {};
       for (const key of Object.keys(p.markets)) {
         const projection = projectStat(key, p.position, prior, contextFor(week), opponent, script, {
           lastSeason: last[key],
           opportunity: opportunityFor(key, shares, recentFlat),
+          role,
         });
         const history = backtestStat(
           key,
@@ -1017,6 +1133,8 @@ export async function fetchGamePropProjections(
               sharesForPast(p.teamAbbr, g.week).get(p.id),
               sumFlat(games.filter((x) => x.week < g.week)),
             ),
+          // Accuracy is tested on the games he actually played in this role.
+          singleRole ? "starter" : role,
         );
         byKey[key] = { projection, accuracy: summarizeAccuracy(history), history };
         const category = marketByKey(key)?.category;
