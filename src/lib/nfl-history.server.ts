@@ -1,7 +1,6 @@
 /**
- * Past NFL seasons (final scores + closing lines), pulled live from nflverse's public games file
- * (github.com/nflverse/nfldata). Finished seasons never change, so it's fetched once and kept
- * for 12 hours.
+ * NFL results since 2022 (final scores, closing lines, kickoff weather), pulled live from
+ * nflverse's public games file (github.com/nflverse/nfldata), one request per hour at most.
  */
 
 import { CURRENT_SEASON } from "./espn.server";
@@ -72,6 +71,9 @@ export function parseHistoryCsv(csv: string, first: number, last: number): Histo
     homeSpreadOdds: col("home_spread_odds"),
     over: col("over_odds"),
     under: col("under_odds"),
+    roof: col("roof"),
+    temp: col("temp"),
+    wind: col("wind"),
   };
   const out: HistoryGame[] = [];
   for (const line of lines.slice(1)) {
@@ -98,25 +100,37 @@ export function parseHistoryCsv(csv: string, first: number, last: number): Histo
       homeSpreadOdds: num(f[idx.homeSpreadOdds]),
       overOdds: num(f[idx.over]),
       underOdds: num(f[idx.under]),
+      roof: f[idx.roof] ?? "",
+      temp: num(f[idx.temp]),
+      wind: num(f[idx.wind]),
     });
   }
   return out;
 }
 
-let cache: { at: number; games: HistoryGame[] } | null = null;
-const TTL = 12 * 60 * 60 * 1000;
+export interface NflHistory {
+  /** The season being played now; `games` from it are this season's finished games. */
+  currentSeason: number;
+  /** Finished regular-season games from 2022 through this season so far. */
+  games: HistoryGame[];
+}
 
-/** Every finished past season (2022 through last season). Empty if GitHub can't be reached. */
-export async function fetchNflHistory(): Promise<HistoryGame[]> {
-  if (cache && Date.now() - cache.at < TTL) return cache.games;
+let cache: { at: number; value: NflHistory } | null = null;
+/** The file gains this season's scores and weather each week, so it's re-read hourly. */
+const TTL = 60 * 60 * 1000;
+
+/** Past seasons plus this season's finished games. Empty if GitHub can't be reached. */
+export async function fetchNflHistory(): Promise<NflHistory> {
+  if (cache && Date.now() - cache.at < TTL) return cache.value;
   try {
     const res = await fetch(GAMES_CSV);
     if (!res.ok) throw new Error(`nflverse ${res.status}`);
-    const games = parseHistoryCsv(await res.text(), FIRST_HISTORY_SEASON, CURRENT_SEASON - 1);
-    cache = { at: Date.now(), games };
-    return games;
+    const games = parseHistoryCsv(await res.text(), FIRST_HISTORY_SEASON, CURRENT_SEASON);
+    const value = { currentSeason: CURRENT_SEASON, games };
+    cache = { at: Date.now(), value };
+    return value;
   } catch (err) {
     console.error("nfl history unavailable", err);
-    return cache?.games ?? [];
+    return cache?.value ?? { currentSeason: CURRENT_SEASON, games: [] };
   }
 }
