@@ -204,6 +204,10 @@ function ModelPage() {
   const priorSeason = useMemo(() => priorQuery.data ?? [], [priorQuery.data]);
   const rows = useMemo(() => runModel(games, priorSeason), [games, priorSeason]);
   const summary = useMemo(() => summarizeModel(rows), [rows]);
+  const latestCalibration = useMemo(
+    () => [...rows].reverse().find((r) => r.calibration)?.calibration,
+    [rows],
+  );
   const [market, setMarket] = useState<Market | "all">("all");
   const [showAll, setShowAll] = useState(false);
   const GRADED_PAGE = 40;
@@ -276,6 +280,45 @@ function ModelPage() {
             />
             {(["spread", "total", "moneyline"] as Market[]).map(card)}
           </div>
+
+          {latestCalibration ? (
+            <Panel>
+              <h2 className="font-disp text-lg font-semibold uppercase tracking-tight">
+                What the model has learned
+              </h2>
+              <p className="mt-1 text-sm text-mute">
+                From {latestCalibration.samples} graded games, using only weeks before the next
+                slate. It starts from the betting line and only moves off it as far as its own track
+                record says it should.
+              </p>
+              <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
+                <div>
+                  <p className="label-mono">Trust vs market · spreads</p>
+                  <p className="mt-1 font-mono text-xl tabular-nums">
+                    {Math.round(latestCalibration.spreadWeight * 100)}%
+                  </p>
+                </div>
+                <div>
+                  <p className="label-mono">Trust vs market · totals</p>
+                  <p className="mt-1 font-mono text-xl tabular-nums">
+                    {Math.round(latestCalibration.totalWeight * 100)}%
+                  </p>
+                </div>
+                <div>
+                  <p className="label-mono">Scoring vs totals</p>
+                  <p className="mt-1 font-mono text-xl tabular-nums">
+                    {latestCalibration.totalBias > 0 ? "+" : ""}
+                    {latestCalibration.totalBias.toFixed(1)} pts
+                  </p>
+                </div>
+              </div>
+              <p className="mt-2 text-[11px] text-faint">
+                0% trust = the model&apos;s disagreements haven&apos;t predicted results yet, so it
+                sits on the line and passes. The number rises only if its disagreements keep beating
+                the closing line.
+              </p>
+            </Panel>
+          ) : null}
 
           <Panel padded={false}>
             <PanelHeader
@@ -488,11 +531,19 @@ function ModelPage() {
                 {MODEL_SETTINGS.minGamesPerTeam} games played before it bets them.
               </li>
               <li>
-                Picks: spread when the model line is {MODEL_SETTINGS.spreadEdgePts}+ points off the
+                Starts from the betting line. Each week it checks, on earlier games only, how much
+                its disagreements with the closing line actually predicted the result, and moves its
+                line off the market only that far (the &quot;trust&quot; above). It also learns how
+                much its own ratings squeeze games toward even, and whether games have been running
+                over or under the totals.
+              </li>
+              <li>
+                Picks: spread when its line is {MODEL_SETTINGS.spreadEdgePts}+ points off the
                 market, total when it&apos;s {MODEL_SETTINGS.totalEdgePts}+ points off, and
                 moneyline when its win probability beats the no-vig price by{" "}
                 {MODEL_SETTINGS.moneylineEdgeProb * 100}+ percentage points (no moneylines longer
-                than ±{MODEL_SETTINGS.moneylineMaxOdds}).
+                than ±{MODEL_SETTINGS.moneylineMaxOdds}). Most games are a pass — that&apos;s by
+                design.
               </li>
               <li>
                 Guardrails: a moneyline pick is always the team the model expects to win — never an
