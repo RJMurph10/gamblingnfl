@@ -15,7 +15,7 @@ import { homeLine } from "./season-pulse";
 /* ---------------- settings (tune here) ---------------- */
 
 export const MODEL_SETTINGS = {
-  version: "gnfl-anchored-v3",
+  version: "gnfl-anchored-v4",
   /**
    * Last season's games count this much each (vs 1 for this season), so week 1 starts from last
    * year's ratings and this season's results take over as they come in.
@@ -512,12 +512,26 @@ export function anchorToMarket(
     game.total > 0
       ? game.total + cal.totalBias + cal.totalWeight * (stretchedTotal - game.total)
       : raw.total;
+  // Win probability starts from the moneyline market's own (no-vig) price and moves only by as
+  // much as the anchored margin moved off the market's. Converting the spread straight into a
+  // probability would disagree with the moneyline on its own and invent "edges" from nothing.
+  let homeWinProb = normalCdf(margin / MODEL_SETTINGS.marginSd);
+  const ml = game.odds;
+  if (ml?.homeMoneyline !== undefined && ml.awayMoneyline !== undefined && mLine !== null) {
+    const ih = impliedProb(ml.homeMoneyline);
+    const ia = impliedProb(ml.awayMoneyline);
+    const fairHome = ih / (ih + ia);
+    const shift =
+      normalCdf(margin / MODEL_SETTINGS.marginSd) -
+      normalCdf(marketMargin / MODEL_SETTINGS.marginSd);
+    homeWinProb = Math.min(0.99, Math.max(0.01, fairHome + shift));
+  }
   return {
     homePoints: (total + margin) / 2,
     awayPoints: (total - margin) / 2,
     homeLine: -margin,
     total,
-    homeWinProb: normalCdf(margin / MODEL_SETTINGS.marginSd),
+    homeWinProb,
   };
 }
 
@@ -525,7 +539,15 @@ export function anchorToMarket(
  * Walk-forward run over the whole schedule: predictions, picks and grades for every game. Each
  * week's ratings AND its market calibration use only earlier weeks, so the record is honest.
  */
-export function runModel(schedule: Game[], priorSeason: PriorResult[] = []): GameModelRow[] {
+export function runModel(
+  schedule: Game[],
+  priorSeason: PriorResult[] = [],
+  /**
+   * Graded rows from earlier seasons. They join the market calibration, so the model learns how
+   * far to trust itself from hundreds of past games instead of starting from zero every September.
+   */
+  pastSeasons: GameModelRow[] = [],
+): GameModelRow[] {
   const finals = schedule.filter((g) => g.status === "final");
   const weeks = [...new Set(schedule.map((g) => g.week))].sort((a, b) => a - b);
   const rows: GameModelRow[] = [];
@@ -534,7 +556,10 @@ export function runModel(schedule: Game[], priorSeason: PriorResult[] = []): Gam
       finals.filter((g) => g.week < week),
       priorSeason,
     );
-    const calibration = calibrateToMarket(rows.filter((r) => r.game.week < week));
+    const calibration = calibrateToMarket([
+      ...pastSeasons,
+      ...rows.filter((r) => r.game.week < week),
+    ]);
     for (const game of schedule.filter((g) => g.week === week)) {
       const marketHomeLine = homeLine(game);
       const marketTotal = game.total > 0 ? game.total : null;
