@@ -298,10 +298,14 @@ function Dashboard() {
   const historyQuery = useQuery({
     queryKey: ["nfl-history"],
     queryFn: () => getNflHistory(),
-    staleTime: 12 * 60 * 60_000,
+    staleTime: 60 * 60_000,
     retry: 1,
   });
-  const history: HistoryGame[] = useMemo(() => historyQuery.data ?? [], [historyQuery.data]);
+  const history: HistoryGame[] = useMemo(
+    () =>
+      (historyQuery.data?.games ?? []).filter((h) => h.season < historyQuery.data!.currentSeason),
+    [historyQuery.data],
+  );
   const modelRows = useMemo(
     () => runModelWithHistory(source, priorSeason, history),
     [source, priorSeason, history],
