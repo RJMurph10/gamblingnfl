@@ -16,6 +16,11 @@ export interface PlayerGameInput {
   opponent: string;
   home: boolean;
   flat: Record<string, number>;
+  /**
+   * Share of the game he played (a QB's share of his team's pass attempts), 0–1. Missing means a
+   * full game. Projections read a partial game as a per-full-game rate, at reduced weight.
+   */
+  share?: number;
 }
 
 export interface MarketGame {
