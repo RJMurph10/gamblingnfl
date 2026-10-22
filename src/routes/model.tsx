@@ -7,7 +7,6 @@ import { teamById } from "@/data/teams";
 import { getLiveSchedule, getPriorSeasonResults } from "@/lib/espn.functions";
 import {
   MODEL_SETTINGS,
-  runModel,
   summarizeModel,
   unitsText,
   type GameModelRow,
@@ -15,6 +14,8 @@ import {
   type MarketRecord,
   type ModelPick,
 } from "@/lib/game-model";
+import { getNflHistory } from "@/lib/history.functions";
+import { pastSeasonRuns, runModelWithHistory, type HistoryGame } from "@/lib/model-history";
 
 export const Route = createFileRoute("/model")({
   head: () => ({
@@ -190,6 +191,59 @@ function UnitsByWeek({ data }: { data: { week: number; units: number; weekUnits:
   );
 }
 
+/** One season's line in the track record: winner, spread, total, best bets. */
+function TrackRecord({ seasons }: { seasons: { label: string; rows: GameModelRow[] }[] }) {
+  const cell = (r: MarketRecord) => (
+    <td className="px-3 py-2 text-right font-mono tabular-nums">
+      <span>{recordText(r)}</span>
+      <span className="ml-2 text-mute">{r.winPct === null ? "—" : `${one(r.winPct)}%`}</span>
+    </td>
+  );
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full min-w-[560px] text-sm">
+        <thead>
+          <tr className="border-b border-line/10 text-left font-mono text-[10px] uppercase tracking-wider text-faint">
+            <th className="px-3 py-2 font-normal">Season</th>
+            <th className="px-3 py-2 text-right font-normal">Winner</th>
+            <th className="px-3 py-2 text-right font-normal">Spread</th>
+            <th className="px-3 py-2 text-right font-normal">Over / under</th>
+            <th className="px-3 py-2 text-right font-normal">★ Best bets</th>
+          </tr>
+        </thead>
+        <tbody>
+          {seasons.map(({ label, rows }) => {
+            const p = summarizeModel(rows, "predictions");
+            const b = summarizeModel(rows, "bets");
+            return (
+              <tr key={label} className="border-b border-line/10 last:border-0">
+                <td className="px-3 py-2 font-mono">{label}</td>
+                {cell(p.byMarket.moneyline)}
+                {cell(p.byMarket.spread)}
+                {cell(p.byMarket.total)}
+                <td className="px-3 py-2 text-right font-mono tabular-nums">
+                  {b.overall.wins + b.overall.losses + b.overall.pushes === 0 ? (
+                    <span className="text-mute">none</span>
+                  ) : (
+                    <>
+                      <span>{recordText(b.overall)}</span>
+                      <span
+                        className={`ml-2 ${b.overall.units > 0 ? "text-win" : b.overall.units < 0 ? "text-loss" : "text-mute"}`}
+                      >
+                        {unitsText(b.overall.units)}
+                      </span>
+                    </>
+                  )}
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 function ModelPage() {
   const scheduleQuery = useQuery({
     queryKey: ["live-schedule"],
@@ -207,7 +261,28 @@ function ModelPage() {
     retry: 1,
   });
   const priorSeason = useMemo(() => priorQuery.data ?? [], [priorQuery.data]);
-  const rows = useMemo(() => runModel(games, priorSeason), [games, priorSeason]);
+  // Calibrated on every past season too, so its trust in itself rests on ~800 graded games.
+  // Past seasons' scores and closing lines (nflverse), so the model's trust in itself rests on
+  // hundreds of graded games and the track record covers every season since 2023.
+  const historyQuery = useQuery({
+    queryKey: ["nfl-history"],
+    queryFn: () => getNflHistory(),
+    staleTime: 12 * 60 * 60_000,
+    retry: 1,
+  });
+  const history: HistoryGame[] = useMemo(() => historyQuery.data ?? [], [historyQuery.data]);
+  const rows = useMemo(
+    () => runModelWithHistory(games, priorSeason, history),
+    [games, priorSeason, history],
+  );
+  const trackRecord = useMemo(() => {
+    const past = pastSeasonRuns(history);
+    const lastPast = past.at(-1)?.season;
+    return [
+      { label: lastPast ? `${lastPast + 1} so far` : "This season", rows },
+      ...past.map((r) => ({ label: String(r.season), rows: r.rows })).reverse(),
+    ];
+  }, [rows, history]);
   // Every game's call (winner, spread side, over/under), and the best bets on their own.
   const summary = useMemo(() => summarizeModel(rows, "predictions"), [rows]);
   const bets = useMemo(() => summarizeModel(rows, "bets"), [rows]);
@@ -303,9 +378,9 @@ function ModelPage() {
                 What the model has learned
               </h2>
               <p className="mt-1 text-sm text-mute">
-                From {latestCalibration.samples} graded games, using only weeks before the next
-                slate. It starts from the betting line and only moves off it as far as its own track
-                record says it should.
+                From {latestCalibration.samples} graded games (past seasons plus this one before the
+                next slate). It starts from the betting line and only moves off it as far as its own
+                track record says it should.
               </p>
               <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
                 <div>
@@ -335,6 +410,23 @@ function ModelPage() {
               </p>
             </Panel>
           ) : null}
+
+          <Panel padded={false}>
+            <PanelHeader
+              title="Track record by season"
+              aside={
+                <span className="font-mono text-[10px] uppercase tracking-wider text-mute">
+                  Same model · walk-forward · closing lines
+                </span>
+              }
+            />
+            <TrackRecord seasons={trackRecord} />
+            <p className="px-4 pb-3 pt-2 text-[11px] text-faint">
+              Each past season is replayed week by week with only the games before each week, the
+              way it would have run live. Winner = the team it expected to win; spread and over /
+              under are its lean on every game against the closing line.
+            </p>
+          </Panel>
 
           <Panel padded={false}>
             <PanelHeader
@@ -567,7 +659,9 @@ function ModelPage() {
               <li>
                 Rates every team&apos;s offense and defense from this season&apos;s final scores,
                 adjusted for opponents and home field, then predicts each game&apos;s score. That
-                gives a model spread, total and win probability.
+                gives a model spread, total and win probability. Yards-per-play and EPA ratings were
+                tested over three seasons and didn&apos;t beat final scores, so they aren&apos;t
+                used.
               </li>
               <li>
                 Only games from earlier weeks are used to predict a week, so the record above is
@@ -575,11 +669,13 @@ function ModelPage() {
                 {MODEL_SETTINGS.minGamesPerTeam} games played before it bets them.
               </li>
               <li>
-                Starts from the betting line. Each week it checks, on earlier games only, how much
-                its disagreements with the closing line actually predicted the result, and moves its
-                line off the market only that far (the &quot;trust&quot; above). It also learns how
-                much its own ratings squeeze games toward even, and whether games have been running
-                over or under the totals.
+                Starts from the betting line. Each week it checks, on earlier games only (every past
+                season since 2023 plus this one), how much its disagreements with the closing line
+                actually predicted the result, and moves its line off the market only that far (the
+                &quot;trust&quot; above). It also learns how much its own ratings squeeze games
+                toward even, and whether games have been running over or under the totals. Win
+                chances start from the moneyline&apos;s no-vig price, so the winner call is the
+                market&apos;s favorite unless the model has earned the right to disagree.
               </li>
               <li>
                 Picks: spread when its line is {MODEL_SETTINGS.spreadEdgePts}+ points off the
