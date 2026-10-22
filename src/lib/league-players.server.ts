@@ -11,8 +11,30 @@ import { gameScore } from "@/data/games";
 import { teams, teamByAbbr, teamById } from "@/data/teams";
 import { fetchSchedule, fetchTeamRoster } from "./espn.server";
 import { nflverseGameYac } from "./nflverse-yac.server";
-import { buildPlayerAnalytics, type GamePropAnalytics, type PlayerGameInput } from "./prop-analytics";
-import { isPropPlayerPosition, normalizePropPosition } from "./prop-model";
+import {
+  buildPlayerAnalytics,
+  type GamePropAnalytics,
+  type PlayerGameInput,
+} from "./prop-analytics";
+import { fitRatings, predictGame, type TeamRatings } from "./game-model";
+import {
+  backtestStat,
+  buildWeekContext,
+  projectStat,
+  summarizeAccuracy,
+  PROJECTION_SETTINGS,
+  type BacktestPoint,
+  type GamePropProjections,
+  type LeagueRecord,
+  type PlayerStatModel,
+  type WeekContext,
+} from "./player-projection-model";
+import {
+  isPropPlayerPosition,
+  marketByKey,
+  normalizePropPosition,
+  type PropCategory,
+} from "./prop-model";
 
 const SUMMARY = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary";
 const CORE_ODDS = "https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/events";
@@ -121,7 +143,10 @@ function extractYacValue(data: any): number | undefined {
       return undefined;
     }
     const name = String(node.name ?? node.displayName ?? "").toLowerCase();
-    if (name === "receivingyardsaftercatch" || (name.includes("yards after catch") && !name.includes("pass"))) {
+    if (
+      name === "receivingyardsaftercatch" ||
+      (name.includes("yards after catch") && !name.includes("pass"))
+    ) {
       const found = parse(node.value ?? node.displayValue);
       if (found !== undefined) return found;
     }
@@ -271,23 +296,28 @@ async function addMatchupPageYac(
   // Keep kicker values identical to the matchup page: its FGYDS and distance
   // buckets are calculated from made field-goal plays, not the summary box-score
   // totals (which can omit individual kick distances).
-  const kickerRecords = records.filter((record) =>
-    ["K", "PK", "PLACEKICKER", "KICKER"].includes(record.posHint.toUpperCase()) || record.flat.fga !== undefined,
+  const kickerRecords = records.filter(
+    (record) =>
+      ["K", "PK", "PLACEKICKER", "KICKER"].includes(record.posHint.toUpperCase()) ||
+      record.flat.fga !== undefined,
   );
   const madeFieldGoalsByPlayer = new Map<string, number[]>();
   for (const drive of summary?.drives?.previous ?? []) {
     const driveTeamId = teamByAbbr(drive?.team?.abbreviation ?? "")?.id;
-    for (const play of (Array.isArray(drive?.plays) ? drive.plays : [])) {
+    for (const play of Array.isArray(drive?.plays) ? drive.plays : []) {
       const text = String(play?.text ?? play?.shortText ?? "").trim();
       if (!/field goal/i.test(text) || /missed|no good|blocked|failed/i.test(text)) continue;
       const playTeamId = teamByAbbr(play?.team?.abbreviation ?? "")?.id ?? driveTeamId;
       if (!playTeamId) continue;
       const candidates = kickerRecords.filter((record) => record.teamId === playTeamId);
-      const namedKicker = candidates.find((record) => text.toLowerCase().includes(record.name.toLowerCase()));
+      const namedKicker = candidates.find((record) =>
+        text.toLowerCase().includes(record.name.toLowerCase()),
+      );
       const kicker = namedKicker ?? (candidates.length === 1 ? candidates[0] : undefined);
       if (!kicker) continue;
-      const match = text.match(/\b(\d{1,2})\s*(?:-?yard|yds?)\b/i)
-        ?? text.match(/field goal\s+(?:is\s+)?good\s+from\s+(?:the\s+)?(\d{1,2})/i);
+      const match =
+        text.match(/\b(\d{1,2})\s*(?:-?yard|yds?)\b/i) ??
+        text.match(/field goal\s+(?:is\s+)?good\s+from\s+(?:the\s+)?(\d{1,2})/i);
       const distance = Number(match?.[1] ?? 0);
       if (distance > 0 && distance <= 70) {
         const distances = madeFieldGoalsByPlayer.get(kicker.id) ?? [];
@@ -298,43 +328,60 @@ async function addMatchupPageYac(
   }
 
   for (const record of kickerRecords) {
-      const distances = madeFieldGoalsByPlayer.get(record.id) ?? [];
-      record.flat["matchup.fgLong"] = distances.length ? Math.max(...distances) : 0;
-      record.flat["matchup.fgYds"] = distances.reduce((sum, distance) => sum + distance, 0);
-      record.flat["matchup.fg0_19"] = distances.filter((distance) => distance < 20).length;
-      record.flat["matchup.fg20_29"] = distances.filter((distance) => distance >= 20 && distance <= 29).length;
-      record.flat["matchup.fg30_39"] = distances.filter((distance) => distance >= 30 && distance <= 39).length;
-      record.flat["matchup.fg40_49"] = distances.filter((distance) => distance >= 40 && distance <= 49).length;
-      record.flat["matchup.fg50plus"] = distances.filter((distance) => distance >= 50).length;
+    const distances = madeFieldGoalsByPlayer.get(record.id) ?? [];
+    record.flat["matchup.fgLong"] = distances.length ? Math.max(...distances) : 0;
+    record.flat["matchup.fgYds"] = distances.reduce((sum, distance) => sum + distance, 0);
+    record.flat["matchup.fg0_19"] = distances.filter((distance) => distance < 20).length;
+    record.flat["matchup.fg20_29"] = distances.filter(
+      (distance) => distance >= 20 && distance <= 29,
+    ).length;
+    record.flat["matchup.fg30_39"] = distances.filter(
+      (distance) => distance >= 30 && distance <= 39,
+    ).length;
+    record.flat["matchup.fg40_49"] = distances.filter(
+      (distance) => distance >= 40 && distance <= 49,
+    ).length;
+    record.flat["matchup.fg50plus"] = distances.filter((distance) => distance >= 50).length;
   }
 
   // ESPN's matchup page requests YAC from the Core per-player endpoint. Do the
   // same for this player's completed game log so YAC isn't a different source.
-  await Promise.all(records
-    .filter((record) => ["QB", "RB", "WR", "TE"].includes(record.posHint.toUpperCase()))
-    .map(async (record) => {
-      const espnTeamId = espnTeamIds.get(record.teamId);
-      if (!espnTeamId) return;
-      try {
-        const stats = await memoize(`matchup-yac-${eventId}-${record.id}`, GAME_TTL_MS, async () => {
-          const url = `${CORE_ODDS}/${eventId}/competitions/${eventId}/competitors/${espnTeamId}/roster/${record.id}/statistics/0`;
-          const response = await fetch(url, { headers: { "User-Agent": "GamblingNFL/1.0" } });
-          if (!response.ok) throw new Error(`ESPN player statistics failed [${response.status}]`);
-          return response.json();
-        });
-        const yac = extractYacValue(stats);
-        if (yac !== undefined) record.flat.yardsAfterCatch = yac;
-      } catch {
-        // Matchup page leaves YAC absent when ESPN's Core endpoint fails.
-      }
-    }));
+  await Promise.all(
+    records
+      .filter((record) => ["QB", "RB", "WR", "TE"].includes(record.posHint.toUpperCase()))
+      .map(async (record) => {
+        const espnTeamId = espnTeamIds.get(record.teamId);
+        if (!espnTeamId) return;
+        try {
+          const stats = await memoize(
+            `matchup-yac-${eventId}-${record.id}`,
+            GAME_TTL_MS,
+            async () => {
+              const url = `${CORE_ODDS}/${eventId}/competitions/${eventId}/competitors/${espnTeamId}/roster/${record.id}/statistics/0`;
+              const response = await fetch(url, { headers: { "User-Agent": "GamblingNFL/1.0" } });
+              if (!response.ok)
+                throw new Error(`ESPN player statistics failed [${response.status}]`);
+              return response.json();
+            },
+          );
+          const yac = extractYacValue(stats);
+          if (yac !== undefined) record.flat.yardsAfterCatch = yac;
+        } catch {
+          // Matchup page leaves YAC absent when ESPN's Core endpoint fails.
+        }
+      }),
+  );
 
   // Some ESPN feeds expose YAC on the receivers but omit it on the QB's own
   // stats endpoint. If this team used exactly one QB with pass attempts, sum
   // the receiving YAC for that game and attach it to that QB.
-  const teamIds = new Set(records.filter((r) => r.posHint.toUpperCase() === "QB").map((r) => r.teamId));
+  const teamIds = new Set(
+    records.filter((r) => r.posHint.toUpperCase() === "QB").map((r) => r.teamId),
+  );
   for (const teamId of teamIds) {
-    const qbs = records.filter((r) => r.teamId === teamId && r.posHint.toUpperCase() === "QB" && (r.flat.pa ?? 0) > 0);
+    const qbs = records.filter(
+      (r) => r.teamId === teamId && r.posHint.toUpperCase() === "QB" && (r.flat.pa ?? 0) > 0,
+    );
     if (qbs.length !== 1) continue;
     const qb = qbs[0];
     if ((qb.flat.yardsAfterCatch ?? 0) > 0) continue;
@@ -353,7 +400,9 @@ async function addMatchupPageYac(
         .map(async (record) => {
           try {
             const row = await nflverseGameYac(record.name, 2026, week);
-            if (row) record.flat.yardsAfterCatch = record.posHint.toUpperCase() === "QB" ? row.pyac : row.yac;
+            if (row)
+              record.flat.yardsAfterCatch =
+                record.posHint.toUpperCase() === "QB" ? row.pyac : row.yac;
           } catch {
             // keep the earlier value
           }
@@ -372,21 +421,37 @@ export function buildLeaguePlayers(
 ): LeaguePlayer[] {
   const acc = new Map<
     string,
-    { id: string; name: string; teamId: string; posHint: string; games: number; flat: Record<string, number> }
+    {
+      id: string;
+      name: string;
+      teamId: string;
+      posHint: string;
+      games: number;
+      flat: Record<string, number>;
+    }
   >();
 
   for (const records of gameRecords) {
     for (const rec of records) {
       let a = acc.get(rec.id);
       if (!a) {
-        a = { id: rec.id, name: rec.name, teamId: rec.teamId, posHint: rec.posHint, games: 0, flat: {} };
+        a = {
+          id: rec.id,
+          name: rec.name,
+          teamId: rec.teamId,
+          posHint: rec.posHint,
+          games: 0,
+          flat: {},
+        };
         acc.set(rec.id, a);
       }
       a.games += 1;
       a.teamId = rec.teamId; // games arrive oldest first, so this ends on the latest team
       for (const [key, value] of Object.entries(rec.flat)) {
         if (key === "yardsAfterCatch" || key.startsWith("matchup.")) continue; // per-game display details, not league totals
-        a.flat[key] = MAX_KEYS.has(key) ? Math.max(a.flat[key] ?? 0, value) : (a.flat[key] ?? 0) + value;
+        a.flat[key] = MAX_KEYS.has(key)
+          ? Math.max(a.flat[key] ?? 0, value)
+          : (a.flat[key] ?? 0) + value;
       }
     }
   }
@@ -518,37 +583,44 @@ export async function fetchPlayerGameLog(
         const records = await Promise.all(
           batch.map((g) => fetchGameRecords(g.id.replace(/^espn-/, ""))),
         );
-        await Promise.all(batch.map(async (game, idx) => {
-          const rec = records[idx].find((r) => r.id === playerId);
-          if (!rec) return;
-          // Add the same YAC value the game matchup page requests, but only
-          // for this player's row so scanning the league doesn't fan out into
-          // hundreds of unnecessary per-athlete requests.
-          try {
-            const yacRecords = rec.posHint.toUpperCase() === "QB"
-              ? records[idx].filter((candidate) => candidate.teamId === rec.teamId && ["QB", "RB", "WR", "TE"].includes(candidate.posHint.toUpperCase()))
-              : [rec];
-            await addMatchupPageYac(
-              game.id.replace(/^espn-/, ""),
-              await fetchGameSummary(game.id.replace(/^espn-/, "")),
-              yacRecords,
-              game.week,
-            );
-          } catch {
-            // Keep the rest of the game log available if ESPN's YAC endpoint fails.
-          }
-          const score = gameScore(game);
-          out.push({
-            gameId: game.id,
-            week: game.week,
-            awayTeamId: game.awayTeamId,
-            homeTeamId: game.homeTeamId,
-            awayScore: score.away,
-            homeScore: score.home,
-            overtime: game.quarters.away.length > 4 || game.quarters.home.length > 4,
-            stats: rec.flat,
-          });
-        }));
+        await Promise.all(
+          batch.map(async (game, idx) => {
+            const rec = records[idx].find((r) => r.id === playerId);
+            if (!rec) return;
+            // Add the same YAC value the game matchup page requests, but only
+            // for this player's row so scanning the league doesn't fan out into
+            // hundreds of unnecessary per-athlete requests.
+            try {
+              const yacRecords =
+                rec.posHint.toUpperCase() === "QB"
+                  ? records[idx].filter(
+                      (candidate) =>
+                        candidate.teamId === rec.teamId &&
+                        ["QB", "RB", "WR", "TE"].includes(candidate.posHint.toUpperCase()),
+                    )
+                  : [rec];
+              await addMatchupPageYac(
+                game.id.replace(/^espn-/, ""),
+                await fetchGameSummary(game.id.replace(/^espn-/, "")),
+                yacRecords,
+                game.week,
+              );
+            } catch {
+              // Keep the rest of the game log available if ESPN's YAC endpoint fails.
+            }
+            const score = gameScore(game);
+            out.push({
+              gameId: game.id,
+              week: game.week,
+              awayTeamId: game.awayTeamId,
+              homeTeamId: game.homeTeamId,
+              awayScore: score.away,
+              homeScore: score.home,
+              overtime: game.quarters.away.length > 4 || game.quarters.home.length > 4,
+              stats: rec.flat,
+            });
+          }),
+        );
       }
       return out;
     };
@@ -567,7 +639,10 @@ export async function fetchPlayerGameLog(
  * Reuses the cached per-game box-score records, so it adds no new ESPN requests after the
  * first load.
  */
-export async function fetchGamePropAnalytics(awayAbbr: string, homeAbbr: string): Promise<GamePropAnalytics> {
+export async function fetchGamePropAnalytics(
+  awayAbbr: string,
+  homeAbbr: string,
+): Promise<GamePropAnalytics> {
   const abbrs = [awayAbbr.toUpperCase(), homeAbbr.toUpperCase()];
   return memoize(`prop-analytics-${abbrs.join("-")}`, TOTALS_TTL_MS, async () => {
     const [schedule, ...rosters] = await Promise.all([
@@ -582,13 +657,17 @@ export async function fetchGamePropAnalytics(awayAbbr: string, homeAbbr: string)
       abbrs.map(async (abbr, teamIndex) => {
         const team = teamByAbbr(abbr);
         if (!team) return;
-        const teamGames = finals.filter((g) => g.homeTeamId === team.id || g.awayTeamId === team.id);
+        const teamGames = finals.filter(
+          (g) => g.homeTeamId === team.id || g.awayTeamId === team.id,
+        );
         gamesScanned[abbr] = teamGames.length;
 
         const byPlayer = new Map<string, PlayerGameInput[]>();
         for (let i = 0; i < teamGames.length; i += BATCH_SIZE) {
           const batch = teamGames.slice(i, i + BATCH_SIZE);
-          const records = await Promise.all(batch.map((g) => fetchGameRecords(g.id.replace(/^espn-/, ""))));
+          const records = await Promise.all(
+            batch.map((g) => fetchGameRecords(g.id.replace(/^espn-/, ""))),
+          );
           batch.forEach((game, idx) => {
             const home = game.homeTeamId === team.id;
             const opponent = teamById(home ? game.awayTeamId : game.homeTeamId)?.abbr ?? "";
@@ -621,5 +700,134 @@ export async function fetchGamePropAnalytics(awayAbbr: string, homeAbbr: string)
     );
 
     return { players, gamesScanned };
+  });
+}
+
+/* ---------------- player prop projections ---------------- */
+
+/**
+ * Model projections for every prop on the board for one game, plus how accurate the same model
+ * has been on these players' earlier games. Uses only games played before this game's week.
+ */
+export async function fetchGamePropProjections(
+  eventId: string,
+  awayAbbr: string,
+  homeAbbr: string,
+): Promise<GamePropProjections> {
+  const id = eventId.replace(/^espn-/, "");
+  return memoize(`prop-projections-${id}`, TOTALS_TTL_MS, async () => {
+    const [schedule, analytics] = await Promise.all([
+      fetchSchedule(),
+      fetchGamePropAnalytics(awayAbbr, homeAbbr),
+    ]);
+    const finals = schedule.filter((g) => g.status === "final");
+    const target = schedule.find((g) => g.id === `espn-${id}`);
+    const week = target?.week ?? Math.max(0, ...finals.map((g) => g.week)) + 1;
+
+    // Every player's box score in every finished game, with who they played.
+    const records: LeagueRecord[] = [];
+    for (let i = 0; i < finals.length; i += BATCH_SIZE) {
+      const batch = finals.slice(i, i + BATCH_SIZE);
+      const results = await Promise.all(
+        batch.map((g) => fetchGameRecords(g.id.replace(/^espn-/, ""))),
+      );
+      batch.forEach((game, idx) => {
+        const homeAbbrG = teamById(game.homeTeamId)?.abbr ?? "";
+        const awayAbbrG = teamById(game.awayTeamId)?.abbr ?? "";
+        for (const rec of results[idx]) {
+          const isHome = rec.teamId === game.homeTeamId;
+          records.push({
+            playerId: rec.id,
+            week: game.week,
+            team: isHome ? homeAbbrG : awayAbbrG,
+            opponent: isHome ? awayAbbrG : homeAbbrG,
+            home: isHome,
+            position: rec.posHint,
+            flat: rec.flat,
+          });
+        }
+      });
+    }
+
+    // Per-week league context and game-model ratings (only earlier games), built once each.
+    const contexts = new Map<number, WeekContext>();
+    const contextFor = (w: number) => {
+      let c = contexts.get(w);
+      if (!c) contexts.set(w, (c = buildWeekContext(records, w)));
+      return c;
+    };
+    const ratingsCache = new Map<number, TeamRatings>();
+    const ratingsFor = (w: number) => {
+      let r = ratingsCache.get(w);
+      if (!r) ratingsCache.set(w, (r = fitRatings(finals.filter((g) => g.week < w))));
+      return r;
+    };
+    /** Team's expected points in this game ÷ its average points so far (1 = a normal game). */
+    const scriptRatio = (teamAbbr: string, oppAbbr: string, home: boolean, w: number) => {
+      const team = teamByAbbr(teamAbbr);
+      const opp = teamByAbbr(oppAbbr);
+      if (!team || !opp) return 1;
+      const prior = finals.filter(
+        (g) => g.week < w && (g.homeTeamId === team.id || g.awayTeamId === team.id),
+      );
+      if (prior.length < 2) return 1;
+      const avg =
+        prior.reduce((s, g) => {
+          const sc = gameScore(g);
+          return s + (g.homeTeamId === team.id ? sc.home : sc.away);
+        }, 0) / prior.length;
+      if (avg <= 0) return 1;
+      const r = ratingsFor(w);
+      const p = home ? predictGame(r, team.id, opp.id) : predictGame(r, opp.id, team.id);
+      return (home ? p.homePoints : p.awayPoints) / avg;
+    };
+
+    const players: GamePropProjections["players"] = {};
+    const allPoints: { category: PropCategory; point: BacktestPoint }[] = [];
+    for (const p of analytics.players) {
+      const opponent =
+        p.teamAbbr === awayAbbr.toUpperCase() ? homeAbbr.toUpperCase() : awayAbbr.toUpperCase();
+      const isHome = p.teamAbbr === homeAbbr.toUpperCase();
+      const games = records
+        .filter((r) => r.playerId === p.id && r.team === p.teamAbbr)
+        .map((r) => ({
+          gameId: `${r.week}`,
+          week: r.week,
+          opponent: r.opponent,
+          home: r.home,
+          flat: r.flat,
+        }));
+      const prior = games.filter((g) => g.week < week);
+      const script = scriptRatio(p.teamAbbr, opponent, isHome, week);
+      const byKey: Record<string, PlayerStatModel> = {};
+      for (const key of Object.keys(p.markets)) {
+        const projection = projectStat(key, p.position, prior, contextFor(week), opponent, script);
+        const history = backtestStat(
+          key,
+          p.position,
+          games,
+          contextFor,
+          (g) => scriptRatio(p.teamAbbr, g.opponent, g.home, g.week),
+          week,
+        );
+        byKey[key] = { projection, accuracy: summarizeAccuracy(history), history };
+        const category = marketByKey(key)?.category;
+        if (category) for (const point of history) allPoints.push({ category, point });
+      }
+      players[p.id] = byKey;
+    }
+
+    const byCategory: GamePropProjections["accuracy"]["byCategory"] = {};
+    for (const cat of [...new Set(allPoints.map((x) => x.category))]) {
+      byCategory[cat] = summarizeAccuracy(
+        allPoints.filter((x) => x.category === cat).map((x) => x.point),
+      );
+    }
+    return {
+      week,
+      modelVersion: PROJECTION_SETTINGS.version,
+      players,
+      accuracy: { overall: summarizeAccuracy(allPoints.map((x) => x.point)), byCategory },
+    };
   });
 }
