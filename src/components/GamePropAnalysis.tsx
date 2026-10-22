@@ -20,7 +20,7 @@ import {
   type Availability,
   type LineupCandidate,
 } from "@/lib/prop-lineup";
-import type { PlayerStatModel } from "@/lib/player-projection-model";
+import type { PlayerStatModel, PlayerUsage } from "@/lib/player-projection-model";
 import {
   analyticsRowsForCategory,
   trendOf,
@@ -149,6 +149,8 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
     staleTime: 10 * 60_000,
     retry: 1,
   });
+  const usageFor = (playerId: string): PlayerUsage | undefined =>
+    projectionsQuery.data?.usage?.[playerId];
   const modelFor = (playerId: string, key: string): PlayerStatModel | undefined =>
     projectionsQuery.data?.players[playerId]?.[key];
   const analyticsPlayers = useMemo(() => analyticsQuery.data?.players ?? [], [analyticsQuery.data]);
@@ -741,6 +743,7 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
         <AnalyticsTable
           tagFor={injuryTagFor}
           modelFor={modelFor}
+          usageFor={usageFor}
           resultWeek={finalGame ? game.week : undefined}
           modelLoading={projectionsQuery.isLoading}
           rows={shownAnalytics}
@@ -936,7 +939,9 @@ function AnalyticsTable({
   modelFor,
   resultWeek,
   modelLoading,
+  usageFor,
 }: {
+  usageFor: (playerId: string) => PlayerUsage | undefined;
   tagFor: (id: string) => InjuryTagInfo | undefined;
   modelFor: (playerId: string, key: string) => PlayerStatModel | undefined;
   /** Week of this game when it's final, to show the actual result next to the projection. */
@@ -1035,6 +1040,15 @@ function AnalyticsTable({
                   <td className="px-2 py-2.5 text-mute">{market?.label ?? summary.key}</td>
                   <td className="px-2 py-2.5 text-right font-mono text-base font-bold tabular-nums text-acc">
                     {proj ? statText(summary.key, proj.projected) : modelLoading ? "…" : "—"}
+                    {proj && (proj.opportunity ?? 1) > 1 ? (
+                      <span
+                        className="ml-1 align-top text-[10px] text-win"
+                        title={`Teammate ruled out: about ${Math.round(((proj.opportunity ?? 1) - 1) * 100)}% more opportunity`}
+                        aria-label="Boosted by a teammate being out"
+                      >
+                        ▲
+                      </span>
+                    ) : null}
                   </td>
                   <td className="px-2 py-2.5 text-right font-mono tabular-nums text-mute">
                     {proj ? (
@@ -1084,12 +1098,37 @@ function AnalyticsTable({
                             {statText(summary.key, proj.projected)}
                           </span>{" "}
                           = form {statText(summary.key, proj.form)} × opponent defense{" "}
-                          {proj.defense.toFixed(2)} × game script {proj.script.toFixed(2)} · built
-                          on {proj.games} earlier games
+                          {proj.defense.toFixed(2)} × game script {proj.script.toFixed(2)}
+                          {(proj.opportunity ?? 1) !== 1
+                            ? ` × teammate out ${(proj.opportunity ?? 1).toFixed(2)}`
+                            : ""}{" "}
+                          · built on {proj.games} games this season
+                          {proj.lastSeason !== undefined
+                            ? ` + last season (${statText(summary.key, proj.lastSeason)} a game)`
+                            : ""}
                         </p>
-                      ) : (
+                      ) : null}
+                      {(() => {
+                        const u = usageFor(player.id);
+                        if (!u || (!u.targetShare && !u.carryShare)) return null;
+                        return (
+                          <p>
+                            <span className="text-faint">Recent usage: </span>
+                            {u.targetShare
+                              ? `${Math.round(u.targetShare * 100)}% of team targets`
+                              : ""}
+                            {u.targetShare && u.carryShare ? " · " : ""}
+                            {u.carryShare
+                              ? `${Math.round(u.carryShare * 100)}% of team carries`
+                              : ""}
+                            {u.ruledOut ? " · ruled out for this game" : ""}
+                          </p>
+                        );
+                      })()}
+                      {proj ? null : (
                         <p className="text-faint">
-                          No projection: the model needs at least 2 earlier games with this stat.
+                          No projection yet: the model needs 2 games with this stat this season (1
+                          if he played last season).
                         </p>
                       )}
                       {model && model.history.length ? (
