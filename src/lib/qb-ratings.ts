@@ -1,177 +1,179 @@
-import { describe, expect, it } from "vitest";
-import type { Game } from "@/data/games";
-import { teams } from "@/data/teams";
-import { applyQbAdjustment, type GameModelRow } from "@/lib/game-model";
-import { keyNumberNote, lineMoveNote, notesForRow } from "@/lib/pick-notes";
-import { buildQbRatings, QB_SETTINGS, type QbStart } from "@/lib/qb-ratings";
+/**
+ * Quarterback ratings for the game model.
+ *
+ * Every start is scored by the team's passing EPA per dropback that game. A quarterback's rating
+ * is the average of his starts (older seasons count less), pulled toward the typical rating of
+ * rarely used quarterbacks until he has enough starts. When a team starts someone other than its
+ * usual quarterback, the difference between the two ratings moves the model's line.
+ *
+ * Walk-forward like the rest of the model: a game is adjusted only from starts before its week.
+ * Pure functions (browser- and server-safe).
+ */
 
-const [A, B] = teams;
-const start = (week: number, teamId: string, qb: string, epa: number, season = 2025): QbStart => ({
-  season,
-  week,
-  teamId,
-  qb,
-  name: qb.toUpperCase(),
-  epaPerDropback: epa,
-});
+export const QB_SETTINGS = {
+  /** Each earlier season's starts count this much of the season after it. */
+  seasonDecay: 0.6,
+  /** Starts of "rarely used quarterback" average a new or little-used QB is blended with. */
+  priorStarts: 12,
+  /** Quarterbacks with fewer (weighted) starts than this define that "rarely used" average. */
+  lowStartCutoff: 4,
+  /** Regular starter: each start counts this much less per team game since (over 2 seasons). */
+  usualDecay: 0.93,
+  /** Baseline the adjustment is measured from: the team's last starts, newest weighted most. */
+  baselineStarts: 8,
+  baselineDecay: 0.85,
+  /** Points of margin per 1.0 EPA per dropback of quarterback difference. */
+  pointsPerEpa: 30,
+  /** Largest adjustment for one game (points of margin). */
+  maxAdjustment: 7,
+} as const;
 
-describe("quarterback ratings", () => {
-  // Team A's starter "star" passes well for 8 weeks; "backup" has two poor starts elsewhere.
-  const starts = [
-    ...Array.from({ length: 8 }, (_, i) => start(i + 1, A.id, "star", 0.25)),
-    ...Array.from({ length: 8 }, (_, i) => start(i + 1, B.id, "bstarter", 0.0)),
-    start(3, "other", "backup", -0.2),
-    start(4, "other", "backup", -0.2),
-  ];
-  const adjust = buildQbRatings(starts);
+/** One quarterback start with how his team passed that game. */
+export interface QbStart {
+  season: number;
+  week: number;
+  teamId: string;
+  qb: string;
+  name: string;
+  /** Passing EPA per dropback that game; missing when the stats aren't available. */
+  epaPerDropback?: number;
+}
 
-  it("moves the line against a team starting a worse quarterback than usual", () => {
-    const usual = adjust({
-      season: 2025,
-      week: 9,
-      homeTeamId: A.id,
-      awayTeamId: B.id,
-      homeQb: "star",
-      awayQb: "bstarter",
-    })!;
-    expect(usual.margin).toBeCloseTo(0, 5);
-    expect(usual.home!.change).toBe(false);
-    const benched = adjust({
-      season: 2025,
-      week: 9,
-      homeTeamId: A.id,
-      awayTeamId: B.id,
-      homeQb: "backup",
-      homeQbName: "Backup Guy",
-      awayQb: "bstarter",
-    })!;
-    expect(benched.home).toMatchObject({ name: "Backup Guy", change: true });
-    expect(benched.margin).toBeLessThan(-3);
-    expect(benched.margin).toBeGreaterThanOrEqual(-QB_SETTINGS.maxAdjustment);
-  });
+export interface QbSide {
+  name: string;
+  /** Points this starter is worth vs the team's usual quarterback (negative = downgrade). */
+  points: number;
+  /** True when he isn't the team's usual starter. */
+  change: boolean;
+  /** The regular starter he's replacing (when `change`). */
+  regularName?: string;
+}
 
-  it("only uses starts before the game's week", () => {
-    const early = adjust({
-      season: 2025,
-      week: 2,
-      homeTeamId: A.id,
-      awayTeamId: B.id,
-      homeQb: "backup",
-      awayQb: "bstarter",
-    })!;
-    const late = adjust({
-      season: 2025,
-      week: 9,
-      homeTeamId: A.id,
-      awayTeamId: B.id,
-      homeQb: "backup",
-      awayQb: "bstarter",
-    })!;
-    // In week 2 the backup has no starts yet and the starter only one: a smaller gap.
-    expect(Math.abs(early.margin)).toBeLessThan(Math.abs(late.margin));
-  });
+export interface QbAdjustment {
+  home?: QbSide;
+  away?: QbSide;
+  /** Points of home margin added to the model's line (home − away), capped. */
+  margin: number;
+}
 
-  it("keeps a starter back from a short injury as the regular, and names who a backup replaces", () => {
-    const team = [
-      ...Array.from({ length: 17 }, (_, i) => start(i + 1, A.id, "caleb", 0.05, 2025)),
-      start(1, A.id, "caleb", 0.05, 2026),
-      start(2, A.id, "caleb", 0.05, 2026),
-      start(3, A.id, "keenum", -0.05, 2026),
-      start(4, A.id, "keenum", -0.05, 2026),
-      start(5, A.id, "bagent", -0.15, 2026),
-      start(6, A.id, "caleb", 0.05, 2026),
-      ...Array.from({ length: 6 }, (_, i) => start(i + 1, B.id, "b", 0, 2026)),
-    ];
-    const adj = buildQbRatings(team);
-    const back = adj({
-      season: 2026,
-      week: 7,
-      homeTeamId: A.id,
-      awayTeamId: B.id,
-      homeQb: "caleb",
-      awayQb: "b",
-    })!;
-    expect(back.home!.change).toBe(false);
-    const fill = adj({
-      season: 2026,
-      week: 5,
-      homeTeamId: A.id,
-      awayTeamId: B.id,
-      homeQb: "bagent",
-      homeQbName: "Tyson Bagent",
-      awayQb: "b",
-    })!;
-    expect(fill.home).toMatchObject({ change: true, regularName: "CALEB" });
-  });
+interface WeekRatings {
+  rating: (qb: string) => number;
+  usual: Map<string, { value: number; qb: string; name: string }>;
+}
 
-  it("stops flagging a quarterback new to the team once he has started for it", () => {
-    const moved = [
-      ...Array.from({ length: 17 }, (_, i) => start(i + 1, A.id, "old", 0.0, 2025)),
-      start(1, A.id, "newguy", 0.1, 2026),
-      ...Array.from({ length: 2 }, (_, i) => start(i + 1, B.id, "b", 0, 2026)),
-    ];
-    const adj = buildQbRatings(moved);
-    const wk2 = adj({
-      season: 2026,
-      week: 2,
-      homeTeamId: A.id,
-      awayTeamId: B.id,
-      homeQb: "newguy",
-      awayQb: "b",
-    })!;
-    expect(wk2.home!.change).toBe(false);
-  });
+const key = (season: number, week: number) => season * 100 + week;
 
-  it("does nothing when no starter is known", () => {
-    expect(adjust({ season: 2025, week: 9, homeTeamId: A.id, awayTeamId: B.id })).toBeUndefined();
-  });
+/**
+ * Builds the QB adjuster from every known start. Ratings for a given week are computed once and
+ * cached, from starts before that week only.
+ */
+export function buildQbRatings(
+  starts: QbStart[],
+  settings: Partial<Record<keyof typeof QB_SETTINGS, number>> = {},
+) {
+  const S = { ...QB_SETTINGS, ...settings };
+  const sorted = starts
+    .filter((s) => s.qb)
+    .sort((a, b) => key(a.season, a.week) - key(b.season, b.week));
+  const cache = new Map<number, WeekRatings>();
 
-  it("shifts the model's line and win chance by the adjustment", () => {
-    const p = { homePoints: 24, awayPoints: 21, homeLine: -3, total: 45, homeWinProb: 0.59 };
-    const q = applyQbAdjustment(p, -4);
-    expect(q.homeLine).toBe(1);
-    expect(q.total).toBe(45);
-    expect(q.homeWinProb).toBeLessThan(0.5);
-  });
-});
+  function ratingsBefore(season: number, week: number): WeekRatings {
+    const k = key(season, week);
+    const hit = cache.get(k);
+    if (hit) return hit;
+    const sum = new Map<string, number>();
+    const n = new Map<string, number>();
+    const recent = new Map<string, QbStart[]>();
+    for (const s of sorted) {
+      if (key(s.season, s.week) >= k) break;
+      if (s.epaPerDropback !== undefined) {
+        const w = S.seasonDecay ** (season - s.season);
+        sum.set(s.qb, (sum.get(s.qb) ?? 0) + w * s.epaPerDropback);
+        n.set(s.qb, (n.get(s.qb) ?? 0) + w);
+      }
+      if (s.season >= season - 1) {
+        const list = recent.get(s.teamId) ?? [];
+        list.push(s);
+        recent.set(s.teamId, list);
+      }
+    }
+    const lows = [...n.entries()]
+      .filter(([, c]) => c > 0 && c < S.lowStartCutoff)
+      .map(([qb, c]) => sum.get(qb)! / c);
+    const prior = lows.length ? lows.reduce((a, b) => a + b, 0) / lows.length : -0.1;
+    const rating = (qb: string) =>
+      ((sum.get(qb) ?? 0) + S.priorStarts * prior) / ((n.get(qb) ?? 0) + S.priorStarts);
+    // The team's regular starter: most starts over this season and last, each start counting a
+    // bit less for every team game since (so a starter returning from a short injury is still
+    // the regular, and a backup's spot starts don't make him one). The adjustment is measured
+    // against the regular's rating.
+    // Offseason moves: once a team has started anyone this season, last season's starts only
+    // count for quarterbacks who have also started for it this season (a starter who left in the
+    // offseason isn't the regular any more).
+    const usual = new Map<string, { value: number; qb: string; name: string }>();
+    for (const [team, list] of recent) {
+      const thisSeason = new Set(list.filter((s) => s.season === season).map((s) => s.qb));
+      const score = new Map<string, number>();
+      list.forEach((s, i) => {
+        if (thisSeason.size && !thisSeason.has(s.qb)) return;
+        const w = S.usualDecay ** (list.length - 1 - i) * (s.season === season ? 1 : 0.5);
+        score.set(s.qb, (score.get(s.qb) ?? 0) + w);
+      });
+      const best = [...score.entries()].sort((a, b) => b[1] - a[1])[0];
+      if (!best) continue;
+      const regular = best[0];
+      // The baseline the adjustment is measured from is what the team has actually been
+      // fielding lately (its ratings already reflect those games): its last starts, newest
+      // weighted most.
+      const last = list.slice(-S.baselineStarts);
+      let num = 0;
+      let den = 0;
+      last.forEach((s, i) => {
+        const w = S.baselineDecay ** (last.length - 1 - i);
+        num += w * rating(s.qb);
+        den += w;
+      });
+      usual.set(team, {
+        value: num / den,
+        qb: regular,
+        name: [...list].reverse().find((s) => s.qb === regular)?.name ?? "",
+      });
+    }
+    const out = { rating, usual };
+    cache.set(k, out);
+    return out;
+  }
 
-describe("pick notes", () => {
-  it("reads key numbers from the bettor's side", () => {
-    expect(keyNumberNote(7.5)).toMatchObject({ tone: "good" });
-    expect(keyNumberNote(6.5)).toMatchObject({ tone: "bad" });
-    expect(keyNumberNote(-2.5)).toMatchObject({ tone: "good" });
-    expect(keyNumberNote(-3.5)).toMatchObject({ tone: "bad" });
-    expect(keyNumberNote(7)).toMatchObject({ tone: "neutral" });
-    expect(keyNumberNote(5)).toBeUndefined();
-  });
+  /** The adjustment for one game, or undefined when neither starter is known. */
+  return function adjust(input: {
+    season: number;
+    week: number;
+    homeTeamId: string;
+    awayTeamId: string;
+    homeQb?: string | null;
+    awayQb?: string | null;
+    homeQbName?: string | null;
+    awayQbName?: string | null;
+  }): QbAdjustment | undefined {
+    if (!input.homeQb && !input.awayQb) return undefined;
+    const r = ratingsBefore(input.season, input.week);
+    const side = (team: string, qb?: string | null, name?: string | null): QbSide | undefined => {
+      if (!qb) return undefined;
+      const usual = r.usual.get(team);
+      if (!usual) return { name: name ?? "", points: 0, change: false };
+      return {
+        name: name ?? "",
+        points: S.pointsPerEpa * (r.rating(qb) - usual.value),
+        change: usual.qb !== qb,
+        regularName: usual.qb !== qb ? usual.name : undefined,
+      };
+    };
+    const home = side(input.homeTeamId, input.homeQb, input.homeQbName);
+    const away = side(input.awayTeamId, input.awayQb, input.awayQbName);
+    const raw = (home?.points ?? 0) - (away?.points ?? 0);
+    const cap = S.maxAdjustment;
+    return { home, away, margin: Math.max(-cap, Math.min(cap, raw)) };
+  };
+}
 
-  const game = {
-    id: "espn-1",
-    week: 8,
-    status: "scheduled",
-    homeTeamId: A.id,
-    awayTeamId: B.id,
-    spread: `${A.abbr} -7`,
-    total: 44,
-    quarters: { away: [], home: [] },
-    odds: { homeSpreadOpen: -8 },
-  } as unknown as Game;
-
-  it("says which way the line moved for the picked side", () => {
-    const away = { market: "spread", side: "away" } as never;
-    // Away opened +8, now +7: new bettors get fewer points -> the market moved toward the away side.
-    expect(lineMoveNote(game, away)).toMatchObject({ tone: "good" });
-    expect(lineMoveNote(game, { market: "spread", side: "home" } as never)).toMatchObject({
-      tone: "bad",
-    });
-  });
-
-  it("collects QB, key-number and line notes for a row", () => {
-    const row = {
-      game,
-      predictions: [{ market: "spread", side: "away", line: 7, best: true }],
-      qb: { margin: -3, home: { name: "Backup Guy", points: -3, change: true } },
-    } as unknown as GameModelRow;
-    expect(notesForRow(row).map((n) => n.kind)).toEqual(["qb", "key", "move"]);
-  });
-});
+export type QbAdjuster = ReturnType<typeof buildQbRatings>;
