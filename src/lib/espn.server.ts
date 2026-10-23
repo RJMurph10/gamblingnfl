@@ -524,6 +524,15 @@ function americanOdds(raw: unknown): number | undefined {
  * (moneyline.home.close.odds, pointSpread..., total.over...) and the older one
  * (homeTeamOdds.moneyLine, spreadOdds, overOdds/underOdds). Closing prices win over opening.
  */
+/** A line like "-7", "+3.5", "o45.5" or "u45.5" as a number (undefined if missing). */
+function lineNumber(raw: unknown): number | undefined {
+  if (raw === null || raw === undefined) return undefined;
+  const text = String(raw).trim();
+  if (/^(pk|even)$/i.test(text)) return 0;
+  const n = Number(text.replace(/^[ou]/i, "").replace(/^\+/, ""));
+  return Number.isFinite(n) ? n : undefined;
+}
+
 function parseGameOdds(odds: any): Game["odds"] {
   if (!odds) return undefined;
   const pick = (node: any) =>
@@ -535,6 +544,8 @@ function parseGameOdds(odds: any): Game["odds"] {
     awaySpreadOdds: pick(odds?.pointSpread?.away) ?? americanOdds(odds?.awayTeamOdds?.spreadOdds),
     overOdds: pick(odds?.total?.over) ?? americanOdds(odds?.overOdds),
     underOdds: pick(odds?.total?.under) ?? americanOdds(odds?.underOdds),
+    homeSpreadOpen: lineNumber(odds?.pointSpread?.home?.open?.line),
+    totalOpen: lineNumber(odds?.total?.over?.open?.line),
   };
   for (const key of Object.keys(out) as (keyof typeof out)[])
     if (out[key] === undefined) delete out[key];
