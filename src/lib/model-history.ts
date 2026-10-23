@@ -10,6 +10,7 @@ import type { Game, TeamGameStats } from "@/data/games";
 import { teamByAbbr } from "@/data/teams";
 import { runModel, type GameModelRow, type KickoffWeather, type PriorResult } from "./game-model";
 import { buildQbRatings, type QbAdjuster, type QbAdjustment, type QbStart } from "./qb-ratings";
+import { buildQbStyles, type QbGameRow } from "./qb-style";
 
 /** One finished past game with its closing lines. */
 export interface HistoryGame {
@@ -95,14 +96,19 @@ export function readHistory(data: unknown): {
   currentSeason: number;
   games: HistoryGame[];
   upcoming: UpcomingStarters[];
+  qbRows: QbGameRow[];
 } {
-  if (Array.isArray(data)) return { currentSeason: 0, games: data as HistoryGame[], upcoming: [] };
+  if (Array.isArray(data))
+    return { currentSeason: 0, games: data as HistoryGame[], upcoming: [], qbRows: [] };
   const d = data as
-    { currentSeason?: unknown; games?: unknown; upcoming?: unknown } | null | undefined;
+    | { currentSeason?: unknown; games?: unknown; upcoming?: unknown; qbStarts?: unknown }
+    | null
+    | undefined;
   return {
     currentSeason: typeof d?.currentSeason === "number" ? d.currentSeason : 0,
     games: Array.isArray(d?.games) ? (d.games as HistoryGame[]) : [],
     upcoming: Array.isArray(d?.upcoming) ? (d.upcoming as UpcomingStarters[]) : [],
+    qbRows: Array.isArray(d?.qbStarts) ? (d.qbStarts as QbGameRow[]) : [],
   };
 }
 
@@ -201,6 +207,37 @@ export interface SeasonRun {
 export interface RunOptions {
   /** Adjust the model's line for starting quarterbacks (on by default). */
   qb?: boolean;
+  /** Quarterback games since 2020, for QB styles (the scrambler-vs-pocket best bet). */
+  qbRows?: QbGameRow[];
+}
+
+/**
+ * QB style lookup for games: styles come from each QB's earlier starts. Rows from seasons with
+ * game data keep only listed starters (no relief appearances); older seasons keep every row.
+ */
+function styleLookup(rows: QbGameRow[], games: HistoryGame[], season: number) {
+  const seasonsWithGames = new Set(games.map((g) => g.season));
+  const starts = new Set(
+    games.flatMap((g) => [
+      `${g.season}|${g.week}|${g.homeQb}`,
+      `${g.season}|${g.week}|${g.awayQb}`,
+    ]),
+  );
+  const styleOf = buildQbStyles(
+    rows,
+    (s, w, qb) => !seasonsWithGames.has(s) || starts.has(`${s}|${w}|${qb}`),
+  );
+  return (starters: StartersById) => (game: Game) => {
+    const m = game.id.match(/(\d+)$/);
+    const s = m ? starters.get(Number(m[1])) : undefined;
+    if (!s) return undefined;
+    const named = (p: ReturnType<typeof styleOf>, name?: string | null) =>
+      p ? { ...p, name: name ?? undefined } : undefined;
+    return {
+      home: named(styleOf(s.homeQb, season, game.week), s.homeQbName),
+      away: named(styleOf(s.awayQb, season, game.week), s.awayQbName),
+    };
+  };
 }
 
 /** Every quarterback start in these games, scored by his team's passing EPA per dropback. */
@@ -269,7 +306,8 @@ export function pastSeasonRuns(input: HistoryGame[], options: RunOptions = {}): 
   const useQb = options.qb !== false;
   const byOptions = runs.get(history) ?? new Map<string, SeasonRun[]>();
   runs.set(history, byOptions);
-  const hit = byOptions.get(String(useQb));
+  const optionsKey = `${useQb}|${options.qbRows?.length ?? 0}`;
+  const hit = byOptions.get(optionsKey);
   if (hit) return hit;
   const adjust = useQb ? buildQbRatings(qbStartsFrom(history)) : undefined;
   const seasons = [...new Set(history.map((h) => h.season))].sort((a, b) => a - b);
@@ -285,10 +323,13 @@ export function pastSeasonRuns(input: HistoryGame[], options: RunOptions = {}): 
         past,
         adjust ? qbLookup(adjust, startersOf(games), season) : undefined,
         weatherLookup(new Map(games.map((g) => [g.espnId, recordedConditions(g)]))),
+        options.qbRows?.length
+          ? styleLookup(options.qbRows, history, season)(startersOf(games))
+          : undefined,
       ),
     });
   }
-  byOptions.set(String(useQb), out);
+  byOptions.set(optionsKey, out);
   return out;
 }
 
@@ -330,5 +371,13 @@ export function runModelWithHistory(
   const forecasts = current?.forecasts ?? {};
   const weatherFor = (game: Game) =>
     game.status === "final" ? weatherLookup(recorded)(game) : (forecasts[game.id] ?? undefined);
-  return runModel(schedule, prior, past, qbFor, weatherFor);
+  const stylesFor =
+    options.qbRows?.length && current
+      ? styleLookup(
+          options.qbRows,
+          [...history, ...asList(current.games)],
+          current.season,
+        )(startersOf([...asList(current.games), ...asList(current.upcoming as never)]))
+      : undefined;
+  return runModel(schedule, prior, past, qbFor, weatherFor, stylesFor);
 }
