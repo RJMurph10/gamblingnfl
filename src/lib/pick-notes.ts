@@ -13,7 +13,7 @@ import { homeLine } from "./season-pulse";
 export type NoteTone = "good" | "bad" | "neutral";
 
 export interface PickNote {
-  kind: "key" | "move" | "qb";
+  kind: "key" | "move" | "qb" | "wind" | "style";
   text: string;
   tone: NoteTone;
 }
@@ -93,10 +93,31 @@ export function qbNotes(row: GameModelRow): PickNote[] {
 export function notesForRow(row: GameModelRow): PickNote[] {
   const notes = qbNotes(row);
   const spread = row.predictions.find((p) => p.market === "spread");
+  if (spread?.best && spread.reason === "qb-style") {
+    const team = (side: "home" | "away") =>
+      teamById(side === "home" ? row.game.homeTeamId : row.game.awayTeamId)?.abbr ?? "";
+    const runner = spread.side === "home" ? "home" : "away";
+    const passer = runner === "home" ? "away" : "home";
+    const who = (side: "home" | "away") => row.styles?.[side]?.name || `${team(side)} QB`;
+    notes.push({
+      kind: "style",
+      text: `${who(runner)} (scrambler) vs ${who(passer)} (pocket passer) · scrambler's team covers about 53% since 2000`,
+      tone: "good",
+    });
+  }
   if (spread?.line !== undefined && spread.best) {
     const key = keyNumberNote(spread.line);
     if (key) notes.push(key);
   }
+  const total = row.predictions.find((p) => p.market === "total");
+  if (total?.best && total.wind !== undefined)
+    notes.push({
+      kind: "wind",
+      text: `${Math.round(total.wind)} mph wind at kickoff${
+        row.game.status === "final" ? "" : " (forecast)"
+      } · under ${total.line}`,
+      tone: "good",
+    });
   if (spread) {
     const move = lineMoveNote(row.game, spread);
     if (move && move.tone !== "neutral") notes.push(move);
