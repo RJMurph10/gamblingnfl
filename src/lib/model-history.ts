@@ -8,7 +8,7 @@
 
 import type { Game, TeamGameStats } from "@/data/games";
 import { teamByAbbr } from "@/data/teams";
-import { runModel, type GameModelRow, type PriorResult } from "./game-model";
+import { runModel, type GameModelRow, type KickoffWeather, type PriorResult } from "./game-model";
 import { buildQbRatings, type QbAdjuster, type QbAdjustment, type QbStart } from "./qb-ratings";
 
 /** One finished past game with its closing lines. */
@@ -40,6 +40,10 @@ export interface HistoryGame {
   /** Kickoff temperature (°F) and wind (mph) for outdoor games; null when not recorded. */
   temp: number | null;
   wind: number | null;
+  /** Neutral site (international games and relocated games). */
+  neutral?: boolean;
+  /** Kickoff time, Eastern, "HH:MM". */
+  kickoffEt?: string | null;
   /** Starting quarterbacks (nflverse player ids and names). */
   homeQb?: string | null;
   awayQb?: string | null;
@@ -48,6 +52,29 @@ export interface HistoryGame {
   /** Each team's passing EPA and dropbacks in this game (rates its quarterback). */
   homePass?: { epa: number; dropbacks: number } | null;
   awayPass?: { epa: number; dropbacks: number } | null;
+}
+
+/** Kickoff conditions. `outdoor` false = dome or closed roof. */
+export interface GameConditions extends KickoffWeather {
+  /** "recorded" for finished games (nflverse), "forecast" for upcoming ones (NWS). */
+  source: "recorded" | "forecast";
+}
+
+/** Kickoff conditions recorded by nflverse for a finished game; null when not recorded. */
+export function recordedConditions(h: HistoryGame): GameConditions | null {
+  const outdoor = h.roof === "outdoors" || h.roof === "open";
+  if (!outdoor)
+    return h.roof ? { outdoor: false, temp: null, wind: null, source: "recorded" } : null;
+  if (h.temp === null && h.wind === null) return null;
+  return { outdoor: true, temp: h.temp, wind: h.wind, source: "recorded" };
+}
+
+/** Kickoff weather by game: the trailing digits of the id are the ESPN game id. */
+function weatherLookup(byEspnId: Map<number, GameConditions | null>) {
+  return (game: Game) => {
+    const m = game.id.match(/(\d+)$/);
+    return m ? byEspnId.get(Number(m[1])) : undefined;
+  };
 }
 
 /** Projected starting quarterbacks for an upcoming game this season. */
@@ -257,6 +284,7 @@ export function pastSeasonRuns(input: HistoryGame[], options: RunOptions = {}): 
         seasonResults(history, season - 1),
         past,
         adjust ? qbLookup(adjust, startersOf(games), season) : undefined,
+        weatherLookup(new Map(games.map((g) => [g.espnId, recordedConditions(g)]))),
       ),
     });
   }
@@ -269,6 +297,8 @@ export interface CurrentSeasonData {
   season: number;
   games: HistoryGame[];
   upcoming: UpcomingStarters[];
+  /** Kickoff forecasts for upcoming games, by site game id ("espn-…"). */
+  forecasts?: Record<string, GameConditions | null>;
 }
 
 /**
@@ -293,5 +323,12 @@ export function runModelWithHistory(
     const starters = startersOf([...thisSeason, ...asList(current.upcoming as never)]);
     qbFor = qbLookup(adjust, starters, current.season);
   }
-  return runModel(schedule, prior, past, qbFor);
+  // Weather: recorded for finished games (nflverse, a few days after), forecast for upcoming.
+  const recorded = new Map(
+    asList(current?.games ?? []).map((g) => [g.espnId, recordedConditions(g)]),
+  );
+  const forecasts = current?.forecasts ?? {};
+  const weatherFor = (game: Game) =>
+    game.status === "final" ? weatherLookup(recorded)(game) : (forecasts[game.id] ?? undefined);
+  return runModel(schedule, prior, past, qbFor, weatherFor);
 }
