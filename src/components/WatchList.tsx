@@ -65,6 +65,38 @@ function HitRow({ hit }: { hit: AngleHit }) {
   );
 }
 
+/**
+ * Kickoff temperature + wind forecasts for next week's games (NWS reaches about a week out).
+ * Shared by the model (wind best bets) and the watch list; React Query fetches it once.
+ */
+export function useKickoffForecasts(schedule: Game[], nextWeek: number | null) {
+  const upcoming = useMemo(
+    () =>
+      schedule
+        .filter((g) => g.week === nextWeek && g.status === "scheduled" && g.kickoffIso)
+        .slice(0, 16)
+        .map((g) => ({
+          id: g.id,
+          homeTeamId: g.homeTeamId,
+          venue: g.venue || undefined,
+          kickoffIso: g.kickoffIso!,
+        })),
+    [schedule, nextWeek],
+  );
+  const query = useQuery({
+    queryKey: ["angle-forecasts", upcoming.map((g) => g.id).join(",")],
+    queryFn: () => getAngleForecasts({ data: { games: upcoming } }),
+    enabled: upcoming.length > 0,
+    staleTime: 30 * 60_000,
+    retry: 1,
+  });
+  const forecasts: Record<string, GameConditions | null> = useMemo(
+    () => query.data ?? {},
+    [query.data],
+  );
+  return { forecasts, loading: query.isLoading };
+}
+
 export function WatchList({
   history,
   currentSeason,
@@ -80,27 +112,7 @@ export function WatchList({
   modelRuns?: { season: number; rows: GameModelRow[] }[];
 }) {
   // Forecasts for next week's games (the forecast only reaches about a week out).
-  const upcoming = useMemo(
-    () =>
-      schedule
-        .filter((g) => g.week === nextWeek && g.status === "scheduled" && g.kickoffIso)
-        .slice(0, 16)
-        .map((g) => ({
-          id: g.id,
-          homeTeamId: g.homeTeamId,
-          venue: g.venue || undefined,
-          kickoffIso: g.kickoffIso!,
-        })),
-    [schedule, nextWeek],
-  );
-  const forecastQuery = useQuery({
-    queryKey: ["angle-forecasts", upcoming.map((g) => g.id).join(",")],
-    queryFn: () => getAngleForecasts({ data: { games: upcoming } }),
-    enabled: upcoming.length > 0,
-    staleTime: 30 * 60_000,
-    retry: 1,
-  });
-  const forecasts = useMemo(() => forecastQuery.data ?? {}, [forecastQuery.data]);
+  const { forecasts, loading: forecastLoading } = useKickoffForecasts(schedule, nextWeek);
   const list = useMemo(
     () => buildWatchList(history, currentSeason, schedule, forecasts, modelRuns),
     [history, currentSeason, schedule, forecasts, modelRuns],
@@ -196,7 +208,7 @@ export function WatchList({
                   </ul>
                 ) : (
                   <p className="mt-1 text-[12px] text-faint">
-                    {forecastQuery.isLoading
+                    {forecastLoading
                       ? "Checking kickoff forecasts…"
                       : "No games qualify on the current forecast."}
                   </p>
@@ -223,7 +235,8 @@ export function WatchList({
         change before kickoff. Warm/dome teams: {""}
         MIA, TB, JAX, CAR, ATL, NO, HOU, DAL, ARI, LV, LAR, LAC, SF, DET, MIN, IND. Quarterback
         changes use the model&apos;s QB ratings and nflverse&apos;s starters (projected about two
-        weeks ahead).
+        weeks ahead). Travel angles use each stadium&apos;s time zone and Eastern kickoff time, and
+        skip international and other neutral-site games.
       </p>
     </Panel>
   );
