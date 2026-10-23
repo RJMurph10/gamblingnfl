@@ -11,11 +11,12 @@
 
 import { gameScore, type Game } from "@/data/games";
 import { homeLine } from "./season-pulse";
+import type { QbAdjustment } from "./qb-ratings";
 
 /* ---------------- settings (tune here) ---------------- */
 
 export const MODEL_SETTINGS = {
-  version: "gnfl-anchored-v4",
+  version: "gnfl-anchored-v5",
   /**
    * Last season's games count this much each (vs 1 for this season), so week 1 starts from last
    * year's ratings and this season's results take over as they come in.
@@ -32,15 +33,6 @@ export const MODEL_SETTINGS = {
    */
   minGamesPerTeam: 2,
   /**
-   * Bets are judged on the market-anchored line (market + learned weight × model disagreement).
-   * Spread pick when that line is at least this many points off the market...
-   */
-  spreadEdgePts: 1.5,
-  /** ...total pick when the anchored total is this many points off the market total... */
-  totalEdgePts: 1.5,
-  /** ...moneyline pick when the anchored win probability beats the no-vig price by this much. */
-  moneylineEdgeProb: 0.03,
-  /**
    * How much evidence (in games) the learned market weight needs before it moves off zero. Until
    * the model's disagreements have actually predicted results, it trusts the market.
    */
@@ -49,21 +41,11 @@ export const MODEL_SETTINGS = {
   calibrationScale: 16,
   /** Limit on the learned scoring bias for totals (points). */
   maxTotalBias: 2.5,
-  /** Skip moneylines longer than this either way (no +400 long shots or -400 favorites). */
-  moneylineMaxOdds: 250,
-  /**
-   * Credibility guardrails. A moneyline pick must be the team the model expects to WIN (no
-   * "the price is nice but they probably lose" underdog bets). And when the model disagrees with
-   * the market by more than these amounts it is almost certainly missing news (an injury, a QB
-   * change), so it passes instead of betting the long shot.
-   */
-  moneylineMinWinProb: 0.5,
-  maxSpreadDisagreementPts: 7,
-  maxTotalDisagreementPts: 8,
-  maxMoneylineDisagreementProb: 0.15,
+  /** An underdog getting at least this many points is a ★ best bet against the spread. */
+  bigUnderdogPts: 7,
   /** Standard deviation of NFL final margins, used for win probability. */
   marginSd: 13.5,
-  /** Price used when ESPN lists no price for a spread or total. */
+  /** Spreads and totals are always graded at this standard price; moneylines at their real odds. */
   defaultPrice: -110,
   /** Flat stake per pick, in units. */
   stake: 1,
@@ -248,7 +230,7 @@ export interface ModelPick {
   line?: number;
   /** American odds; missing when ESPN lists no price (record counts, units don't). */
   odds?: number;
-  /** A best bet: the model sees a real edge here, not just a lean. */
+  /** ★ Best bet: an underdog getting 7+ points against the spread. Everything else is a lean. */
   best: boolean;
   /** Points (spread/total) or probability (moneyline) by which the model beats the market. */
   edge: number;
@@ -294,8 +276,23 @@ export interface GameModelRow {
   marketTotal: number | null;
   /** The model's call on every market for this game (winner, spread side, over/under). */
   predictions: ModelPick[];
-  /** Best bets: the predictions where it sees a real edge. */
+  /** ★ Best bets (7+ point underdogs). */
   picks: ModelPick[];
+  /** Starting-quarterback adjustment applied to the model's own line, when starters are known. */
+  qb?: QbAdjustment;
+}
+
+/** Moves a ratings-only prediction by a quarterback adjustment (points of home margin). */
+export function applyQbAdjustment(p: GamePrediction, margin: number): GamePrediction {
+  if (!margin) return p;
+  const m = -p.homeLine + margin;
+  return {
+    homePoints: p.homePoints + margin / 2,
+    awayPoints: p.awayPoints - margin / 2,
+    homeLine: -m,
+    total: p.total,
+    homeWinProb: normalCdf(m / MODEL_SETTINGS.marginSd),
+  };
 }
 
 function grade(pick: Omit<ModelPick, "result" | "units">, game: Game): ModelPick {
@@ -338,14 +335,17 @@ export function predictionsForGame(
 
   const mLine = homeLine(game);
   if (mLine !== null) {
-    // Positive edge -> the home side is the value (model expects home to do better than the line).
+    // Positive edge -> the model expects home to do better than the line.
     const edge = mLine - p.homeLine;
-    const lean = sign(edge) || sign(mLine - raw.homeLine) || (mLine <= 0 ? 1 : -1);
+    // ★ Best bets: every underdog getting 7+ points. Big favorites have been overrated in every
+    // season since 2022 (162-128 ATS through week 6 of 2026).
+    const bigDog = Math.abs(mLine) >= MODEL_SETTINGS.bigUnderdogPts;
+    const lean = bigDog
+      ? mLine > 0
+        ? 1
+        : -1
+      : sign(edge) || sign(mLine - raw.homeLine) || (mLine <= 0 ? 1 : -1);
     const side = lean > 0 ? "home" : "away";
-    const best =
-      Math.abs(edge) >= MODEL_SETTINGS.spreadEdgePts &&
-      // The sanity cap looks at the model's own disagreement: a huge gap means missing news.
-      Math.abs(mLine - raw.homeLine) <= MODEL_SETTINGS.maxSpreadDisagreementPts;
     out.push(
       grade(
         {
@@ -353,11 +353,10 @@ export function predictionsForGame(
           market: "spread",
           side,
           line: side === "home" ? mLine : -mLine,
-          odds:
-            (side === "home" ? odds.homeSpreadOdds : odds.awaySpreadOdds) ??
-            MODEL_SETTINGS.defaultPrice,
+          // Spreads and totals are graded at the standard -110, whatever price was listed.
+          odds: MODEL_SETTINGS.defaultPrice,
           edge: Math.abs(edge),
-          best,
+          best: bigDog,
         },
         game,
       ),
@@ -367,20 +366,16 @@ export function predictionsForGame(
   if (game.total > 0) {
     const edge = p.total - game.total;
     const lean = sign(edge) || sign(raw.total - game.total) || 1;
-    const side = lean > 0 ? "over" : "under";
-    const best =
-      Math.abs(edge) >= MODEL_SETTINGS.totalEdgePts &&
-      Math.abs(raw.total - game.total) <= MODEL_SETTINGS.maxTotalDisagreementPts;
     out.push(
       grade(
         {
           ...base,
           market: "total",
-          side,
+          side: lean > 0 ? "over" : "under",
           line: game.total,
-          odds: (side === "over" ? odds.overOdds : odds.underOdds) ?? MODEL_SETTINGS.defaultPrice,
+          odds: MODEL_SETTINGS.defaultPrice,
           edge: Math.abs(edge),
-          best,
+          best: false,
         },
         game,
       ),
@@ -390,36 +385,33 @@ export function predictionsForGame(
   // Winner: the team the model expects to win (ties go to the market favorite).
   const homeWins =
     p.homeWinProb > 0.5 || (p.homeWinProb === 0.5 && (mLine === null ? true : mLine <= 0));
-  const side = homeWins ? "home" : "away";
   const winProb = homeWins ? p.homeWinProb : 1 - p.homeWinProb;
-  const price = homeWins ? odds.homeMoneyline : odds.awayMoneyline;
   let edge = 0;
-  let best = false;
   if (odds.homeMoneyline !== undefined && odds.awayMoneyline !== undefined) {
     // Remove the bookmaker's margin so the two implied probabilities add to 1.
     const ih = impliedProb(odds.homeMoneyline);
     const ia = impliedProb(odds.awayMoneyline);
     const fairHome = ih / (ih + ia);
-    const fairSide = homeWins ? fairHome : 1 - fairHome;
-    const rawSide = homeWins ? raw.homeWinProb : 1 - raw.homeWinProb;
-    edge = winProb - fairSide;
-    best =
-      edge >= MODEL_SETTINGS.moneylineEdgeProb &&
-      Math.abs(rawSide - fairSide) <= MODEL_SETTINGS.maxMoneylineDisagreementProb &&
-      winProb > MODEL_SETTINGS.moneylineMinWinProb &&
-      price !== undefined &&
-      Math.abs(price) <= MODEL_SETTINGS.moneylineMaxOdds;
+    edge = winProb - (homeWins ? fairHome : 1 - fairHome);
   }
   out.push(
     grade(
-      { ...base, market: "moneyline", side, odds: price, edge, modelProb: winProb, best },
+      {
+        ...base,
+        market: "moneyline",
+        side: homeWins ? "home" : "away",
+        odds: homeWins ? odds.homeMoneyline : odds.awayMoneyline,
+        edge,
+        modelProb: winProb,
+        best: false,
+      },
       game,
     ),
   );
   return out;
 }
 
-/** Best bets only: the calls where the model sees a real edge. */
+/** ★ Best bets only (7+ point underdogs against the spread). */
 export function picksForGame(game: Game, p: GamePrediction, raw: GamePrediction = p): ModelPick[] {
   return predictionsForGame(game, p, raw).filter((pick) => pick.best);
 }
@@ -547,6 +539,8 @@ export function runModel(
    * far to trust itself from hundreds of past games instead of starting from zero every September.
    */
   pastSeasons: GameModelRow[] = [],
+  /** Starting-quarterback adjustment for a game (from starts before its week), if known. */
+  qbFor?: (game: Game) => QbAdjustment | undefined,
 ): GameModelRow[] {
   const finals = schedule.filter((g) => g.status === "final");
   const weeks = [...new Set(schedule.map((g) => g.week))].sort((a, b) => a - b);
@@ -577,7 +571,11 @@ export function runModel(
         });
         continue;
       }
-      const modelPrediction = predictGame(ratings, game.homeTeamId, game.awayTeamId);
+      const qb = qbFor?.(game);
+      const modelPrediction = applyQbAdjustment(
+        predictGame(ratings, game.homeTeamId, game.awayTeamId),
+        qb?.margin ?? 0,
+      );
       const prediction = anchorToMarket(game, modelPrediction, calibration);
       // Live games keep their pregame calls but aren't graded until final.
       const predictions = predictionsForGame(game, prediction, modelPrediction);
@@ -585,6 +583,7 @@ export function runModel(
         game,
         prediction,
         modelPrediction,
+        qb,
         calibration,
         marketHomeLine,
         marketTotal,
