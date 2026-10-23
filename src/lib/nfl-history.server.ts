@@ -5,9 +5,14 @@
  */
 
 import { CURRENT_SEASON } from "./espn.server";
+import { QB_STARTS, type QbStartRow } from "@/data/qb-starts";
 import type { HistoryGame, UpcomingStarters } from "./model-history";
 
 const GAMES_CSV = "https://raw.githubusercontent.com/nflverse/nfldata/master/data/games.csv";
+const PLAYER_WEEK_CSV = (season: number) =>
+  `https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_week_${season}.csv`;
+/** First season of quarterback starts the QB style ratings need (16-start look-back). */
+const FIRST_QB_SEASON = 2020;
 const TEAM_WEEK_CSV = (season: number) =>
   `https://github.com/nflverse/nflverse-data/releases/download/stats_team/stats_team_week_${season}.csv`;
 /** First season pulled. The first one only serves as the prior for the next. */
@@ -80,6 +85,45 @@ export function parseTeamWeekCsv(csv: string, into: PassingByTeamWeek = new Map(
     into.set(`${f[i.season]}|${f[i.week]}|${fix(f[i.team])}`, { epa, dropbacks });
   }
   return into;
+}
+
+/**
+ * Quarterback rows (10+ dropbacks) from one nflverse weekly player file. The file is large, so
+ * lines are skipped cheaply unless they mention a QB. Exported for tests.
+ */
+export function parseQbWeekCsv(csv: string): QbStartRow[] {
+  const nl = csv.indexOf("\n");
+  if (nl < 0) return [];
+  const header = splitCsvLine(csv.slice(0, nl).replace(/\r$/, ""));
+  const col = (name: string) => header.indexOf(name);
+  const i = {
+    id: col("player_id"),
+    position: col("position"),
+    season: col("season"),
+    week: col("week"),
+    type: col("season_type"),
+    attempts: col("attempts"),
+    sacks: col("sacks_suffered"),
+    epa: col("passing_epa"),
+    rush: col("rushing_yards"),
+  };
+  const out: QbStartRow[] = [];
+  for (const line of csv.slice(nl + 1).split(/\r?\n/)) {
+    if (!line.includes(",QB,")) continue;
+    const f = splitCsvLine(line);
+    if (f[i.position] !== "QB" || f[i.type] !== "REG") continue;
+    const dropbacks = (num(f[i.attempts]) ?? 0) + (num(f[i.sacks]) ?? 0);
+    if (dropbacks < 10) continue;
+    out.push([
+      Number(f[i.season]),
+      Number(f[i.week]),
+      f[i.id],
+      Math.round(num(f[i.rush]) ?? 0),
+      Math.round((num(f[i.epa]) ?? 0) * 100) / 100,
+      dropbacks,
+    ]);
+  }
+  return out;
 }
 
 /** Finished regular-season games from `first` through `last`. Exported for tests. */
@@ -191,6 +235,8 @@ export interface NflHistory {
   games: HistoryGame[];
   /** This season's upcoming games with nflverse's projected starting QBs (about 2 weeks out). */
   upcoming: UpcomingStarters[];
+  /** Quarterback games since 2020 (rushing yards, passing EPA, dropbacks), for QB styles. */
+  qbStarts: QbStartRow[];
 }
 
 let cache: { at: number; value: NflHistory } | null = null;
@@ -204,6 +250,19 @@ export async function fetchNflHistory(): Promise<NflHistory> {
     const seasons = Array.from(
       { length: CURRENT_SEASON - FIRST_HISTORY_SEASON + 1 },
       (_, i) => FIRST_HISTORY_SEASON + i,
+    );
+    // Finished seasons come from the bundled file; the rest (normally just this season) live.
+    const liveQbSeasons = Array.from(
+      { length: CURRENT_SEASON - FIRST_QB_SEASON + 1 },
+      (_, i) => FIRST_QB_SEASON + i,
+    ).filter((y) => !QB_STARTS[String(y)]);
+    const qbLive = Promise.all(
+      liveQbSeasons.map((y) =>
+        fetch(PLAYER_WEEK_CSV(y))
+          .then((r) => (r.ok ? r.text() : ""))
+          .then(parseQbWeekCsv)
+          .catch(() => [] as QbStartRow[]),
+      ),
     );
     const [res, ...statFiles] = await Promise.all([
       fetch(GAMES_CSV),
@@ -224,11 +283,17 @@ export async function fetchNflHistory(): Promise<NflHistory> {
       CURRENT_SEASON,
       passing,
     );
-    const value = { currentSeason: CURRENT_SEASON, games, upcoming };
+    const qbStarts = [
+      ...Object.entries(QB_STARTS)
+        .filter(([y]) => Number(y) >= FIRST_QB_SEASON)
+        .flatMap(([, rows]) => rows),
+      ...(await qbLive).flat(),
+    ];
+    const value = { currentSeason: CURRENT_SEASON, games, upcoming, qbStarts };
     cache = { at: Date.now(), value };
     return value;
   } catch (err) {
     console.error("nfl history unavailable", err);
-    return cache?.value ?? { currentSeason: CURRENT_SEASON, games: [], upcoming: [] };
+    return cache?.value ?? { currentSeason: CURRENT_SEASON, games: [], upcoming: [], qbStarts: [] };
   }
 }
