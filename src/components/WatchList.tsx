@@ -8,7 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Panel, PanelHeader, TeamLogo } from "@/components/booth";
 import { gameScore, type Game } from "@/data/games";
 import { teamById } from "@/data/teams";
-import { unitsText } from "@/lib/game-model";
+import { unitsText, type GameModelRow } from "@/lib/game-model";
 import { getAngleForecasts } from "@/lib/history.functions";
 import type { HistoryGame } from "@/lib/model-history";
 import {
@@ -51,7 +51,9 @@ function HitRow({ hit }: { hit: AngleHit }) {
         </span>
       ) : null}
       <span className="font-mono">{hit.label}</span>
-      <span className="font-mono text-[11px] text-mute">{conditionsText(hit.conditions)}</span>
+      <span className="font-mono text-[11px] text-mute">
+        {hit.conditions ? conditionsText(hit.conditions) : hit.note}
+      </span>
       <span
         className={`ml-auto font-mono text-[11px] uppercase ${
           hit.result === "win" ? "text-win" : hit.result === "loss" ? "text-loss" : "text-mute"
@@ -68,11 +70,14 @@ export function WatchList({
   currentSeason,
   schedule,
   nextWeek,
+  modelRuns = [],
 }: {
   history: HistoryGame[];
   currentSeason: number;
   schedule: Game[];
   nextWeek: number | null;
+  /** Model runs by season, for the quarterback-change angle. */
+  modelRuns?: { season: number; rows: GameModelRow[] }[];
 }) {
   // Forecasts for next week's games (the forecast only reaches about a week out).
   const upcoming = useMemo(
@@ -97,8 +102,8 @@ export function WatchList({
   });
   const forecasts = useMemo(() => forecastQuery.data ?? {}, [forecastQuery.data]);
   const list = useMemo(
-    () => buildWatchList(history, currentSeason, schedule, forecasts),
-    [history, currentSeason, schedule, forecasts],
+    () => buildWatchList(history, currentSeason, schedule, forecasts, modelRuns),
+    [history, currentSeason, schedule, forecasts, modelRuns],
   );
 
   return (
@@ -112,9 +117,9 @@ export function WatchList({
         }
       />
       <p className="px-4 pt-3 text-sm text-mute">
-        Weather angles that looked promising in past seasons but haven&apos;t proven themselves.
-        Every qualifying game is graded at 1 unit against the closing line. An angle joins the model
-        only if it keeps winning on new games.
+        Angles that looked promising in past seasons but haven&apos;t proven themselves. Every
+        qualifying game is graded at 1 unit against the closing line. An angle joins the model only
+        if it keeps winning on new games.
       </p>
       {history.length === 0 ? (
         <p className="px-4 py-6 text-center font-mono text-xs text-mute">Loading past seasons…</p>
@@ -216,7 +221,9 @@ export function WatchList({
         Past weather is what was recorded at kickoff (nflverse); about 1 in 10 outdoor games has
         none and isn&apos;t counted. This week uses the National Weather Service forecast, which can
         change before kickoff. Warm/dome teams: {""}
-        MIA, TB, JAX, CAR, ATL, NO, HOU, DAL, ARI, LV, LAR, LAC, SF, DET, MIN, IND.
+        MIA, TB, JAX, CAR, ATL, NO, HOU, DAL, ARI, LV, LAR, LAC, SF, DET, MIN, IND. Quarterback
+        changes use the model&apos;s QB ratings and nflverse&apos;s starters (projected about two
+        weeks ahead).
       </p>
     </Panel>
   );
