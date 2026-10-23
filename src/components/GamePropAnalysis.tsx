@@ -96,6 +96,20 @@ export function TeamLink({ team, className = "size-5" }: { team: Team; className
 function StatusBadge({ game }: { game: Game }) {
   const live = game.status === "live";
   const final = game.status === "final";
+  if (live)
+    // Live games: green, and a link to the game's live page.
+    return (
+      <Link
+        to="/games/$gameId"
+        params={{ gameId: game.id }}
+        title="Open the live game"
+        className="inline-flex items-center gap-1.5 rounded bg-win/15 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-win transition-colors hover:bg-win/25"
+      >
+        <span className="size-1.5 animate-pulse rounded-full bg-win" aria-hidden />
+        Live{game.clock ? ` · ${game.clock}` : ""}
+        <span aria-hidden>→</span>
+      </Link>
+    );
   return (
     <span
       className={`rounded px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider ${
