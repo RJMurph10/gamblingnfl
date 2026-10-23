@@ -15,7 +15,7 @@ import {
   type ModelPick,
 } from "@/lib/game-model";
 import { getNflHistory } from "@/lib/history.functions";
-import { WatchList } from "@/components/WatchList";
+import { useKickoffForecasts, WatchList } from "@/components/WatchList";
 import { pastSeasonRuns, readHistory, runModelWithHistory } from "@/lib/model-history";
 import { notesForRow, type PickNote } from "@/lib/pick-notes";
 
@@ -127,7 +127,15 @@ function FinalMatchup({ game }: { game: Game }) {
 function PickChip({ pick, game }: { pick: ModelPick; game: Game }) {
   return (
     <span
-      title={`${pick.best ? "Best bet (7+ point underdog) · " : "Lean · "}${MARKET_LABEL[pick.market]} · edge ${edgeText(pick)}${
+      title={`${
+        pick.best
+          ? pick.reason === "wind" && pick.wind !== undefined
+            ? `Best bet (wind ${Math.round(pick.wind)} mph) · `
+            : pick.reason === "qb-style"
+              ? "Best bet (scrambler vs pocket passer) · "
+              : "Best bet (7+ point underdog) · "
+          : "Lean · "
+      }${MARKET_LABEL[pick.market]} · edge ${edgeText(pick)}${
         pick.modelProb !== undefined ? ` · model ${(pick.modelProb * 100).toFixed(0)}%` : ""
       }`}
       className={`inline-flex items-center gap-1 rounded-md px-2 py-0.5 font-mono text-[11px] ring-1 ${
@@ -146,7 +154,13 @@ function PickChip({ pick, game }: { pick: ModelPick; game: Game }) {
   );
 }
 
-const NOTE_ICON: Record<PickNote["kind"], string> = { qb: "QB", key: "KEY", move: "LINE" };
+const NOTE_ICON: Record<PickNote["kind"], string> = {
+  qb: "QB",
+  key: "KEY",
+  move: "LINE",
+  wind: "WIND",
+  style: "QB STYLE",
+};
 
 /** QB changes, key numbers and line movement under a game's picks. */
 function RowNotes({ row }: { row: GameModelRow }) {
@@ -304,35 +318,49 @@ function ModelPage() {
     games: allHistory,
     currentSeason,
     upcoming,
+    qbRows,
   } = useMemo(() => readHistory(historyQuery.data), [historyQuery.data]);
+  // QB games since 2020 feed the QB styles (scrambler vs pocket passer best bets).
+  const runOptions = useMemo(() => ({ qbRows }), [qbRows]);
   const history = useMemo(
     () => allHistory.filter((h) => h.season < currentSeason),
     [allHistory, currentSeason],
   );
-  // This season's starters (finished + projected) feed the quarterback ratings.
+  // Next week's kickoff forecasts: 10+ mph wind makes the under a ★ best bet.
+  const slateWeek = useMemo(() => {
+    const open = games.filter((g) => g.status !== "final").map((g) => g.week);
+    return open.length ? Math.min(...open) : null;
+  }, [games]);
+  const { forecasts } = useKickoffForecasts(games, slateWeek);
+  // This season's starters (finished + projected) feed the quarterback ratings; its recorded
+  // weather and the forecasts feed the wind best bets.
   const current = useMemo(
     () => ({
       season: currentSeason,
       games: allHistory.filter((h) => h.season === currentSeason),
       upcoming,
+      forecasts,
     }),
-    [allHistory, currentSeason, upcoming],
+    [allHistory, currentSeason, upcoming, forecasts],
   );
   const rows = useMemo(
-    () => runModelWithHistory(games, priorSeason, history, current),
-    [games, priorSeason, history, current],
+    () => runModelWithHistory(games, priorSeason, history, current, runOptions),
+    [games, priorSeason, history, current, runOptions],
   );
   const trackRecord = useMemo(() => {
-    const past = pastSeasonRuns(history);
+    const past = pastSeasonRuns(history, runOptions);
     const lastPast = past.at(-1)?.season;
     return [
       { label: lastPast ? `${lastPast + 1} so far` : "This season", rows },
       ...past.map((r) => ({ label: String(r.season), rows: r.rows })).reverse(),
     ];
-  }, [rows, history]);
+  }, [rows, history, runOptions]);
   const qbRuns = useMemo(
-    () => [...pastSeasonRuns(history), ...(currentSeason ? [{ season: currentSeason, rows }] : [])],
-    [history, currentSeason, rows],
+    () => [
+      ...pastSeasonRuns(history, runOptions),
+      ...(currentSeason ? [{ season: currentSeason, rows }] : []),
+    ],
+    [history, currentSeason, rows, runOptions],
   );
   // Every game's call (winner, spread side, over/under), and the best bets on their own.
   const summary = useMemo(() => summarizeModel(rows, "predictions"), [rows]);
@@ -747,8 +775,12 @@ function ModelPage() {
               </li>
               <li>
                 ★ Best bets: every underdog getting {MODEL_SETTINGS.bigUnderdogPts}+ points, against
-                the spread. Big favorites have been overrated in every season since 2022. Past
-                results don&apos;t guarantee future ones; the track record above keeps score.
+                the spread (big favorites have been overrated in every season since 2022), and the
+                under in every outdoor game with {MODEL_SETTINGS.windUnderMph}+ mph of wind at
+                kickoff (469-361 since 2012; picked on 2012–2021 and confirmed on 2022–2026 games it
+                had never seen). Upcoming wind uses the National Weather Service forecast; finished
+                games use the wind recorded at kickoff. Past results don&apos;t guarantee future
+                ones; the track record above keeps score.
               </li>
               <li>
                 Every pick risks {MODEL_SETTINGS.stake} unit. Spreads and totals are graded at the
