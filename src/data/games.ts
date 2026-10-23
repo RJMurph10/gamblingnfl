@@ -153,6 +153,9 @@ export interface GameOdds {
   awaySpreadOdds?: number;
   overOdds?: number;
   underOdds?: number;
+  /** Opening lines (ESPN's provider), to show how the line has moved since it opened. */
+  homeSpreadOpen?: number;
+  totalOpen?: number;
 }
 
 export interface Game {
