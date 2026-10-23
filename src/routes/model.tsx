@@ -17,6 +17,7 @@ import {
 import { getNflHistory } from "@/lib/history.functions";
 import { WatchList } from "@/components/WatchList";
 import { pastSeasonRuns, readHistory, runModelWithHistory } from "@/lib/model-history";
+import { notesForRow, type PickNote } from "@/lib/pick-notes";
 
 export const Route = createFileRoute("/model")({
   head: () => ({
@@ -126,7 +127,7 @@ function FinalMatchup({ game }: { game: Game }) {
 function PickChip({ pick, game }: { pick: ModelPick; game: Game }) {
   return (
     <span
-      title={`${pick.best ? "Best bet · " : "Lean · "}${MARKET_LABEL[pick.market]} · edge ${edgeText(pick)}${
+      title={`${pick.best ? "Best bet (7+ point underdog) · " : "Lean · "}${MARKET_LABEL[pick.market]} · edge ${edgeText(pick)}${
         pick.modelProb !== undefined ? ` · model ${(pick.modelProb * 100).toFixed(0)}%` : ""
       }`}
       className={`inline-flex items-center gap-1 rounded-md px-2 py-0.5 font-mono text-[11px] ring-1 ${
@@ -142,6 +143,32 @@ function PickChip({ pick, game }: { pick: ModelPick; game: Game }) {
       <PickLabel pick={pick} game={game} />
       <span className="text-mute">{oddsText(pick.odds)}</span>
     </span>
+  );
+}
+
+const NOTE_ICON: Record<PickNote["kind"], string> = { qb: "QB", key: "KEY", move: "LINE" };
+
+/** QB changes, key numbers and line movement under a game's picks. */
+function RowNotes({ row }: { row: GameModelRow }) {
+  const notes = notesForRow(row);
+  if (!notes.length) return null;
+  return (
+    <ul className="mt-1.5 space-y-0.5">
+      {notes.map((n) => (
+        <li key={n.kind + n.text} className="flex items-baseline gap-1.5 text-[11px]">
+          <span className="font-mono text-[9px] uppercase tracking-wider text-faint">
+            {NOTE_ICON[n.kind]}
+          </span>
+          <span
+            className={
+              n.tone === "good" ? "text-win" : n.tone === "bad" ? "text-loss" : "text-mute"
+            }
+          >
+            {n.text}
+          </span>
+        </li>
+      ))}
+    </ul>
   );
 }
 
@@ -228,6 +255,9 @@ function TrackRecord({ seasons }: { seasons: { label: string; rows: GameModelRow
                   ) : (
                     <>
                       <span>{recordText(b.overall)}</span>
+                      <span className="ml-2 text-mute">
+                        {b.overall.winPct === null ? "—" : `${one(b.overall.winPct)}%`}
+                      </span>
                       <span
                         className={`ml-2 ${b.overall.units > 0 ? "text-win" : b.overall.units < 0 ? "text-loss" : "text-mute"}`}
                       >
@@ -270,17 +300,27 @@ function ModelPage() {
     staleTime: 60 * 60_000,
     retry: 1,
   });
-  const { games: allHistory, currentSeason } = useMemo(
-    () => readHistory(historyQuery.data),
-    [historyQuery.data],
-  );
+  const {
+    games: allHistory,
+    currentSeason,
+    upcoming,
+  } = useMemo(() => readHistory(historyQuery.data), [historyQuery.data]);
   const history = useMemo(
     () => allHistory.filter((h) => h.season < currentSeason),
     [allHistory, currentSeason],
   );
+  // This season's starters (finished + projected) feed the quarterback ratings.
+  const current = useMemo(
+    () => ({
+      season: currentSeason,
+      games: allHistory.filter((h) => h.season === currentSeason),
+      upcoming,
+    }),
+    [allHistory, currentSeason, upcoming],
+  );
   const rows = useMemo(
-    () => runModelWithHistory(games, priorSeason, history),
-    [games, priorSeason, history],
+    () => runModelWithHistory(games, priorSeason, history, current),
+    [games, priorSeason, history, current],
   );
   const trackRecord = useMemo(() => {
     const past = pastSeasonRuns(history);
@@ -290,6 +330,10 @@ function ModelPage() {
       ...past.map((r) => ({ label: String(r.season), rows: r.rows })).reverse(),
     ];
   }, [rows, history]);
+  const qbRuns = useMemo(
+    () => [...pastSeasonRuns(history), ...(currentSeason ? [{ season: currentSeason, rows }] : [])],
+    [history, currentSeason, rows],
+  );
   // Every game's call (winner, spread side, over/under), and the best bets on their own.
   const summary = useMemo(() => summarizeModel(rows, "predictions"), [rows]);
   const bets = useMemo(() => summarizeModel(rows, "bets"), [rows]);
@@ -412,7 +456,7 @@ function ModelPage() {
               </div>
               <p className="mt-2 text-[11px] text-faint">
                 0% trust = the model&apos;s disagreements haven&apos;t predicted results yet, so it
-                sits on the line and passes. The number rises only if its disagreements keep beating
+                stays on the betting line. The number rises only if its disagreements keep beating
                 the closing line.
               </p>
             </Panel>
@@ -441,6 +485,7 @@ function ModelPage() {
               currentSeason={currentSeason}
               schedule={games}
               nextWeek={nextWeek}
+              modelRuns={qbRuns}
             />
           ) : null}
 
@@ -533,11 +578,14 @@ function ModelPage() {
                           {row.skipped ? (
                             <span className="text-[11px] text-faint">{row.skipped}</span>
                           ) : (
-                            <div className="flex flex-wrap gap-1.5">
-                              {row.predictions.map((p) => (
-                                <PickChip key={p.market} pick={p} game={row.game} />
-                              ))}
-                            </div>
+                            <>
+                              <div className="flex flex-wrap gap-1.5">
+                                {row.predictions.map((p) => (
+                                  <PickChip key={p.market} pick={p} game={row.game} />
+                                ))}
+                              </div>
+                              <RowNotes row={row} />
+                            </>
                           )}
                         </td>
                       </tr>
@@ -694,26 +742,19 @@ function ModelPage() {
                 market&apos;s favorite unless the model has earned the right to disagree.
               </li>
               <li>
-                Picks: spread when its line is {MODEL_SETTINGS.spreadEdgePts}+ points off the
-                market, total when it&apos;s {MODEL_SETTINGS.totalEdgePts}+ points off, and
-                moneyline when its win probability beats the no-vig price by{" "}
-                {MODEL_SETTINGS.moneylineEdgeProb * 100}+ percentage points (no moneylines longer
-                than ±{MODEL_SETTINGS.moneylineMaxOdds}). Most games are a pass — that&apos;s by
-                design.
+                Every game gets a call on all three markets: the winner, a spread side and over /
+                under. Those are leans, graded so the record is complete.
               </li>
               <li>
-                Guardrails: a moneyline pick is always the team the model expects to win — never an
-                underdog it thinks will lose just because the price looks good. And when the model
-                and the market disagree by more than {MODEL_SETTINGS.maxSpreadDisagreementPts}{" "}
-                points on the spread, {MODEL_SETTINGS.maxTotalDisagreementPts} on the total, or{" "}
-                {MODEL_SETTINGS.maxMoneylineDisagreementProb * 100} percentage points on win chance,
-                it passes: a gap that big usually means news the model can&apos;t see, like an
-                injury or a quarterback change.
+                ★ Best bets: every underdog getting {MODEL_SETTINGS.bigUnderdogPts}+ points, against
+                the spread. Big favorites have been overrated in every season since 2022. Past
+                results don&apos;t guarantee future ones; the track record above keeps score.
               </li>
               <li>
-                Every pick risks {MODEL_SETTINGS.stake} unit at the closing ESPN price (
-                {MODEL_SETTINGS.defaultPrice} when no price is listed). Pushes return the stake.
-                Picks for upcoming games can change until kickoff as the lines move.
+                Every pick risks {MODEL_SETTINGS.stake} unit. Spreads and totals are graded at the
+                standard {MODEL_SETTINGS.defaultPrice}; moneylines at their closing ESPN price.
+                Pushes return the stake. Picks for upcoming games can change until kickoff as the
+                lines move.
               </li>
             </ul>
           </Panel>
