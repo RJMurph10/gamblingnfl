@@ -3480,8 +3480,55 @@ export async function fetchPropAvailability(
         }
       });
 
+      // Quarterbacks: ESPN's depth chart can lag behind a starter returning from injury (it kept
+      // listing the backup first after Caleb Williams came back). nflverse's projected starter for
+      // this game wins when we can match him on the roster.
+      try {
+        const { fetchNflHistory } = await import("./nfl-history.server");
+        const history = await fetchNflHistory();
+        const eventNum = Number(id);
+        const game =
+          history.upcoming.find((g) => g.espnId === eventNum) ??
+          history.games.find((g) => g.espnId === eventNum);
+        if (game) {
+          // abbrs is [away, home], the same order for finished and upcoming games.
+          const projected: Record<string, string | null | undefined> = {
+            [abbrs[0]]: game.awayQbName,
+            [abbrs[1]]: game.homeQbName,
+          };
+          abbrs.forEach((abbr, i) => {
+            const name = projected[abbr];
+            if (!name) return;
+            const match = rosters[i].find(
+              (p) => normalizePosition(p.position) === "QB" && sameName(p.name, name),
+            );
+            if (match) entry(match.id, abbr).depthRank = 0;
+          });
+        }
+      } catch {
+        // Without nflverse the depth chart alone decides.
+      }
+
       return { players: [...byId.values()], sources: { injuryReport, depthChart } };
     },
     10 * 60 * 1000,
   );
 }
+
+/** "Caleb Williams" vs "C.Williams" / "Caleb Williams Jr." — same person? */
+function sameName(a: string, b: string): boolean {
+  const clean = (n: string) =>
+    n
+      .toLowerCase()
+      .replace(/\b(jr|sr|ii|iii|iv)\b\.?/g, "")
+      .replace(/[^a-z ]/g, " ")
+      .split(/\s+/)
+      .filter(Boolean);
+  const x = clean(a);
+  const y = clean(b);
+  if (!x.length || !y.length) return false;
+  if (x.at(-1) !== y.at(-1)) return false; // last names must match
+  return x[0][0] === y[0][0]; // and first initials
+}
+
+const normalizePosition = (pos: string) => String(pos ?? "").toUpperCase();
