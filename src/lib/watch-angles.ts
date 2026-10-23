@@ -9,21 +9,19 @@
 import { gameScore, type Game } from "@/data/games";
 import { teamById } from "@/data/teams";
 import { MODEL_SETTINGS, payout, type GameModelRow } from "./game-model";
-import { historyGameToGame, type HistoryGame } from "./model-history";
+import {
+  historyGameToGame,
+  recordedConditions,
+  type GameConditions,
+  type HistoryGame,
+} from "./model-history";
+
+export { recordedConditions, type GameConditions };
 import { homeLine } from "./season-pulse";
+import { getStadiumForGame, NFL_STADIUMS } from "./stadiums";
 
 /** Kickoff conditions. `outdoor` false = dome or closed roof. Null when unknown. */
-export interface GameConditions {
-  outdoor: boolean;
-  /** °F at kickoff. */
-  temp: number | null;
-  /** mph at kickoff. */
-  wind: number | null;
-  /** "recorded" for finished games (nflverse), "forecast" for upcoming ones (NWS). */
-  source: "recorded" | "forecast";
-}
-
-export type AngleId = "wind-under" | "cold-visitor" | "qb-change";
+export type AngleId = "cold-visitor" | "qb-change" | "west-coast-east" | "east-at-west-night";
 
 export interface AngleDefinition {
   id: AngleId;
@@ -34,12 +32,12 @@ export interface AngleDefinition {
 }
 
 export const WATCH_ANGLE_SETTINGS = {
-  /** Wind at or above this (mph) in an outdoor game → under. */
-  windMph: 15,
   /** Temperature at or below this (°F) in an outdoor game with a warm/dome visitor → home side. */
   coldF: 32,
   /** A starting-QB change worth at least this many points of margin → the side it favors. */
   qbPoints: 2,
+  /** Night games: kickoff at or after this hour (Eastern). */
+  nightHourEt: 19,
 } as const;
 
 /** Teams that play home games in a dome or a warm climate (by abbreviation). */
@@ -64,12 +62,6 @@ export const WARM_OR_DOME_TEAMS = new Set([
 
 export const WATCH_ANGLES: AngleDefinition[] = [
   {
-    id: "wind-under",
-    title: `Wind ${WATCH_ANGLE_SETTINGS.windMph}+ mph → under`,
-    bet: "Under the total",
-    why: "Strong wind hurts deep passing and long kicks, and books may not lower totals enough for it.",
-  },
-  {
     id: "cold-visitor",
     title: `Warm/dome team in the cold (${WATCH_ANGLE_SETTINGS.coldF}°F or colder) → home team`,
     bet: "Home team against the spread",
@@ -81,7 +73,88 @@ export const WATCH_ANGLES: AngleDefinition[] = [
     bet: "The side the QB change helps, against the spread",
     why: "When a team starts a different quarterback, the line may not move as far as the gap between the two QBs.",
   },
+  {
+    id: "west-coast-east",
+    title: "West Coast team flying 3 time zones east → the traveler",
+    bet: "The road team against the spread",
+    why: "Everyone expects West Coast teams to flop on East Coast trips, so lines may give them too many points. Neutral-site and international games don't count.",
+  },
+  {
+    id: "east-at-west-night",
+    title: "East team at a West night game → home team",
+    bet: "The home team against the spread",
+    why: "A cross-country trip for a late kickoff may cost the visitor more than the line allows. Neutral-site and international games don't count.",
+  },
 ];
+
+/** Hours behind Eastern for each stadium's time zone (Arizona counted with the West Coast). */
+const ET_OFFSET: Record<string, number> = {
+  "America/New_York": 0,
+  "America/Detroit": 0,
+  "America/Indiana/Indianapolis": 0,
+  "America/Chicago": -1,
+  "America/Denver": -2,
+  "America/Phoenix": -3,
+  "America/Los_Angeles": -3,
+};
+
+const teamOffset = (teamId: string): number | undefined => {
+  const abbr = teamById(teamId)?.abbr;
+  const tz = abbr ? NFL_STADIUMS[abbr]?.timezone : undefined;
+  return tz ? ET_OFFSET[tz] : undefined;
+};
+
+/** Kickoff hour in Eastern time from an ISO time. */
+export function easternHour(iso?: string): number | undefined {
+  if (!iso || !Number.isFinite(Date.parse(iso))) return undefined;
+  const h = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/New_York",
+    hour: "numeric",
+    hourCycle: "h23",
+  }).format(new Date(iso));
+  return Number(h);
+}
+
+/**
+ * Travel angles for one game. `neutral` = international or relocated game (skipped);
+ * `hourEt` = kickoff hour, Eastern.
+ */
+export function travelHitsForGame(
+  game: Game,
+  season: number,
+  ctx: { neutral: boolean; hourEt?: number },
+): AngleHit[] {
+  if (ctx.neutral) return [];
+  const away = teamOffset(game.awayTeamId);
+  const home = teamOffset(game.homeTeamId);
+  const line = homeLine(game);
+  if (away === undefined || home === undefined || line === null) return [];
+  const zones = home - away; // + = the road team flew east
+  const final = game.status === "final";
+  const s = gameScore(game);
+  const out: AngleHit[] = [];
+  if (zones === 3) {
+    out.push({
+      angle: "west-coast-east",
+      game,
+      season,
+      note: "3 time zones east",
+      label: `${abbrOf(game.awayTeamId)} ${lineText(-line)}`,
+      ...settle(final ? s.away - s.home - line : null, final),
+    });
+  }
+  if (zones <= -2 && ctx.hourEt !== undefined && ctx.hourEt >= WATCH_ANGLE_SETTINGS.nightHourEt) {
+    out.push({
+      angle: "east-at-west-night",
+      game,
+      season,
+      note: `${-zones} time zones west · night kickoff`,
+      label: `${abbrOf(game.homeTeamId)} ${lineText(line)}`,
+      ...settle(final ? s.home - s.away + line : null, final),
+    });
+  }
+  return out;
+}
 
 export type AngleResult = "win" | "loss" | "push" | "pending";
 
@@ -101,7 +174,7 @@ export interface AngleHit {
 
 const abbrOf = (teamId: string) => teamById(teamId)?.abbr ?? "";
 
-/** Both angles are spread/total bets, graded at the standard -110. */
+/** Watch-list angles are spread bets, graded at the standard -110. */
 function settle(margin: number | null, final: boolean) {
   if (!final || margin === null) return { result: "pending" as const, units: 0 };
   const price = MODEL_SETTINGS.defaultPrice;
@@ -119,18 +192,7 @@ export function angleHitsForGame(game: Game, season: number, c: GameConditions |
   const final = game.status === "final";
   const s = gameScore(game);
 
-  if (c.wind !== null && c.wind >= WATCH_ANGLE_SETTINGS.windMph && game.total > 0) {
-    const margin = final ? game.total - (s.home + s.away) : null;
-    out.push({
-      angle: "wind-under",
-      game,
-      season,
-      conditions: c,
-      label: `Under ${game.total}`,
-      ...settle(margin, final),
-    });
-  }
-
+  // (Wind unders graduated to ★ best bets in the game model.)
   const line = homeLine(game);
   const away = abbrOf(game.awayTeamId);
   const home = abbrOf(game.homeTeamId);
@@ -176,15 +238,6 @@ export function angleRecord(hits: AngleHit[]): AngleRecord {
 }
 
 /* ---------------- assembling the watch list ---------------- */
-
-/** Kickoff conditions recorded by nflverse for a finished game; null when not recorded. */
-export function recordedConditions(h: HistoryGame): GameConditions | null {
-  const outdoor = h.roof === "outdoors" || h.roof === "open";
-  if (!outdoor)
-    return h.roof ? { outdoor: false, temp: null, wind: null, source: "recorded" } : null;
-  if (h.temp === null && h.wind === null) return null;
-  return { outdoor: true, temp: h.temp, wind: h.wind, source: "recorded" };
-}
 
 export interface WatchList {
   /** Every qualifying game, newest first. */
@@ -245,7 +298,15 @@ export function buildWatchList(
   for (const h of history) {
     if (h.season < currentSeason) {
       const game = historyGameToGame(h);
-      if (game) hits.push(...angleHitsForGame(game, h.season, recordedConditions(h)));
+      if (game) {
+        hits.push(...angleHitsForGame(game, h.season, recordedConditions(h)));
+        hits.push(
+          ...travelHitsForGame(game, h.season, {
+            neutral: !!h.neutral,
+            hourEt: h.kickoffEt ? Number(h.kickoffEt.split(":")[0]) : undefined,
+          }),
+        );
+      }
     } else {
       recorded.set(`espn-${h.espnId}`, recordedConditions(h));
     }
@@ -253,6 +314,12 @@ export function buildWatchList(
   for (const game of schedule) {
     const c = game.status === "final" ? recorded.get(game.id) : forecasts[game.id];
     hits.push(...angleHitsForGame(game, currentSeason, c ?? null));
+    hits.push(
+      ...travelHitsForGame(game, currentSeason, {
+        neutral: !!getStadiumForGame(game.homeTeamId, game.venue)?.international,
+        hourEt: easternHour(game.kickoffIso),
+      }),
+    );
   }
   hits.sort(
     (a, b) =>
