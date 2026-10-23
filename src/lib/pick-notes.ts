@@ -80,7 +80,9 @@ export function qbNotes(row: GameModelRow): PickNote[] {
     const pts = Math.round(side.points * 10) / 10;
     out.push({
       kind: "qb",
-      text: `${abbr} starting ${side.name || "a different QB"} (${pts > 0 ? "+" : ""}${pts} pts vs usual starter)`,
+      text: `${abbr} starting ${side.name || "a different QB"}${
+        side.regularName ? ` for ${side.regularName}` : ""
+      } (${pts > 0 ? "+" : ""}${pts} pts to the line)`,
       tone: "neutral",
     });
   }
