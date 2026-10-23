@@ -12,6 +12,14 @@
 import { gameScore, type Game } from "@/data/games";
 import { homeLine } from "./season-pulse";
 import type { QbAdjustment } from "./qb-ratings";
+import type { QbStyleProfile } from "./qb-style";
+
+/** Kickoff conditions the model uses (dome / closed roof = not outdoor). */
+export interface KickoffWeather {
+  outdoor: boolean;
+  wind: number | null;
+  temp: number | null;
+}
 
 /* ---------------- settings (tune here) ---------------- */
 
@@ -43,6 +51,8 @@ export const MODEL_SETTINGS = {
   maxTotalBias: 2.5,
   /** An underdog getting at least this many points is a ★ best bet against the spread. */
   bigUnderdogPts: 7,
+  /** Outdoor wind at kickoff (mph) at or above this makes the under a ★ best bet. */
+  windUnderMph: 10,
   /** Standard deviation of NFL final margins, used for win probability. */
   marginSd: 13.5,
   /** Spreads and totals are always graded at this standard price; moneylines at their real odds. */
@@ -230,8 +240,12 @@ export interface ModelPick {
   line?: number;
   /** American odds; missing when ESPN lists no price (record counts, units don't). */
   odds?: number;
-  /** ★ Best bet: an underdog getting 7+ points against the spread. Everything else is a lean. */
+  /** ★ Best bet: a 7+ point underdog, the under in 10+ mph wind, or a scrambler vs a pocket passer. */
   best: boolean;
+  /** Kickoff wind (mph) behind a wind best bet. */
+  wind?: number;
+  /** Which rule made it a best bet. */
+  reason?: "underdog" | "wind" | "qb-style";
   /** Points (spread/total) or probability (moneyline) by which the model beats the market. */
   edge: number;
   /** Model's win probability for moneyline picks. */
@@ -276,10 +290,12 @@ export interface GameModelRow {
   marketTotal: number | null;
   /** The model's call on every market for this game (winner, spread side, over/under). */
   predictions: ModelPick[];
-  /** ★ Best bets (7+ point underdogs). */
+  /** ★ Best bets (7+ point underdogs, unders in 10+ mph wind). */
   picks: ModelPick[];
   /** Starting-quarterback adjustment applied to the model's own line, when starters are known. */
   qb?: QbAdjustment;
+  /** Each starting quarterback's style going into the game. */
+  styles?: { home?: QbStyleProfile; away?: QbStyleProfile };
 }
 
 /** Moves a ratings-only prediction by a quarterback adjustment (points of home margin). */
@@ -327,6 +343,10 @@ export function predictionsForGame(
   game: Game,
   p: GamePrediction,
   raw: GamePrediction = p,
+  /** Kickoff weather (recorded for finished games, forecast for upcoming ones), if known. */
+  weather?: KickoffWeather | null,
+  /** Each starting quarterback's style going into the game, if known. */
+  styles?: { home?: QbStyleProfile; away?: QbStyleProfile },
 ): ModelPick[] {
   const out: ModelPick[] = [];
   const base = { gameId: game.id, week: game.week };
@@ -340,11 +360,21 @@ export function predictionsForGame(
     // ★ Best bets: every underdog getting 7+ points. Big favorites have been overrated in every
     // season since 2022 (162-128 ATS through week 6 of 2026).
     const bigDog = Math.abs(mLine) >= MODEL_SETTINGS.bigUnderdogPts;
+    // ★ Best bets: a scrambler's team against a pocket passer's team (53% since 2000; found on
+    // 2016–2026, confirmed on 2000–2015). The underdog rule wins if the two disagree.
+    const hs = styles?.home?.style;
+    const as = styles?.away?.style;
+    const styleSide =
+      !bigDog && hs === "scrambler" && as === "pocket"
+        ? 1
+        : !bigDog && as === "scrambler" && hs === "pocket"
+          ? -1
+          : 0;
     const lean = bigDog
       ? mLine > 0
         ? 1
         : -1
-      : sign(edge) || sign(mLine - raw.homeLine) || (mLine <= 0 ? 1 : -1);
+      : styleSide || sign(edge) || sign(mLine - raw.homeLine) || (mLine <= 0 ? 1 : -1);
     const side = lean > 0 ? "home" : "away";
     out.push(
       grade(
@@ -356,7 +386,8 @@ export function predictionsForGame(
           // Spreads and totals are graded at the standard -110, whatever price was listed.
           odds: MODEL_SETTINGS.defaultPrice,
           edge: Math.abs(edge),
-          best: bigDog,
+          best: bigDog || styleSide !== 0,
+          reason: bigDog ? "underdog" : styleSide ? "qb-style" : undefined,
         },
         game,
       ),
@@ -365,7 +396,11 @@ export function predictionsForGame(
 
   if (game.total > 0) {
     const edge = p.total - game.total;
-    const lean = sign(edge) || sign(raw.total - game.total) || 1;
+    // ★ Best bets: the under in outdoor games with 10+ mph wind at kickoff (469-361 since 2012;
+    // chosen on 2012–2021 and confirmed on 2022–2026 games it never saw).
+    const windy =
+      !!weather?.outdoor && weather.wind !== null && weather.wind >= MODEL_SETTINGS.windUnderMph;
+    const lean = windy ? -1 : sign(edge) || sign(raw.total - game.total) || 1;
     out.push(
       grade(
         {
@@ -375,7 +410,9 @@ export function predictionsForGame(
           line: game.total,
           odds: MODEL_SETTINGS.defaultPrice,
           edge: Math.abs(edge),
-          best: false,
+          best: windy,
+          reason: windy ? "wind" : undefined,
+          wind: windy ? weather!.wind! : undefined,
         },
         game,
       ),
@@ -411,7 +448,7 @@ export function predictionsForGame(
   return out;
 }
 
-/** ★ Best bets only (7+ point underdogs against the spread). */
+/** ★ Best bets only (7+ point underdogs, unders in 10+ mph wind, scramblers vs pocket passers). */
 export function picksForGame(game: Game, p: GamePrediction, raw: GamePrediction = p): ModelPick[] {
   return predictionsForGame(game, p, raw).filter((pick) => pick.best);
 }
@@ -541,6 +578,10 @@ export function runModel(
   pastSeasons: GameModelRow[] = [],
   /** Starting-quarterback adjustment for a game (from starts before its week), if known. */
   qbFor?: (game: Game) => QbAdjustment | undefined,
+  /** Kickoff weather for a game (recorded or forecast), if known. */
+  weatherFor?: (game: Game) => KickoffWeather | null | undefined,
+  /** Starting quarterbacks' styles for a game, if known. */
+  stylesFor?: (game: Game) => { home?: QbStyleProfile; away?: QbStyleProfile } | undefined,
 ): GameModelRow[] {
   const finals = schedule.filter((g) => g.status === "final");
   const weeks = [...new Set(schedule.map((g) => g.week))].sort((a, b) => a - b);
@@ -578,12 +619,20 @@ export function runModel(
       );
       const prediction = anchorToMarket(game, modelPrediction, calibration);
       // Live games keep their pregame calls but aren't graded until final.
-      const predictions = predictionsForGame(game, prediction, modelPrediction);
+      const styles = stylesFor?.(game);
+      const predictions = predictionsForGame(
+        game,
+        prediction,
+        modelPrediction,
+        weatherFor?.(game),
+        styles,
+      );
       rows.push({
         game,
         prediction,
         modelPrediction,
         qb,
+        styles,
         calibration,
         marketHomeLine,
         marketTotal,
