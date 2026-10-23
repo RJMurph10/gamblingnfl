@@ -301,13 +301,20 @@ function Dashboard() {
     staleTime: 60 * 60_000,
     retry: 1,
   });
-  const history = useMemo(() => {
-    const { games, currentSeason } = readHistory(historyQuery.data);
-    return games.filter((h) => h.season < currentSeason);
+  const { history, current } = useMemo(() => {
+    const { games, currentSeason, upcoming } = readHistory(historyQuery.data);
+    return {
+      history: games.filter((h) => h.season < currentSeason),
+      current: {
+        season: currentSeason,
+        games: games.filter((h) => h.season === currentSeason),
+        upcoming,
+      },
+    };
   }, [historyQuery.data]);
   const modelRows = useMemo(
-    () => runModelWithHistory(source, priorSeason, history),
-    [source, priorSeason, history],
+    () => runModelWithHistory(source, priorSeason, history, current),
+    [source, priorSeason, history, current],
   );
   // Accuracy cards grade every game; the units card follows the best bets (what it would bet).
   const model = useMemo(() => summarizeModel(modelRows, "predictions"), [modelRows]);
