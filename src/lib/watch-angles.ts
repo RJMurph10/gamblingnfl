@@ -216,7 +216,9 @@ export function qbChangeHits(rows: GameModelRow[], season: number): AngleHit[] {
       .filter((x) => x?.change)
       .map(
         (x) =>
-          `${x!.name} starting (${x!.points > 0 ? "+" : ""}${Math.round(x!.points * 10) / 10} pts)`,
+          `${x!.name}${x!.regularName ? ` for ${x!.regularName}` : ""} (${x!.points > 0 ? "+" : ""}${
+            Math.round(x!.points * 10) / 10
+          } pts)`,
       );
     out.push({
       angle: "qb-change",
