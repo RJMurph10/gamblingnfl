@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { PageTitle, Panel, PanelHeader } from "@/components/booth";
 import { GamePropAnalysis, TeamLink } from "@/components/GamePropAnalysis";
@@ -67,13 +67,27 @@ function GameCard({ game, selected, onSelect }: { game: Game; selected: boolean;
           <p suppressHydrationWarning className="font-mono text-xs font-semibold tabular-nums">
             {kickoffTime(game.kickoffIso)}
           </p>
-          <p
-            className={`mt-1 font-mono text-[10px] uppercase tracking-wider ${
-              live ? "text-loss" : final ? "text-faint" : "text-mute"
-            }`}
-          >
-            {live ? "Live" : final ? "Final" : (game.broadcast ?? game.info?.broadcast ?? "Upcoming")}
-          </p>
+          {live ? (
+            // Green, and a shortcut to the live game (without selecting the card).
+            <Link
+              to="/games/$gameId"
+              params={{ gameId: game.id }}
+              onClick={(event) => event.stopPropagation()}
+              title="Open the live game"
+              className="mt-1 inline-flex items-center gap-1 font-mono text-[10px] uppercase tracking-wider text-win hover:underline"
+            >
+              <span className="size-1.5 animate-pulse rounded-full bg-win" aria-hidden />
+              Live{game.clock ? ` · ${game.clock}` : ""}
+            </Link>
+          ) : (
+            <p
+              className={`mt-1 font-mono text-[10px] uppercase tracking-wider ${
+                final ? "text-faint" : "text-mute"
+              }`}
+            >
+              {final ? "Final" : (game.broadcast ?? game.info?.broadcast ?? "Upcoming")}
+            </p>
+          )}
         </div>
       </div>
     </div>
