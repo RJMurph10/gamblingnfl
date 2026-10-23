@@ -8,7 +8,7 @@
 
 import { gameScore, type Game } from "@/data/games";
 import { teamById } from "@/data/teams";
-import { MODEL_SETTINGS, payout } from "./game-model";
+import { MODEL_SETTINGS, payout, type GameModelRow } from "./game-model";
 import { historyGameToGame, type HistoryGame } from "./model-history";
 import { homeLine } from "./season-pulse";
 
@@ -23,7 +23,7 @@ export interface GameConditions {
   source: "recorded" | "forecast";
 }
 
-export type AngleId = "wind-under" | "cold-visitor";
+export type AngleId = "wind-under" | "cold-visitor" | "qb-change";
 
 export interface AngleDefinition {
   id: AngleId;
@@ -38,6 +38,8 @@ export const WATCH_ANGLE_SETTINGS = {
   windMph: 15,
   /** Temperature at or below this (°F) in an outdoor game with a warm/dome visitor → home side. */
   coldF: 32,
+  /** A starting-QB change worth at least this many points of margin → the side it favors. */
+  qbPoints: 2,
 } as const;
 
 /** Teams that play home games in a dome or a warm climate (by abbreviation). */
@@ -73,6 +75,12 @@ export const WATCH_ANGLES: AngleDefinition[] = [
     bet: "Home team against the spread",
     why: "Teams built for domes and warm weather, visiting a freezing outdoor stadium, may play below their line.",
   },
+  {
+    id: "qb-change",
+    title: `Quarterback change (${WATCH_ANGLE_SETTINGS.qbPoints}+ pts) → side it favors`,
+    bet: "The side the QB change helps, against the spread",
+    why: "When a team starts a different quarterback, the line may not move as far as the gap between the two QBs.",
+  },
 ];
 
 export type AngleResult = "win" | "loss" | "push" | "pending";
@@ -81,7 +89,10 @@ export interface AngleHit {
   angle: AngleId;
   game: Game;
   season: number;
-  conditions: GameConditions;
+  /** Kickoff weather (weather angles). */
+  conditions?: GameConditions;
+  /** Extra context, e.g. which quarterback is starting. */
+  note?: string;
   /** "Under 44.5", "KC -3.5". */
   label: string;
   result: AngleResult;
@@ -90,9 +101,10 @@ export interface AngleHit {
 
 const abbrOf = (teamId: string) => teamById(teamId)?.abbr ?? "";
 
-function settle(margin: number | null, odds: number | undefined, final: boolean) {
+/** Both angles are spread/total bets, graded at the standard -110. */
+function settle(margin: number | null, final: boolean) {
   if (!final || margin === null) return { result: "pending" as const, units: 0 };
-  const price = odds ?? MODEL_SETTINGS.defaultPrice;
+  const price = MODEL_SETTINGS.defaultPrice;
   if (margin > 0) return { result: "win" as const, units: payout(price) };
   if (margin < 0) return { result: "loss" as const, units: -1 };
   return { result: "push" as const, units: 0 };
@@ -115,7 +127,7 @@ export function angleHitsForGame(game: Game, season: number, c: GameConditions |
       season,
       conditions: c,
       label: `Under ${game.total}`,
-      ...settle(margin, game.odds?.underOdds, final),
+      ...settle(margin, final),
     });
   }
 
@@ -136,7 +148,7 @@ export function angleHitsForGame(game: Game, season: number, c: GameConditions |
       season,
       conditions: c,
       label: `${home} ${lineText(line)}`,
-      ...settle(margin, game.odds?.homeSpreadOdds, final),
+      ...settle(margin, final),
     });
   }
   return out;
@@ -185,13 +197,48 @@ export interface WatchList {
  * Past seasons from nflverse; this season's finished games graded on the site's own (ESPN)
  * lines with nflverse's recorded weather; upcoming games with the kickoff forecast.
  */
+/** QB-change bets from model rows (their quarterback adjustment), for one season. */
+export function qbChangeHits(rows: GameModelRow[], season: number): AngleHit[] {
+  const out: AngleHit[] = [];
+  for (const row of rows) {
+    const qb = row.qb;
+    const line = homeLine(row.game);
+    if (!qb || line === null || Math.abs(qb.margin) < WATCH_ANGLE_SETTINGS.qbPoints) continue;
+    const changed = [qb.home, qb.away].some((s) => s?.change);
+    if (!changed) continue;
+    const homeSide = qb.margin > 0;
+    const teamId = homeSide ? row.game.homeTeamId : row.game.awayTeamId;
+    const sideLine = homeSide ? line : -line;
+    const final = row.game.status === "final";
+    const s = gameScore(row.game);
+    const margin = final ? (homeSide ? s.home - s.away : s.away - s.home) + sideLine : null;
+    const names = [qb.home, qb.away]
+      .filter((x) => x?.change)
+      .map(
+        (x) =>
+          `${x!.name} starting (${x!.points > 0 ? "+" : ""}${Math.round(x!.points * 10) / 10} pts)`,
+      );
+    out.push({
+      angle: "qb-change",
+      game: row.game,
+      season,
+      note: names.join(" · "),
+      label: `${abbrOf(teamId)} ${lineText(sideLine)}`,
+      ...settle(margin, final),
+    });
+  }
+  return out;
+}
+
 export function buildWatchList(
   history: HistoryGame[],
   currentSeason: number,
   schedule: Game[],
   forecasts: Record<string, GameConditions | null>,
+  /** Model runs (past seasons + this one) for the quarterback-change angle. */
+  modelRuns: { season: number; rows: GameModelRow[] }[] = [],
 ): WatchList {
-  const hits: AngleHit[] = [];
+  const hits: AngleHit[] = modelRuns.flatMap((r) => qbChangeHits(r.rows, r.season));
   const recorded = new Map<string, GameConditions | null>();
   for (const h of history) {
     if (h.season < currentSeason) {
