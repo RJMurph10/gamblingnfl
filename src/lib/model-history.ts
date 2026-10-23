@@ -9,6 +9,7 @@
 import type { Game, TeamGameStats } from "@/data/games";
 import { teamByAbbr } from "@/data/teams";
 import { runModel, type GameModelRow, type PriorResult } from "./game-model";
+import { buildQbRatings, type QbAdjuster, type QbAdjustment, type QbStart } from "./qb-ratings";
 
 /** One finished past game with its closing lines. */
 export interface HistoryGame {
@@ -39,18 +40,42 @@ export interface HistoryGame {
   /** Kickoff temperature (°F) and wind (mph) for outdoor games; null when not recorded. */
   temp: number | null;
   wind: number | null;
+  /** Starting quarterbacks (nflverse player ids and names). */
+  homeQb?: string | null;
+  awayQb?: string | null;
+  homeQbName?: string | null;
+  awayQbName?: string | null;
+  /** Each team's passing EPA and dropbacks in this game (rates its quarterback). */
+  homePass?: { epa: number; dropbacks: number } | null;
+  awayPass?: { epa: number; dropbacks: number } | null;
+}
+
+/** Projected starting quarterbacks for an upcoming game this season. */
+export interface UpcomingStarters {
+  espnId: number;
+  week: number;
+  homeQb: string | null;
+  awayQb: string | null;
+  homeQbName: string | null;
+  awayQbName: string | null;
 }
 
 /**
  * Reads getNflHistory's result safely: { currentSeason, games }, an older bare list of games, or
  * nothing at all (still loading / unreachable). Always returns a list.
  */
-export function readHistory(data: unknown): { currentSeason: number; games: HistoryGame[] } {
-  if (Array.isArray(data)) return { currentSeason: 0, games: data as HistoryGame[] };
-  const d = data as { currentSeason?: unknown; games?: unknown } | null | undefined;
+export function readHistory(data: unknown): {
+  currentSeason: number;
+  games: HistoryGame[];
+  upcoming: UpcomingStarters[];
+} {
+  if (Array.isArray(data)) return { currentSeason: 0, games: data as HistoryGame[], upcoming: [] };
+  const d = data as
+    { currentSeason?: unknown; games?: unknown; upcoming?: unknown } | null | undefined;
   return {
     currentSeason: typeof d?.currentSeason === "number" ? d.currentSeason : 0,
     games: Array.isArray(d?.games) ? (d.games as HistoryGame[]) : [],
+    upcoming: Array.isArray(d?.upcoming) ? (d.upcoming as UpcomingStarters[]) : [],
   };
 }
 
@@ -146,28 +171,104 @@ export interface SeasonRun {
   rows: GameModelRow[];
 }
 
-const runs = new WeakMap<HistoryGame[], SeasonRun[]>();
+export interface RunOptions {
+  /** Adjust the model's line for starting quarterbacks (on by default). */
+  qb?: boolean;
+}
+
+/** Every quarterback start in these games, scored by his team's passing EPA per dropback. */
+export function qbStartsFrom(history: HistoryGame[]): QbStart[] {
+  const out: QbStart[] = [];
+  for (const h of history) {
+    const sides = [
+      [h.home, h.homeQb, h.homeQbName, h.homePass],
+      [h.away, h.awayQb, h.awayQbName, h.awayPass],
+    ] as const;
+    for (const [abbr, qb, name, pass] of sides) {
+      const team = teamByAbbr(abbr);
+      if (!team || !qb) continue;
+      out.push({
+        season: h.season,
+        week: h.week,
+        teamId: team.id,
+        qb,
+        name: name ?? "",
+        epaPerDropback: pass && pass.dropbacks > 0 ? pass.epa / pass.dropbacks : undefined,
+      });
+    }
+  }
+  return out;
+}
+
+/** Starting quarterbacks by ESPN game id, for finished and projected games. */
+type StartersById = Map<
+  number,
+  Pick<HistoryGame, "homeQb" | "awayQb" | "homeQbName" | "awayQbName">
+>;
+
+/** The model's QB lookup for a list of games: "h2024-401…" history ids and "espn-401…" ids. */
+function qbLookup(adjust: QbAdjuster, starters: StartersById, season: number) {
+  return (game: Game) => {
+    const m = game.id.match(/(\d+)$/);
+    const s = m ? starters.get(Number(m[1])) : undefined;
+    if (!s) return undefined;
+    return adjust({
+      season,
+      week: game.week,
+      homeTeamId: game.homeTeamId,
+      awayTeamId: game.awayTeamId,
+      ...s,
+    });
+  };
+}
+
+const startersOf = (games: (HistoryGame | UpcomingStarters)[]): StartersById =>
+  new Map(
+    games.map((g) => [
+      g.espnId,
+      { homeQb: g.homeQb, awayQb: g.awayQb, homeQbName: g.homeQbName, awayQbName: g.awayQbName },
+    ]),
+  );
+
+const runs = new WeakMap<HistoryGame[], Map<string, SeasonRun[]>>();
 
 /**
  * The model run over every past season that has the season before it available as a prior
  * (the first season only serves as a prior). Each season calibrates on the seasons before it,
  * exactly as the current one does, so the records are honest walk-forward tests.
  */
-export function pastSeasonRuns(input: HistoryGame[]): SeasonRun[] {
+export function pastSeasonRuns(input: HistoryGame[], options: RunOptions = {}): SeasonRun[] {
   const history = asList(input);
-  const hit = runs.get(history);
+  const useQb = options.qb !== false;
+  const byOptions = runs.get(history) ?? new Map<string, SeasonRun[]>();
+  runs.set(history, byOptions);
+  const hit = byOptions.get(String(useQb));
   if (hit) return hit;
+  const adjust = useQb ? buildQbRatings(qbStartsFrom(history)) : undefined;
   const seasons = [...new Set(history.map((h) => h.season))].sort((a, b) => a - b);
   const out: SeasonRun[] = [];
   for (const season of seasons.slice(1)) {
     const past = out.flatMap((r) => r.rows);
+    const games = history.filter((h) => h.season === season);
     out.push({
       season,
-      rows: runModel(historySeasonGames(history, season), seasonResults(history, season - 1), past),
+      rows: runModel(
+        historySeasonGames(history, season),
+        seasonResults(history, season - 1),
+        past,
+        adjust ? qbLookup(adjust, startersOf(games), season) : undefined,
+      ),
     });
   }
-  runs.set(history, out);
+  byOptions.set(String(useQb), out);
   return out;
+}
+
+/** This season's finished games (from nflverse) and projected starters, for QB ratings. */
+export interface CurrentSeasonData {
+  season: number;
+  games: HistoryGame[];
+  upcoming: UpcomingStarters[];
 }
 
 /**
@@ -178,10 +279,19 @@ export function runModelWithHistory(
   schedule: Game[],
   priorSeason: PriorResult[],
   input: HistoryGame[],
+  current?: CurrentSeasonData,
+  options: RunOptions = {},
 ): GameModelRow[] {
   const history = asList(input);
-  const past = pastSeasonRuns(history).flatMap((r) => r.rows);
+  const past = pastSeasonRuns(history, options).flatMap((r) => r.rows);
   const last = Math.max(0, ...history.map((h) => h.season));
   const prior = priorSeason.length ? priorSeason : seasonResults(history, last);
-  return runModel(schedule, prior, past);
+  let qbFor: ((game: Game) => QbAdjustment | undefined) | undefined;
+  if (options.qb !== false && current) {
+    const thisSeason = asList(current.games);
+    const adjust = buildQbRatings(qbStartsFrom([...history, ...thisSeason]));
+    const starters = startersOf([...thisSeason, ...asList(current.upcoming as never)]);
+    qbFor = qbLookup(adjust, starters, current.season);
+  }
+  return runModel(schedule, prior, past, qbFor);
 }
