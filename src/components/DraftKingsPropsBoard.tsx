@@ -99,17 +99,15 @@ function groupOffers(offers: LivePropOffer[]) {
   return [...groups.values()].map((g) => ({ ...g, rows: g.rows.sort((x, y) => (x.line ?? 0) - (y.line ?? 0)) }));
 }
 
-export function DraftKingsPropsBoard({ game, away, home }: DraftKingsPropsBoardProps) {
-  const [category, setCategory] = useState<PropCategory>("td-scorers");
-  const [teamFilter, setTeamFilter] = useState<"all" | "away" | "home">("all");
-  const [marketFilter, setMarketFilter] = useState<string>("");
 
-  const isLive = game.status === "live" || game.status === "halftime";
+/**
+ * Real DraftKings lines for a game from ESPN, refreshed while it's upcoming or live. Shared by
+ * the props board and the college projections (same query, fetched once).
+ */
+export function useGamePropBoard(game: Game, away: Team, home: Team) {
+  const isLive = game.status === "live";
   const isFinal = game.status === "final";
-  const isOT = (game.period ?? 0) > 4;
-
-  // Real DraftKings lines from ESPN; refreshed while the game is upcoming or live.
-  const propsQuery = useQuery<GamePropBoard>({
+  return useQuery<GamePropBoard>({
     queryKey: ["game-props", game.id, away.abbr, home.abbr],
     queryFn: async () => {
       const serverBoard = await getGameProps({
@@ -133,6 +131,19 @@ export function DraftKingsPropsBoard({ game, away, home }: DraftKingsPropsBoardP
       query.state.data?.diagnostics?.viaBrowser ? 60_000 : isLive ? 15_000 : isFinal ? false : 60_000,
     staleTime: 10_000,
   });
+}
+
+export function DraftKingsPropsBoard({ game, away, home }: DraftKingsPropsBoardProps) {
+  const [category, setCategory] = useState<PropCategory>("td-scorers");
+  const [teamFilter, setTeamFilter] = useState<"all" | "away" | "home">("all");
+  const [marketFilter, setMarketFilter] = useState<string>("");
+
+  const isLive = game.status === "live" || game.status === "halftime";
+  const isFinal = game.status === "final";
+  const isOT = (game.period ?? 0) > 4;
+
+  // Real DraftKings lines from ESPN; refreshed while the game is upcoming or live.
+  const propsQuery = useGamePropBoard(game, away, home);
   const board = propsQuery.data;
   // Offers carry the team key the server was given (a college id for college teams).
   const abbrOf = (key: string) =>
