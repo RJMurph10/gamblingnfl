@@ -139,7 +139,7 @@ export interface StatProjection {
   stat: ProjStat;
   /** Median projection (passing TDs: expected count). */
   median: number;
-  /** 80% range (none for passing TDs). */
+  /** 80% range (passing TDs: 10th–90th percentile of a Poisson count). */
   low?: number;
   high?: number;
 }
@@ -202,7 +202,7 @@ export function projectPlayer(
     const median = raw * s.scale;
     stats.push(
       stat === "passTd"
-        ? { stat, median: Math.round(median * 100) / 100 }
+        ? { stat, median: Math.round(median * 100) / 100, ...poissonRange(median) }
         : {
             stat,
             median: round1(median),
@@ -225,6 +225,21 @@ export function projectPlayer(
     : undefined;
   if (!stats.length && anytimeTd === undefined) return null;
   return { ...player, games: games.length, stats, anytimeTd };
+}
+
+/** 10th–90th percentile of a Poisson count with this mean (touchdowns). */
+export function poissonRange(mean: number): { low: number; high: number } {
+  let p = Math.exp(-mean);
+  let cdf = p;
+  let k = 0;
+  let low: number | null = cdf >= 0.1 ? 0 : null;
+  while (cdf < 0.9 && k < 20) {
+    k++;
+    p *= mean / k;
+    cdf += p;
+    if (low === null && cdf >= 0.1) low = k;
+  }
+  return { low: low ?? 0, high: k };
 }
 
 /** American odds → implied probability (0–1). */
