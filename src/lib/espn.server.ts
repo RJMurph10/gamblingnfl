@@ -22,6 +22,12 @@ import {
   type Team,
 } from "@/data/teams";
 import {
+  projectPlayer,
+  type DefenseAllowed,
+  type PlayerGameStats,
+  type PlayerProjection,
+} from "./cfb-projections";
+import {
   conferenceTeams,
   parseCalendar,
   parseConferences,
@@ -3740,6 +3746,8 @@ function addCollegeDetails(game: Game, comp: any) {
   game.awayRank = rankOf("away");
   game.homeRank = rankOf("home");
   game.neutralSite = Boolean(comp?.neutralSite) || undefined;
+  const note = comp?.notes?.[0]?.headline;
+  if (note) game.note = String(note);
   game.teamRefs = collegeTeamRefs(game);
 }
 
@@ -3778,7 +3786,26 @@ export async function fetchCfbSchedule(): Promise<Game[]> {
       );
     }),
   );
-  const games = perWeek.flat();
+  // Bowls and the playoff (ESPN's postseason), listed as the week after the regular season.
+  const bowlWeek = Math.max(0, ...weeks.map((w) => w.number)) + 1;
+  const bowls = await cached(
+    "cfb-schedule-postseason",
+    async () => {
+      try {
+        const data = await fetchJson(
+          `${FEEDS.cfb.scoreboard}?groups=${FBS_GROUP}&dates=${SEASON}&seasontype=3&week=1&limit=400`,
+        );
+        return (data?.events ?? [])
+          .map((e: any) => mapCollegeEvent(e, bowlWeek, fbsIds))
+          .filter((g: Game | null): g is Game => g !== null)
+          .map((g: Game) => ({ ...g, postseason: true }));
+      } catch {
+        return [] as Game[];
+      }
+    },
+    MINUTE,
+  );
+  const games = [...perWeek.flat(), ...bowls];
   // Cached weeks still need their teams on a fresh server instance.
   for (const g of games) registerTeams(g.teamRefs);
   return games.sort(
@@ -4003,6 +4030,157 @@ export async function fetchCfbConferencePlayers(conference: string): Promise<Cfb
         }),
       );
       return perTeam.flat();
+    },
+    10 * MINUTE,
+  );
+}
+
+/** Each team's players' lines in a college box score: team id → player id → line. */
+function collegeBoxLines(summary: any) {
+  const out = new Map<
+    string,
+    Map<string, { name: string; position: string; line: PlayerGameStats }>
+  >();
+  for (const block of summary?.boxscore?.players ?? []) {
+    const teamId = teamOf(block?.team)?.id;
+    if (!teamId) continue;
+    const players = out.get(teamId) ?? new Map();
+    for (const group of block?.statistics ?? []) {
+      const name = String(group?.name ?? "");
+      if (!["passing", "rushing", "receiving"].includes(name)) continue;
+      const keys: string[] = group?.keys ?? [];
+      for (const a of group?.athletes ?? []) {
+        const id = String(a?.athlete?.id ?? "");
+        if (!id) continue;
+        const entry = players.get(id) ?? {
+          name: String(a.athlete.displayName ?? ""),
+          position: String(a.athlete.position?.abbreviation ?? ""),
+          line: { passYds: 0, passTd: 0, cmp: 0, rushYds: 0, rushAtt: 0, rushTd: 0, recYds: 0, rec: 0, recTd: 0 },
+        };
+        const v = (key: string) => {
+          const i = keys.indexOf(key);
+          return i < 0 ? 0 : numericStat(a?.stats?.[i]);
+        };
+        const L = entry.line;
+        if (name === "passing") {
+          const i = keys.indexOf("completions/passingAttempts");
+          if (i >= 0) L.cmp += parsePair(a?.stats?.[i])[0];
+          L.passYds += v("passingYards");
+          L.passTd += v("passingTouchdowns");
+        } else if (name === "rushing") {
+          L.rushAtt += v("rushingAttempts");
+          L.rushYds += v("rushingYards");
+          L.rushTd += v("rushingTouchdowns");
+        } else {
+          L.rec += v("receptions");
+          L.recYds += v("receivingYards");
+          L.recTd += v("receivingTouchdowns");
+        }
+        players.set(id, entry);
+      }
+    }
+    out.set(teamId, players);
+  }
+  return out;
+}
+
+export interface CfbGameProjections {
+  gameId: string;
+  players: PlayerProjection[];
+  /** Games behind each team's numbers. */
+  gamesUsed: Record<string, number>;
+}
+
+/**
+ * Player projections for a college game, from both teams' finished games this season before
+ * kickoff (box scores) and each opponent's defense. 10-minute cache.
+ */
+export async function fetchCfbGameProjections(gameId: string): Promise<CfbGameProjections> {
+  return cached(
+    `cfb-projections-${gameId}`,
+    async () => {
+      const schedule = await fetchCfbSchedule();
+      const game = schedule.find((g) => g.id === gameId);
+      if (!game) return { gameId, players: [], gamesUsed: {} };
+      const start = game.kickoffIso ? Date.parse(game.kickoffIso) : Date.now();
+      const priorOf = (teamId: string) =>
+        schedule
+          .filter(
+            (g) =>
+              g.id !== game.id &&
+              g.status === "final" &&
+              (g.homeTeamId === teamId || g.awayTeamId === teamId) &&
+              (g.kickoffIso ? Date.parse(g.kickoffIso) : 0) < start,
+          )
+          .sort((a, b) => Date.parse(a.kickoffIso ?? "") - Date.parse(b.kickoffIso ?? ""));
+      const sides = [game.awayTeamId, game.homeTeamId];
+      const prior = Object.fromEntries(sides.map((t) => [t, priorOf(t)]));
+      const ids = [...new Set(sides.flatMap((t) => prior[t].map((g) => g.id)))];
+      const boxes = new Map<string, ReturnType<typeof collegeBoxLines>>();
+      await Promise.all(
+        ids.map(async (id) => {
+          try {
+            boxes.set(id, collegeBoxLines(await fetchSummaryFor(id, true)));
+          } catch {
+            // leave the game out
+          }
+        }),
+      );
+
+      // What each team's defense has allowed per game: the other side's passing and rushing.
+      const allowedBy = (teamId: string): DefenseAllowed | null => {
+        const totals: DefenseAllowed = { passYds: 0, cmp: 0, passTd: 0, rushYds: 0, rushAtt: 0 };
+        let n = 0;
+        for (const g of prior[teamId]) {
+          const box = boxes.get(g.id);
+          const otherId = g.homeTeamId === teamId ? g.awayTeamId : g.homeTeamId;
+          const other = box?.get(otherId);
+          if (!other) continue;
+          n++;
+          for (const { line } of other.values()) {
+            totals.passYds += line.passYds;
+            totals.cmp += line.cmp;
+            totals.passTd += line.passTd;
+            totals.rushYds += line.rushYds;
+            totals.rushAtt += line.rushAtt;
+          }
+        }
+        if (n < 2) return null;
+        return {
+          passYds: totals.passYds / n,
+          cmp: totals.cmp / n,
+          passTd: totals.passTd / n,
+          rushYds: totals.rushYds / n,
+          rushAtt: totals.rushAtt / n,
+        };
+      };
+
+      const players: PlayerProjection[] = [];
+      for (const teamId of sides) {
+        const opponent = teamId === game.homeTeamId ? game.awayTeamId : game.homeTeamId;
+        const allowed = allowedBy(opponent);
+        const logs = new Map<string, { name: string; position: string; games: PlayerGameStats[] }>();
+        for (const g of prior[teamId]) {
+          for (const [id, p] of boxes.get(g.id)?.get(teamId) ?? []) {
+            const entry = logs.get(id) ?? { name: p.name, position: p.position, games: [] };
+            entry.games.push(p.line);
+            logs.set(id, entry);
+          }
+        }
+        for (const [playerId, p] of logs) {
+          const proj = projectPlayer(
+            { playerId, name: p.name, position: p.position, teamId },
+            p.games,
+            allowed,
+          );
+          if (proj) players.push(proj);
+        }
+      }
+      return {
+        gameId,
+        players,
+        gamesUsed: Object.fromEntries(sides.map((t) => [t, prior[t].length])),
+      };
     },
     10 * MINUTE,
   );
