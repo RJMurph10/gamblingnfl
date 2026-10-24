@@ -29,7 +29,6 @@ import { useCfbSchedule } from "@/lib/use-cfb";
 import { getGameWeather, getLiveGame, getTeamSeasonAverages } from "@/lib/espn.functions";
 import { showGameStatistics } from "@/lib/game-visibility";
 import { DraftKingsPropsBoard } from "@/components/DraftKingsPropsBoard";
-import { CfbProjections } from "@/components/CfbProjections";
 
 /* ---------- Interactive 100-Yard Field Visualizer ---------- */
 
@@ -1843,7 +1842,6 @@ export function GameDetail({ gameId }: { gameId: string }) {
                     {/* Live / Finished games Props tab */}
           {activeGameTab === "props" ? (
             <section className="mt-6">
-              {college ? <div className="mb-6"><CfbProjections game={game} away={away} home={home} /></div> : null}
               <DraftKingsPropsBoard game={game} away={away} home={home} />
             </section>
           ) : null}
@@ -1878,7 +1876,6 @@ export function GameDetail({ gameId }: { gameId: string }) {
           ) : activeGameTab === "props" ? (
             /* Upcoming / Scheduled games Props tab */
             <section className="mt-6">
-              {college ? <div className="mb-6"><CfbProjections game={game} away={away} home={home} /></div> : null}
               <DraftKingsPropsBoard game={game} away={away} home={home} />
             </section>
           ) : activeGameTab === "gamecast" ? (
