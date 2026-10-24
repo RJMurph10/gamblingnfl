@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { type Game } from "@/data/games";
 import { type Team } from "@/data/teams";
+import { teamKey } from "@/lib/league-links";
 import { TeamLogo } from "@/components/booth";
 import { getGameProps, getPropPeople } from "@/lib/espn.functions";
 import { athleteIdOf, buildPropOffers, sampleTdItem, type PropPerson } from "@/lib/props.parse";
@@ -25,8 +26,10 @@ async function loadPropsInBrowser(
   homeAbbr: string,
   serverBoard: GamePropBoard,
 ): Promise<GamePropBoard> {
-  const id = eventId.replace(/^espn-/, "");
-  const base = `https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/events/${id}/competitions/${id}/odds/100/propBets`;
+  const college = eventId.startsWith("cfb-");
+  const coreLeague = college ? "college-football" : "nfl";
+  const id = eventId.replace(/^(espn|cfb)-/, "");
+  const base = `https://sports.core.api.espn.com/v2/sports/football/leagues/${coreLeague}/events/${id}/competitions/${id}/odds/100/propBets`;
   const items: any[] = [];
   const first = await fetch(`${base}?limit=400&page=1`);
   if (!first.ok) throw new Error(`browser fetch failed [${first.status}]`);
@@ -50,7 +53,7 @@ async function loadPropsInBrowser(
     missing.map(async (athleteId) => {
       if (!athleteCache.has(athleteId)) {
         try {
-          const res = await fetch(`https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/athletes/${athleteId}`);
+          const res = await fetch(`https://sports.core.api.espn.com/v2/sports/football/leagues/${coreLeague}/athletes/${athleteId}`);
           const athlete = res.ok ? await res.json() : null;
           athleteCache.set(
             athleteId,
@@ -110,12 +113,12 @@ export function DraftKingsPropsBoard({ game, away, home }: DraftKingsPropsBoardP
     queryKey: ["game-props", game.id, away.abbr, home.abbr],
     queryFn: async () => {
       const serverBoard = await getGameProps({
-        data: { eventId: String(game.id), awayAbbr: away.abbr, homeAbbr: home.abbr },
+        data: { eventId: String(game.id), awayAbbr: teamKey(away), homeAbbr: teamKey(home) },
       });
       // ESPN sometimes refuses the server (403); the visitor's own browser is not refused.
       if (serverBoard.available || !serverBoard.diagnostics?.error) return serverBoard;
       try {
-        return await loadPropsInBrowser(String(game.id), away.abbr, home.abbr, serverBoard);
+        return await loadPropsInBrowser(String(game.id), teamKey(away), teamKey(home), serverBoard);
       } catch (error) {
         return {
           ...serverBoard,
@@ -131,6 +134,9 @@ export function DraftKingsPropsBoard({ game, away, home }: DraftKingsPropsBoardP
     staleTime: 10_000,
   });
   const board = propsQuery.data;
+  // Offers carry the team key the server was given (a college id for college teams).
+  const abbrOf = (key: string) =>
+    key === teamKey(away) ? away.abbr : key === teamKey(home) ? home.abbr : key;
 
   // Box-score stats so live/final games can show progress and results against each line.
   const statsByName = useMemo(() => {
@@ -148,7 +154,7 @@ export function DraftKingsPropsBoard({ game, away, home }: DraftKingsPropsBoardP
 
   const sideOk = (offer: LivePropOffer) =>
     teamFilter === "all" ||
-    (teamFilter === "away" ? offer.teamAbbr === away.abbr : offer.teamAbbr === home.abbr);
+    (teamFilter === "away" ? offer.teamAbbr === teamKey(away) : offer.teamAbbr === teamKey(home));
 
   // TD scorer table: one row per player with First / Anytime / 2+ prices.
   const tdRows = useMemo(() => {
@@ -217,7 +223,7 @@ export function DraftKingsPropsBoard({ game, away, home }: DraftKingsPropsBoardP
         {isLive && (
           <div className="flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-mono font-bold text-emerald-400">
             <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
-            {game.status === "halftime" ? "HALFTIME" : isOT ? "OVERTIME" : `Q${game.period} ${game.clock || ""}`}
+            {game.status === "halftime" ? "HALFTIME" : isOT ? "OVERTIME" : game.period ? `Q${game.period} ${game.clock || ""}` : game.clock || "LIVE"}
           </div>
         )}
         {isFinal && (
@@ -355,7 +361,7 @@ export function DraftKingsPropsBoard({ game, away, home }: DraftKingsPropsBoardP
                                   ) : null}
                                 </div>
                                 <div className="text-[11px] text-mute">
-                                  {row.offer.position} · {row.offer.teamAbbr}
+                                  {row.offer.position} · {abbrOf(row.offer.teamAbbr)}
                                 </div>
                               </td>
                               <td className="py-2.5 px-2 text-center">{cell(row.first)}</td>
@@ -413,7 +419,7 @@ export function DraftKingsPropsBoard({ game, away, home }: DraftKingsPropsBoardP
                             <div className="min-w-0">
                               <div className="font-bold text-white text-sm truncate">{head.playerName}</div>
                               <div className="text-[11px] text-mute">
-                                {head.position} · {head.teamAbbr} · {head.market}
+                                {head.position} · {abbrOf(head.teamAbbr)} · {head.market}
                               </div>
                               {current !== undefined && rows[0].line !== undefined ? (
                                 <div className="mt-1 flex items-center gap-2">
