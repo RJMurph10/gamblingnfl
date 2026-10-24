@@ -40,6 +40,10 @@ function CfbGames() {
 
   const weeks = useMemo(() => [...new Set(all.map((g) => g.week))].sort((a, b) => a - b), [all]);
   const week = picked ?? currentCfbWeek(all);
+  const bowlWeeks = useMemo(
+    () => new Set(all.filter((g) => g.postseason).map((g) => g.week)),
+    [all],
+  );
   const games = useMemo(
     () =>
       scopeGames(
@@ -80,7 +84,7 @@ function CfbGames() {
                   : "bg-panel2 text-mute ring-line/10 hover:text-acc"
               }`}
             >
-              Wk {w}
+              {bowlWeeks.has(w) ? "Bowls" : `Wk ${w}`}
             </button>
           ))}
         </div>
@@ -105,7 +109,8 @@ function CfbGames() {
               title={day}
               aside={
                 <span className="label-mono">
-                  Wk {week} · {list.length} {list.length === 1 ? "game" : "games"}
+                  {week !== null && bowlWeeks.has(week) ? "Bowls" : `Wk ${week}`} · {list.length}{" "}
+                  {list.length === 1 ? "game" : "games"}
                 </span>
               }
             />
