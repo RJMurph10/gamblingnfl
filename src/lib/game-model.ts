@@ -61,6 +61,47 @@ export const MODEL_SETTINGS = {
   stake: 1,
 } as const;
 
+/**
+ * The settings that differ between leagues. The NFL runs on NFL_CONFIG (exactly the numbers
+ * above); college football passes its own (see CFB_CONFIG in cfb-model.ts).
+ */
+export interface ModelConfig {
+  /** Standard deviation of final margins, used for win probability. */
+  marginSd: number;
+  /** Home-field prior (points of margin) and how many games of evidence it is worth. */
+  homeFieldPrior: number;
+  homeFieldPriorGames: number;
+  /** Ridge shrinkage on team ratings, in "games of average play". */
+  shrinkGames: number;
+  /** Weight of each game from last season (vs 1 for this season). */
+  priorSeasonWeight: number;
+  /** Biggest margin a game counts for in the ratings (a bigger blowout is trimmed). 0 = no cap. */
+  marginCap: number;
+  /** Weight in the ratings of a game against an FCS team (1 = like any other game). */
+  fcsWeight: number;
+  /** Neutral-site games have no home field. */
+  neutralSites: boolean;
+}
+
+export const NFL_CONFIG: ModelConfig = {
+  marginSd: MODEL_SETTINGS.marginSd,
+  homeFieldPrior: MODEL_SETTINGS.homeFieldPrior,
+  homeFieldPriorGames: MODEL_SETTINGS.homeFieldPriorGames,
+  shrinkGames: MODEL_SETTINGS.shrinkGames,
+  priorSeasonWeight: MODEL_SETTINGS.priorSeasonWeight,
+  marginCap: 0,
+  fcsWeight: 1,
+  neutralSites: false,
+};
+
+/** Trims a blowout to `cap` points of margin, keeping the game's total. */
+function trimMargin(home: number, away: number, cap: number): [number, number] {
+  const margin = home - away;
+  if (!cap || Math.abs(margin) <= cap) return [home, away];
+  const excess = (Math.abs(margin) - cap) / 2;
+  return margin > 0 ? [home - excess, away + excess] : [home + excess, away - excess];
+}
+
 /* ---------------- ratings ---------------- */
 
 export interface TeamRatings {
@@ -100,7 +141,11 @@ interface PointsObs {
  * points = mean + homeField * home + offense[team] + defense[opponent].
  * Last season's results (if given) join at a reduced weight.
  */
-export function fitRatings(finals: Game[], prior: PriorResult[] = []): TeamRatings {
+export function fitRatings(
+  finals: Game[],
+  prior: PriorResult[] = [],
+  cfg: ModelConfig = NFL_CONFIG,
+): TeamRatings {
   const obs: PointsObs[] = [];
   const games: Record<string, number> = {};
   const currentGames: Record<string, number> = {};
@@ -110,21 +155,24 @@ export function fitRatings(finals: Game[], prior: PriorResult[] = []): TeamRatin
     homePts: number,
     awayPts: number,
     weight: number,
+    neutral = false,
   ) => {
-    obs.push({ team: homeId, opp: awayId, home: 0.5, points: homePts, weight });
-    obs.push({ team: awayId, opp: homeId, home: -0.5, points: awayPts, weight });
+    [homePts, awayPts] = trimMargin(homePts, awayPts, cfg.marginCap);
+    const side = neutral && cfg.neutralSites ? 0 : 0.5;
+    obs.push({ team: homeId, opp: awayId, home: side, points: homePts, weight });
+    obs.push({ team: awayId, opp: homeId, home: -side, points: awayPts, weight });
     games[homeId] = (games[homeId] ?? 0) + weight;
     games[awayId] = (games[awayId] ?? 0) + weight;
   };
   for (const g of finals) {
     const s = gameScore(g);
-    add(g.homeTeamId, g.awayTeamId, s.home, s.away, 1);
+    add(g.homeTeamId, g.awayTeamId, s.home, s.away, g.fcs ? cfg.fcsWeight : 1, Boolean(g.neutralSite));
     currentGames[g.homeTeamId] = (currentGames[g.homeTeamId] ?? 0) + 1;
     currentGames[g.awayTeamId] = (currentGames[g.awayTeamId] ?? 0) + 1;
   }
   for (const r of prior) {
     if (!Number.isFinite(r.homeScore) || !Number.isFinite(r.awayScore)) continue;
-    add(r.homeTeamId, r.awayTeamId, r.homeScore, r.awayScore, MODEL_SETTINGS.priorSeasonWeight);
+    add(r.homeTeamId, r.awayTeamId, r.homeScore, r.awayScore, cfg.priorSeasonWeight);
   }
   const offense: Record<string, number> = {};
   const defense: Record<string, number> = {};
@@ -135,7 +183,7 @@ export function fitRatings(finals: Game[], prior: PriorResult[] = []): TeamRatin
   if (obs.length === 0)
     return {
       mean: 22,
-      homeField: MODEL_SETTINGS.homeFieldPrior,
+      homeField: cfg.homeFieldPrior,
       offense,
       defense,
       games,
@@ -144,8 +192,8 @@ export function fitRatings(finals: Game[], prior: PriorResult[] = []): TeamRatin
 
   const totalWeight = obs.reduce((sum, o) => sum + o.weight, 0);
   let mean = obs.reduce((sum, o) => sum + o.weight * o.points, 0) / totalWeight;
-  let homeField: number = MODEL_SETTINGS.homeFieldPrior;
-  const lambda = MODEL_SETTINGS.shrinkGames;
+  let homeField: number = cfg.homeFieldPrior;
+  const lambda = cfg.shrinkGames;
   const predict = (o: PointsObs) => mean + homeField * o.home + offense[o.team] + defense[o.opp];
 
   for (let iter = 0; iter < 60; iter++) {
@@ -161,8 +209,8 @@ export function fitRatings(finals: Game[], prior: PriorResult[] = []): TeamRatin
       defense[id] = (defSum[id] ?? 0) / ((games[id] ?? 0) + lambda);
     // Home field, pulled toward its prior. Each game contributes 0.5 to the denominator
     // (two observations at ±0.5), times its weight.
-    const priorWeight = MODEL_SETTINGS.homeFieldPriorGames * 0.5;
-    let hfNum = MODEL_SETTINGS.homeFieldPrior * priorWeight;
+    const priorWeight = cfg.homeFieldPriorGames * 0.5;
+    let hfNum = cfg.homeFieldPrior * priorWeight;
     let hfDen: number = priorWeight;
     for (const o of obs) {
       if (o.home === 0) continue;
@@ -203,16 +251,23 @@ function normalCdf(x: number): number {
   return x >= 0 ? 0.5 * (1 + y) : 0.5 * (1 - y);
 }
 
-export function predictGame(r: TeamRatings, homeId: string, awayId: string): GamePrediction {
-  const homePoints = r.mean + r.homeField / 2 + (r.offense[homeId] ?? 0) + (r.defense[awayId] ?? 0);
-  const awayPoints = r.mean - r.homeField / 2 + (r.offense[awayId] ?? 0) + (r.defense[homeId] ?? 0);
+export function predictGame(
+  r: TeamRatings,
+  homeId: string,
+  awayId: string,
+  cfg: ModelConfig = NFL_CONFIG,
+  neutral = false,
+): GamePrediction {
+  const hf = neutral && cfg.neutralSites ? 0 : r.homeField;
+  const homePoints = r.mean + hf / 2 + (r.offense[homeId] ?? 0) + (r.defense[awayId] ?? 0);
+  const awayPoints = r.mean - hf / 2 + (r.offense[awayId] ?? 0) + (r.defense[homeId] ?? 0);
   const margin = homePoints - awayPoints;
   return {
     homePoints,
     awayPoints,
     homeLine: -margin,
     total: homePoints + awayPoints,
-    homeWinProb: normalCdf(margin / MODEL_SETTINGS.marginSd),
+    homeWinProb: normalCdf(margin / cfg.marginSd),
   };
 }
 
@@ -534,6 +589,7 @@ export function anchorToMarket(
   game: Game,
   raw: GamePrediction,
   cal: MarketCalibration,
+  cfg: ModelConfig = NFL_CONFIG,
 ): GamePrediction {
   const mLine = homeLine(game);
   const marketMargin = mLine === null ? -raw.homeLine : -mLine;
@@ -548,15 +604,14 @@ export function anchorToMarket(
   // Win probability starts from the moneyline market's own (no-vig) price and moves only by as
   // much as the anchored margin moved off the market's. Converting the spread straight into a
   // probability would disagree with the moneyline on its own and invent "edges" from nothing.
-  let homeWinProb = normalCdf(margin / MODEL_SETTINGS.marginSd);
+  let homeWinProb = normalCdf(margin / cfg.marginSd);
   const ml = game.odds;
   if (ml?.homeMoneyline !== undefined && ml.awayMoneyline !== undefined && mLine !== null) {
     const ih = impliedProb(ml.homeMoneyline);
     const ia = impliedProb(ml.awayMoneyline);
     const fairHome = ih / (ih + ia);
     const shift =
-      normalCdf(margin / MODEL_SETTINGS.marginSd) -
-      normalCdf(marketMargin / MODEL_SETTINGS.marginSd);
+      normalCdf(margin / cfg.marginSd) - normalCdf(marketMargin / cfg.marginSd);
     homeWinProb = Math.min(0.99, Math.max(0.01, fairHome + shift));
   }
   return {
@@ -588,6 +643,8 @@ export function runModel(
   stylesFor?: (game: Game) => { home?: QbStyleProfile; away?: QbStyleProfile } | undefined,
   /** False for college: every-game calls only, without the NFL ★ best-bet rules. */
   nflRules = true,
+  /** League settings (college passes its own); the NFL's by default. */
+  cfg: ModelConfig = NFL_CONFIG,
 ): GameModelRow[] {
   const finals = schedule.filter((g) => g.status === "final");
   const weeks = [...new Set(schedule.map((g) => g.week))].sort((a, b) => a - b);
@@ -596,6 +653,7 @@ export function runModel(
     const ratings = fitRatings(
       finals.filter((g) => g.week < week),
       priorSeason,
+      cfg,
     );
     const calibration = calibrateToMarket([
       ...pastSeasons,
@@ -620,10 +678,10 @@ export function runModel(
       }
       const qb = qbFor?.(game);
       const modelPrediction = applyQbAdjustment(
-        predictGame(ratings, game.homeTeamId, game.awayTeamId),
+        predictGame(ratings, game.homeTeamId, game.awayTeamId, cfg, Boolean(game.neutralSite)),
         qb?.margin ?? 0,
       );
-      const prediction = anchorToMarket(game, modelPrediction, calibration);
+      const prediction = anchorToMarket(game, modelPrediction, calibration, cfg);
       // Live games keep their pregame calls but aren't graded until final.
       const styles = stylesFor?.(game);
       const predictions = predictionsForGame(
