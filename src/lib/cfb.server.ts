@@ -18,6 +18,7 @@ import {
   fetchCfbCalendar,
   fetchCfbSchedule,
   fetchCfbConferencePlayers,
+  fetchCfbGameProjections,
   fetchCollegePlayerGameLog,
   fetchConferenceTeamOverviewStats,
   fetchFbsConferences,
@@ -25,6 +26,7 @@ import {
 
 export {
   fetchCfbConferencePlayers,
+  fetchCfbGameProjections,
   fetchCfbSchedule,
   fetchCollegePlayerGameLog,
   fetchConferenceTeamOverviewStats,
