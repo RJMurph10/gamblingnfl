@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import {
+  fetchCfbConferencePlayers,
   fetchCfbConferences,
   fetchCfbRankings,
   fetchCfbSchedule,
@@ -40,3 +41,8 @@ export const getCfbPlayerGameLog = createServerFn({ method: "GET" })
 export const getConferenceTeamOverviewStats = createServerFn({ method: "GET" })
   .inputValidator((data) => z.object({ teamId: z.string() }).parse(data))
   .handler(async ({ data }) => fetchConferenceTeamOverviewStats(data.teamId));
+
+/** Every player on a conference's rosters, with season totals (the college players index). */
+export const getCfbConferencePlayers = createServerFn({ method: "GET" })
+  .inputValidator((data) => z.object({ conference: z.string().min(1) }).parse(data))
+  .handler(async ({ data }) => fetchCfbConferencePlayers(data.conference));
