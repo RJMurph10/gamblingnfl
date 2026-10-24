@@ -17,7 +17,6 @@ import {
   CURRENT_SEASON,
   fetchCfbCalendar,
   fetchCfbSchedule,
-  fetchCfbConferencePlayers,
   fetchCfbGameProjections,
   fetchCollegePlayerGameLog,
   fetchConferenceTeamOverviewStats,
@@ -25,7 +24,6 @@ import {
 } from "./espn.server";
 
 export {
-  fetchCfbConferencePlayers,
   fetchCfbGameProjections,
   fetchCfbSchedule,
   fetchCollegePlayerGameLog,
