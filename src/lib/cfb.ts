@@ -1,3 +1,5 @@
+import type { Team } from "@/data/teams";
+
 /**
  * College football (FBS) types and ESPN parsing. Pure functions (browser- and server-safe), so
  * the parsing can be tested without ESPN.
@@ -224,3 +226,110 @@ export function spreadText(game: CfbGame): string | undefined {
 }
 
 export const teamLabel = (s: CfbSide) => `${s.rank ? `#${s.rank} ` : ""}${s.team.shortName}`;
+
+/* ---------------- re-keying ESPN college payloads ---------------- */
+
+/** An ESPN team object (not a player, position or conference). */
+function isTeamObject(o: any): boolean {
+  return (
+    o &&
+    o.id !== undefined &&
+    o.id !== null &&
+    typeof o.abbreviation === "string" &&
+    o.position === undefined &&
+    o.jersey === undefined &&
+    (o.location !== undefined ||
+      o.logos !== undefined ||
+      o.logo !== undefined ||
+      (typeof o.uid === "string" && o.uid.includes("~t:")))
+  );
+}
+
+const parseRecord = (summary: unknown): Team["record"] | undefined => {
+  const m = String(summary ?? "").match(/^(\d+)-(\d+)(?:-(\d+))?/);
+  return m ? { w: Number(m[1]), l: Number(m[2]), t: Number(m[3] ?? 0) } : undefined;
+};
+
+/**
+ * Tags every team object in an ESPN college payload with `_key: "cfb:<espnId>"` (abbreviations
+ * stay as they are, so text like "OSU 35" still matches) and returns the teams found, as site
+ * teams with ids "cfb-<espnId>". The NFL parsers then resolve college teams by that key.
+ */
+export function rekeyCollegeTeams(json: unknown): Team[] {
+  const found = new Map<string, Team>();
+  const upsert = (o: any): Team => {
+    const espnId = String(o.id);
+    const prev = found.get(espnId);
+    // The site is dark, so prefer ESPN's dark-background logo when the payload lists one.
+    const logos: any[] = Array.isArray(o.logos) ? o.logos : [];
+    const dark = logos.find((l) => Array.isArray(l?.rel) && l.rel.includes("dark"));
+    const logo: string | undefined = dark?.href ?? o.logo ?? logos[0]?.href;
+    const team: Team = {
+      id: `cfb-${espnId}`,
+      espnId,
+      league: "cfb",
+      abbr: String(o.abbreviation || prev?.abbr || ""),
+      city: String(o.location ?? o.shortDisplayName ?? o.displayName ?? prev?.city ?? ""),
+      name: String(o.name ?? prev?.name ?? ""),
+      conference: prev?.conference ?? "",
+      division: "",
+      color: o.color ? `#${String(o.color).replace(/^#/, "")}` : (prev?.color ?? "#8899aa"),
+      record: prev?.record ?? { w: 0, l: 0, t: 0 },
+      pointsFor: 0,
+      pointsAgainst: 0,
+      logo: logo ?? prev?.logo,
+      rank: prev?.rank,
+    };
+    found.set(espnId, team);
+    return team;
+  };
+  const visit = (node: any) => {
+    if (Array.isArray(node)) {
+      for (const n of node) visit(n);
+      return;
+    }
+    if (!node || typeof node !== "object") return;
+    if (isTeamObject(node)) {
+      node._key = `cfb:${node.id}`;
+      upsert(node);
+    }
+    // A competitor carries the team's rank and record next to it.
+    if (node.team && isTeamObject(node.team)) {
+      const team = upsert(node.team);
+      if (node.curatedRank) {
+        // 0 = unranked this week (ESPN uses 99), so an old ranking doesn't linger.
+        const rank = Number(node.curatedRank.current);
+        team.rank = Number.isFinite(rank) && rank >= 1 && rank <= 25 ? rank : 0;
+      }
+      const total = (Array.isArray(node.records) ? node.records : []).find(
+        (r: any) => r?.type === "total" || r?.name === "overall",
+      );
+      const record = parseRecord(total?.summary);
+      if (record) team.record = record;
+    }
+    for (const key of Object.keys(node)) if (key !== "_key") visit(node[key]);
+  };
+  visit(json);
+  return [...found.values()];
+}
+
+/** Site teams for FBS conference members (from the standings), tagged with the conference. */
+export function conferenceTeams(conferences: CfbConference[]): Team[] {
+  return conferences.flatMap((c) =>
+    c.teams.map((t) => ({
+      id: `cfb-${t.id}`,
+      espnId: t.id,
+      league: "cfb" as const,
+      abbr: t.abbr,
+      city: t.location,
+      name: t.name,
+      conference: c.abbr || c.name,
+      division: "",
+      color: t.color ? `#${t.color.replace(/^#/, "")}` : "#8899aa",
+      record: parseRecord(t.record) ?? { w: 0, l: 0, t: 0 },
+      pointsFor: 0,
+      pointsAgainst: 0,
+      logo: t.logo,
+    })),
+  );
+}
