@@ -5,6 +5,14 @@ import { Panel, TeamLogo } from "@/components/booth";
 import type { Game } from "@/data/games";
 import type { Team } from "@/data/teams";
 import {
+  gameRoute,
+  playerRoute,
+  teamKey,
+  teamRoute,
+  teamShort,
+  useLeague,
+} from "@/lib/league-links";
+import {
   getGamePropAnalytics,
   getGamePropPredictions,
   getGamePropProjections,
@@ -81,7 +89,7 @@ const kickoffText = (iso?: string) =>
 export function TeamLink({ team, className = "size-5" }: { team: Team; className?: string }) {
   return (
     <Link
-      to="/teams/$teamId"
+      to={teamRoute(team.id)}
       params={{ teamId: team.id }}
       onClick={(event) => event.stopPropagation()}
       aria-label={`${team.city} ${team.name} team page`}
@@ -100,7 +108,7 @@ function StatusBadge({ game }: { game: Game }) {
     // Live games: green, and a link to the game's live page.
     return (
       <Link
-        to="/games/$gameId"
+        to={gameRoute(game.id)}
         params={{ gameId: game.id }}
         title="Open the live game"
         className="inline-flex items-center gap-1.5 rounded bg-win/15 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-win transition-colors hover:bg-win/25"
@@ -122,6 +130,12 @@ function StatusBadge({ game }: { game: Game }) {
 }
 
 export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team; home: Team }) {
+  const league = useLeague();
+  // The server looks teams up by these keys (NFL abbreviations, college team ids); players come
+  // back tagged with them, and abbrOf turns one back into the abbreviation shown.
+  const awayKey = teamKey(away);
+  const homeKey = teamKey(home);
+  const abbrOf = (key: string) => (key === awayKey ? away.abbr : key === homeKey ? home.abbr : key);
   const [category, setCategory] = useState<PropCategory>("passing");
   const [marketKey, setMarketKey] = useState<string>("all");
   const [teamFilter, setTeamFilter] = useState<"all" | "away" | "home">("all");
@@ -134,8 +148,8 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
 
   // Real players for both teams (the same ESPN rosters the rest of the site uses).
   const rosterQuery = useQuery({
-    queryKey: ["prop-roster", away.abbr, home.abbr],
-    queryFn: () => getPropPeople({ data: { awayAbbr: away.abbr, homeAbbr: home.abbr } }),
+    queryKey: ["prop-roster", awayKey, homeKey],
+    queryFn: () => getPropPeople({ data: { awayAbbr: awayKey, homeAbbr: homeKey } }),
     staleTime: 10 * 60_000,
   });
   // Saved model projections for exactly this game; nothing is calculated in the browser.
@@ -148,17 +162,17 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
 
   // Real results from completed games for both teams (season averages, last 3, highs/lows).
   const analyticsQuery = useQuery({
-    queryKey: ["prop-analytics", away.abbr, home.abbr],
-    queryFn: () => getGamePropAnalytics({ data: { awayAbbr: away.abbr, homeAbbr: home.abbr } }),
+    queryKey: ["prop-analytics", awayKey, homeKey],
+    queryFn: () => getGamePropAnalytics({ data: { awayAbbr: awayKey, homeAbbr: homeKey } }),
     staleTime: 10 * 60_000,
     retry: 1,
   });
   // Model projections for every prop in this game, with the model's season accuracy.
   const projectionsQuery = useQuery({
-    queryKey: ["prop-projections", game.id, away.abbr, home.abbr],
+    queryKey: ["prop-projections", game.id, awayKey, homeKey],
     queryFn: () =>
       getGamePropProjections({
-        data: { eventId: game.id, awayAbbr: away.abbr, homeAbbr: home.abbr },
+        data: { eventId: game.id, awayAbbr: awayKey, homeAbbr: homeKey },
       }),
     staleTime: 10 * 60_000,
     retry: 1,
@@ -176,9 +190,9 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
 
   // Injury report + depth chart for this game.
   const availabilityQuery = useQuery({
-    queryKey: ["prop-availability", game.id, away.abbr, home.abbr],
+    queryKey: ["prop-availability", game.id, awayKey, homeKey],
     queryFn: () =>
-      getPropAvailability({ data: { eventId: game.id, awayAbbr: away.abbr, homeAbbr: home.abbr } }),
+      getPropAvailability({ data: { eventId: game.id, awayAbbr: awayKey, homeAbbr: homeKey } }),
     staleTime: 5 * 60_000,
     refetchInterval: game.status === "final" ? false : 10 * 60_000,
     retry: 1,
@@ -202,7 +216,7 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
   }, [rosterQuery.data]);
 
   const sideOf = (abbr: string): "away" | "home" | undefined =>
-    abbr === away.abbr ? "away" : abbr === home.abbr ? "home" : undefined;
+    abbr === awayKey ? "away" : abbr === homeKey ? "home" : undefined;
 
   const offensivePlayers = useMemo(
     () =>
@@ -395,7 +409,7 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
           <TeamLink team={away} className="size-10" />
           <div>
             <h2 className="font-disp text-xl font-semibold uppercase tracking-tight sm:text-2xl">
-              {away.name} <span className="text-mute">@</span> {home.name}
+              {teamShort(away)} <span className="text-mute">@</span> {teamShort(home)}
             </h2>
             <p
               suppressHydrationWarning
@@ -425,10 +439,11 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
               <p className="mt-1 text-mute">
                 {hasAnalytics ? (
                   <>
-                    The model projects each stat from recent form, this opponent&apos;s defense and
-                    the expected game script, using only games before this one ({away.abbr}{" "}
-                    {scanned[away.abbr] ?? 0} games, {home.abbr} {scanned[home.abbr] ?? 0} games
-                    played).{" "}
+                    {league === "cfb"
+                      ? "The model projects each stat from recent form and this opponent\u2019s defense"
+                      : "The model projects each stat from recent form, this opponent\u2019s defense and the expected game script"}
+                    , using only games before this one ({away.abbr} {scanned[awayKey] ?? 0} games,{" "}
+                    {home.abbr} {scanned[homeKey] ?? 0} games played).{" "}
                     {projectionsQuery.isLoading ? (
                       "Loading projections\u2026"
                     ) : projectionsQuery.data?.accuracy.overall.n ? (
@@ -679,7 +694,7 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
                       >
                         <td className="px-4 py-2.5">
                           <Link
-                            to="/players/$playerId"
+                            to={playerRoute(league)}
                             params={{ playerId: row.playerId }}
                             onClick={(event) => event.stopPropagation()}
                             className="font-medium hover:text-acc"
@@ -691,7 +706,7 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
                           </span>
                           <InjuryTag info={injuryTagFor(row.playerId)} />
                         </td>
-                        <td className="px-2 py-2.5 font-mono text-mute">{row.teamAbbr}</td>
+                        <td className="px-2 py-2.5 font-mono text-mute">{abbrOf(row.teamAbbr)}</td>
                         <td className="px-2 py-2.5 text-mute">{row.market.label}</td>
                         <td className="px-2 py-2.5 text-right font-mono text-base font-bold tabular-nums text-acc">
                           {formatProjection(row.market.kind, row.projected)}
@@ -755,6 +770,7 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
         )
       ) : hasAnalytics ? (
         <AnalyticsTable
+          abbrOf={abbrOf}
           tagFor={injuryTagFor}
           modelFor={modelFor}
           usageFor={usageFor}
@@ -780,11 +796,23 @@ export function GamePropAnalysis({ game, away, home }: { game: Game; away: Team;
       <p className="border-t border-line/10 px-4 py-3 text-[11px] text-faint">
         {hasAnalytics ? (
           <>
-            Proj = model projection = recent form (latest games weighted most, pulled toward the
-            position average early in the season) × opponent defense vs. that position × expected
-            game script. Range: {RANGE_METHOD_NOTE} Season figures come from ESPN box scores of
-            completed 2026 games; longest-play stats only count games with such a play. Not
-            sportsbook lines or advice.
+            {league === "cfb" ? (
+              <>
+                Proj = model projection = the middle outcome from recent form (each player&apos;s
+                last 8 games, latest weighted most, pulled back toward normal) × a partial
+                adjustment for the opponent&apos;s defense. Range: where about 80% of results landed
+                when tested on 2025 games (passing TDs: a count range). Season figures come from
+                ESPN box scores of completed 2026 games. Not sportsbook lines or advice.
+              </>
+            ) : (
+              <>
+                Proj = model projection = recent form (latest games weighted most, pulled toward the
+                position average early in the season) × opponent defense vs. that position ×
+                expected game script. Range: {RANGE_METHOD_NOTE} Season figures come from ESPN box
+                scores of completed 2026 games; longest-play stats only count games with such a
+                play. Not sportsbook lines or advice.
+              </>
+            )}
           </>
         ) : (
           <>
@@ -811,6 +839,10 @@ function PlayerList({
   home: Team;
   loadFailed: boolean;
 }) {
+  const league = useLeague();
+  const awayKey = teamKey(away);
+  const abbrOf = (key: string) =>
+    key === awayKey ? away.abbr : key === teamKey(home) ? home.abbr : key;
   if (players.length === 0) {
     return (
       <p className="px-4 pb-6 text-center font-mono text-xs text-mute">
@@ -836,7 +868,7 @@ function PlayerList({
             <tr key={player.id} className="hover:bg-line/5">
               <td className="px-4 py-2.5">
                 <Link
-                  to="/players/$playerId"
+                  to={playerRoute(league)}
                   params={{ playerId: player.id }}
                   className="font-medium hover:text-acc"
                 >
@@ -846,8 +878,8 @@ function PlayerList({
               </td>
               <td className="px-2 py-2.5">
                 <span className="inline-flex items-center gap-1.5 font-mono text-mute">
-                  <TeamLink team={player.team === away.abbr ? away : home} className="size-4" />
-                  {player.team}
+                  <TeamLink team={player.team === awayKey ? away : home} className="size-4" />
+                  {abbrOf(player.team)}
                 </span>
               </td>
               <td className="px-2 py-2.5 font-mono text-mute">
@@ -954,7 +986,10 @@ function AnalyticsTable({
   resultWeek,
   modelLoading,
   usageFor,
+  abbrOf,
 }: {
+  /** Team key (abbreviation or college id) → abbreviation shown. */
+  abbrOf: (key: string) => string;
   usageFor: (playerId: string) => PlayerUsage | undefined;
   tagFor: (id: string) => InjuryTagInfo | undefined;
   modelFor: (playerId: string, key: string) => PlayerStatModel | undefined;
@@ -966,6 +1001,7 @@ function AnalyticsTable({
   expanded: Set<string>;
   toggle: (id: string) => void;
 }) {
+  const league = useLeague();
   if (rows.length === 0) {
     return (
       <p className="px-4 py-8 text-center font-mono text-xs text-mute">
@@ -1040,7 +1076,7 @@ function AnalyticsTable({
                 >
                   <td className="px-4 py-2.5">
                     <Link
-                      to="/players/$playerId"
+                      to={playerRoute(league)}
                       params={{ playerId: player.id }}
                       onClick={(event) => event.stopPropagation()}
                       className="font-medium hover:text-acc"
@@ -1058,7 +1094,7 @@ function AnalyticsTable({
                       </span>
                     ) : null}
                   </td>
-                  <td className="px-2 py-2.5 font-mono text-mute">{player.teamAbbr}</td>
+                  <td className="px-2 py-2.5 font-mono text-mute">{abbrOf(player.teamAbbr)}</td>
                   <td className="px-2 py-2.5 text-mute">{market?.label ?? summary.key}</td>
                   <td
                     className={`px-2 py-2.5 text-right font-mono text-base font-bold tabular-nums ${
