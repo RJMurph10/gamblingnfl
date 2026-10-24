@@ -192,6 +192,18 @@ export interface Game {
   distance?: number;
   /** Closing (or latest) prices from ESPN's scoreboard, American odds. Missing when ESPN lists none. */
   odds?: GameOdds;
+  /**
+   * College games: the two teams (college teams aren't in the built-in list, so they travel
+   * with the game and are registered in the browser).
+   */
+  teamRefs?: import("./teams").Team[];
+  /** College games: one team is an FCS school (shown, but the model skips it). */
+  fcs?: boolean;
+  /** College: AP / CFP rank going into the game (1-25). */
+  awayRank?: number;
+  homeRank?: number;
+  /** College: played at a neutral site (bowls, kickoff classics). */
+  neutralSite?: boolean;
   /** Short TV network / streaming label from the scoreboard, e.g. "AMZN", "CBS", "FOX". */
   broadcast?: string;
   /** Venue, TV, attendance and officials for the Information tab. */
