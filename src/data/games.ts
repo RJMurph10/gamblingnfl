@@ -204,6 +204,10 @@ export interface Game {
   homeRank?: number;
   /** College: played at a neutral site (bowls, kickoff classics). */
   neutralSite?: boolean;
+  /** College: a bowl or playoff game. */
+  postseason?: boolean;
+  /** College: ESPN's note for the game, e.g. "Rose Bowl - CFP Quarterfinal". */
+  note?: string;
   /** Short TV network / streaming label from the scoreboard, e.g. "AMZN", "CBS", "FOX". */
   broadcast?: string;
   /** Venue, TV, attendance and officials for the Information tab. */
