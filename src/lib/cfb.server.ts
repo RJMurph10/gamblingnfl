@@ -17,12 +17,18 @@ import {
   CURRENT_SEASON,
   fetchCfbCalendar,
   fetchCfbSchedule,
+  fetchCfbConferencePlayers,
   fetchCollegePlayerGameLog,
   fetchConferenceTeamOverviewStats,
   fetchFbsConferences,
 } from "./espn.server";
 
-export { fetchCfbSchedule, fetchCollegePlayerGameLog, fetchConferenceTeamOverviewStats };
+export {
+  fetchCfbConferencePlayers,
+  fetchCfbSchedule,
+  fetchCollegePlayerGameLog,
+  fetchConferenceTeamOverviewStats,
+};
 
 const SITE = "https://site.api.espn.com/apis/site/v2/sports/football/college-football";
 const STANDINGS = "https://site.api.espn.com/apis/v2/sports/football/college-football/standings";
