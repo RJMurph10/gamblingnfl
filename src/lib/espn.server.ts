@@ -2587,7 +2587,7 @@ export async function fetchPlayerProfile(
             try {
               return {
                 game,
-                summary: await fetchSummaryFor(game.id),
+                summary: await fetchSummaryFor(game.id, true),
               };
             } catch {
               return null;
@@ -3121,7 +3121,7 @@ export async function fetchTeamSeasonStats(teamAbbr: string): Promise<TeamSeason
           try {
             return {
               gameId: game.id,
-              summary: await fetchSummaryFor(game.id),
+              summary: await fetchSummaryFor(game.id, true),
             };
           } catch {
             return null;
@@ -3670,10 +3670,16 @@ function scheduleForTeam(teamId: string): Promise<Game[]> {
 }
 
 /** A game's ESPN summary, from the right league's feed. */
-function fetchSummaryFor(gameId: string): Promise<any> {
+function fetchSummaryFor(gameId: string, final = false): Promise<any> {
   const { league, id } = eventLeague(gameId);
-  return fetchJson(`${FEEDS[league].summary}?event=${id}`).then((d) =>
-    league === "cfb" ? prepareCollege(d) : d,
+  // Finished games never change, so team and player pages share one copy for hours.
+  return cached(
+    `summary-${league}-${id}`,
+    () =>
+      fetchJson(`${FEEDS[league].summary}?event=${id}`).then((d) =>
+        league === "cfb" ? prepareCollege(d) : d,
+      ),
+    final ? 6 * 60 * 60_000 : 60_000,
   );
 }
 
@@ -3810,7 +3816,7 @@ export async function fetchCollegePlayerGameLog(
         finals.map(async (game) => {
           let summary: any;
           try {
-            summary = await fetchSummaryFor(game.id);
+            summary = await fetchSummaryFor(game.id, true);
           } catch {
             return null;
           }
@@ -3881,6 +3887,122 @@ export async function fetchConferenceTeamOverviewStats(
           stats: await fetchTeamOverviewStats(t.id),
         })),
       );
+    },
+    10 * MINUTE,
+  );
+}
+
+/** One college player in the players index: roster details plus season totals. */
+export interface CfbIndexPlayer {
+  id: string;
+  name: string;
+  teamId: string;
+  position: string;
+  jersey?: string;
+  height?: string;
+  weight?: string;
+  headshot?: string;
+  /** Season totals (0 when none): games, passing, rushing, receiving, defense. */
+  stats: {
+    gp: number;
+    cmp: number;
+    att: number;
+    passYds: number;
+    passTd: number;
+    int: number;
+    rushAtt: number;
+    rushYds: number;
+    rushTd: number;
+    rec: number;
+    recYds: number;
+    recTd: number;
+    tackles: number;
+    sacks: number;
+    defInt: number;
+  };
+}
+
+/**
+ * Every player on a conference's rosters with season totals from its teams' box scores
+ * (10-minute cache). A conference at a time keeps it to about 15 rosters.
+ */
+export async function fetchCfbConferencePlayers(conference: string): Promise<CfbIndexPlayer[]> {
+  await fetchFbsConferences().catch(() => []);
+  return cached(
+    `cfb-conference-players-${conference}`,
+    async () => {
+      const members = registeredCollegeTeams().filter((t) => t.conference === conference);
+      const perTeam = await Promise.all(
+        members.map(async (team) => {
+          const [roster, season] = await Promise.all([
+            fetchTeamRoster(team.id).catch((): LiveRosterPlayer[] => []),
+            fetchTeamSeasonStats(team.id).catch(() => null),
+          ]);
+          const totals = new Map<string, CfbIndexPlayer["stats"]>();
+          const blank = (): CfbIndexPlayer["stats"] => ({
+            gp: 0,
+            cmp: 0,
+            att: 0,
+            passYds: 0,
+            passTd: 0,
+            int: 0,
+            rushAtt: 0,
+            rushYds: 0,
+            rushTd: 0,
+            rec: 0,
+            recYds: 0,
+            recTd: 0,
+            tackles: 0,
+            sacks: 0,
+            defInt: 0,
+          });
+          const n = (row: TeamSeasonStatRow, key: string) => numericStat(row.stats[key]);
+          const add = (rows: TeamSeasonStatRow[] | undefined, fill: (t: CfbIndexPlayer["stats"], r: TeamSeasonStatRow) => void) => {
+            for (const r of rows ?? []) {
+              const t = totals.get(r.id) ?? blank();
+              t.gp = Math.max(t.gp, n(r, "gamesPlayed"));
+              fill(t, r);
+              totals.set(r.id, t);
+            }
+          };
+          add(season?.offense.passing, (t, r) => {
+            t.cmp += n(r, "completions");
+            t.att += n(r, "passingAttempts");
+            t.passYds += n(r, "passingYards");
+            t.passTd += n(r, "passingTouchdowns");
+            t.int += n(r, "interceptions");
+          });
+          add(season?.offense.rushing, (t, r) => {
+            t.rushAtt += n(r, "rushingAttempts");
+            t.rushYds += n(r, "rushingYards");
+            t.rushTd += n(r, "rushingTouchdowns");
+          });
+          add(season?.offense.receiving, (t, r) => {
+            t.rec += n(r, "receptions");
+            t.recYds += n(r, "receivingYards");
+            t.recTd += n(r, "receivingTouchdowns");
+          });
+          add(season?.defense, (t, r) => {
+            t.tackles += n(r, "totalTackles");
+            t.sacks += n(r, "sacks");
+            t.defInt += n(r, "interceptions");
+          });
+          return roster.map(
+            (p): CfbIndexPlayer => ({
+              id: p.id,
+              name: p.name,
+              teamId: team.id,
+              position: p.position,
+              jersey: p.jersey,
+              height: p.height,
+              weight: p.weight,
+              headshot: p.headshot,
+              stats: totals.get(p.id) ?? blank(),
+            }),
+          );
+        }),
+      );
+      return perTeam.flat();
     },
     10 * MINUTE,
   );
