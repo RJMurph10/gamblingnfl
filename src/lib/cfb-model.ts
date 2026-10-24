@@ -16,7 +16,15 @@
 
 import { gameScore, type Game } from "@/data/games";
 import { CFB_STADIUMS } from "@/data/cfb-stadiums";
-import { MODEL_SETTINGS, runModel, type GameModelRow, type ModelPick } from "./game-model";
+import {
+  MODEL_SETTINGS,
+  NFL_CONFIG,
+  runModel,
+  type GameModelRow,
+  type ModelConfig,
+  type ModelPick,
+  type PriorResult,
+} from "./game-model";
 import { homeLine } from "./season-pulse";
 
 export type CfbRuleId = "bounce" | "travel" | "early" | "academy";
@@ -375,12 +383,33 @@ function ruleNote(p: CfbPick): string {
 }
 
 /**
+ * College settings for the every-game model. The NFL's numbers don't fit the college game:
+ * margins are wider (SD about 17 vs 13.5), the 28-point cap and the FCS discount keep one
+ * 70-0 blowout over an FCS team from rewriting a rating, and neutral-site games have no home
+ * field. The before/after for each change is on the model page (the lab at the bottom), so a
+ * change that doesn't help can be switched off here.
+ */
+export const CFB_CONFIG: ModelConfig = {
+  ...NFL_CONFIG,
+  marginSd: 17,
+  homeFieldPrior: 2.5,
+  marginCap: 28,
+  fcsWeight: 0.25,
+  neutralSites: true,
+};
+
+/**
  * The NFL game model run on the college season: team ratings from this season's scores, anchored
  * to the betting line, a call on every game (winner, spread side, over/under), with the college
  * ★ best-bet rules in place of the NFL ones. Bowls get every-game calls but no ★.
  */
-export function runCfbModel(games: Game[]): GameModelRow[] {
-  const rows = runModel(games, [], [], undefined, undefined, undefined, false);
+export function runCfbModel(
+  games: Game[],
+  /** Last season's FBS results, so ratings start the year from last year's teams. */
+  priorSeason: PriorResult[] = [],
+  cfg: ModelConfig = CFB_CONFIG,
+): GameModelRow[] {
+  const rows = runModel(games, priorSeason, [], undefined, undefined, undefined, false, cfg);
   const byGame = new Map<string, CfbPick[]>();
   for (const p of cfbBestBets(games)) byGame.set(p.game.id, [...(byGame.get(p.game.id) ?? []), p]);
   for (const row of rows) {
