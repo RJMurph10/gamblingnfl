@@ -20,6 +20,8 @@ export const getAngleForecasts = createServerFn({ method: "POST" })
               homeTeamId: z.string(),
               venue: z.string().optional(),
               kickoffIso: z.string(),
+              lat: z.number().optional(),
+              lon: z.number().optional(),
             }),
           )
           .max(16),
