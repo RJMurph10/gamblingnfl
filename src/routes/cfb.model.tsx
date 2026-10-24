@@ -16,6 +16,7 @@ import {
   type CfbRuleId,
 } from "@/lib/cfb-model";
 import { unitsText } from "@/lib/game-model";
+import { CfbWatchList } from "@/components/CfbWatchList";
 import { currentCfbWeek, useCfbSchedule } from "@/lib/use-cfb";
 
 export const Route = createFileRoute("/cfb/model")({
@@ -35,7 +36,7 @@ export const Route = createFileRoute("/cfb/model")({
 const SEASON = 2026;
 const one = (n: number) => (Math.round(n * 10) / 10).toFixed(1);
 const lineText = (n: number) => (n === 0 ? "PK" : n > 0 ? `+${n}` : String(n));
-const toneOf = (u: number) => (u > 0 ? "win" : u < 0 ? "loss" : "mute") as const;
+const toneOf = (u: number): "win" | "loss" | "mute" => (u > 0 ? "win" : u < 0 ? "loss" : "mute");
 const toneClass = (u: number) => (u > 0 ? "text-win" : u < 0 ? "text-loss" : "text-mute");
 const RULE_TITLE = Object.fromEntries(CFB_RULES.map((r) => [r.id, r.title])) as Record<
   CfbRuleId,
@@ -56,7 +57,7 @@ function RecordCell({ r, bold = false }: { r?: CfbRecord; bold?: boolean }) {
 
 function PickText({ pick }: { pick: CfbPick }) {
   if (pick.market === "total") return <span>Under {pick.line}</span>;
-  const team = teamById(pick.game.awayTeamId);
+  const team = teamById(pick.side === "home" ? pick.game.homeTeamId : pick.game.awayTeamId);
   return (
     <span className="inline-flex items-center gap-1.5">
       {team ? <TeamLogo team={team} className="size-4" /> : null}
@@ -74,6 +75,7 @@ function PickRow({ pick }: { pick: CfbPick }) {
   if (!away || !home) return null;
   const s = gameScore(g);
   const lost = pick.lastLoss ? Math.abs(pick.lastLoss.margin) : null;
+  const trip = pick.miles ? `${away.abbr} traveled ${pick.miles.toLocaleString()} mi` : null;
   return (
     <tr className="border-b border-line/5 last:border-0 hover:bg-line/5">
       <td className="px-4 py-2.5 font-mono text-mute">Wk {g.week}</td>
@@ -93,6 +95,7 @@ function PickRow({ pick }: { pick: CfbPick }) {
       <td className="px-2 py-2.5 text-[12px] text-mute">
         {RULE_TITLE[pick.rule]}
         {lost ? ` · lost by ${lost} last game` : ""}
+        {trip ? ` · ${trip}` : ""}
       </td>
       <td
         className={`px-4 py-2.5 text-right font-mono text-[11px] uppercase ${
@@ -164,7 +167,7 @@ function CfbModel() {
     <>
       <PageTitle eyebrow="FBS · flat 1 unit per pick at -110" title="Model" />
       <div className="space-y-6">
-        <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-6">
           <StatCard
             label={`★ Best bets · ${SEASON}`}
             value={isLoading ? "…" : recordText(season)}
@@ -189,8 +192,8 @@ function CfbModel() {
           })}
           <StatCard
             label="Since 2009"
-            value={recordText(allTime)}
-            note={`${one(allTime.winPct ?? 0)}% · ${unitsText(allTime.units)} · ${winningSeasons}/${seasons.length} winning seasons`}
+            value={unitsText(allTime.units)}
+            note={`${recordText(allTime)} · ${one(allTime.winPct ?? 0)}% · ${winningSeasons}/${seasons.length} winning seasons`}
             tone={toneOf(allTime.units)}
           />
         </div>
@@ -217,12 +220,15 @@ function CfbModel() {
             The ★ best bet rules
           </h2>
           <p className="mt-1 text-sm text-mute">
-            Each rule was found on 2009–2017 and then checked on 2018–2025, seasons it never saw,
-            against the consensus closing line. Dozens of other angles were tested and dropped
-            because they didn&apos;t hold up on the newer seasons (big underdogs, home dogs, byes,
-            Thursday and #MACtion unders, conference-specific unders, Elo ratings vs the line).
+            Each rule was looked for on 2009–2017 and then checked on 2018–2025, seasons it never
+            saw, against the consensus closing line. Early-season unders were flat on the older
+            seasons and only took off in 2018, so they&apos;re the least proven of the four. Dozens
+            of other angles were tested and dropped because they didn&apos;t hold up on the newer
+            seasons (big underdogs, home dogs, byes, Thursday and #MACtion unders,
+            conference-specific unders, Elo ratings vs the line, altitude, domes, cold northern
+            November games).
           </p>
-          <div className="mt-4 grid gap-3 lg:grid-cols-3">
+          <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             {CFB_RULES.map((rule) => (
               <div key={rule.id} className="rounded-lg border border-line/10 bg-panel2/20 p-3">
                 <h3 className="font-disp text-base font-semibold uppercase tracking-tight">
@@ -293,6 +299,8 @@ function CfbModel() {
             teams and bowls aren&apos;t included.
           </p>
         </Panel>
+
+        <CfbWatchList games={games} season={SEASON} />
 
         <Panel padded={false}>
           <PanelHeader
