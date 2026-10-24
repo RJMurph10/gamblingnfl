@@ -17,6 +17,7 @@ import {
   CURRENT_SEASON,
   fetchCfbCalendar,
   fetchCfbSchedule,
+  fetchCfbPriorSeasonResults,
   fetchCfbGameProjections,
   fetchCollegePlayerGameLog,
   fetchConferenceTeamOverviewStats,
@@ -25,6 +26,7 @@ import {
 
 export {
   fetchCfbGameProjections,
+  fetchCfbPriorSeasonResults,
   fetchCfbSchedule,
   fetchCollegePlayerGameLog,
   fetchConferenceTeamOverviewStats,
