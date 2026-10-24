@@ -186,6 +186,17 @@ export interface Game {
   ballSpot?: { side: "away" | "home" | "mid"; yard: number };
   /** Most recent scoring drive during a live game. */
   scoringAlert?: { type: "TD" | "FG"; teamId: string; yards?: number };
+  /**
+   * Live game between snaps with a kick coming or in the air, so no down applies: after a score
+   * the scoring team kicks off. Shown in place of the dash.
+   */
+  kicking?: { kind: "kickoff"; teamId: string };
+  /**
+   * What ESPN's last play was in a live game: a touchdown / made field goal ("score"), the kick
+   * that follows one ("kick"), or anything else. Undefined when ESPN sends no last play. Keeps a
+   * TD / FG label from lingering after the next drive starts.
+   */
+  playState?: "score" | "kick" | "other";
   awayRecord?: string;
   homeRecord?: string;
   possessionText?: string;
