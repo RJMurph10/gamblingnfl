@@ -1,20 +1,12 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageTitle, Panel, StatCard, TeamLogo } from "@/components/booth";
-import { CfbScopePicker } from "@/components/CfbScope";
 import { LiveGamesPanel, RecentGamesPanel, UpcomingGames } from "@/components/GameTables";
-import { gameScore, type Game } from "@/data/games";
-import { cfbBestBets, cfbRecord, recordText } from "@/lib/cfb-model";
-import { unitsText } from "@/lib/game-model";
+import type { Game } from "@/data/games";
+import { runCfbModel } from "@/lib/cfb-model";
+import { summarizeModel, unitsText } from "@/lib/game-model";
 import { buildSeasonPulse, changeTone, weekChangeText } from "@/lib/season-pulse";
-import {
-  currentCfbWeek,
-  scopeGames,
-  useCfbConferences,
-  useCfbSchedule,
-  useCfbTop25,
-  type CfbScope,
-} from "@/lib/use-cfb";
+import { useCfbSchedule, useCfbTop25 } from "@/lib/use-cfb";
 
 export const Route = createFileRoute("/cfb/")({
   head: () => ({
@@ -30,138 +22,121 @@ export const Route = createFileRoute("/cfb/")({
   component: CfbDashboard,
 });
 
-const fmt = (v: number | null) => (v === null ? "—" : v.toFixed(1));
-
-/** Overs vs unders on games with a closing total (pushes left out). */
-function overRecord(games: Game[]) {
-  let overs = 0;
-  let unders = 0;
-  for (const g of games) {
-    if (g.status !== "final" || !g.total) continue;
-    const s = gameScore(g);
-    const pts = s.away + s.home;
-    if (pts > g.total) overs++;
-    else if (pts < g.total) unders++;
-  }
-  const n = overs + unders;
-  return { overs, unders, pct: n ? (overs / n) * 100 : null };
-}
-
 const kickoffTime = (g: Game) => (g.kickoffIso ? new Date(g.kickoffIso).getTime() : 0);
 
 function CfbDashboard() {
-  const [scope, setScope] = useState<CfbScope>("all");
-  const { games: all, isLoading, isError } = useCfbSchedule(60_000);
-  const { conferences } = useCfbConferences();
+  const {
+    games: source,
+    isLoading: scheduleLoading,
+    isError: scheduleError,
+  } = useCfbSchedule(60_000);
   const top25 = useCfbTop25();
+  const isLive = source.length > 0;
 
-  const source = useMemo(() => scopeGames(all, scope), [all, scope]);
-  // Lines are FBS-on-FBS: FCS games rarely have one and would skew the figures.
-  const lined = useMemo(() => source.filter((g) => !g.fcs), [source]);
-  const pulse = useMemo(() => buildSeasonPulse(lined), [lined]);
-  const prevWeek = pulse.throughWeek === null ? null : pulse.throughWeek - 1;
-  const overs = useMemo(() => overRecord(lined), [lined]);
-  const oversBefore = useMemo(
-    () => (prevWeek === null ? null : overRecord(lined.filter((g) => g.week <= prevWeek))),
-    [lined, prevWeek],
-  );
-  const overChange =
-    overs.pct !== null && oversBefore?.pct !== null && oversBefore?.pct !== undefined
-      ? Math.round((overs.pct - oversBefore.pct) * 10) / 10
-      : null;
-
-  // ★ best bets need every team's previous game, so they run on the whole schedule.
-  const allPicks = useMemo(() => cfbBestBets(all), [all]);
-  const inScope = useMemo(() => new Set(source.map((g) => g.id)), [source]);
-  const scopedPicks = allPicks.filter((p) => inScope.has(p.game.id));
-  const bets = cfbRecord(scopedPicks.filter((p) => p.result !== "pending"));
-  const pendingBets = scopedPicks.filter((p) => p.game.status === "scheduled").length;
-
-  const live = source.filter((g) => g.status === "live");
   const recent = useMemo(
     () =>
       source
         .filter((g) => g.status === "final")
         .sort((a, b) => b.week - a.week || kickoffTime(b) - kickoffTime(a))
-        .slice(0, 8),
+        .slice(0, 5),
     [source],
   );
-  const week = currentCfbWeek(all);
-  const fav = pulse.favoriteWinRate;
-  const cover = pulse.favoriteCoverRate;
-  const loadingNote = isLoading ? "Loading…" : undefined;
-  const sample = (n: number) => `${n} ${n === 1 ? "game" : "games"}`;
+  const live = source.filter((g) => g.status === "live");
+
+  // Season Pulse: the model's record and units (flat 1u), plus the average total.
+  const pulse = useMemo(() => buildSeasonPulse(source.filter((g) => !g.fcs)), [source]);
+  const modelRows = useMemo(() => runCfbModel(source), [source]);
+  // Accuracy cards grade every game; the units card follows the best bets (what it would bet).
+  const model = useMemo(() => summarizeModel(modelRows, "predictions"), [modelRows]);
+  const bets = useMemo(() => summarizeModel(modelRows, "bets"), [modelRows]);
+  const prev = model.previous;
+  const pctChange = (now: number | null, before: number | null | undefined) =>
+    now !== null && before !== null && before !== undefined
+      ? Math.round((now - before) * 10) / 10
+      : null;
+  const winner = model.byMarket.moneyline;
+  const winChange = pctChange(winner.winPct, prev?.byMarket.moneyline.winPct);
+  const coverChange = pctChange(model.byMarket.spread.winPct, prev?.byMarket.spread.winPct);
+  const totalChange = pctChange(model.byMarket.total.winPct, prev?.byMarket.total.winPct);
+  const unitsChange = bets.previous
+    ? Math.round((bets.overall.units - bets.previous.overall.units) * 100) / 100
+    : null;
+  const fmt = (v: number | null) => (v === null ? "—" : v.toFixed(1));
+  const rec = (r: { wins: number; losses: number; pushes: number }) =>
+    `${r.wins}-${r.losses}${r.pushes ? `-${r.pushes}` : ""}`;
+  const note = (...parts: (string | undefined)[]) => parts.filter(Boolean).join(" · ");
 
   return (
     <>
       <section className="mb-6">
         <PageTitle
-          eyebrow={`Home dashboard · FBS${week ? ` · Week ${week}` : ""}`}
+          eyebrow={isLive ? "Home dashboard · 2026 live schedule" : "Home dashboard"}
           title="Season Pulse"
-          aside={<CfbScopePicker scope={scope} onChange={setScope} conferences={conferences} />}
         />
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
           <StatCard
-            label="Favorites · win rate"
-            value={fmt(fav.value)}
-            unit={fav.value === null ? undefined : "%"}
+            label="Win rate · model"
+            value={fmt(winner.winPct)}
+            unit={winner.winPct === null ? undefined : "%"}
             note={
-              loadingNote ??
-              [weekChangeText(fav.weekChange), `${sample(fav.sample)} straight up`]
-                .filter(Boolean)
-                .join(" · ")
+              scheduleLoading
+                ? "Loading…"
+                : note(weekChangeText(winChange), `${rec(winner)} picking winners`)
             }
-            tone={changeTone(fav.weekChange)}
+            tone={changeTone(winChange)}
           />
           <StatCard
-            label="Favorites · cover %"
-            value={fmt(cover.value)}
-            unit={cover.value === null ? undefined : "%"}
+            label="Totals · model"
+            value={fmt(model.byMarket.total.winPct)}
+            unit={model.byMarket.total.winPct === null ? undefined : "%"}
             note={
-              loadingNote ??
-              [weekChangeText(cover.weekChange), `${sample(cover.sample)} ATS`]
-                .filter(Boolean)
-                .join(" · ")
+              scheduleLoading
+                ? "Loading…"
+                : note(
+                    weekChangeText(totalChange),
+                    `${rec(model.byMarket.total)} O/U`,
+                    pulse.avgTotal.value !== null && pulse.avgTotalLine !== null
+                      ? `games avg ${pulse.avgTotal.value.toFixed(1)} vs line ${pulse.avgTotalLine.toFixed(1)}`
+                      : undefined,
+                  )
             }
-            tone={changeTone(cover.weekChange)}
+            tone={changeTone(totalChange)}
           />
           <StatCard
-            label="Overs · hit rate"
-            value={fmt(overs.pct)}
-            unit={overs.pct === null ? undefined : "%"}
+            label="Cover % · model"
+            value={fmt(model.byMarket.spread.winPct)}
+            unit={model.byMarket.spread.winPct === null ? undefined : "%"}
             note={
-              loadingNote ??
-              [
-                weekChangeText(overChange),
-                `${overs.overs}-${overs.unders} O/U`,
-                pulse.avgTotal.value !== null && pulse.avgTotalLine !== null
-                  ? `avg ${pulse.avgTotal.value.toFixed(1)} pts vs line ${pulse.avgTotalLine.toFixed(1)}`
-                  : undefined,
-              ]
-                .filter(Boolean)
-                .join(" · ")
+              scheduleLoading
+                ? "Loading…"
+                : note(weekChangeText(coverChange), `${rec(model.byMarket.spread)} ATS`)
             }
-            tone={changeTone(overChange)}
+            tone={changeTone(coverChange)}
           />
           <StatCard
-            label="Model · ★ best bets"
-            value={isLoading ? "…" : unitsText(bets.units)}
+            label="Model edge · ★ best bets"
+            value={unitsText(bets.overall.units)}
             note={
-              loadingNote ??
-              (bets.wins + bets.losses + bets.pushes === 0
-                ? "No best bets graded yet"
-                : `${recordText(bets)} · ${bets.winPct === null ? "—" : `${bets.winPct.toFixed(1)}%`}${
-                    pendingBets ? ` · ${pendingBets} this week` : ""
-                  }`)
+              scheduleLoading
+                ? "Loading…"
+                : note(
+                    unitsChange === null
+                      ? undefined
+                      : `${unitsChange > 0 ? "▲" : unitsChange < 0 ? "▼" : "—"} ${Math.abs(unitsChange).toFixed(2)}u wk/wk`,
+                    bets.overall.roi === null
+                      ? "No best bets graded yet"
+                      : `${rec(bets.overall)} · ROI ${bets.overall.roi > 0 ? "+" : ""}${bets.overall.roi.toFixed(1)}%`,
+                    `every game ${unitsText(model.overall.units)}`,
+                  )
             }
-            tone={bets.units > 0 ? "win" : bets.units < 0 ? "loss" : "mute"}
+            tone={bets.overall.units > 0 ? "win" : bets.overall.units < 0 ? "loss" : "mute"}
           />
         </div>
         {pulse.throughWeek !== null ? (
           <p className="mt-2 font-mono text-[10px] uppercase tracking-wider text-faint">
-            Through week {pulse.throughWeek} · FBS vs FBS games at closing ESPN lines · 1u per best bet at -110 ·{" "}
+            Through week {pulse.throughWeek} · flat 1u per pick at closing ESPN odds ·{" "}
             <Link to="/cfb/model" className="text-acc">
-              Best bets →
+              Model picks →
             </Link>
           </p>
         ) : null}
@@ -175,9 +150,9 @@ function CfbDashboard() {
             games={recent}
             allGamesTo="/cfb/games"
             emptyText={
-              isLoading
+              scheduleLoading
                 ? "Loading games from ESPN…"
-                : isError
+                : scheduleError
                   ? "Could not load games from ESPN. Try refreshing shortly."
                   : "No completed games yet."
             }
