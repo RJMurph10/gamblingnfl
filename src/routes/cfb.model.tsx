@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { Panel } from "@/components/booth";
+import { CfbLab } from "@/components/CfbLab";
 import { CfbWatchList } from "@/components/CfbWatchList";
 import { ModelBoard, type TrackSeason } from "@/components/ModelBoard";
 import { CFB_HISTORY } from "@/data/cfb-best-bets-history";
@@ -13,7 +14,7 @@ import {
   type CfbRecord,
 } from "@/lib/cfb-model";
 import { MODEL_SETTINGS, summarizeModel, unitsText, type MarketRecord } from "@/lib/game-model";
-import { useCfbSchedule } from "@/lib/use-cfb";
+import { useCfbPriorSeason, useCfbSchedule } from "@/lib/use-cfb";
 
 export const Route = createFileRoute("/cfb/model")({
   head: () => ({
@@ -57,7 +58,8 @@ const PAST: { season: number; rules: Record<string, CfbRecord>; all: CfbRecord }
 
 function CfbModel() {
   const { games, isLoading } = useCfbSchedule(60_000);
-  const rows = useMemo(() => runCfbModel(games), [games]);
+  const priorSeason = useCfbPriorSeason();
+  const rows = useMemo(() => runCfbModel(games, priorSeason), [games, priorSeason]);
   const trackRecord: TrackSeason[] = useMemo(
     () => [
       { label: `${SEASON} so far`, rows },
@@ -133,7 +135,7 @@ function CfbModel() {
     <ModelBoard
       rows={rows}
       loading={isLoading}
-      eyebrow={`gcfb-anchored-v1 · flat 1 unit per pick`}
+      eyebrow={`gcfb-anchored-v2 · flat 1 unit per pick`}
       trackRecord={trackRecord}
       trackRecordAside="Walk-forward · closing lines"
       trackRecordNote={`${SEASON} runs week by week with only the games before each week, the way it runs live. Past seasons show the ★ best bets only (consensus closing lines, FBS vs FBS regular season); the every-game calls start this season.`}
@@ -141,6 +143,8 @@ function CfbModel() {
       extraTop={rules}
       watchList={<CfbWatchList games={games} season={SEASON} />}
       howItWorks={
+        <>
+        <CfbLab games={games} prior={priorSeason} />
         <Panel>
           <h2 className="font-disp text-lg font-semibold uppercase tracking-tight">
             How the model works
@@ -174,6 +178,7 @@ function CfbModel() {
             </li>
           </ul>
         </Panel>
+        </>
       }
     />
   );
