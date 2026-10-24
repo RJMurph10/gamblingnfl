@@ -1,6 +1,13 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { fetchCfbConferences, fetchCfbRankings, fetchCfbWeek } from "./cfb.server";
+import {
+  fetchCfbConferences,
+  fetchCfbRankings,
+  fetchCfbSchedule,
+  fetchCfbWeek,
+  fetchCollegePlayerGameLog,
+  fetchConferenceTeamOverviewStats,
+} from "./cfb.server";
 
 /** One week of FBS games (the week in progress when no week is given). */
 export const getCfbWeek = createServerFn({ method: "GET" })
@@ -18,3 +25,18 @@ export const getCfbConferences = createServerFn({ method: "GET" }).handler(async
 export const getCfbRankings = createServerFn({ method: "GET" }).handler(async () =>
   fetchCfbRankings(),
 );
+
+/** The whole FBS regular season as site games (college teams attached to each game). */
+export const getCfbSchedule = createServerFn({ method: "GET" }).handler(async () =>
+  fetchCfbSchedule(),
+);
+
+/** A college player's game-by-game stats this season. */
+export const getCfbPlayerGameLog = createServerFn({ method: "GET" })
+  .inputValidator((data) => z.object({ playerId: z.string(), teamId: z.string() }).parse(data))
+  .handler(async ({ data }) => fetchCollegePlayerGameLog(data.playerId, data.teamId));
+
+/** Season metrics for every team in a college team's conference (for conference ranks). */
+export const getConferenceTeamOverviewStats = createServerFn({ method: "GET" })
+  .inputValidator((data) => z.object({ teamId: z.string() }).parse(data))
+  .handler(async ({ data }) => fetchConferenceTeamOverviewStats(data.teamId));
