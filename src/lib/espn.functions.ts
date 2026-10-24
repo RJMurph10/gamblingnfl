@@ -105,10 +105,11 @@ export const getPlayerProfile = createServerFn({
     z
       .object({
         playerId: z.string(),
+        league: z.enum(["nfl", "cfb"]).optional(),
       })
       .parse(data),
   )
-  .handler(async ({ data }) => fetchPlayerProfile(data.playerId));
+  .handler(async ({ data }) => fetchPlayerProfile(data.playerId, data.league ?? "nfl"));
 
 export const getLeaguePlayers = createServerFn({
   method: "GET",
