@@ -8,7 +8,13 @@ import { useQuery } from "@tanstack/react-query";
 import type { Game } from "@/data/games";
 import { registerTeams, teamById, type Team } from "@/data/teams";
 import { conferenceTeams, type CfbConference } from "./cfb";
-import { getCfbConferences, getCfbRankings, getCfbSchedule } from "./cfb.functions";
+import {
+  getCfbConferences,
+  getCfbPriorSeasonResults,
+  getCfbRankings,
+  getCfbSchedule,
+} from "./cfb.functions";
+import type { PriorResult } from "./game-model";
 
 /** The FBS regular season as site games (refreshed every 15 seconds while a game is live). */
 export function useCfbSchedule(refetchMs: number | false = 60_000, enabled = true) {
@@ -32,6 +38,17 @@ export function useCfbSchedule(refetchMs: number | false = 60_000, enabled = tru
     return list;
   }, [query.data]);
   return { ...query, games };
+}
+
+/** Last season's FBS results (fetched once; finished seasons never change). */
+export function useCfbPriorSeason(): PriorResult[] {
+  const query = useQuery({
+    queryKey: ["cfb-prior-season"],
+    queryFn: () => getCfbPriorSeasonResults(),
+    staleTime: 6 * 60 * 60_000,
+    retry: 1,
+  });
+  return useMemo(() => (Array.isArray(query.data) ? query.data : []), [query.data]);
 }
 
 /** FBS conferences (standings), with their teams registered as site teams. */
