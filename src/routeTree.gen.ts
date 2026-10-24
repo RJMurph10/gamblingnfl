@@ -23,6 +23,7 @@ import { Route as TeamsIndexRouteImport } from './routes/teams.index'
 import { Route as TeamsTeamIdRouteImport } from './routes/teams.$teamId'
 import { Route as CfbGamesIndexRouteImport } from './routes/cfb.games.index'
 import { Route as CfbGamesGameIdRouteImport } from './routes/cfb.games.$gameId'
+import { Route as CfbPlayersIndexRouteImport } from './routes/cfb.players.index'
 import { Route as CfbPlayersPlayerIdRouteImport } from './routes/cfb.players.$playerId'
 import { Route as CfbTeamsIndexRouteImport } from './routes/cfb.teams.index'
 import { Route as CfbTeamsTeamIdRouteImport } from './routes/cfb.teams.$teamId'
@@ -97,6 +98,11 @@ const CfbGamesGameIdRoute = CfbGamesGameIdRouteImport.update({
   path: '/cfb/games/$gameId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CfbPlayersIndexRoute = CfbPlayersIndexRouteImport.update({
+  id: '/cfb/players/',
+  path: '/cfb/players/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CfbPlayersPlayerIdRoute = CfbPlayersPlayerIdRouteImport.update({
   id: '/cfb/players/$playerId',
   path: '/cfb/players/$playerId',
@@ -130,6 +136,7 @@ export interface FileRoutesByFullPath {
   '/cfb/players/$playerId': typeof CfbPlayersPlayerIdRoute
   '/cfb/teams/$teamId': typeof CfbTeamsTeamIdRoute
   '/cfb/games/': typeof CfbGamesIndexRoute
+  '/cfb/players/': typeof CfbPlayersIndexRoute
   '/cfb/teams/': typeof CfbTeamsIndexRoute
 }
 export interface FileRoutesByTo {
@@ -149,6 +156,7 @@ export interface FileRoutesByTo {
   '/cfb/players/$playerId': typeof CfbPlayersPlayerIdRoute
   '/cfb/teams/$teamId': typeof CfbTeamsTeamIdRoute
   '/cfb/games': typeof CfbGamesIndexRoute
+  '/cfb/players': typeof CfbPlayersIndexRoute
   '/cfb/teams': typeof CfbTeamsIndexRoute
 }
 export interface FileRoutesById {
@@ -169,6 +177,7 @@ export interface FileRoutesById {
   '/cfb/players/$playerId': typeof CfbPlayersPlayerIdRoute
   '/cfb/teams/$teamId': typeof CfbTeamsTeamIdRoute
   '/cfb/games/': typeof CfbGamesIndexRoute
+  '/cfb/players/': typeof CfbPlayersIndexRoute
   '/cfb/teams/': typeof CfbTeamsIndexRoute
 }
 export interface FileRouteTypes {
@@ -190,6 +199,7 @@ export interface FileRouteTypes {
     | '/cfb/players/$playerId'
     | '/cfb/teams/$teamId'
     | '/cfb/games/'
+    | '/cfb/players/'
     | '/cfb/teams/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -209,6 +219,7 @@ export interface FileRouteTypes {
     | '/cfb/players/$playerId'
     | '/cfb/teams/$teamId'
     | '/cfb/games'
+    | '/cfb/players'
     | '/cfb/teams'
   id:
     | '__root__'
@@ -228,6 +239,7 @@ export interface FileRouteTypes {
     | '/cfb/players/$playerId'
     | '/cfb/teams/$teamId'
     | '/cfb/games/'
+    | '/cfb/players/'
     | '/cfb/teams/'
   fileRoutesById: FileRoutesById
 }
@@ -248,6 +260,7 @@ export interface RootRouteChildren {
   CfbPlayersPlayerIdRoute: typeof CfbPlayersPlayerIdRoute
   CfbTeamsTeamIdRoute: typeof CfbTeamsTeamIdRoute
   CfbGamesIndexRoute: typeof CfbGamesIndexRoute
+  CfbPlayersIndexRoute: typeof CfbPlayersIndexRoute
   CfbTeamsIndexRoute: typeof CfbTeamsIndexRoute
 }
 
@@ -351,6 +364,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CfbGamesGameIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/cfb/players/': {
+      id: '/cfb/players/'
+      path: '/cfb/players'
+      fullPath: '/cfb/players/'
+      preLoaderRoute: typeof CfbPlayersIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/cfb/players/$playerId': {
       id: '/cfb/players/$playerId'
       path: '/cfb/players/$playerId'
@@ -392,6 +412,7 @@ const rootRouteChildren: RootRouteChildren = {
   CfbPlayersPlayerIdRoute: CfbPlayersPlayerIdRoute,
   CfbTeamsTeamIdRoute: CfbTeamsTeamIdRoute,
   CfbGamesIndexRoute: CfbGamesIndexRoute,
+  CfbPlayersIndexRoute: CfbPlayersIndexRoute,
   CfbTeamsIndexRoute: CfbTeamsIndexRoute,
 }
 export const routeTree = rootRouteImport
