@@ -35,7 +35,15 @@ export function LiveGameRow({ game, showDown }: { game: Game; showDown: boolean 
   // live down-and-distance to report. As soon as downs return, show them.
   const liveDownDistance = game.downDistance?.trim() ?? "";
   const hasLiveDowns = liveDownDistance !== "" && !/^[-—]+$/.test(liveDownDistance);
-  const showScoringTransition = Boolean(game.scoringAlert) && !hasLiveDowns;
+  // After the extra point (or on the kickoff), the team that scored is kicking off to the other.
+  const kickoffTeam = game.kicking && !hasLiveDowns ? teamById(game.kicking.teamId) : undefined;
+  // The TD / FG label only belongs to the play right after the score; once ESPN's last play is
+  // something else (a punt on the next drive, say), it must not come back.
+  const showScoringTransition =
+    Boolean(game.scoringAlert) &&
+    !hasLiveDowns &&
+    !kickoffTeam &&
+    (game.playState === undefined || game.playState === "score");
   // Team whose side of the field the ball is on (none at midfield).
   const ballTeam =
     game.ballSpot?.side === "away" ? away : game.ballSpot?.side === "home" ? home : null;
@@ -46,7 +54,12 @@ export function LiveGameRow({ game, showDown }: { game: Game; showDown: boolean 
       {showDown ? (
         <td className="whitespace-nowrap px-2 py-2.5 font-mono text-mute">
           {!isHalftime ? (
-            showScoringTransition ? (
+            kickoffTeam ? (
+              <span className="inline-flex items-center gap-1">
+                <TeamLogo team={kickoffTeam} className="size-4" />
+                Kickoff
+              </span>
+            ) : showScoringTransition ? (
               <span className="inline-flex items-center gap-1">
                 <TeamLogo team={teamById(game.scoringAlert!.teamId)!} className="size-4" />
                 {game.scoringAlert!.type === "FG"
