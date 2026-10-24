@@ -676,6 +676,22 @@ function parseBroadcast(comp: any): string | undefined {
   return names.length ? names.join(" · ") : undefined;
 }
 
+/**
+ * The down & distance, ball spot and possession from a game's last snap. ESPN blanks the down
+ * during a timeout, so the last known one is held and shown until the next real play.
+ */
+const lastSnapState = new Map<
+  string,
+  {
+    downDistance: string;
+    ballSpot: Game["ballSpot"];
+    possession: Game["possession"];
+    isRedZone: boolean;
+    at: number;
+  }
+>();
+const SNAP_HOLD_MS = 20 * 60 * 1000;
+
 function mapEvent(event: any, week: number): Game | null {
   const comp = event?.competitions?.[0];
   if (!comp) return null;
@@ -810,6 +826,31 @@ function mapEvent(event: any, week: number): Game | null {
       isRedZone = !!oppAbbr && spot[1] === oppAbbr && Number(spot[2]) <= 20;
     } else {
       isRedZone = Boolean(sit.isRedZone);
+    }
+  }
+
+  // A timeout (either team's, any quarter) shouldn't wipe the down: hold the last snap's down,
+  // distance and spot until ESPN reports a real play. Any other no-down moment (a score, kick,
+  // punt, turnover) clears it, so a timeout before a kickoff never revives an old down.
+  const snapKey = String(event.id);
+  if (!isLive) {
+    lastSnapState.delete(snapKey);
+  } else if (downDistance) {
+    lastSnapState.set(snapKey, { downDistance, ballSpot, possession, isRedZone, at: Date.now() });
+  } else if (sit?.lastPlay) {
+    const lp = sit.lastPlay;
+    if (/timeout/i.test(`${String(lp?.type?.text ?? "")} ${String(lp?.text ?? "")}`)) {
+      const held = lastSnapState.get(snapKey);
+      if (held && Date.now() - held.at < SNAP_HOLD_MS) {
+        downDistance = held.downDistance;
+        ballSpot = held.ballSpot;
+        possession = possession ?? held.possession ?? null;
+        isRedZone = held.isRedZone;
+        playState = undefined;
+        kicking = undefined;
+      }
+    } else {
+      lastSnapState.delete(snapKey);
     }
   }
 
