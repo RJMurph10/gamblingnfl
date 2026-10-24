@@ -6,6 +6,7 @@ import type { Game, PlayByPlayItem, SeasonLeader, TeamGameStats } from "@/data/g
 import { gameScore } from "@/data/games";
 import { teamByAbbr, teamById, teamLogo, teamLogoFallback } from "@/data/teams";
 import { useRunningGameClock } from "@/lib/use-running-game-clock";
+import { gameRoute, headshotUrl, playerRoute, teamRoute, teamShort, useLeague } from "@/lib/league-links";
 
 
 /* ---------- primitives ---------- */
@@ -137,6 +138,7 @@ export function GameInformation({
 /** Pregame "Season leaders": same look as Game leaders, but cumulative season stats. */
 export function SeasonLeaders({ game, away, home }: { game: Game; away: Team; home: Team }) {
   const rows = game.seasonLeaders ?? [];
+  const league = useLeague();
   const playerCell = (leader: SeasonLeader | undefined, side: "away" | "home") => {
     const isHome = side === "home";
     const alignment = isHome ? "justify-end text-right" : "justify-start text-left";
@@ -146,7 +148,7 @@ export function SeasonLeaders({ game, away, home }: { game: Game; away: Team; ho
         <img
           src={
             leader.headshot ??
-            (leader.playerId ? `https://a.espncdn.com/i/headshots/nfl/players/full/${leader.playerId}.png` : "")
+            headshotUrl(league, leader.playerId ?? "")
           }
           alt=""
           loading="lazy"
@@ -169,7 +171,7 @@ export function SeasonLeaders({ game, away, home }: { game: Game; away: Team; ho
       <div className={`flex min-w-0 items-center py-3 ${alignment}`}>
         {leader.playerId ? (
           <Link
-            to="/players/$playerId"
+            to={playerRoute(league)}
             params={{ playerId: leader.playerId }}
             className="group block min-w-0 rounded-md p-1 transition-colors hover:bg-line/5"
           >
@@ -190,11 +192,11 @@ export function SeasonLeaders({ game, away, home }: { game: Game; away: Team; ho
         <div className="grid grid-cols-[minmax(0,1fr)_112px_minmax(0,1fr)] items-center gap-2 border-b border-line/10 py-3 font-mono text-[10px] uppercase tracking-wider text-faint sm:grid-cols-[minmax(0,1fr)_160px_minmax(0,1fr)]">
           <div className="flex items-center gap-2">
             <TeamLogo team={away} className="size-5" />
-            <span>{away.name}</span>
+            <span>{teamShort(away)}</span>
           </div>
           <div className="text-center">Category</div>
           <div className="flex items-center justify-end gap-2 text-right">
-            <span>{home.name}</span>
+            <span>{teamShort(home)}</span>
             <TeamLogo team={home} className="size-5" />
           </div>
         </div>
@@ -461,15 +463,27 @@ export function TeamLogo({ team, className = "size-4" }: { team: Team; className
 export function TeamCard({ team }: { team: Team }) {
   return (
     <Link
-      to="/teams/$teamId"
+      to={teamRoute(team.id)}
       params={{ teamId: team.id }}
       className="glass flex items-center gap-3 p-3 transition-shadow hover:glow"
     >
       <TeamMark team={team} />
       <span className="min-w-0">
-        <span className="block truncate font-disp text-lg font-semibold uppercase leading-none tracking-tight">
-          {team.name.toUpperCase()}
-        </span>
+        {team.league === "cfb" ? (
+          <>
+            <span className="block truncate font-disp text-lg font-semibold uppercase leading-none tracking-tight">
+              {team.rank ? <span className="mr-1 text-acc">#{team.rank}</span> : null}
+              {team.city}
+            </span>
+            <span className="mt-1 block truncate font-mono text-[10px] uppercase tracking-wider text-faint">
+              {team.name} · {team.record.w}-{team.record.l}
+            </span>
+          </>
+        ) : (
+          <span className="block truncate font-disp text-lg font-semibold uppercase leading-none tracking-tight">
+            {team.name.toUpperCase()}
+          </span>
+        )}
       </span>
     </Link>
   );
@@ -568,7 +582,7 @@ export function LineScore({ game }: { game: Game }) {
       <tbody className="divide-y divide-line/5">
         {rows.map((row) => (
           <tr key={row.team.id}>
-            <td className="py-2 text-left font-medium">{row.team.name}</td>
+            <td className="py-2 text-left font-medium">{teamShort(row.team)}</td>
             {Array.from({ length: quarterCount }, (_, i) => (
               <td key={i} className="py-2 tabular-nums text-mute">
                 {row.quarters[i] !== undefined ? row.quarters[i] : 0}
@@ -664,7 +678,7 @@ export function DriveTable({ game }: { game: Game }) {
                 className="size-6 object-contain"
                 onError={(e) => onLogoError(e, team)}
               />
-              <span>{team.id === awayTeam?.id && team.city === "Atlanta" ? "Atlanta" : team.name}</span>
+              <span>{team.id === awayTeam?.id && team.city === "Atlanta" ? "Atlanta" : teamShort(team)}</span>
               <span className="font-mono text-[10px] text-faint">{count}</span>
             </button>
           );
@@ -1187,6 +1201,27 @@ export function formatNumericDate(date: string | undefined): string {
   return `${month + 1}/${Number(match[2])}`;
 }
 
+/** A team logo with its AP / CFP rank tucked into the corner (college games). */
+export function RankedLogo({
+  team,
+  rank,
+  className,
+}: {
+  team: Team;
+  rank?: number;
+  className?: string;
+}) {
+  if (!rank) return <TeamLogo team={team} className={className} />;
+  return (
+    <span className="relative inline-flex" title={`#${rank} ${team.city}`}>
+      <TeamLogo team={team} className={className} />
+      <span className="absolute -left-1.5 -top-1.5 font-mono text-[9px] font-bold leading-none text-acc">
+        {rank}
+      </span>
+    </span>
+  );
+}
+
 /**
  * Matchup link used in game tables. A 3-column grid (1fr / @ / 1fr) keeps the
  * "@" in the exact center of the cell on every row, regardless of score width,
@@ -1213,7 +1248,7 @@ export function MatchupLink({
   const homeBall = showPossession && game.possession === "home";
   return (
     <Link
-      to="/games/$gameId"
+      to={gameRoute(game.id)}
       params={{ gameId: game.id }}
       className="grid w-full grid-cols-[1fr_auto_1fr] items-center gap-1.5 font-mono tabular-nums font-semibold hover:text-acc"
     >
@@ -1225,13 +1260,13 @@ export function MatchupLink({
             </span>
           ) : null}
           <span className="w-6 text-right">{awayScore}</span>
-          <TeamLogo team={away} />
+          <RankedLogo team={away} rank={game.awayRank} />
         </span>
       </span>
       <span className="text-center font-sans font-normal text-mute">@</span>
       <span className="flex justify-start">
         <span className="relative inline-flex items-center gap-1.5">
-          <TeamLogo team={home} />
+          <RankedLogo team={home} rank={game.homeRank} />
           <span className="w-6 text-left">{homeScore}</span>
           {showOT || homeBall ? (
             <span className="absolute left-full top-1/2 ml-1.5 flex -translate-y-1/2 items-center gap-1.5 whitespace-nowrap">
