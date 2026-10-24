@@ -1894,7 +1894,7 @@ function CfbBestBetBanner({ picks }: { picks: CfbPick[] }) {
   return (
     <section className="mt-4 rounded-xl border border-acc/30 bg-acc/5 px-4 py-3">
       {picks.map((p) => {
-        const team = teamById(p.game.awayTeamId);
+        const team = teamById(p.side === "home" ? p.game.homeTeamId : p.game.awayTeamId);
         const rule = CFB_RULES.find((r) => r.id === p.rule);
         const line = p.line === 0 ? "PK" : p.line > 0 ? `+${p.line}` : String(p.line);
         return (
@@ -1913,6 +1913,7 @@ function CfbBestBetBanner({ picks }: { picks: CfbPick[] }) {
             <span className="text-mute">
               {rule?.title}
               {p.lastLoss ? ` · lost by ${Math.abs(p.lastLoss.margin)} last game` : ""}
+              {p.miles ? ` · visitor traveled ${p.miles.toLocaleString()} mi` : ""}
             </span>
             <Link to="/cfb/model" className="font-mono text-[11px] text-acc hover:underline">
               Why →
