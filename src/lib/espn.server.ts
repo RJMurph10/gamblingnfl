@@ -708,6 +708,8 @@ function mapEvent(event: any, week: number): Game | null {
   let downDistance: string | undefined;
   let ballSpot: Game["ballSpot"];
   let scoringAlert: Game["scoringAlert"];
+  let kicking: Game["kicking"];
+  let playState: Game["playState"];
 
   const isHalftimeStatus =
     comp.status?.type?.name === "STATUS_HALFTIME" ||
@@ -748,6 +750,41 @@ function mapEvent(event: any, week: number): Game | null {
           : undefined);
     }
 
+    // No down: read ESPN's last play. A touchdown or made field goal gets its TD / FG label (for
+    // college too); the extra point, two-point try or kickoff after it means the team that
+    // scored is kicking off to the other team.
+    if (!downDistance && sit.lastPlay) {
+      const lp = sit.lastPlay;
+      const kind = String(lp?.type?.text ?? "");
+      const text = `${kind} ${String(lp?.text ?? "")}`;
+      const teamOfLastPlay = (): string | undefined => {
+        const id = String(lp?.team?.id ?? "");
+        if (!id) return undefined;
+        if (away?.team?.id && id === String(away.team.id)) return awayTeam.id;
+        if (home?.team?.id && id === String(home.team.id)) return homeTeam.id;
+        return undefined;
+      };
+      const failed = /missed|no good|blocked|failed|fail/i.test(text);
+      if (/touchdown/i.test(kind)) {
+        playState = "score";
+        const teamId = teamOfLastPlay();
+        if (teamId) scoringAlert = { type: "TD", teamId };
+      } else if (/field goal/i.test(kind) && !failed) {
+        playState = "score";
+        const teamId = teamOfLastPlay();
+        const yards = text.match(/\b(\d{1,2})\s*(?:-?\s*(?:yard|yd)s?)\b/i);
+        if (teamId) scoringAlert = { type: "FG", teamId, ...(yards ? { yards: Number(yards[1]) } : {}) };
+      } else if (
+        /extra point|two.?point|conversion|kickoff|kicks? \d+ yards? from/i.test(text)
+      ) {
+        playState = "kick";
+        const teamId = teamOfLastPlay();
+        if (teamId) kicking = { kind: "kickoff", teamId };
+      } else {
+        playState = "other";
+      }
+    }
+
     // Where the ball is on the field, e.g. "BAL 46" -> BAL's 46, "50" -> midfield.
     if (typeof sit.down === "number" && sit.down >= 1 && sit.down <= 4) {
       const spotText = [sit.possessionText, sit.downDistanceText, sit.shortDownDistanceText]
@@ -784,6 +821,8 @@ function mapEvent(event: any, week: number): Game | null {
     ballSpot,
     timeouts: parseTimeouts(sit),
     scoringAlert,
+    kicking,
+    playState,
     awayRecord,
     homeRecord,
     possessionText: isLive ? sit?.possessionText : undefined,
@@ -2048,6 +2087,8 @@ export async function fetchGameDetail(rawEventId: string): Promise<Game | null> 
       base.ballSpot = sbGame.ballSpot;
       base.timeouts = sbGame.timeouts ?? base.timeouts;
       base.scoringAlert = sbGame.scoringAlert ?? base.scoringAlert;
+      base.kicking = sbGame.kicking;
+      base.playState = sbGame.playState;
       base.possessionText = sbGame.possessionText;
       base.distance = sbGame.distance;
       base.clock = sbGame.clock;
