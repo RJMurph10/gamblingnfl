@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import {
   fetchCfbConferencePlayers,
+  fetchCfbGameProjections,
   fetchCfbConferences,
   fetchCfbRankings,
   fetchCfbSchedule,
@@ -46,3 +47,8 @@ export const getConferenceTeamOverviewStats = createServerFn({ method: "GET" })
 export const getCfbConferencePlayers = createServerFn({ method: "GET" })
   .inputValidator((data) => z.object({ conference: z.string().min(1) }).parse(data))
   .handler(async ({ data }) => fetchCfbConferencePlayers(data.conference));
+
+/** Player projections for a college game (both teams' box scores so far this season). */
+export const getCfbGameProjections = createServerFn({ method: "GET" })
+  .inputValidator((data) => z.object({ gameId: z.string() }).parse(data))
+  .handler(async ({ data }) => fetchCfbGameProjections(data.gameId));
