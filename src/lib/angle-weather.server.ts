@@ -44,10 +44,16 @@ export interface ForecastRequest {
   homeTeamId: string;
   venue?: string;
   kickoffIso: string;
+  /** College games: the outdoor stadium's location (NFL games are looked up by team). */
+  lat?: number;
+  lon?: number;
 }
 
 async function forecastOne(g: ForecastRequest): Promise<GameConditions | null> {
-  const stadium = getStadiumForGame(g.homeTeamId, g.venue);
+  const stadium =
+    g.lat !== undefined && g.lon !== undefined
+      ? { lat: g.lat, lon: g.lon, isIndoor: false, international: false }
+      : getStadiumForGame(g.homeTeamId, g.venue);
   if (!stadium || stadium.international) return null;
   if (stadium.isIndoor) return { outdoor: false, temp: null, wind: null, source: "forecast" };
 
