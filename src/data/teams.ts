@@ -15,8 +15,10 @@ export interface Team {
   abbr: string;
   city: string;
   name: string;
-  conference: Conference;
-  division: DivisionName;
+  /** NFL: "AFC" / "NFC". College: the conference's short name, e.g. "SEC". */
+  conference: Conference | string;
+  /** NFL division; empty for college teams. */
+  division: DivisionName | string;
   /** Primary brand color, used as a data-driven accent on team marks. */
   color: string;
   /** PLACEHOLDER record for layout purposes. */
@@ -24,6 +26,14 @@ export interface Team {
   /** PLACEHOLDER season aggregates. */
   pointsFor: number;
   pointsAgainst: number;
+  /** "cfb" for college teams (added at runtime from ESPN); NFL teams leave it unset. */
+  league?: "nfl" | "cfb";
+  /** Logo URL (college teams; NFL logos come from the abbreviation). */
+  logo?: string;
+  /** ESPN team id (college teams). */
+  espnId?: string;
+  /** Current AP / CFP rank (college teams). */
+  rank?: number;
 }
 
 export const teams: Team[] = [
@@ -68,10 +78,44 @@ export const teams: Team[] = [
   { id: "seahawks", abbr: "SEA", city: "Seattle", name: "Seahawks", conference: "NFC", division: "West", color: "#002244", record: { w: 5, l: 4, t: 0 }, pointsFor: 193, pointsAgainst: 186 },
 ];
 
-export const teamById = (id: string): Team | undefined => teams.find((t) => t.id === id);
+/**
+ * College teams, registered at runtime from ESPN data (ids "cfb-<espnId>"). College
+ * abbreviations clash with NFL ones (MIA, HOU, ARI...), so ESPN college data is re-keyed to
+ * "cfb:<espnId>" before parsing and looked up here instead of by abbreviation.
+ */
+const extraTeams = new Map<string, Team>();
+
+/** Adds college teams (from server responses) so lookups by id work everywhere. */
+export function registerTeams(list: Team[] | undefined | null) {
+  for (const t of list ?? []) {
+    if (!t?.id) continue;
+    const prev = extraTeams.get(t.id);
+    // Keep what's already known when the new copy leaves a field blank.
+    const defined = Object.fromEntries(
+      Object.entries(t).filter(([, v]) => v !== undefined && v !== ""),
+    ) as Partial<Team>;
+    const merged = { ...(prev ?? t), ...defined } as Team;
+    // A conference from the standings beats a blank one from a scoreboard.
+    if (prev?.conference && !t.conference) merged.conference = prev.conference;
+    extraTeams.set(t.id, merged);
+    if (merged.espnId) extraTeams.set(`cfb:${merged.espnId}`, merged);
+  }
+}
+
+/** Every registered college team. */
+export const registeredCollegeTeams = (): Team[] =>
+  [...new Set(extraTeams.values())].filter((t) => t.league === "cfb");
+
+export const teamById = (id: string): Team | undefined =>
+  teams.find((t) => t.id === id) ?? extraTeams.get(id);
 
 export const teamByAbbr = (abbr: string): Team | undefined =>
-  teams.find((t) => t.abbr.toLowerCase() === abbr.toLowerCase());
+  abbr.startsWith("cfb:")
+    ? extraTeams.get(abbr)
+    : teams.find((t) => t.abbr.toLowerCase() === abbr.toLowerCase());
+
+/** True for college team ids ("cfb-…"). */
+export const isCollegeId = (id: string) => id.startsWith("cfb-");
 
 /**
  * Team logo from ESPN's public team-logo CDN, keyed by lowercase abbreviation.
@@ -79,7 +123,9 @@ export const teamByAbbr = (abbr: string): Team | undefined =>
  * variant (500-dark). The light-background (all-blue) logo is `teamLogoLight`.
  */
 export const teamLogo = (team: Team): string =>
-  team.id === "rams"
+  team.logo
+    ? team.logo
+    : team.id === "rams"
     ? `https://a.espncdn.com/i/teamlogos/nfl/500-dark/${team.abbr.toLowerCase()}.png`
     : `https://a.espncdn.com/i/teamlogos/nfl/500/${team.abbr.toLowerCase()}.png`;
 
