@@ -3850,6 +3850,45 @@ export async function fetchCfbSchedule(): Promise<Game[]> {
 }
 
 /**
+ * Last season's FBS vs FBS final scores (2025 when this season is 2026), for the college model's
+ * head start. Finished seasons never change, so this is kept for 12 hours.
+ */
+export async function fetchCfbPriorSeasonResults(): Promise<PriorSeasonResult[]> {
+  return cached(
+    "cfb-prior-season-results",
+    async () => {
+      const conferences = await fetchFbsConferences().catch((): CfbConference[] => []);
+      const fbsIds = new Set(conferences.flatMap((c) => c.teams.map((t) => t.id)));
+      const weeks = await Promise.all(
+        Array.from({ length: 16 }, (_, i) =>
+          fetchJson(weekScoreboardUrl("cfb", i + 1, SEASON - 1))
+            .then((d) => ({ week: i + 1, events: d?.events ?? [] }))
+            .catch(() => ({ week: i + 1, events: [] as any[] })),
+        ),
+      );
+      const out: PriorSeasonResult[] = [];
+      for (const { week, events } of weeks) {
+        for (const event of events) {
+          const game = mapCollegeEvent(event, week, fbsIds);
+          // FCS opponents aren't rated, so their games would only add noise.
+          if (!game || game.status !== "final" || game.fcs) continue;
+          const score = gameScore(game);
+          out.push({
+            homeTeamId: game.homeTeamId,
+            awayTeamId: game.awayTeamId,
+            homeScore: score.home,
+            awayScore: score.away,
+            week,
+          });
+        }
+      }
+      return out;
+    },
+    12 * 60 * 60 * 1000,
+  );
+}
+
+/**
  * A college player's game log: every finished game of his team's he recorded a stat in, with
  * stats keyed like the NFL log ("passing.passingYards", "pc"/"pa", "fgm"/"fga"...).
  */
