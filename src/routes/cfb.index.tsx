@@ -4,6 +4,8 @@ import { PageTitle, Panel, StatCard, TeamLogo } from "@/components/booth";
 import { CfbScopePicker } from "@/components/CfbScope";
 import { LiveGamesPanel, RecentGamesPanel, UpcomingGames } from "@/components/GameTables";
 import { gameScore, type Game } from "@/data/games";
+import { cfbBestBets, cfbRecord, recordText } from "@/lib/cfb-model";
+import { unitsText } from "@/lib/game-model";
 import { buildSeasonPulse, changeTone, weekChangeText } from "@/lib/season-pulse";
 import {
   currentCfbWeek,
@@ -68,6 +70,13 @@ function CfbDashboard() {
       ? Math.round((overs.pct - oversBefore.pct) * 10) / 10
       : null;
 
+  // ★ best bets need every team's previous game, so they run on the whole schedule.
+  const allPicks = useMemo(() => cfbBestBets(all), [all]);
+  const inScope = useMemo(() => new Set(source.map((g) => g.id)), [source]);
+  const scopedPicks = allPicks.filter((p) => inScope.has(p.game.id));
+  const bets = cfbRecord(scopedPicks.filter((p) => p.result !== "pending"));
+  const pendingBets = scopedPicks.filter((p) => p.game.status === "scheduled").length;
+
   const live = source.filter((g) => g.status === "live");
   const recent = useMemo(
     () =>
@@ -122,35 +131,37 @@ function CfbDashboard() {
             unit={overs.pct === null ? undefined : "%"}
             note={
               loadingNote ??
-              [weekChangeText(overChange), `${overs.overs}-${overs.unders} over/under`]
+              [
+                weekChangeText(overChange),
+                `${overs.overs}-${overs.unders} O/U`,
+                pulse.avgTotal.value !== null && pulse.avgTotalLine !== null
+                  ? `avg ${pulse.avgTotal.value.toFixed(1)} pts vs line ${pulse.avgTotalLine.toFixed(1)}`
+                  : undefined,
+              ]
                 .filter(Boolean)
                 .join(" · ")
             }
             tone={changeTone(overChange)}
           />
           <StatCard
-            label="Avg points · vs line"
-            value={fmt(pulse.avgTotal.value)}
+            label="Model · ★ best bets"
+            value={isLoading ? "…" : unitsText(bets.units)}
             note={
               loadingNote ??
-              (pulse.avgTotalLine !== null
-                ? `closing total avg ${pulse.avgTotalLine.toFixed(1)}`
-                : "No totals graded yet")
+              (bets.wins + bets.losses + bets.pushes === 0
+                ? "No best bets graded yet"
+                : `${recordText(bets)} · ${bets.winPct === null ? "—" : `${bets.winPct.toFixed(1)}%`}${
+                    pendingBets ? ` · ${pendingBets} this week` : ""
+                  }`)
             }
-            tone={
-              pulse.avgTotal.value !== null && pulse.avgTotalLine !== null
-                ? pulse.avgTotal.value > pulse.avgTotalLine
-                  ? "win"
-                  : "loss"
-                : "mute"
-            }
+            tone={bets.units > 0 ? "win" : bets.units < 0 ? "loss" : "mute"}
           />
         </div>
         {pulse.throughWeek !== null ? (
           <p className="mt-2 font-mono text-[10px] uppercase tracking-wider text-faint">
-            Through week {pulse.throughWeek} · FBS vs FBS games at closing ESPN lines ·{" "}
+            Through week {pulse.throughWeek} · FBS vs FBS games at closing ESPN lines · 1u per best bet at -110 ·{" "}
             <Link to="/cfb/model" className="text-acc">
-              Model →
+              Best bets →
             </Link>
           </p>
         ) : null}
