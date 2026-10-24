@@ -3,6 +3,7 @@ import { fetchCfbConferenceLeaguePlayers } from "./league-players.server";
 import { z } from "zod";
 import {
   fetchCfbGameProjections,
+  fetchCfbPriorSeasonResults,
   fetchCfbConferences,
   fetchCfbRankings,
   fetchCfbSchedule,
@@ -31,6 +32,11 @@ export const getCfbRankings = createServerFn({ method: "GET" }).handler(async ()
 /** The whole FBS regular season as site games (college teams attached to each game). */
 export const getCfbSchedule = createServerFn({ method: "GET" }).handler(async () =>
   fetchCfbSchedule(),
+);
+
+/** Last season's FBS results, so the college model starts the year from last year's teams. */
+export const getCfbPriorSeasonResults = createServerFn({ method: "GET" }).handler(async () =>
+  fetchCfbPriorSeasonResults(),
 );
 
 /** A college player's game-by-game stats this season. */
