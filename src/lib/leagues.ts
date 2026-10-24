@@ -35,11 +35,11 @@ export function leagueFromPath(pathname: string): League {
 }
 
 /** Pages every live league has, by section. */
-const SECTIONS = ["teams", "games", "props", "model"] as const;
+const SECTIONS = ["teams", "players", "games", "props", "model"] as const;
 
 /**
  * The matching page in another league: the NFL Model page → the college Model page, and so on.
- * Pages the other league doesn't have (the players index, a single game) go to its dashboard.
+ * A single game, team or player page goes to the other league's list of the same kind.
  */
 export function switchLeaguePath(pathname: string, to: League): string {
   const from = leagueFromPath(pathname);
