@@ -6,8 +6,6 @@
 
 import {
   currentWeek,
-  parseCalendar,
-  parseConferences,
   parseEvent,
   parseTeamRef,
   type CfbConference,
@@ -15,7 +13,16 @@ import {
   type CfbTeamRef,
   type CfbWeek,
 } from "./cfb";
-import { CURRENT_SEASON } from "./espn.server";
+import {
+  CURRENT_SEASON,
+  fetchCfbCalendar,
+  fetchCfbSchedule,
+  fetchCollegePlayerGameLog,
+  fetchConferenceTeamOverviewStats,
+  fetchFbsConferences,
+} from "./espn.server";
+
+export { fetchCfbSchedule, fetchCollegePlayerGameLog, fetchConferenceTeamOverviewStats };
 
 const SITE = "https://site.api.espn.com/apis/site/v2/sports/football/college-football";
 const STANDINGS = "https://site.api.espn.com/apis/v2/sports/football/college-football/standings";
@@ -41,9 +48,7 @@ const MINUTE = 60_000;
 
 /** FBS conferences with their teams and records (refreshed every 30 minutes). */
 export function fetchCfbConferences(): Promise<CfbConference[]> {
-  return cached("cfb-conferences", 30 * MINUTE, async () =>
-    parseConferences(await fetchJson(`${STANDINGS}?group=${FBS}&season=${CURRENT_SEASON}`)),
-  );
+  return fetchFbsConferences();
 }
 
 async function fbsTeamIds(): Promise<Set<string>> {
@@ -69,11 +74,7 @@ export interface CfbWeekSlate {
  * Without a week, the week in progress. Live weeks refresh every minute, others every 10.
  */
 export async function fetchCfbWeek(week?: number): Promise<CfbWeekSlate> {
-  const calendar = await cached("cfb-calendar", 6 * 60 * MINUTE, async () =>
-    parseCalendar(
-      await fetchJson(`${SITE}/scoreboard?groups=${FBS}&dates=${CURRENT_SEASON}&limit=1`),
-    ),
-  );
+  const calendar = await fetchCfbCalendar();
   const now = currentWeek(calendar);
   const target = week ?? now;
   const ids = await fbsTeamIds();
