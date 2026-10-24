@@ -12,11 +12,70 @@ import { nflverseGameYac } from "@/lib/nflverse-yac.server";
 import { athleteIdOf, buildPropOffers, sampleTdItem, type PropPerson } from "@/lib/props.parse";
 import type { BoxScoreLine, Drive, DriveResult, Game, TeamGameStats } from "@/data/games";
 import { gameScore } from "@/data/games";
-import { teamByAbbr, teamById, teams } from "@/data/teams";
+import {
+  isCollegeId,
+  registerTeams,
+  registeredCollegeTeams,
+  teamByAbbr,
+  teamById,
+  teams,
+  type Team,
+} from "@/data/teams";
+import {
+  conferenceTeams,
+  parseCalendar,
+  parseConferences,
+  rekeyCollegeTeams,
+  type CfbConference,
+  type CfbWeek,
+} from "./cfb";
 
 const SCOREBOARD = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard";
 const SUMMARY = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary";
 const CORE_ODDS = "https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/events";
+
+/* ---------- leagues: NFL and college football (FBS) share ESPN's football feeds ---------- */
+
+export type FeedLeague = "nfl" | "cfb";
+const CFB_SITE = "https://site.api.espn.com/apis/site/v2/sports/football/college-football";
+const FEEDS: Record<FeedLeague, { summary: string; scoreboard: string; coreOdds: string }> = {
+  nfl: { summary: SUMMARY, scoreboard: SCOREBOARD, coreOdds: CORE_ODDS },
+  cfb: {
+    summary: `${CFB_SITE}/summary`,
+    scoreboard: `${CFB_SITE}/scoreboard`,
+    coreOdds: "https://sports.core.api.espn.com/v2/sports/football/leagues/college-football/events",
+  },
+};
+/** A week's scoreboard (college: FBS teams only, ESPN group 80). */
+const weekScoreboardUrl = (league: FeedLeague, week: number, season = SEASON) =>
+  league === "cfb"
+    ? `${FEEDS.cfb.scoreboard}?groups=80&dates=${season}&seasontype=2&week=${week}&limit=400`
+    : `${SCOREBOARD}?dates=${season}&seasontype=2&week=${week}&limit=100`;
+/** "cfb-401…" → college game 401…; anything else is an NFL ESPN id. */
+export const eventLeague = (eventId: string): { league: FeedLeague; id: string } =>
+  eventId.startsWith("cfb-")
+    ? { league: "cfb", id: eventId.slice(4) }
+    : { league: "nfl", id: eventId.replace(/^espn-/, "") };
+
+/**
+ * An ESPN team object's site team. College data is re-keyed first (see rekeyCollegeTeams), so
+ * college teams resolve by ESPN id instead of by an abbreviation that may match an NFL team.
+ */
+function teamOf(apiTeam: any) {
+  if (apiTeam?._key) return teamByAbbr(apiTeam._key);
+  return teamByAbbr(String(apiTeam?.abbreviation ?? ""));
+}
+
+/** The two college teams of a game, to send to the browser with it. */
+function collegeTeamRefs(game: Game): Team[] {
+  return [teamById(game.awayTeamId), teamById(game.homeTeamId)].filter((t): t is Team => !!t);
+}
+
+/** Re-keys a college ESPN payload and registers its teams (server side). */
+function prepareCollege<T>(json: T): T {
+  registerTeams(rekeyCollegeTeams(json));
+  return json;
+}
 
 const optionalNumber = (value: unknown): number | undefined => {
   if (value === undefined || value === null || value === "") return undefined;
@@ -53,10 +112,19 @@ async function cached<T>(
 ): Promise<T> {
   const hit = cache.get(key);
   if (hit && Date.now() - hit.at < ttl) return hit.value as T;
-  const value = await load();
-  cache.set(key, { at: Date.now(), value });
-  return value;
+  // Callers asking for the same thing at once share one request (team pages load many games).
+  const pending = inflight.get(key);
+  if (pending) return pending as Promise<T>;
+  const request = load()
+    .then((value) => {
+      cache.set(key, { at: Date.now(), value });
+      return value;
+    })
+    .finally(() => inflight.delete(key));
+  inflight.set(key, request);
+  return request;
 }
+const inflight = new Map<string, Promise<unknown>>();
 
 /** Find yards-after-catch in ESPN Core stats, specifically targeting the receiving category. */
 function extractYacValue(data: any): number | undefined {
@@ -150,7 +218,11 @@ const hasMarketFields = (record: any): boolean =>
     record?.overProbability,
   ].some((v) => typeof v === "number" && v > 0);
 
-async function fetchCoreProbabilityRecords(eventId: string): Promise<any[]> {
+async function fetchCoreProbabilityRecords(
+  eventId: string,
+  league: FeedLeague = "nfl",
+): Promise<any[]> {
+  const CORE_ODDS = FEEDS[league].coreOdds;
   const url = `${CORE_ODDS}/${eventId}/competitions/${eventId}/probabilities?limit=400&page=1`;
   let collection: any;
   try {
@@ -222,7 +294,11 @@ function mergeOdds(base: Game["odds"], extra: Game["odds"]): Game["odds"] {
 const hasMoneylines = (odds?: Game["odds"]) =>
   odds?.homeMoneyline !== undefined && odds?.awayMoneyline !== undefined;
 
-async function loadHistoricalOdds(eventId: string): Promise<HistoricalOdds> {
+async function loadHistoricalOdds(
+  eventId: string,
+  league: FeedLeague = "nfl",
+): Promise<HistoricalOdds> {
+  const { coreOdds: CORE_ODDS, summary: SUMMARY } = FEEDS[league];
   const result: HistoricalOdds = {};
   // 1) Core odds feed: look through every provider for a spread and a total.
   try {
@@ -259,16 +335,20 @@ async function loadHistoricalOdds(eventId: string): Promise<HistoricalOdds> {
   return result;
 }
 
-async function fetchHistoricalOdds(eventId: string): Promise<HistoricalOdds> {
-  const hit = historicalOddsCache.get(eventId);
+async function fetchHistoricalOdds(
+  eventId: string,
+  league: FeedLeague = "nfl",
+): Promise<HistoricalOdds> {
+  const cacheKey = `${league}-${eventId}`;
+  const hit = historicalOddsCache.get(cacheKey);
   const found = (v: HistoricalOdds) => Boolean(v.spread) || v.total !== undefined;
   // Remember good results for a day, but retry empty ones after 30 seconds so a single
   // failed request can't blank a finished game's spread for hours.
   if (hit && Date.now() - hit.at < (found(hit.value) ? HISTORICAL_ODDS_CACHE_TTL_MS : 30_000)) {
     return hit.value;
   }
-  const value = await loadHistoricalOdds(eventId);
-  historicalOddsCache.set(eventId, { at: Date.now(), value });
+  const value = await loadHistoricalOdds(eventId, league);
+  historicalOddsCache.set(cacheKey, { at: Date.now(), value });
   return value;
 }
 
@@ -359,7 +439,7 @@ function parseSeasonLeaders(
   const order = Object.values(labels).filter((v, i, a) => a.indexOf(v) === i);
   const rows = new Map<string, { category: string; away?: any; home?: any }>();
   for (const entry of leaders) {
-    const teamId = teamByAbbr(entry?.team?.abbreviation ?? "")?.id;
+    const teamId = teamOf(entry?.team)?.id;
     const side = teamId === awayTeamId ? "away" : teamId === homeTeamId ? "home" : undefined;
     if (!side) continue;
     for (const cat of Array.isArray(entry?.leaders) ? entry.leaders : []) {
@@ -594,8 +674,8 @@ function mapEvent(event: any, week: number): Game | null {
   if (!comp) return null;
   const home = comp.competitors?.find((c: any) => c.homeAway === "home");
   const away = comp.competitors?.find((c: any) => c.homeAway === "away");
-  const homeTeam = teamByAbbr(home?.team?.abbreviation ?? "");
-  const awayTeam = teamByAbbr(away?.team?.abbreviation ?? "");
+  const homeTeam = teamOf(home?.team);
+  const awayTeam = teamOf(away?.team);
 
   const parseRecord = (c: any) => {
     const list = c?.records ?? c?.record ?? [];
@@ -860,9 +940,8 @@ export async function fetchSchedule(): Promise<Game[]> {
             }
             if (!scoringTeamId) {
               const apiTeam = play?.team;
-              const team = teamByAbbr(
-                String(apiTeam?.abbreviation ?? apiTeam?.shortDisplayName ?? ""),
-              );
+              const team =
+                teamOf(apiTeam) ?? teamByAbbr(String(apiTeam?.shortDisplayName ?? ""));
               if (team && (team.id === game.homeTeamId || team.id === game.awayTeamId)) {
                 scoringTeamId = team.id;
               }
@@ -1140,7 +1219,7 @@ function mapBoxScore(
   const rawStats = new Map<string, Record<string, string>>();
 
   for (const teamBlock of players ?? []) {
-    const teamId = teamByAbbr(teamBlock?.team?.abbreviation ?? "")?.id;
+    const teamId = teamOf(teamBlock?.team)?.id;
     if (!teamId || (teamId !== awayTeamId && teamId !== homeTeamId)) continue;
 
     for (const group of teamBlock?.statistics ?? []) {
@@ -1349,7 +1428,10 @@ function homeSpreadFromLine(spread: string, game: Game): number | undefined {
   const abbr = alias[match[1].toUpperCase()] ?? match[1].toUpperCase();
   const line = Number(match[2]);
   if (!Number.isFinite(line)) return undefined;
-  const favoriteId = teamByAbbr(abbr)?.id;
+  // Match the game's own teams first (college abbreviations clash with NFL ones).
+  const favoriteId =
+    [game.homeTeamId, game.awayTeamId].find((id) => teamById(id)?.abbr.toUpperCase() === abbr) ??
+    teamByAbbr(abbr)?.id;
   if (favoriteId === game.homeTeamId) return -Math.abs(line);
   if (favoriteId === game.awayTeamId) return Math.abs(line);
   return undefined;
@@ -1757,11 +1839,16 @@ function formatExtraPoint(text: string): string {
 }
 
 /** Full game detail (quarters, drives, team stats, box score) for one event. */
-export async function fetchGameDetail(eventId: string): Promise<Game | null> {
-  return cached(`game-${eventId}`, async () => {
+export async function fetchGameDetail(rawEventId: string): Promise<Game | null> {
+  // College games come in as "cfb-<id>"; everything else is an NFL ESPN id.
+  const { league, id: eventId } = eventLeague(rawEventId);
+  const college = league === "cfb";
+  const SUMMARY = FEEDS[league].summary;
+  const game = await cached(`game-${league}-${eventId}`, async (): Promise<Game | null> => {
     const d = await fetchJson(`${SUMMARY}?event=${eventId}`);
+    if (college) prepareCollege(d);
     // Resolve ESPN Core API probability records; items may be $ref-only.
-    const coreProbabilityItems = await fetchCoreProbabilityRecords(eventId);
+    const coreProbabilityItems = await fetchCoreProbabilityRecords(eventId, league);
     const comp = d?.header?.competitions?.[0];
     if (!comp) return null;
     const week = d?.header?.week ?? 0;
@@ -1770,6 +1857,10 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
       week,
     );
     if (!base) return null;
+    if (college) {
+      base.id = `cfb-${eventId}`;
+      addCollegeDetails(base, comp);
+    }
 
     const summaryProbabilities = Array.isArray(d?.winprobability) ? d.winprobability : [];
     const summaryPlays = [
@@ -1926,9 +2017,8 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
 
     // The summary header omits quarter linescores and venue; merge them from
     // the week's scoreboard event.
-    const sb = await fetchJson(
-      `${SCOREBOARD}?dates=${SEASON}&seasontype=2&week=${week}&limit=100`,
-    ).catch(() => null);
+    const sb = await fetchJson(weekScoreboardUrl(league, week)).catch(() => null);
+    if (college && sb) prepareCollege(sb);
     const sbEvent = sb?.events?.find((e: any) => String(e?.id) === String(eventId));
     const sbGame = sbEvent ? mapEvent(sbEvent, week) : null;
     if (base.venue === "TBD" && d?.gameInfo?.venue?.fullName) {
@@ -1960,7 +2050,7 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
     }
 
     if (base.status !== "scheduled" && (base.spread === "—" || !base.total)) {
-      const historicalOdds = await fetchHistoricalOdds(eventId);
+      const historicalOdds = await fetchHistoricalOdds(eventId, league);
       if (base.spread === "—" && historicalOdds.spread) base.spread = historicalOdds.spread;
       if (!base.total && typeof historicalOdds.total === "number")
         base.total = historicalOdds.total;
@@ -2034,7 +2124,7 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
     // Direct fallback from live summary drive if scoreboard hasn't synced
     const currentDrive = d?.drives?.current;
     if (base.status === "live" && !base.possession && currentDrive) {
-      const possTeamId = teamByAbbr(currentDrive?.team?.abbreviation ?? "")?.id;
+      const possTeamId = teamOf(currentDrive?.team)?.id;
       if (possTeamId === base.awayTeamId) base.possession = "away";
       else if (possTeamId === base.homeTeamId) base.possession = "home";
 
@@ -2076,17 +2166,17 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
     }
 
     const awayStats = d?.boxscore?.teams?.find(
-      (t: any) => teamByAbbr(t?.team?.abbreviation ?? "")?.id === base.awayTeamId,
+      (t: any) => teamOf(t?.team)?.id === base.awayTeamId,
     );
     const homeStats = d?.boxscore?.teams?.find(
-      (t: any) => teamByAbbr(t?.team?.abbreviation ?? "")?.id === base.homeTeamId,
+      (t: any) => teamOf(t?.team)?.id === base.homeTeamId,
     );
     if (awayStats) base.stats.away = mapTeamStats(awayStats.statistics ?? []);
     if (homeStats) base.stats.home = mapTeamStats(homeStats.statistics ?? []);
 
     // Per-player totals (TDs, FGs, XPs, sacks, defensive stats) for each team.
     for (const block of d?.boxscore?.players ?? []) {
-      const id = teamByAbbr(block?.team?.abbreviation ?? "")?.id;
+      const id = teamOf(block?.team)?.id;
       const target =
         id === base.awayTeamId ? base.stats.away : id === base.homeTeamId ? base.stats.home : null;
       if (!target) continue;
@@ -2110,7 +2200,7 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
     }
 
     const mapEspnDrive = (dr: any, index: number): Drive => {
-      const teamId = teamByAbbr(dr?.team?.abbreviation ?? "")?.id ?? base.awayTeamId;
+      const teamId = teamOf(dr?.team)?.id ?? base.awayTeamId;
       const clock = (s: any) => {
         const [m, sec] = String(s?.clock?.displayValue ?? "0:00")
           .split(":")
@@ -2138,7 +2228,7 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
               dr?.end?.result?.text,
           ),
           dr,
-          teamByAbbr(dr?.team?.abbreviation ?? "")?.abbr,
+          teamOf(dr?.team)?.abbr,
         ),
       };
     };
@@ -2148,7 +2238,7 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
     // Live play-by-play (newest first), straight from the drives in ESPN's summary feed.
     const pbp: NonNullable<Game["playByPlay"]> = [];
     driveRows.forEach((dr: any) => {
-      const driveTeamId = teamByAbbr(dr?.team?.abbreviation ?? "")?.id;
+      const driveTeamId = teamOf(dr?.team)?.id;
       const drivePlays: any[] = Array.isArray(dr?.plays) ? dr.plays : [];
       drivePlays.forEach((play: any, i: number) => {
         const rawText = String(play?.text ?? play?.shortText ?? "").trim();
@@ -2192,7 +2282,7 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
           id: String(play?.id ?? `${dr?.id ?? "d"}-${i}`),
           quarter: Number(play?.period?.number) || undefined,
           clock: play?.clock?.displayValue ? String(play.clock.displayValue) : undefined,
-          teamId: teamByAbbr(play?.team?.abbreviation ?? "")?.id ?? driveTeamId,
+          teamId: teamOf(play?.team)?.id ?? driveTeamId,
           header: header || undefined,
           text,
           defender: incomplete.defender ?? defended.defender,
@@ -2234,11 +2324,11 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
     for (const kicker of base.boxScore.filter((line) => line.position === "K")) {
       const distances: number[] = [];
       for (const drive of driveRows) {
-        const driveTeamId = teamByAbbr(drive?.team?.abbreviation ?? "")?.id;
+        const driveTeamId = teamOf(drive?.team)?.id;
         for (const play of Array.isArray(drive?.plays) ? drive.plays : []) {
           const text = String(play?.text ?? play?.shortText ?? "").trim();
           if (!/field goal/i.test(text) || /missed|no good|blocked|failed/i.test(text)) continue;
-          const playTeamId = teamByAbbr(play?.team?.abbreviation ?? "")?.id ?? driveTeamId;
+          const playTeamId = teamOf(play?.team)?.id ?? driveTeamId;
           if (playTeamId !== kicker.teamId) continue;
           if (text.toLowerCase().includes(kicker.name.toLowerCase()) === false) {
             const teamKickers = base.boxScore.filter(
@@ -2261,7 +2351,7 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
     if (base.status === "final") {
       const espnTeamIds = new Map<string, string>();
       for (const block of d?.boxscore?.players ?? []) {
-        const ourId = teamByAbbr(block?.team?.abbreviation ?? "")?.id;
+        const ourId = teamOf(block?.team)?.id;
         if (ourId && block?.team?.id) espnTeamIds.set(ourId, String(block.team.id));
       }
       await Promise.all(
@@ -2325,7 +2415,7 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
 
       // nflverse publishes real yards-after-catch numbers (PYAC for passers, YAC for receivers)
       // after games finish. When it has a player, use its number over the estimates above.
-      for (const line of base.boxScore) {
+      for (const line of college ? [] : base.boxScore) {
         if (!["QB", "RB", "WR", "TE"].includes(line.position) || !line.stats) continue;
         try {
           const row = await nflverseGameYac(line.name, SEASON, base.week);
@@ -2335,8 +2425,13 @@ export async function fetchGameDetail(eventId: string): Promise<Game | null> {
         }
       }
     }
+    // College teams aren't in the site's built-in team list: send them with the game.
+    if (college) base.teamRefs = collegeTeamRefs(base);
     return base;
   });
+  // A fresh server instance may hold the game in its cache without its college teams.
+  if (game?.teamRefs) registerTeams(game.teamRefs);
+  return game;
 }
 
 export interface PlayerProfileStat {
@@ -2458,22 +2553,30 @@ function playerGroupStats(block: any, playerId: string) {
   return out;
 }
 
-export async function fetchPlayerProfile(playerId: string): Promise<PlayerProfile | null> {
+export async function fetchPlayerProfile(
+  playerId: string,
+  league: FeedLeague = "nfl",
+): Promise<PlayerProfile | null> {
+  const college = league === "cfb";
   return cached(
-    `player-profile-${playerId}`,
+    `player-profile-${league}-${playerId}`,
     async () => {
       try {
         const data = await fetchJson(
-          `https://site.api.espn.com/apis/common/v3/sports/football/nfl/athletes/${encodeURIComponent(playerId)}`,
+          `https://site.api.espn.com/apis/common/v3/sports/football/${
+            college ? "college-football" : "nfl"
+          }/athletes/${encodeURIComponent(playerId)}`,
         );
         const athlete = data?.athlete ?? data;
         if (!athlete?.id || !athlete?.displayName) return null;
         const teamAbbr = String(
           athlete?.team?.abbreviation ?? athlete?.team?.shortDisplayName ?? "",
         ).toUpperCase();
-        const team = teamByAbbr(teamAbbr);
+        const team = college
+          ? await teamForKey(`cfb-${athlete?.team?.id ?? ""}`)
+          : teamByAbbr(teamAbbr);
         if (!team) return null;
-        const schedule = await fetchSchedule();
+        const schedule = await scheduleForTeam(team.id);
         const games = schedule.filter(
           (g) => g.status === "final" && (g.homeTeamId === team.id || g.awayTeamId === team.id),
         );
@@ -2484,7 +2587,7 @@ export async function fetchPlayerProfile(playerId: string): Promise<PlayerProfil
             try {
               return {
                 game,
-                summary: await fetchJson(`${SUMMARY}?event=${game.id.replace(/^espn-/, "")}`),
+                summary: await fetchSummaryFor(game.id),
               };
             } catch {
               return null;
@@ -2495,7 +2598,7 @@ export async function fetchPlayerProfile(playerId: string): Promise<PlayerProfil
           if (!item) continue;
           const { game, summary } = item;
           const block = (summary?.boxscore?.players ?? []).find(
-            (b: any) => teamByAbbr(b?.team?.abbreviation ?? "")?.id === team.id,
+            (b: any) => teamOf(b?.team)?.id === team.id,
           );
           if (!block) continue;
           const p = playerGroupStats(block, String(playerId));
@@ -2503,7 +2606,9 @@ export async function fetchPlayerProfile(playerId: string): Promise<PlayerProfil
           if (!participated) continue;
           // Real yards after catch from nflverse (PYAC for QBs, YAC for everyone else); 0 until it publishes.
           try {
-            const nflverse = await nflverseGameYac(athlete.displayName, SEASON, game.week);
+            const nflverse = college
+              ? null
+              : await nflverseGameYac(athlete.displayName, SEASON, game.week);
             if (nflverse) {
               const isQb = String(athlete.position?.abbreviation ?? "").toUpperCase() === "QB";
               p.yardsAfterCatch = isQb ? nflverse.pyac : nflverse.yac;
@@ -2609,7 +2714,7 @@ export async function fetchTeamOverviewStats(teamId: string): Promise<TeamOvervi
   return cached(
     `team-overview-${teamId}`,
     async () => {
-      const schedule = await fetchSchedule();
+      const schedule = await scheduleForTeam(teamId);
       const completed = schedule.filter(
         (game) =>
           game.status === "final" && (game.homeTeamId === teamId || game.awayTeamId === teamId),
@@ -2721,7 +2826,7 @@ export async function fetchTeamSeasonAverages(
   return cached(
     key,
     async () => {
-      const schedule = await fetchSchedule();
+      const schedule = await scheduleForTeam(homeTeamId);
       const teamIds = new Set([awayTeamId, homeTeamId]);
       const completed = schedule.filter(
         (game) =>
@@ -2913,14 +3018,12 @@ function rosterInjuryStatus(item: any): string | undefined {
 
 /** Fetches real active team roster from ESPN with 1-hour caching. */
 export async function fetchTeamRoster(teamAbbr: string): Promise<LiveRosterPlayer[]> {
-  const abbr = teamAbbr.toUpperCase();
+  const feed = teamFeed(teamAbbr);
   return cached(
-    `roster-${abbr}`,
+    `roster-${feed.key}`,
     async () => {
       try {
-        const data = await fetchJson(
-          `https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams/${abbr}/roster`,
-        );
+        const data = await fetchJson(`${feed.site}/teams/${feed.path}/roster`);
         const groups = data?.athletes ?? [];
         const players: LiveRosterPlayer[] = [];
         for (const grp of groups) {
@@ -2985,12 +3088,12 @@ function teamSeasonPosition(athlete: any, groupName: string): string {
  * team page does not refetch every game on every render.
  */
 export async function fetchTeamSeasonStats(teamAbbr: string): Promise<TeamSeasonStats> {
-  const abbr = teamAbbr.toUpperCase();
+  const feed = teamFeed(teamAbbr);
   return cached(
-    `team-season-stats-${abbr}`,
+    `team-season-stats-${feed.key}`,
     async () => {
-      const schedule = await fetchSchedule();
-      const team = teamByAbbr(abbr);
+      const team = await teamForKey(teamAbbr);
+      const schedule = team ? await scheduleForTeam(team.id) : [];
       if (!team)
         return {
           gamesPlayed: 0,
@@ -3018,7 +3121,7 @@ export async function fetchTeamSeasonStats(teamAbbr: string): Promise<TeamSeason
           try {
             return {
               gameId: game.id,
-              summary: await fetchJson(`${SUMMARY}?event=${game.id.replace(/^espn-/, "")}`),
+              summary: await fetchSummaryFor(game.id),
             };
           } catch {
             return null;
@@ -3031,7 +3134,7 @@ export async function fetchTeamSeasonStats(teamAbbr: string): Promise<TeamSeason
         const { gameId, summary } = result;
         const blocks = summary?.boxscore?.players ?? [];
         for (const block of blocks) {
-          if (teamByAbbr(block?.team?.abbreviation ?? "")?.id !== team.id) continue;
+          if (teamOf(block?.team)?.id !== team.id) continue;
           for (const group of block?.statistics ?? []) {
             const groupName = String(group?.name ?? "");
             if (
@@ -3145,14 +3248,12 @@ export async function fetchTeamRosterForPage(teamAbbr: string): Promise<LiveRost
 
 /** Fetches ESPN's current depth chart and normalizes its position groups. */
 export async function fetchTeamDepthChart(teamAbbr: string): Promise<TeamDepthChart> {
-  const abbr = teamAbbr.toUpperCase();
+  const feed = teamFeed(teamAbbr);
   return cached(
-    `depthchart-${abbr}`,
+    `depthchart-${feed.key}`,
     async () => {
       try {
-        const data = await fetchJson(
-          `https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams/${abbr}/depthcharts`,
-        );
+        const data = await fetchJson(`${feed.site}/teams/${feed.path}/depthcharts`);
         const output: TeamDepthChart = { offense: [], defense: [], specialTeams: [] };
         const charts = data?.depthCharts ?? [];
         const seen = new Set<string>();
@@ -3224,10 +3325,13 @@ export async function fetchGameProps(
   awayAbbr: string,
   homeAbbr: string,
 ): Promise<GamePropBoard> {
-  // Game ids in the app look like "espn-401872995"; ESPN's feed wants the bare number.
-  eventId = eventId.replace(/^espn-/, "");
+  // Game ids in the app look like "espn-401872995" (college: "cfb-401…"); ESPN wants the number.
+  const { league: propLeague, id: bareId } = eventLeague(eventId);
+  eventId = bareId;
+  const CORE_ODDS = FEEDS[propLeague].coreOdds;
+  const coreLeague = propLeague === "cfb" ? "college-football" : "nfl";
   return cached(
-    `props-${eventId}`,
+    `props-${propLeague}-${eventId}`,
     async () => {
       const diagnostics: NonNullable<GamePropBoard["diagnostics"]> = {
         providersTried: [],
@@ -3340,7 +3444,7 @@ export async function fetchGameProps(
               `athlete-${id}`,
               () =>
                 fetchJson(
-                  `https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/athletes/${id}`,
+                  `https://sports.core.api.espn.com/v2/sports/football/leagues/${coreLeague}/athletes/${id}`,
                 ),
               ROSTER_CACHE_TTL_MS,
             );
@@ -3532,3 +3636,252 @@ function sameName(a: string, b: string): boolean {
 }
 
 const normalizePosition = (pos: string) => String(pos ?? "").toUpperCase();
+
+/* ---------------- college football (FBS) ---------------- */
+
+const SITES: Record<FeedLeague, string> = {
+  nfl: "https://site.api.espn.com/apis/site/v2/sports/football/nfl",
+  cfb: CFB_SITE,
+};
+
+/**
+ * Where a team's ESPN pages live. Team keys from the browser are NFL abbreviations ("KC") or
+ * college team ids ("cfb-194"; ESPN college pages use the number).
+ */
+function teamFeed(key: string): { league: FeedLeague; site: string; path: string; key: string } {
+  if (isCollegeId(key)) {
+    const id = key.slice(4);
+    return { league: "cfb", site: SITES.cfb, path: id, key: `cfb-${id}` };
+  }
+  const abbr = key.toUpperCase();
+  return { league: "nfl", site: SITES.nfl, path: abbr, key: abbr };
+}
+
+/** The site team for a key (NFL abbreviation or college id), loading college teams if needed. */
+async function teamForKey(key: string): Promise<Team | undefined> {
+  if (!isCollegeId(key)) return teamByAbbr(key) ?? teamById(key);
+  if (!teamById(key)) await fetchFbsConferences().catch(() => []);
+  return teamById(key);
+}
+
+/** The schedule a team plays in: the NFL season or the FBS season. */
+function scheduleForTeam(teamId: string): Promise<Game[]> {
+  return isCollegeId(teamId) ? fetchCfbSchedule() : fetchSchedule();
+}
+
+/** A game's ESPN summary, from the right league's feed. */
+function fetchSummaryFor(gameId: string): Promise<any> {
+  const { league, id } = eventLeague(gameId);
+  return fetchJson(`${FEEDS[league].summary}?event=${id}`).then((d) =>
+    league === "cfb" ? prepareCollege(d) : d,
+  );
+}
+
+const MINUTE = 60_000;
+/** ESPN group 80 = FBS. */
+const FBS_GROUP = 80;
+
+/** FBS conferences and their teams (standings), registered as site teams. 30-minute cache. */
+export async function fetchFbsConferences(): Promise<CfbConference[]> {
+  const conferences = await cached(
+    "cfb-conferences",
+    async () =>
+      parseConferences(
+        await fetchJson(
+          `https://site.api.espn.com/apis/v2/sports/football/college-football/standings?group=${FBS_GROUP}&season=${SEASON}`,
+        ),
+      ),
+    30 * MINUTE,
+  );
+  registerTeams(conferenceTeams(conferences));
+  return conferences;
+}
+
+/** The FBS regular-season calendar (weeks with their dates). 6-hour cache. */
+export function fetchCfbCalendar(): Promise<CfbWeek[]> {
+  return cached(
+    "cfb-calendar",
+    async () =>
+      parseCalendar(
+        await fetchJson(`${FEEDS.cfb.scoreboard}?groups=${FBS_GROUP}&dates=${SEASON}&limit=1`),
+      ),
+    6 * 60 * MINUTE,
+  );
+}
+
+/**
+ * One college scoreboard event as a site game: id "cfb-<espnId>", the two teams attached (the
+ * browser has no college team list), each side's ranking that week, and an FCS flag when either
+ * team isn't FBS.
+ */
+export function mapCollegeEvent(event: any, week: number, fbsIds?: Set<string>): Game | null {
+  prepareCollege(event);
+  const game = mapEvent(event, week);
+  if (!game) return null;
+  game.id = `cfb-${event.id}`;
+  addCollegeDetails(game, event?.competitions?.[0]);
+  if (fbsIds?.size) game.fcs = (game.teamRefs ?? []).some((t) => !fbsIds.has(String(t.espnId)));
+  return game;
+}
+
+/** Each side's ranking that week, the neutral-site flag and the two teams, from a competition. */
+function addCollegeDetails(game: Game, comp: any) {
+  const rankOf = (homeAway: string) => {
+    const c = (comp?.competitors ?? []).find((x: any) => x?.homeAway === homeAway);
+    const r = Number(c?.curatedRank?.current);
+    return Number.isFinite(r) && r >= 1 && r <= 25 ? r : undefined;
+  };
+  game.awayRank = rankOf("away");
+  game.homeRank = rankOf("home");
+  game.neutralSite = Boolean(comp?.neutralSite) || undefined;
+  game.teamRefs = collegeTeamRefs(game);
+}
+
+/**
+ * The whole FBS regular season as site games (every FBS team's games, FCS opponents included and
+ * flagged). Finished weeks are cached for 6 hours, later weeks for 10 minutes, and this week
+ * for 15 seconds (live scores).
+ */
+export async function fetchCfbSchedule(): Promise<Game[]> {
+  const [calendar, conferences] = await Promise.all([
+    fetchCfbCalendar(),
+    fetchFbsConferences().catch((): CfbConference[] => []),
+  ]);
+  const fbsIds = new Set(conferences.flatMap((c) => c.teams.map((t) => t.id)));
+  const now = Date.now();
+  const weeks = calendar.length
+    ? calendar
+    : Array.from({ length: 15 }, (_, i) => ({ number: i + 1, start: "", end: "" }) as CfbWeek);
+  const perWeek = await Promise.all(
+    weeks.map((w) => {
+      const done = w.end && Date.parse(w.end) < now - 24 * 60 * MINUTE;
+      const future = w.start && Date.parse(w.start) > now + 24 * 60 * MINUTE;
+      return cached(
+        `cfb-schedule-week-${w.number}`,
+        async () => {
+          try {
+            const data = await fetchJson(weekScoreboardUrl("cfb", w.number));
+            return (data?.events ?? [])
+              .map((e: any) => mapCollegeEvent(e, w.number, fbsIds))
+              .filter((g: Game | null): g is Game => g !== null);
+          } catch {
+            return [] as Game[];
+          }
+        },
+        done ? 6 * 60 * MINUTE : future ? 10 * MINUTE : 15_000,
+      );
+    }),
+  );
+  const games = perWeek.flat();
+  // Cached weeks still need their teams on a fresh server instance.
+  for (const g of games) registerTeams(g.teamRefs);
+  return games.sort(
+    (a, b) => a.week - b.week || (a.kickoffIso ?? "").localeCompare(b.kickoffIso ?? ""),
+  );
+}
+
+/**
+ * A college player's game log: every finished game of his team's he recorded a stat in, with
+ * stats keyed like the NFL log ("passing.passingYards", "pc"/"pa", "fgm"/"fga"...).
+ */
+export async function fetchCollegePlayerGameLog(
+  playerId: string,
+  teamId: string,
+): Promise<
+  {
+    gameId: string;
+    week: number;
+    awayTeamId: string;
+    homeTeamId: string;
+    awayScore: number;
+    homeScore: number;
+    overtime: boolean;
+    stats: Record<string, number>;
+  }[]
+> {
+  return cached(
+    `cfb-player-log-${playerId}-${teamId}`,
+    async () => {
+      const schedule = await fetchCfbSchedule();
+      const finals = schedule.filter(
+        (g) => g.status === "final" && (g.homeTeamId === teamId || g.awayTeamId === teamId),
+      );
+      const rows = await Promise.all(
+        finals.map(async (game) => {
+          let summary: any;
+          try {
+            summary = await fetchSummaryFor(game.id);
+          } catch {
+            return null;
+          }
+          const stats: Record<string, number> = {};
+          for (const block of summary?.boxscore?.players ?? []) {
+            for (const group of block?.statistics ?? []) {
+              const name = String(group?.name ?? "");
+              const keys: string[] = group?.keys ?? [];
+              const athlete = (group?.athletes ?? []).find(
+                (x: any) => String(x?.athlete?.id ?? "") === playerId,
+              );
+              if (!athlete) continue;
+              keys.forEach((key, i) => {
+                const raw = athlete?.stats?.[i];
+                if (raw === undefined || raw === null || raw === "-") return;
+                const pair = (a: string, b: string) => {
+                  const [x, y] = parsePair(raw);
+                  stats[a] = (stats[a] ?? 0) + x;
+                  stats[b] = (stats[b] ?? 0) + y;
+                };
+                if (key === "completions/passingAttempts") pair("pc", "pa");
+                else if (key === "fieldGoalsMade/fieldGoalAttempts") pair("fgm", "fga");
+                else if (key === "extraPointsMade/extraPointAttempts") pair("xpm", "xpa");
+                else if (key === "longFieldGoalMade") stats.fgLong = numericStat(raw);
+                else stats[`${name}.${key}`] = (stats[`${name}.${key}`] ?? 0) + numericStat(raw);
+              });
+            }
+          }
+          if (Object.keys(stats).length === 0) return null;
+          const score = gameScore(game);
+          return {
+            gameId: game.id,
+            week: game.week,
+            awayTeamId: game.awayTeamId,
+            homeTeamId: game.homeTeamId,
+            awayScore: score.away,
+            homeScore: score.home,
+            overtime: game.quarters.away.length > 4 || game.quarters.home.length > 4,
+            stats,
+          };
+        }),
+      );
+      return rows.filter((r): r is NonNullable<typeof r> => r !== null).sort((a, b) => a.week - b.week);
+    },
+    10 * MINUTE,
+  );
+}
+
+/**
+ * Season metrics for every team in a college team's conference, so its team page can rank it
+ * within the conference (the NFL page ranks against all 32 teams).
+ */
+export async function fetchConferenceTeamOverviewStats(
+  teamId: string,
+): Promise<LeagueTeamOverviewRow[]> {
+  const team = await teamForKey(teamId);
+  const conference = team?.conference;
+  if (!conference) return [];
+  return cached(
+    `conference-overview-${conference}`,
+    async () => {
+      const members = registeredCollegeTeams().filter((t) => t.conference === conference);
+      return Promise.all(
+        members.map(async (t) => ({
+          teamId: t.id,
+          teamAbbr: t.abbr,
+          teamName: `${t.city} ${t.name}`,
+          stats: await fetchTeamOverviewStats(t.id),
+        })),
+      );
+    },
+    10 * MINUTE,
+  );
+}
