@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
+import { fetchCfbConferenceLeaguePlayers } from "./league-players.server";
 import { z } from "zod";
 import {
-  fetchCfbConferencePlayers,
   fetchCfbGameProjections,
   fetchCfbConferences,
   fetchCfbRankings,
@@ -43,12 +43,12 @@ export const getConferenceTeamOverviewStats = createServerFn({ method: "GET" })
   .inputValidator((data) => z.object({ teamId: z.string() }).parse(data))
   .handler(async ({ data }) => fetchConferenceTeamOverviewStats(data.teamId));
 
-/** Every player on a conference's rosters, with season totals (the college players index). */
-export const getCfbConferencePlayers = createServerFn({ method: "GET" })
-  .inputValidator((data) => z.object({ conference: z.string().min(1) }).parse(data))
-  .handler(async ({ data }) => fetchCfbConferencePlayers(data.conference));
-
 /** Player projections for a college game (both teams' box scores so far this season). */
 export const getCfbGameProjections = createServerFn({ method: "GET" })
   .inputValidator((data) => z.object({ gameId: z.string() }).parse(data))
   .handler(async ({ data }) => fetchCfbGameProjections(data.gameId));
+
+/** College players index for one conference (the Players page merges every conference). */
+export const getCfbConferenceLeaguePlayers = createServerFn({ method: "GET" })
+  .inputValidator((data) => z.object({ conference: z.string().min(1) }).parse(data))
+  .handler(async ({ data }) => fetchCfbConferenceLeaguePlayers(data.conference));
