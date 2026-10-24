@@ -129,7 +129,8 @@ export function cfbBestBets(games: Game[]): CfbPick[] {
   const byTeam = gamesByTeam(games);
   const picks: CfbPick[] = [];
   for (const g of games) {
-    if (g.fcs) continue;
+    // FCS opponents and bowls weren't in the history the rules were tested on.
+    if (g.fcs || g.postseason) continue;
     const final = g.status === "final";
     const s = final ? gameScore(g) : null;
     const academy = ACADEMY_IDS.has(g.homeTeamId) && ACADEMY_IDS.has(g.awayTeamId);
@@ -309,7 +310,7 @@ export interface CfbWatchHit {
 export function cfbWatchHits(games: Game[], windByGame: Record<string, number | null> = {}) {
   const hits: CfbWatchHit[] = [];
   for (const g of games) {
-    if (g.fcs || !g.kickoffIso) continue;
+    if (g.fcs || g.postseason || !g.kickoffIso) continue;
     const s = g.status === "final" ? gameScore(g) : null;
     if (g.total && g.total > 0) {
       const under = grade(s ? g.total - (s.home + s.away) : null);
