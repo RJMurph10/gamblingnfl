@@ -5,7 +5,7 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * GamblingNFL design system Ã¢â‚¬â€ "booth glass".
+ * GamblingNFL design system ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â "booth glass".
  * Dark press-box palette, condensed display type, mono tabular data.
  * All colors are oklch tokens. Never hardcode colors in components.
  */
@@ -68,7 +68,7 @@
   --loss: oklch(0.676 0.173 19);
   /* League accents: each league's pages swap --acc for its own color (see [data-league]). */
   --acc-nfl: oklch(0.782 0.129 212);
-  --acc-cfb: oklch(0.78 0.15 60);
+  --acc-cfb: oklch(0.782 0.129 212);
 
   --background: var(--bg);
   --foreground: var(--ink);
