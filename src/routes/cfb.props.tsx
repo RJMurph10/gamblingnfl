@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageTitle, Panel, PanelHeader, RankedLogo } from "@/components/booth";
 import { CfbScopePicker } from "@/components/CfbScope";
+import { CfbProjections } from "@/components/CfbProjections";
 import { DraftKingsPropsBoard } from "@/components/DraftKingsPropsBoard";
 import type { Game } from "@/data/games";
 import { teamById } from "@/data/teams";
@@ -127,7 +128,9 @@ function CfbPropsPage() {
   return (
     <>
       <PageTitle
-        eyebrow={week ? `Week ${week} · DraftKings lines` : "DraftKings lines"}
+        eyebrow={
+          week ? `Week ${week} · projections & DraftKings lines` : "Projections & DraftKings lines"
+        }
         title="Player Props"
         aside={
           <CfbScopePicker
@@ -209,16 +212,24 @@ function CfbPropsPage() {
           </Panel>
 
           {selectedGame && away && home ? (
-            <DraftKingsPropsBoard
-              key={selectedGame.id}
-              game={selectedGame}
-              away={away}
-              home={home}
-            />
+            <>
+              <CfbProjections
+                key={`proj-${selectedGame.id}`}
+                game={selectedGame}
+                away={away}
+                home={home}
+              />
+              <DraftKingsPropsBoard
+                key={selectedGame.id}
+                game={selectedGame}
+                away={away}
+                home={home}
+              />
+            </>
           ) : null}
           <p className="font-mono text-[10px] uppercase tracking-wider text-faint">
-            Sportsbook lines as ESPN publishes them (usually ranked and televised games). Player
-            projections come with the college model.
+            Sportsbook lines as ESPN publishes them (usually ranked and televised games).
+            Projections need each player to have played at least 2 games this season.
           </p>
         </div>
       )}
