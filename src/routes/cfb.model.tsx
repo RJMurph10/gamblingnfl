@@ -1,23 +1,19 @@
 import { useMemo } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { MatchupLink, PageTitle, Panel, PanelHeader, StatCard, TeamLogo } from "@/components/booth";
+import { createFileRoute } from "@tanstack/react-router";
+import { Panel } from "@/components/booth";
+import { CfbWatchList } from "@/components/CfbWatchList";
+import { ModelBoard, type TrackSeason } from "@/components/ModelBoard";
 import { CFB_HISTORY } from "@/data/cfb-best-bets-history";
-import { gameScore } from "@/data/games";
-import { teamById } from "@/data/teams";
 import {
   CFB_RULES,
   addRecords,
-  cfbBestBets,
-  cfbRecord,
   recordFromCounts,
   recordText,
-  type CfbPick,
+  runCfbModel,
   type CfbRecord,
-  type CfbRuleId,
 } from "@/lib/cfb-model";
-import { unitsText } from "@/lib/game-model";
-import { CfbWatchList } from "@/components/CfbWatchList";
-import { currentCfbWeek, useCfbSchedule } from "@/lib/use-cfb";
+import { MODEL_SETTINGS, summarizeModel, unitsText, type MarketRecord } from "@/lib/game-model";
+import { useCfbSchedule } from "@/lib/use-cfb";
 
 export const Route = createFileRoute("/cfb/model")({
   head: () => ({
@@ -26,7 +22,7 @@ export const Route = createFileRoute("/cfb/model")({
       {
         name: "description",
         content:
-          "GamblingCFB's ★ best bets: college football rules tested on past seasons against closing lines, this week's picks and the record in units.",
+          "GamblingCFB's game model: predicted spreads, totals and win probabilities for every FBS game, its ★ best bets, and its record in units.",
       },
     ],
   }),
@@ -35,295 +31,157 @@ export const Route = createFileRoute("/cfb/model")({
 
 const SEASON = 2026;
 const one = (n: number) => (Math.round(n * 10) / 10).toFixed(1);
-const lineText = (n: number) => (n === 0 ? "PK" : n > 0 ? `+${n}` : String(n));
-const toneOf = (u: number): "win" | "loss" | "mute" => (u > 0 ? "win" : u < 0 ? "loss" : "mute");
 const toneClass = (u: number) => (u > 0 ? "text-win" : u < 0 ? "text-loss" : "text-mute");
-const RULE_TITLE = Object.fromEntries(CFB_RULES.map((r) => [r.id, r.title])) as Record<
-  CfbRuleId,
-  string
->;
 
-function RecordCell({ r, bold = false }: { r?: CfbRecord; bold?: boolean }) {
-  if (!r || r.wins + r.losses + r.pushes === 0)
-    return <td className="px-3 py-2 text-right font-mono text-mute">—</td>;
-  return (
-    <td className={`px-3 py-2 text-right font-mono tabular-nums ${bold ? "font-semibold" : ""}`}>
-      <span>{recordText(r)}</span>
-      <span className="ml-2 text-mute">{r.winPct === null ? "—" : `${one(r.winPct)}%`}</span>
-      <span className={`ml-2 ${toneClass(r.units)}`}>{unitsText(r.units)}</span>
-    </td>
-  );
-}
+const asMarketRecord = (r: CfbRecord): MarketRecord => ({
+  wins: r.wins,
+  losses: r.losses,
+  pushes: r.pushes,
+  winPct: r.winPct,
+  units: r.units,
+  roi: r.wins + r.losses + r.pushes ? (r.units / (r.wins + r.losses + r.pushes)) * 100 : null,
+  pending: 0,
+});
 
-function PickText({ pick }: { pick: CfbPick }) {
-  if (pick.market === "total") return <span>Under {pick.line}</span>;
-  const team = teamById(pick.side === "home" ? pick.game.homeTeamId : pick.game.awayTeamId);
-  return (
-    <span className="inline-flex items-center gap-1.5">
-      {team ? <TeamLogo team={team} className="size-4" /> : null}
-      <span>
-        {team?.abbr} {lineText(pick.line)}
-      </span>
-    </span>
-  );
-}
-
-function PickRow({ pick }: { pick: CfbPick }) {
-  const g = pick.game;
-  const away = teamById(g.awayTeamId);
-  const home = teamById(g.homeTeamId);
-  if (!away || !home) return null;
-  const s = gameScore(g);
-  const lost = pick.lastLoss ? Math.abs(pick.lastLoss.margin) : null;
-  const trip = pick.miles ? `${away.abbr} traveled ${pick.miles.toLocaleString()} mi` : null;
-  return (
-    <tr className="border-b border-line/5 last:border-0 hover:bg-line/5">
-      <td className="px-4 py-2.5 font-mono text-mute">Wk {g.week}</td>
-      <td className="px-2 py-2.5 text-center">
-        <MatchupLink
-          game={g}
-          away={away}
-          home={home}
-          awayScore={g.status !== "scheduled" ? s.away : ""}
-          homeScore={g.status !== "scheduled" ? s.home : ""}
-        />
-      </td>
-      <td className="whitespace-nowrap px-2 py-2.5 font-mono font-semibold">
-        <span className="mr-1 text-acc">★</span>
-        <PickText pick={pick} />
-      </td>
-      <td className="px-2 py-2.5 text-[12px] text-mute">
-        {RULE_TITLE[pick.rule]}
-        {lost ? ` · lost by ${lost} last game` : ""}
-        {trip ? ` · ${trip}` : ""}
-      </td>
-      <td
-        className={`px-4 py-2.5 text-right font-mono text-[11px] uppercase ${
-          pick.result === "win"
-            ? "text-win"
-            : pick.result === "loss"
-              ? "text-loss"
-              : pick.result === "push"
-                ? "text-mute"
-                : "text-acc"
-        }`}
-      >
-        {pick.result === "pending" ? (g.status === "live" ? "live" : "upcoming") : pick.result}
-      </td>
-    </tr>
-  );
-}
-
-function PickTable({ picks, empty }: { picks: CfbPick[]; empty: string }) {
-  if (!picks.length)
-    return <p className="px-4 py-6 text-center font-mono text-xs text-mute">{empty}</p>;
-  return (
-    <div className="overflow-x-auto">
-      <table className="w-full min-w-[640px] text-sm">
-        <thead>
-          <tr className="border-b border-line/10 text-left font-mono text-[10px] uppercase tracking-wider text-faint">
-            <th className="px-4 py-2 font-normal">Week</th>
-            <th className="px-2 py-2 text-center font-normal">Matchup</th>
-            <th className="px-2 py-2 font-normal">Pick</th>
-            <th className="px-2 py-2 font-normal">Why</th>
-            <th className="px-4 py-2 text-right font-normal">Result</th>
-          </tr>
-        </thead>
-        <tbody>
-          {picks.map((p) => (
-            <PickRow key={`${p.rule}-${p.game.id}`} pick={p} />
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-}
+/** Past seasons' ★ best-bet records (fixed), newest first. */
+const PAST: { season: number; rules: Record<string, CfbRecord>; all: CfbRecord }[] = Object.entries(
+  CFB_HISTORY,
+)
+  .map(([year, rules]) => {
+    const r = Object.fromEntries(
+      CFB_RULES.map((rule) => [rule.id, recordFromCounts(rules[rule.id] ?? [0, 0, 0])]),
+    );
+    return { season: Number(year), rules: r, all: addRecords(Object.values(r)) };
+  })
+  .sort((a, b) => b.season - a.season);
 
 function CfbModel() {
   const { games, isLoading } = useCfbSchedule(60_000);
-  const picks = useMemo(() => cfbBestBets(games), [games]);
-  const graded = picks.filter((p) => p.result !== "pending");
-  const week = currentCfbWeek(games);
-  const upcoming = picks.filter((p) => p.result === "pending" && p.game.week === week);
-  const season = cfbRecord(graded);
-  const byRule = (rule: CfbRuleId) => cfbRecord(graded.filter((p) => p.rule === rule));
+  const rows = useMemo(() => runCfbModel(games), [games]);
+  const trackRecord: TrackSeason[] = useMemo(
+    () => [
+      { label: `${SEASON} so far`, rows },
+      ...PAST.map((p) => ({ label: String(p.season), fixed: { bets: asMarketRecord(p.all) } })),
+    ],
+    [rows],
+  );
+  const allTime = addRecords(PAST.map((p) => p.all));
+  const winning = PAST.filter((p) => p.all.units > 0).length;
+  // This season's ★ record by rule.
+  const thisSeason = (rule: string) => {
+    const picks = rows.flatMap((r) => r.picks).filter((p) => p.reason === rule);
+    return summarizeModel(
+      rows.map((r) => ({ ...r, picks: r.picks.filter((p) => p.reason === rule) })),
+      "bets",
+    ).overall.wins + picks.length >= 0
+      ? summarizeModel(
+          rows.map((r) => ({ ...r, picks: r.picks.filter((p) => p.reason === rule) })),
+          "bets",
+        ).overall
+      : null;
+  };
 
-  // Past seasons (fixed) plus this season (live).
-  const seasons = useMemo(() => {
-    const past = Object.entries(CFB_HISTORY)
-      .map(([year, rules]) => {
-        const r = Object.fromEntries(
-          CFB_RULES.map((rule) => [rule.id, recordFromCounts(rules[rule.id] ?? [0, 0, 0])]),
-        ) as Record<CfbRuleId, CfbRecord>;
-        return { label: year, rules: r, all: addRecords(Object.values(r)) };
-      })
-      .sort((a, b) => Number(b.label) - Number(a.label));
-    return past;
-  }, []);
-  const allTime = addRecords(seasons.map((s) => s.all));
-  const winningSeasons = seasons.filter((s) => s.all.units > 0).length;
+  const rules = (
+    <Panel>
+      <h2 className="font-disp text-lg font-semibold uppercase tracking-tight">
+        The ★ best bet rules
+      </h2>
+      <p className="mt-1 text-sm text-mute">
+        Each rule was looked for on 2009–2017 and then checked on 2018–2025, seasons it never saw,
+        against the consensus closing line. Together: {recordText(allTime)},{" "}
+        {one(allTime.winPct ?? 0)}%, {unitsText(allTime.units)} since 2009, {winning} of{" "}
+        {PAST.length} seasons winning. Early-season unders were flat on the older seasons and only
+        took off in 2018, so they&apos;re the least proven of the four. Dozens of other angles were
+        tested and dropped (big underdogs, home dogs, byes, Thursday and #MACtion unders,
+        conference-specific unders, altitude, domes, cold northern November games).
+      </p>
+      <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        {CFB_RULES.map((rule) => {
+          const now = thisSeason(rule.id);
+          const past = addRecords(PAST.map((p) => p.rules[rule.id]));
+          return (
+            <div key={rule.id} className="rounded-lg border border-line/10 bg-panel2/20 p-3">
+              <h3 className="font-disp text-base font-semibold uppercase tracking-tight">
+                {rule.title}
+              </h3>
+              <p className="mt-1 text-sm">{rule.bet}</p>
+              <p className="mt-1 text-[12px] text-mute">{rule.why}</p>
+              <dl className="mt-2 space-y-0.5 font-mono text-[11px]">
+                <div className="flex justify-between gap-2">
+                  <dt className="text-faint">Found</dt>
+                  <dd>{rule.found}</dd>
+                </div>
+                <div className="flex justify-between gap-2">
+                  <dt className="text-faint">Confirmed</dt>
+                  <dd className="text-win">{rule.tested}</dd>
+                </div>
+                <div className="flex justify-between gap-2">
+                  <dt className="text-faint">Since 2009</dt>
+                  <dd className={toneClass(past.units)}>
+                    {recordText(past)} · {unitsText(past.units)}
+                  </dd>
+                </div>
+                <div className="flex justify-between gap-2">
+                  <dt className="text-faint">{SEASON} so far</dt>
+                  <dd className={toneClass(now?.units ?? 0)}>
+                    {now ? `${now.wins}-${now.losses}${now.pushes ? `-${now.pushes}` : ""}` : "—"} ·{" "}
+                    {unitsText(now?.units ?? 0)}
+                  </dd>
+                </div>
+              </dl>
+            </div>
+          );
+        })}
+      </div>
+    </Panel>
+  );
 
   return (
-    <>
-      <PageTitle eyebrow="FBS · flat 1 unit per pick at -110" title="Model" />
-      <div className="space-y-6">
-        <div className="grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-6">
-          <StatCard
-            label={`★ Best bets · ${SEASON}`}
-            value={isLoading ? "…" : recordText(season)}
-            note={
-              isLoading
-                ? "Loading…"
-                : `${season.winPct === null ? "—" : `${one(season.winPct)}% won`} · ${unitsText(season.units)}`
-            }
-            tone={toneOf(season.units)}
-          />
-          {CFB_RULES.map((rule) => {
-            const r = byRule(rule.id);
-            return (
-              <StatCard
-                key={rule.id}
-                label={rule.title}
-                value={isLoading ? "…" : recordText(r)}
-                note={`${r.winPct === null ? "—" : `${one(r.winPct)}%`} · ${unitsText(r.units)}`}
-                tone={toneOf(r.units)}
-              />
-            );
-          })}
-          <StatCard
-            label="Since 2009"
-            value={unitsText(allTime.units)}
-            note={`${recordText(allTime)} · ${one(allTime.winPct ?? 0)}% · ${winningSeasons}/${seasons.length} winning seasons`}
-            tone={toneOf(allTime.units)}
-          />
-        </div>
-
-        <Panel padded={false}>
-          <PanelHeader
-            title={week ? `Week ${week} picks` : "Upcoming picks"}
-            aside={
-              <span className="font-mono text-[10px] uppercase tracking-wider text-mute">
-                Lines update until kickoff
-              </span>
-            }
-          />
-          <PickTable
-            picks={upcoming}
-            empty={
-              isLoading ? "Loading the schedule and lines…" : "No ★ best bets this week (yet)."
-            }
-          />
-        </Panel>
-
+    <ModelBoard
+      rows={rows}
+      loading={isLoading}
+      eyebrow={`gcfb-anchored-v1 · flat 1 unit per pick`}
+      trackRecord={trackRecord}
+      trackRecordAside="Walk-forward · closing lines"
+      trackRecordNote={`${SEASON} runs week by week with only the games before each week, the way it runs live. Past seasons show the ★ best bets only (consensus closing lines, FBS vs FBS regular season); the every-game calls start this season.`}
+      calibrationSource="this season's games before the next slate"
+      extraTop={rules}
+      watchList={<CfbWatchList games={games} season={SEASON} />}
+      howItWorks={
         <Panel>
           <h2 className="font-disp text-lg font-semibold uppercase tracking-tight">
-            The ★ best bet rules
+            How the model works
           </h2>
-          <p className="mt-1 text-sm text-mute">
-            Each rule was looked for on 2009–2017 and then checked on 2018–2025, seasons it never
-            saw, against the consensus closing line. Early-season unders were flat on the older
-            seasons and only took off in 2018, so they&apos;re the least proven of the four. Dozens
-            of other angles were tested and dropped because they didn&apos;t hold up on the newer
-            seasons (big underdogs, home dogs, byes, Thursday and #MACtion unders,
-            conference-specific unders, Elo ratings vs the line, altitude, domes, cold northern
-            November games).
-          </p>
-          <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            {CFB_RULES.map((rule) => (
-              <div key={rule.id} className="rounded-lg border border-line/10 bg-panel2/20 p-3">
-                <h3 className="font-disp text-base font-semibold uppercase tracking-tight">
-                  {rule.title}
-                </h3>
-                <p className="mt-1 text-sm">{rule.bet}</p>
-                <p className="mt-1 text-[12px] text-mute">{rule.why}</p>
-                <dl className="mt-2 space-y-0.5 font-mono text-[11px]">
-                  <div className="flex justify-between gap-2">
-                    <dt className="text-faint">Found</dt>
-                    <dd>{rule.found}</dd>
-                  </div>
-                  <div className="flex justify-between gap-2">
-                    <dt className="text-faint">Confirmed</dt>
-                    <dd className="text-win">{rule.tested}</dd>
-                  </div>
-                </dl>
-              </div>
-            ))}
-          </div>
+          <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-mute">
+            <li>
+              The same engine as GamblingNFL: it rates every FBS team&apos;s offense and defense
+              from this season&apos;s final scores, adjusted for opponents and home field, then
+              predicts each game&apos;s score, spread, total and win probability.
+            </li>
+            <li>
+              Only games from earlier weeks are used to predict a week, so the record above is what
+              it would have picked at the time. Teams need {MODEL_SETTINGS.minGamesPerTeam} games
+              played before it makes calls on them (FCS opponents rarely get there).
+            </li>
+            <li>
+              It starts from the betting line and moves off it only as far as its own disagreements
+              have actually predicted results this season (the &quot;trust&quot; above). Every game
+              gets a winner, a spread side and an over / under; those are leans, graded so the
+              record is complete.
+            </li>
+            <li>
+              ★ Best bets use the four college rules above instead of the NFL ones: road
+              bounce-back, cross-country trips, early-season unders and service academies. A rule
+              sets the side on its market. Bowls get every-game calls but no ★.
+            </li>
+            <li>
+              Every pick risks {MODEL_SETTINGS.stake} unit. Spreads and totals are graded at{" "}
+              {MODEL_SETTINGS.defaultPrice}; moneylines at their ESPN price. Picks for upcoming
+              games can change until kickoff as the lines move.
+            </li>
+          </ul>
         </Panel>
-
-        <Panel padded={false}>
-          <PanelHeader
-            title="Track record by season"
-            aside={
-              <span className="font-mono text-[10px] uppercase tracking-wider text-mute">
-                Closing lines · FBS vs FBS
-              </span>
-            }
-          />
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[760px] text-sm">
-              <thead>
-                <tr className="border-b border-line/10 text-left font-mono text-[10px] uppercase tracking-wider text-faint">
-                  <th className="px-3 py-2 font-normal">Season</th>
-                  {CFB_RULES.map((r) => (
-                    <th key={r.id} className="px-3 py-2 text-right font-normal">
-                      {r.title}
-                    </th>
-                  ))}
-                  <th className="px-3 py-2 text-right font-normal">★ Best bets</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr className="border-b border-line/10 bg-acc/5">
-                  <td className="px-3 py-2 font-mono">{SEASON} so far</td>
-                  {CFB_RULES.map((r) => (
-                    <RecordCell key={r.id} r={byRule(r.id)} />
-                  ))}
-                  <RecordCell r={season} bold />
-                </tr>
-                {seasons.map((s) => (
-                  <tr key={s.label} className="border-b border-line/10 last:border-0">
-                    <td className="px-3 py-2 font-mono">{s.label}</td>
-                    {CFB_RULES.map((r) => (
-                      <RecordCell key={r.id} r={s.rules[r.id]} />
-                    ))}
-                    <RecordCell r={s.all} bold />
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <p className="px-4 pb-3 pt-2 text-[11px] text-faint">
-            Past seasons use the consensus closing line across sportsbooks; {SEASON} uses the line
-            ESPN shows at kickoff. Units: +0.91 per win, −1 per loss, pushes 0. Games against FCS
-            teams and bowls aren&apos;t included.
-          </p>
-        </Panel>
-
-        <CfbWatchList games={games} season={SEASON} />
-
-        <Panel padded={false}>
-          <PanelHeader
-            title={`Graded picks · ${SEASON}`}
-            aside={
-              <span className="font-mono text-[10px] uppercase tracking-wider text-mute">
-                Newest first
-              </span>
-            }
-          />
-          <PickTable
-            picks={[...graded].reverse()}
-            empty={isLoading ? "Loading…" : "No graded picks yet this season."}
-          />
-        </Panel>
-
-        <p className="font-mono text-[10px] uppercase tracking-wider text-faint">
-          For research, not betting advice ·{" "}
-          <Link to="/cfb/games" className="text-acc">
-            This week&apos;s games →
-          </Link>
-        </p>
-      </div>
-    </>
+      }
+    />
   );
 }
