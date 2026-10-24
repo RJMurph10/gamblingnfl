@@ -23,6 +23,7 @@ import {
 } from "@/data/teams";
 import {
   projectPlayer,
+  type ProjStat,
   type DefenseAllowed,
   type PlayerGameStats,
   type PlayerProjection,
@@ -67,7 +68,7 @@ export const eventLeague = (eventId: string): { league: FeedLeague; id: string }
  * An ESPN team object's site team. College data is re-keyed first (see rekeyCollegeTeams), so
  * college teams resolve by ESPN id instead of by an abbreviation that may match an NFL team.
  */
-function teamOf(apiTeam: any) {
+export function teamOf(apiTeam: any) {
   if (apiTeam?._key) return teamByAbbr(apiTeam._key);
   return teamByAbbr(String(apiTeam?.abbreviation ?? ""));
 }
@@ -3533,13 +3534,16 @@ export async function fetchPropAvailability(
   awayAbbr: string,
   homeAbbr: string,
 ): Promise<PropAvailability> {
-  const abbrs = [awayAbbr.toUpperCase(), homeAbbr.toUpperCase()];
-  const id = eventId.replace(/^espn-/, "");
+  // College team keys are ids ("cfb-194"); NFL ones are abbreviations.
+  const keyOf = (k: string) => (isCollegeId(k) ? k : k.toUpperCase());
+  const abbrs = [keyOf(awayAbbr), keyOf(homeAbbr)];
+  const college = eventLeague(eventId).league === "cfb";
+  const id = eventLeague(eventId).id;
   return cached(
-    `prop-availability-${id}-${abbrs.join("-")}`,
+    `prop-availability-${college ? "cfb-" : ""}${id}-${abbrs.join("-")}`,
     async () => {
       const [summary, rosters, charts] = await Promise.all([
-        fetchJson(`${SUMMARY}?event=${id}`).catch(() => null),
+        (college ? fetchSummaryFor(eventId) : fetchJson(`${SUMMARY}?event=${id}`)).catch(() => null),
         Promise.all(abbrs.map((abbr) => fetchTeamRoster(abbr))),
         Promise.all(abbrs.map((abbr) => fetchTeamDepthChart(abbr))),
       ]);
@@ -3562,7 +3566,9 @@ export async function fetchPropAvailability(
       // The game's injury report is the most specific source, so it wins.
       let injuryReport = rosters.some((r) => r.some((p) => p.injuryStatus));
       for (const block of Array.isArray(summary?.injuries) ? summary.injuries : []) {
-        const abbr = String(block?.team?.abbreviation ?? "").toUpperCase();
+        const abbr = college
+          ? String(teamOf(block?.team)?.id ?? "")
+          : String(block?.team?.abbreviation ?? "").toUpperCase();
         if (!abbrs.includes(abbr)) continue;
         for (const injury of Array.isArray(block?.injuries) ? block.injuries : []) {
           const athleteId = injury?.athlete?.id;
@@ -3594,6 +3600,7 @@ export async function fetchPropAvailability(
       // listing the backup first after Caleb Williams came back). nflverse's projected starter for
       // this game wins when we can match him on the roster.
       try {
+        if (college) throw new Error("nflverse covers the NFL only");
         const { fetchNflHistory } = await import("./nfl-history.server");
         const history = await fetchNflHistory();
         const eventNum = Number(id);
@@ -3676,7 +3683,7 @@ function scheduleForTeam(teamId: string): Promise<Game[]> {
 }
 
 /** A game's ESPN summary, from the right league's feed. */
-function fetchSummaryFor(gameId: string, final = false): Promise<any> {
+export function fetchSummaryFor(gameId: string, final = false): Promise<any> {
   const { league, id } = eventLeague(gameId);
   // Finished games never change, so team and player pages share one copy for hours.
   return cached(
@@ -3919,122 +3926,6 @@ export async function fetchConferenceTeamOverviewStats(
   );
 }
 
-/** One college player in the players index: roster details plus season totals. */
-export interface CfbIndexPlayer {
-  id: string;
-  name: string;
-  teamId: string;
-  position: string;
-  jersey?: string;
-  height?: string;
-  weight?: string;
-  headshot?: string;
-  /** Season totals (0 when none): games, passing, rushing, receiving, defense. */
-  stats: {
-    gp: number;
-    cmp: number;
-    att: number;
-    passYds: number;
-    passTd: number;
-    int: number;
-    rushAtt: number;
-    rushYds: number;
-    rushTd: number;
-    rec: number;
-    recYds: number;
-    recTd: number;
-    tackles: number;
-    sacks: number;
-    defInt: number;
-  };
-}
-
-/**
- * Every player on a conference's rosters with season totals from its teams' box scores
- * (10-minute cache). A conference at a time keeps it to about 15 rosters.
- */
-export async function fetchCfbConferencePlayers(conference: string): Promise<CfbIndexPlayer[]> {
-  await fetchFbsConferences().catch(() => []);
-  return cached(
-    `cfb-conference-players-${conference}`,
-    async () => {
-      const members = registeredCollegeTeams().filter((t) => t.conference === conference);
-      const perTeam = await Promise.all(
-        members.map(async (team) => {
-          const [roster, season] = await Promise.all([
-            fetchTeamRoster(team.id).catch((): LiveRosterPlayer[] => []),
-            fetchTeamSeasonStats(team.id).catch(() => null),
-          ]);
-          const totals = new Map<string, CfbIndexPlayer["stats"]>();
-          const blank = (): CfbIndexPlayer["stats"] => ({
-            gp: 0,
-            cmp: 0,
-            att: 0,
-            passYds: 0,
-            passTd: 0,
-            int: 0,
-            rushAtt: 0,
-            rushYds: 0,
-            rushTd: 0,
-            rec: 0,
-            recYds: 0,
-            recTd: 0,
-            tackles: 0,
-            sacks: 0,
-            defInt: 0,
-          });
-          const n = (row: TeamSeasonStatRow, key: string) => numericStat(row.stats[key]);
-          const add = (rows: TeamSeasonStatRow[] | undefined, fill: (t: CfbIndexPlayer["stats"], r: TeamSeasonStatRow) => void) => {
-            for (const r of rows ?? []) {
-              const t = totals.get(r.id) ?? blank();
-              t.gp = Math.max(t.gp, n(r, "gamesPlayed"));
-              fill(t, r);
-              totals.set(r.id, t);
-            }
-          };
-          add(season?.offense.passing, (t, r) => {
-            t.cmp += n(r, "completions");
-            t.att += n(r, "passingAttempts");
-            t.passYds += n(r, "passingYards");
-            t.passTd += n(r, "passingTouchdowns");
-            t.int += n(r, "interceptions");
-          });
-          add(season?.offense.rushing, (t, r) => {
-            t.rushAtt += n(r, "rushingAttempts");
-            t.rushYds += n(r, "rushingYards");
-            t.rushTd += n(r, "rushingTouchdowns");
-          });
-          add(season?.offense.receiving, (t, r) => {
-            t.rec += n(r, "receptions");
-            t.recYds += n(r, "receivingYards");
-            t.recTd += n(r, "receivingTouchdowns");
-          });
-          add(season?.defense, (t, r) => {
-            t.tackles += n(r, "totalTackles");
-            t.sacks += n(r, "sacks");
-            t.defInt += n(r, "interceptions");
-          });
-          return roster.map(
-            (p): CfbIndexPlayer => ({
-              id: p.id,
-              name: p.name,
-              teamId: team.id,
-              position: p.position,
-              jersey: p.jersey,
-              height: p.height,
-              weight: p.weight,
-              headshot: p.headshot,
-              stats: totals.get(p.id) ?? blank(),
-            }),
-          );
-        }),
-      );
-      return perTeam.flat();
-    },
-    10 * MINUTE,
-  );
-}
-
 /** Each team's players' lines in a college box score: team id → player id → line. */
 function collegeBoxLines(summary: any) {
   const out = new Map<
@@ -4084,9 +3975,21 @@ function collegeBoxLines(summary: any) {
   return out;
 }
 
+/** A projection re-run on one of the player's earlier games, against what happened. */
+export interface CfbProjectionCheck {
+  week: number;
+  opponent: string;
+  projected: number;
+  lower: number;
+  upper: number;
+  actual: number;
+}
+
 export interface CfbGameProjections {
   gameId: string;
   players: PlayerProjection[];
+  /** Walk-forward checks on each player's earlier games, by player id then stat. */
+  history: Record<string, Partial<Record<ProjStat, CfbProjectionCheck[]>>>;
   /** Games behind each team's numbers. */
   gamesUsed: Record<string, number>;
 }
@@ -4101,7 +4004,7 @@ export async function fetchCfbGameProjections(gameId: string): Promise<CfbGamePr
     async () => {
       const schedule = await fetchCfbSchedule();
       const game = schedule.find((g) => g.id === gameId);
-      if (!game) return { gameId, players: [], gamesUsed: {} };
+      if (!game) return { gameId, players: [], history: {}, gamesUsed: {} };
       const start = game.kickoffIso ? Date.parse(game.kickoffIso) : Date.now();
       const priorOf = (teamId: string) =>
         schedule
@@ -4156,14 +4059,25 @@ export async function fetchCfbGameProjections(gameId: string): Promise<CfbGamePr
       };
 
       const players: PlayerProjection[] = [];
+      const history: CfbGameProjections["history"] = {};
       for (const teamId of sides) {
         const opponent = teamId === game.homeTeamId ? game.awayTeamId : game.homeTeamId;
         const allowed = allowedBy(opponent);
-        const logs = new Map<string, { name: string; position: string; games: PlayerGameStats[] }>();
+        const logs = new Map<
+          string,
+          {
+            name: string;
+            position: string;
+            games: PlayerGameStats[];
+            meta: { week: number; opponent: string }[];
+          }
+        >();
         for (const g of prior[teamId]) {
+          const opp = teamById(g.homeTeamId === teamId ? g.awayTeamId : g.homeTeamId)?.abbr ?? "";
           for (const [id, p] of boxes.get(g.id)?.get(teamId) ?? []) {
-            const entry = logs.get(id) ?? { name: p.name, position: p.position, games: [] };
+            const entry = logs.get(id) ?? { name: p.name, position: p.position, games: [], meta: [] };
             entry.games.push(p.line);
+            entry.meta.push({ week: g.week, opponent: opp });
             logs.set(id, entry);
           }
         }
@@ -4173,12 +4087,34 @@ export async function fetchCfbGameProjections(gameId: string): Promise<CfbGamePr
             p.games,
             allowed,
           );
-          if (proj) players.push(proj);
+          if (!proj) continue;
+          players.push(proj);
+          // The same projection on each earlier game (from the games before it), vs the result.
+          const checks: CfbGameProjections["history"][string] = {};
+          for (let i = 2; i < p.games.length; i++) {
+            const then = projectPlayer(
+              { playerId, name: p.name, position: p.position, teamId },
+              p.games.slice(0, i),
+              null,
+            );
+            for (const s of then?.stats ?? []) {
+              (checks[s.stat] ??= []).push({
+                week: p.meta[i].week,
+                opponent: p.meta[i].opponent,
+                projected: s.median,
+                lower: s.low ?? 0,
+                upper: s.high ?? 0,
+                actual: p.games[i][s.stat],
+              });
+            }
+          }
+          history[playerId] = checks;
         }
       }
       return {
         gameId,
         players,
+        history,
         gamesUsed: Object.fromEntries(sides.map((t) => [t, prior[t].length])),
       };
     },
