@@ -6,7 +6,7 @@ import type { Game } from "@/data/games";
 import { runCfbModel } from "@/lib/cfb-model";
 import { summarizeModel, unitsText } from "@/lib/game-model";
 import { buildSeasonPulse, changeTone, weekChangeText } from "@/lib/season-pulse";
-import { useCfbSchedule, useCfbTop25 } from "@/lib/use-cfb";
+import { useCfbPriorSeason, useCfbSchedule, useCfbTop25 } from "@/lib/use-cfb";
 
 export const Route = createFileRoute("/cfb/")({
   head: () => ({
@@ -31,6 +31,7 @@ function CfbDashboard() {
     isError: scheduleError,
   } = useCfbSchedule(60_000);
   const top25 = useCfbTop25();
+  const priorSeason = useCfbPriorSeason();
   const isLive = source.length > 0;
 
   const recent = useMemo(
@@ -45,7 +46,7 @@ function CfbDashboard() {
 
   // Season Pulse: the model's record and units (flat 1u), plus the average total.
   const pulse = useMemo(() => buildSeasonPulse(source.filter((g) => !g.fcs)), [source]);
-  const modelRows = useMemo(() => runCfbModel(source), [source]);
+  const modelRows = useMemo(() => runCfbModel(source, priorSeason), [source, priorSeason]);
   // Accuracy cards grade every game; the units card follows the best bets (what it would bet).
   const model = useMemo(() => summarizeModel(modelRows, "predictions"), [modelRows]);
   const bets = useMemo(() => summarizeModel(modelRows, "bets"), [modelRows]);
