@@ -68,6 +68,11 @@ export function GameCard({ game }: { game: Game }) {
           <span className={game.status === "final" ? "text-mute" : "text-acc"}>{game.status}</span>
         </span>
       </div>
+      {game.note ? (
+        <div className="mt-1 truncate font-mono text-[10px] uppercase tracking-wider text-acc">
+          {game.note}
+        </div>
+      ) : null}
       <div className="mt-2 space-y-1">
         {[
           { team: away, pts: score.away, rank: game.awayRank },
