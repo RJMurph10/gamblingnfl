@@ -8,14 +8,20 @@
  */
 
 import { gameScore } from "@/data/games";
-import { teams, teamByAbbr, teamById } from "@/data/teams";
+import { isCollegeId, registeredCollegeTeams, teams, teamByAbbr, teamById } from "@/data/teams";
 import {
   CURRENT_SEASON,
+  fetchCfbGameProjections,
+  fetchCfbSchedule,
+  fetchFbsConferences,
   fetchPriorSeasonResults,
   fetchPropAvailability,
   fetchSchedule,
+  fetchSummaryFor,
   fetchTeamRoster,
+  teamOf,
 } from "./espn.server";
+import type { ProjStat } from "./cfb-projections";
 import { nflverseGameYac } from "./nflverse-yac.server";
 import {
   MARKET_SOURCES,
@@ -209,12 +215,12 @@ const GROUP_PRIORITY = [
 
 export function extractGameRecords(
   summary: any,
-  teamIdFor: (abbr: string) => string | undefined,
+  teamIdFor: (abbr: string, team?: any) => string | undefined,
 ): GameRecord[] {
   const byPlayer = new Map<string, GameRecord & { groups: Set<string> }>();
 
   for (const block of summary?.boxscore?.players ?? []) {
-    const teamId = teamIdFor(block?.team?.abbreviation ?? "");
+    const teamId = teamIdFor(block?.team?.abbreviation ?? "", block?.team);
     if (!teamId) continue;
     for (const group of block?.statistics ?? []) {
       const groupName = String(group?.name ?? "");
@@ -521,6 +527,17 @@ async function fetchGameSummary(eventId: string): Promise<any> {
   });
 }
 
+/** A college game's player records (college box scores, teams resolved by ESPN id). */
+async function fetchCollegeGameRecords(gameId: string): Promise<GameRecord[]> {
+  try {
+    return await memoize(`league-game-${gameId}`, GAME_TTL_MS, async () =>
+      extractGameRecords(await fetchSummaryFor(gameId, true), (_, team) => teamOf(team)?.id),
+    );
+  } catch {
+    return [];
+  }
+}
+
 async function fetchGameRecords(eventId: string): Promise<GameRecord[]> {
   try {
     return await memoize(`league-game-${eventId}`, GAME_TTL_MS, async () => {
@@ -659,10 +676,12 @@ export async function fetchGamePropAnalytics(
   awayAbbr: string,
   homeAbbr: string,
 ): Promise<GamePropAnalytics> {
-  const abbrs = [awayAbbr.toUpperCase(), homeAbbr.toUpperCase()];
+  // NFL teams come as abbreviations, college teams as ids ("cfb-194").
+  const college = isCollegeId(awayAbbr);
+  const abbrs = college ? [awayAbbr, homeAbbr] : [awayAbbr.toUpperCase(), homeAbbr.toUpperCase()];
   return memoize(`prop-analytics-${abbrs.join("-")}`, TOTALS_TTL_MS, async () => {
     const [schedule, ...rosters] = await Promise.all([
-      fetchSchedule(),
+      college ? fetchCfbSchedule() : fetchSchedule(),
       ...abbrs.map((abbr) => fetchTeamRoster(abbr)),
     ]);
     const finals = schedule.filter((g) => g.status === "final");
@@ -671,7 +690,7 @@ export async function fetchGamePropAnalytics(
 
     await Promise.all(
       abbrs.map(async (abbr, teamIndex) => {
-        const team = teamByAbbr(abbr);
+        const team = college ? teamById(abbr) : teamByAbbr(abbr);
         if (!team) return;
         const teamGames = finals.filter(
           (g) => g.homeTeamId === team.id || g.awayTeamId === team.id,
@@ -682,7 +701,9 @@ export async function fetchGamePropAnalytics(
         for (let i = 0; i < teamGames.length; i += BATCH_SIZE) {
           const batch = teamGames.slice(i, i + BATCH_SIZE);
           const records = await Promise.all(
-            batch.map((g) => fetchGameRecords(g.id.replace(/^espn-/, ""))),
+            batch.map((g) =>
+              college ? fetchCollegeGameRecords(g.id) : fetchGameRecords(g.id.replace(/^espn-/, "")),
+            ),
           );
           batch.forEach((game, idx) => {
             const home = game.homeTeamId === team.id;
@@ -836,6 +857,7 @@ export async function fetchGamePropProjections(
   awayAbbr: string,
   homeAbbr: string,
 ): Promise<GamePropProjections> {
+  if (eventId.startsWith("cfb-")) return collegePropProjections(eventId);
   const id = eventId.replace(/^espn-/, "");
   return memoize(`prop-projections-${id}`, TOTALS_TTL_MS, async () => {
     const [schedule, analytics, priorSeason, availability] = await Promise.all([
@@ -1157,5 +1179,104 @@ export async function fetchGamePropProjections(
       lastSeasonPlayers: [...lastSeason.values()].filter((l) => Object.keys(l).length > 0).length,
       accuracy: { overall: summarizeAccuracy(allPoints.map((x) => x.point)), byCategory },
     };
+  });
+}
+
+/* ---------------- college: the same page shapes from the college projections ---------------- */
+
+/** College projection stats → the props page's market keys. */
+const COLLEGE_KEYS: Record<ProjStat, string> = {
+  passYds: "pass_yds",
+  passTd: "pass_tds",
+  rushYds: "rush_yds",
+  rushAtt: "rush_att",
+  recYds: "rec_yds",
+  rec: "receptions",
+};
+
+/**
+ * College prop projections in the same shape as the NFL's, so the props page shows them the same
+ * way (see cfb-projections.ts for how they're made and how they tested).
+ */
+async function collegePropProjections(gameId: string): Promise<GamePropProjections> {
+  const [data, schedule] = await Promise.all([fetchCfbGameProjections(gameId), fetchCfbSchedule()]);
+  const week = schedule.find((g) => g.id === gameId)?.week ?? 0;
+  const players: GamePropProjections["players"] = {};
+  const all: BacktestPoint[] = [];
+  const byCategory: Partial<Record<PropCategory, BacktestPoint[]>> = {};
+  for (const p of data.players) {
+    const models: Record<string, PlayerStatModel> = {};
+    for (const s of p.stats) {
+      const key = COLLEGE_KEYS[s.stat];
+      const history: BacktestPoint[] = data.history[p.playerId]?.[s.stat] ?? [];
+      all.push(...history);
+      const category = marketByKey(key)?.category;
+      if (category) (byCategory[category] ??= []).push(...history);
+      models[key] = {
+        projection: {
+          projected: s.median,
+          lower: s.low ?? 0,
+          upper: s.high ?? 0,
+          form: s.median,
+          defense: 1,
+          script: 1,
+          opportunity: 1,
+          games: p.games,
+          role: "starter",
+        },
+        accuracy: summarizeAccuracy(history),
+        history,
+      };
+    }
+    players[p.playerId] = models;
+  }
+  return {
+    week,
+    modelVersion: "gcfb-proj-v1",
+    players,
+    usage: {},
+    lastSeasonPlayers: 0,
+    accuracy: {
+      overall: summarizeAccuracy(all),
+      byCategory: Object.fromEntries(
+        Object.entries(byCategory).map(([k, v]) => [k, summarizeAccuracy(v ?? [])]),
+      ) as GamePropProjections["accuracy"]["byCategory"],
+    },
+  };
+}
+
+/**
+ * College players index, one conference at a time (the page loads every conference and merges
+ * them): each member's players with season totals from this season's box scores, the same shape
+ * as the NFL's league players.
+ */
+export async function fetchCfbConferenceLeaguePlayers(conference: string): Promise<LeaguePlayer[]> {
+  return memoize(`cfb-league-players-${conference}`, TOTALS_TTL_MS, async () => {
+    const [schedule] = await Promise.all([fetchCfbSchedule(), fetchFbsConferences().catch(() => [])]);
+    const members = registeredCollegeTeams().filter((t) => t.conference === conference);
+    const ids = new Set(members.map((t) => t.id));
+    const finals = schedule.filter(
+      (g) => g.status === "final" && (ids.has(g.homeTeamId) || ids.has(g.awayTeamId)),
+    );
+    const positionById = new Map<string, string>();
+    await Promise.all(
+      members.map(async (team) => {
+        try {
+          for (const p of await fetchTeamRoster(team.id)) {
+            if (p.position) positionById.set(p.id, p.position);
+          }
+        } catch {
+          /* fall back to the box-score position */
+        }
+      }),
+    );
+    const gameRecords: GameRecord[][] = [];
+    for (let i = 0; i < finals.length; i += BATCH_SIZE) {
+      const batch = finals.slice(i, i + BATCH_SIZE);
+      const records = await Promise.all(batch.map((g) => fetchCollegeGameRecords(g.id)));
+      // Only this conference's players (opponents are counted with their own conference).
+      gameRecords.push(...records.map((r) => r.filter((rec) => ids.has(rec.teamId))));
+    }
+    return buildLeaguePlayers(gameRecords, positionById);
   });
 }
