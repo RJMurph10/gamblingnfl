@@ -13,7 +13,7 @@ import { homeLine } from "./season-pulse";
 export type NoteTone = "good" | "bad" | "neutral";
 
 export interface PickNote {
-  kind: "key" | "move" | "qb" | "wind" | "style";
+  kind: "key" | "move" | "qb" | "wind" | "style" | "rule";
   text: string;
   tone: NoteTone;
 }
@@ -92,6 +92,8 @@ export function qbNotes(row: GameModelRow): PickNote[] {
 /** Every note for a game row: QB changes, then the best bet's key number and line movement. */
 export function notesForRow(row: GameModelRow): PickNote[] {
   const notes = qbNotes(row);
+  // College ★ rules explain themselves (e.g. "lost by 28 last week").
+  for (const text of row.ruleNotes ?? []) notes.push({ kind: "rule", text, tone: "good" });
   const spread = row.predictions.find((p) => p.market === "spread");
   if (spread?.best && spread.reason === "qb-style") {
     const team = (side: "home" | "away") =>
