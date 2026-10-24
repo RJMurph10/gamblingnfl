@@ -3759,6 +3759,31 @@ function addCollegeDetails(game: Game, comp: any) {
 }
 
 /**
+ * The college scoreboard drops the spread/total once a game starts, so live and finished games
+ * would show "—". Fill them from ESPN's odds history (the same lookup the game page uses), a few
+ * games at a time so a whole week never fires hundreds of requests at once.
+ */
+async function fillCollegeLines(games: Game[]): Promise<void> {
+  const missing = games.filter(
+    (g) => g.status !== "scheduled" && (g.spread === "—" || !g.total),
+  );
+  for (let i = 0; i < missing.length; i += 12) {
+    await Promise.all(
+      missing.slice(i, i + 12).map(async (g) => {
+        try {
+          const odds = await fetchHistoricalOdds(g.id.replace(/^cfb-/, ""), "cfb");
+          if (g.spread === "—" && odds.spread) g.spread = odds.spread;
+          if (!g.total && typeof odds.total === "number") g.total = odds.total;
+          if (odds.prices) g.odds = mergeOdds(g.odds, odds.prices);
+        } catch {
+          // leave the dash; it retries the next time the week reloads
+        }
+      }),
+    );
+  }
+}
+
+/**
  * The whole FBS regular season as site games (every FBS team's games, FCS opponents included and
  * flagged). Finished weeks are cached for 6 hours, later weeks for 10 minutes, and this week
  * for 15 seconds (live scores).
@@ -3782,9 +3807,11 @@ export async function fetchCfbSchedule(): Promise<Game[]> {
         async () => {
           try {
             const data = await fetchJson(weekScoreboardUrl("cfb", w.number));
-            return (data?.events ?? [])
+            const weekGames = (data?.events ?? [])
               .map((e: any) => mapCollegeEvent(e, w.number, fbsIds))
               .filter((g: Game | null): g is Game => g !== null);
+            await fillCollegeLines(weekGames);
+            return weekGames;
           } catch {
             return [] as Game[];
           }
@@ -3802,10 +3829,12 @@ export async function fetchCfbSchedule(): Promise<Game[]> {
         const data = await fetchJson(
           `${FEEDS.cfb.scoreboard}?groups=${FBS_GROUP}&dates=${SEASON}&seasontype=3&week=1&limit=400`,
         );
-        return (data?.events ?? [])
+        const bowlGames = (data?.events ?? [])
           .map((e: any) => mapCollegeEvent(e, bowlWeek, fbsIds))
           .filter((g: Game | null): g is Game => g !== null)
           .map((g: Game) => ({ ...g, postseason: true }));
+        await fillCollegeLines(bowlGames);
+        return bowlGames;
       } catch {
         return [] as Game[];
       }
