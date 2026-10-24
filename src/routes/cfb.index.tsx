@@ -1,152 +1,216 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
-import { PageTitle, Panel, PanelHeader, StatCard } from "@/components/booth";
-import { CfbGameCard, CfbLogo } from "@/components/CfbGameCard";
-import { getCfbRankings, getCfbWeek } from "@/lib/cfb.functions";
+import { PageTitle, Panel, StatCard, TeamLogo } from "@/components/booth";
+import { CfbScopePicker } from "@/components/CfbScope";
+import { LiveGamesPanel, RecentGamesPanel, UpcomingGames } from "@/components/GameTables";
+import { gameScore, type Game } from "@/data/games";
+import { buildSeasonPulse, changeTone, weekChangeText } from "@/lib/season-pulse";
+import {
+  currentCfbWeek,
+  scopeGames,
+  useCfbConferences,
+  useCfbSchedule,
+  useCfbTop25,
+  type CfbScope,
+} from "@/lib/use-cfb";
 
 export const Route = createFileRoute("/cfb/")({
   head: () => ({
     meta: [
-      { title: "College football — GamblingCFB" },
+      { title: "Season Pulse — GamblingCFB dashboard" },
       {
         name: "description",
-        content: "FBS college football: this week's games, live scores, lines and the AP Top 25.",
+        content:
+          "FBS college football dashboard: how favorites and totals are doing against the closing lines, live and upcoming games, recent results and the Top 25.",
       },
     ],
   }),
   component: CfbDashboard,
 });
 
+const fmt = (v: number | null) => (v === null ? "—" : v.toFixed(1));
+
+/** Overs vs unders on games with a closing total (pushes left out). */
+function overRecord(games: Game[]) {
+  let overs = 0;
+  let unders = 0;
+  for (const g of games) {
+    if (g.status !== "final" || !g.total) continue;
+    const s = gameScore(g);
+    const pts = s.away + s.home;
+    if (pts > g.total) overs++;
+    else if (pts < g.total) unders++;
+  }
+  const n = overs + unders;
+  return { overs, unders, pct: n ? (overs / n) * 100 : null };
+}
+
+const kickoffTime = (g: Game) => (g.kickoffIso ? new Date(g.kickoffIso).getTime() : 0);
+
 function CfbDashboard() {
-  const weekQuery = useQuery({
-    queryKey: ["cfb-week", "current"],
-    queryFn: () => getCfbWeek({ data: {} }),
-    refetchInterval: 60_000,
-    staleTime: 30_000,
-    retry: 1,
-  });
-  const rankingsQuery = useQuery({
-    queryKey: ["cfb-rankings"],
-    queryFn: () => getCfbRankings(),
-    staleTime: 30 * 60_000,
-    retry: 1,
-  });
-  const slate = weekQuery.data;
-  const games = useMemo(() => slate?.games ?? [], [slate]);
-  const live = games.filter((g) => g.status === "live");
-  const ranked = games.filter((g) => g.home.rank || g.away.rank);
-  const finals = games.filter((g) => g.status === "final").length;
-  const poll =
-    rankingsQuery.data?.find((r) => /playoff|cfp/i.test(r.poll)) ?? rankingsQuery.data?.[0];
+  const [scope, setScope] = useState<CfbScope>("all");
+  const { games: all, isLoading, isError } = useCfbSchedule(60_000);
+  const { conferences } = useCfbConferences();
+  const top25 = useCfbTop25();
+
+  const source = useMemo(() => scopeGames(all, scope), [all, scope]);
+  // Lines are FBS-on-FBS: FCS games rarely have one and would skew the figures.
+  const lined = useMemo(() => source.filter((g) => !g.fcs), [source]);
+  const pulse = useMemo(() => buildSeasonPulse(lined), [lined]);
+  const prevWeek = pulse.throughWeek === null ? null : pulse.throughWeek - 1;
+  const overs = useMemo(() => overRecord(lined), [lined]);
+  const oversBefore = useMemo(
+    () => (prevWeek === null ? null : overRecord(lined.filter((g) => g.week <= prevWeek))),
+    [lined, prevWeek],
+  );
+  const overChange =
+    overs.pct !== null && oversBefore?.pct !== null && oversBefore?.pct !== undefined
+      ? Math.round((overs.pct - oversBefore.pct) * 10) / 10
+      : null;
+
+  const live = source.filter((g) => g.status === "live");
+  const recent = useMemo(
+    () =>
+      source
+        .filter((g) => g.status === "final")
+        .sort((a, b) => b.week - a.week || kickoffTime(b) - kickoffTime(a))
+        .slice(0, 8),
+    [source],
+  );
+  const week = currentCfbWeek(all);
+  const fav = pulse.favoriteWinRate;
+  const cover = pulse.favoriteCoverRate;
+  const loadingNote = isLoading ? "Loading…" : undefined;
+  const sample = (n: number) => `${n} ${n === 1 ? "game" : "games"}`;
 
   return (
     <>
-      <PageTitle
-        eyebrow={slate ? `FBS · ${slate.season} · Week ${slate.week}` : "FBS"}
-        title="College football"
-      />
-      {weekQuery.isLoading ? (
-        <Panel>
-          <p className="py-8 text-center font-mono text-xs text-mute">Loading this week…</p>
-        </Panel>
-      ) : !slate ? (
-        <Panel>
-          <p className="py-8 text-center font-mono text-xs text-mute">
-            College football couldn&apos;t be loaded right now.
-          </p>
-        </Panel>
-      ) : (
-        <div className="space-y-6">
-          <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-            <StatCard label="Games this week" value={String(games.length)} note="FBS teams" />
-            <StatCard
-              label="Live now"
-              value={String(live.length)}
-              tone={live.length ? "win" : "mute"}
-            />
-            <StatCard
-              label="Top 25 games"
-              value={String(ranked.length)}
-              note="a ranked team plays"
-            />
-            <StatCard label="Final" value={`${finals}/${games.length}`} />
-          </div>
-
-          <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
-            <div className="space-y-6">
-              {live.length ? (
-                <Panel padded={false}>
-                  <PanelHeader title="Live now" />
-                  <div className="grid gap-3 p-4 sm:grid-cols-2">
-                    {live.map((g) => (
-                      <CfbGameCard key={g.id} game={g} />
-                    ))}
-                  </div>
-                </Panel>
-              ) : null}
-              <Panel padded={false}>
-                <PanelHeader
-                  title="Top 25 this week"
-                  aside={
-                    <Link
-                      to="/cfb/games"
-                      className="font-mono text-[10px] uppercase tracking-wider text-acc hover:underline"
-                    >
-                      All games →
-                    </Link>
-                  }
-                />
-                {ranked.length ? (
-                  <div className="grid gap-3 p-4 sm:grid-cols-2">
-                    {ranked.map((g) => (
-                      <CfbGameCard key={g.id} game={g} />
-                    ))}
-                  </div>
-                ) : (
-                  <p className="p-6 text-center font-mono text-xs text-mute">
-                    No ranked teams play this week.
-                  </p>
-                )}
-              </Panel>
-            </div>
-
-            <Panel padded={false}>
-              <PanelHeader title={poll?.poll || "Top 25"} />
-              {poll ? (
-                <ol className="divide-y divide-line/5">
-                  {poll.ranks.slice(0, 25).map((r) => (
-                    <li key={r.team.id} className="flex items-center gap-2.5 px-4 py-1.5 text-sm">
-                      <span className="w-6 text-right font-mono text-xs tabular-nums text-mute">
-                        {r.rank}
-                      </span>
-                      <CfbLogo team={r.team} className="size-5" />
-                      <span className="min-w-0 truncate">{r.team.location}</span>
-                      <span className="ml-auto font-mono text-[11px] text-faint">{r.record}</span>
-                      {r.previous && r.previous !== r.rank && r.previous <= 25 ? (
-                        <span
-                          className={`w-7 text-right font-mono text-[10px] ${
-                            r.previous > r.rank ? "text-win" : "text-loss"
-                          }`}
-                        >
-                          {r.previous > r.rank ? "▲" : "▼"}
-                          {Math.abs(r.previous - r.rank)}
-                        </span>
-                      ) : (
-                        <span className="w-7" />
-                      )}
-                    </li>
-                  ))}
-                </ol>
-              ) : (
-                <p className="p-6 text-center font-mono text-xs text-mute">
-                  {rankingsQuery.isLoading ? "Loading rankings…" : "Rankings unavailable."}
-                </p>
-              )}
-            </Panel>
-          </div>
+      <section className="mb-6">
+        <PageTitle
+          eyebrow={`Home dashboard · FBS${week ? ` · Week ${week}` : ""}`}
+          title="Season Pulse"
+          aside={<CfbScopePicker scope={scope} onChange={setScope} conferences={conferences} />}
+        />
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+          <StatCard
+            label="Favorites · win rate"
+            value={fmt(fav.value)}
+            unit={fav.value === null ? undefined : "%"}
+            note={
+              loadingNote ??
+              [weekChangeText(fav.weekChange), `${sample(fav.sample)} straight up`]
+                .filter(Boolean)
+                .join(" · ")
+            }
+            tone={changeTone(fav.weekChange)}
+          />
+          <StatCard
+            label="Favorites · cover %"
+            value={fmt(cover.value)}
+            unit={cover.value === null ? undefined : "%"}
+            note={
+              loadingNote ??
+              [weekChangeText(cover.weekChange), `${sample(cover.sample)} ATS`]
+                .filter(Boolean)
+                .join(" · ")
+            }
+            tone={changeTone(cover.weekChange)}
+          />
+          <StatCard
+            label="Overs · hit rate"
+            value={fmt(overs.pct)}
+            unit={overs.pct === null ? undefined : "%"}
+            note={
+              loadingNote ??
+              [weekChangeText(overChange), `${overs.overs}-${overs.unders} over/under`]
+                .filter(Boolean)
+                .join(" · ")
+            }
+            tone={changeTone(overChange)}
+          />
+          <StatCard
+            label="Avg points · vs line"
+            value={fmt(pulse.avgTotal.value)}
+            note={
+              loadingNote ??
+              (pulse.avgTotalLine !== null
+                ? `closing total avg ${pulse.avgTotalLine.toFixed(1)}`
+                : "No totals graded yet")
+            }
+            tone={
+              pulse.avgTotal.value !== null && pulse.avgTotalLine !== null
+                ? pulse.avgTotal.value > pulse.avgTotalLine
+                  ? "win"
+                  : "loss"
+                : "mute"
+            }
+          />
         </div>
-      )}
+        {pulse.throughWeek !== null ? (
+          <p className="mt-2 font-mono text-[10px] uppercase tracking-wider text-faint">
+            Through week {pulse.throughWeek} · FBS vs FBS games at closing ESPN lines ·{" "}
+            <Link to="/cfb/model" className="text-acc">
+              Model →
+            </Link>
+          </p>
+        ) : null}
+      </section>
+
+      <div className="grid gap-6 lg:grid-cols-12">
+        <section className="min-w-0 space-y-6 lg:col-span-8">
+          <LiveGamesPanel games={live} />
+          <UpcomingGames games={source} />
+          <RecentGamesPanel
+            games={recent}
+            allGamesTo="/cfb/games"
+            emptyText={
+              isLoading
+                ? "Loading games from ESPN…"
+                : isError
+                  ? "Could not load games from ESPN. Try refreshing shortly."
+                  : "No completed games yet."
+            }
+          />
+        </section>
+
+        <aside className="min-w-0 lg:col-span-4">
+          <Panel>
+            <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">
+              {top25.poll || "Top 25"}
+            </h2>
+            <p className="label-mono mb-3">This week · tap to open</p>
+            {top25.ranks.length ? (
+              <div className="grid grid-cols-5 gap-2">
+                {top25.ranks.map((r) => (
+                  <Link
+                    key={r.team.id}
+                    to="/cfb/teams/$teamId"
+                    params={{ teamId: r.team.id }}
+                    title={`#${r.rank} ${r.team.city}${r.record ? ` (${r.record})` : ""}`}
+                    className="glass relative grid aspect-square place-items-center rounded-xl hover:glow"
+                    style={{ boxShadow: `inset 0 0 0 1px ${r.team.color}44` }}
+                  >
+                    <span className="absolute left-1 top-0.5 font-mono text-[9px] font-bold text-acc">
+                      {r.rank}
+                    </span>
+                    <TeamLogo team={r.team} className="size-8" />
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <p className="py-6 text-center font-mono text-xs text-mute">
+                {top25.isLoading ? "Loading rankings…" : "Rankings unavailable."}
+              </p>
+            )}
+            <Link
+              to="/cfb/teams"
+              className="mt-3 block text-center font-mono text-[10px] uppercase tracking-wider text-acc"
+            >
+              + all FBS teams
+            </Link>
+          </Panel>
+        </aside>
+      </div>
     </>
   );
 }
