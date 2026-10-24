@@ -1,7 +1,7 @@
 /**
  * Game page body, shared by the NFL and college game routes.
  */
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { isScoreOrKickoffPlay, useRunningGameClock } from "@/lib/use-running-game-clock";
@@ -24,6 +24,8 @@ import {
 import { gameScore, type BoxScoreLine, type Game, type GameProbabilityPoint } from "@/data/games";
 import { isCollegeId, registerTeams, teamById, type Team } from "@/data/teams";
 import { headshotUrl, playerRoute, teamRoute, teamShort, useLeague } from "@/lib/league-links";
+import { CFB_RULES, cfbBestBets, type CfbPick } from "@/lib/cfb-model";
+import { useCfbSchedule } from "@/lib/use-cfb";
 import { getGameWeather, getLiveGame, getTeamSeasonAverages } from "@/lib/espn.functions";
 import { showGameStatistics } from "@/lib/game-visibility";
 import { DraftKingsPropsBoard } from "@/components/DraftKingsPropsBoard";
@@ -938,6 +940,13 @@ export function GameDetail({ gameId }: { gameId: string }) {
   const [activeMarketTab, setActiveMarketTab] =
     useState<"moneyline" | "cover" | "total">("moneyline");
 
+  // College ★ best bets need the whole schedule (each team's previous game).
+  const cfbSchedule = useCfbSchedule(false, college);
+  const cfbPicks = useMemo(
+    () => (college ? cfbBestBets(cfbSchedule.games).filter((p) => p.game.id === gameId) : []),
+    [college, cfbSchedule.games, gameId],
+  );
+
   // Hooks must run on every render, so this sits above the loading / missing-game early returns.
   const lastPlay = game?.playByPlay?.[0]?.text;
   const runningClock = useRunningGameClock({
@@ -1308,6 +1317,8 @@ export function GameDetail({ gameId }: { gameId: string }) {
           );
         })()}
       </Panel>
+
+      {cfbPicks.length ? <CfbBestBetBanner picks={cfbPicks} /> : null}
 
       {game.status === "live" ? <PlayByPlay plays={game.playByPlay ?? []} /> : null}
 
@@ -1875,5 +1886,47 @@ export function GameDetail({ gameId }: { gameId: string }) {
         </>
       ) : null}
     </>
+  );
+}
+
+/** College ★ best bets on this game, with the rule behind each and its result once final. */
+function CfbBestBetBanner({ picks }: { picks: CfbPick[] }) {
+  return (
+    <section className="mt-4 rounded-xl border border-acc/30 bg-acc/5 px-4 py-3">
+      {picks.map((p) => {
+        const team = teamById(p.game.awayTeamId);
+        const rule = CFB_RULES.find((r) => r.id === p.rule);
+        const line = p.line === 0 ? "PK" : p.line > 0 ? `+${p.line}` : String(p.line);
+        return (
+          <div key={p.rule} className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
+            <span className="font-mono text-[11px] uppercase tracking-wider text-acc">★ Best bet</span>
+            <span className="inline-flex items-center gap-1.5 font-mono font-semibold">
+              {p.market === "total" ? (
+                `Under ${p.line}`
+              ) : (
+                <>
+                  {team ? <TeamLogo team={team} className="size-4" /> : null}
+                  {team?.abbr} {line}
+                </>
+              )}
+            </span>
+            <span className="text-mute">
+              {rule?.title}
+              {p.lastLoss ? ` · lost by ${Math.abs(p.lastLoss.margin)} last game` : ""}
+            </span>
+            <Link to="/cfb/model" className="font-mono text-[11px] text-acc hover:underline">
+              Why →
+            </Link>
+            <span
+              className={`ml-auto font-mono text-[11px] uppercase ${
+                p.result === "win" ? "text-win" : p.result === "loss" ? "text-loss" : "text-mute"
+              }`}
+            >
+              {p.result === "pending" ? "" : p.result}
+            </span>
+          </div>
+        );
+      })}
+    </section>
   );
 }
