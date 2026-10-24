@@ -897,9 +897,9 @@ export function GameDetail({ gameId }: { gameId: string }) {
       });
     },
 
-    // Stadium weather is mapped for NFL venues only.
+    // College: home stadiums only (neutral-site locations aren't on file).
     enabled: Boolean(
-      !college &&
+      !(college && game?.neutralSite) &&
       game?.id &&
         game?.homeTeamId &&
         game?.kickoffIso &&
