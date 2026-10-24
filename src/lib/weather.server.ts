@@ -11,6 +11,22 @@
  */
 
 import { getStadiumForGame, type StadiumInfo } from "@/lib/stadiums";
+import { CFB_STADIUMS } from "@/data/cfb-stadiums";
+
+/** A college home team's stadium (FBS teams on file; neutral sites aren't). */
+function collegeStadium(homeTeamId: string, venue?: string): StadiumInfo | null {
+  const st = CFB_STADIUMS[Number(homeTeamId.replace(/^cfb-/, ""))];
+  if (!st) return null;
+  return {
+    name: venue ?? "",
+    city: "",
+    state: "",
+    lat: st[0],
+    lon: st[1],
+    timezone: st[2],
+    isIndoor: Boolean(st[3]),
+  };
+}
 
 export interface GameWeather {
   temperature: number | null;
@@ -627,7 +643,9 @@ async function loadGameWeather({
   gameTime: string;
 }): Promise<GameWeather | null> {
   try {
-    const stadium = getStadiumForGame(homeTeamId, venue);
+    const stadium = homeTeamId.startsWith("cfb-")
+      ? collegeStadium(homeTeamId, venue)
+      : getStadiumForGame(homeTeamId, venue);
 
     if (!stadium) {
       console.error("Weather lookup failed: no stadium matched the game.");
