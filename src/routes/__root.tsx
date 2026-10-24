@@ -4,16 +4,18 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
   HeadContent,
   Scripts,
   type ErrorComponentProps,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { LEAGUES, leagueFromPath, switchLeaguePath, type League } from "../lib/leagues";
 
-const nav = [
+const nflNav = [
   { to: "/", label: "Dashboard" },
   { to: "/teams", label: "Teams" },
   { to: "/players", label: "Players" },
@@ -22,22 +24,125 @@ const nav = [
   { to: "/model", label: "Model" },
 ] as const;
 
+const cfbNav = [
+  { to: "/cfb", label: "Dashboard" },
+  { to: "/cfb/teams", label: "Teams" },
+  { to: "/cfb/games", label: "Games" },
+  { to: "/cfb/model", label: "Model" },
+] as const;
+
+/** League accent colors for the menu (each league's own token). */
+const LEAGUE_DOT: Record<string, string> = {
+  nfl: "var(--acc-nfl)",
+  cfb: "var(--acc-cfb)",
+};
+
+function Logo({ league }: { league: League }) {
+  return (
+    <span className="font-disp text-xl font-bold uppercase tracking-tight sm:text-2xl">
+      Gambling<span className="text-acc">{league.short}</span>
+    </span>
+  );
+}
+
+/** The logo opens a menu of leagues; picking one opens the matching page in that league. */
+function LeagueMenu({ league, pathname }: { league: League; pathname: string }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    const close = (e: MouseEvent | KeyboardEvent) => {
+      if (
+        e instanceof KeyboardEvent ? e.key === "Escape" : !ref.current?.contains(e.target as Node)
+      )
+        setOpen(false);
+    };
+    document.addEventListener("mousedown", close);
+    document.addEventListener("keydown", close);
+    return () => {
+      document.removeEventListener("mousedown", close);
+      document.removeEventListener("keydown", close);
+    };
+  }, [open]);
+  useEffect(() => setOpen(false), [pathname]);
+
+  return (
+    <div ref={ref} className="relative shrink-0">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        title="Switch league"
+        className="flex items-center gap-2 rounded-lg outline-none ring-acc/40 focus-visible:ring-2"
+      >
+        <span className="size-3 rounded-[3px] bg-acc" />
+        <Logo league={league} />
+        <span className="hidden items-center gap-1 rounded-full px-2 py-1 font-mono text-[10px] uppercase tracking-wider text-mute ring-1 ring-line/15 sm:inline-flex">
+          ▾ Leagues
+        </span>
+      </button>
+      {open ? (
+        <div
+          role="menu"
+          className="absolute left-0 top-full z-50 mt-2 w-72 rounded-xl border border-line/15 bg-panel p-1.5 shadow-xl"
+        >
+          {LEAGUES.map((l) =>
+            l.live ? (
+              <Link
+                key={l.id}
+                role="menuitem"
+                // Paths are built from the league list, so they aren't typed route literals.
+                to={switchLeaguePath(pathname, l) as "/"}
+                className={`flex items-center gap-2.5 rounded-lg px-2.5 py-2 hover:bg-line/5 ${
+                  l.id === league.id ? "bg-line/5" : ""
+                }`}
+              >
+                <span className="size-2.5 rounded-[3px]" style={{ background: LEAGUE_DOT[l.id] }} />
+                <span className="font-disp text-lg font-bold uppercase tracking-tight">
+                  Gambling<span style={{ color: LEAGUE_DOT[l.id] }}>{l.short}</span>
+                </span>
+                <span className="ml-auto font-mono text-[10px] text-faint">
+                  {l.id === league.id ? "current" : l.prefix}
+                </span>
+              </Link>
+            ) : (
+              <div
+                key={l.id}
+                role="menuitem"
+                aria-disabled
+                className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 opacity-45"
+              >
+                <span className="size-2.5 rounded-[3px] bg-faint" />
+                <span className="font-disp text-lg font-bold uppercase tracking-tight">
+                  Gambling{l.short}
+                </span>
+                <span className="ml-auto whitespace-nowrap font-mono text-[10px] text-faint">
+                  coming soon
+                </span>
+              </div>
+            ),
+          )}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 function SiteHeader() {
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const league = leagueFromPath(pathname);
+  const nav = league.id === "cfb" ? cfbNav : nflNav;
   return (
     <header className="glass sticky top-0 z-40 rounded-none border-x-0 border-t-0">
       <div className="mx-auto flex max-w-[1400px] items-center gap-4 px-4 py-3 sm:px-5">
-        <Link to="/" className="flex shrink-0 items-center gap-2">
-          <span className="size-3 rounded-[3px] bg-acc" />
-          <span className="font-disp text-xl font-bold uppercase tracking-tight sm:text-2xl">
-            Gambling<span className="text-acc">NFL</span>
-          </span>
-        </Link>
+        <LeagueMenu league={league} pathname={pathname} />
         <nav className="-mx-1 flex min-w-0 flex-1 items-center gap-1 overflow-x-auto px-1">
           {nav.map((item) => (
             <Link
               key={item.to}
               to={item.to}
-              activeOptions={{ exact: item.to === "/" }}
+              activeOptions={{ exact: item.to === "/" || item.to === "/cfb" }}
               className="shrink-0 rounded-lg px-3 py-1.5 text-sm text-mute hover:text-ink"
               activeProps={{ className: "bg-acc/10 text-acc ring-1 ring-acc/25" }}
             >
@@ -45,20 +150,19 @@ function SiteHeader() {
             </Link>
           ))}
         </nav>
-        <span className="hidden shrink-0 font-mono text-[11px] text-faint lg:block">
-          WK 09 · SAMPLE FEED
-        </span>
       </div>
     </header>
   );
 }
 
 function SiteFooter() {
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const league = leagueFromPath(pathname);
   return (
     <footer className="mt-10 border-t border-line/10 px-4 py-5 sm:px-5">
       <p className="mx-auto max-w-[1400px] font-mono text-[10px] uppercase leading-relaxed tracking-wider text-faint">
-        GamblingNFL · analytics prototype · all figures are sample/placeholder until real NFL data
-        is imported
+        Gambling{league.short} · {league.name} analytics & betting research · live data from ESPN
+        and nflverse · for research, not betting advice
       </p>
     </footer>
   );
@@ -72,9 +176,7 @@ function NotFoundComponent() {
         <h2 className="mt-2 font-disp text-2xl font-semibold uppercase tracking-tight">
           Page not found
         </h2>
-        <p className="mt-2 text-sm text-mute">
-          That page doesn't exist or has been moved.
-        </p>
+        <p className="mt-2 text-sm text-mute">That page doesn't exist or has been moved.</p>
         <Link
           to="/"
           className="mt-6 inline-flex rounded-lg bg-acc/10 px-4 py-2 font-mono text-xs uppercase tracking-wider text-acc ring-1 ring-acc/25"
@@ -175,10 +277,14 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="relative z-10 flex min-h-screen flex-col font-body text-ink">
+      <div
+        data-league={leagueFromPath(pathname).id}
+        className="relative z-10 flex min-h-screen flex-col font-body text-ink"
+      >
         <SiteHeader />
         <main className="mx-auto w-full max-w-[1400px] flex-1 px-4 py-6 sm:px-5">
           {/* Required: nested routes render here. */}
