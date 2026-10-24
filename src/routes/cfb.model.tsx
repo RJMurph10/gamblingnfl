@@ -68,18 +68,11 @@ function CfbModel() {
   const allTime = addRecords(PAST.map((p) => p.all));
   const winning = PAST.filter((p) => p.all.units > 0).length;
   // This season's ★ record by rule.
-  const thisSeason = (rule: string) => {
-    const picks = rows.flatMap((r) => r.picks).filter((p) => p.reason === rule);
-    return summarizeModel(
+  const thisSeason = (rule: string) =>
+    summarizeModel(
       rows.map((r) => ({ ...r, picks: r.picks.filter((p) => p.reason === rule) })),
       "bets",
-    ).overall.wins + picks.length >= 0
-      ? summarizeModel(
-          rows.map((r) => ({ ...r, picks: r.picks.filter((p) => p.reason === rule) })),
-          "bets",
-        ).overall
-      : null;
-  };
+    ).overall;
 
   const rules = (
     <Panel>
@@ -123,9 +116,9 @@ function CfbModel() {
                 </div>
                 <div className="flex justify-between gap-2">
                   <dt className="text-faint">{SEASON} so far</dt>
-                  <dd className={toneClass(now?.units ?? 0)}>
-                    {now ? `${now.wins}-${now.losses}${now.pushes ? `-${now.pushes}` : ""}` : "—"} ·{" "}
-                    {unitsText(now?.units ?? 0)}
+                  <dd className={toneClass(now.units)}>
+                    {now.wins}-{now.losses}
+                    {now.pushes ? `-${now.pushes}` : ""} · {unitsText(now.units)}
                   </dd>
                 </div>
               </dl>
