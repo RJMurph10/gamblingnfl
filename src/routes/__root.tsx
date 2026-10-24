@@ -28,6 +28,7 @@ const cfbNav = [
   { to: "/cfb", label: "Dashboard" },
   { to: "/cfb/teams", label: "Teams" },
   { to: "/cfb/games", label: "Games" },
+  { to: "/cfb/props", label: "Props" },
   { to: "/cfb/model", label: "Model" },
 ] as const;
 
