@@ -245,7 +245,7 @@ export interface ModelPick {
   /** Kickoff wind (mph) behind a wind best bet. */
   wind?: number;
   /** Which rule made it a best bet. */
-  reason?: "underdog" | "wind" | "qb-style";
+  reason?: "underdog" | "wind" | "qb-style" | "bounce" | "travel" | "early" | "academy";
   /** Points (spread/total) or probability (moneyline) by which the model beats the market. */
   edge: number;
   /** Model's win probability for moneyline picks. */
@@ -296,6 +296,8 @@ export interface GameModelRow {
   qb?: QbAdjustment;
   /** Each starting quarterback's style going into the game. */
   styles?: { home?: QbStyleProfile; away?: QbStyleProfile };
+  /** College: why a game has a ★ best bet, shown under its picks. */
+  ruleNotes?: string[];
 }
 
 /** Moves a ratings-only prediction by a quarterback adjustment (points of home margin). */
@@ -347,6 +349,8 @@ export function predictionsForGame(
   weather?: KickoffWeather | null,
   /** Each starting quarterback's style going into the game, if known. */
   styles?: { home?: QbStyleProfile; away?: QbStyleProfile },
+  /** Apply the NFL ★ best-bet rules (college games have their own, added afterwards). */
+  nflRules = true,
 ): ModelPick[] {
   const out: ModelPick[] = [];
   const base = { gameId: game.id, week: game.week };
@@ -359,7 +363,7 @@ export function predictionsForGame(
     const edge = mLine - p.homeLine;
     // ★ Best bets: every underdog getting 7+ points. Big favorites have been overrated in every
     // season since 2022 (162-128 ATS through week 6 of 2026).
-    const bigDog = Math.abs(mLine) >= MODEL_SETTINGS.bigUnderdogPts;
+    const bigDog = nflRules && Math.abs(mLine) >= MODEL_SETTINGS.bigUnderdogPts;
     // ★ Best bets: a scrambler's team against a pocket passer's team (53% since 2000; found on
     // 2016–2026, confirmed on 2000–2015). The underdog rule wins if the two disagree.
     const hs = styles?.home?.style;
@@ -582,6 +586,8 @@ export function runModel(
   weatherFor?: (game: Game) => KickoffWeather | null | undefined,
   /** Starting quarterbacks' styles for a game, if known. */
   stylesFor?: (game: Game) => { home?: QbStyleProfile; away?: QbStyleProfile } | undefined,
+  /** False for college: every-game calls only, without the NFL ★ best-bet rules. */
+  nflRules = true,
 ): GameModelRow[] {
   const finals = schedule.filter((g) => g.status === "final");
   const weeks = [...new Set(schedule.map((g) => g.week))].sort((a, b) => a - b);
@@ -626,6 +632,7 @@ export function runModel(
         modelPrediction,
         weatherFor?.(game),
         styles,
+        nflRules,
       );
       rows.push({
         game,
