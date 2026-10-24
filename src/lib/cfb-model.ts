@@ -16,6 +16,7 @@
 
 import { gameScore, type Game } from "@/data/games";
 import { CFB_STADIUMS } from "@/data/cfb-stadiums";
+import { MODEL_SETTINGS, runModel, type GameModelRow, type ModelPick } from "./game-model";
 import { homeLine } from "./season-pulse";
 
 export type CfbRuleId = "bounce" | "travel" | "early" | "academy";
@@ -359,4 +360,56 @@ export function cfbWatchHits(games: Game[], windByGame: Record<string, number | 
 export function outdoorStadium(teamId: string): { lat: number; lon: number } | null {
   const st = stadiumOf(teamId);
   return st && !st[3] ? { lat: st[0], lon: st[1] } : null;
+}
+
+/* ---------------- every-game model (same engine as the NFL) ---------------- */
+
+/** Explains a college ★ best bet under its game's picks. */
+function ruleNote(p: CfbPick): string {
+  if (p.rule === "bounce" && p.lastLoss)
+    return `Road bounce-back · lost by ${Math.abs(p.lastLoss.margin)} last game`;
+  if (p.rule === "travel" && p.miles)
+    return `Cross-country trip · visitor traveled ${p.miles.toLocaleString()} mi`;
+  if (p.rule === "early") return "Early-season under (weeks 1–2)";
+  return "Service academies under";
+}
+
+/**
+ * The NFL game model run on the college season: team ratings from this season's scores, anchored
+ * to the betting line, a call on every game (winner, spread side, over/under), with the college
+ * ★ best-bet rules in place of the NFL ones. Bowls get every-game calls but no ★.
+ */
+export function runCfbModel(games: Game[]): GameModelRow[] {
+  const rows = runModel(games, [], [], undefined, undefined, undefined, false);
+  const byGame = new Map<string, CfbPick[]>();
+  for (const p of cfbBestBets(games)) byGame.set(p.game.id, [...(byGame.get(p.game.id) ?? []), p]);
+  for (const row of rows) {
+    const bets = byGame.get(row.game.id);
+    if (!bets) continue;
+    for (const bet of bets) {
+      const market = bet.market;
+      const pick: ModelPick = {
+        gameId: row.game.id,
+        week: row.game.week,
+        market,
+        side: bet.side,
+        line: bet.line,
+        odds: MODEL_SETTINGS.defaultPrice,
+        best: true,
+        reason: bet.rule,
+        edge: row.predictions.find((x) => x.market === market)?.edge ?? 0,
+        result: bet.result,
+        units: bet.units,
+      };
+      // The rule decides the side; it replaces the model's lean on that market.
+      row.predictions = [...row.predictions.filter((x) => x.market !== market), pick];
+    }
+    const order: Record<string, number> = { spread: 0, total: 1, moneyline: 2 };
+    row.predictions.sort((a, b) => order[a.market] - order[b.market]);
+    row.picks = row.predictions.filter((x) => x.best);
+    row.ruleNotes = bets.map(ruleNote);
+    // Early-season games have no ratings yet, but the ★ still stands.
+    if (row.skipped) row.skipped = undefined;
+  }
+  return rows;
 }
