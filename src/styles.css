@@ -5,7 +5,7 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * GamblingNFL design system ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â "booth glass".
+ * GamblingNFL design system ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â "booth glass".
  * Dark press-box palette, condensed display type, mono tabular data.
  * All colors are oklch tokens. Never hardcode colors in components.
  */
@@ -69,6 +69,7 @@
   /* League accents: each league's pages swap --acc for its own color (see [data-league]). */
   --acc-nfl: oklch(0.782 0.129 212);
   --acc-cfb: oklch(0.782 0.129 212);
+  --acc-nba: oklch(0.769 0.165 62);
 
   --background: var(--bg);
   --foreground: var(--ink);
@@ -157,4 +158,9 @@
 /* College football pages use the CFB accent (the logo, active tabs and highlights). */
 [data-league="cfb"] {
   --acc: var(--acc-cfb);
+}
+
+/* NBA pages use an orange accent. */
+[data-league="nba"] {
+  --acc: var(--acc-nba);
 }
