@@ -25,7 +25,12 @@ const nflNav = [
 ] as const;
 
 const nbaNav = [
+  { to: "/nba", label: "Dashboard" },
+  { to: "/nba/teams", label: "Teams" },
+  { to: "/nba/players", label: "Players" },
   { to: "/nba/games", label: "Games" },
+  { to: "/nba/props", label: "Props" },
+  { to: "/nba/model", label: "Model" },
 ] as const;
 
 const cfbNav = [
@@ -41,7 +46,7 @@ const cfbNav = [
 const LEAGUE_DOT: Record<string, string> = {
   nfl: "var(--acc-nfl)",
   cfb: "var(--acc-cfb)",
-  nba: "var(--acc-nba, #f59e0b)",
+  nba: "var(--acc-nba)",
 };
 
 function Logo({ league }: { league: League }) {
@@ -149,7 +154,7 @@ function SiteHeader() {
             <Link
               key={item.to}
               to={item.to}
-              activeOptions={{ exact: item.to === "/" || item.to === "/cfb" }}
+              activeOptions={{ exact: item.to === "/" || item.to === "/cfb" || item.to === "/nba" }}
               className="shrink-0 rounded-lg px-3 py-1.5 text-sm text-mute hover:text-ink"
               activeProps={{ className: "bg-acc/10 text-acc ring-1 ring-acc/25" }}
             >
