@@ -185,8 +185,14 @@ export function CfbWatchList({ games, season }: { games: Game[]; season: number 
                   <RecordRow label={`${season} so far`} r={cfbRecord(graded)} bold />
                   {Object.keys(past).length ? (
                     <>
-                      <RecordRow label="2018–25" r={span(2018, 2025)} />
-                      <RecordRow label="2009–17" r={span(2009, 2017)} />
+                      <RecordRow
+                        label={`${(angle.splitYear ?? 2017) + 1}–25`}
+                        r={span((angle.splitYear ?? 2017) + 1, 2025)}
+                      />
+                      <RecordRow
+                        label={`${angle.firstYear ?? 2009}–${String(angle.splitYear ?? 2017).slice(2)}`}
+                        r={span(angle.firstYear ?? 2009, angle.splitYear ?? 2017)}
+                      />
                     </>
                   ) : null}
                 </tbody>
