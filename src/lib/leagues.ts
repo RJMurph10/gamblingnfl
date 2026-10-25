@@ -19,7 +19,7 @@ export interface League {
 export const LEAGUES: League[] = [
   { id: "nfl", short: "NFL", name: "NFL", prefix: "", live: true },
   { id: "cfb", short: "CFB", name: "College football (FBS)", prefix: "/cfb", live: true },
-  { id: "nba", short: "NBA", name: "NBA", prefix: "/nba", live: false },
+  { id: "nba", short: "NBA", name: "NBA", prefix: "/nba", live: true },
   { id: "mlb", short: "MLB", name: "MLB", prefix: "/mlb", live: false },
 ];
 
