@@ -1,10 +1,11 @@
 import { useMemo } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageTitle, Panel, PanelHeader, StatCard } from "@/components/booth";
-import { GamesPanel, NbaLogo } from "@/components/nba/NbaBits";
-import { etDayKey, etDayLabel, hasScore, isRatedGame } from "@/lib/nba";
+import { NbaLogo } from "@/components/nba/NbaBits";
+import { NbaLivePanel, NbaRecentGames, NbaUpcomingGames } from "@/components/nba/NbaTables";
+import { hasScore, isRatedGame } from "@/lib/nba";
 import { summarizeNba, unitsText } from "@/lib/nba-model";
-import { defaultNbaDay, useNbaModelRows, useNbaSchedule, useNbaStandings } from "@/lib/use-nba";
+import { useNbaModelRows, useNbaSchedule, useNbaStandings } from "@/lib/use-nba";
 
 export const Route = createFileRoute("/nba/")({
   head: () => ({
@@ -35,17 +36,12 @@ function NbaDashboard() {
   const rows = useNbaModelRows(games);
 
   const live = useMemo(() => games.filter((g) => g.status === "live"), [games]);
-  const day = defaultNbaDay(games.filter((g) => g.status !== "live"));
-  const upcoming = useMemo(
-    () => games.filter((g) => g.status === "scheduled" && day !== null && etDayKey(g.date) === day),
-    [games, day],
-  );
   const recent = useMemo(
     () =>
       games
         .filter((g) => g.status === "final" && isRatedGame(g) && hasScore(g))
         .sort((a, b) => b.date.localeCompare(a.date))
-        .slice(0, 8),
+        .slice(0, 5),
     [games],
   );
 
@@ -131,18 +127,12 @@ function NbaDashboard() {
 
       <div className="grid gap-6 lg:grid-cols-12">
         <section className="min-w-0 space-y-6 lg:col-span-8">
-          {live.length ? <GamesPanel title="Live now" games={live} empty="" /> : null}
-          <GamesPanel
-            title={day ? `Next up · ${etDayLabel(day)}` : "Upcoming"}
-            games={upcoming}
-            empty={isLoading ? "Loading games from ESPN…" : isError ? "Could not load games from ESPN. Try refreshing shortly." : "No upcoming games are scheduled."}
-            aside={
-              <Link to="/nba/games" className="font-mono text-[10px] uppercase tracking-wider text-acc">
-                All games →
-              </Link>
-            }
+          <NbaLivePanel games={live} />
+          <NbaUpcomingGames games={games} />
+          <NbaRecentGames
+            games={recent}
+            emptyText={isLoading ? "Loading games from ESPN…" : isError ? "Could not load games from ESPN. Try refreshing shortly." : "No completed games yet."}
           />
-          <GamesPanel title="Recent results" games={recent} empty={isLoading ? "Loading games from ESPN…" : "No completed games yet."} />
         </section>
 
         <aside className="min-w-0 space-y-6 lg:col-span-4">
