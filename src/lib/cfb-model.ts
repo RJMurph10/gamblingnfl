@@ -1,13 +1,14 @@
 /**
  * College football ★ best bets: four rules that made money on past seasons they were not built
- * on (looked for on 2009–2017, confirmed on 2018–2025, closing lines, 1 unit at -110).
+ * on (looked for on 2013–2018, confirmed on 2019–2025, closing lines, 1 unit at -110).
  *
- * - Road bounce-back: the road team against the spread after losing its last game by 21+.
- *   (Markets overreact to a blowout; home teams in the same spot don't bounce back.)
+ * - Road bounce-back: the road team against the spread after losing its last game by 28+.
+ *   (Markets overreact to a blowout; home teams in the same spot don't bounce back. 28+ beat
+ *   21+ on both periods: losses of 21–27 were a coin flip.)
  * - Cross-country trips: the home team against the spread when the visitor flew 2,000+ miles.
  *   (When both spread rules fire they point at opposite teams, so neither is bet.)
  * - Early-season unders: the under in weeks 1–2, when totals are set on last season's offenses.
- *   (Flat on 2009–2017, strong since 2018: kept as the newest, least proven rule.)
+ *   (Flat on 2013–2018, strong since 2019: kept as the newest, least proven rule.)
  * - Service academies: the under when Army, Navy and Air Force play each other (option offenses
  *   that know each other and keep the clock running).
  *
@@ -43,40 +44,40 @@ export const CFB_RULES: CfbRule[] = [
   {
     id: "bounce",
     title: "Road bounce-back",
-    bet: "Road team against the spread after losing its last game by 21+",
-    why: "Lines overreact to a blowout loss. Home teams in the same spot don't bounce back, so it's road teams only.",
-    found: "431-379 · 53.2% · +12.8u (2009–17)",
-    tested: "395-337 · 54.0% · +22.1u (2018–25)",
+    bet: "Road team against the spread after losing its last game by 28+",
+    why: "Lines overreact to a blowout loss. Home teams in the same spot don't bounce back, so it's road teams only. Losses of 21–27 were a coin flip, so the bar is 28.",
+    found: "200-165-4 · 54.8% · +16.8u (2013–18)",
+    tested: "222-167-8 · 57.1% · +34.8u (2019–25)",
   },
   {
     id: "travel",
     title: "Cross-country trips",
     bet: "Home team against the spread when the visitor traveled 2,000+ miles",
-    why: "Lines don't fully price a cross-country flight and a body clock 3+ hours off. Big Ten and ACC expansion made these trips common.",
-    found: "32-23 · 58.2% · +6.1u (2009–17)",
-    tested: "70-45 · 60.9% · +18.6u (2018–25)",
+    why: "Lines don't fully price a cross-country flight and a body clock 3+ hours off. Flat before 2020, when few teams flew that far; strong since conference realignment made these trips common.",
+    found: "48-53-3 · 47.5% · −9.4u (2013–18)",
+    tested: "79-54-3 · 59.4% · +17.8u (2019–25)",
   },
   {
     id: "early",
     title: "Early-season unders",
     bet: "Under in weeks 1–2",
-    why: "Opening totals lean on last season's offenses, and new quarterbacks and transfers start slow. Flat before 2018, strong in the transfer-portal era.",
-    found: "371-339 · 52.3% · −1.7u (2009–17)",
-    tested: "374-295 · 55.9% · +45.0u (2018–25)",
+    why: "Opening totals lean on last season's offenses, and new quarterbacks and transfers start slow. Flat before 2019, strong in the transfer-portal era. Weeks 3 and 4 don't work (47.9% and 47.6%), so it stops after week 2.",
+    found: "273-250-5 · 52.2% · −1.8u (2013–18)",
+    tested: "330-253-7 · 56.6% · +47.0u (2019–25)",
   },
   {
     id: "academy",
     title: "Service academies",
     bet: "Under when Army, Navy and Air Force play each other",
     why: "Two option offenses that know each other: long drives, few possessions, a running clock.",
-    found: "22-5 · 81.5% · +15.0u (2009–17)",
-    tested: "17-6 · 73.9% · +9.5u (2018–25)",
+    found: "16-2 · 88.9% · +12.5u (2013–18)",
+    tested: "14-6-1 · 70.0% · +6.7u (2019–25)",
   },
 ];
 
 /** Army, Navy, Air Force (ESPN team ids). */
 export const ACADEMY_IDS = new Set(["cfb-349", "cfb-2426", "cfb-2005"]);
-export const BOUNCE_LOSS_MARGIN = 21;
+export const BOUNCE_LOSS_MARGIN = 28;
 export const EARLY_LAST_WEEK = 2;
 export const TRAVEL_MILES = 2000;
 
@@ -248,7 +249,7 @@ export const recordText = (r: CfbRecord) =>
 
 /* ---------------- watch list (tracked, not bet) ---------------- */
 
-export type CfbWatchId = "late" | "eastlate" | "wind";
+export type CfbWatchId = "late" | "eastlate" | "wind" | "under60" | "under65" | "tz3";
 
 export interface CfbWatchAngle {
   id: CfbWatchId;
@@ -257,6 +258,9 @@ export interface CfbWatchAngle {
   why: string;
   found?: string;
   tested?: string;
+  /** First season on file and last "found" season, when not the default 2009 / 2017 split. */
+  firstYear?: number;
+  splitYear?: number;
 }
 
 export const CFB_WATCH: CfbWatchAngle[] = [
@@ -280,7 +284,39 @@ export const CFB_WATCH: CfbWatchAngle[] = [
     id: "wind",
     title: "Wind 10+ mph unders",
     bet: "Under at outdoor stadiums with a 10+ mph wind forecast at kickoff",
-    why: "Works in the NFL. College history has no weather to test it on, so it's tracked from the forecast.",
+    why: "Works in the NFL, but on 2013–25 college games it faded: 53.5% on the first six seasons, 51.4% since. Tracked from the forecast; not bet.",
+    found: "493-428-12 · 53.5% · +20.2u (2013–18)",
+    tested: "466-441-15 · 51.4% · −17.4u (2019–25)",
+  },
+  {
+    id: "under60",
+    title: "High-total unders (60+)",
+    bet: "Under when the total is 60 or higher",
+    why: "Shootout totals attract over money. Winning in 12 of 13 seasons, but it only just missed the bar on the first six. Overlaps with early-season unders. Tracked on new games first.",
+    found: "728-661-23 · 52.4% · +0.8u (2013–18)",
+    tested: "601-498-18 · 54.7% · +48.4u (2019–25)",
+    firstYear: 2013,
+    splitYear: 2018,
+  },
+  {
+    id: "under65",
+    title: "Very high totals (65+)",
+    bet: "Under when the total is 65 or higher",
+    why: "The stricter version of the 60+ unders: fewer games, a bigger edge on new seasons. Fewer than 30 a year lately.",
+    found: "384-342-14 · 52.9% · +7.1u (2013–18)",
+    tested: "257-202-7 · 56.0% · +31.6u (2019–25)",
+    firstYear: 2013,
+    splitYear: 2018,
+  },
+  {
+    id: "tz3",
+    title: "3+ time zones from home",
+    bet: "Home team against the spread when the visitor's home is 3+ time zones away",
+    why: "Steady on both periods but small. Possibly a better measure of travel than miles.",
+    found: "70-59-5 · 54.3% · +4.6u (2013–18)",
+    tested: "95-82-3 · 53.7% · +4.4u (2019–25)",
+    firstYear: 2013,
+    splitYear: 2018,
   },
 ];
 
@@ -333,6 +369,24 @@ export function cfbWatchHits(games: Game[], windByGame: Record<string, number | 
           line: g.total,
           ...under,
         });
+      if (g.total >= 60)
+        hits.push({
+          game: g,
+          angle: "under60",
+          market: "total",
+          side: "under",
+          line: g.total,
+          ...under,
+        });
+      if (g.total >= 65)
+        hits.push({
+          game: g,
+          angle: "under65",
+          market: "total",
+          side: "under",
+          line: g.total,
+          ...under,
+        });
       const wind = windByGame[g.id];
       if (typeof wind === "number" && wind >= 10)
         hits.push({
@@ -351,6 +405,15 @@ export function cfbWatchHits(games: Game[], windByGame: Record<string, number | 
     if (home === null || !away || !venue || g.neutralSite) continue;
     const zones = offsetIn(g.kickoffIso, away[2]) - offsetIn(g.kickoffIso, venue[2]);
     const clock = hourIn(g.kickoffIso, away[2]);
+    if (Math.abs(zones) >= 3)
+      hits.push({
+        game: g,
+        angle: "tz3",
+        market: "spread",
+        side: "home",
+        line: home,
+        ...grade(s ? s.home - s.away + home : null),
+      });
     if (zones >= 2 && (clock >= 21 || clock < 4))
       hits.push({
         game: g,
