@@ -54,14 +54,17 @@ async function cached<T>(key: string, ttl: number, load: () => Promise<T>): Prom
   return p;
 }
 
-async function fetchJson(url: string, timeoutMs = 15_000): Promise<any> {
+const BROWSER_HEADERS = {
+  "User-Agent":
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36",
+  Accept: "application/json, text/plain, */*",
+  Referer: "https://www.espn.com/",
+  Origin: "https://www.espn.com",
+};
+
+async function fetchJson(url: string, timeoutMs = 15_000, browser = false): Promise<any> {
   const res = await fetch(url, {
-    headers: {
-      "User-Agent":
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36",
-      Accept: "application/json, text/plain, */*",
-      Referer: "https://www.espn.com/",
-    },
+    headers: browser ? BROWSER_HEADERS : { "User-Agent": "GamblingNFL/1.0" },
     signal: AbortSignal.timeout(timeoutMs),
   });
   if (!res.ok) throw new Error(`ESPN NBA feed failed [${res.status}] for ${url}`);
@@ -213,7 +216,7 @@ export function parseEvent(event: any): NbaGame | null {
 async function fetchRange(from: Date, to: Date, ttl: number): Promise<NbaGame[]> {
   const range = `${ymd(from)}-${ymd(to)}`;
   return cached(`sched-${range}`, ttl, async () => {
-    const json = await fetchJson(`${SITE}/scoreboard?dates=${range}&limit=1000`);
+    const json = await fetchJson(`${SITE}/scoreboard?dates=${range}&limit=500`);
     return (Array.isArray(json?.events) ? json.events : [])
       .map(parseEvent)
       .filter((g: NbaGame | null): g is NbaGame => g !== null);
@@ -221,37 +224,37 @@ async function fetchRange(from: Date, to: Date, ttl: number): Promise<NbaGame[]>
 }
 
 /**
- * The season so far plus the next month, as site games. Fetched a month at a time; finished
- * months are cached for an hour, the current one for a minute (live games refresh quickly).
+ * The season so far plus the next two weeks, as site games. Fetched in 10-day ranges (ESPN
+ * handles those reliably); finished ranges are cached for an hour, recent ones for a minute.
+ * If every range fails the error is raised so the pages can say so, instead of showing "none".
  */
 export async function fetchNbaSchedule(): Promise<NbaGame[]> {
   const now = new Date();
   const season = nbaSeasonYear(now);
+  const day = 24 * HOUR;
   const start = new Date(season - 1, 9, 1); // Oct 1
-  const horizon = new Date(now.getTime() + 30 * 24 * HOUR);
-  const end = new Date(Math.min(horizon.getTime(), new Date(season, 5, 30).getTime()));
+  const end = new Date(Math.min(now.getTime() + 14 * day, new Date(season, 5, 30).getTime()));
   const chunks: [Date, Date][] = [];
-  for (let d = new Date(start); d <= end; d = new Date(d.getFullYear(), d.getMonth() + 1, 1)) {
-    const last = new Date(d.getFullYear(), d.getMonth() + 1, 0);
+  for (let d = new Date(start); d <= end; d = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 10)) {
+    const last = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 9);
     chunks.push([new Date(d), last > end ? end : last]);
   }
-  const yesterday = now.getTime() - 2 * 24 * HOUR;
-  const lists = await Promise.all(
-    chunks.map(([a, b]) =>
-      fetchRange(a, b, b.getTime() < yesterday ? HOUR : MINUTE).catch(() => [] as NbaGame[]),
-    ),
+  const results = await Promise.allSettled(
+    chunks.map(([a, b]) => fetchRange(a, b, b.getTime() < now.getTime() - 2 * day ? HOUR : MINUTE)),
   );
+  const ok = results.filter((r): r is PromiseFulfilledResult<NbaGame[]> => r.status === "fulfilled");
+  if (!ok.length) {
+    const first = results.find((r) => r.status === "rejected") as PromiseRejectedResult | undefined;
+    throw first?.reason instanceof Error ? first.reason : new Error("ESPN NBA schedule unavailable");
+  }
   const seen = new Set<string>();
   const all: NbaGame[] = [];
-  for (const g of lists.flat()) {
-    if (seen.has(g.id)) continue;
-    seen.add(g.id);
-    all.push(g);
-  }
-  if (!all.length) {
-    // Every month failed or the feed is empty: surface a real error only when ESPN is down.
-    await fetchJson(`${SITE}/scoreboard`);
-  }
+  for (const r of ok)
+    for (const g of r.value) {
+      if (seen.has(g.id)) continue;
+      seen.add(g.id);
+      all.push(g);
+    }
   return all.sort((a, b) => a.date.localeCompare(b.date));
 }
 
@@ -682,7 +685,7 @@ function classifyNbaProp(typeName: string): { stat: NbaStatKey; market: string }
 async function fetchPropsJson(url: string): Promise<any> {
   for (const candidate of [url, url.replace(/^https:/, "http:")]) {
     try {
-      return await fetchJson(candidate, 20_000);
+      return await fetchJson(candidate, 20_000, true);
     } catch {
       // try the next form
     }
