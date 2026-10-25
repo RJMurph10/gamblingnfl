@@ -81,6 +81,12 @@ export interface ModelConfig {
   fcsWeight: number;
   /** Neutral-site games have no home field. */
   neutralSites: boolean;
+  /**
+   * Weight of each finished game's closing line as an extra rating observation (0 = scores only).
+   * A line is a far less noisy read on how good two teams are than one score, and it already
+   * carries injuries and news. Only lines of games before the one being predicted are used.
+   */
+  marketWeight: number;
 }
 
 export const NFL_CONFIG: ModelConfig = {
@@ -92,6 +98,7 @@ export const NFL_CONFIG: ModelConfig = {
   marginCap: 0,
   fcsWeight: 1,
   neutralSites: false,
+  marketWeight: 0,
 };
 
 /** Trims a blowout to `cap` points of margin, keeping the game's total. */
@@ -169,6 +176,19 @@ export function fitRatings(
     add(g.homeTeamId, g.awayTeamId, s.home, s.away, g.fcs ? cfg.fcsWeight : 1, Boolean(g.neutralSite));
     currentGames[g.homeTeamId] = (currentGames[g.homeTeamId] ?? 0) + 1;
     currentGames[g.awayTeamId] = (currentGames[g.awayTeamId] ?? 0) + 1;
+    if (cfg.marketWeight > 0 && !g.fcs && g.total > 0) {
+      // The closing line as if it were a score: the margin and total it implied.
+      const line = homeLine(g);
+      if (line !== null)
+        add(
+          g.homeTeamId,
+          g.awayTeamId,
+          (g.total - line) / 2,
+          (g.total + line) / 2,
+          cfg.marketWeight,
+          Boolean(g.neutralSite),
+        );
+    }
   }
   for (const r of prior) {
     if (!Number.isFinite(r.homeScore) || !Number.isFinite(r.awayScore)) continue;
