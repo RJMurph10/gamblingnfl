@@ -82,13 +82,15 @@ function CfbModel() {
         The ★ best bet rules
       </h2>
       <p className="mt-1 text-sm text-mute">
-        Each rule was looked for on 2009–2017 and then checked on 2018–2025, seasons it never saw,
+        Each rule was looked for on 2013–2018 and then checked on 2019–2025, seasons it never saw,
         against the consensus closing line. Together: {recordText(allTime)},{" "}
-        {one(allTime.winPct ?? 0)}%, {unitsText(allTime.units)} since 2009, {winning} of{" "}
-        {PAST.length} seasons winning. Early-season unders were flat on the older seasons and only
-        took off in 2018, so they&apos;re the least proven of the four. Dozens of other angles were
-        tested and dropped (big underdogs, home dogs, byes, Thursday and #MACtion unders,
-        conference-specific unders, altitude, domes, cold northern November games).
+        {one(allTime.winPct ?? 0)}%, {unitsText(allTime.units)} since 2013, {winning} of{" "}
+        {PAST.length} seasons winning. Early-season unders and cross-country trips were flat on
+        the older seasons and only took off later, so they&apos;re the least proven of the four.
+        Dozens of other angles were tested and dropped (big underdogs, home dogs, byes, Thursday
+        and #MACtion unders, conference-specific unders, altitude, domes, cold northern November
+        games, and more recently wind unders, first-year coaches and favorites before a top-10
+        opponent).
       </p>
       <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         {CFB_RULES.map((rule) => {
@@ -111,7 +113,7 @@ function CfbModel() {
                   <dd className="text-win">{rule.tested}</dd>
                 </div>
                 <div className="flex justify-between gap-2">
-                  <dt className="text-faint">Since 2009</dt>
+                  <dt className="text-faint">Since 2013</dt>
                   <dd className={toneClass(past.units)}>
                     {recordText(past)} · {unitsText(past.units)}
                   </dd>
