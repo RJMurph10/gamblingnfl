@@ -40,12 +40,7 @@ export const LAB_VARIANTS: LabVariant[] = [
     id: "constants",
     label: "+ College constants",
     note: "Margin SD 17, home field 2.5, neutral sites",
-    config: {
-      ...NFL_CONFIG,
-      marginSd: CFB_CONFIG.marginSd,
-      homeFieldPrior: CFB_CONFIG.homeFieldPrior,
-      neutralSites: true,
-    },
+    config: { ...NFL_CONFIG, marginSd: 17, homeFieldPrior: 2.5, neutralSites: true },
     usesPrior: false,
   },
   {
@@ -63,8 +58,22 @@ export const LAB_VARIANTS: LabVariant[] = [
     usesPrior: true,
   },
   {
+    id: "market",
+    label: "+ Market lines",
+    note: "Finished games' closing lines count as rating evidence",
+    config: { ...NFL_CONFIG, marketWeight: 1 },
+    usesPrior: false,
+  },
+  {
+    id: "allnomarket",
+    label: "Cap, FCS & last season",
+    note: "Everything kept so far, without market lines",
+    config: { ...CFB_CONFIG, marketWeight: 0 },
+    usesPrior: true,
+  },
+  {
     id: "all",
-    label: "All changes",
+    label: "All kept changes",
     note: "What the model page runs now",
     config: CFB_CONFIG,
     usesPrior: true,
@@ -183,7 +192,7 @@ export function runLab(games: Game[], prior: PriorResult[]): LabResult | null {
 
   const buckets: EdgeBucket[] = [];
   for (const market of ["spread", "total"] as const) {
-    for (const minEdge of market === "spread" ? [0, 2, 4, 6] : [0, 2, 4, 6]) {
+    for (const minEdge of [0, 1, 2, 3, 4, 6]) {
       let wins = 0;
       let losses = 0;
       let pushes = 0;
