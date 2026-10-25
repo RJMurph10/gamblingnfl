@@ -27,6 +27,14 @@ import { Route as CfbPlayersIndexRouteImport } from './routes/cfb.players.index'
 import { Route as CfbPlayersPlayerIdRouteImport } from './routes/cfb.players.$playerId'
 import { Route as CfbTeamsIndexRouteImport } from './routes/cfb.teams.index'
 import { Route as CfbTeamsTeamIdRouteImport } from './routes/cfb.teams.$teamId'
+import { Route as NbaIndexRouteImport } from './routes/nba.index'
+import { Route as NbaModelRouteImport } from './routes/nba.model'
+import { Route as NbaPropsRouteImport } from './routes/nba.props'
+import { Route as NbaGamesGameIdRouteImport } from './routes/nba.games.$gameId'
+import { Route as NbaPlayersPlayerIdRouteImport } from './routes/nba.players.$playerId'
+import { Route as NbaTeamsTeamIdRouteImport } from './routes/nba.teams.$teamId'
+import { Route as NbaPlayersIndexRouteImport } from './routes/nba.players.index'
+import { Route as NbaTeamsIndexRouteImport } from './routes/nba.teams.index'
 import { Route as NbaGamesIndexRouteImport } from './routes/nba.games.index'
 
 const IndexRoute = IndexRouteImport.update({
@@ -119,6 +127,46 @@ const CfbTeamsTeamIdRoute = CfbTeamsTeamIdRouteImport.update({
   path: '/cfb/teams/$teamId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const NbaIndexRoute = NbaIndexRouteImport.update({
+  id: '/nba/',
+  path: '/nba/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NbaModelRoute = NbaModelRouteImport.update({
+  id: '/nba/model',
+  path: '/nba/model',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NbaPropsRoute = NbaPropsRouteImport.update({
+  id: '/nba/props',
+  path: '/nba/props',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NbaGamesGameIdRoute = NbaGamesGameIdRouteImport.update({
+  id: '/nba/games/$gameId',
+  path: '/nba/games/$gameId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NbaPlayersPlayerIdRoute = NbaPlayersPlayerIdRouteImport.update({
+  id: '/nba/players/$playerId',
+  path: '/nba/players/$playerId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NbaTeamsTeamIdRoute = NbaTeamsTeamIdRouteImport.update({
+  id: '/nba/teams/$teamId',
+  path: '/nba/teams/$teamId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NbaPlayersIndexRoute = NbaPlayersIndexRouteImport.update({
+  id: '/nba/players/',
+  path: '/nba/players/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NbaTeamsIndexRoute = NbaTeamsIndexRouteImport.update({
+  id: '/nba/teams/',
+  path: '/nba/teams/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const NbaGamesIndexRoute = NbaGamesIndexRouteImport.update({
   id: '/nba/games/',
   path: '/nba/games/',
@@ -144,6 +192,14 @@ export interface FileRoutesByFullPath {
   '/cfb/games/': typeof CfbGamesIndexRoute
   '/cfb/players/': typeof CfbPlayersIndexRoute
   '/cfb/teams/': typeof CfbTeamsIndexRoute
+  '/nba/': typeof NbaIndexRoute
+  '/nba/model': typeof NbaModelRoute
+  '/nba/props': typeof NbaPropsRoute
+  '/nba/games/$gameId': typeof NbaGamesGameIdRoute
+  '/nba/players/$playerId': typeof NbaPlayersPlayerIdRoute
+  '/nba/teams/$teamId': typeof NbaTeamsTeamIdRoute
+  '/nba/players/': typeof NbaPlayersIndexRoute
+  '/nba/teams/': typeof NbaTeamsIndexRoute
   '/nba/games/': typeof NbaGamesIndexRoute
 }
 export interface FileRoutesByTo {
@@ -165,6 +221,14 @@ export interface FileRoutesByTo {
   '/cfb/games': typeof CfbGamesIndexRoute
   '/cfb/players': typeof CfbPlayersIndexRoute
   '/cfb/teams': typeof CfbTeamsIndexRoute
+  '/nba': typeof NbaIndexRoute
+  '/nba/model': typeof NbaModelRoute
+  '/nba/props': typeof NbaPropsRoute
+  '/nba/games/$gameId': typeof NbaGamesGameIdRoute
+  '/nba/players/$playerId': typeof NbaPlayersPlayerIdRoute
+  '/nba/teams/$teamId': typeof NbaTeamsTeamIdRoute
+  '/nba/players': typeof NbaPlayersIndexRoute
+  '/nba/teams': typeof NbaTeamsIndexRoute
   '/nba/games': typeof NbaGamesIndexRoute
 }
 export interface FileRoutesById {
@@ -187,6 +251,14 @@ export interface FileRoutesById {
   '/cfb/games/': typeof CfbGamesIndexRoute
   '/cfb/players/': typeof CfbPlayersIndexRoute
   '/cfb/teams/': typeof CfbTeamsIndexRoute
+  '/nba/': typeof NbaIndexRoute
+  '/nba/model': typeof NbaModelRoute
+  '/nba/props': typeof NbaPropsRoute
+  '/nba/games/$gameId': typeof NbaGamesGameIdRoute
+  '/nba/players/$playerId': typeof NbaPlayersPlayerIdRoute
+  '/nba/teams/$teamId': typeof NbaTeamsTeamIdRoute
+  '/nba/players/': typeof NbaPlayersIndexRoute
+  '/nba/teams/': typeof NbaTeamsIndexRoute
   '/nba/games/': typeof NbaGamesIndexRoute
 }
 export interface FileRouteTypes {
@@ -210,6 +282,14 @@ export interface FileRouteTypes {
     | '/cfb/games/'
     | '/cfb/players/'
     | '/cfb/teams/'
+    | '/nba/'
+    | '/nba/model'
+    | '/nba/props'
+    | '/nba/games/$gameId'
+    | '/nba/players/$playerId'
+    | '/nba/teams/$teamId'
+    | '/nba/players/'
+    | '/nba/teams/'
     | '/nba/games/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -231,6 +311,14 @@ export interface FileRouteTypes {
     | '/cfb/games'
     | '/cfb/players'
     | '/cfb/teams'
+    | '/nba'
+    | '/nba/model'
+    | '/nba/props'
+    | '/nba/games/$gameId'
+    | '/nba/players/$playerId'
+    | '/nba/teams/$teamId'
+    | '/nba/players'
+    | '/nba/teams'
     | '/nba/games'
   id:
     | '__root__'
@@ -252,6 +340,15 @@ export interface FileRouteTypes {
     | '/cfb/games/'
     | '/cfb/players/'
     | '/cfb/teams/'
+    | '/nba/'
+    | '/nba/model'
+    | '/nba/props'
+    | '/nba/games/$gameId'
+    | '/nba/players/$playerId'
+    | '/nba/teams/$teamId'
+    | '/nba/players/'
+    | '/nba/teams/'
+    | '/nba/games/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -273,6 +370,14 @@ export interface RootRouteChildren {
   CfbGamesIndexRoute: typeof CfbGamesIndexRoute
   CfbPlayersIndexRoute: typeof CfbPlayersIndexRoute
   CfbTeamsIndexRoute: typeof CfbTeamsIndexRoute
+  NbaIndexRoute: typeof NbaIndexRoute
+  NbaModelRoute: typeof NbaModelRoute
+  NbaPropsRoute: typeof NbaPropsRoute
+  NbaGamesGameIdRoute: typeof NbaGamesGameIdRoute
+  NbaPlayersPlayerIdRoute: typeof NbaPlayersPlayerIdRoute
+  NbaTeamsTeamIdRoute: typeof NbaTeamsTeamIdRoute
+  NbaPlayersIndexRoute: typeof NbaPlayersIndexRoute
+  NbaTeamsIndexRoute: typeof NbaTeamsIndexRoute
   NbaGamesIndexRoute: typeof NbaGamesIndexRoute
 }
 
@@ -404,6 +509,62 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CfbTeamsTeamIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/nba/': {
+      id: '/nba/'
+      path: '/nba'
+      fullPath: '/nba/'
+      preLoaderRoute: typeof NbaIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/nba/model': {
+      id: '/nba/model'
+      path: '/nba/model'
+      fullPath: '/nba/model'
+      preLoaderRoute: typeof NbaModelRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/nba/props': {
+      id: '/nba/props'
+      path: '/nba/props'
+      fullPath: '/nba/props'
+      preLoaderRoute: typeof NbaPropsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/nba/games/$gameId': {
+      id: '/nba/games/$gameId'
+      path: '/nba/games/$gameId'
+      fullPath: '/nba/games/$gameId'
+      preLoaderRoute: typeof NbaGamesGameIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/nba/players/$playerId': {
+      id: '/nba/players/$playerId'
+      path: '/nba/players/$playerId'
+      fullPath: '/nba/players/$playerId'
+      preLoaderRoute: typeof NbaPlayersPlayerIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/nba/teams/$teamId': {
+      id: '/nba/teams/$teamId'
+      path: '/nba/teams/$teamId'
+      fullPath: '/nba/teams/$teamId'
+      preLoaderRoute: typeof NbaTeamsTeamIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/nba/players/': {
+      id: '/nba/players/'
+      path: '/nba/players'
+      fullPath: '/nba/players/'
+      preLoaderRoute: typeof NbaPlayersIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/nba/teams/': {
+      id: '/nba/teams/'
+      path: '/nba/teams'
+      fullPath: '/nba/teams/'
+      preLoaderRoute: typeof NbaTeamsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/nba/games/': {
       id: '/nba/games/'
       path: '/nba/games'
@@ -433,6 +594,14 @@ const rootRouteChildren: RootRouteChildren = {
   CfbGamesIndexRoute: CfbGamesIndexRoute,
   CfbPlayersIndexRoute: CfbPlayersIndexRoute,
   CfbTeamsIndexRoute: CfbTeamsIndexRoute,
+  NbaIndexRoute: NbaIndexRoute,
+  NbaModelRoute: NbaModelRoute,
+  NbaPropsRoute: NbaPropsRoute,
+  NbaGamesGameIdRoute: NbaGamesGameIdRoute,
+  NbaPlayersPlayerIdRoute: NbaPlayersPlayerIdRoute,
+  NbaTeamsTeamIdRoute: NbaTeamsTeamIdRoute,
+  NbaPlayersIndexRoute: NbaPlayersIndexRoute,
+  NbaTeamsIndexRoute: NbaTeamsIndexRoute,
   NbaGamesIndexRoute: NbaGamesIndexRoute,
 }
 export const routeTree = rootRouteImport
