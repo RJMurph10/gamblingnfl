@@ -69,7 +69,7 @@
   /* League accents: each league's pages swap --acc for its own color (see [data-league]). */
   --acc-nfl: oklch(0.782 0.129 212);
   --acc-cfb: oklch(0.782 0.129 212);
-  --acc-nba: oklch(0.769 0.165 62);
+  --acc-nba: oklch(0.782 0.129 212);
 
   --background: var(--bg);
   --foreground: var(--ink);
@@ -160,7 +160,7 @@
   --acc: var(--acc-cfb);
 }
 
-/* NBA pages use an orange accent. */
+/* NBA pages use the same cyan accent as the NFL and college pages. */
 [data-league="nba"] {
   --acc: var(--acc-nba);
 }
