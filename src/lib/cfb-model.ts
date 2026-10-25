@@ -446,19 +446,21 @@ function ruleNote(p: CfbPick): string {
 }
 
 /**
- * College settings for the every-game model. The NFL's numbers don't fit the college game:
- * margins are wider (SD about 17 vs 13.5), the 28-point cap and the FCS discount keep one
- * 70-0 blowout over an FCS team from rewriting a rating, and neutral-site games have no home
- * field. The before/after for each change is on the model page (the lab at the bottom), so a
- * change that doesn't help can be switched off here.
+ * College settings for the every-game model. Each change was measured in the model lab on this
+ * season's games (margin miss: old 15.76, market 11.88):
+ * - 28-point margin cap and a 25% weight on FCS games: 13.67. Keeps one 70-0 blowout over an
+ *   FCS team from rewriting a rating. KEPT.
+ * - Last season's results as a starting point: 13.79. KEPT.
+ * - College constants (margin SD 17, home field 2.5, neutral sites): 15.92, no better. LEFT OFF
+ *   (NFL values stay).
+ * - Closing lines of finished games as extra rating evidence: added after those lab results; the
+ *   lab shows whether it earns its place. If it isn't green there, set marketWeight to 0.
  */
 export const CFB_CONFIG: ModelConfig = {
   ...NFL_CONFIG,
-  marginSd: 17,
-  homeFieldPrior: 2.5,
   marginCap: 28,
   fcsWeight: 0.25,
-  neutralSites: true,
+  marketWeight: 1,
 };
 
 /**
