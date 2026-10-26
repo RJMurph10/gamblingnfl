@@ -225,7 +225,7 @@ async function fetchRange(from: Date, to: Date, ttl: number): Promise<NbaGame[]>
 
 /**
  * The season so far plus the next two weeks, as site games. Fetched in 10-day ranges (ESPN
- * handles those reliably); finished ranges are cached for an hour, recent ones for a minute.
+ * handles those reliably); finished ranges are cached for an hour, recent ones for 15 seconds so live scores stay fresh.
  * If every range fails the error is raised so the pages can say so, instead of showing "none".
  */
 export async function fetchNbaSchedule(): Promise<NbaGame[]> {
@@ -240,7 +240,7 @@ export async function fetchNbaSchedule(): Promise<NbaGame[]> {
     chunks.push([new Date(d), last > end ? end : last]);
   }
   const results = await Promise.allSettled(
-    chunks.map(([a, b]) => fetchRange(a, b, b.getTime() < now.getTime() - 2 * day ? HOUR : MINUTE)),
+    chunks.map(([a, b]) => fetchRange(a, b, b.getTime() < now.getTime() - 2 * day ? HOUR : 15_000)),
   );
   const ok = results.filter((r): r is PromiseFulfilledResult<NbaGame[]> => r.status === "fulfilled");
   if (!ok.length) {
