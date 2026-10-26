@@ -33,7 +33,9 @@ function formatSlateDate(day: string, gameCount: number) {
     day: "numeric",
   }).format(date);
 
-  return `${dateLabel} · ${gameCount} ${gameCount === 1 ? "game" : "games"}`;
+  return `${dateLabel} · ${gameCount} ${
+    gameCount === 1 ? "game" : "games"
+  }`.toUpperCase();
 }
 
 function formatWeekday(day: string) {
@@ -41,7 +43,9 @@ function formatWeekday(day: string) {
   return new Intl.DateTimeFormat("en-US", {
     timeZone: "America/New_York",
     weekday: "long",
-  }).format(date).toUpperCase();
+  })
+    .format(date)
+    .toUpperCase();
 }
 
 function SlateCard({
@@ -53,25 +57,23 @@ function SlateCard({
   selected: boolean;
   onSelect: () => void;
 }) {
-  const isFinal = game.status === "final";
-
   return (
     <button
       type="button"
       onClick={onSelect}
       aria-pressed={selected}
-      className={`w-full rounded-2xl border p-4 text-left transition-colors sm:p-5 ${
+      className={`w-full rounded-xl border p-3 text-left transition-colors ${
         selected
           ? "border-acc/80 bg-acc/[0.10] ring-1 ring-acc/50"
           : "border-line/15 bg-panel2/20 hover:border-line/30 hover:bg-panel2/40"
       }`}
     >
-      <div className="flex items-center justify-between gap-4">
-        <div className="min-w-0 space-y-3">
+      <div className="flex items-center justify-between gap-3">
+        <div className="min-w-0 space-y-1.5">
           {[game.away, game.home].map((side) => (
-            <div key={side.team.id} className="flex items-center gap-3">
-              <NbaLogo team={side.team} className="size-7 shrink-0" />
-              <span className="truncate text-base font-semibold sm:text-lg">
+            <div key={side.team.id} className="flex items-center gap-2.5">
+              <NbaLogo team={side.team} className="size-5 shrink-0" />
+              <span className="truncate text-sm font-semibold">
                 {side.team.nickname}
               </span>
             </div>
@@ -80,18 +82,14 @@ function SlateCard({
 
         <div className="shrink-0 text-right">
           <p
-            className="font-mono text-sm font-semibold tabular-nums sm:text-base"
+            className="font-mono text-xs font-semibold tabular-nums"
             suppressHydrationWarning
           >
             {localTip(game.date)}
           </p>
           <p
-            className={`mt-2 text-xs uppercase tracking-wider sm:text-sm ${
-              game.status === "live"
-                ? "text-win"
-                : isFinal
-                  ? "text-mute"
-                  : "text-mute"
+            className={`mt-1 font-mono text-[10px] uppercase tracking-wider ${
+              game.status === "live" ? "text-win" : "text-mute"
             }`}
             suppressHydrationWarning
           >
@@ -117,11 +115,9 @@ function NbaPropsPage() {
   const days = useMemo(() => {
     const today = etDayKey(new Date());
 
-    return [
-      ...new Set(slate.map((game) => etDayKey(game.date))),
-    ]
+    return [...new Set(slate.map((game) => etDayKey(game.date)))]
       .sort()
-      .filter((day) => day >= today)
+      .filter((date) => date >= today)
       .slice(0, 7);
   }, [slate]);
 
@@ -167,7 +163,7 @@ function NbaPropsPage() {
             : "No games are scheduled for the current slate."}
         </EmptyPanel>
       ) : (
-        <div className="space-y-6">
+        <div className="space-y-5">
           <Panel padded={false}>
             <PanelHeader
               title="Slate"
@@ -178,9 +174,9 @@ function NbaPropsPage() {
               }
             />
 
-            <div className="px-4 pb-4 sm:px-5 sm:pb-5">
+            <div className="px-3 pb-3 sm:px-4 sm:pb-4">
               <div
-                className="mb-4 flex gap-2 overflow-x-auto pb-1"
+                className="mb-3 flex gap-2 overflow-x-auto pb-1"
                 role="tablist"
                 aria-label="Slate day"
               >
@@ -194,7 +190,7 @@ function NbaPropsPage() {
                       role="tab"
                       aria-selected={active}
                       onClick={() => pickDay(date)}
-                      className={`shrink-0 rounded-full border px-4 py-2 text-xs font-medium tracking-wide transition-colors sm:px-6 sm:text-sm ${
+                      className={`shrink-0 rounded-full border px-4 py-1.5 text-xs font-medium tracking-wide transition-colors ${
                         active
                           ? "border-acc/40 bg-acc/10 text-acc"
                           : "border-line/15 bg-panel2/20 text-mute hover:border-line/30 hover:text-foreground"
@@ -206,7 +202,7 @@ function NbaPropsPage() {
                 })}
               </div>
 
-              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                 {dayGames.map((game) => (
                   <SlateCard
                     key={game.id}
