@@ -216,7 +216,17 @@ export function parseEvent(event: any): NbaGame | null {
 async function fetchRange(from: Date, to: Date, ttl: number): Promise<NbaGame[]> {
   const range = `${ymd(from)}-${ymd(to)}`;
   return cached(`sched-${range}`, ttl, async () => {
-    const json = await fetchJson(`${SITE}/scoreboard?dates=${range}&limit=500`);
+    let json: any;
+    try {
+      json = await fetchJson(`${SITE}/scoreboard?dates=${range}&limit=500`);
+    } catch (first) {
+      // Retry once the way a browser would ask (no limit, browser headers); keep the first error if it fails too.
+      try {
+        json = await fetchJson(`${SITE}/scoreboard?dates=${range}`, 20_000, true);
+      } catch {
+        throw first;
+      }
+    }
     return (Array.isArray(json?.events) ? json.events : [])
       .map((event: any) => {
         try {
