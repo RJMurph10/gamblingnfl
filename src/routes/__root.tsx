@@ -174,7 +174,7 @@ function SiteFooter() {
     <footer className="mt-10 border-t border-line/10 px-4 py-5 sm:px-5">
       <p className="mx-auto max-w-[1400px] font-mono text-[10px] uppercase leading-relaxed tracking-wider text-faint">
         Gambling{league.short} · {league.name} analytics & betting research · live data from ESPN
-        and nflverse · for research, not betting advice
+        {league.id === "nba" ? "" : " and nflverse"} · for research, not betting advice
       </p>
     </footer>
   );
