@@ -253,6 +253,86 @@ async function fetchRange(from: Date, to: Date, ttl: number): Promise<NbaGame[]>
   });
 }
 
+/* ---------- closing lines for live and finished games ---------- */
+
+// ESPN's scoreboard drops the lines once a game starts, so live and final games get theirs from the
+// core odds feed (any provider), then the game summary's pick center, like the NFL pages do.
+const oddsBackfill = new Map<string, { at: number; odds: NbaOdds | null }>();
+
+async function loadClosingOdds(game: NbaGame): Promise<NbaOdds | null> {
+  const acc: NbaOdds = { spread: null, total: null, mlHome: null, mlAway: null };
+  const absorb = (raw: any) => {
+    const o = parseOdds(raw, game.away.team.abbr, game.home.team.abbr);
+    if (!o) return;
+    if (acc.spread === null) acc.spread = o.spread;
+    if (acc.total === null) acc.total = o.total;
+    if (acc.mlHome === null) acc.mlHome = o.mlHome;
+    if (acc.mlAway === null) acc.mlAway = o.mlAway;
+    if (!acc.provider && o.provider) acc.provider = o.provider;
+  };
+  try {
+    const data = await fetchJson(`${CORE}/events/${game.id}/competitions/${game.id}/odds`);
+    for (const item of Array.isArray(data?.items) ? data.items : []) absorb(item);
+  } catch {
+    // fall through to the summary feed
+  }
+  if (acc.spread === null || acc.total === null) {
+    try {
+      const summary = await fetchJson(`${SITE}/summary?event=${game.id}`);
+      for (const pick of Array.isArray(summary?.pickcenter) ? summary.pickcenter : []) absorb(pick);
+    } catch {
+      // keep whatever was found
+    }
+  }
+  return acc.spread === null && acc.total === null && acc.mlHome === null ? null : acc;
+}
+
+async function closingOdds(game: NbaGame): Promise<NbaOdds | null> {
+  const hit = oddsBackfill.get(game.id);
+  // Good results are kept for 12 hours; misses are retried after a minute (live) or ten (final).
+  const ttl = hit?.odds ? 12 * HOUR : game.status === "live" ? MINUTE : 10 * MINUTE;
+  if (hit && Date.now() - hit.at < ttl) return hit.odds;
+  const odds = await loadClosingOdds(game);
+  oddsBackfill.set(game.id, { at: Date.now(), odds });
+  return odds;
+}
+
+/** Fills in missing spreads/totals on live and finished games (newest first, a bounded batch per refresh). */
+async function withClosingOdds(games: NbaGame[]): Promise<NbaGame[]> {
+  const missing = (g: NbaGame) =>
+    (g.status === "live" || g.status === "final") && (g.odds?.spread == null || g.odds?.total == null);
+  const todo = games.filter(missing).sort((a, b) => b.date.localeCompare(a.date));
+  const fresh = (g: NbaGame) => {
+    const hit = oddsBackfill.get(g.id);
+    return Boolean(hit && Date.now() - hit.at < (hit.odds ? 12 * HOUR : g.status === "live" ? MINUTE : 10 * MINUTE));
+  };
+  // Cached answers are free; only a bounded number of new lookups run per refresh.
+  const lookups = [...todo.filter(fresh), ...todo.filter((g) => !fresh(g)).slice(0, 60)];
+  const found = new Map<string, NbaOdds>();
+  let next = 0;
+  await Promise.all(
+    Array.from({ length: 8 }, async () => {
+      while (next < lookups.length) {
+        const g = lookups[next++];
+        const o = await closingOdds(g).catch(() => null);
+        if (o) found.set(g.id, o);
+      }
+    }),
+  );
+  return games.map((g) => {
+    const o = found.get(g.id);
+    if (!o) return g;
+    const merged: NbaOdds = {
+      spread: g.odds?.spread ?? o.spread,
+      total: g.odds?.total ?? o.total,
+      mlHome: g.odds?.mlHome ?? o.mlHome,
+      mlAway: g.odds?.mlAway ?? o.mlAway,
+      ...((g.odds?.provider ?? o.provider) ? { provider: (g.odds?.provider ?? o.provider) as string } : {}),
+    };
+    return { ...g, odds: merged };
+  });
+}
+
 /**
  * The season so far plus the next two weeks, as site games. Fetched in 10-day ranges (ESPN
  * handles those reliably); finished ranges are cached for an hour, recent ones for 15 seconds so live scores stay fresh.
@@ -286,7 +366,7 @@ export async function fetchNbaSchedule(): Promise<NbaGame[]> {
       seen.add(g.id);
       all.push(g);
     }
-  return all.sort((a, b) => a.date.localeCompare(b.date));
+  return withClosingOdds(all.sort((a, b) => a.date.localeCompare(b.date)));
 }
 
 /* ---------- standings ---------- */
