@@ -50,6 +50,14 @@ function SlateCard({ game, selected, onSelect }: { game: NbaGame; selected: bool
   );
 }
 
+function mondayOf(day: string) {
+  const [year, month, date] = day.split("-").map(Number);
+  const value = new Date(Date.UTC(year, month - 1, date, 12));
+  const offset = (value.getUTCDay() + 6) % 7;
+  value.setUTCDate(value.getUTCDate() - offset);
+  return `${value.getUTCFullYear()}-${String(value.getUTCMonth() + 1).padStart(2, "0")}-${String(value.getUTCDate()).padStart(2, "0")}`;
+}
+
 function shiftDay(day: string, offset: number) {
   const [year, month, date] = day.split("-").map(Number);
   const next = new Date(Date.UTC(year, month - 1, date + offset, 12));
@@ -59,31 +67,35 @@ function shiftDay(day: string, offset: number) {
 function NbaPropsPage() {
   const search = Route.useSearch();
   const { games, isLoading, isError } = useNbaSchedule(30_000);
-  // Use a rolling seven-calendar-day window: Monday–Sunday, then Tuesday–Monday, etc.
+  // The visible strip starts Monday and spans seven calendar days. Moving forward shifts it one day.
   const slate = useMemo(() => games.filter((g) => g.status !== "postponed"), [games]);
   const linked = search.game ? slate.find((g) => g.id === search.game) : undefined;
   const initialDay = linked ? etDayKey(linked.date) : (defaultNbaDay(slate) ?? etDayKey(new Date()));
   const [dayKey, setDayKey] = useState<string | null>(null);
+  const [windowStartKey, setWindowStartKey] = useState<string | null>(null);
   const [gameId, setGameId] = useState<string | null>(search.game ?? null);
   const strip = useRef<HTMLDivElement>(null);
   const day = dayKey ?? initialDay;
-  const shownDays = useMemo(() => {
-    const [year, month, date] = day.split("-").map(Number);
-    return Array.from({ length: 7 }, (_, i) => {
-      const next = new Date(Date.UTC(year, month - 1, date + i, 12));
-      return `${next.getUTCFullYear()}-${String(next.getUTCMonth() + 1).padStart(2, "0")}-${String(next.getUTCDate()).padStart(2, "0")}`;
-    });
-  }, [day]);
+  const windowStart = windowStartKey ?? mondayOf(initialDay);
+  const shownDays = useMemo(() => Array.from({ length: 7 }, (_, i) => shiftDay(windowStart, i)), [windowStart]);
+
   const dayGames = slate.filter((g) => etDayKey(g.date) === day);
   const selected = dayGames.find((g) => g.id === gameId) ?? dayGames[0];
 
   useEffect(() => {
     strip.current?.querySelector<HTMLElement>('[aria-pressed="true"]')?.scrollIntoView({ inline: "center", block: "nearest" });
-  }, [day]);
+  }, [day, windowStart]);
 
   const pickDay = (nextDay: string) => {
     setDayKey(nextDay);
     setGameId(null);
+  };
+
+  const shiftWindow = (offset: number) => {
+    const nextStart = shiftDay(windowStart, offset);
+    const nextEnd = shiftDay(nextStart, 6);
+    setWindowStartKey(nextStart);
+    if (day < nextStart || day > nextEnd) setDayKey(nextStart);
   };
 
   return (
@@ -94,7 +106,7 @@ function NbaPropsPage() {
           <button
             type="button"
             disabled={!day}
-            onClick={() => pickDay(shiftDay(day, -1))}
+            onClick={() => shiftWindow(-1)}
             className="rounded-full bg-panel2 px-3 py-1 font-mono text-[11px] text-mute ring-1 ring-line/10 enabled:hover:text-acc disabled:opacity-40"
             aria-label="Previous day"
           >
@@ -110,7 +122,7 @@ function NbaPropsPage() {
           <button
             type="button"
             disabled={!day}
-            onClick={() => pickDay(shiftDay(day, 1))}
+            onClick={() => shiftWindow(1)}
             className="rounded-full bg-panel2 px-3 py-1 font-mono text-[11px] text-mute ring-1 ring-line/10 enabled:hover:text-acc disabled:opacity-40"
             aria-label="Next day"
           >
@@ -118,7 +130,7 @@ function NbaPropsPage() {
           </button>
           <button
             type="button"
-            onClick={() => { setDayKey(initialDay); setGameId(null); }}
+            onClick={() => { setWindowStartKey(mondayOf(initialDay)); setDayKey(initialDay); setGameId(null); }}
             className="rounded-full bg-acc/10 px-3 py-1 font-mono text-[11px] uppercase tracking-wider text-acc ring-1 ring-acc/25"
           >
             Today
