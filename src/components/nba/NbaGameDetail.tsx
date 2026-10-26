@@ -114,6 +114,61 @@ function Header({ game }: { game: NbaGame }) {
   const when = game.date
     ? new Date(game.date).toLocaleString([], { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })
     : "";
+  const finalDate = game.date
+    ? new Date(game.date).toLocaleDateString("en-US", { timeZone: "America/New_York", weekday: "short", month: "short", day: "numeric" })
+    : "";
+  const isFinal = game.status === "final";
+  const isOT = game.period > 4 || /\b\d?OT\b/i.test(game.statusDetail);
+  const spread = game.odds?.spread;
+  const favorite = spread == null || spread === 0 ? null : spread < 0 ? game.home.team : game.away.team;
+  const spreadLabel = spread == null ? "—" : spread === 0 ? "PK" : `-${Math.abs(spread).toFixed(1).replace(/\.0$/, "")}`;
+
+  if (isFinal) {
+    const awayWon = hasScore(game) && (game.away.score as number) > (game.home.score as number);
+    const homeWon = hasScore(game) && (game.home.score as number) > (game.away.score as number);
+    return (
+      <>
+        <PageTitle
+          eyebrow={[game.part === "pre" ? "Preseason" : game.part === "play-in" ? "Play-in" : game.part === "post" ? "Playoffs" : "NBA", game.note].filter(Boolean).join(" · ")}
+          title={`${game.away.team.abbr} @ ${game.home.team.abbr}`}
+        />
+        <Panel className="mb-6">
+          <div className="mx-auto flex max-w-2xl items-center justify-between gap-2">
+            <div className="flex min-w-0 items-center gap-2 sm:gap-4">
+              <Link to="/nba/teams/$teamId" params={{ teamId: game.away.team.id }} className="group flex shrink-0 flex-col items-center gap-1 text-center">
+                <NbaLogo team={game.away.team} className="size-10 transition-transform group-hover:scale-105 sm:size-14" />
+                <span className="font-mono text-[10px] text-mute group-hover:text-acc sm:text-xs">{game.away.record ?? ""}</span>
+              </Link>
+              <span className={`font-mono text-3xl font-bold tabular-nums sm:text-5xl ${awayWon ? "text-acc" : ""}`}>{game.away.score ?? ""}</span>
+            </div>
+            <div className="flex shrink-0 flex-col items-center justify-center px-1 text-center">
+              <span className="font-disp text-base font-bold tracking-wider text-acc sm:text-xl">{isOT ? "FINAL/OT" : "FINAL"}</span>
+              <span className="font-mono text-[10px] text-mute sm:text-[11px]">{finalDate}</span>
+            </div>
+            <div className="flex min-w-0 items-center gap-2 sm:gap-4">
+              <span className={`font-mono text-3xl font-bold tabular-nums sm:text-5xl ${homeWon ? "text-acc" : ""}`}>{game.home.score ?? ""}</span>
+              <Link to="/nba/teams/$teamId" params={{ teamId: game.home.team.id }} className="group flex shrink-0 flex-col items-center gap-1 text-center">
+                <NbaLogo team={game.home.team} className="size-10 transition-transform group-hover:scale-105 sm:size-14" />
+                <span className="font-mono text-[10px] text-mute group-hover:text-acc sm:text-xs">{game.home.record ?? ""}</span>
+              </Link>
+            </div>
+          </div>
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 border-t border-line/10 pt-3 font-mono text-[11px] text-mute">
+            <span>Spread:</span>
+            {favorite ? (
+              <span className="inline-flex items-center gap-1">
+                <NbaLogo team={favorite} className="size-4" />
+                <span className="font-semibold text-foreground">{spreadLabel}</span>
+              </span>
+            ) : <span className="font-semibold text-foreground">{spreadLabel}</span>}
+            <span>·</span>
+            <span>O/U: <span className="font-semibold text-foreground">{game.odds?.total ?? "—"}</span></span>
+          </div>
+        </Panel>
+      </>
+    );
+  }
+
   return (
     <>
       <PageTitle
