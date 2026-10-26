@@ -50,6 +50,8 @@ export interface NhlSide {
   score: number | null;
   /** Overall record text, e.g. "5-2-1". */
   record?: string;
+  /** Goals per period (then overtime / shootout), when ESPN reports them. */
+  periods?: number[];
 }
 
 export interface NhlGame {
@@ -66,6 +68,23 @@ export interface NhlGame {
   away: NhlSide;
   home: NhlSide;
   odds?: NhlOdds;
+}
+
+/** One team's regular-season standing, derived from its finished games. */
+export interface NhlStandingRow {
+  teamId: string;
+  team: NhlTeamRef;
+  conference: "East" | "West" | "";
+  division: string;
+  gp: number;
+  wins: number;
+  /** Losses in regulation. */
+  losses: number;
+  /** Losses in overtime or a shootout (worth one point). */
+  otLosses: number;
+  points: number;
+  goalsFor: number;
+  goalsAgainst: number;
 }
 
 /* ---------- formatting ---------- */
@@ -136,4 +155,135 @@ export function slateDays(games: NhlGame[], count = 7, now: Date = new Date()): 
     .sort()
     .filter((d) => d >= today)
     .slice(0, count);
+}
+
+export function etShortLabel(key: string): string {
+  const d = new Date(`${key}T12:00:00-04:00`);
+  if (Number.isNaN(d.getTime())) return key;
+  return d.toLocaleDateString("en-US", { timeZone: ET, weekday: "short", month: "short", day: "numeric" });
+}
+
+/** M/D in Eastern time, the date column of the game tables. */
+export function shortDate(iso: string): string {
+  const d = new Date(iso);
+  return Number.isNaN(d.getTime())
+    ? "—"
+    : d.toLocaleDateString("en-US", { timeZone: ET, month: "numeric", day: "numeric" });
+}
+
+/** True when a finished game went past 60 minutes (overtime or shootout). */
+export function wentToOvertime(g: Pick<NhlGame, "period" | "statusDetail">): boolean {
+  return g.period > 3 || /\b(ot|so)\b|shootout|overtime/i.test(g.statusDetail);
+}
+
+/** Which side the moneyline favors (the shorter price), or null when even / unknown. */
+export function mlFavorite(g: Pick<NhlGame, "odds">): "home" | "away" | null {
+  const h = g.odds?.mlHome;
+  const a = g.odds?.mlAway;
+  if (h === null || h === undefined || a === null || a === undefined || h === a) return null;
+  return h < a ? "home" : "away";
+}
+
+/** The winner of a game that has a score and is not tied (live: who is ahead right now). */
+export function leader(g: NhlGame): "home" | "away" | null {
+  if (!hasScore(g)) return null;
+  const a = g.away.score as number;
+  const h = g.home.score as number;
+  return h === a ? null : h > a ? "home" : "away";
+}
+
+/* ---------- league structure (reference data, not statistics) ---------- */
+
+export const NHL_DIVISIONS: { conference: "East" | "West"; name: string; teams: string[] }[] = [
+  { conference: "East", name: "Atlantic", teams: ["BOS", "BUF", "DET", "FLA", "MTL", "OTT", "TB", "TOR"] },
+  { conference: "East", name: "Metropolitan", teams: ["CAR", "CBJ", "NJ", "NYI", "NYR", "PHI", "PIT", "WSH"] },
+  { conference: "West", name: "Central", teams: ["CHI", "COL", "DAL", "MIN", "NSH", "STL", "UTAH", "WPG"] },
+  { conference: "West", name: "Pacific", teams: ["ANA", "CGY", "EDM", "LA", "SJ", "SEA", "VAN", "VGK"] },
+];
+
+/** ESPN uses a few different abbreviations in different feeds; fold them together. */
+const ABBR_ALIASES: Record<string, string> = {
+  TBL: "TB",
+  NJD: "NJ",
+  LAK: "LA",
+  SJS: "SJ",
+  WAS: "WSH",
+  UTA: "UTAH",
+  VEG: "VGK",
+  CAL: "CGY",
+  MON: "MTL",
+  NAS: "NSH",
+  WIN: "WPG",
+};
+export const canonAbbr = (abbr: string) => ABBR_ALIASES[abbr.toUpperCase()] ?? abbr.toUpperCase();
+
+export function divisionOf(abbr: string): { conference: "East" | "West"; name: string } | null {
+  const a = canonAbbr(abbr);
+  const d = NHL_DIVISIONS.find((x) => x.teams.includes(a));
+  return d ? { conference: d.conference, name: d.name } : null;
+}
+
+/* ---------- derived from the schedule ---------- */
+
+/** Every team that appears in the schedule, sorted by name. */
+export function teamsFromGames(games: NhlGame[]): NhlTeamRef[] {
+  const byId = new Map<string, NhlTeamRef>();
+  for (const g of games) {
+    byId.set(g.home.team.id, g.home.team);
+    byId.set(g.away.team.id, g.away.team);
+  }
+  return [...byId.values()].filter((t) => t.id).sort((a, b) => a.name.localeCompare(b.name));
+}
+
+/**
+ * Regular-season standings from finished games: a win (any way) is 2 points, an overtime or
+ * shootout loss 1, a regulation loss 0. Sorted by points, then fewer games played, then wins.
+ */
+export function buildStandings(games: NhlGame[]): NhlStandingRow[] {
+  const rows = new Map<string, NhlStandingRow>();
+  const row = (team: NhlTeamRef): NhlStandingRow => {
+    let r = rows.get(team.id);
+    if (!r) {
+      const d = divisionOf(team.abbr);
+      r = {
+        teamId: team.id,
+        team,
+        conference: d?.conference ?? "",
+        division: d?.name ?? "",
+        gp: 0,
+        wins: 0,
+        losses: 0,
+        otLosses: 0,
+        points: 0,
+        goalsFor: 0,
+        goalsAgainst: 0,
+      };
+      rows.set(team.id, r);
+    }
+    return r;
+  };
+  for (const g of games) {
+    if (g.part !== "reg" || g.status !== "final" || !hasScore(g)) continue;
+    const a = g.away.score as number;
+    const h = g.home.score as number;
+    if (a === h) continue;
+    const ot = wentToOvertime(g);
+    const home = row(g.home.team);
+    const away = row(g.away.team);
+    home.gp++;
+    away.gp++;
+    home.goalsFor += h;
+    home.goalsAgainst += a;
+    away.goalsFor += a;
+    away.goalsAgainst += h;
+    const [win, lose] = h > a ? [home, away] : [away, home];
+    win.wins++;
+    win.points += 2;
+    if (ot) {
+      lose.otLosses++;
+      lose.points += 1;
+    } else lose.losses++;
+  }
+  for (const t of teamsFromGames(games)) row(t);
+  return [...rows.values()].sort((x, y) => y.points - x.points || x.gp - y.gp || y.wins - x.wins);
 }
