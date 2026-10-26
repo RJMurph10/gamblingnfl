@@ -36,14 +36,17 @@ function NbaDashboard() {
   const rows = useNbaModelRows(games);
 
   const live = useMemo(() => games.filter((g) => g.status === "live"), [games]);
-  const recent = useMemo(
-    () =>
-      games
-        .filter((g) => g.status === "final" && isRatedGame(g) && hasScore(g))
-        .sort((a, b) => b.date.localeCompare(a.date))
-        .slice(0, 5),
-    [games],
-  );
+  // Display only needs a finished game with a real score: odds and model grades never hide a game here.
+  const recent = useMemo(() => {
+    const tipoff = (g: (typeof games)[number]) => {
+      const t = new Date(g.date).getTime();
+      return Number.isNaN(t) ? 0 : t;
+    };
+    return games
+      .filter((g) => g.status === "final" && hasScore(g))
+      .sort((a, b) => tipoff(b) - tipoff(a) || b.id.localeCompare(a.id))
+      .slice(0, 5);
+  }, [games]);
 
   const weekAgo = useMemo(() => new Date(Date.now() - 7 * 24 * 3_600_000), []);
   const all = useMemo(() => summarizeNba(rows, "predictions"), [rows]);
@@ -131,7 +134,7 @@ function NbaDashboard() {
           <NbaUpcomingGames games={games} />
           <NbaRecentGames
             games={recent}
-            emptyText={isLoading ? "Loading games from ESPN…" : isError ? "Could not load games from ESPN. Try refreshing shortly." : "No completed games yet."}
+            emptyText={isLoading ? "Loading games from ESPN…" : isError ? "Could not load games from ESPN. Try refreshing shortly." : "No completed NBA games are currently available from ESPN."}
           />
         </section>
 
