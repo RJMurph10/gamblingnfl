@@ -213,30 +213,43 @@ export function parseEvent(event: any): NbaGame | null {
   };
 }
 
+function parseEvents(json: any): NbaGame[] {
+  return (Array.isArray(json?.events) ? json.events : [])
+    .map((event: any) => {
+      try {
+        return parseEvent(event);
+      } catch (err) {
+        console.error(`NBA schedule: skipped event ${event?.id}`, err);
+        return null;
+      }
+    })
+    .filter((g: NbaGame | null): g is NbaGame => g !== null);
+}
+
+/** One calendar day's games (ESPN's most dependable scoreboard form: dates=YYYYMMDD). */
+function fetchDay(day: Date, now: Date): Promise<NbaGame[]> {
+  const old = day.getTime() < now.getTime() - 2 * 24 * HOUR;
+  return cached(`sched-day-${ymd(day)}`, old ? HOUR : 15_000, async () =>
+    parseEvents(await fetchJson(`${SITE}/scoreboard?dates=${ymd(day)}`)),
+  );
+}
+
 async function fetchRange(from: Date, to: Date, ttl: number): Promise<NbaGame[]> {
   const range = `${ymd(from)}-${ymd(to)}`;
   return cached(`sched-${range}`, ttl, async () => {
-    let json: any;
     try {
-      json = await fetchJson(`${SITE}/scoreboard?dates=${range}&limit=500`);
+      return parseEvents(await fetchJson(`${SITE}/scoreboard?dates=${range}&limit=500`));
     } catch (first) {
-      // Retry once the way a browser would ask (no limit, browser headers); keep the first error if it fails too.
-      try {
-        json = await fetchJson(`${SITE}/scoreboard?dates=${range}`, 20_000, true);
-      } catch {
-        throw first;
-      }
+      console.error(`NBA schedule range ${range} failed, falling back to single days:`, first);
+      // ESPN sometimes rejects the range form (HTTP 400); ask day by day instead.
+      const now = new Date();
+      const days: Date[] = [];
+      for (let d = new Date(from); d <= to; d = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1)) days.push(new Date(d));
+      const perDay = await Promise.allSettled(days.map((d) => fetchDay(d, now)));
+      const ok = perDay.filter((r): r is PromiseFulfilledResult<NbaGame[]> => r.status === "fulfilled");
+      if (!ok.length) throw first;
+      return ok.flatMap((r) => r.value);
     }
-    return (Array.isArray(json?.events) ? json.events : [])
-      .map((event: any) => {
-        try {
-          return parseEvent(event);
-        } catch (err) {
-          console.error(`NBA schedule: skipped event ${event?.id}`, err);
-          return null;
-        }
-      })
-      .filter((g: NbaGame | null): g is NbaGame => g !== null);
   });
 }
 
