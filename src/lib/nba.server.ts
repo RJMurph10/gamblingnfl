@@ -218,7 +218,14 @@ async function fetchRange(from: Date, to: Date, ttl: number): Promise<NbaGame[]>
   return cached(`sched-${range}`, ttl, async () => {
     const json = await fetchJson(`${SITE}/scoreboard?dates=${range}&limit=500`);
     return (Array.isArray(json?.events) ? json.events : [])
-      .map(parseEvent)
+      .map((event: any) => {
+        try {
+          return parseEvent(event);
+        } catch (err) {
+          console.error(`NBA schedule: skipped event ${event?.id}`, err);
+          return null;
+        }
+      })
       .filter((g: NbaGame | null): g is NbaGame => g !== null);
   });
 }
@@ -243,6 +250,7 @@ export async function fetchNbaSchedule(): Promise<NbaGame[]> {
     chunks.map(([a, b]) => fetchRange(a, b, b.getTime() < now.getTime() - 2 * day ? HOUR : 15_000)),
   );
   const ok = results.filter((r): r is PromiseFulfilledResult<NbaGame[]> => r.status === "fulfilled");
+  for (const r of results) if (r.status === "rejected") console.error("NBA schedule range failed:", r.reason);
   if (!ok.length) {
     const first = results.find((r) => r.status === "rejected") as PromiseRejectedResult | undefined;
     throw first?.reason instanceof Error ? first.reason : new Error("ESPN NBA schedule unavailable");
