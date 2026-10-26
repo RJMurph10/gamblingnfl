@@ -1,10 +1,10 @@
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { PageTitle, Panel, PanelHeader } from "@/components/booth";
-import { Chip, EmptyPanel, NbaLogo, statusText } from "@/components/nba/NbaBits";
+import { EmptyPanel, NbaLogo, statusText } from "@/components/nba/NbaBits";
 import { NbaPropsBoard } from "@/components/nba/NbaPropsBoard";
-import { etDayKey, etShortLabel, localTip, type NbaGame } from "@/lib/nba";
+import { etDayKey, localTip, type NbaGame } from "@/lib/nba";
 import { defaultNbaDay, useNbaSchedule } from "@/lib/use-nba";
 
 export const Route = createFileRoute("/nba/props")({
@@ -16,12 +16,33 @@ export const Route = createFileRoute("/nba/props")({
       { title: "Player Props — GamblingNBA" },
       {
         name: "description",
-        content: "Game-by-game NBA player prop projections: pick a slate day, pick a game, and see projected stat ranges and DraftKings edges.",
+        content:
+          "Game-by-game NBA player prop projections: pick a slate day, pick a game, and see projected stat ranges and DraftKings edges.",
       },
     ],
   }),
   component: NbaPropsPage,
 });
+
+function formatSlateDate(day: string, gameCount: number) {
+  const date = new Date(`${day}T12:00:00-04:00`);
+  const dateLabel = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/New_York",
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+  }).format(date);
+
+  return `${dateLabel} · ${gameCount} ${gameCount === 1 ? "game" : "games"}`;
+}
+
+function formatWeekday(day: string) {
+  const date = new Date(`${day}T12:00:00-04:00`);
+  return new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/New_York",
+    weekday: "long",
+  }).format(date).toUpperCase();
+}
 
 function SlateCard({
   game,
@@ -32,38 +53,45 @@ function SlateCard({
   selected: boolean;
   onSelect: () => void;
 }) {
+  const isFinal = game.status === "final";
+
   return (
     <button
       type="button"
       onClick={onSelect}
       aria-pressed={selected}
-      className={`w-full rounded-lg border p-3 text-left transition-colors ${
+      className={`w-full rounded-2xl border p-4 text-left transition-colors sm:p-5 ${
         selected
-          ? "border-acc/60 bg-acc/10 ring-1 ring-acc/30"
-          : "border-line/10 bg-panel2/30 hover:border-line/25 hover:bg-panel2/60"
+          ? "border-acc/80 bg-acc/[0.10] ring-1 ring-acc/50"
+          : "border-line/15 bg-panel2/20 hover:border-line/30 hover:bg-panel2/40"
       }`}
     >
-      <div className="flex items-center justify-between gap-2">
-        <div className="min-w-0 space-y-1.5">
-          {[game.away, game.home].map((s) => (
-            <div key={s.team.id} className="flex items-center gap-2">
-              <NbaLogo team={s.team} className="size-5" />
-              <span className="truncate text-sm font-semibold">
-                {s.team.nickname}
+      <div className="flex items-center justify-between gap-4">
+        <div className="min-w-0 space-y-3">
+          {[game.away, game.home].map((side) => (
+            <div key={side.team.id} className="flex items-center gap-3">
+              <NbaLogo team={side.team} className="size-7 shrink-0" />
+              <span className="truncate text-base font-semibold sm:text-lg">
+                {side.team.nickname}
               </span>
             </div>
           ))}
         </div>
+
         <div className="shrink-0 text-right">
           <p
-            className="font-mono text-xs font-semibold tabular-nums"
+            className="font-mono text-sm font-semibold tabular-nums sm:text-base"
             suppressHydrationWarning
           >
             {localTip(game.date)}
           </p>
           <p
-            className={`mt-1 font-mono text-[10px] uppercase tracking-wider ${
-              game.status === "live" ? "text-win" : "text-mute"
+            className={`mt-2 text-xs uppercase tracking-wider sm:text-sm ${
+              game.status === "live"
+                ? "text-win"
+                : isFinal
+                  ? "text-mute"
+                  : "text-mute"
             }`}
             suppressHydrationWarning
           >
@@ -81,17 +109,19 @@ function NbaPropsPage() {
   const search = Route.useSearch();
   const { games, isLoading, isError } = useNbaSchedule(30_000);
 
-  // Keep the props slate focused on the next seven available game dates.
   const slate = useMemo(
-    () => games.filter((g) => g.status !== "postponed"),
+    () => games.filter((game) => game.status !== "postponed"),
     [games]
   );
 
   const days = useMemo(() => {
     const today = etDayKey(new Date());
-    return [...new Set(slate.map((g) => etDayKey(g.date)))]
+
+    return [
+      ...new Set(slate.map((game) => etDayKey(game.date))),
+    ]
       .sort()
-      .filter((d) => d >= today)
+      .filter((day) => day >= today)
       .slice(0, 7);
   }, [slate]);
 
@@ -99,37 +129,25 @@ function NbaPropsPage() {
   const [gameId, setGameId] = useState<string | null>(
     search.game ?? null
   );
-  const strip = useRef<HTMLDivElement>(null);
 
-  const linked = search.game
-    ? slate.find((g) => g.id === search.game)
+  const linkedGame = search.game
+    ? slate.find((game) => game.id === search.game)
     : undefined;
 
   const day =
     dayKey ??
-    (linked
-      ? etDayKey(linked.date)
+    (linkedGame
+      ? etDayKey(linkedGame.date)
       : days.includes(defaultNbaDay(slate) ?? "")
         ? defaultNbaDay(slate)
         : days[0] ?? defaultNbaDay(slate));
 
   const dayGames = slate.filter(
-    (g) => day !== null && etDayKey(g.date) === day
+    (game) => day !== null && etDayKey(game.date) === day
   );
 
-  const selected =
-    dayGames.find((g) => g.id === gameId) ?? dayGames[0];
-
-  const shownDays =
-    day && !days.includes(day) ? [day, ...days] : days;
-
-  const idx = day ? shownDays.indexOf(day) : -1;
-
-  useEffect(() => {
-    strip.current
-      ?.querySelector<HTMLElement>('[aria-pressed="true"]')
-      ?.scrollIntoView({ inline: "center", block: "nearest" });
-  }, [day, shownDays.length]);
+  const selectedGame =
+    dayGames.find((game) => game.id === gameId) ?? dayGames[0];
 
   const pickDay = (nextDay: string) => {
     setDayKey(nextDay);
@@ -139,58 +157,6 @@ function NbaPropsPage() {
   return (
     <>
       <PageTitle title="Player Props" />
-
-      {shownDays.length ? (
-        <div className="mb-4 flex items-center gap-2">
-          <button
-            type="button"
-            disabled={idx <= 0}
-            onClick={() => pickDay(shownDays[idx - 1])}
-            className="rounded-full bg-panel2 px-3 py-1 font-mono text-[11px] text-mute ring-1 ring-line/10 enabled:hover:text-acc disabled:opacity-40"
-            aria-label="Previous day"
-          >
-            ←
-          </button>
-
-          <div
-            ref={strip}
-            className="flex min-w-0 flex-1 gap-2 overflow-x-auto pb-1"
-            role="tablist"
-            aria-label="Slate day"
-          >
-            {shownDays.map((d) => (
-              <Chip
-                key={d}
-                active={d === day}
-                onClick={() => pickDay(d)}
-              >
-                {etShortLabel(d)}
-              </Chip>
-            ))}
-          </div>
-
-          <button
-            type="button"
-            disabled={idx < 0 || idx >= shownDays.length - 1}
-            onClick={() => pickDay(shownDays[idx + 1])}
-            className="rounded-full bg-panel2 px-3 py-1 font-mono text-[11px] text-mute ring-1 ring-line/10 enabled:hover:text-acc disabled:opacity-40"
-            aria-label="Next day"
-          >
-            →
-          </button>
-
-          <button
-            type="button"
-            onClick={() => {
-              setDayKey(defaultNbaDay(slate) ?? null);
-              setGameId(null);
-            }}
-            className="rounded-full bg-acc/10 px-3 py-1 font-mono text-[11px] uppercase tracking-wider text-acc ring-1 ring-acc/25"
-          >
-            Today
-          </button>
-        </div>
-      ) : null}
 
       {isLoading ? (
         <EmptyPanel>Loading the schedule…</EmptyPanel>
@@ -206,27 +172,55 @@ function NbaPropsPage() {
             <PanelHeader
               title="Slate"
               aside={
-                <span className="font-mono text-[10px] uppercase tracking-wider text-mute">
-                  {dayGames.length}{" "}
-                  {dayGames.length === 1 ? "game" : "games"}
+                <span className="font-mono text-[10px] uppercase tracking-wider text-mute sm:text-xs">
+                  {day ? formatSlateDate(day, dayGames.length) : ""}
                 </span>
               }
             />
 
-            <div className="grid gap-2 px-4 pb-4 sm:grid-cols-2 xl:grid-cols-3">
-              {dayGames.map((g) => (
-                <SlateCard
-                  key={g.id}
-                  game={g}
-                  selected={g.id === selected?.id}
-                  onSelect={() => setGameId(g.id)}
-                />
-              ))}
+            <div className="px-4 pb-4 sm:px-5 sm:pb-5">
+              <div
+                className="mb-4 flex gap-2 overflow-x-auto pb-1"
+                role="tablist"
+                aria-label="Slate day"
+              >
+                {days.map((date) => {
+                  const active = date === day;
+
+                  return (
+                    <button
+                      key={date}
+                      type="button"
+                      role="tab"
+                      aria-selected={active}
+                      onClick={() => pickDay(date)}
+                      className={`shrink-0 rounded-full border px-4 py-2 text-xs font-medium tracking-wide transition-colors sm:px-6 sm:text-sm ${
+                        active
+                          ? "border-acc/40 bg-acc/10 text-acc"
+                          : "border-line/15 bg-panel2/20 text-mute hover:border-line/30 hover:text-foreground"
+                      }`}
+                    >
+                      {formatWeekday(date)}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
+                {dayGames.map((game) => (
+                  <SlateCard
+                    key={game.id}
+                    game={game}
+                    selected={game.id === selectedGame?.id}
+                    onSelect={() => setGameId(game.id)}
+                  />
+                ))}
+              </div>
             </div>
           </Panel>
 
-          {selected ? (
-            <NbaPropsBoard key={selected.id} game={selected} />
+          {selectedGame ? (
+            <NbaPropsBoard key={selectedGame.id} game={selectedGame} />
           ) : null}
         </div>
       )}
