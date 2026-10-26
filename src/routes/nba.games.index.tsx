@@ -18,25 +18,17 @@ export const Route = createFileRoute("/nba/games/")({
   component: NbaGames,
 });
 
-type Filter = "all" | "live" | "final" | "upcoming";
-
 function NbaGames() {
   const { games, isLoading, isError } = useNbaSchedule(60_000);
   const rows = useNbaModelRows(games);
   const rowById = useMemo(() => new Map(rows.map((r) => [r.game.id, r])), [rows]);
   const [picked, setPicked] = useState<string | null>(null);
-  const [filter, setFilter] = useState<Filter>("all");
 
   const days = useMemo(() => [...new Set(games.map((g) => etDayKey(g.date)).filter(Boolean))].sort(), [games]);
   const day = picked ?? defaultNbaDay(games);
   const dayGames = useMemo(
-    () =>
-      games
-        .filter((g) => etDayKey(g.date) === day)
-        .filter((g) =>
-          filter === "all" ? true : filter === "live" ? g.status === "live" : filter === "final" ? g.status === "final" : g.status === "scheduled",
-        ),
-    [games, day, filter],
+    () => games.filter((g) => etDayKey(g.date) === day),
+    [games, day],
   );
   const idx = day ? days.indexOf(day) : -1;
 
@@ -48,19 +40,7 @@ function NbaGames() {
 
   return (
     <>
-      <PageTitle
-        eyebrow={games.length ? "NBA · Live data" : "Live ESPN schedule"}
-        title="Games"
-        aside={
-          <div className="flex flex-wrap gap-2">
-            {(["all", "live", "upcoming", "final"] as Filter[]).map((f) => (
-              <Chip key={f} active={filter === f} onClick={() => setFilter(f)}>
-                {f}
-              </Chip>
-            ))}
-          </div>
-        }
-      />
+      <PageTitle title="Games" />
       {days.length ? (
         <div className="mb-4 flex items-center gap-2">
           <button
@@ -104,7 +84,7 @@ function NbaGames() {
             : isError
               ? "Could not load games from ESPN. Try refreshing shortly."
               : games.length
-                ? "No games match this filter on this day."
+                ? "No games scheduled for this day."
                 : "No NBA games are currently available from ESPN."}
         </EmptyPanel>
       ) : (
