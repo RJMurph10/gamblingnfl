@@ -198,6 +198,12 @@ export function parseEvent(e: any): NhlGame | null {
     const recs: any[] = c?.records ?? [];
     return (recs.find((r) => r?.type === "total") ?? recs[0])?.summary ?? undefined;
   };
+  /** Goals per period once a game has started. */
+  const periods = (c: any): number[] | undefined => {
+    if (status === "scheduled" || status === "postponed" || !Array.isArray(c?.linescores)) return undefined;
+    const out = c.linescores.map((l: any) => Number(l?.value ?? l?.displayValue)).filter((n: number) => Number.isFinite(n));
+    return out.length ? out : undefined;
+  };
   const broadcast = comp.broadcasts?.[0]?.names?.[0] ?? comp.geoBroadcasts?.[0]?.media?.shortName;
   const a = teamRef(away.team);
   const h = teamRef(home.team);
@@ -211,8 +217,8 @@ export function parseEvent(e: any): NhlGame | null {
     part: partOf(e),
     venue: comp.venue?.fullName ? String(comp.venue.fullName) : undefined,
     broadcast: broadcast ? String(broadcast) : undefined,
-    away: { team: a, score: score(away), record: record(away) },
-    home: { team: h, score: score(home), record: record(home) },
+    away: { team: a, score: score(away), record: record(away), periods: periods(away) },
+    home: { team: h, score: score(home), record: record(home), periods: periods(home) },
     odds: parseOdds(Array.isArray(comp.odds) ? comp.odds[0] : undefined, a.abbr, h.abbr),
   };
 }
