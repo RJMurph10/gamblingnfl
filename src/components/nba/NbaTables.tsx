@@ -2,8 +2,40 @@
 import { useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Panel, PanelHeader } from "@/components/booth";
-import { NbaLogo, marketClasses, statusText } from "@/components/nba/NbaBits";
-import { etDayKey, etShortLabel, localTip, type NbaGame } from "@/lib/nba";
+import { NbaLogo, statusText } from "@/components/nba/NbaBits";
+import { etDayKey, etShortLabel, hasScore, localTip, type NbaGame } from "@/lib/nba";
+
+/**
+ * Spread / total colouring, same rules as the NFL tables (marketResultClass): neutral until a game
+ * starts, green/red against the line while live or final, and an exact hit is red while live and
+ * yellow once final.
+ */
+function marketClasses(game: NbaGame): { spread: string; total: string } {
+  const neutral = "text-mute";
+  const win = "text-win font-semibold";
+  const loss = "text-loss font-semibold";
+  const live = game.status === "live";
+  const push = live ? loss : "text-yellow-400 font-semibold";
+  if ((game.status !== "final" && !live) || !hasScore(game)) return { spread: neutral, total: neutral };
+  const away = game.away.score as number;
+  const home = game.home.score as number;
+
+  let spread = neutral;
+  const line = game.odds?.spread;
+  if (line !== null && line !== undefined && line !== 0) {
+    const favoriteMargin = line < 0 ? home - away : away - home;
+    const vsLine = favoriteMargin - Math.abs(line);
+    spread = vsLine > 0 ? win : vsLine < 0 ? loss : push;
+  }
+
+  let total = neutral;
+  const posted = game.odds?.total;
+  if (posted !== null && posted !== undefined && posted > 0) {
+    const points = away + home;
+    total = points > posted ? win : points < posted ? loss : push;
+  }
+  return { spread, total };
+}
 
 /** Favorite's logo and line, e.g. [BOS] -5.5. */
 export function NbaSpread({ game }: { game: NbaGame }) {
@@ -21,7 +53,7 @@ export function NbaSpread({ game }: { game: NbaGame }) {
 
 export function NbaMatchup({ game }: { game: NbaGame }) {
   const shown = game.status !== "scheduled";
-  const ot = game.period > 4 || /ot/i.test(game.statusDetail);
+  const ot = game.period > 4 || /\b\d?OT\b/i.test(game.statusDetail);
   return (
     <Link
       to="/nba/games/$gameId"
@@ -39,7 +71,7 @@ export function NbaMatchup({ game }: { game: NbaGame }) {
         <span className="relative inline-flex items-center gap-1.5">
           <NbaLogo team={game.home.team} className="size-5" />
           <span className="w-8 text-left">{shown ? (game.home.score ?? "") : ""}</span>
-          {ot && game.status === "final" ? (
+          {ot && shown ? (
             <span className="absolute left-full top-1/2 ml-1.5 -translate-y-1/2 whitespace-nowrap font-mono text-[10px] font-normal text-mute">(OT)</span>
           ) : null}
         </span>
@@ -62,7 +94,7 @@ function MarketCells({ game }: { game: NbaGame }) {
 
 const shortDate = (iso: string) => {
   const d = new Date(iso);
-  return Number.isNaN(d.getTime()) ? "" : d.toLocaleDateString("en-US", { timeZone: "America/New_York", month: "numeric", day: "numeric" });
+  return Number.isNaN(d.getTime()) ? "—" : d.toLocaleDateString("en-US", { timeZone: "America/New_York", month: "numeric", day: "numeric" });
 };
 
 function GameTableRow({ game }: { game: NbaGame }) {
@@ -72,7 +104,7 @@ function GameTableRow({ game }: { game: NbaGame }) {
       <td suppressHydrationWarning className="whitespace-nowrap px-2 py-2.5 font-mono text-mute">{localTip(game.date)}</td>
       <td className="px-2 py-2.5 text-center"><NbaMatchup game={game} /></td>
       <td className="truncate whitespace-nowrap px-2 py-2.5 font-mono text-mute">
-        {game.status === "live" ? <span suppressHydrationWarning>{statusText(game).replace("LIVE · ", "")}</span> : (game.venue ?? "")}
+        {game.venue || "—"}
       </td>
       <MarketCells game={game} />
     </tr>
@@ -82,10 +114,10 @@ function GameTableRow({ game }: { game: NbaGame }) {
 const HEAD = (
   <thead>
     <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
-      <th className="w-[12%] px-4 py-2 font-normal">Date</th>
-      <th className="w-[14%] px-2 py-2 font-normal">Time</th>
-      <th className="w-[28%] px-2 py-2 text-center font-normal">Matchup</th>
-      <th className="w-[26%] px-2 py-2 font-normal">Venue</th>
+      <th className="w-[17%] px-4 py-2 font-normal">Date</th>
+      <th className="w-[15%] px-2 py-2 font-normal">Time</th>
+      <th className="w-[26%] px-2 py-2 text-center font-normal">Matchup</th>
+      <th className="w-[22%] px-2 py-2 font-normal">Venue</th>
       <th className="w-[10%] px-2 py-2 text-right font-normal">Spread</th>
       <th className="w-[10%] px-4 py-2 text-right font-normal">Total</th>
     </tr>
@@ -102,12 +134,12 @@ export function NbaLivePanel({ games }: { games: NbaGame[] }) {
         aside={<span className="font-mono text-[10px] uppercase tracking-wider text-mute">{games.length} in progress</span>}
       />
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[620px] text-sm" style={{ tableLayout: "fixed" }}>
+        <table className="w-full min-w-[680px] text-sm" style={{ tableLayout: "fixed" }}>
           <thead>
             <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
-              <th className="w-[20%] px-4 py-2 font-normal">Game Clock</th>
-              <th className="w-[34%] px-2 py-2 text-center font-normal">Matchup</th>
-              <th className="w-[23%] px-2 py-2 text-right font-normal">Spread</th>
+              <th className="w-[19%] px-4 py-2 font-normal">Game Clock</th>
+              <th className="w-[36%] px-2 py-2 text-center font-normal">Matchup</th>
+              <th className="w-[22%] px-2 py-2 text-right font-normal">Spread</th>
               <th className="w-[23%] px-4 py-2 text-right font-normal">Total</th>
             </tr>
           </thead>
@@ -192,7 +224,7 @@ export function NbaRecentGames({ games, emptyText }: { games: NbaGame[]; emptyTe
     <Panel padded={false}>
       <PanelHeader title="Recent games" aside={<Link to="/nba/games" className="font-mono text-[11px] text-acc">View all →</Link>} />
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[620px] text-sm" style={{ tableLayout: "fixed" }}>
+        <table className="w-full min-w-[680px] text-sm" style={{ tableLayout: "fixed" }}>
           {HEAD}
           <tbody className="divide-y divide-line/5">
             {games.length ? (
