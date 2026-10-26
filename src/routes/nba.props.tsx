@@ -1,4 +1,3 @@
-
 import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { PageTitle, Panel, PanelHeader } from "@/components/booth";
@@ -25,26 +24,24 @@ export const Route = createFileRoute("/nba/props")({
 });
 
 function formatSlateDate(day: string, gameCount: number) {
-  const date = new Date(`${day}T12:00:00-04:00`);
+  const [year, month, date] = day.split("-").map(Number);
   const dateLabel = new Intl.DateTimeFormat("en-US", {
     timeZone: "America/New_York",
     weekday: "short",
     month: "short",
     day: "numeric",
-  }).format(date);
+  }).format(new Date(Date.UTC(year, month - 1, date, 17)));
 
-  return `${dateLabel} · ${gameCount} ${
-    gameCount === 1 ? "game" : "games"
-  }`.toUpperCase();
+  return `${dateLabel} · ${gameCount} ${gameCount === 1 ? "game" : "games"}`.toUpperCase();
 }
 
 function formatWeekday(day: string) {
-  const date = new Date(`${day}T12:00:00-04:00`);
+  const [year, month, date] = day.split("-").map(Number);
   return new Intl.DateTimeFormat("en-US", {
     timeZone: "America/New_York",
     weekday: "long",
   })
-    .format(date)
+    .format(new Date(Date.UTC(year, month - 1, date, 17)))
     .toUpperCase();
 }
 
@@ -64,7 +61,7 @@ function SlateCard({
       aria-pressed={selected}
       className={`w-full rounded-xl border p-3 text-left transition-colors ${
         selected
-          ? "border-acc/80 bg-acc/[0.10] ring-1 ring-acc/50"
+          ? "border-acc/70 bg-acc/[0.10] ring-1 ring-acc/30"
           : "border-line/15 bg-panel2/20 hover:border-line/30 hover:bg-panel2/40"
       }`}
     >
@@ -81,10 +78,7 @@ function SlateCard({
         </div>
 
         <div className="shrink-0 text-right">
-          <p
-            className="font-mono text-xs font-semibold tabular-nums"
-            suppressHydrationWarning
-          >
+          <p className="font-mono text-xs font-semibold tabular-nums" suppressHydrationWarning>
             {localTip(game.date)}
           </p>
           <p
@@ -114,7 +108,6 @@ function NbaPropsPage() {
 
   const days = useMemo(() => {
     const today = etDayKey(new Date());
-
     return [...new Set(slate.map((game) => etDayKey(game.date)))]
       .sort()
       .filter((date) => date >= today)
@@ -122,9 +115,7 @@ function NbaPropsPage() {
   }, [slate]);
 
   const [dayKey, setDayKey] = useState<string | null>(null);
-  const [gameId, setGameId] = useState<string | null>(
-    search.game ?? null
-  );
+  const [gameId, setGameId] = useState<string | null>(search.game ?? null);
 
   const linkedGame = search.game
     ? slate.find((game) => game.id === search.game)
@@ -141,7 +132,6 @@ function NbaPropsPage() {
   const dayGames = slate.filter(
     (game) => day !== null && etDayKey(game.date) === day
   );
-
   const selectedGame =
     dayGames.find((game) => game.id === gameId) ?? dayGames[0];
 
@@ -163,7 +153,7 @@ function NbaPropsPage() {
             : "No games are scheduled for the current slate."}
         </EmptyPanel>
       ) : (
-        <div className="space-y-5">
+        <div className="space-y-4">
           <Panel padded={false}>
             <PanelHeader
               title="Slate"
@@ -182,7 +172,6 @@ function NbaPropsPage() {
               >
                 {days.map((date) => {
                   const active = date === day;
-
                   return (
                     <button
                       key={date}
@@ -190,7 +179,7 @@ function NbaPropsPage() {
                       role="tab"
                       aria-selected={active}
                       onClick={() => pickDay(date)}
-                      className={`shrink-0 rounded-full border px-4 py-1.5 text-xs font-medium tracking-wide transition-colors ${
+                      className={`shrink-0 rounded-full border px-3.5 py-1.5 text-[11px] font-medium tracking-wide transition-colors sm:px-4 sm:text-xs ${
                         active
                           ? "border-acc/40 bg-acc/10 text-acc"
                           : "border-line/15 bg-panel2/20 text-mute hover:border-line/30 hover:text-foreground"
