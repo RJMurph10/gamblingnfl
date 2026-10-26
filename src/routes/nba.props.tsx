@@ -50,29 +50,36 @@ function SlateCard({ game, selected, onSelect }: { game: NbaGame; selected: bool
   );
 }
 
+function shiftDay(day: string, offset: number) {
+  const [year, month, date] = day.split("-").map(Number);
+  const next = new Date(Date.UTC(year, month - 1, date + offset, 12));
+  return `${next.getUTCFullYear()}-${String(next.getUTCMonth() + 1).padStart(2, "0")}-${String(next.getUTCDate()).padStart(2, "0")}`;
+}
+
 function NbaPropsPage() {
   const search = Route.useSearch();
   const { games, isLoading, isError } = useNbaSchedule(30_000);
-  // Keep the props slate focused on the next seven available game dates.
+  // Use a rolling seven-calendar-day window: Monday–Sunday, then Tuesday–Monday, etc.
   const slate = useMemo(() => games.filter((g) => g.status !== "postponed"), [games]);
-  const days = useMemo(() => {
-    const today = etDayKey(new Date());
-    return [...new Set(slate.map((g) => etDayKey(g.date)))].sort().filter((d) => d >= today).slice(0, 7);
-  }, [slate]);
+  const linked = search.game ? slate.find((g) => g.id === search.game) : undefined;
+  const initialDay = linked ? etDayKey(linked.date) : (defaultNbaDay(slate) ?? etDayKey(new Date()));
   const [dayKey, setDayKey] = useState<string | null>(null);
   const [gameId, setGameId] = useState<string | null>(search.game ?? null);
   const strip = useRef<HTMLDivElement>(null);
-
-  const linked = search.game ? slate.find((g) => g.id === search.game) : undefined;
-  const day = dayKey ?? (linked ? etDayKey(linked.date) : (days.includes(defaultNbaDay(slate) ?? "") ? defaultNbaDay(slate) : days[0] ?? defaultNbaDay(slate)));
-  const dayGames = slate.filter((g) => day !== null && etDayKey(g.date) === day);
+  const day = dayKey ?? initialDay;
+  const shownDays = useMemo(() => {
+    const [year, month, date] = day.split("-").map(Number);
+    return Array.from({ length: 7 }, (_, i) => {
+      const next = new Date(Date.UTC(year, month - 1, date + i, 12));
+      return `${next.getUTCFullYear()}-${String(next.getUTCMonth() + 1).padStart(2, "0")}-${String(next.getUTCDate()).padStart(2, "0")}`;
+    });
+  }, [day]);
+  const dayGames = slate.filter((g) => etDayKey(g.date) === day);
   const selected = dayGames.find((g) => g.id === gameId) ?? dayGames[0];
-  const shownDays = day && !days.includes(day) ? [day, ...days] : days;
-  const idx = day ? shownDays.indexOf(day) : -1;
 
   useEffect(() => {
     strip.current?.querySelector<HTMLElement>('[aria-pressed="true"]')?.scrollIntoView({ inline: "center", block: "nearest" });
-  }, [day, shownDays.length]);
+  }, [day]);
 
   const pickDay = (nextDay: string) => {
     setDayKey(nextDay);
@@ -86,8 +93,8 @@ function NbaPropsPage() {
         <div className="mb-4 flex items-center gap-2">
           <button
             type="button"
-            disabled={idx <= 0}
-            onClick={() => pickDay(shownDays[idx - 1])}
+            disabled={!day}
+            onClick={() => pickDay(shiftDay(day, -1))}
             className="rounded-full bg-panel2 px-3 py-1 font-mono text-[11px] text-mute ring-1 ring-line/10 enabled:hover:text-acc disabled:opacity-40"
             aria-label="Previous day"
           >
@@ -102,8 +109,8 @@ function NbaPropsPage() {
           </div>
           <button
             type="button"
-            disabled={idx < 0 || idx >= shownDays.length - 1}
-            onClick={() => pickDay(shownDays[idx + 1])}
+            disabled={!day}
+            onClick={() => pickDay(shiftDay(day, 1))}
             className="rounded-full bg-panel2 px-3 py-1 font-mono text-[11px] text-mute ring-1 ring-line/10 enabled:hover:text-acc disabled:opacity-40"
             aria-label="Next day"
           >
@@ -111,7 +118,7 @@ function NbaPropsPage() {
           </button>
           <button
             type="button"
-            onClick={() => { setDayKey(defaultNbaDay(slate) ?? null); setGameId(null); }}
+            onClick={() => { setDayKey(initialDay); setGameId(null); }}
             className="rounded-full bg-acc/10 px-3 py-1 font-mono text-[11px] uppercase tracking-wider text-acc ring-1 ring-acc/25"
           >
             Today
@@ -121,7 +128,7 @@ function NbaPropsPage() {
       {isLoading ? (
         <EmptyPanel>Loading the schedule…</EmptyPanel>
       ) : !dayGames.length ? (
-        <EmptyPanel>{isError ? "The schedule couldn't be loaded right now." : "No games are scheduled for the current slate."}</EmptyPanel>
+        <EmptyPanel>{isError ? "The schedule couldn't be loaded right now." : "No games are scheduled for this date."}</EmptyPanel>
       ) : (
         <div className="space-y-6">
           <Panel padded={false}>
