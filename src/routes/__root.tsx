@@ -33,7 +33,12 @@ const nbaNav = [
   { to: "/nba/model", label: "Model" },
 ] as const;
 
-const nhlNav = [{ to: "/nhl", label: "Slate" }] as const;
+const nhlNav = [
+  { to: "/nhl", label: "Dashboard" },
+  { to: "/nhl/teams", label: "Teams" },
+  { to: "/nhl/games", label: "Games" },
+  { to: "/nhl/model", label: "Model" },
+] as const;
 
 const cfbNav = [
   { to: "/cfb", label: "Dashboard" },
