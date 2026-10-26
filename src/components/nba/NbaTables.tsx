@@ -64,12 +64,18 @@ export function NbaMatchup({ game }: { game: NbaGame }) {
         <span className="inline-flex items-center gap-1.5">
           <span className="w-8 text-right">{shown ? (game.away.score ?? "") : ""}</span>
           <NbaLogo team={game.away.team} className="size-5" />
+          {game.status === "live" && game.possessionTeamId === game.away.team.id ? (
+            <span aria-label="Possession" title="Possession" className="text-sm leading-none">🏀</span>
+          ) : null}
         </span>
       </span>
       <span className="text-center font-sans font-normal text-mute">@</span>
       <span className="flex justify-start">
         <span className="relative inline-flex items-center gap-1.5">
           <NbaLogo team={game.home.team} className="size-5" />
+          {game.status === "live" && game.possessionTeamId === game.home.team.id ? (
+            <span aria-label="Possession" title="Possession" className="text-sm leading-none">🏀</span>
+          ) : null}
           <span className="w-8 text-left">{shown ? (game.home.score ?? "") : ""}</span>
           {ot && shown ? (
             <span className="absolute left-full top-1/2 ml-1.5 -translate-y-1/2 whitespace-nowrap font-mono text-[10px] font-normal text-mute">(OT)</span>

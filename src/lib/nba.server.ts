@@ -188,6 +188,7 @@ export function parseEvent(event: any): NbaGame | null {
   };
   const awaySide = side(away);
   const homeSide = side(home);
+  const possessionCompetitor = competitors.find((c) => c?.possession === true || c?.possession === "true");
   const broadcast =
     comp?.broadcasts?.[0]?.names?.[0] ??
     comp?.geoBroadcasts?.[0]?.media?.shortName ??
@@ -201,6 +202,7 @@ export function parseEvent(event: any): NbaGame | null {
     statusDetail: detail,
     period: numOr(status0.period),
     clock: String(status0.displayClock ?? ""),
+    ...(status === "live" && possessionCompetitor?.id ? { possessionTeamId: String(possessionCompetitor.id) } : {}),
     part: partOf(event),
     ...(note ? { note: String(note) } : {}),
     ...(comp?.venue?.fullName ? { venue: String(comp.venue.fullName) } : {}),
@@ -366,7 +368,22 @@ export async function fetchNbaSchedule(): Promise<NbaGame[]> {
       seen.add(g.id);
       all.push(g);
     }
-  return withClosingOdds(all.sort((a, b) => a.date.localeCompare(b.date)));
+  const withOdds = await withClosingOdds(all.sort((a, b) => a.date.localeCompare(b.date)));
+  // Only live games need the extra summary feed. The summary is cached and shared with game-detail
+  // requests, so this is one request per live game rather than one per rendered row.
+  return Promise.all(
+    withOdds.map(async (game) => {
+      if (game.status !== "live" || game.possessionTeamId) return game;
+      try {
+        const detail = await fetchNbaGameDetail(game.id);
+        return detail.game.possessionTeamId
+          ? { ...game, possessionTeamId: detail.game.possessionTeamId }
+          : game;
+      } catch {
+        return game;
+      }
+    }),
+  );
 }
 
 /* ---------- standings ---------- */
@@ -668,6 +685,84 @@ export async function fetchNbaPlayerProfile(playerId: string): Promise<NbaPlayer
 
 /* ---------- game summary ---------- */
 
+/**
+ * Prefer ESPN's explicit possession field. The play-by-play fallback only returns a team after
+ * a clear event; ambiguous missed shots/free throws deliberately clear possession until resolved.
+ */
+function possessionFromSummary(json: any, game: NbaGame, plays: any[]): string | undefined {
+  const valid = new Set([game.away.team.id, game.home.team.id].filter(Boolean));
+  const situation = json?.situation;
+  const competitors: any[] = json?.header?.competitions?.[0]?.competitors ?? [];
+  const direct = [
+    situation?.possession?.id,
+    situation?.possession?.team?.id,
+    situation?.possessionTeam?.id,
+    situation?.possessionTeamId,
+    competitors.find((c) => c?.possession === true || c?.possession === "true")?.id,
+  ].map((id) => (id == null ? "" : String(id)));
+  const explicit = direct.find((id) => valid.has(id));
+  if (explicit) return explicit;
+
+  let possession: string | undefined;
+  let previousMadeShotTeam: string | undefined;
+  for (const play of plays) {
+    const teamId = String(play?.team?.id ?? play?.teamId ?? "");
+    const text = String(play?.text ?? play?.shortDescription ?? play?.type?.text ?? "").toLowerCase();
+    if (!text) continue;
+    const knownTeam = valid.has(teamId) ? teamId : undefined;
+    const opponent = (id: string | undefined) =>
+      id === game.away.team.id ? game.home.team.id : id === game.home.team.id ? game.away.team.id : undefined;
+
+    if (/\b(rebound|rebounds)\b/.test(text) && !/rebound violation/.test(text)) {
+      if (knownTeam) possession = knownTeam;
+      continue;
+    }
+
+    if (/\bfree throw\b/.test(text)) {
+      if (/technical/.test(text) || /miss(?:es|ed)?\s+(?:the\s+)?free throw/.test(text)) {
+        possession = undefined;
+        continue;
+      }
+      const made = /\b(?:makes?|made)\b.*free throw|free throw.*\bmade\b/.test(text);
+      if (!made || !knownTeam) {
+        possession = undefined;
+        continue;
+      }
+      const ordinal = text.match(/\b(\d+)\s*(?:st|nd|rd|th)?\s+of\s+(\d+)\b/);
+      if (!ordinal) possession = undefined;
+      else possession = Number(ordinal[1]) < Number(ordinal[2]) ? knownTeam : opponent(knownTeam);
+      continue;
+    }
+
+    if (/\bturnover\b/.test(text)) {
+      possession = /\bsteal(?:s|en)?\b/.test(text) ? knownTeam : opponent(knownTeam);
+      continue;
+    }
+    if (/\bsteals?\b/.test(text) && knownTeam) {
+      possession = knownTeam;
+      continue;
+    }
+
+    const shot = /\b(2|3)-pt\b|\b(two|three)-point\b|\b(?:layup|dunk|jumper|jump shot|hook shot|tip-in)\b/.test(text);
+    const made = /\b(make|makes|made)\b/.test(text) && shot;
+    const missed = /\b(miss|misses|missed)\b/.test(text) && shot;
+    if (made && knownTeam) {
+      previousMadeShotTeam = knownTeam;
+      // A made shot with an and-one/shooting foul leaves the shooter at the line.
+      possession = /foul|and.?one|free throw/.test(text) ? knownTeam : opponent(knownTeam);
+      continue;
+    }
+    if (missed) {
+      possession = undefined;
+      continue;
+    }
+    if (/\bfoul\b/.test(text) && /shooting|and.?one/.test(text) && previousMadeShotTeam) {
+      possession = previousMadeShotTeam;
+    }
+  }
+  return possession && valid.has(possession) ? possession : undefined;
+}
+
 export function fetchNbaGameDetail(gameId: string): Promise<NbaGameDetail> {
   return cached(`game-${gameId}`, 15_000, async () => {
     const json = await fetchJson(`${SITE}/summary?event=${gameId}`);
@@ -730,7 +825,8 @@ export function fetchNbaGameDetail(gameId: string): Promise<NbaGameDetail> {
       };
     });
 
-    const plays: NbaPlay[] = (json?.plays ?? []).map((p: any, i: number) => ({
+    const rawPlays: any[] = Array.isArray(json?.plays) ? json.plays : [];
+    const plays: NbaPlay[] = rawPlays.map((p: any, i: number) => ({
       id: String(p?.id ?? i),
       period: numOr(p?.period?.number),
       clock: String(p?.clock?.displayValue ?? ""),
@@ -741,6 +837,10 @@ export function fetchNbaGameDetail(gameId: string): Promise<NbaGameDetail> {
       scoring: Boolean(p?.scoringPlay),
       scoreValue: numOr(p?.scoreValue),
     }));
+    if (game.status === "live") {
+      const possessionTeamId = possessionFromSummary(json, game, rawPlays);
+      if (possessionTeamId) game.possessionTeamId = possessionTeamId;
+    }
 
     const winProb: number[] = (json?.winprobability ?? [])
       .map((w: any) => num(w?.homeWinPercentage))
