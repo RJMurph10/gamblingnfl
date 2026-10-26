@@ -31,7 +31,7 @@ const changeText = (c: number | null) => (c === null ? undefined : `${c > 0 ? "�
 const tone = (c: number | null): "win" | "loss" | "mute" => (c === null || c === 0 ? "mute" : c > 0 ? "win" : "loss");
 
 function NbaDashboard() {
-  const { games, isLoading, isError } = useNbaSchedule(60_000);
+  const { games, isLoading, isError, error } = useNbaSchedule(60_000);
   const standings = useNbaStandings();
   const rows = useNbaModelRows(games);
   const { teams } = useNbaTeams();
@@ -145,7 +145,7 @@ function NbaDashboard() {
           <NbaUpcomingGames games={games} />
           <NbaRecentGames
             games={recent}
-            emptyText={isLoading ? "Loading games from ESPN…" : isError ? "Could not load games from ESPN. Try refreshing shortly." : "No completed NBA games are currently available from ESPN."}
+            emptyText={isLoading ? "Loading games from ESPN…" : isError ? `Could not load games from ESPN. Try refreshing shortly.${error instanceof Error && error.message ? ` (${error.message})` : ""}` : "No completed NBA games are currently available from ESPN."}
           />
         </section>
 
