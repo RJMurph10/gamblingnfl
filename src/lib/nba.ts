@@ -47,6 +47,8 @@ export interface NbaGame {
   statusDetail: string;
   period: number;
   clock: string;
+  /** Team currently in possession during live games, when ESPN data supports a confident answer. */
+  possessionTeamId?: string;
   part: NbaSeasonPart;
   /** e.g. "NBA Cup", "Emirates NBA Cup", "Game 3 · East R1". */
   note?: string;
