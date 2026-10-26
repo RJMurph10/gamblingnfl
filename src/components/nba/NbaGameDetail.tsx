@@ -118,10 +118,10 @@ function Header({ game }: { game: NbaGame }) {
     ? new Date(game.date).toLocaleDateString("en-US", { timeZone: "America/New_York", weekday: "short", month: "short", day: "numeric" })
     : "";
   const isFinal = game.status === "final";
-  const isOT = game.period > 4 || /\\b\\d?OT\\b/i.test(game.statusDetail);
+  const isOT = game.period > 4 || /\b\d?OT\b/i.test(game.statusDetail);
   const spread = game.odds?.spread;
   const favorite = spread == null || spread === 0 ? null : spread < 0 ? game.home.team : game.away.team;
-  const spreadLabel = spread == null ? "—" : spread === 0 ? "PK" : `-${Math.abs(spread).toFixed(1).replace(/\\.0$/, "")}`;
+  const spreadLabel = spread == null ? "—" : spread === 0 ? "PK" : `-${Math.abs(spread).toFixed(1).replace(/\.0$/, "")}`;
 
   if (isFinal) {
     const awayWon = hasScore(game) && (game.away.score as number) > (game.home.score as number);
