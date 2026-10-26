@@ -33,6 +33,8 @@ const nbaNav = [
   { to: "/nba/model", label: "Model" },
 ] as const;
 
+const nhlNav = [{ to: "/nhl", label: "Slate" }] as const;
+
 const cfbNav = [
   { to: "/cfb", label: "Dashboard" },
   { to: "/cfb/teams", label: "Teams" },
@@ -47,6 +49,7 @@ const LEAGUE_DOT: Record<string, string> = {
   nfl: "var(--acc-nfl)",
   cfb: "var(--acc-cfb)",
   nba: "var(--acc-nba)",
+  nhl: "var(--acc-nhl)",
 };
 
 function Logo({ league }: { league: League }) {
@@ -144,7 +147,8 @@ function LeagueMenu({ league, pathname }: { league: League; pathname: string }) 
 function SiteHeader() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const league = leagueFromPath(pathname);
-  const nav = league.id === "cfb" ? cfbNav : league.id === "nba" ? nbaNav : nflNav;
+  const nav =
+    league.id === "cfb" ? cfbNav : league.id === "nba" ? nbaNav : league.id === "nhl" ? nhlNav : nflNav;
   return (
     <header className="glass sticky top-0 z-40 rounded-none border-x-0 border-t-0">
       <div className="mx-auto flex max-w-[1400px] items-center gap-4 px-4 py-3 sm:px-5">
@@ -174,7 +178,7 @@ function SiteFooter() {
     <footer className="mt-10 border-t border-line/10 px-4 py-5 sm:px-5">
       <p className="mx-auto max-w-[1400px] font-mono text-[10px] uppercase leading-relaxed tracking-wider text-faint">
         Gambling{league.short} · {league.name} analytics & betting research · live data from ESPN
-        {league.id === "nba" ? "" : " and nflverse"} · for research, not betting advice
+        {league.id === "nba" || league.id === "nhl" ? "" : " and nflverse"} · for research, not betting advice
       </p>
     </footer>
   );
