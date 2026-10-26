@@ -23,7 +23,9 @@
  * data it says so instead of producing numbers.
  */
 
-import { hasScore, type NhlGame, type NhlOdds } from "./nhl";
+import { hasScore, mlFavorite, wentToOvertime, type NhlGame, type NhlOdds } from "./nhl";
+
+export { wentToOvertime };
 
 export const MAX_GOALS = 14;
 export const SHRINK_GAMES = 12;
@@ -78,11 +80,6 @@ export interface NhlRatings {
   teams: Map<string, NhlTeamRating>;
 }
 
-/** True when a finished game went past 60 minutes. */
-export function wentToOvertime(g: NhlGame): boolean {
-  return g.period > 3 || /\b(ot|so)\b|shootout|overtime/i.test(g.statusDetail);
-}
-
 /** Regulation (60-minute) goals for a finished game, or null when it has no score. */
 export function regulationGoals(g: NhlGame): { home: number; away: number } | null {
   if (g.status !== "final" || !hasScore(g)) return null;
@@ -95,53 +92,70 @@ export function regulationGoals(g: NhlGame): { home: number; away: number } | nu
   return { home, away };
 }
 
+const tsOf = (g: NhlGame) => {
+  const t = new Date(g.date).getTime();
+  return Number.isNaN(t) ? 0 : t;
+};
+
+/** Accumulates regular-season results into ratings (add games oldest first, build any time). */
+export class RatingsBuilder {
+  private raw = new Map<string, { gp: number; gf: number; ga: number }>();
+  private homeGoals = 0;
+  private awayGoals = 0;
+  private n = 0;
+
+  add(g: NhlGame): void {
+    if (g.part !== "reg") return;
+    const r = regulationGoals(g);
+    if (!r) return;
+    this.n++;
+    this.homeGoals += r.home;
+    this.awayGoals += r.away;
+    for (const [id, gf, ga] of [
+      [g.home.team.id, r.home, r.away],
+      [g.away.team.id, r.away, r.home],
+    ] as const) {
+      const t = this.raw.get(id) ?? { gp: 0, gf: 0, ga: 0 };
+      t.gp++;
+      t.gf += gf;
+      t.ga += ga;
+      this.raw.set(id, t);
+    }
+  }
+
+  /** Null when the league sample is too small. */
+  build(): NhlRatings | null {
+    const n = this.n;
+    if (n < MIN_LEAGUE_GAMES) return null;
+    const mu = (this.homeGoals + this.awayGoals) / (2 * n);
+    if (!(mu > 0)) return null;
+    const w = n / (n + HOME_ICE_PRIOR_WEIGHT_GAMES);
+    const ratio = this.awayGoals > 0 ? this.homeGoals / this.awayGoals : HOME_ICE_PRIOR;
+    const homeIce = Math.min(1.2, Math.max(0.95, HOME_ICE_PRIOR * (1 - w) + ratio * w));
+    const teams = new Map<string, NhlTeamRating>();
+    for (const [teamId, t] of this.raw) {
+      teams.set(teamId, {
+        teamId,
+        gp: t.gp,
+        gf: t.gp ? t.gf / t.gp : 0,
+        ga: t.gp ? t.ga / t.gp : 0,
+        attack: (t.gf + SHRINK_GAMES * mu) / (t.gp + SHRINK_GAMES) / mu,
+        defense: (t.ga + SHRINK_GAMES * mu) / (t.gp + SHRINK_GAMES) / mu,
+      });
+    }
+    return { mu, homeIce, games: n, teams };
+  }
+}
+
 /**
  * Ratings from regular-season finals strictly before `before` (an ISO time) so a game is never
  * projected with information from itself or later. Null when the league sample is too small.
  */
 export function buildRatings(games: NhlGame[], before?: string): NhlRatings | null {
   const cutoff = before ? new Date(before).getTime() : Infinity;
-  const raw = new Map<string, { gp: number; gf: number; ga: number }>();
-  let homeGoals = 0;
-  let awayGoals = 0;
-  let n = 0;
-  for (const g of games) {
-    if (g.part !== "reg") continue;
-    if (new Date(g.date).getTime() >= cutoff) continue;
-    const r = regulationGoals(g);
-    if (!r) continue;
-    n++;
-    homeGoals += r.home;
-    awayGoals += r.away;
-    for (const [id, gf, ga] of [
-      [g.home.team.id, r.home, r.away],
-      [g.away.team.id, r.away, r.home],
-    ] as const) {
-      const t = raw.get(id) ?? { gp: 0, gf: 0, ga: 0 };
-      t.gp++;
-      t.gf += gf;
-      t.ga += ga;
-      raw.set(id, t);
-    }
-  }
-  if (n < MIN_LEAGUE_GAMES) return null;
-  const mu = (homeGoals + awayGoals) / (2 * n);
-  if (!(mu > 0)) return null;
-  const w = n / (n + HOME_ICE_PRIOR_WEIGHT_GAMES);
-  const ratio = awayGoals > 0 ? homeGoals / awayGoals : HOME_ICE_PRIOR;
-  const homeIce = Math.min(1.2, Math.max(0.95, HOME_ICE_PRIOR * (1 - w) + ratio * w));
-  const teams = new Map<string, NhlTeamRating>();
-  for (const [teamId, t] of raw) {
-    teams.set(teamId, {
-      teamId,
-      gp: t.gp,
-      gf: t.gp ? t.gf / t.gp : 0,
-      ga: t.gp ? t.ga / t.gp : 0,
-      attack: (t.gf + SHRINK_GAMES * mu) / (t.gp + SHRINK_GAMES) / mu,
-      defense: (t.ga + SHRINK_GAMES * mu) / (t.gp + SHRINK_GAMES) / mu,
-    });
-  }
-  return { mu, homeIce, games: n, teams };
+  const builder = new RatingsBuilder();
+  for (const g of games) if (tsOf(g) < cutoff) builder.add(g);
+  return builder.build();
 }
 
 /* ---------- game projection ---------- */
@@ -232,9 +246,7 @@ export function projectFromMeans(homeMean: number, awayMean: number): NhlDistrib
   };
 }
 
-/** Projects one game using only regular-season results played before it. */
-export function projectGame(game: NhlGame, games: NhlGame[]): NhlProjection | NhlUnavailable {
-  const ratings = buildRatings(games, game.date);
+function projectWithRatings(game: NhlGame, ratings: NhlRatings | null): NhlProjection | NhlUnavailable {
   if (!ratings) {
     return { ok: false, reason: `Not enough finished games yet (need ${MIN_LEAGUE_GAMES} league-wide).` };
   }
@@ -250,6 +262,11 @@ export function projectGame(game: NhlGame, games: NhlGame[]): NhlProjection | Nh
     ...projectFromMeans(homeMean, awayMean),
     samples: { home: home.gp, away: away.gp, league: ratings.games },
   };
+}
+
+/** Projects one game using only regular-season results played before it. */
+export function projectGame(game: NhlGame, games: NhlGame[]): NhlProjection | NhlUnavailable {
+  return projectWithRatings(game, buildRatings(games, game.date));
 }
 
 /** P(home margin + line > 0), P(push) for a home puck line (negative = home favorite). */
@@ -382,3 +399,144 @@ export function marketRows(game: NhlGame, p: NhlDistribution, odds: NhlOdds | un
   }
   return rows;
 }
+
+/* ---------- grading the model on finished games ---------- */
+
+export interface NhlRecord {
+  wins: number;
+  losses: number;
+  pushes: number;
+  /** wins / (wins + losses), as a percentage; null with no decided games. */
+  winPct: number | null;
+}
+
+export interface NhlSummary {
+  /** Finished regular-season games the model could project (using only earlier games). */
+  games: number;
+  /** Model's pick to win each game. */
+  moneyline: NhlRecord;
+  /** The sportsbook favorite on the moneyline, over the same games that have a posted moneyline. */
+  marketFavorite: NhlRecord;
+  /** Model's side against the posted puck line. */
+  puckLine: NhlRecord;
+  /** Model's over/under against the posted total. */
+  total: NhlRecord;
+  /** Mean squared error of the home win probability (0.25 = always saying 50%). Lower is better. */
+  brier: number | null;
+  /** Mean negative log-likelihood of the winner (0.693 = always saying 50%). Lower is better. */
+  logLoss: number | null;
+  /** Flat 1u on the moneyline side with positive expected value at the posted price. */
+  bets: { count: number; wins: number; losses: number; units: number; roi: number | null };
+}
+
+const emptyRecord = (): NhlRecord => ({ wins: 0, losses: 0, pushes: 0, winPct: null });
+const finishRecord = (r: NhlRecord): NhlRecord => ({
+  ...r,
+  winPct: r.wins + r.losses ? (r.wins / (r.wins + r.losses)) * 100 : null,
+});
+
+/**
+ * Grades the model on every finished regular-season game, each one projected with only the games
+ * played before it (nothing leaks). `before` limits the grading to games played before that time,
+ * which is how week-over-week change is computed. Only posted lines are graded: a game without a
+ * puck line, total or moneyline simply isn't counted in that market.
+ */
+export function summarizeNhl(games: NhlGame[], before?: Date): NhlSummary {
+  const cutoff = before ? before.getTime() : Infinity;
+  const finals = games
+    .filter((g) => g.part === "reg" && g.status === "final" && hasScore(g) && tsOf(g) < cutoff)
+    .sort((a, b) => tsOf(a) - tsOf(b));
+  const builder = new RatingsBuilder();
+  const ml = emptyRecord();
+  const fav = emptyRecord();
+  const pl = emptyRecord();
+  const tot = emptyRecord();
+  const bets = { count: 0, wins: 0, losses: 0, units: 0 };
+  let brier = 0;
+  let logLoss = 0;
+  let graded = 0;
+  let next = 0;
+
+  for (const g of finals) {
+    // Everything strictly earlier than this game's puck drop, and nothing else.
+    while (next < finals.length && tsOf(finals[next]) < tsOf(g)) builder.add(finals[next++]);
+    const p = projectWithRatings(g, builder.build());
+    if (!p.ok) continue;
+    const h = g.home.score as number;
+    const a = g.away.score as number;
+    if (h === a) continue;
+    const homeWon = h > a;
+    graded++;
+
+    // Moneyline accuracy and probability quality.
+    if (p.pHome >= 0.5 === homeWon) ml.wins++; // pick = home when the model says 50% or more
+    else ml.losses++;
+    const pw = homeWon ? p.pHome : p.pAway;
+    brier += (p.pHome - (homeWon ? 1 : 0)) ** 2;
+    logLoss += -Math.log(Math.max(pw, 1e-9));
+
+    // The sportsbook favorite, as a yardstick.
+    const favorite = mlFavorite(g);
+    if (favorite) {
+      if ((favorite === "home") === homeWon) fav.wins++;
+      else fav.losses++;
+    }
+
+    // Puck line against the posted number.
+    const line = g.odds?.spread;
+    if (line !== null && line !== undefined) {
+      const home = probHomeCovers(p, line);
+      const homePick = home.win / (1 - home.push || 1) >= 0.5;
+      const v = h - a + line;
+      if (v === 0) pl.pushes++;
+      else if (homePick === v > 0) pl.wins++;
+      else pl.losses++;
+    }
+
+    // Total against the posted number.
+    const posted = g.odds?.total;
+    if (posted !== null && posted !== undefined) {
+      const o = probOver(p, posted);
+      const overPick = o.over >= o.under;
+      const sum = h + a;
+      if (sum === posted) tot.pushes++;
+      else if (overPick === sum > posted) tot.wins++;
+      else tot.losses++;
+    }
+
+    // Moneyline bets: the side with positive expected value at the posted price, 1u flat.
+    const mh = g.odds?.mlHome;
+    const ma = g.odds?.mlAway;
+    if (mh !== null && mh !== undefined && ma !== null && ma !== undefined) {
+      const evHome = expectedValue(p.pHome, mh);
+      const evAway = expectedValue(p.pAway, ma);
+      const side = evHome >= evAway ? "home" : "away";
+      if (Math.max(evHome, evAway) > 0) {
+        const price = side === "home" ? mh : ma;
+        const won = (side === "home") === homeWon;
+        bets.count++;
+        if (won) {
+          bets.wins++;
+          bets.units += americanToDecimal(price) - 1;
+        } else {
+          bets.losses++;
+          bets.units -= 1;
+        }
+      }
+    }
+  }
+
+  return {
+    games: graded,
+    moneyline: finishRecord(ml),
+    marketFavorite: finishRecord(fav),
+    puckLine: finishRecord(pl),
+    total: finishRecord(tot),
+    brier: graded ? brier / graded : null,
+    logLoss: graded ? logLoss / graded : null,
+    bets: { ...bets, roi: bets.count ? (bets.units / bets.count) * 100 : null },
+  };
+}
+
+/** "+1.23u" / "-0.40u" / "0.00u". */
+export const unitsText = (u: number) => `${u > 0 ? "+" : ""}${u.toFixed(2)}u`;
