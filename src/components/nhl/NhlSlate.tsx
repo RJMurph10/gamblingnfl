@@ -1,5 +1,5 @@
 /** The NHL slate: day tabs, a compact card per game, and the selected game's model-vs-market analysis. */
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import { Panel, PanelHeader } from "@/components/booth";
 import { NhlEmpty, NhlLogo } from "@/components/nhl/NhlBits";
 import { NhlGameBoard } from "@/components/nhl/NhlGameBoard";
@@ -73,11 +73,14 @@ export function NhlSlate({
   isLoading,
   isError,
   initialGame,
+  renderBoard,
 }: {
   games: NhlGame[];
   isLoading: boolean;
   isError: boolean;
   initialGame?: string;
+  /** What to show for the selected game (defaults to the market analysis). */
+  renderBoard?: (game: NhlGame, games: NhlGame[]) => ReactNode;
 }) {
 
   // Preseason games are left off: the slate is the regular season and playoffs.
@@ -163,7 +166,13 @@ export function NhlSlate({
             </div>
           </Panel>
 
-          {selectedGame ? <NhlGameBoard key={selectedGame.id} game={selectedGame} games={slate} /> : null}
+          {selectedGame ? (
+            renderBoard ? (
+              renderBoard(selectedGame, slate)
+            ) : (
+              <NhlGameBoard key={selectedGame.id} game={selectedGame} games={slate} />
+            )
+          ) : null}
         </div>
       )}
     </>
