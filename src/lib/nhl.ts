@@ -287,3 +287,104 @@ export function buildStandings(games: NhlGame[]): NhlStandingRow[] {
   for (const t of teamsFromGames(games)) row(t);
   return [...rows.values()].sort((x, y) => y.points - x.points || x.gp - y.gp || y.wins - x.wins);
 }
+
+/* ---------- players and props ---------- */
+
+export type NhlPosGroup = "F" | "D" | "G";
+
+/** Forwards (C, LW, RW, F), defensemen (D) and goalies (G). */
+export function posGroup(position: string): NhlPosGroup {
+  const p = position.toUpperCase().trim();
+  if (p === "G") return "G";
+  if (p === "D" || p === "LD" || p === "RD") return "D";
+  return "F";
+}
+
+/** Season totals as ESPN reports them; null where the feed has no value. Skaters and goalies differ. */
+export interface NhlPlayerStats {
+  gp: number;
+  /** Average time on ice per game, in minutes. */
+  toi: number | null;
+  goals: number | null;
+  assists: number | null;
+  points: number | null;
+  plusMinus: number | null;
+  shots: number | null;
+  /** Shooting percentage as a fraction (0.12 = 12%). */
+  shootingPct: number | null;
+  pim: number | null;
+  ppg: number | null;
+  /** Goalies. */
+  gs: number | null;
+  wins: number | null;
+  losses: number | null;
+  otLosses: number | null;
+  /** Save percentage as a fraction (0.915). */
+  savePct: number | null;
+  gaa: number | null;
+  saves: number | null;
+  shotsAgainst: number | null;
+  shutouts: number | null;
+}
+
+export interface NhlPlayer {
+  id: string;
+  name: string;
+  teamId: string;
+  teamAbbr: string;
+  position: string;
+  jersey?: string;
+  height?: string;
+  weight?: string;
+  age?: number;
+  headshot: string;
+  /** Injury status text ("Day-To-Day", "Out"…), when listed. */
+  status?: string;
+  stats?: NhlPlayerStats;
+}
+
+export interface NhlPlayerIndex {
+  players: NhlPlayer[];
+  /** The ESPN season the stats come from (last season if this one has no stats yet). */
+  statsSeason: number;
+}
+
+export const nhlHeadshot = (id: string) => `https://a.espncdn.com/i/headshots/nhl/players/full/${id}.png`;
+
+export type NhlPropStat = "goals" | "assists" | "points" | "sog" | "saves";
+
+export const PROP_LABEL: Record<NhlPropStat, string> = {
+  goals: "Goals",
+  assists: "Assists",
+  points: "Points",
+  sog: "Shots on goal",
+  saves: "Goalie saves",
+};
+export const PROP_SHORT: Record<NhlPropStat, string> = {
+  goals: "G",
+  assists: "A",
+  points: "PTS",
+  sog: "SOG",
+  saves: "SV",
+};
+
+/** One DraftKings player prop from ESPN's odds feed. */
+export interface NhlPropOffer {
+  playerId: string;
+  playerName: string;
+  teamAbbr: string;
+  stat: NhlPropStat;
+  market: string;
+  /** over-under: a line with two prices; yes: a one-price "anytime" market. */
+  kind: "over-under" | "yes";
+  line: number | null;
+  /** American prices (the "yes" price for kind "yes"). */
+  overOdds: number | null;
+  underOdds: number | null;
+}
+
+export interface NhlPropBoard {
+  available: boolean;
+  offers: NhlPropOffer[];
+  fetchedAt: number;
+}
