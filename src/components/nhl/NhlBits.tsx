@@ -35,3 +35,28 @@ export function NhlEmpty({ children }: { children: ReactNode }) {
     </Panel>
   );
 }
+
+/** A small pill button used for filters. */
+export function Chip({
+  active,
+  onClick,
+  children,
+  title,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: ReactNode;
+  title?: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      title={title}
+      aria-pressed={active}
+      className={`shrink-0 whitespace-nowrap rounded-full px-3 py-1 font-mono text-[11px] uppercase tracking-wider ring-1 ${active ? "bg-acc/10 text-acc ring-acc/25" : "bg-panel2 text-mute ring-line/10 hover:text-acc"}`}
+    >
+      {children}
+    </button>
+  );
+}
