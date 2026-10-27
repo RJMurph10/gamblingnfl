@@ -3,9 +3,25 @@
  * lines (moneyline, puck line, total). Everything is cached in memory. Empty or failed feeds stay
  * empty: no sample games, scores or odds are ever substituted, and a missing line stays missing.
  */
-import { nhlLogoFor, type NhlGame, type NhlOdds, type NhlSeasonPart, type NhlStatus, type NhlTeamRef } from "./nhl";
+import {
+  nhlHeadshot,
+  nhlLogoFor,
+  type NhlGame,
+  type NhlOdds,
+  type NhlPlayer,
+  type NhlPlayerIndex,
+  type NhlPlayerStats,
+  type NhlPropBoard,
+  type NhlPropOffer,
+  type NhlPropStat,
+  type NhlSeasonPart,
+  type NhlStatus,
+  type NhlTeamRef,
+} from "./nhl";
+import { athleteIdOf, findPropPrice, priceToAmerican } from "./props.parse";
 
 const SITE = "https://site.api.espn.com/apis/site/v2/sports/hockey/nhl";
+const WEB = "https://site.web.api.espn.com/apis/common/v3/sports/hockey/nhl";
 const CORE = "https://sports.core.api.espn.com/v2/sports/hockey/leagues/nhl";
 
 const MINUTE = 60_000;
@@ -32,9 +48,17 @@ async function cached<T>(key: string, ttl: number, load: () => Promise<T>): Prom
   return p;
 }
 
-async function fetchJson(url: string, timeoutMs = 15_000): Promise<any> {
+const BROWSER_HEADERS = {
+  "User-Agent":
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36",
+  Accept: "application/json, text/plain, */*",
+  Referer: "https://www.espn.com/",
+  Origin: "https://www.espn.com",
+};
+
+async function fetchJson(url: string, timeoutMs = 15_000, browser = false): Promise<any> {
   const res = await fetch(url, {
-    headers: { "User-Agent": "GamblingNFL/1.0", Accept: "application/json" },
+    headers: browser ? BROWSER_HEADERS : { "User-Agent": "GamblingNFL/1.0", Accept: "application/json" },
     signal: AbortSignal.timeout(timeoutMs),
   });
   if (!res.ok) throw new Error(`ESPN NHL feed failed [${res.status}] for ${url}`);
@@ -375,4 +399,258 @@ export async function fetchNhlSchedule(): Promise<NhlGame[]> {
   const byId = new Map<string, NhlGame>();
   for (const r of ok) for (const g of r.value) byId.set(g.id, g);
   return withLines([...byId.values()].sort((a, b) => a.date.localeCompare(b.date)));
+}
+
+
+/* ---------- teams, rosters and player stats ---------- */
+
+const num = (v: unknown): number | null => {
+  if (v === null || v === undefined || v === "") return null;
+  const n = Number(String(v).replace(/[,%+]/g, ""));
+  return Number.isFinite(n) ? n : null;
+};
+
+/** Minutes from a number (18.4) or a clock string ("18:24"). */
+function minutes(v: unknown): number | null {
+  if (typeof v === "string" && /^\d+:\d{2}$/.test(v.trim())) {
+    const [m, sec] = v.trim().split(":").map(Number);
+    return m + sec / 60;
+  }
+  return num(v);
+}
+
+export function fetchNhlTeams(): Promise<NhlTeamRef[]> {
+  return cached("teams", 6 * HOUR, async () => {
+    const json = await fetchJson(`${SITE}/teams?limit=50`);
+    const list: any[] = json?.sports?.[0]?.leagues?.[0]?.teams ?? [];
+    return list
+      .map((x) => teamRef(x?.team ?? x))
+      .filter((t) => t.id)
+      .sort((a, b) => a.name.localeCompare(b.name));
+  });
+}
+
+function playerFrom(a: any, team: NhlTeamRef): NhlPlayer {
+  const injury = (a?.injuries ?? [])[0];
+  return {
+    id: String(a?.id ?? ""),
+    name: String(a?.displayName ?? a?.fullName ?? "Unknown"),
+    teamId: team.id,
+    teamAbbr: team.abbr,
+    position: String(a?.position?.abbreviation ?? ""),
+    ...(a?.jersey ? { jersey: String(a.jersey) } : {}),
+    ...(a?.displayHeight ? { height: String(a.displayHeight) } : {}),
+    ...(a?.displayWeight ? { weight: String(a.displayWeight) } : {}),
+    ...(num(a?.age) !== null ? { age: num(a.age) as number } : {}),
+    headshot: String(a?.headshot?.href ?? nhlHeadshot(String(a?.id ?? ""))),
+    ...(injury?.status ? { status: String(injury.status) } : {}),
+  };
+}
+
+export function fetchNhlRoster(teamId: string): Promise<NhlPlayer[]> {
+  return cached(`roster-${teamId}`, HOUR, async () => {
+    const [json, teams] = await Promise.all([
+      fetchJson(`${SITE}/teams/${teamId}/roster`),
+      fetchNhlTeams().catch(() => [] as NhlTeamRef[]),
+    ]);
+    const team = teams.find((t) => t.id === teamId) ?? teamRef(json?.team ?? { id: teamId });
+    const raw: any[] = Array.isArray(json?.athletes) ? json.athletes : [];
+    const flat = raw.flatMap((x) => (Array.isArray(x?.items) ? x.items : [x]));
+    return flat.filter((a) => a?.id).map((a) => playerFrom(a, team));
+  });
+}
+
+/**
+ * One ESPN statistics row → season totals. ESPN groups a player's numbers into categories, each
+ * with a list of stat names; every name is collected and read by the aliases below. A stat the feed
+ * does not provide stays null (shown as "—"): nothing is estimated.
+ */
+export function statsFromEntry(entry: any, defs: any[]): NhlPlayerStats | null {
+  const values = new Map<string, unknown>();
+  (entry?.categories ?? []).forEach((cat: any, i: number) => {
+    const names: string[] = defs[i]?.names ?? cat?.names ?? [];
+    const vals: unknown[] = cat?.values ?? [];
+    names.forEach((n, j) => {
+      if (!values.has(n) && vals[j] !== undefined && vals[j] !== null) values.set(n, vals[j]);
+    });
+  });
+  const get = (...keys: string[]): number | null => {
+    for (const k of keys) if (values.has(k)) return num(values.get(k));
+    return null;
+  };
+  const gp = get("gamesPlayed");
+  if (gp === null) return null;
+  const fraction = (v: number | null) => (v === null ? null : v > 1 ? v / 100 : v);
+  let toi: number | null = null;
+  for (const k of ["avgTimeOnIce", "timeOnIcePerGame", "avgTimeOnIcePerGame", "avgToi"]) {
+    if (values.has(k)) {
+      toi = minutes(values.get(k));
+      if (toi !== null) break;
+    }
+  }
+  return {
+    gp,
+    toi,
+    goals: get("goals"),
+    assists: get("assists"),
+    points: get("points"),
+    plusMinus: get("plusMinus"),
+    shots: get("shotsTotal", "shots"),
+    shootingPct: fraction(get("shootingPct", "shotPct")),
+    pim: get("penaltyMinutes"),
+    ppg: get("powerPlayGoals"),
+    gs: get("gamesStarted"),
+    wins: get("wins"),
+    losses: get("losses"),
+    otLosses: get("otLosses", "overtimeLosses"),
+    savePct: fraction(get("savePct", "savePercentage")),
+    gaa: get("goalsAgainstAverage", "avgGoalsAgainst"),
+    saves: get("saves"),
+    shotsAgainst: get("shotsAgainst"),
+    shutouts: get("shutouts"),
+  };
+}
+
+/** Season totals for every player ESPN lists (paged); traded players keep the entry with more games. */
+async function fetchSeasonStats(season: number): Promise<Map<string, NhlPlayerStats>> {
+  return cached(`stats-${season}`, 15 * MINUTE, async () => {
+    const out = new Map<string, NhlPlayerStats>();
+    for (let page = 1; page <= 8; page++) {
+      let json: any;
+      try {
+        json = await fetchJson(
+          `${WEB}/statistics/byathlete?region=us&lang=en&contentorigin=espn&isqualified=false&page=${page}&limit=200&season=${season}&seasontype=2`,
+        );
+      } catch (err) {
+        if (page === 1) console.error(`NHL player stats ${season} failed:`, err);
+        break;
+      }
+      const defs: any[] = json?.categories ?? [];
+      const athletes: any[] = json?.athletes ?? [];
+      for (const entry of athletes) {
+        const id = String(entry?.athlete?.id ?? "");
+        if (!id) continue;
+        const next = statsFromEntry(entry, defs);
+        if (!next) continue;
+        const prev = out.get(id);
+        // A player can appear again (traded mid-season): keep the entry with more games.
+        if (!prev || next.gp > prev.gp) out.set(id, next);
+      }
+      if (athletes.length < 200) break;
+    }
+    return out;
+  });
+}
+
+export function fetchNhlPlayerIndex(): Promise<NhlPlayerIndex> {
+  return cached("player-index", 15 * MINUTE, async () => {
+    const teams = await fetchNhlTeams();
+    const rosters = await Promise.all(teams.map((t) => fetchNhlRoster(t.id).catch(() => [] as NhlPlayer[])));
+    const current = nhlSeasonYear();
+    let season = current;
+    let stats = await fetchSeasonStats(current);
+    if (stats.size < 100) {
+      // The new season has no stats feed yet: last year's totals are better than nothing.
+      const prior = await fetchSeasonStats(current - 1);
+      if (prior.size > stats.size) {
+        stats = prior;
+        season = current - 1;
+      }
+    }
+    const players = rosters.flat().map((p) => ({ ...p, ...(stats.get(p.id) ? { stats: stats.get(p.id) } : {}) }));
+    return { players, statsSeason: season };
+  });
+}
+
+/* ---------- player props ---------- */
+
+export function classifyNhlProp(typeName: string): { stat: NhlPropStat; market: string; yes?: boolean } | null {
+  const n = typeName.toLowerCase().replace(/\(incl\.? overtime\)/, "").trim();
+  if (/first|last|period|1st|2nd|3rd|team|milestone|2\+|3\+|hat.?trick|power.?play/.test(n)) return null;
+  if (/anytime|to score a goal|goal ?scorer/.test(n)) return { stat: "goals", market: "Anytime goal", yes: true };
+  if (/save/.test(n)) return { stat: "saves", market: "Saves" };
+  if (/shot/.test(n)) return { stat: "sog", market: "Shots on goal" };
+  if (/assist/.test(n) && !/point/.test(n)) return { stat: "assists", market: "Assists" };
+  if (/point/.test(n)) return { stat: "points", market: "Points" };
+  if (/goal/.test(n)) return { stat: "goals", market: "Goals" };
+  return null;
+}
+
+async function fetchPropsJson(url: string): Promise<any> {
+  for (const candidate of [url, url.replace(/^https:/, "http:")]) {
+    try {
+      return await fetchJson(candidate, 20_000, true);
+    } catch {
+      // try the next form
+    }
+  }
+  throw new Error(`ESPN prop feed failed for ${url}`);
+}
+
+/** DraftKings player props for one game from ESPN's core odds feed (empty when none are posted). */
+export function fetchNhlGameProps(gameId: string, awayId: string, homeId: string): Promise<NhlPropBoard> {
+  return cached(`props-${gameId}`, 30_000, async () => {
+    const base = `${CORE}/events/${gameId}/competitions/${gameId}/odds/100/propBets`;
+    let items: any[] = [];
+    try {
+      const first = await fetchPropsJson(`${base}?limit=400&page=1`);
+      items = Array.isArray(first?.items) ? [...first.items] : [];
+      const pages = Math.min(num(first?.pageCount) ?? 1, 8);
+      for (let p = 2; p <= pages; p++) {
+        const next = await fetchPropsJson(`${base}?limit=400&page=${p}`);
+        items.push(...(Array.isArray(next?.items) ? next.items : []));
+      }
+      const unresolved = items.filter((x) => x && !x.type && typeof x.$ref === "string");
+      if (unresolved.length) {
+        const resolved = new Map<string, any>();
+        const refs = unresolved.map((x) => String(x.$ref)).slice(0, 800);
+        for (let i = 0; i < refs.length; i += 20) {
+          await Promise.all(
+            refs.slice(i, i + 20).map(async (ref) => {
+              try {
+                resolved.set(ref, await cached(`propref-${ref}`, MINUTE, () => fetchPropsJson(ref)));
+              } catch {
+                // skip
+              }
+            }),
+          );
+        }
+        items = items.map((x) => (x && !x.type && typeof x.$ref === "string" ? resolved.get(String(x.$ref)) : x)).filter(Boolean);
+      }
+    } catch {
+      return { available: false, offers: [], fetchedAt: Date.now() };
+    }
+    const [awayRoster, homeRoster] = await Promise.all([
+      fetchNhlRoster(awayId).catch(() => [] as NhlPlayer[]),
+      fetchNhlRoster(homeId).catch(() => [] as NhlPlayer[]),
+    ]);
+    const people = new Map<string, NhlPlayer>([...awayRoster, ...homeRoster].map((p) => [p.id, p]));
+    const offers: NhlPropOffer[] = [];
+    const seen = new Set<string>();
+    for (const x of items) {
+      const typeName = String(x?.type?.name ?? x?.type?.displayName ?? x?.displayName ?? x?.name ?? "");
+      const kind = classifyNhlProp(typeName);
+      const id = athleteIdOf(x);
+      if (!kind || !id) continue;
+      const person = people.get(id);
+      if (!person) continue;
+      const line = kind.yes ? null : num(x?.current?.target?.value ?? x?.current?.target?.displayValue);
+      if (!kind.yes && (line === null || line <= 0)) continue;
+      const key = `${id}|${kind.stat}|${kind.yes ? "yes" : line}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      offers.push({
+        playerId: id,
+        playerName: person.name,
+        teamAbbr: person.teamAbbr,
+        stat: kind.stat,
+        market: kind.market,
+        kind: kind.yes ? "yes" : "over-under",
+        line,
+        overOdds: american(findPropPrice(x)),
+        underOdds: kind.yes ? null : american(priceToAmerican(x?.current?.under ?? x?.odds?.under)),
+      });
+    }
+    return { available: offers.length > 0, offers, fetchedAt: Date.now() };
+  });
 }
