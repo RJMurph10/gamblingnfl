@@ -36,7 +36,9 @@ const nbaNav = [
 const nhlNav = [
   { to: "/nhl", label: "Dashboard" },
   { to: "/nhl/teams", label: "Teams" },
+  { to: "/nhl/players", label: "Players" },
   { to: "/nhl/games", label: "Games" },
+  { to: "/nhl/props", label: "Props" },
   { to: "/nhl/model", label: "Model" },
 ] as const;
 
