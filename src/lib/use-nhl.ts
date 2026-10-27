@@ -1,7 +1,7 @@
 /** NHL data hooks for the /nhl page. */
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { getNhlSchedule } from "./nhl.functions";
+import { getNhlGameProps, getNhlPlayerIndex, getNhlSchedule } from "./nhl.functions";
 import type { NhlGame } from "./nhl";
 
 /** The season's games (refreshed every 15 seconds while one is live). */
@@ -21,3 +21,24 @@ export function useNhlSchedule(refetchMs: number | false = 60_000) {
   const games: NhlGame[] = useMemo(() => (Array.isArray(query.data) ? query.data : []), [query.data]);
   return { ...query, games };
 }
+
+/** Every player with this season's totals (refreshed every 15 minutes at most). */
+export const useNhlPlayerIndex = () =>
+  useQuery({
+    queryKey: ["nhl-player-index"],
+    queryFn: () => getNhlPlayerIndex(),
+    staleTime: 10 * 60_000,
+    retry: 1,
+  });
+
+/** DraftKings props for one game (refreshed every minute). */
+export const useNhlGameProps = (game: NhlGame | undefined) =>
+  useQuery({
+    queryKey: ["nhl-props", game?.id],
+    queryFn: () =>
+      getNhlGameProps({ data: { gameId: game!.id, awayId: game!.away.team.id, homeId: game!.home.team.id } }),
+    enabled: Boolean(game),
+    refetchInterval: 60_000,
+    staleTime: 30_000,
+    retry: 1,
+  });
