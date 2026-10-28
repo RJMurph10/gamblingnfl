@@ -25,6 +25,7 @@ import {
   type NbaTeamStatLine,
   nbaLogoFor,
 } from "./nba";
+import { finalCached, finalLinesStore, readFinal, writeFinal } from "./final-cache.server";
 import { athleteIdOf, findPropPrice, priceToAmerican } from "./props.parse";
 
 export type { NbaGame } from "./nba";
@@ -236,7 +237,17 @@ function fetchDay(day: Date, now: Date): Promise<NbaGame[]> {
   );
 }
 
+const allFinal = (games: NbaGame[]) => games.length > 0 && games.every((g) => g.status === "final" || g.status === "postponed");
+
 async function fetchRange(from: Date, to: Date, ttl: number): Promise<NbaGame[]> {
+  // A range that ended two+ days ago with every game final never changes: keep it long-term.
+  if (to.getTime() < Date.now() - 2 * 24 * HOUR) {
+    return finalCached(`nba-range-${ymd(from)}-${ymd(to)}`, () => loadRange(from, to, ttl), allFinal);
+  }
+  return loadRange(from, to, ttl);
+}
+
+async function loadRange(from: Date, to: Date, ttl: number): Promise<NbaGame[]> {
   const range = `${ymd(from)}-${ymd(to)}`;
   return cached(`sched-${range}`, ttl, async () => {
     try {
@@ -308,9 +319,13 @@ async function withClosingOdds(games: NbaGame[]): Promise<NbaGame[]> {
     const hit = oddsBackfill.get(g.id);
     return Boolean(hit && Date.now() - hit.at < (hit.odds ? 12 * HOUR : g.status === "live" ? MINUTE : 10 * MINUTE));
   };
+  // Lines of finished games never change: read them from the long-term store first.
+  const finals = todo.filter((g) => g.status === "final");
+  const stored = finals.length ? await finalLines.get(finals) : new Map<string, NbaOdds>();
+  const rest = todo.filter((g) => !stored.has(g.id));
   // Cached answers are free; only a bounded number of new lookups run per refresh.
-  const lookups = [...todo.filter(fresh), ...todo.filter((g) => !fresh(g)).slice(0, 60)];
-  const found = new Map<string, NbaOdds>();
+  const lookups = [...rest.filter(fresh), ...rest.filter((g) => !fresh(g)).slice(0, 60)];
+  const found = new Map<string, NbaOdds>(stored);
   let next = 0;
   await Promise.all(
     Array.from({ length: 8 }, async () => {
@@ -321,6 +336,10 @@ async function withClosingOdds(games: NbaGame[]): Promise<NbaGame[]> {
       }
     }),
   );
+  const newFinals = lookups
+    .filter((g) => g.status === "final" && found.get(g.id)?.spread != null && found.get(g.id)?.total != null)
+    .map((g) => ({ id: g.id, date: g.date, odds: found.get(g.id) as NbaOdds }));
+  if (newFinals.length) await finalLines.save(newFinals);
   return games.map((g) => {
     const o = found.get(g.id);
     if (!o) return g;
@@ -334,6 +353,8 @@ async function withClosingOdds(games: NbaGame[]): Promise<NbaGame[]> {
     return { ...g, odds: merged };
   });
 }
+
+const finalLines = finalLinesStore<NbaOdds>("nba");
 
 /**
  * The season so far plus the next two weeks, as site games. Fetched in 10-day ranges (ESPN
@@ -763,7 +784,16 @@ function possessionFromSummary(json: any, game: NbaGame, plays: any[]): string |
   return possession && valid.has(possession) ? possession : undefined;
 }
 
-export function fetchNbaGameDetail(gameId: string): Promise<NbaGameDetail> {
+/** Game detail; a finished game's detail is kept long-term (it can't change any more). */
+export async function fetchNbaGameDetail(gameId: string): Promise<NbaGameDetail> {
+  const stored = await readFinal<NbaGameDetail>(`nba-game-${gameId}`);
+  if (stored) return stored;
+  const detail = await loadNbaGameDetail(gameId);
+  if (detail.game.status === "final") await writeFinal(`nba-game-${gameId}`, detail);
+  return detail;
+}
+
+function loadNbaGameDetail(gameId: string): Promise<NbaGameDetail> {
   return cached(`game-${gameId}`, 15_000, async () => {
     const json = await fetchJson(`${SITE}/summary?event=${gameId}`);
     const header = json?.header;
