@@ -92,9 +92,16 @@ export function regulationGoals(g: NhlGame): { home: number; away: number } | nu
   return { home, away };
 }
 
+const tsMemo = new Map<string, number>();
 const tsOf = (g: NhlGame) => {
-  const t = new Date(g.date).getTime();
-  return Number.isNaN(t) ? 0 : t;
+  let t = tsMemo.get(g.date);
+  if (t === undefined) {
+    t = new Date(g.date).getTime();
+    if (Number.isNaN(t)) t = 0;
+    if (tsMemo.size > 20_000) tsMemo.clear();
+    tsMemo.set(g.date, t);
+  }
+  return t;
 };
 
 /** Accumulates regular-season results into ratings (add games oldest first, build any time). */
@@ -151,8 +158,49 @@ export class RatingsBuilder {
  * Ratings from regular-season finals strictly before `before` (an ISO time) so a game is never
  * projected with information from itself or later. Null when the league sample is too small.
  */
+/**
+ * Per list of games: the games sorted by time and one running builder, so ratings "before game N" are built
+ * by adding only the games since the last request instead of re-adding the whole season every time.
+ */
+interface RatingsIndex {
+  sorted: NhlGame[];
+  times: number[];
+  builder: RatingsBuilder;
+  added: number;
+  byCount: Map<number, NhlRatings | null>;
+}
+const ratingsMemo = new WeakMap<NhlGame[], RatingsIndex>();
+
 export function buildRatings(games: NhlGame[], before?: string): NhlRatings | null {
   const cutoff = before ? new Date(before).getTime() : Infinity;
+  let index = ratingsMemo.get(games);
+  if (!index) {
+    const sorted = [...games].sort((x, y) => tsOf(x) - tsOf(y));
+    index = { sorted, times: sorted.map(tsOf), builder: new RatingsBuilder(), added: 0, byCount: new Map() };
+    ratingsMemo.set(games, index);
+  }
+  // how many games started before the cutoff (binary search)
+  let lo = 0;
+  let hi = index.times.length;
+  while (lo < hi) {
+    const mid = (lo + hi) >> 1;
+    if (index.times[mid] < cutoff) lo = mid + 1;
+    else hi = mid;
+  }
+  const count = lo;
+  if (index.byCount.has(count)) return index.byCount.get(count) ?? null;
+  if (index.added > count) {
+    index.builder = new RatingsBuilder();
+    index.added = 0;
+  }
+  while (index.added < count) index.builder.add(index.sorted[index.added++]);
+  const ratings = index.builder.build();
+  index.byCount.set(count, ratings);
+  return ratings;
+}
+
+/** The original one-pass version (kept for reference and tests). */
+export function computeRatings(games: NhlGame[], cutoff: number): NhlRatings | null {
   const builder = new RatingsBuilder();
   for (const g of games) if (tsOf(g) < cutoff) builder.add(g);
   return builder.build();
