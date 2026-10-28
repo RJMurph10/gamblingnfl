@@ -9,6 +9,7 @@
 
 import type { GamePropBoard } from "@/lib/props.types";
 import { nflverseGameYac } from "@/lib/nflverse-yac.server";
+import { finalCached, readFinal, writeFinal } from "@/lib/final-cache.server";
 import { athleteIdOf, buildPropOffers, sampleTdItem, type PropPerson } from "@/lib/props.parse";
 import type { BoxScoreLine, Drive, DriveResult, Game, TeamGameStats } from "@/data/games";
 import { gameScore } from "@/data/games";
@@ -911,6 +912,11 @@ export interface PriorSeasonResult {
  * change, so this is fetched once and kept for 12 hours.
  */
 export async function fetchPriorSeasonResults(): Promise<PriorSeasonResult[]> {
+  // Last season can't change: keep it long-term once it has loaded.
+  return finalCached(`nfl-prior-season-${SEASON - 1}`, loadPriorSeasonResults, (r) => r.length > 200);
+}
+
+function loadPriorSeasonResults(): Promise<PriorSeasonResult[]> {
   return cached(
     "prior-season-results",
     async () => {
@@ -942,17 +948,25 @@ export async function fetchPriorSeasonResults(): Promise<PriorSeasonResult[]> {
   );
 }
 
+const eventFinal = (e: any) =>
+  (e?.competitions?.[0]?.status?.type ?? e?.status?.type)?.completed === true;
+
+/** One week's scoreboard events. A week whose games are all final is kept long-term. */
+function scheduleWeek(week: number): Promise<{ week: number; events: any[] }> {
+  const load = () =>
+    fetchJson(`${SCOREBOARD}?dates=${SEASON}&seasontype=2&week=${week}&limit=100`)
+      .then((d) => ({ week, events: (d?.events ?? []) as any[] }))
+      .catch(() => ({ week, events: [] as any[] }));
+  return finalCached(`nfl-week-${SEASON}-${week}`, load, (w) => w.events.length > 0 && w.events.every(eventFinal));
+}
+
 /** Full 2026 regular-season schedule with results, grouped by week. */
 export async function fetchSchedule(): Promise<Game[]> {
   return cached(
     "schedule",
     async () => {
       const weeks = await Promise.all(
-        Array.from({ length: REGULAR_SEASON_WEEKS }, (_, i) =>
-          fetchJson(`${SCOREBOARD}?dates=${SEASON}&seasontype=2&week=${i + 1}&limit=100`)
-            .then((d) => ({ week: i + 1, events: d?.events ?? [] }))
-            .catch(() => ({ week: i + 1, events: [] })),
-        ),
+        Array.from({ length: REGULAR_SEASON_WEEKS }, (_, i) => scheduleWeek(i + 1)),
       );
       const games: Game[] = [];
       for (const { week, events } of weeks) {
@@ -1929,6 +1943,22 @@ function formatExtraPoint(text: string): string {
 export async function fetchGameDetail(rawEventId: string): Promise<Game | null> {
   // College games come in as "cfb-<id>"; everything else is an NFL ESPN id.
   const { league, id: eventId } = eventLeague(rawEventId);
+  // A game that finished over a day ago (late stat updates included) is kept long-term.
+  const storeKey = `game-detail-${league}-${eventId}`;
+  const stored = await readFinal<Game>(storeKey);
+  if (stored) {
+    if (stored.teamRefs) registerTeams(stored.teamRefs);
+    return stored;
+  }
+  const game = await loadGameDetail(league, eventId);
+  const kickoff = game?.kickoffIso ? new Date(game.kickoffIso).getTime() : NaN;
+  if (game && game.status === "final" && Number.isFinite(kickoff) && Date.now() - kickoff > 36 * 3_600_000) {
+    await writeFinal(storeKey, game);
+  }
+  return game;
+}
+
+async function loadGameDetail(league: ReturnType<typeof eventLeague>["league"], eventId: string): Promise<Game | null> {
   const college = league === "cfb";
   const SUMMARY = FEEDS[league].summary;
   const game = await cached(`game-${league}-${eventId}`, async (): Promise<Game | null> => {
