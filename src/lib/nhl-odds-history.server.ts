@@ -15,15 +15,25 @@ import type { NhlOddsRow, NhlPastGame } from "./nhl-odds-history";
 const SITE = "https://site.api.espn.com/apis/site/v2/sports/hockey/nhl";
 const CORE = "https://sports.core.api.espn.com/v2/sports/hockey/leagues/nhl";
 
-async function fetchJson(url: string): Promise<any> {
+const BROWSER_HEADERS = {
+  "User-Agent":
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36",
+  Accept: "application/json, text/plain, */*",
+  Referer: "https://www.espn.com/",
+  Origin: "https://www.espn.com",
+};
+
+/** GET JSON; `browser` uses browser-like headers and also tries plain http (the core feed sometimes needs both). */
+async function fetchJson(url: string, browser = false): Promise<any> {
+  const urls = browser ? [url, url.replace(/^https:/, "http:")] : [url, url];
   let last: unknown;
-  for (let attempt = 0; attempt < 2; attempt++) {
+  for (const u of urls) {
     try {
-      const res = await fetch(url, {
-        headers: { "User-Agent": "GamblingNFL/1.0", Accept: "application/json" },
+      const res = await fetch(u, {
+        headers: browser ? BROWSER_HEADERS : { "User-Agent": "GamblingNFL/1.0", Accept: "application/json" },
         signal: AbortSignal.timeout(15_000),
       });
-      if (!res.ok) throw new Error(`ESPN ${res.status} for ${url}`);
+      if (!res.ok) throw new Error(`ESPN ${res.status} for ${u}`);
       return await res.json();
     } catch (err) {
       last = err;
@@ -31,6 +41,8 @@ async function fetchJson(url: string): Promise<any> {
   }
   throw last;
 }
+
+const msg = (err: unknown) => (err instanceof Error ? err.message : String(err));
 
 const pad = (n: number) => String(n).padStart(2, "0");
 const ymd = (d: Date) => `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}`;
@@ -140,23 +152,42 @@ export async function fetchNhlOddsRows(
   const failed: string[] = [];
   let raw = "";
   for (const game of games) {
+    const debug: Record<string, unknown> = { game };
+    let items: any[] = [];
+    // 1) the core odds feed (one item per sportsbook, with open / close)
     try {
-      const json = await fetchJson(`${CORE}/events/${game.id}/competitions/${game.id}/odds?limit=50`);
-      let items: any[] = Array.isArray(json?.items) ? json.items : [];
+      const json = await fetchJson(`${CORE}/events/${game.id}/competitions/${game.id}/odds?limit=50`, true);
+      items = Array.isArray(json?.items) ? json.items : [];
       const refs = items.filter((x) => x && typeof x.$ref === "string" && !x.provider);
       if (refs.length) {
-        const resolved = await Promise.all(refs.slice(0, 6).map((x) => fetchJson(x.$ref).catch(() => null)));
+        const resolved = await Promise.all(refs.slice(0, 6).map((x) => fetchJson(x.$ref, true).catch(() => null)));
         items = [...items.filter((x) => !(x && typeof x.$ref === "string" && !x.provider)), ...resolved.filter(Boolean)];
       }
-      if (withRaw && !raw) raw = JSON.stringify({ odds: json, resolved: items }, null, 2).slice(0, 400_000);
-      if (!items.length) {
-        failed.push(game.id);
-        continue;
-      }
-      for (const o of items) rows.push(oddsRow(game, o));
-    } catch {
-      failed.push(game.id);
+      debug.core = json;
+      debug.coreResolved = items;
+    } catch (err) {
+      debug.coreError = msg(err);
     }
+    // 2) the game summary's pick center, when the core feed has nothing
+    if (!items.length) {
+      try {
+        const summary = await fetchJson(`${SITE}/summary?event=${game.id}`);
+        const picks: any[] = Array.isArray(summary?.pickcenter) ? summary.pickcenter : [];
+        const odds: any[] = Array.isArray(summary?.odds) ? summary.odds : [];
+        items = [...picks, ...odds];
+        debug.pickcenter = picks;
+        debug.summaryOdds = odds;
+        debug.summaryKeys = Object.keys(summary ?? {});
+      } catch (err) {
+        debug.summaryError = msg(err);
+      }
+    }
+    if (withRaw && !raw) raw = JSON.stringify(debug, null, 2).slice(0, 400_000);
+    if (!items.length) {
+      failed.push(game.id);
+      continue;
+    }
+    for (const o of items) rows.push(oddsRow(game, o));
   }
   return { rows, failed, raw };
 }
