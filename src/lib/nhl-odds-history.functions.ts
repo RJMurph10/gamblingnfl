@@ -1,11 +1,11 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { fetchNhlOddsRows, fetchNhlSeasonEvents } from "./nhl-odds-history.server";
+import { fetchNhlOddsRows, fetchNhlWeekEvents } from "./nhl-odds-history.server";
 
-/** A past season's finished regular-season games (2023 = 2023-24). */
-export const getNhlSeasonEvents = createServerFn({ method: "GET" })
-  .inputValidator((data) => z.object({ season: z.number().int().min(2015).max(2030) }).parse(data))
-  .handler(async ({ data }) => fetchNhlSeasonEvents(data.season));
+/** One week of finished regular-season games, starting on `start` (YYYYMMDD). */
+export const getNhlWeekEvents = createServerFn({ method: "GET" })
+  .inputValidator((data) => z.object({ start: z.string().regex(/^\d{8}$/) }).parse(data))
+  .handler(async ({ data }) => fetchNhlWeekEvents(data.start));
 
 const pastGame = z.object({
   id: z.string(),
