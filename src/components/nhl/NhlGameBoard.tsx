@@ -3,14 +3,9 @@ import { useMemo } from "react";
 import { Panel, PanelHeader } from "@/components/booth";
 import { NhlLogo } from "@/components/nhl/NhlBits";
 import { americanText, lineText, localTip, statusText, type NhlGame } from "@/lib/nhl";
-import {
-  marketRows,
-  MIN_LEAGUE_GAMES,
-  projectGame,
-  SHRINK_GAMES,
-  type NhlMarketRow,
-  type NhlProjection,
-} from "@/lib/nhl-model";
+import { type NhlMarketRow, type NhlProjection } from "@/lib/nhl-model";
+import { marketRowsV2, projectGameV2, type NhlV2Projection } from "@/lib/nhl-model-v2";
+import { useNhlModelInputs } from "@/lib/use-nhl";
 
 const pct = (p: number | null | undefined, digits = 1) =>
   p === null || p === undefined ? "—" : `${(p * 100).toFixed(digits)}%`;
@@ -154,9 +149,28 @@ function Movement({ game }: { game: NhlGame }) {
   );
 }
 
+function Factors({ game, p }: { game: NhlGame; p: NhlV2Projection }) {
+  const f = p.features;
+  const A = game.away.team.abbr;
+  const H = game.home.team.abbr;
+  const rest = (s: NhlV2Projection["features"]["home"]) => (s.b2b ? "back-to-back" : s.rest3 ? "3+ days off" : "normal rest");
+  const goalie = (s: NhlV2Projection["features"]["home"]) =>
+    s.goalie ? `${s.goalie} (${s.sv >= 1 ? "+" : ""}${((s.sv - 1) * 100).toFixed(1)}% vs avg saves)` : "starter unknown";
+  return (
+    <p className="font-mono text-[10px] uppercase tracking-wider text-faint">
+      {A}: {goalie(f.away)}, {rest(f.away)} · {H}: {goalie(f.home)}, {rest(f.home)}
+      {f.current ? "" : " · last season's shots and goalie history only"}
+    </p>
+  );
+}
+
 export function NhlGameBoard({ game, games }: { game: NhlGame; games: NhlGame[] }) {
-  const projection = useMemo(() => (game.status === "postponed" ? null : projectGame(game, games)), [game, games]);
-  const rows = useMemo(() => (projection?.ok ? marketRows(game, projection) : []), [game, projection]);
+  const { inputs } = useNhlModelInputs();
+  const projection = useMemo(
+    () => (game.status === "postponed" ? null : projectGameV2(game, games, inputs)),
+    [game, games, inputs],
+  );
+  const rows = useMemo(() => (projection?.ok ? marketRowsV2(game, projection) : []), [game, projection]);
   const hasBook = Boolean(game.odds);
 
   return (
@@ -197,6 +211,7 @@ export function NhlGameBoard({ game, games }: { game: NhlGame; games: NhlGame[] 
               </p>
             ) : null}
             <ModelSummary game={game} p={projection} />
+            <Factors game={game} p={projection} />
 
             <div>
               <h3 className="label-mono mb-2">Markets · model vs sportsbook</h3>
@@ -230,18 +245,21 @@ export function NhlGameBoard({ game, games }: { game: NhlGame; games: NhlGame[] 
               </summary>
               <div className="mt-2 space-y-1.5 leading-relaxed">
                 <p>
-                  <b>Ratings.</b> Each team&apos;s goals for / against per game in regulation, blended with {SHRINK_GAMES} games of
-                  league-average play. Games decided in overtime or a shootout count as ties at 60 minutes. Only regular-season
-                  games before this one are used ({projection.samples.league} league games; {game.away.team.abbr}{" "}
-                  {projection.samples.away}, {game.home.team.abbr} {projection.samples.home}). Needs {MIN_LEAGUE_GAMES}+ league games.
+                  <b>Ratings.</b> Each team&apos;s regulation goals for and against and its shots on goal for and against, per game.
+                  This season so far is blended with 15 games of last season (pulled a third of the way to league average) and 5
+                  games of league average, so the model works from opening night ({projection.samples.league} league games so
+                  far; {game.away.team.abbr} {projection.samples.away}, {game.home.team.abbr} {projection.samples.home}).
                 </p>
                 <p>
-                  <b>Goals.</b> Expected goals = league average × attack × opposing defense, with home ice from the league&apos;s
-                  home/away goal ratio. Each side&apos;s goals are Poisson.
+                  <b>Goalies and rest.</b> The opponent&apos;s expected starter (most starts this season) counts through his save %
+                  over several seasons, with 2,000 shots of league-average goaltending added. Playing the day before lowers a
+                  team&apos;s goals about 5% and raises goals against about 5%; 3+ days off raises goals against about 3%.
                 </p>
                 <p>
-                  <b>Overtime.</b> A game tied after 60 minutes is won by one more goal for the winner (as the NHL records it);
-                  strength counts half as much as in regulation. So an overtime win never covers −1.5, and totals include that goal.
+                  <b>Goals and overtime.</b> Expected goals feed the same final-score grid as before (Poisson goals; an overtime or
+                  shootout winner gets one more goal, so an overtime win never covers −1.5). Each market&apos;s probability is
+                  then recalibrated from past seasons, and the overtime chance is scaled to how often NHL games are really tied
+                  after 60 minutes.
                 </p>
                 <p>
                   <b>Fair odds</b> = the American price of the model probability. <b>No-vig book</b> = the book&apos;s two prices with
@@ -249,8 +267,9 @@ export function NhlGameBoard({ game, games }: { game: NhlGame; games: NhlGame[] 
                   odds − 1) − (1 − p), per 1u at the book&apos;s price. Pushes are removed before comparing.
                 </p>
                 <p>
-                  Not modeled: injuries, starting goalies, back-to-backs, travel. Small samples early in the season make these
-                  numbers rough; treat them as research, not advice.
+                  Live and finished games show what the model knew before puck drop (this season&apos;s shot and save totals
+                  are left out). Not modeled: injuries and confirmed starting goalies. Treat these numbers as research, not
+                  advice.
                 </p>
               </div>
             </details>
