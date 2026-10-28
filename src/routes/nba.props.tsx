@@ -1,10 +1,10 @@
 import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { PageTitle, Panel, PanelHeader } from "@/components/booth";
+import { PageTitle, Panel, PanelHeader } from "@/components/shared/booth";
 import { EmptyPanel, NbaLogo, statusText } from "@/components/nba/NbaBits";
 import { NbaPropsBoard } from "@/components/nba/NbaPropsBoard";
-import { etDayKey, localTip, type NbaGame } from "@/lib/nba";
-import { defaultNbaDay, useNbaSchedule } from "@/lib/use-nba";
+import { etDayKey, localTip, type NbaGame } from "@/lib/nba/nba";
+import { defaultNbaDay, useNbaSchedule } from "@/lib/nba/use-nba";
 
 export const Route = createFileRoute("/nba/props")({
   validateSearch: (search: Record<string, unknown>): { game?: string } => ({

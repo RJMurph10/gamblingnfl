@@ -1,8 +1,8 @@
 import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { PageTitle, Panel, PanelHeader, StatCard } from "@/components/booth";
+import { PageTitle, Panel, PanelHeader, StatCard } from "@/components/shared/booth";
 import { Chip, EmptyPanel, NbaLogo } from "@/components/nba/NbaBits";
-import { etDayKey, etDayLabel, hasScore, pct, spreadText, type NbaTeamRef } from "@/lib/nba";
+import { etDayKey, etDayLabel, hasScore, pct, spreadText, type NbaTeamRef } from "@/lib/nba/nba";
 import {
   buildRatings,
   ratingRows,
@@ -10,8 +10,8 @@ import {
   unitsText,
   type NbaModelRow,
   type Record3,
-} from "@/lib/nba-model";
-import { useNbaModelRows, useNbaPrior, useNbaSchedule, useNbaStandings } from "@/lib/use-nba";
+} from "@/lib/nba/nba-model";
+import { useNbaModelRows, useNbaPrior, useNbaSchedule, useNbaStandings } from "@/lib/nba/use-nba";
 
 export const Route = createFileRoute("/nba/model")({
   head: () => ({

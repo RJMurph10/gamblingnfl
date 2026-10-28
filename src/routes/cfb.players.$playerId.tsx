@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PlayerDetail } from "@/components/PlayerDetail";
+import { PlayerDetail } from "@/components/shared/PlayerDetail";
 
 export const Route = createFileRoute("/cfb/players/$playerId")({
   head: () => ({

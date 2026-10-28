@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PageTitle, Panel, SampleBadge, TeamCard } from "@/components/booth";
-import { divisions, teams } from "@/data/teams";
+import { PageTitle, Panel, SampleBadge, TeamCard } from "@/components/shared/booth";
+import { divisions, teams } from "@/data/shared/teams";
 
 export const Route = createFileRoute("/teams/")({
   head: () => ({

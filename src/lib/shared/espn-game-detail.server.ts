@@ -5,10 +5,10 @@
  * (Split out of the old lib/espn.server.ts; the code is unchanged.)
  */
 
-import { nflverseGameYac } from "@/lib/nflverse-yac.server";
-import { readFinal, writeFinal } from "@/lib/final-cache.server";
-import type { BoxScoreLine, Drive, DriveResult, Game, TeamGameStats } from "@/data/games";
-import { registerTeams, teamByAbbr, teamById } from "@/data/teams";
+import { nflverseGameYac } from "@/lib/nfl/nflverse-yac.server";
+import { readFinal, writeFinal } from "@/lib/shared/final-cache.server";
+import type { BoxScoreLine, Drive, DriveResult, Game, TeamGameStats } from "@/data/shared/games";
+import { registerTeams, teamByAbbr, teamById } from "@/data/shared/teams";
 import { CORE_ODDS, FEEDS, HISTORICAL_ODDS_CACHE_TTL_MS, SEASON, SUMMARY, asProbability, cached, collegeTeamRefs, eventLeague, extractYacValue, fetchCoreProbabilityRecords, fetchHistoricalOdds, fetchJson, formatLocation, mapEvent, optionalNumber, parseGameInfo, parsePredictor, parseSeasonLeaders, parseTimeouts, prepareCollege, teamOf, weekScoreboardUrl } from "@/lib/shared/espn-core.server";
 import { fetchTeamRoster } from "@/lib/shared/espn-teams-players.server";
 import { addCollegeDetails } from "@/lib/cfb/cfb-espn.server";

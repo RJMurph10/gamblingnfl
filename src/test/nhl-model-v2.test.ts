@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import type { NhlGame, NhlPlayerIndex, NhlTeamRef } from "@/lib/nhl";
-import { projectGame } from "@/lib/nhl-model";
+import type { NhlGame, NhlPlayerIndex, NhlTeamRef } from "@/lib/nhl/nhl";
+import { projectGame } from "@/lib/nhl/nhl-model";
 import {
   calibrateHomeCover,
   calibrateMoneyline,
@@ -13,8 +13,8 @@ import {
   projectGameV2,
   restDays,
   type NhlV2Features,
-} from "@/lib/nhl-model-v2";
-import { projectFromMeans, probHomeCovers, probOver } from "@/lib/nhl-model";
+} from "@/lib/nhl/nhl-model-v2";
+import { projectFromMeans, probHomeCovers, probOver } from "@/lib/nhl/nhl-model";
 
 /** Cases computed by the Python fit (nhl_fit.py) from real 2009-2026 games. */
 const CASES = [

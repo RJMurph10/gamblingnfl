@@ -7,7 +7,7 @@ import {
   isOffensivePosition,
   isPropPlayerPosition,
   summarizeEvaluations,
-} from "@/lib/prop-model";
+} from "@/lib/shared/prop-model";
 
 describe("projected ranges", () => {
   it("uses ±25% for yardage", () => {

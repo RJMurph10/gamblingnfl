@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { posGroup, type NhlPlayer, type NhlPlayerStats } from "@/lib/nhl";
+import { posGroup, type NhlPlayer, type NhlPlayerStats } from "@/lib/nhl/nhl";
 import {
   PRIOR_GAMES,
   evaluateAtLeastOne,
@@ -8,7 +8,7 @@ import {
   poissonCdf,
   poissonPmf,
   projectRate,
-} from "@/lib/nhl-props";
+} from "@/lib/nhl/nhl-props";
 
 const blank: NhlPlayerStats = {
   gp: 0, toi: null, goals: null, assists: null, points: null, plusMinus: null, shots: null,

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { NbaGame, NbaLogRow, NbaTeamRef } from "@/lib/nba";
+import type { NbaGame, NbaLogRow, NbaTeamRef } from "@/lib/nba/nba";
 import {
   buildRatings,
   evaluateProp,
@@ -8,7 +8,7 @@ import {
   projectStat,
   runNbaModel,
   summarizeNba,
-} from "@/lib/nba-model";
+} from "@/lib/nba/nba-model";
 
 const team = (id: string): NbaTeamRef => ({
   id,

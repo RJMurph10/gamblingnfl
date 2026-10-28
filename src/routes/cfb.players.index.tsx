@@ -1,10 +1,10 @@
 import { useMemo } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQueries } from "@tanstack/react-query";
-import { PlayersIndex } from "@/components/PlayersIndex";
-import { getCfbConferenceLeaguePlayers } from "@/lib/cfb.functions";
-import type { LeaguePlayer } from "@/lib/league-players.server";
-import { useCfbConferences } from "@/lib/use-cfb";
+import { PlayersIndex } from "@/components/shared/PlayersIndex";
+import { getCfbConferenceLeaguePlayers } from "@/lib/cfb/cfb.functions";
+import type { LeaguePlayer } from "@/lib/shared/league-players.server";
+import { useCfbConferences } from "@/lib/cfb/use-cfb";
 
 export const Route = createFileRoute("/cfb/players/")({
   head: () => ({

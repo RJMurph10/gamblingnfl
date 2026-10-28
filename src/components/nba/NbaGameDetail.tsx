@@ -1,7 +1,7 @@
 /** One NBA game: header and lines, line score, model pick, then box score / team stats / plays tabs. */
 import { useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { PageTitle, Panel, PanelHeader } from "@/components/booth";
+import { PageTitle, Panel, PanelHeader } from "@/components/shared/booth";
 import { NbaLogo, oddsLine, statusText } from "@/components/nba/NbaBits";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -15,9 +15,9 @@ import {
   type NbaGame,
   type NbaGameDetail,
   type NbaPlay,
-} from "@/lib/nba";
-import { predictGame, buildRatings, rowFor, type NbaModelRow } from "@/lib/nba-model";
-import { useNbaGameDetail, useNbaPrior, useNbaSchedule } from "@/lib/use-nba";
+} from "@/lib/nba/nba";
+import { predictGame, buildRatings, rowFor, type NbaModelRow } from "@/lib/nba/nba-model";
+import { useNbaGameDetail, useNbaPrior, useNbaSchedule } from "@/lib/nba/use-nba";
 
 const tabClass =
   "rounded-none border-b-2 border-transparent px-5 py-3 data-[state=active]:border-acc data-[state=active]:bg-transparent";

@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { PageTitle, Panel } from "@/components/booth";
+import { PageTitle, Panel } from "@/components/shared/booth";
 import { NbaTeamDetail } from "@/components/nba/NbaTeamDetail";
-import { useNbaTeams } from "@/lib/use-nba";
+import { useNbaTeams } from "@/lib/nba/use-nba";
 
 export const Route = createFileRoute("/nba/teams/$teamId")({
   head: () => ({

@@ -1,9 +1,9 @@
 /** NBA dashboard game tables (live, upcoming by day, recent): same layout as the NFL/CFB ones. */
 import { useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Panel, PanelHeader } from "@/components/booth";
+import { Panel, PanelHeader } from "@/components/shared/booth";
 import { NbaLogo, statusText } from "@/components/nba/NbaBits";
-import { etDayKey, etShortLabel, hasScore, localTip, type NbaGame } from "@/lib/nba";
+import { etDayKey, etShortLabel, hasScore, localTip, type NbaGame } from "@/lib/nba/nba";
 
 /**
  * Spread / total colouring, same rules as the NFL tables (marketResultClass): neutral until a game

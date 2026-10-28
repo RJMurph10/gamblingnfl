@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { defaultNhlDay, etDayKey, slateDays, type NhlGame, type NhlTeamRef } from "@/lib/nhl";
+import { defaultNhlDay, etDayKey, slateDays, type NhlGame, type NhlTeamRef } from "@/lib/nhl/nhl";
 import {
   americanToProb,
   buildRatings,
@@ -12,7 +12,7 @@ import {
   projectFromMeans,
   projectGame,
   regulationGoals,
-} from "@/lib/nhl-model";
+} from "@/lib/nhl/nhl-model";
 
 const team = (id: string): NhlTeamRef => ({
   id,

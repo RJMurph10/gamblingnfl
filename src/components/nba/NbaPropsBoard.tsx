@@ -1,11 +1,11 @@
 /** Player prop projections for one NBA game, plus DraftKings lines (when posted) with model edges. */
 import { useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Panel, PanelHeader } from "@/components/booth";
+import { Panel, PanelHeader } from "@/components/shared/booth";
 import { Chip, NbaLogo } from "@/components/nba/NbaBits";
-import { STAT_LABEL, STAT_SHORT, pct, type NbaGame, type NbaGameRosterStat, type NbaPropOffer, type NbaStatKey } from "@/lib/nba";
-import { buildRatings, evaluateProp, predictGame, projectStat, ratingRows, type StatProjection } from "@/lib/nba-model";
-import { useNbaGameProps, useNbaGameRosterStats, useNbaPrior, useNbaSchedule } from "@/lib/use-nba";
+import { STAT_LABEL, STAT_SHORT, pct, type NbaGame, type NbaGameRosterStat, type NbaPropOffer, type NbaStatKey } from "@/lib/nba/nba";
+import { buildRatings, evaluateProp, predictGame, projectStat, ratingRows, type StatProjection } from "@/lib/nba/nba-model";
+import { useNbaGameProps, useNbaGameRosterStats, useNbaPrior, useNbaSchedule } from "@/lib/nba/use-nba";
 
 const BOARD_STATS: NbaStatKey[] = ["pts", "reb", "ast", "fg3m", "pra"];
 const MORE_STATS: NbaStatKey[] = ["stl", "blk", "tov", "pr", "pa", "ra"];

@@ -1,12 +1,12 @@
 import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { PageTitle, Panel, PanelHeader } from "@/components/booth";
-import { GamePropAnalysis, TeamLink } from "@/components/GamePropAnalysis";
-import type { Game } from "@/data/games";
-import { teamById } from "@/data/teams";
-import { getLiveSchedule } from "@/lib/espn.functions";
-import { buildSlateDays, defaultSlateDay, pickSlateWeek } from "@/lib/prop-slate";
+import { PageTitle, Panel, PanelHeader } from "@/components/shared/booth";
+import { GamePropAnalysis, TeamLink } from "@/components/shared/GamePropAnalysis";
+import type { Game } from "@/data/shared/games";
+import { teamById } from "@/data/shared/teams";
+import { getLiveSchedule } from "@/lib/shared/espn.functions";
+import { buildSlateDays, defaultSlateDay, pickSlateWeek } from "@/lib/shared/prop-slate";
 
 export const Route = createFileRoute("/props")({
   head: () => ({

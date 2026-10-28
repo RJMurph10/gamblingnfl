@@ -1,9 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { PageTitle, Panel, PanelHeader } from "@/components/booth";
+import { PageTitle, Panel, PanelHeader } from "@/components/shared/booth";
 import { NhlEmpty, NhlLogo } from "@/components/nhl/NhlBits";
 import { NhlGameBoard } from "@/components/nhl/NhlGameBoard";
-import type { NhlGame } from "@/lib/nhl";
-import { useNhlSchedule } from "@/lib/use-nhl";
+import type { NhlGame } from "@/lib/nhl/nhl";
+import { useNhlSchedule } from "@/lib/nhl/use-nhl";
 
 export const Route = createFileRoute("/nhl/games/$gameId")({
   head: () => ({ meta: [{ title: "Game — GamblingNHL" }] }),

@@ -5,11 +5,11 @@
  * (Split out of the old lib/espn.server.ts; the code is unchanged.)
  */
 
-import type { Game } from "@/data/games";
-import { gameScore } from "@/data/games";
-import { isCollegeId, registerTeams, registeredCollegeTeams, teamByAbbr, teamById, type Team } from "@/data/teams";
-import { projectPlayer, type ProjStat, type DefenseAllowed, type PlayerGameStats, type PlayerProjection } from "@/lib/cfb-projections";
-import { conferenceTeams, parseCalendar, parseConferences, type CfbConference, type CfbWeek } from "@/lib/cfb";
+import type { Game } from "@/data/shared/games";
+import { gameScore } from "@/data/shared/games";
+import { isCollegeId, registerTeams, registeredCollegeTeams, teamByAbbr, teamById, type Team } from "@/data/shared/teams";
+import { projectPlayer, type ProjStat, type DefenseAllowed, type PlayerGameStats, type PlayerProjection } from "@/lib/cfb/cfb-projections";
+import { conferenceTeams, parseCalendar, parseConferences, type CfbConference, type CfbWeek } from "@/lib/cfb/cfb";
 import { CFB_SITE, FEEDS, type FeedLeague, SEASON, backfillHistoricalOdds, cached, collegeTeamRefs, eventLeague, fetchJson, mapEvent, prepareCollege, teamOf, weekScoreboardUrl } from "@/lib/shared/espn-core.server";
 import { type PriorSeasonResult, fetchSchedule } from "@/lib/nfl/nfl-schedule.server";
 import { parsePair } from "@/lib/shared/espn-game-detail.server";

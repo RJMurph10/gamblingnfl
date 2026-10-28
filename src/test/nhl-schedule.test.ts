@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseEvent, parseOdds } from "@/lib/nhl.server";
+import { parseEvent, parseOdds } from "@/lib/nhl/nhl.server";
 
 // ESPN-shaped fixtures (written from the feed's known structure; not a live capture).
 const event = (over: Record<string, unknown> = {}, status: Record<string, unknown> = {}, odds?: unknown) => ({

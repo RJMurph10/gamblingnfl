@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { buildStandings, teamsFromGames, divisionOf, type NhlGame, type NhlTeamRef } from "@/lib/nhl";
-import { summarizeNhl } from "@/lib/nhl-model";
+import { buildStandings, teamsFromGames, divisionOf, type NhlGame, type NhlTeamRef } from "@/lib/nhl/nhl";
+import { summarizeNhl } from "@/lib/nhl/nhl-model";
 
 const team = (abbr: string): NhlTeamRef => ({
   id: abbr,

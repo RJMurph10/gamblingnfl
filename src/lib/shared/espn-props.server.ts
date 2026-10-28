@@ -5,9 +5,9 @@
  * (Split out of the old lib/espn.server.ts; the code is unchanged.)
  */
 
-import type { GamePropBoard } from "@/lib/props.types";
-import { athleteIdOf, buildPropOffers, sampleTdItem, type PropPerson } from "@/lib/props.parse";
-import { isCollegeId } from "@/data/teams";
+import type { GamePropBoard } from "@/lib/shared/props.types";
+import { athleteIdOf, buildPropOffers, sampleTdItem, type PropPerson } from "@/lib/shared/props.parse";
+import { isCollegeId } from "@/data/shared/teams";
 import { CORE_ODDS, FEEDS, ROSTER_CACHE_TTL_MS, SUMMARY, cached, eventLeague, fetchJson, teamOf } from "@/lib/shared/espn-core.server";
 import { fetchTeamDepthChart, fetchTeamRoster } from "@/lib/shared/espn-teams-players.server";
 import { fetchSummaryFor } from "@/lib/cfb/cfb-espn.server";
@@ -314,7 +314,7 @@ export async function fetchPropAvailability(
       // this game wins when we can match him on the roster.
       try {
         if (college) throw new Error("nflverse covers the NFL only");
-        const { fetchNflHistory } = await import("@/lib/nfl-history.server");
+        const { fetchNflHistory } = await import("@/lib/nfl/nfl-history.server");
         const history = await fetchNflHistory();
         const eventNum = Number(id);
         const game =

@@ -1,9 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { PageTitle, Panel, PanelHeader } from "@/components/booth";
-import { GameCard } from "@/components/GameCard";
-import type { Game } from "@/data/games";
-import { getLiveSchedule } from "@/lib/espn.functions";
+import { PageTitle, Panel, PanelHeader } from "@/components/shared/booth";
+import { GameCard } from "@/components/shared/GameCard";
+import type { Game } from "@/data/shared/games";
+import { getLiveSchedule } from "@/lib/shared/espn.functions";
 
 export const Route = createFileRoute("/games/")({
   head: () => ({

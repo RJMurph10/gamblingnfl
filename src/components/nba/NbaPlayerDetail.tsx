@@ -1,7 +1,7 @@
 /** One NBA player: bio, season averages, a last-games chart and the game log. */
 import { useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { PageTitle, Panel, PanelHeader, StatCard } from "@/components/booth";
+import { PageTitle, Panel, PanelHeader, StatCard } from "@/components/shared/booth";
 import { NbaLogo } from "@/components/nba/NbaBits";
 import {
   STAT_SHORT,
@@ -11,8 +11,8 @@ import {
   statValue,
   type NbaLogRow,
   type NbaStatKey,
-} from "@/lib/nba";
-import { useNbaPlayerProfile, useNbaTeams } from "@/lib/use-nba";
+} from "@/lib/nba/nba";
+import { useNbaPlayerProfile, useNbaTeams } from "@/lib/nba/use-nba";
 
 const CHART_STATS: NbaStatKey[] = ["pts", "reb", "ast", "fg3m", "pra"];
 

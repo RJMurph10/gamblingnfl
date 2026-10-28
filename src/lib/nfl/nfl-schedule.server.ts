@@ -5,10 +5,10 @@
  * (Split out of the old lib/espn.server.ts; the code is unchanged.)
  */
 
-import { finalCached } from "@/lib/final-cache.server";
-import type { Game } from "@/data/games";
-import { gameScore } from "@/data/games";
-import { teamByAbbr } from "@/data/teams";
+import { finalCached } from "@/lib/shared/final-cache.server";
+import type { Game } from "@/data/shared/games";
+import { gameScore } from "@/data/shared/games";
+import { teamByAbbr } from "@/data/shared/teams";
 import { REGULAR_SEASON_WEEKS, SCOREBOARD, SEASON, SUMMARY, backfillHistoricalOdds, cached, fetchJson, hasMoneylines, mapEvent, teamOf } from "@/lib/shared/espn-core.server";
 
 /** One final score from last season, for the models' head start. */

@@ -82,8 +82,8 @@ compare model generations and backtest.
 
 ## 5. Point the site at real data
 
-The site currently imports sample data from `src/data/teams.ts`,
-`src/data/players.ts`, and `src/data/games.ts`. Each module exposes small
+The site currently imports sample data from `src/data/shared/teams.ts`,
+`src/data/nfl/players.ts`, and `src/data/shared/games.ts`. Each module exposes small
 accessor functions (`teamById`, `playerById`, `gameById`, …). Replacing those
 accessors with Supabase reads is the only frontend change needed — no page or
 component has to be rewritten.

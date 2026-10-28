@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { PlayersIndex } from "@/components/PlayersIndex";
-import { getLeaguePlayers } from "@/lib/espn.functions";
-import type { LeaguePlayer } from "@/lib/league-players.server";
+import { PlayersIndex } from "@/components/shared/PlayersIndex";
+import { getLeaguePlayers } from "@/lib/shared/espn.functions";
+import type { LeaguePlayer } from "@/lib/shared/league-players.server";
 
 export const Route = createFileRoute("/players/")({
   head: () => ({

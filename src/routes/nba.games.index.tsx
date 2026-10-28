@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { PageTitle, Panel, PanelHeader } from "@/components/booth";
+import { PageTitle, Panel, PanelHeader } from "@/components/shared/booth";
 import { Chip, EmptyPanel, NbaGameCard } from "@/components/nba/NbaBits";
-import { etDayKey, etDayLabel, etShortLabel } from "@/lib/nba";
-import { defaultNbaDay, useNbaModelRows, useNbaSchedule } from "@/lib/use-nba";
+import { etDayKey, etDayLabel, etShortLabel } from "@/lib/nba/nba";
+import { defaultNbaDay, useNbaModelRows, useNbaSchedule } from "@/lib/nba/use-nba";
 
 export const Route = createFileRoute("/nba/games/")({
   head: () => ({

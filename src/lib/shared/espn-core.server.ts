@@ -5,10 +5,10 @@
  * (Split out of the old lib/espn.server.ts; the code is unchanged.)
  */
 
-import { finalLinesStore } from "@/lib/final-cache.server";
-import type { Game, TeamGameStats } from "@/data/games";
-import { registerTeams, teamByAbbr, teamById, type Team } from "@/data/teams";
-import { rekeyCollegeTeams } from "@/lib/cfb";
+import { finalLinesStore } from "@/lib/shared/final-cache.server";
+import type { Game, TeamGameStats } from "@/data/shared/games";
+import { registerTeams, teamByAbbr, teamById, type Team } from "@/data/shared/teams";
+import { rekeyCollegeTeams } from "@/lib/cfb/cfb";
 
 export const SCOREBOARD = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard";
 export const SUMMARY = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary";

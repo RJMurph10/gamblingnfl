@@ -1,7 +1,7 @@
 /** Player props for one NHL game: DraftKings lines vs. the model, plus per-game projections for both rosters. */
 import { useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Panel, PanelHeader } from "@/components/booth";
+import { Panel, PanelHeader } from "@/components/shared/booth";
 import { Chip, NhlLogo } from "@/components/nhl/NhlBits";
 import {
   americanText,
@@ -12,9 +12,9 @@ import {
   type NhlPlayer,
   type NhlPropOffer,
   type NhlPropStat,
-} from "@/lib/nhl";
-import { evaluateAtLeastOne, evaluateProp, leagueRates, projectRate, type RateTable } from "@/lib/nhl-props";
-import { useNhlGameProps, useNhlPlayerIndex } from "@/lib/use-nhl";
+} from "@/lib/nhl/nhl";
+import { evaluateAtLeastOne, evaluateProp, leagueRates, projectRate, type RateTable } from "@/lib/nhl/nhl-props";
+import { useNhlGameProps, useNhlPlayerIndex } from "@/lib/nhl/use-nhl";
 
 const STATS: NhlPropStat[] = ["goals", "assists", "points", "sog", "saves"];
 const pct = (p: number, d = 0) => `${(p * 100).toFixed(d)}%`;

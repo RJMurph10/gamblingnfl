@@ -1,13 +1,13 @@
 import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { PageTitle, Panel, PanelHeader, RankedLogo } from "@/components/booth";
-import { CfbScopePicker } from "@/components/CfbScope";
-import { GamePropAnalysis } from "@/components/GamePropAnalysis";
-import type { Game } from "@/data/games";
-import { teamById } from "@/data/teams";
-import { teamShort } from "@/lib/league-links";
-import { buildSlateDays, defaultSlateDay, pickSlateWeek } from "@/lib/prop-slate";
-import { scopeGames, useCfbConferences, useCfbSchedule, type CfbScope } from "@/lib/use-cfb";
+import { PageTitle, Panel, PanelHeader, RankedLogo } from "@/components/shared/booth";
+import { CfbScopePicker } from "@/components/cfb/CfbScope";
+import { GamePropAnalysis } from "@/components/shared/GamePropAnalysis";
+import type { Game } from "@/data/shared/games";
+import { teamById } from "@/data/shared/teams";
+import { teamShort } from "@/lib/shared/league-links";
+import { buildSlateDays, defaultSlateDay, pickSlateWeek } from "@/lib/shared/prop-slate";
+import { scopeGames, useCfbConferences, useCfbSchedule, type CfbScope } from "@/lib/cfb/use-cfb";
 
 export const Route = createFileRoute("/cfb/props")({
   head: () => ({

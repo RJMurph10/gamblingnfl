@@ -1,11 +1,11 @@
 import { useMemo } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { PageTitle, Panel, PanelHeader, StatCard } from "@/components/booth";
+import { PageTitle, Panel, PanelHeader, StatCard } from "@/components/shared/booth";
 import { NbaLogo } from "@/components/nba/NbaBits";
 import { NbaLivePanel, NbaRecentGames, NbaUpcomingGames } from "@/components/nba/NbaTables";
-import { hasScore, isRatedGame } from "@/lib/nba";
-import { summarizeNba, unitsText } from "@/lib/nba-model";
-import { useNbaModelRows, useNbaPlayerIndex, useNbaSchedule, useNbaStandings, useNbaTeams } from "@/lib/use-nba";
+import { hasScore, isRatedGame } from "@/lib/nba/nba";
+import { summarizeNba, unitsText } from "@/lib/nba/nba-model";
+import { useNbaModelRows, useNbaPlayerIndex, useNbaSchedule, useNbaStandings, useNbaTeams } from "@/lib/nba/use-nba";
 
 export const Route = createFileRoute("/nba/")({
   head: () => ({

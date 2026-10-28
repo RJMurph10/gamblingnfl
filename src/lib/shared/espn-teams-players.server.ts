@@ -5,10 +5,10 @@
  * (Split out of the old lib/espn.server.ts; the code is unchanged.)
  */
 
-import { nflverseGameYac } from "@/lib/nflverse-yac.server";
-import type { TeamGameStats } from "@/data/games";
-import { gameScore } from "@/data/games";
-import { teamByAbbr, teamById, teams } from "@/data/teams";
+import { nflverseGameYac } from "@/lib/nfl/nflverse-yac.server";
+import type { TeamGameStats } from "@/data/shared/games";
+import { gameScore } from "@/data/shared/games";
+import { teamByAbbr, teamById, teams } from "@/data/shared/teams";
 import { type FeedLeague, ROSTER_CACHE_TTL_MS, SEASON, cached, fetchJson, teamOf } from "@/lib/shared/espn-core.server";
 import { fetchGameDetail, parsePair } from "@/lib/shared/espn-game-detail.server";
 import { fetchSummaryFor, scheduleForTeam, teamFeed, teamForKey } from "@/lib/cfb/cfb-espn.server";

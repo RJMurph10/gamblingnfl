@@ -1,10 +1,10 @@
 import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { PageTitle, Panel, PanelHeader } from "@/components/booth";
+import { PageTitle, Panel, PanelHeader } from "@/components/shared/booth";
 import { NhlEmpty } from "@/components/nhl/NhlBits";
 import { NhlGameTable } from "@/components/nhl/NhlTables";
-import { hasScore } from "@/lib/nhl";
-import { useNhlSchedule } from "@/lib/use-nhl";
+import { hasScore } from "@/lib/nhl/nhl";
+import { useNhlSchedule } from "@/lib/nhl/use-nhl";
 
 export const Route = createFileRoute("/nhl/games/")({
   head: () => ({

@@ -1,9 +1,9 @@
 /** The NHL slate: day tabs, a compact card per game, and the selected game's model-vs-market analysis. */
 import { useMemo, useState, type ReactNode } from "react";
-import { Panel, PanelHeader } from "@/components/booth";
+import { Panel, PanelHeader } from "@/components/shared/booth";
 import { NhlEmpty, NhlLogo } from "@/components/nhl/NhlBits";
 import { NhlGameBoard } from "@/components/nhl/NhlGameBoard";
-import { defaultNhlDay, etDayKey, localTip, slateDays, statusText, type NhlGame } from "@/lib/nhl";
+import { defaultNhlDay, etDayKey, localTip, slateDays, statusText, type NhlGame } from "@/lib/nhl/nhl";
 
 /** "MON, OCT 26 · 9 GAMES" (Eastern-time day). */
 function formatSlateDate(day: string, gameCount: number) {
