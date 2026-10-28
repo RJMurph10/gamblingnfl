@@ -112,8 +112,74 @@ interface SeasonState {
   goals: number;
 }
 
+/**
+ * Per list of games: the regular-season results sorted by Eastern day, one running total, and the totals
+ * already handed out. A state "before day D" adds only the results since the last request.
+ */
+interface SeasonIndex {
+  results: { day: string; home: string; away: string; hg: number; ag: number }[];
+  running: SeasonState;
+  added: number;
+  byCount: Map<number, SeasonState>;
+}
+const seasonIndexMemo = new WeakMap<NhlGame[], SeasonIndex>();
+
+const emptyState = (): SeasonState => ({ teams: new Map(), games: 0, goals: 0 });
+
 /** Regular-season finals on Eastern days strictly before `beforeDay` (all finals when null). */
-function seasonState(games: NhlGame[], beforeDay: string | null): SeasonState {
+export function seasonState(games: NhlGame[], beforeDay: string | null): SeasonState {
+  let index = seasonIndexMemo.get(games);
+  if (!index) {
+    const results: SeasonIndex["results"] = [];
+    for (const g of games) {
+      if (g.part !== "reg") continue;
+      const r = regulationGoals(g);
+      if (!r) continue;
+      results.push({ day: etDayKey(g.date), home: canonAbbr(g.home.team.abbr), away: canonAbbr(g.away.team.abbr), hg: r.home, ag: r.away });
+    }
+    results.sort((x, y) => (x.day < y.day ? -1 : x.day > y.day ? 1 : 0));
+    index = { results, running: emptyState(), added: 0, byCount: new Map() };
+    seasonIndexMemo.set(games, index);
+  }
+  const { results } = index;
+  let count = results.length;
+  if (beforeDay !== null) {
+    let lo = 0;
+    let hi = results.length;
+    while (lo < hi) {
+      const mid = (lo + hi) >> 1;
+      if (results[mid].day < beforeDay) lo = mid + 1;
+      else hi = mid;
+    }
+    count = lo;
+  }
+  const hit = index.byCount.get(count);
+  if (hit) return hit;
+  if (index.added > count) {
+    index.running = emptyState();
+    index.added = 0;
+  }
+  const run = index.running;
+  while (index.added < count) {
+    const r = results[index.added++];
+    run.games++;
+    run.goals += r.hg + r.ag;
+    for (const [abbr, gf, ga] of [
+      [r.home, r.hg, r.ag],
+      [r.away, r.ag, r.hg],
+    ] as const) {
+      const t = run.teams.get(abbr) ?? { gp: 0, gf: 0, ga: 0 };
+      run.teams.set(abbr, { gp: t.gp + 1, gf: t.gf + gf, ga: t.ga + ga });
+    }
+  }
+  // a snapshot (team entries are replaced, never changed, so a shallow copy is safe)
+  const state: SeasonState = { teams: new Map(run.teams), games: run.games, goals: run.goals };
+  index.byCount.set(count, state);
+  return state;
+}
+
+/** The original one-pass version (kept to check the fast one in tests). */
+export function computeSeasonState(games: NhlGame[], beforeDay: string | null): SeasonState {
   const teams = new Map<string, TeamState>();
   let n = 0;
   let goals = 0;
@@ -142,13 +208,31 @@ const DAY = 86_400_000;
 const dayNum = (key: string) => Date.UTC(+key.slice(0, 4), +key.slice(5, 7) - 1, +key.slice(8, 10)) / DAY;
 
 /** Days off before this game (0 = back-to-back), capped at 4; 4 for a team's first game. */
+/** Each team's regular-season game days, per list of games (built once instead of scanning every game). */
+const teamDaysMemo = new WeakMap<NhlGame[], Map<string, { id: string; day: string }[]>>();
+
+function teamDays(games: NhlGame[]): Map<string, { id: string; day: string }[]> {
+  let index = teamDaysMemo.get(games);
+  if (index) return index;
+  index = new Map();
+  for (const g of games) {
+    if (g.part !== "reg" || g.status === "postponed") continue;
+    const day = etDayKey(g.date);
+    for (const abbr of new Set([canonAbbr(g.home.team.abbr), canonAbbr(g.away.team.abbr)])) {
+      const list = index.get(abbr) ?? [];
+      list.push({ id: g.id, day });
+      index.set(abbr, list);
+    }
+  }
+  teamDaysMemo.set(games, index);
+  return index;
+}
+
 export function restDays(games: NhlGame[], game: NhlGame, abbr: string): number {
   const today = etDayKey(game.date);
   let last: string | null = null;
-  for (const g of games) {
-    if (g.part !== "reg" || g.id === game.id || g.status === "postponed") continue;
-    if (canonAbbr(g.home.team.abbr) !== abbr && canonAbbr(g.away.team.abbr) !== abbr) continue;
-    const d = etDayKey(g.date);
+  for (const { id, day: d } of teamDays(games).get(abbr) ?? []) {
+    if (id === game.id) continue;
     if (d < today && (last === null || d > last)) last = d;
   }
   if (last === null) return 4;
@@ -189,6 +273,23 @@ export type NhlV2Projection = NhlProjection & {
  * The features for one game. `current` false: this season's shots and goalie numbers are left out (the
  * inputs then only say who each team's expected starter is; his earlier seasons are used).
  */
+const goalieTotalsMemo = new WeakMap<NhlModelParams, [number, number]>();
+/** League saves and shots over every goalie's history (the same for every game, so added up once). */
+function goalieHistoryTotals(P: NhlModelParams): [number, number] {
+  let totals = goalieTotalsMemo.get(P);
+  if (!totals) {
+    let saves = 0;
+    let shots = 0;
+    for (const [sv, sh] of Object.values(P.goalies)) {
+      saves += sv;
+      shots += sh;
+    }
+    totals = [saves, shots];
+    goalieTotalsMemo.set(P, totals);
+  }
+  return [...totals] as [number, number];
+}
+
 export function featuresFor(
   game: NhlGame,
   games: NhlGame[],
@@ -217,12 +318,7 @@ export function featuresFor(
   const sogNow = useShots ? lgSogF / lgGp : P.league.sogPerGame;
 
   // goalies: league save % from history (+ this season when given)
-  let lgSaves = 0;
-  let lgShots = 0;
-  for (const [sv, sh] of Object.values(P.goalies)) {
-    lgSaves += sv;
-    lgShots += sh;
-  }
+  let [lgSaves, lgShots] = goalieHistoryTotals(P);
   if (current) {
     for (const g of inputs?.goalies ?? []) {
       lgSaves += g.saves;
@@ -319,6 +415,37 @@ export function projectGameV2(
 ): NhlV2Projection | NhlUnavailable {
   if (game.part !== "reg" && game.part !== "post") return { ok: false, reason: "Preseason games are not projected." };
   const pregame = opts.pregameOnly || game.status !== "scheduled";
+  // Each page projects the same games several times (picks table, season cards, a week ago): remember them.
+  if (P !== NHL_MODEL_PARAMS) return computeProjectionV2(game, games, inputs, pregame, P);
+  let byInputs = projectionMemo.get(games);
+  if (!byInputs) {
+    byInputs = new WeakMap();
+    projectionMemo.set(games, byInputs);
+  }
+  const inputsKey = inputs ?? NO_INPUTS;
+  let byGame = byInputs.get(inputsKey);
+  if (!byGame) {
+    byGame = new Map();
+    byInputs.set(inputsKey, byGame);
+  }
+  const key = `${game.id}|${game.date}|${game.status}|${pregame}`;
+  const hit = byGame.get(key);
+  if (hit) return hit;
+  const result = computeProjectionV2(game, games, inputs, pregame, P);
+  byGame.set(key, result);
+  return result;
+}
+
+const projectionMemo = new WeakMap<NhlGame[], WeakMap<object, Map<string, NhlV2Projection | NhlUnavailable>>>();
+const NO_INPUTS = {};
+
+function computeProjectionV2(
+  game: NhlGame,
+  games: NhlGame[],
+  inputs: NhlModelInputs | null,
+  pregame: boolean,
+  P: NhlModelParams,
+): NhlV2Projection | NhlUnavailable {
   const f = featuresFor(game, games, inputs, !pregame, P);
   const { home, away } = meansFromFeatures(f, P);
   if (!(home > 0 && away > 0)) return { ok: false, reason: "The model could not compute this game." };
