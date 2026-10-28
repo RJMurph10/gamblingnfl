@@ -100,10 +100,20 @@ const ET_DAY_KEY = new Intl.DateTimeFormat("en-CA", {
 
 /** "2026-10-24" in Eastern time (the NHL's scheduling day). Empty for an invalid date. */
 export function etDayKey(iso: string | Date): string {
+  // Called for every game many times over by the model; formatting a date is slow, so remember it.
+  if (typeof iso === "string") {
+    const hit = dayKeyCache.get(iso);
+    if (hit !== undefined) return hit;
+  }
   const d = typeof iso === "string" ? new Date(iso) : iso;
-  if (Number.isNaN(d.getTime())) return "";
-  return ET_DAY_KEY.format(d);
+  const key = Number.isNaN(d.getTime()) ? "" : ET_DAY_KEY.format(d);
+  if (typeof iso === "string") {
+    if (dayKeyCache.size > 20_000) dayKeyCache.clear();
+    dayKeyCache.set(iso, key);
+  }
+  return key;
 }
+const dayKeyCache = new Map<string, string>();
 
 /** Puck drop in the viewer's own time zone, e.g. "7:30 PM". */
 export function localTip(iso: string): string {
