@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { PageTitle, Panel, PanelHeader } from "@/components/booth";
-import { getNhlOddsRows, getNhlSeasonEvents } from "@/lib/nhl-odds-history.functions";
+import { getNhlOddsRows, getNhlWeekEvents } from "@/lib/nhl-odds-history.functions";
 import { NHL_ODDS_COLUMNS, type NhlOddsRow, type NhlPastGame } from "@/lib/nhl-odds-history";
 
 export const Route = createFileRoute("/nhl/odds-export")({
@@ -45,19 +45,37 @@ function NhlOddsExportPage() {
   const filled = (r: NhlOddsRow) => Boolean(r.mlHomeOpen && r.mlHomeClose);
   const withOpen = rows.filter(filled).length;
 
-  async function events(): Promise<NhlPastGame[]> {
-    setStatus(`Listing ${label(season)} games…`);
-    const games = await getNhlSeasonEvents({ data: { season } });
-    if (!games.length) throw new Error("ESPN returned no finished games for that season.");
-    return games;
+  /** Walks the season a week at a time (Sep 25 to Jun 30). `stopAfter` ends early once that many games are found. */
+  async function events(stopAfter = Infinity): Promise<NhlPastGame[]> {
+    const pad = (n: number) => String(n).padStart(2, "0");
+    const all = new Map<string, NhlPastGame>();
+    const errs: string[] = [];
+    const end = new Date(season + 1, 5, 30);
+    for (let d = new Date(season, 8, 25); d <= end && !stop.current; d = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 7)) {
+      const start = `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}`;
+      setStatus(`Listing ${label(season)} games… week of ${start} · ${all.size} found`);
+      try {
+        const res = await getNhlWeekEvents({ data: { start } });
+        res.games.forEach((g) => all.set(g.id, g));
+        errs.push(...res.errors);
+      } catch (err) {
+        errs.push(`${start}: ${err instanceof Error ? err.message : String(err)}`);
+      }
+      if (all.size >= stopAfter) break;
+    }
+    if (!all.size) {
+      throw new Error(`ESPN returned no finished games for that season.${errs.length ? ` First errors: ${errs.slice(0, 3).join(" | ")}` : ""}`);
+    }
+    return [...all.values()].sort((a, b) => a.date.localeCompare(b.date));
   }
 
   async function testOne() {
     setRunning(true);
     setSample(null);
     try {
-      const games = await events();
-      const pick = games[Math.floor(games.length / 2)];
+      stop.current = false;
+      const games = await events(40);
+      const pick = games[games.length - 1];
       setStatus(`Reading lines for ${pick.away} @ ${pick.home} (${pick.date.slice(0, 10)})…`);
       const res = await getNhlOddsRows({ data: { games: [pick], withRaw: true } });
       setSample({ rows: res.rows, raw: res.raw });
