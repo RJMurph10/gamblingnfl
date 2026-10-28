@@ -9,18 +9,11 @@
 
 import { gameScore } from "@/data/games";
 import { isCollegeId, registeredCollegeTeams, teams, teamByAbbr, teamById } from "@/data/teams";
-import {
-  CURRENT_SEASON,
-  fetchCfbGameProjections,
-  fetchCfbSchedule,
-  fetchFbsConferences,
-  fetchPriorSeasonResults,
-  fetchPropAvailability,
-  fetchSchedule,
-  fetchSummaryFor,
-  fetchTeamRoster,
-  teamOf,
-} from "./espn.server";
+import { CURRENT_SEASON, teamOf } from "@/lib/shared/espn-core.server";
+import { fetchPriorSeasonResults, fetchSchedule } from "@/lib/nfl/nfl-schedule.server";
+import { fetchTeamRoster } from "@/lib/shared/espn-teams-players.server";
+import { fetchPropAvailability } from "@/lib/shared/espn-props.server";
+import { fetchCfbGameProjections, fetchCfbSchedule, fetchFbsConferences, fetchSummaryFor } from "@/lib/cfb/cfb-espn.server";
 import type { ProjStat } from "./cfb-projections";
 import { nflverseGameYac } from "./nflverse-yac.server";
 import {

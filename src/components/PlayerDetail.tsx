@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Panel, PanelHeader, StatCard, TeamLogo, TeamMark } from "@/components/booth";
 import { getPlayerGameLog, getPlayerProfile } from "@/lib/espn.functions";
-import type { PlayerProfile } from "@/lib/espn.server";
+import type { PlayerProfile } from "@/lib/shared/espn-teams-players.server";
 import type { PlayerGameLogEntry } from "@/lib/league-players.server";
 import { teamById } from "@/data/teams";
 import { getCfbPlayerGameLog } from "@/lib/cfb.functions";

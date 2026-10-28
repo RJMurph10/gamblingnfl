@@ -4,7 +4,7 @@
  * (github.com/nflverse/nfldata and nflverse-data), at most once an hour.
  */
 
-import { CURRENT_SEASON } from "./espn.server";
+import { CURRENT_SEASON } from "@/lib/shared/espn-core.server";
 import { QB_STARTS, type QbStartRow } from "@/data/qb-starts";
 import type { HistoryGame, UpcomingStarters } from "./model-history";
 

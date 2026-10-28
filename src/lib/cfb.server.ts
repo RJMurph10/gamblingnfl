@@ -14,16 +14,8 @@ import {
   type CfbTeamRef,
   type CfbWeek,
 } from "./cfb";
-import {
-  CURRENT_SEASON,
-  fetchCfbCalendar,
-  fetchCfbSchedule,
-  fetchCfbPriorSeasonResults,
-  fetchCfbGameProjections,
-  fetchCollegePlayerGameLog,
-  fetchConferenceTeamOverviewStats,
-  fetchFbsConferences,
-} from "./espn.server";
+import { CURRENT_SEASON } from "@/lib/shared/espn-core.server";
+import { fetchCfbCalendar, fetchCfbSchedule, fetchCfbPriorSeasonResults, fetchCfbGameProjections, fetchCollegePlayerGameLog, fetchConferenceTeamOverviewStats, fetchFbsConferences } from "@/lib/cfb/cfb-espn.server";
 
 export {
   fetchCfbGameProjections,

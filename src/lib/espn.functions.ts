@@ -1,20 +1,9 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import {
-  fetchGameDetail,
-  fetchGameProps,
-  fetchPropPeople,
-  fetchSchedule,
-  fetchTeamDepthChart,
-  fetchTeamRosterForPage,
-  fetchTeamSeasonStats,
-  fetchTeamOverviewStats,
-  fetchTeamSeasonAverages,
-  fetchLeagueTeamOverviewStats,
-  fetchPlayerProfile,
-  fetchPriorSeasonResults,
-  fetchPropAvailability,
-} from "./espn.server";
+import { fetchSchedule, fetchPriorSeasonResults } from "@/lib/nfl/nfl-schedule.server";
+import { fetchGameDetail } from "@/lib/shared/espn-game-detail.server";
+import { fetchTeamDepthChart, fetchTeamRosterForPage, fetchTeamSeasonStats, fetchTeamOverviewStats, fetchTeamSeasonAverages, fetchLeagueTeamOverviewStats, fetchPlayerProfile } from "@/lib/shared/espn-teams-players.server";
+import { fetchGameProps, fetchPropPeople, fetchPropAvailability } from "@/lib/shared/espn-props.server";
 import {
   fetchGamePropAnalytics,
   fetchGamePropProjections,

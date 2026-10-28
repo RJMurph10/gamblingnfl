@@ -24,7 +24,7 @@ import {
   getTeamOverviewStats,
   getLeagueTeamOverviewStats,
 } from "@/lib/espn.functions";
-import type { DepthChartEntry, LiveRosterPlayer, TeamSeasonStatRow, TeamOverviewStats } from "@/lib/espn.server";
+import type { DepthChartEntry, LiveRosterPlayer, TeamSeasonStatRow, TeamOverviewStats } from "@/lib/shared/espn-teams-players.server";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 /**
