@@ -1,4 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useQueryPersistence } from "@/lib/query-persist";
+import { prefetchForSsr, rememberTimeZone } from "@/lib/ssr-prefetch";
 import {
   Outlet,
   Link,
@@ -248,6 +250,9 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
 }
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
+  // On the server, load the page's games so they arrive inside the page (lib/ssr-prefetch.ts).
+  // In the browser this returns at once, so clicking between pages never waits on it.
+  loader: ({ context, location }) => prefetchForSsr(context.queryClient, location.pathname),
   head: () => ({
     meta: [
       { charSet: "utf-8" },
@@ -298,12 +303,20 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
+/** Saved schedules from the last visit show instantly, then refresh (see query-persist.ts). */
+function QueryPersistence({ client }: { client: QueryClient }) {
+  useQueryPersistence(client);
+  useEffect(() => rememberTimeZone(), []);
+  return null;
+}
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   return (
     <QueryClientProvider client={queryClient}>
+      <QueryPersistence client={queryClient} />
       <div
         data-league={leagueFromPath(pathname).id}
         className="relative z-10 flex min-h-screen flex-col font-body text-ink"
