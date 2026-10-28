@@ -18,6 +18,7 @@ import {
   type NhlStatus,
   type NhlTeamRef,
 } from "./nhl";
+import { finalCached, finalLinesStore } from "./final-cache.server";
 import { athleteIdOf, findPropPrice, priceToAmerican } from "./props.parse";
 
 const SITE = "https://site.api.espn.com/apis/site/v2/sports/hockey/nhl";
@@ -271,7 +272,16 @@ function fetchDay(day: Date, now: Date): Promise<NhlGame[]> {
 }
 
 /** A span of days: one range request, falling back to day-by-day when ESPN rejects the range form. */
+const allFinal = (games: NhlGame[]) => games.length > 0 && games.every((g) => g.status === "final" || g.status === "postponed");
+
 function fetchRange(from: Date, to: Date, ttl: number): Promise<NhlGame[]> {
+  const range = `${ymd(from)}-${ymd(to)}`;
+  // A range that ended two+ days ago with every game final never changes: keep it long-term.
+  if (to.getTime() < Date.now() - 2 * DAY) return finalCached(`nhl-range-${range}`, () => loadRange(from, to, ttl), allFinal);
+  return loadRange(from, to, ttl);
+}
+
+function loadRange(from: Date, to: Date, ttl: number): Promise<NhlGame[]> {
   const range = `${ymd(from)}-${ymd(to)}`;
   return cached(`range-${range}`, ttl, async () => {
     try {
@@ -354,9 +364,13 @@ async function withLines(games: NhlGame[]): Promise<NhlGame[]> {
     const hit = backfill.get(g.id);
     return Boolean(hit && Date.now() - hit.at < backfillTtl(g, hit.odds));
   };
+  // Lines of finished games never change: read them from the long-term store first.
+  const finals = todo.filter((g) => g.status === "final");
+  const stored = finals.length ? await finalLines.get(finals) : new Map<string, NhlOdds>();
+  const rest = todo.filter((g) => !stored.has(g.id));
   // Cached answers are free; only a bounded number of new lookups run per refresh.
-  const lookups = [...todo.filter(fresh), ...todo.filter((g) => !fresh(g)).slice(0, 60)];
-  const found = new Map<string, NhlOdds>();
+  const lookups = [...rest.filter(fresh), ...rest.filter((g) => !fresh(g)).slice(0, 60)];
+  const found = new Map<string, NhlOdds>(stored);
   let next = 0;
   await Promise.all(
     Array.from({ length: 8 }, async () => {
@@ -367,11 +381,17 @@ async function withLines(games: NhlGame[]): Promise<NhlGame[]> {
       }
     }),
   );
+  const newFinals = lookups
+    .filter((g) => g.status === "final" && found.has(g.id) && hasAllLines(found.get(g.id)))
+    .map((g) => ({ id: g.id, date: g.date, odds: found.get(g.id) as NhlOdds }));
+  if (newFinals.length) await finalLines.save(newFinals);
   return games.map((g) => {
     const extra = found.get(g.id);
     return extra ? { ...g, odds: mergeOdds(g.odds, extra) } : g;
   });
 }
+
+const finalLines = finalLinesStore<NhlOdds>("nhl");
 
 /**
  * The season so far plus the next two weeks, with lines. Finished ranges are cached for an hour,
