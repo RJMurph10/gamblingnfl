@@ -1,7 +1,7 @@
 /** Small shared pieces for the NHL page: team logo and the empty / message panel. */
 import { useState, type ReactNode } from "react";
-import { Panel } from "@/components/booth";
-import { nhlLogoFor, type NhlTeamRef } from "@/lib/nhl";
+import { Panel } from "@/components/shared/booth";
+import { nhlLogoFor, type NhlTeamRef } from "@/lib/nhl/nhl";
 
 export function NhlLogo({
   team,

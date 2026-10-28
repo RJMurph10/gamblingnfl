@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { classifyNhlProp, statsFromEntry } from "@/lib/nhl.server";
+import { classifyNhlProp, statsFromEntry } from "@/lib/nhl/nhl.server";
 
 // ESPN-shaped fixtures (written from the feed's known structure; not a live capture).
 const defs = [

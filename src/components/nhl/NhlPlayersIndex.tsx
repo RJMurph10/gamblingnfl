@@ -1,10 +1,10 @@
 /** Searchable NHL player table with season totals (skater and goalie columns). */
 import { useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { PageTitle, Panel, PanelHeader } from "@/components/booth";
+import { PageTitle, Panel, PanelHeader } from "@/components/shared/booth";
 import { Chip, NhlLogo } from "@/components/nhl/NhlBits";
-import { nhlHeadshot, posGroup, teamsFromGames, type NhlPlayer, type NhlPlayerStats } from "@/lib/nhl";
-import { useNhlPlayerIndex, useNhlSchedule } from "@/lib/use-nhl";
+import { nhlHeadshot, posGroup, teamsFromGames, type NhlPlayer, type NhlPlayerStats } from "@/lib/nhl/nhl";
+import { useNhlPlayerIndex, useNhlSchedule } from "@/lib/nhl/use-nhl";
 
 type Group = "ALL" | "F" | "D" | "G";
 const GROUPS: { id: Group; label: string }[] = [

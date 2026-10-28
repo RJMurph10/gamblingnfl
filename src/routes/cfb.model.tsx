@@ -1,10 +1,10 @@
 import { useMemo } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { Panel } from "@/components/booth";
-import { CfbLab } from "@/components/CfbLab";
-import { CfbWatchList } from "@/components/CfbWatchList";
-import { ModelBoard, type TrackSeason } from "@/components/ModelBoard";
-import { CFB_HISTORY } from "@/data/cfb-best-bets-history";
+import { Panel } from "@/components/shared/booth";
+import { CfbLab } from "@/components/cfb/CfbLab";
+import { CfbWatchList } from "@/components/cfb/CfbWatchList";
+import { ModelBoard, type TrackSeason } from "@/components/shared/ModelBoard";
+import { CFB_HISTORY } from "@/data/cfb/cfb-best-bets-history";
 import {
   CFB_RULES,
   addRecords,
@@ -12,9 +12,9 @@ import {
   recordText,
   runCfbModel,
   type CfbRecord,
-} from "@/lib/cfb-model";
-import { MODEL_SETTINGS, summarizeModel, unitsText, type MarketRecord } from "@/lib/game-model";
-import { useCfbPriorSeason, useCfbSchedule } from "@/lib/use-cfb";
+} from "@/lib/cfb/cfb-model";
+import { MODEL_SETTINGS, summarizeModel, unitsText, type MarketRecord } from "@/lib/shared/game-model";
+import { useCfbPriorSeason, useCfbSchedule } from "@/lib/cfb/use-cfb";
 
 export const Route = createFileRoute("/cfb/model")({
   head: () => ({

@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PageTitle } from "@/components/booth";
+import { PageTitle } from "@/components/shared/booth";
 import { NhlPropsBoard } from "@/components/nhl/NhlPropsBoard";
 import { NhlSlate } from "@/components/nhl/NhlSlate";
-import { useNhlSchedule } from "@/lib/use-nhl";
+import { useNhlSchedule } from "@/lib/nhl/use-nhl";
 
 export const Route = createFileRoute("/nhl/props")({
   validateSearch: (search: Record<string, unknown>): { game?: string } => ({

@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useQueryPersistence } from "@/lib/query-persist";
-import { prefetchForSsr, rememberTimeZone } from "@/lib/ssr-prefetch";
+import { useQueryPersistence } from "@/lib/shared/query-persist";
+import { prefetchForSsr, rememberTimeZone } from "@/lib/shared/ssr-prefetch";
 import {
   Outlet,
   Link,
@@ -15,7 +15,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
-import { LEAGUES, leagueFromPath, switchLeaguePath, type League } from "../lib/leagues";
+import { LEAGUES, leagueFromPath, switchLeaguePath, type League } from "../lib/shared/leagues";
 
 const nflNav = [
   { to: "/", label: "Dashboard" },
@@ -250,7 +250,7 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
 }
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
-  // On the server, load the page's games so they arrive inside the page (lib/ssr-prefetch.ts).
+  // On the server, load the page's games so they arrive inside the page (lib/shared/ssr-prefetch.ts).
   // In the browser this returns at once, so clicking between pages never waits on it.
   loader: ({ context, location }) => prefetchForSsr(context.queryClient, location.pathname),
   head: () => ({
@@ -303,7 +303,7 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
-/** Saved schedules from the last visit show instantly, then refresh (see query-persist.ts). */
+/** Saved schedules from the last visit show instantly, then refresh (see lib/shared/query-persist.ts). */
 function QueryPersistence({ client }: { client: QueryClient }) {
   useQueryPersistence(client);
   useEffect(() => rememberTimeZone(), []);

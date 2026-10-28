@@ -5,13 +5,13 @@
  */
 import { useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { PageTitle, Panel, PanelHeader, StatCard } from "@/components/booth";
+import { PageTitle, Panel, PanelHeader, StatCard } from "@/components/shared/booth";
 import { NhlLogo } from "@/components/nhl/NhlBits";
-import { NHL_HISTORY, type NhlHistoryRecord } from "@/data/nhl-history";
-import { NHL_MODEL_PARAMS } from "@/data/nhl-model-params";
-import { etDayKey, etShortLabel, localTip, type NhlGame } from "@/lib/nhl";
-import { projectGame, unitsText } from "@/lib/nhl-model";
-import { compareNhlModels, espnSeasonYear, TRACK_EDGE, type NhlModelInputs } from "@/lib/nhl-model-v2";
+import { NHL_HISTORY, type NhlHistoryRecord } from "@/data/nhl/nhl-history";
+import { NHL_MODEL_PARAMS } from "@/data/nhl/nhl-model-params";
+import { etDayKey, etShortLabel, localTip, type NhlGame } from "@/lib/nhl/nhl";
+import { projectGame, unitsText } from "@/lib/nhl/nhl-model";
+import { compareNhlModels, espnSeasonYear, TRACK_EDGE, type NhlModelInputs } from "@/lib/nhl/nhl-model-v2";
 import {
   buildNhlPickRows,
   NHL_WATCH_RULES,
@@ -21,7 +21,7 @@ import {
   type NhlPick,
   type NhlPickRow,
   type NhlRecordU,
-} from "@/lib/nhl-picks";
+} from "@/lib/nhl/nhl-picks";
 
 const MARKET_LABEL: Record<NhlMarket, string> = { moneyline: "Moneyline", puckLine: "Puck line", total: "Total" };
 const oddsText = (o: number | null) => (o === null ? "—" : o > 0 ? `+${o}` : String(o));

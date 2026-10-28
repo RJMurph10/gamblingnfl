@@ -1,10 +1,10 @@
 /** Searchable NBA player table with per-game averages. */
 import { useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { PageTitle, Panel, PanelHeader } from "@/components/booth";
+import { PageTitle, Panel, PanelHeader } from "@/components/shared/booth";
 import { Chip, NbaLogo } from "@/components/nba/NbaBits";
-import { nbaHeadshot, type NbaPlayer } from "@/lib/nba";
-import { useNbaPlayerIndex, useNbaTeams } from "@/lib/use-nba";
+import { nbaHeadshot, type NbaPlayer } from "@/lib/nba/nba";
+import { useNbaPlayerIndex, useNbaTeams } from "@/lib/nba/use-nba";
 
 type Group = "ALL" | "G" | "F" | "C";
 const GROUPS: { id: Group; label: string }[] = [

@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { NhlModelBoard } from "@/components/nhl/NhlModelBoard";
-import { useNhlModelInputs, useNhlSchedule } from "@/lib/use-nhl";
+import { useNhlModelInputs, useNhlSchedule } from "@/lib/nhl/use-nhl";
 
 export const Route = createFileRoute("/nhl/model")({
   validateSearch: (search: Record<string, unknown>): { game?: string } => ({

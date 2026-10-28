@@ -1,11 +1,11 @@
 /** The selected NHL game: result/status, the model's projection, market comparison and line movement. */
 import { useMemo } from "react";
-import { Panel, PanelHeader } from "@/components/booth";
+import { Panel, PanelHeader } from "@/components/shared/booth";
 import { NhlLogo } from "@/components/nhl/NhlBits";
-import { americanText, lineText, localTip, statusText, type NhlGame } from "@/lib/nhl";
-import { type NhlMarketRow, type NhlProjection } from "@/lib/nhl-model";
-import { marketRowsV2, projectGameV2, type NhlV2Projection } from "@/lib/nhl-model-v2";
-import { useNhlModelInputs } from "@/lib/use-nhl";
+import { americanText, lineText, localTip, statusText, type NhlGame } from "@/lib/nhl/nhl";
+import { type NhlMarketRow, type NhlProjection } from "@/lib/nhl/nhl-model";
+import { marketRowsV2, projectGameV2, type NhlV2Projection } from "@/lib/nhl/nhl-model-v2";
+import { useNhlModelInputs } from "@/lib/nhl/use-nhl";
 
 const pct = (p: number | null | undefined, digits = 1) =>
   p === null || p === undefined ? "—" : `${(p * 100).toFixed(digits)}%`;

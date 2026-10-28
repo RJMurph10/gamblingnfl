@@ -1,4 +1,4 @@
-"""Regenerate src/data/players.ts from ESPN 2026 box scores.
+"""Regenerate src/data/nfl/players.ts from ESPN 2026 box scores.
 
 Includes every player who recorded at least one statistic in a completed or
 in-progress 2026 regular-season game. Run: python3 python/build_players.py
@@ -16,7 +16,7 @@ def get(url):
         return json.load(r)
 
 
-teams_src = (ROOT / "src/data/teams.ts").read_text()
+teams_src = (ROOT / "src/data/shared/teams.ts").read_text()
 ABBR_TO_ID = {a: i for i, a in re.findall(r'id: "([a-z0-9]+)", abbr: "([A-Z]+)"', teams_src)}
 
 events = []
@@ -108,7 +108,7 @@ for pid, p in players.items():
 rows.sort()
 
 header = (ROOT / "python/players_header.ts").read_text()
-(ROOT / "src/data/players.ts").write_text(header + "\nexport const players: Player[] = [\n" + "\n".join(rows) + "\n];\n" + """
+(ROOT / "src/data/nfl/players.ts").write_text(header + "\nexport const players: Player[] = [\n" + "\n".join(rows) + "\n];\n" + """
 export const playerById = (id: string): Player | undefined => players.find((p) => p.id === id);
 
 export const playersByTeam = (teamId: string): Player[] =>

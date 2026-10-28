@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { GameDetail } from "@/components/GameDetail";
+import { GameDetail } from "@/components/shared/GameDetail";
 
 export const Route = createFileRoute("/cfb/games/$gameId")({
   head: () => ({

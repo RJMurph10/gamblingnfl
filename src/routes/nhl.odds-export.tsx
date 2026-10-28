@@ -1,8 +1,8 @@
 import { useRef, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { PageTitle, Panel, PanelHeader } from "@/components/booth";
-import { getNhlOddsRows, getNhlWeekEvents } from "@/lib/nhl-odds-history.functions";
-import { NHL_ODDS_COLUMNS, type NhlOddsRow, type NhlPastGame } from "@/lib/nhl-odds-history";
+import { PageTitle, Panel, PanelHeader } from "@/components/shared/booth";
+import { getNhlOddsRows, getNhlWeekEvents } from "@/lib/nhl/nhl-odds-history.functions";
+import { NHL_ODDS_COLUMNS, type NhlOddsRow, type NhlPastGame } from "@/lib/nhl/nhl-odds-history";
 
 export const Route = createFileRoute("/nhl/odds-export")({
   head: () => ({

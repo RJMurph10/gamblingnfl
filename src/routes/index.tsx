@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { LiveGamesPanel, RecentGamesPanel, UpcomingGames } from "@/components/GameTables";
+import { LiveGamesPanel, RecentGamesPanel, UpcomingGames } from "@/components/shared/GameTables";
 import {
   PageTitle,
   Panel,
@@ -10,15 +10,15 @@ import {
   StatCard,
   TeamLogo,
   TeamMark,
-} from "@/components/booth";
-import type { Game } from "@/data/games";
-import { players } from "@/data/players";
-import { teams } from "@/data/teams";
-import { getLiveSchedule, getPriorSeasonResults } from "@/lib/espn.functions";
-import { summarizeModel, unitsText } from "@/lib/game-model";
-import { getNflHistory } from "@/lib/history.functions";
-import { readHistory, runModelWithHistory } from "@/lib/model-history";
-import { buildSeasonPulse, changeTone, weekChangeText } from "@/lib/season-pulse";
+} from "@/components/shared/booth";
+import type { Game } from "@/data/shared/games";
+import { players } from "@/data/nfl/players";
+import { teams } from "@/data/shared/teams";
+import { getLiveSchedule, getPriorSeasonResults } from "@/lib/shared/espn.functions";
+import { summarizeModel, unitsText } from "@/lib/shared/game-model";
+import { getNflHistory } from "@/lib/shared/history.functions";
+import { readHistory, runModelWithHistory } from "@/lib/nfl/model-history";
+import { buildSeasonPulse, changeTone, weekChangeText } from "@/lib/shared/season-pulse";
 
 export const Route = createFileRoute("/")({
   head: () => ({

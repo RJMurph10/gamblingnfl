@@ -1,7 +1,7 @@
 /** Small shared pieces for the NBA pages: team marks, game cards and rows, status text. */
 import { useState, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
-import { Panel, PanelHeader } from "@/components/booth";
+import { Panel, PanelHeader } from "@/components/shared/booth";
 import {
   americanText,
   atsResult,
@@ -13,8 +13,8 @@ import {
   spreadText,
   type NbaGame,
   type NbaTeamRef,
-} from "@/lib/nba";
-import type { NbaModelRow } from "@/lib/nba-model";
+} from "@/lib/nba/nba";
+import type { NbaModelRow } from "@/lib/nba/nba-model";
 
 export function NbaLogo({ team, className = "size-6" }: { team: Pick<NbaTeamRef, "abbr" | "logo" | "name">; className?: string }) {
   const [failed, setFailed] = useState(false);

@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { PageTitle, Panel } from "@/components/booth";
-import { TeamDetail } from "@/components/TeamDetail";
-import { teamById } from "@/data/teams";
-import { useCfbConferences, useCfbSchedule } from "@/lib/use-cfb";
+import { PageTitle, Panel } from "@/components/shared/booth";
+import { TeamDetail } from "@/components/shared/TeamDetail";
+import { teamById } from "@/data/shared/teams";
+import { useCfbConferences, useCfbSchedule } from "@/lib/cfb/use-cfb";
 
 export const Route = createFileRoute("/cfb/teams/$teamId")({
   head: () => ({

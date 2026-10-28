@@ -1,7 +1,7 @@
 /** An NBA team's page: season metrics with league ranks, then schedule / roster / player stats tabs. */
 import { useMemo } from "react";
 import { Link } from "@tanstack/react-router";
-import { PageTitle, Panel } from "@/components/booth";
+import { PageTitle, Panel } from "@/components/shared/booth";
 import { NbaLogo, statusText } from "@/components/nba/NbaBits";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -16,9 +16,9 @@ import {
   type NbaPlayer,
   type NbaStandingRow,
   type NbaTeamRef,
-} from "@/lib/nba";
-import { buildRatings, ratingRows } from "@/lib/nba-model";
-import { useNbaPlayerIndex, useNbaPrior, useNbaRoster, useNbaSchedule, useNbaStandings } from "@/lib/use-nba";
+} from "@/lib/nba/nba";
+import { buildRatings, ratingRows } from "@/lib/nba/nba-model";
+import { useNbaPlayerIndex, useNbaPrior, useNbaRoster, useNbaSchedule, useNbaStandings } from "@/lib/nba/use-nba";
 
 const tabClass =
   "rounded-none border-b-2 border-transparent px-5 py-3 data-[state=active]:border-acc data-[state=active]:bg-transparent";

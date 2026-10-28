@@ -1,7 +1,7 @@
 /** NHL game tables (live, upcoming by day, recent, all games): same layout as the NFL/NBA ones. */
 import { useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Panel, PanelHeader } from "@/components/booth";
+import { Panel, PanelHeader } from "@/components/shared/booth";
 import { NhlLogo } from "@/components/nhl/NhlBits";
 import {
   americanText,
@@ -14,7 +14,7 @@ import {
   shortDate,
   statusText,
   type NhlGame,
-} from "@/lib/nhl";
+} from "@/lib/nhl/nhl";
 
 /**
  * Moneyline / puck line / total colouring, the same rules as the NFL tables: neutral until a game

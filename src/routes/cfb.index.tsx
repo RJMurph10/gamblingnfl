@@ -1,12 +1,12 @@
 import { useMemo } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { PageTitle, Panel, StatCard, TeamLogo } from "@/components/booth";
-import { LiveGamesPanel, RecentGamesPanel, UpcomingGames } from "@/components/GameTables";
-import type { Game } from "@/data/games";
-import { runCfbModel } from "@/lib/cfb-model";
-import { summarizeModel, unitsText } from "@/lib/game-model";
-import { buildSeasonPulse, changeTone, weekChangeText } from "@/lib/season-pulse";
-import { useCfbPriorSeason, useCfbSchedule, useCfbTop25 } from "@/lib/use-cfb";
+import { PageTitle, Panel, StatCard, TeamLogo } from "@/components/shared/booth";
+import { LiveGamesPanel, RecentGamesPanel, UpcomingGames } from "@/components/shared/GameTables";
+import type { Game } from "@/data/shared/games";
+import { runCfbModel } from "@/lib/cfb/cfb-model";
+import { summarizeModel, unitsText } from "@/lib/shared/game-model";
+import { buildSeasonPulse, changeTone, weekChangeText } from "@/lib/shared/season-pulse";
+import { useCfbPriorSeason, useCfbSchedule, useCfbTop25 } from "@/lib/cfb/use-cfb";
 
 export const Route = createFileRoute("/cfb/")({
   head: () => ({

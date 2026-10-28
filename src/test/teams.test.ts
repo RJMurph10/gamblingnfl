@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { divisions, teams } from "@/data/teams";
+import { divisions, teams } from "@/data/shared/teams";
 
 describe("NFL team reference data", () => {
   it("covers all 32 franchises", () => {

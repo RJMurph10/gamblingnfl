@@ -1,14 +1,14 @@
 import { useMemo } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Panel } from "@/components/booth";
-import { ModelBoard } from "@/components/ModelBoard";
-import type { Game } from "@/data/games";
-import { getLiveSchedule, getPriorSeasonResults } from "@/lib/espn.functions";
-import { MODEL_SETTINGS } from "@/lib/game-model";
-import { getNflHistory } from "@/lib/history.functions";
-import { useKickoffForecasts, WatchList } from "@/components/WatchList";
-import { pastSeasonRuns, readHistory, runModelWithHistory } from "@/lib/model-history";
+import { Panel } from "@/components/shared/booth";
+import { ModelBoard } from "@/components/shared/ModelBoard";
+import type { Game } from "@/data/shared/games";
+import { getLiveSchedule, getPriorSeasonResults } from "@/lib/shared/espn.functions";
+import { MODEL_SETTINGS } from "@/lib/shared/game-model";
+import { getNflHistory } from "@/lib/shared/history.functions";
+import { useKickoffForecasts, WatchList } from "@/components/nfl/WatchList";
+import { pastSeasonRuns, readHistory, runModelWithHistory } from "@/lib/nfl/model-history";
 
 export const Route = createFileRoute("/model")({
   head: () => ({

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildSlateDays, defaultSlateDay, pickSlateWeek } from "@/lib/prop-slate";
+import { buildSlateDays, defaultSlateDay, pickSlateWeek } from "@/lib/shared/prop-slate";
 
 const game = (id: string, week: number, status: string, kickoffIso: string) => ({ id, week, status, kickoffIso });
 

@@ -1,11 +1,11 @@
 import { useMemo } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { PageTitle, Panel, PanelHeader } from "@/components/booth";
+import { PageTitle, Panel, PanelHeader } from "@/components/shared/booth";
 import { NhlEmpty, NhlLogo } from "@/components/nhl/NhlBits";
-import { nhlHeadshot, posGroup, teamsFromGames } from "@/lib/nhl";
-import { PROP_LABEL, type NhlPropStat } from "@/lib/nhl";
-import { evaluateAtLeastOne, leagueRates, projectRate } from "@/lib/nhl-props";
-import { useNhlPlayerIndex, useNhlSchedule } from "@/lib/use-nhl";
+import { nhlHeadshot, posGroup, teamsFromGames } from "@/lib/nhl/nhl";
+import { PROP_LABEL, type NhlPropStat } from "@/lib/nhl/nhl";
+import { evaluateAtLeastOne, leagueRates, projectRate } from "@/lib/nhl/nhl-props";
+import { useNhlPlayerIndex, useNhlSchedule } from "@/lib/nhl/use-nhl";
 
 export const Route = createFileRoute("/nhl/players/$playerId")({
   head: () => ({ meta: [{ title: "Player — GamblingNHL" }] }),

@@ -1,6 +1,6 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
-import { TeamDetail } from "@/components/TeamDetail";
-import { teamById } from "@/data/teams";
+import { TeamDetail } from "@/components/shared/TeamDetail";
+import { teamById } from "@/data/shared/teams";
 
 export const Route = createFileRoute("/teams/$teamId")({
   loader: ({ params }) => {

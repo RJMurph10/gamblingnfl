@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { showGameStatistics } from "@/lib/game-visibility";
+import { showGameStatistics } from "@/lib/shared/game-visibility";
 
 describe("game statistics visibility", () => {
   it("shows the game tabs before a scheduled game starts", () => {

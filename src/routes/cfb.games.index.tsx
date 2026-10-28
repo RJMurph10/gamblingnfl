@@ -1,16 +1,16 @@
 import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { PageTitle, Panel, PanelHeader } from "@/components/booth";
-import { CfbScopePicker } from "@/components/CfbScope";
-import { GameCard } from "@/components/GameCard";
-import type { Game } from "@/data/games";
+import { PageTitle, Panel, PanelHeader } from "@/components/shared/booth";
+import { CfbScopePicker } from "@/components/cfb/CfbScope";
+import { GameCard } from "@/components/shared/GameCard";
+import type { Game } from "@/data/shared/games";
 import {
   currentCfbWeek,
   scopeGames,
   useCfbConferences,
   useCfbSchedule,
   type CfbScope,
-} from "@/lib/use-cfb";
+} from "@/lib/cfb/use-cfb";
 
 export const Route = createFileRoute("/cfb/games/")({
   head: () => ({

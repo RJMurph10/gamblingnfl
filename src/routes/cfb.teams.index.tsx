@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { PageTitle, Panel, TeamCard } from "@/components/booth";
-import { teamById, type Team } from "@/data/teams";
-import { useCfbConferences, useCfbTop25 } from "@/lib/use-cfb";
+import { PageTitle, Panel, TeamCard } from "@/components/shared/booth";
+import { teamById, type Team } from "@/data/shared/teams";
+import { useCfbConferences, useCfbTop25 } from "@/lib/cfb/use-cfb";
 
 export const Route = createFileRoute("/cfb/teams/")({
   head: () => ({
