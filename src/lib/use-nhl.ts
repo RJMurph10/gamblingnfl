@@ -3,6 +3,7 @@ import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getNhlGameProps, getNhlPlayerIndex, getNhlSchedule } from "./nhl.functions";
 import type { NhlGame } from "./nhl";
+import { inputsFromPlayerIndex, type NhlModelInputs } from "./nhl-model-v2";
 
 /** The season's games (refreshed every 15 seconds while one is live). */
 export function useNhlSchedule(refetchMs: number | false = 60_000) {
@@ -42,3 +43,13 @@ export const useNhlGameProps = (game: NhlGame | undefined) =>
     staleTime: 30_000,
     retry: 1,
   });
+
+/**
+ * The v2 model's current-season inputs (team shots, goalies), from the player index. Null while loading
+ * or when the player feed is unavailable; the model then uses last season's numbers.
+ */
+export function useNhlModelInputs(): { inputs: NhlModelInputs | null; isLoading: boolean } {
+  const q = useNhlPlayerIndex();
+  const inputs = useMemo(() => (q.data ? inputsFromPlayerIndex(q.data) : null), [q.data]);
+  return { inputs, isLoading: q.isLoading };
+}
