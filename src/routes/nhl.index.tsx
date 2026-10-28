@@ -4,8 +4,9 @@ import { PageTitle, Panel, PanelHeader, StatCard } from "@/components/booth";
 import { NhlLogo } from "@/components/nhl/NhlBits";
 import { NhlLivePanel, NhlRecentGames, NhlUpcomingGames } from "@/components/nhl/NhlTables";
 import { buildStandings, hasScore, teamsFromGames } from "@/lib/nhl";
-import { summarizeNhl, unitsText } from "@/lib/nhl-model";
-import { useNhlSchedule } from "@/lib/use-nhl";
+import { projectGame, unitsText } from "@/lib/nhl-model";
+import { compareNhlModels, TRACK_EDGE } from "@/lib/nhl-model-v2";
+import { useNhlModelInputs, useNhlSchedule } from "@/lib/use-nhl";
 
 export const Route = createFileRoute("/nhl/")({
   head: () => ({
@@ -47,22 +48,16 @@ function NhlDashboard() {
       .slice(0, 5);
   }, [games]);
 
+  const { inputs } = useNhlModelInputs();
   const weekAgo = useMemo(() => new Date(Date.now() - 7 * 24 * 3_600_000), []);
-  const all = useMemo(() => summarizeNhl(games), [games]);
-  const prev = useMemo(() => summarizeNhl(games, weekAgo), [games, weekAgo]);
-  const hasPrev = prev.moneyline.wins + prev.moneyline.losses > 0;
-
-  const played = games.filter((g) => g.part === "reg" && g.status === "final" && hasScore(g));
-  const avgTotal = played.length
-    ? played.reduce((s, g) => s + (g.away.score as number) + (g.home.score as number), 0) / played.length
-    : null;
-  const lined = played.filter((g) => g.odds?.total);
-  const avgLine = lined.length ? lined.reduce((s, g) => s + (g.odds?.total as number), 0) / lined.length : null;
-
-  const mlChange = hasPrev ? change(all.moneyline.winPct, prev.moneyline.winPct) : null;
-  const plChange = hasPrev ? change(all.puckLine.winPct, prev.puckLine.winPct) : null;
-  const totChange = hasPrev ? change(all.total.winPct, prev.total.winPct) : null;
-  const unitsChange = hasPrev ? Math.round((all.bets.units - prev.bets.units) * 100) / 100 : null;
+  const v1 = useMemo(() => (g: (typeof games)[number]) => projectGame(g, games), [games]);
+  const all = useMemo(() => compareNhlModels(games, v1, inputs), [games, v1, inputs]);
+  const prev = useMemo(() => compareNhlModels(games, v1, inputs, weekAgo), [games, v1, inputs, weekAgo]);
+  const hasPrev = prev.v2.picks.wins + prev.v2.picks.losses > 0;
+  const mlChange = hasPrev ? change(all.v2.picks.winPct, prev.v2.picks.winPct) : null;
+  const t = all.tracked;
+  const moved = t.movedToward + t.movedAgainst;
+  const ll = (v: number | null) => (v === null ? "—" : v.toFixed(3));
   const loading = isLoading ? "Loading…" : undefined;
 
   const standings = useMemo(() => buildStandings(games), [games]);
@@ -80,57 +75,48 @@ function NhlDashboard() {
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
           <StatCard
             label="Win rate · model"
-            value={fmt(all.moneyline.winPct)}
-            unit={all.moneyline.winPct === null ? undefined : "%"}
+            value={fmt(all.v2.picks.winPct)}
+            unit={all.v2.picks.winPct === null ? undefined : "%"}
             note={
               loading ??
               note(
                 changeText(mlChange),
-                `${rec(all.moneyline)} picking winners`,
-                all.marketFavorite.winPct !== null && `book favorites ${all.marketFavorite.winPct.toFixed(1)}%`,
+                `${rec(all.v2.picks)} picking winners`,
+                all.book.picks.winPct !== null && `book favorites ${all.book.picks.winPct.toFixed(1)}%`,
               )
             }
             tone={tone(mlChange)}
           />
           <StatCard
-            label="Totals · model"
-            value={fmt(all.total.winPct)}
-            unit={all.total.winPct === null ? undefined : "%"}
+            label="Accuracy · log loss"
+            value={ll(all.v2.logLoss)}
             note={
               loading ??
-              note(
-                changeText(totChange),
-                `${rec(all.total)} O/U`,
-                avgTotal !== null && avgLine !== null && `goals avg ${avgTotal.toFixed(1)} vs line ${avgLine.toFixed(1)}`,
-              )
+              note(`old model ${ll(all.v1.logLoss)}`, all.book.logLoss !== null && `closing line ${ll(all.book.logLoss)}`, "lower is better")
             }
-            tone={tone(totChange)}
+            tone={all.v2.logLoss !== null && all.v1.logLoss !== null ? (all.v2.logLoss < all.v1.logLoss ? "win" : "loss") : "mute"}
           />
           <StatCard
-            label="Cover % · model"
-            value={fmt(all.puckLine.winPct)}
-            unit={all.puckLine.winPct === null ? undefined : "%"}
-            note={loading ?? note(changeText(plChange), `${rec(all.puckLine)} puck line`)}
-            tone={tone(plChange)}
-          />
-          <StatCard
-            label="Model edge · +EV moneylines"
-            value={unitsText(all.bets.units)}
+            label={`Tracked · ${Math.round(TRACK_EDGE * 100)}+ pt edges`}
+            value={unitsText(t.units)}
             note={
               loading ??
-              note(
-                unitsChange !== null &&
-                  `${unitsChange > 0 ? "▲" : unitsChange < 0 ? "▼" : "—"} ${Math.abs(unitsChange).toFixed(2)}u wk/wk`,
-                all.bets.roi === null
-                  ? "No +EV moneylines graded yet"
-                  : `${all.bets.wins}-${all.bets.losses} · ROI ${all.bets.roi > 0 ? "+" : ""}${all.bets.roi.toFixed(1)}%`,
-              )
+              (t.bets
+                ? `${t.wins}-${t.losses} · ROI ${t.roi !== null && t.roi > 0 ? "+" : ""}${(t.roi ?? 0).toFixed(1)}% at the opening price`
+                : "No tracked bets yet (needs ESPN opening lines)")
             }
-            tone={all.bets.units > 0 ? "win" : all.bets.units < 0 ? "loss" : "mute"}
+            tone={t.units > 0 ? "win" : t.units < 0 ? "loss" : "mute"}
+          />
+          <StatCard
+            label="Line moved our way"
+            value={moved ? ((t.movedToward / moved) * 100).toFixed(0) : "—"}
+            unit={moved ? "%" : undefined}
+            note={loading ?? (moved ? `${t.movedToward} of ${moved} tracked bets beat the closing line` : "Shown once tracked bets close")}
+            tone={moved ? (t.movedToward > t.movedAgainst ? "win" : "loss") : "mute"}
           />
         </div>
         <p className="mt-2 font-mono text-[10px] uppercase tracking-wider text-faint">
-          {all.games} games graded · flat 1u at the posted moneyline · each game projected from earlier games only ·{" "}
+          {all.games} games graded · tracked bets 1u at the opening moneyline · each game projected from earlier games only ·{" "}
           <Link to="/nhl/model" className="text-acc">
             Model →
           </Link>
