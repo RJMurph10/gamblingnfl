@@ -9,7 +9,7 @@
 
 import type { GamePropBoard } from "@/lib/props.types";
 import { nflverseGameYac } from "@/lib/nflverse-yac.server";
-import { finalCached, readFinal, writeFinal } from "@/lib/final-cache.server";
+import { finalCached, finalLinesStore, readFinal, writeFinal } from "@/lib/final-cache.server";
 import { athleteIdOf, buildPropOffers, sampleTdItem, type PropPerson } from "@/lib/props.parse";
 import type { BoxScoreLine, Drive, DriveResult, Game, TeamGameStats } from "@/data/games";
 import { gameScore } from "@/data/games";
@@ -358,6 +358,61 @@ async function fetchHistoricalOdds(
   const value = await loadHistoricalOdds(eventId, league);
   historicalOddsCache.set(cacheKey, { at: Date.now(), value });
   return value;
+}
+
+/** Odds of finished games never change, so they're kept long-term (shared with every server instance). */
+const finalOddsStores = {
+  nfl: finalLinesStore<HistoricalOdds>("nfl-odds"),
+  cfb: finalLinesStore<HistoricalOdds>("cfb-odds"),
+};
+
+/**
+ * Fills missing spreads, totals and prices of started games from ESPN's odds history.
+ * Finished games read the long-term store first, so after the first lookup they need no ESPN calls;
+ * newly found odds of finished games are saved there. Lookups run a few at a time.
+ */
+async function backfillHistoricalOdds(
+  games: Game[],
+  league: "nfl" | "cfb",
+  needsOdds: (game: Game) => boolean,
+): Promise<void> {
+  const missing = games.filter((g) => g.status !== "scheduled" && needsOdds(g));
+  if (!missing.length) return;
+  const store = finalOddsStores[league];
+  const dateOf = (g: Game) => g.kickoffIso ?? "unknown";
+  const finals = missing.filter((g) => g.status === "final");
+  const stored = await store
+    .get(finals.map((g) => ({ id: g.id, date: dateOf(g) })))
+    .catch(() => new Map<string, HistoricalOdds>());
+  const apply = (g: Game, odds: HistoricalOdds) => {
+    if (g.spread === "—" && odds.spread) g.spread = odds.spread;
+    if (!g.total && typeof odds.total === "number") g.total = odds.total;
+    if (odds.prices) g.odds = mergeOdds(g.odds, odds.prices);
+  };
+  const toFetch: Game[] = [];
+  for (const g of missing) {
+    const hit = g.status === "final" ? stored.get(g.id) : undefined;
+    if (hit) apply(g, hit);
+    else toFetch.push(g);
+  }
+  const found: { id: string; date: string; odds: HistoricalOdds }[] = [];
+  const prefix = league === "cfb" ? /^cfb-/ : /^espn-/;
+  for (let i = 0; i < toFetch.length; i += 16) {
+    await Promise.all(
+      toFetch.slice(i, i + 16).map(async (g) => {
+        try {
+          const odds = await fetchHistoricalOdds(g.id.replace(prefix, ""), league);
+          apply(g, odds);
+          if (g.status === "final" && (odds.spread || odds.total !== undefined)) {
+            found.push({ id: g.id, date: dateOf(g), odds });
+          }
+        } catch {
+          // leave the dash; it retries the next time the schedule reloads
+        }
+      }),
+    );
+  }
+  if (found.length) await store.save(found).catch(() => undefined);
 }
 
 const zeroStats = (): TeamGameStats => ({
@@ -1064,21 +1119,11 @@ export async function fetchSchedule(): Promise<Game[]> {
       // Keep the pregame spread/total available after kickoff if the live
       // scoreboard drops the odds fields. Historical odds are also used for finals.
       // Finals also need moneylines and prices so the model's picks can be graded in units.
-      const missingOddsGames = games.filter(
-        (game) =>
-          game.status !== "scheduled" &&
-          (game.spread === "—" || !game.total || !hasMoneylines(game.odds)),
+      await backfillHistoricalOdds(
+        games,
+        "nfl",
+        (game) => game.spread === "—" || !game.total || !hasMoneylines(game.odds),
       );
-      if (missingOddsGames.length) {
-        await Promise.all(
-          missingOddsGames.map(async (game) => {
-            const odds = await fetchHistoricalOdds(game.id.replace(/^espn-/, ""));
-            if (game.spread === "—" && odds.spread) game.spread = odds.spread;
-            if (!game.total && typeof odds.total === "number") game.total = odds.total;
-            if (odds.prices) game.odds = mergeOdds(game.odds, odds.prices);
-          }),
-        );
-      }
 
       return games;
     },
@@ -3876,23 +3921,7 @@ function addCollegeDetails(game: Game, comp: any) {
  * games at a time so a whole week never fires hundreds of requests at once.
  */
 async function fillCollegeLines(games: Game[]): Promise<void> {
-  const missing = games.filter(
-    (g) => g.status !== "scheduled" && (g.spread === "—" || !g.total),
-  );
-  for (let i = 0; i < missing.length; i += 12) {
-    await Promise.all(
-      missing.slice(i, i + 12).map(async (g) => {
-        try {
-          const odds = await fetchHistoricalOdds(g.id.replace(/^cfb-/, ""), "cfb");
-          if (g.spread === "—" && odds.spread) g.spread = odds.spread;
-          if (!g.total && typeof odds.total === "number") g.total = odds.total;
-          if (odds.prices) g.odds = mergeOdds(g.odds, odds.prices);
-        } catch {
-          // leave the dash; it retries the next time the week reloads
-        }
-      }),
-    );
-  }
+  await backfillHistoricalOdds(games, "cfb", (g) => g.spread === "—" || !g.total);
 }
 
 /**
