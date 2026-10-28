@@ -2,7 +2,7 @@
  * Server-only: ESPN's opening and closing NHL lines for past games, for the odds export page.
  *
  * Two small steps so no single request does too much work:
- *  1. fetchNhlSeasonEvents(season) lists a season's finished regular-season games (scoreboard, 10-day chunks).
+ *  1. fetchNhlWeekEvents(start) lists one week's finished regular-season games (the page walks the season).
  *  2. fetchNhlOddsRows(games) reads each game's core odds feed and returns one row per sportsbook with the
  *     opening and closing moneyline, puck line and total, plus their prices. A value ESPN does not have stays
  *     empty; nothing is estimated.
@@ -35,38 +35,50 @@ async function fetchJson(url: string): Promise<any> {
 const pad = (n: number) => String(n).padStart(2, "0");
 const ymd = (d: Date) => `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}`;
 
-/** Finished regular-season games of the season that starts in `season` (2023 = 2023-24). */
-export async function fetchNhlSeasonEvents(season: number): Promise<NhlPastGame[]> {
-  const start = new Date(season, 8, 25);
-  const end = new Date(season + 1, 5, 30);
-  const chunks: Array<[Date, Date]> = [];
-  for (let d = new Date(start); d <= end; d = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 10)) {
-    const to = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 9);
-    chunks.push([new Date(d), to > end ? new Date(end) : to]);
-  }
+const toPast = (g: NhlGame): NhlPastGame => ({
+  id: g.id,
+  date: g.date,
+  away: g.away.team.abbr,
+  home: g.home.team.abbr,
+  awayScore: g.away.score,
+  homeScore: g.home.score,
+  detail: g.statusDetail,
+});
+
+/**
+ * Finished regular-season games for one week starting on `start` (YYYYMMDD). Tries ESPN's date-range form
+ * first, then each day on its own (ESPN rejects the range form at times). Errors are returned, not hidden.
+ */
+export async function fetchNhlWeekEvents(start: string): Promise<{ games: NhlPastGame[]; errors: string[] }> {
+  const y = Number(start.slice(0, 4));
+  const m = Number(start.slice(4, 6)) - 1;
+  const d = Number(start.slice(6, 8));
+  const days = Array.from({ length: 7 }, (_, i) => ymd(new Date(y, m, d + i)));
+  const errors: string[] = [];
   const byId = new Map<string, NhlGame>();
-  for (const [from, to] of chunks) {
-    try {
-      const json = await fetchJson(`${SITE}/scoreboard?dates=${ymd(from)}-${ymd(to)}&limit=500`);
-      for (const e of Array.isArray(json?.events) ? json.events : []) {
-        const g = parseEvent(e);
-        if (g && g.part === "reg" && g.status === "final") byId.set(g.id, g);
+  let total = 0;
+  const take = (json: any) => {
+    for (const e of Array.isArray(json?.events) ? json.events : []) {
+      total++;
+      const g = parseEvent(e);
+      if (g && g.part === "reg" && g.status === "final") byId.set(g.id, g);
+    }
+  };
+  try {
+    take(await fetchJson(`${SITE}/scoreboard?dates=${days[0]}-${days[6]}&limit=200`));
+  } catch (err) {
+    errors.push(`range ${days[0]}: ${err instanceof Error ? err.message : String(err)}`);
+  }
+  if (!total) {
+    for (const day of days) {
+      try {
+        take(await fetchJson(`${SITE}/scoreboard?dates=${day}&limit=100`));
+      } catch (err) {
+        errors.push(`${day}: ${err instanceof Error ? err.message : String(err)}`);
       }
-    } catch (err) {
-      console.error(`NHL odds export: scoreboard ${ymd(from)} failed`, err);
     }
   }
-  return [...byId.values()]
-    .sort((a, b) => a.date.localeCompare(b.date))
-    .map((g) => ({
-      id: g.id,
-      date: g.date,
-      away: g.away.team.abbr,
-      home: g.home.team.abbr,
-      awayScore: g.away.score,
-      homeScore: g.home.score,
-      detail: g.statusDetail,
-    }));
+  return { games: [...byId.values()].sort((a, b) => a.date.localeCompare(b.date)).map(toPast), errors };
 }
 
 const odds = (...vals: any[]): string => {
