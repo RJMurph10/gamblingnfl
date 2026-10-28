@@ -4,6 +4,7 @@
  * few ESPN calls, and results are cached in memory.
  */
 
+import { finalCached } from "./final-cache.server";
 import {
   currentWeek,
   parseEvent,
@@ -86,7 +87,7 @@ export async function fetchCfbWeek(week?: number): Promise<CfbWeekSlate> {
   const now = currentWeek(calendar);
   const target = week ?? now;
   const ids = await fbsTeamIds();
-  const games = await cached(
+  const loadWeek = () => cached<CfbGame[]>(
     `cfb-week-${target}`,
     target === now ? MINUTE : 10 * MINUTE,
     async () => {
@@ -99,6 +100,11 @@ export async function fetchCfbWeek(week?: number): Promise<CfbWeekSlate> {
         .sort((a: CfbGame, b: CfbGame) => a.date.localeCompare(b.date));
     },
   );
+  // Past weeks whose games are all final can't change: keep them long-term (FBS team list included in the key).
+  const games: CfbGame[] =
+    target < now
+      ? await finalCached(`cfb-week-${CURRENT_SEASON}-${target}-${ids.size}`, loadWeek, (g) => g.length > 0 && g.every((x) => x.status === "final"))
+      : await loadWeek();
   return { season: CURRENT_SEASON, week: target, currentWeek: now, weeks: calendar, games };
 }
 
