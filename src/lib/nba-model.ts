@@ -82,25 +82,50 @@ export function buildRatings(finals: NbaGame[], prior: NbaPriorTeam[]): RatingTa
   if (!finals.length) return { avg, off, def, games };
 
   const h = HOME_COURT / 2;
+  // Same fit as before, on plain arrays indexed by team (much faster than map lookups; identical numbers).
+  const idList = [...ids];
+  const slot = new Map(idList.map((id, i) => [id, i]));
+  const T = idList.length;
+  const offA = idList.map((id) => off.get(id) ?? 0);
+  const defA = idList.map((id) => def.get(id) ?? 0);
+  const nA = idList.map((id) => games.get(id) ?? 0);
+  const pOffA = idList.map((id) => priorOff.get(id) ?? 0);
+  const pDefA = idList.map((id) => priorDef.get(id) ?? 0);
+  const G = finals.length;
+  const hi = new Int32Array(G);
+  const ai = new Int32Array(G);
+  const hsA = new Float64Array(G);
+  const asA = new Float64Array(G);
+  finals.forEach((g, k) => {
+    hi[k] = slot.get(g.home.team.id) as number;
+    ai[k] = slot.get(g.away.team.id) as number;
+    hsA[k] = g.home.score as number;
+    asA[k] = g.away.score as number;
+  });
+  const offSum = new Float64Array(T);
+  const defSum = new Float64Array(T);
   for (let iter = 0; iter < 25; iter++) {
-    const offSum = new Map<string, number>();
-    const defSum = new Map<string, number>();
-    for (const g of finals) {
-      const hs = g.home.score as number;
-      const as = g.away.score as number;
-      const H = g.home.team.id;
-      const A = g.away.team.id;
-      offSum.set(H, (offSum.get(H) ?? 0) + (hs - avg - h - (def.get(A) ?? 0)));
-      offSum.set(A, (offSum.get(A) ?? 0) + (as - avg + h - (def.get(H) ?? 0)));
-      defSum.set(A, (defSum.get(A) ?? 0) + (hs - avg - h - (off.get(H) ?? 0)));
-      defSum.set(H, (defSum.get(H) ?? 0) + (as - avg + h - (off.get(A) ?? 0)));
+    offSum.fill(0);
+    defSum.fill(0);
+    for (let k = 0; k < G; k++) {
+      const H = hi[k];
+      const A = ai[k];
+      const hs = hsA[k];
+      const as = asA[k];
+      offSum[H] = offSum[H] + (hs - avg - h - defA[A]);
+      offSum[A] = offSum[A] + (as - avg + h - defA[H]);
+      defSum[A] = defSum[A] + (hs - avg - h - offA[H]);
+      defSum[H] = defSum[H] + (as - avg + h - offA[A]);
     }
-    for (const id of ids) {
-      const n = games.get(id) ?? 0;
-      off.set(id, ((offSum.get(id) ?? 0) + PRIOR_WEIGHT * (priorOff.get(id) ?? 0)) / (n + PRIOR_WEIGHT));
-      def.set(id, ((defSum.get(id) ?? 0) + PRIOR_WEIGHT * (priorDef.get(id) ?? 0)) / (n + PRIOR_WEIGHT));
+    for (let i = 0; i < T; i++) {
+      offA[i] = (offSum[i] + PRIOR_WEIGHT * pOffA[i]) / (nA[i] + PRIOR_WEIGHT);
+      defA[i] = (defSum[i] + PRIOR_WEIGHT * pDefA[i]) / (nA[i] + PRIOR_WEIGHT);
     }
   }
+  idList.forEach((id, i) => {
+    off.set(id, offA[i]);
+    def.set(id, defA[i]);
+  });
   return { avg, off, def, games };
 }
 
@@ -230,13 +255,19 @@ export function runNbaModel(games: NbaGame[], prior: NbaPriorTeam[]): NbaModelRo
     .sort((a, b) => a.date.localeCompare(b.date));
   const rows: NbaModelRow[] = [];
 
-  const days = [...new Set(finals.map((g) => etDayKey(g.date)))];
+  // Each day's games are predicted from every game before that day (grouped once, in order).
+  const byDay = new Map<string, NbaGame[]>();
+  for (const g of finals) {
+    const day = etDayKey(g.date);
+    const list = byDay.get(day);
+    if (list) list.push(g);
+    else byDay.set(day, [g]);
+  }
   let cursor = 0;
-  for (const day of days) {
+  for (const [day, dayGames] of byDay) {
     while (cursor < finals.length && etDayKey(finals[cursor].date) < day) cursor++;
     const table = buildRatings(finals.slice(0, cursor), prior);
-    for (const g of finals.filter((x) => etDayKey(x.date) === day))
-      rows.push(rowFor(g, predictGame(table, g.home.team.id, g.away.team.id)));
+    for (const g of dayGames) rows.push(rowFor(g, predictGame(table, g.home.team.id, g.away.team.id)));
   }
   const now = buildRatings(finals, prior);
   for (const g of rated.filter((x) => x.status !== "final" || !hasScore(x)))
