@@ -104,3 +104,16 @@ describe("previous-game margins", () => {
     expect(m2.get("y2")).toBe(-35);
   });
 });
+
+describe("road-underdog watch item", () => {
+  it("tracks road underdogs of 7+ (and only those), graded from the underdog's side", async () => {
+    const { roadDogHitsForGame } = await import("@/lib/nfl/watch-angles");
+    // KC -9.5 at home over the Jets; Jets lose 20-17 → cover +9.5
+    const hit = roadDogHitsForGame(game("r1", 5, "jets", "chiefs", "KC -9.5", [17, 20]), 2026)[0];
+    expect(hit.angle).toBe("road-dog");
+    expect(hit.label).toBe("NYJ +9.5");
+    expect(hit.result).toBe("win");
+    expect(roadDogHitsForGame(game("r2", 5, "jets", "chiefs", "KC -6.5", [17, 20]), 2026)).toHaveLength(0);
+    expect(roadDogHitsForGame(game("r3", 5, "chiefs", "jets", "KC -9.5", [20, 17]), 2026)).toHaveLength(0);
+  });
+});
