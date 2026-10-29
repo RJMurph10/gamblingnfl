@@ -160,13 +160,23 @@ function ModelPage() {
               under. Those are leans, graded so the record is complete.
             </li>
             <li>
-              ★ Best bets: every underdog getting {MODEL_SETTINGS.bigUnderdogPts}+ points, against
-              the spread (big favorites have been overrated in every season since 2022), and the
-              under in every outdoor game with {MODEL_SETTINGS.windUnderMph}+ mph of wind at kickoff
-              (469-361 since 2012; picked on 2012–2021 and confirmed on 2022–2026 games it had never
-              seen). Upcoming wind uses the National Weather Service forecast; finished games use
-              the wind recorded at kickoff. Past results don&apos;t guarantee future ones; the track
-              record above keeps score.
+              ★ Best bets, against the spread: every home underdog getting{" "}
+              {MODEL_SETTINGS.bigUnderdogPts}+ points (279-224 at closing lines since 1999); the
+              road team after it lost its previous game by {MODEL_SETTINGS.bounceLossMargin}+ (the
+              college bounce-back rule, 118-92 on 27 NFL seasons it had never seen); and a
+              scrambler&apos;s team against a pocket passer&apos;s team. On totals: the under in
+              every outdoor game with {MODEL_SETTINGS.windUnderMph}+ mph of wind at kickoff (469-361
+              since 2012; picked on 2012–2021 and confirmed on 2022–2026 games it had never seen).
+              Upcoming wind uses the National Weather Service forecast; finished games use the wind
+              recorded at kickoff. Past results don&apos;t guarantee future ones; the track record
+              above keeps score.
+            </li>
+            <li>
+              Changed in October 2026: road underdogs of {MODEL_SETTINGS.bigUnderdogPts}+ were
+              dropped from the ★ best bets (they broke even or lost in every era since 1999:
+              792-767, −47u) and the bounce-back rule was added. Over 1999–2025 at closing lines
+              that took the ★ record from 53.1% (+51.9u) to 55.0% (+122.2u) on a third fewer bets.
+              The seasons in the track record above are replayed with the current rules.
             </li>
             <li>
               Every pick risks {MODEL_SETTINGS.stake} unit. Spreads and totals are graded at the

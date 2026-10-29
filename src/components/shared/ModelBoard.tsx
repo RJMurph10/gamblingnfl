@@ -137,7 +137,7 @@ function PickChip({ pick, game }: { pick: ModelPick; game: Game }) {
 
 /** Why a pick is a ★ best bet, for its tooltip. */
 const REASON_TEXT: Record<NonNullable<ModelPick["reason"]>, string> = {
-  underdog: "7+ point underdog",
+  underdog: "7+ point home underdog",
   wind: "wind",
   "qb-style": "scrambler vs pocket passer",
   bounce: "road bounce-back",
