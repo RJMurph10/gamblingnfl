@@ -49,8 +49,17 @@ export const MODEL_SETTINGS = {
   calibrationScale: 16,
   /** Limit on the learned scoring bias for totals (points). */
   maxTotalBias: 2.5,
-  /** An underdog getting at least this many points is a ★ best bet against the spread. */
+  /**
+   * A HOME underdog getting at least this many points is a ★ best bet against the spread. (Road
+   * underdogs of 7+ broke even or lost in every era since 1999: 792-767, −47u at closing lines.)
+   */
   bigUnderdogPts: 7,
+  /**
+   * A road team that lost its previous game by at least this many points is a ★ best bet against
+   * the spread (the college bounce-back rule; on NFL games it never saw, 1999–2025: 118-92,
+   * 56.2%).
+   */
+  bounceLossMargin: 28,
   /** Outdoor wind at kickoff (mph) at or above this makes the under a ★ best bet. */
   windUnderMph: 10,
   /** Standard deviation of NFL final margins, used for win probability. */
@@ -315,7 +324,10 @@ export interface ModelPick {
   line?: number;
   /** American odds; missing when ESPN lists no price (record counts, units don't). */
   odds?: number;
-  /** ★ Best bet: a 7+ point underdog, the under in 10+ mph wind, or a scrambler vs a pocket passer. */
+  /**
+   * ★ Best bet. NFL: a 7+ point home underdog, a road team after a 28+ point loss, the under in
+   * 10+ mph wind, or a scrambler vs a pocket passer.
+   */
   best: boolean;
   /** Kickoff wind (mph) behind a wind best bet. */
   wind?: number;
@@ -365,13 +377,13 @@ export interface GameModelRow {
   marketTotal: number | null;
   /** The model's call on every market for this game (winner, spread side, over/under). */
   predictions: ModelPick[];
-  /** ★ Best bets (7+ point underdogs, unders in 10+ mph wind). */
+  /** ★ Best bets only. */
   picks: ModelPick[];
   /** Starting-quarterback adjustment applied to the model's own line, when starters are known. */
   qb?: QbAdjustment;
   /** Each starting quarterback's style going into the game. */
   styles?: { home?: QbStyleProfile; away?: QbStyleProfile };
-  /** College: why a game has a ★ best bet, shown under its picks. */
+  /** Why a game has a rule-based ★ best bet (e.g. a bounce-back), shown under its picks. */
   ruleNotes?: string[];
 }
 
@@ -426,6 +438,8 @@ export function predictionsForGame(
   styles?: { home?: QbStyleProfile; away?: QbStyleProfile },
   /** Apply the NFL ★ best-bet rules (college games have their own, added afterwards). */
   nflRules = true,
+  /** The road team's margin in its previous game this season (negative = lost), when final. */
+  awayLastMargin?: number | null,
 ): ModelPick[] {
   const out: ModelPick[] = [];
   const base = { gameId: game.id, week: game.week };
@@ -436,24 +450,33 @@ export function predictionsForGame(
   if (mLine !== null) {
     // Positive edge -> the model expects home to do better than the line.
     const edge = mLine - p.homeLine;
-    // ★ Best bets: every underdog getting 7+ points. Big favorites have been overrated in every
-    // season since 2022 (162-128 ATS through week 6 of 2026).
-    const bigDog = nflRules && Math.abs(mLine) >= MODEL_SETTINGS.bigUnderdogPts;
+    // ★ Best bets: a HOME underdog getting 7+ points (279-224, 55.5% at closing lines since
+    // 1999).
+    // Road underdogs of 7+ were dropped: they broke even or lost in every era (792-767, −47u).
+    const bigDog = nflRules && mLine >= MODEL_SETTINGS.bigUnderdogPts;
+    // ★ Best bets: the road team after losing its previous game by 28+ (the college bounce-back
+    // rule; on 27 NFL seasons it never saw: 118-92, 56.2%, positive in every era).
+    const bounce =
+      nflRules &&
+      awayLastMargin !== null &&
+      awayLastMargin !== undefined &&
+      awayLastMargin <= -MODEL_SETTINGS.bounceLossMargin;
+    // The two rules back opposite teams when a home dog hosts a bounce-back team: then neither.
+    const ruleSide = bigDog && bounce ? 0 : bigDog ? 1 : bounce ? -1 : 0;
     // ★ Best bets: a scrambler's team against a pocket passer's team (53% since 2000; found on
-    // 2016–2026, confirmed on 2000–2015). The underdog rule wins if the two disagree.
+    // 2016–2026, confirmed on 2000–2015). The underdog and bounce-back rules win if they
+    // disagree.
     const hs = styles?.home?.style;
     const as = styles?.away?.style;
+    const free = !bigDog && !bounce;
     const styleSide =
-      !bigDog && hs === "scrambler" && as === "pocket"
+      free && hs === "scrambler" && as === "pocket"
         ? 1
-        : !bigDog && as === "scrambler" && hs === "pocket"
+        : free && as === "scrambler" && hs === "pocket"
           ? -1
           : 0;
-    const lean = bigDog
-      ? mLine > 0
-        ? 1
-        : -1
-      : styleSide || sign(edge) || sign(mLine - raw.homeLine) || (mLine <= 0 ? 1 : -1);
+    const lean =
+      ruleSide || styleSide || sign(edge) || sign(mLine - raw.homeLine) || (mLine <= 0 ? 1 : -1);
     const side = lean > 0 ? "home" : "away";
     out.push(
       grade(
@@ -465,8 +488,15 @@ export function predictionsForGame(
           // Spreads and totals are graded at the standard -110, whatever price was listed.
           odds: MODEL_SETTINGS.defaultPrice,
           edge: Math.abs(edge),
-          best: bigDog || styleSide !== 0,
-          reason: bigDog ? "underdog" : styleSide ? "qb-style" : undefined,
+          best: ruleSide !== 0 || styleSide !== 0,
+          reason:
+            ruleSide > 0
+              ? "underdog"
+              : ruleSide < 0
+                ? "bounce"
+                : styleSide
+                  ? "qb-style"
+                  : undefined,
         },
         game,
       ),
@@ -527,7 +557,7 @@ export function predictionsForGame(
   return out;
 }
 
-/** ★ Best bets only (7+ point underdogs, unders in 10+ mph wind, scramblers vs pocket passers). */
+/** ★ Best bets only (the NFL rules; see predictionsForGame). */
 export function picksForGame(game: Game, p: GamePrediction, raw: GamePrediction = p): ModelPick[] {
   return predictionsForGame(game, p, raw).filter((pick) => pick.best);
 }
@@ -644,6 +674,31 @@ export function anchorToMarket(
 }
 
 /**
+ * For each game: the road team's margin in its previous game this season (negative = it lost),
+ * or nothing when that game isn't final yet (or it's the team's first game).
+ */
+export function previousGameMargins(schedule: Game[]): Map<string, number> {
+  const byTeam = new Map<string, Game[]>();
+  for (const g of schedule) {
+    for (const t of [g.homeTeamId, g.awayTeamId]) {
+      const list = byTeam.get(t) ?? [];
+      list.push(g);
+      byTeam.set(t, list);
+    }
+  }
+  const out = new Map<string, number>();
+  for (const g of schedule) {
+    const prev = (byTeam.get(g.awayTeamId) ?? [])
+      .filter((x) => x.week < g.week)
+      .sort((a, b) => b.week - a.week)[0];
+    if (!prev || prev.status !== "final") continue;
+    const s = gameScore(prev);
+    out.set(g.id, prev.homeTeamId === g.awayTeamId ? s.home - s.away : s.away - s.home);
+  }
+  return out;
+}
+
+/**
  * Walk-forward run over the whole schedule: predictions, picks and grades for every game. Each
  * week's ratings AND its market calibration use only earlier weeks, so the record is honest.
  */
@@ -669,6 +724,7 @@ export function runModel(
   const finals = schedule.filter((g) => g.status === "final");
   const weeks = [...new Set(schedule.map((g) => g.week))].sort((a, b) => a - b);
   const rows: GameModelRow[] = [];
+  const lastMargin = nflRules ? previousGameMargins(schedule) : null;
   for (const week of weeks) {
     const ratings = fitRatings(
       finals.filter((g) => g.week < week),
@@ -704,6 +760,7 @@ export function runModel(
       const prediction = anchorToMarket(game, modelPrediction, calibration, cfg);
       // Live games keep their pregame calls but aren't graded until final.
       const styles = stylesFor?.(game);
+      const awayLast = lastMargin?.get(game.id) ?? null;
       const predictions = predictionsForGame(
         game,
         prediction,
@@ -711,7 +768,13 @@ export function runModel(
         weatherFor?.(game),
         styles,
         nflRules,
+        awayLast,
       );
+      const spreadPick = predictions.find((pick) => pick.market === "spread");
+      const ruleNotes =
+        spreadPick?.best && spreadPick.reason === "bounce" && awayLast !== null
+          ? [`Road bounce-back · lost by ${Math.abs(awayLast)} last game`]
+          : undefined;
       rows.push({
         game,
         prediction,
@@ -723,6 +786,7 @@ export function runModel(
         marketTotal,
         predictions,
         picks: predictions.filter((pick) => pick.best),
+        ...(ruleNotes ? { ruleNotes } : {}),
       });
     }
   }
