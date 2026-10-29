@@ -1,12 +1,15 @@
-/** One NBA game: header and lines, line score, model pick, then box score / team stats / plays tabs. */
-import { useMemo, useState } from "react";
+/**
+ * One NBA game, laid out like the NFL game page: header, then Gamecast / Stats / Markets / Props /
+ * Information tabs.
+ */
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { PageTitle, Panel, PanelHeader } from "@/components/shared/booth";
 import { NbaLogo, oddsLine, statusText } from "@/components/nba/NbaBits";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   atsResult,
   hasScore,
+  nbaHeadshot,
   ouResult,
   pct,
   periodLabel,
@@ -19,8 +22,7 @@ import {
 import { predictGame, buildRatings, rowFor, type NbaModelRow } from "@/lib/nba/nba-model";
 import { useNbaGameDetail, useNbaPrior, useNbaSchedule } from "@/lib/nba/use-nba";
 
-const tabClass =
-  "rounded-none border-b-2 border-transparent px-5 py-3 data-[state=active]:border-acc data-[state=active]:bg-transparent";
+type GameTab = "gamecast" | "stats" | "markets" | "props" | "information";
 
 export function NbaGameDetailView({ gameId }: { gameId: string }) {
   const schedule = useNbaSchedule(false);
@@ -30,6 +32,15 @@ export function NbaGameDetailView({ gameId }: { gameId: string }) {
   const data = detail.data as NbaGameDetail | undefined;
   // The schedule refreshes more often than the summary, so it wins for the live score.
   const game: NbaGame | undefined = scheduled && data ? { ...data.game, ...scheduled, odds: scheduled.odds ?? data.game.odds } : (scheduled ?? data?.game);
+
+  const started0 = game ? game.status !== "scheduled" : false;
+  // Same tabs as the NFL game page. Before tip-off the Gamecast is empty, so open on Markets.
+  const [tab, setTab] = useState<GameTab | null>(null);
+  const activeTab: GameTab = tab ?? (started0 ? "gamecast" : "markets");
+  // Like the NFL page, Information isn't offered during live games.
+  useEffect(() => {
+    if (game?.status === "live" && tab === "information") setTab("gamecast");
+  }, [game?.status, tab]);
 
   const row: NbaModelRow | null = useMemo(() => {
     if (!game || game.part === "pre") return null;
@@ -59,54 +70,161 @@ export function NbaGameDetailView({ gameId }: { gameId: string }) {
   }
 
   const started = game.status !== "scheduled";
+  const tabs: [GameTab, string][] = [
+    ["gamecast", "Gamecast"],
+    ["stats", "Stats"],
+    ["markets", "Markets"],
+    ["props", "Props"],
+    ...(game.status !== "live" ? ([["information", "Information"]] as [GameTab, string][]) : []),
+  ];
   return (
     <>
       <Header game={game} />
-      <div className="grid gap-6 lg:grid-cols-12">
-        <div className="min-w-0 space-y-6 lg:col-span-8">
+      <nav
+        className={`grid border-b border-line/15 ${tabs.length === 4 ? "grid-cols-4" : "grid-cols-5"}`}
+        aria-label="Game details tabs"
+      >
+        {tabs.map(([key, label]) => (
+          <button
+            key={key}
+            type="button"
+            onClick={() => setTab(key)}
+            aria-pressed={activeTab === key}
+            className={`border-b-2 px-3 py-3 font-disp text-sm font-semibold uppercase tracking-wider transition-colors ${activeTab === key ? "border-acc text-foreground" : "border-transparent text-mute hover:text-foreground"}`}
+          >
+            {label}
+          </button>
+        ))}
+      </nav>
+
+      {activeTab === "gamecast" ? (
+        <div className="mt-6 space-y-6">
           {started ? (
             <Panel>
-              <LineScore game={game} />
+              <div className="flex items-center justify-between">
+                <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">Box score</h2>
+                <span className="label-mono">scoring</span>
+              </div>
+              <div className="mt-3">
+                <LineScore game={game} />
+              </div>
             </Panel>
+          ) : (
+            <Panel>
+              <p className="py-6 text-center font-mono text-[11px] uppercase tracking-wider text-faint">
+                The gamecast starts at tip-off
+              </p>
+            </Panel>
+          )}
+          {data?.leaders.length ? <Leaders game={game} leaders={data.leaders} /> : null}
+          {started ? (
+            <div className="grid gap-6 lg:grid-cols-12">
+              <Panel className="min-w-0 lg:col-span-7">
+                <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">Play-by-play</h2>
+                <div className="mt-3">
+                  <Plays game={game} plays={data?.plays ?? []} started={started} />
+                </div>
+              </Panel>
+              <Panel className="min-w-0 lg:col-span-5">
+                <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">Win probability</h2>
+                <div className="mt-3">
+                  <WinProb game={game} detail={data} />
+                </div>
+              </Panel>
+            </div>
           ) : null}
-          <Panel padded={false}>
-            <Tabs defaultValue={started ? "box" : "stats"}>
-              <TabsList className="w-full justify-start overflow-x-auto rounded-none border-b border-line/10 bg-transparent p-0">
-                <TabsTrigger value="box" className={tabClass}>Box score</TabsTrigger>
-                <TabsTrigger value="stats" className={tabClass}>Team stats</TabsTrigger>
-                <TabsTrigger value="plays" className={tabClass}>Play-by-play</TabsTrigger>
-                <TabsTrigger value="flow" className={tabClass}>Win probability</TabsTrigger>
-              </TabsList>
-              <TabsContent value="box" className="m-0 p-4">
-                <BoxScore detail={data} started={started} loading={detail.isLoading} />
-              </TabsContent>
-              <TabsContent value="stats" className="m-0 p-4">
-                <TeamStats game={game} detail={data} started={started} />
-              </TabsContent>
-              <TabsContent value="plays" className="m-0 p-4">
-                <Plays game={game} plays={data?.plays ?? []} started={started} />
-              </TabsContent>
-              <TabsContent value="flow" className="m-0 p-4">
-                <WinProb game={game} detail={data} />
-              </TabsContent>
-            </Tabs>
+        </div>
+      ) : null}
+
+      {activeTab === "stats" ? (
+        <div className="mt-6 grid gap-6 lg:grid-cols-12">
+          <Panel padded={false} className="min-w-0 lg:col-span-8">
+            <div className="border-b border-line/10 px-4 py-3">
+              <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">Box score</h2>
+            </div>
+            <div className="p-4">
+              <BoxScore detail={data} started={started} loading={detail.isLoading} />
+            </div>
+          </Panel>
+          <Panel className="min-w-0 lg:col-span-4">
+            <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">Team statistics</h2>
+            <div className="mt-4">
+              <TeamStats game={game} detail={data} started={started} />
+            </div>
           </Panel>
         </div>
-        <aside className="min-w-0 space-y-6 lg:col-span-4">
+      ) : null}
+
+      {activeTab === "markets" ? (
+        <div className="mt-6 grid gap-6 lg:grid-cols-2">
           {row ? <ModelCard row={row} /> : null}
           <LinesCard game={game} />
-          {data?.leaders.length ? <Leaders game={game} leaders={data.leaders} /> : null}
-          {data?.injuries.length ? <Injuries game={game} injuries={data.injuries} /> : null}
+        </div>
+      ) : null}
+
+      {activeTab === "props" ? (
+        <div className="mt-6">
           <Link
             to="/nba/props"
             search={{ game: game.id }}
-            className="glass block p-3 text-center font-mono text-[11px] uppercase tracking-wider text-acc hover:glow"
+            className="glass block p-4 text-center font-mono text-[11px] uppercase tracking-wider text-acc hover:glow"
           >
             Player prop projections for this game →
           </Link>
-        </aside>
-      </div>
+        </div>
+      ) : null}
+
+      {activeTab === "information" && game.status !== "live" ? (
+        <div className="mt-6 grid gap-6 lg:grid-cols-2">
+          <GameInfo game={game} />
+          {data?.injuries.length ? (
+            <Injuries game={game} injuries={data.injuries} />
+          ) : (
+            <Panel>
+              <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">Injuries</h2>
+              <p className="mt-3 font-mono text-xs text-mute">No injuries listed.</p>
+            </Panel>
+          )}
+        </div>
+      ) : null}
     </>
+  );
+}
+
+/** Where and when: the Information tab's facts. */
+function GameInfo({ game }: { game: NbaGame }) {
+  const when = game.date
+    ? new Date(game.date).toLocaleString([], {
+        weekday: "long",
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+      })
+    : "";
+  const rows: [string, string | undefined][] = [
+    ["Tip-off", when || undefined],
+    ["Arena", game.venue],
+    ["TV", game.broadcast],
+    ["Game", [game.part === "pre" ? "Preseason" : game.part === "play-in" ? "Play-in" : game.part === "post" ? "Playoffs" : "Regular season", game.note].filter(Boolean).join(" · ")],
+  ];
+  return (
+    <Panel>
+      <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">Game information</h2>
+      <dl className="mt-3 space-y-2 text-sm">
+        {rows
+          .filter(([, v]) => v)
+          .map(([k, v]) => (
+            <div key={k} className="flex justify-between gap-3">
+              <dt className="text-mute">{k}</dt>
+              <dd className="text-right font-mono" suppressHydrationWarning>
+                {v}
+              </dd>
+            </div>
+          ))}
+      </dl>
+    </Panel>
   );
 }
 
@@ -215,6 +333,9 @@ function Header({ game }: { game: NbaGame }) {
   );
 }
 
+/** Line-score column headers, like the NFL page: 1st, 2nd, 3rd, 4th, then OT, 2OT… */
+const quarterHeader = (i: number) => (i < 4 ? ["1st", "2nd", "3rd", "4th"][i] : periodLabel(i));
+
 function LineScore({ game }: { game: NbaGame }) {
   const count = Math.max(4, game.away.periods.length, game.home.periods.length);
   const winner = game.status === "final" && hasScore(game) ? ((game.away.score as number) > (game.home.score as number) ? "away" : "home") : null;
@@ -224,7 +345,7 @@ function LineScore({ game }: { game: NbaGame }) {
         <tr className="text-[10px] uppercase tracking-wider text-faint">
           <th className="text-left font-normal">Team</th>
           {Array.from({ length: count }, (_, i) => (
-            <th key={i} className="font-normal">{periodLabel(i)}</th>
+            <th key={i} className="font-normal">{quarterHeader(i)}</th>
           ))}
           <th className="text-right font-normal">{game.status === "final" ? "Final" : "T"}</th>
         </tr>
@@ -508,27 +629,80 @@ function WinProb({ game, detail }: { game: NbaGame; detail?: NbaGameDetail }) {
   );
 }
 
+/** Game leaders, laid out like the NFL page: away player, category, home player. */
 function Leaders({ game, leaders }: { game: NbaGame; leaders: NbaGameDetail["leaders"] }) {
   const cats = [...new Set(leaders.map((l) => l.category))].slice(0, 4);
+  const cell = (l: NbaGameDetail["leaders"][number] | undefined, side: "away" | "home") => {
+    const isHome = side === "home";
+    if (!l) return <div className="py-4" aria-hidden="true" />;
+    const content = (
+      <div className={`flex min-w-0 items-center gap-2.5 ${isHome ? "flex-row-reverse" : ""}`}>
+        <img
+          src={nbaHeadshot(l.playerId ?? "")}
+          alt=""
+          loading="lazy"
+          className="size-11 shrink-0 rounded-full bg-line/10 object-cover ring-1 ring-line/15 sm:size-12"
+          onError={(event) => {
+            event.currentTarget.style.visibility = "hidden";
+          }}
+        />
+        <div className={`min-w-0 ${isHome ? "text-right" : "text-left"}`}>
+          <div className="truncate text-sm font-semibold text-foreground group-hover:text-acc">{l.name}</div>
+          <div className="mt-1 font-mono text-sm font-bold tabular-nums text-acc">{l.value}</div>
+        </div>
+      </div>
+    );
+    return (
+      <div className={`flex min-w-0 items-center py-3 ${isHome ? "justify-end text-right" : "justify-start text-left"}`}>
+        {l.playerId ? (
+          <Link
+            to="/nba/players/$playerId"
+            params={{ playerId: l.playerId }}
+            className="group block min-w-0 rounded-md p-1 transition-colors hover:bg-line/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-acc"
+          >
+            {content}
+          </Link>
+        ) : (
+          <div className="min-w-0 p-1">{content}</div>
+        )}
+      </div>
+    );
+  };
   return (
     <Panel padded={false}>
-      <PanelHeader title="Leaders" />
-      <div className="divide-y divide-line/5">
-        {cats.map((c) => (
-          <div key={c} className="px-4 py-2">
-            <p className="label-mono">{c}</p>
-            {[game.away.team, game.home.team].map((t) => {
-              const l = leaders.find((x) => x.category === c && x.teamId === t.id);
-              return l ? (
-                <div key={t.id} className="flex items-center gap-2 py-0.5 text-sm">
-                  <NbaLogo team={t} className="size-4" />
-                  {l.playerId ? <Link to="/nba/players/$playerId" params={{ playerId: l.playerId }} className="flex-1 truncate hover:text-acc">{l.name}</Link> : <span className="flex-1 truncate">{l.name}</span>}
-                  <span className="font-mono text-xs tabular-nums text-mute">{l.value}</span>
-                </div>
-              ) : null;
-            })}
+      <div className="border-b border-line/10 px-4 py-3">
+        <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">Game leaders</h2>
+        <p className="label-mono mt-1">Top individual performance for each team</p>
+      </div>
+      <div className="px-3 sm:px-5">
+        <div className="grid grid-cols-[minmax(0,1fr)_112px_minmax(0,1fr)] items-center gap-2 border-b border-line/10 py-3 font-mono text-[10px] uppercase tracking-wider text-faint sm:grid-cols-[minmax(0,1fr)_160px_minmax(0,1fr)]">
+          <div className="flex items-center gap-2">
+            <NbaLogo team={game.away.team} className="size-5" />
+            <span>{game.away.team.nickname}</span>
           </div>
-        ))}
+          <div className="text-center">Category</div>
+          <div className="flex items-center justify-end gap-2 text-right">
+            <span>{game.home.team.nickname}</span>
+            <NbaLogo team={game.home.team} className="size-5" />
+          </div>
+        </div>
+        <div className="divide-y divide-line/10">
+          {cats.map((c) => {
+            const away = leaders.find((x) => x.category === c && x.teamId === game.away.team.id);
+            const home = leaders.find((x) => x.category === c && x.teamId === game.home.team.id);
+            if (!away && !home) return null;
+            return (
+              <div
+                key={c}
+                className="grid grid-cols-[minmax(0,1fr)_112px_minmax(0,1fr)] items-center gap-2 sm:grid-cols-[minmax(0,1fr)_160px_minmax(0,1fr)]"
+              >
+                {cell(away, "away")}
+                <div className="text-center font-mono text-[10px] uppercase tracking-wider text-mute">{c}</div>
+                {cell(home, "home")}
+              </div>
+            );
+          })}
+        </div>
       </div>
     </Panel>
   );
