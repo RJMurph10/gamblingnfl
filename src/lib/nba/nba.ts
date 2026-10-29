@@ -397,6 +397,8 @@ export interface NbaGameDetail {
   plays: NbaPlay[];
   /** Home win probability after each play (0–1), when ESPN reports it. */
   winProb: number[];
+  /** Per-play moneyline / cover / over-under chances for the Markets tab (see nba-probabilities.ts). */
+  probabilities?: import("@/data/shared/games").GameProbabilityPoint[];
   injuries: { teamId: string; name: string; status: string; detail?: string }[];
   leaders: { teamId: string; category: string; name: string; value: string; playerId?: string }[];
 }

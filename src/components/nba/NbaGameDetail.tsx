@@ -5,6 +5,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { PageTitle, Panel, PanelHeader } from "@/components/shared/booth";
+import { BASKETBALL_CLOCK, ProbabilityGraph } from "@/components/shared/ProbabilityGraph";
 import { NbaLogo, oddsLine, statusText } from "@/components/nba/NbaBits";
 import {
   atsResult,
@@ -156,9 +157,12 @@ export function NbaGameDetailView({ gameId }: { gameId: string }) {
       ) : null}
 
       {activeTab === "markets" ? (
-        <div className="mt-6 grid gap-6 lg:grid-cols-2">
-          {row ? <ModelCard row={row} /> : null}
-          <LinesCard game={game} />
+        <div className="mt-6 space-y-6">
+          <Probabilities game={game} detail={data} />
+          <div className="grid gap-6 lg:grid-cols-2">
+            {row ? <ModelCard row={row} /> : null}
+            <LinesCard game={game} />
+          </div>
         </div>
       ) : null}
 
@@ -188,6 +192,84 @@ export function NbaGameDetailView({ gameId }: { gameId: string }) {
         </div>
       ) : null}
     </>
+  );
+}
+
+/** The Markets tab's chart, the same as the NFL game page: moneyline, cover and total over the game. */
+function Probabilities({ game, detail }: { game: NbaGame; detail?: NbaGameDetail }) {
+  const [market, setMarket] = useState<"moneyline" | "cover" | "total">("moneyline");
+  const points = detail?.probabilities ?? [];
+  const spread = game.odds?.spread;
+  const favorite = spread == null || spread === 0 ? null : spread < 0 ? game.home.team : game.away.team;
+  const spreadLabel =
+    spread == null ? "—" : spread === 0 ? "PK" : `-${Math.abs(spread).toFixed(1).replace(/\.0$/, "")}`;
+  const away = game.away.team;
+  const home = game.home.team;
+  const logo = (t: typeof away) => <NbaLogo team={t} className="size-8" />;
+  return (
+    <Panel>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">Probabilities</h2>
+        <div className="text-right text-xs text-mute">
+          <div className="flex items-center justify-end gap-1.5">
+            Spread:{" "}
+            <span className="inline-flex items-center gap-1 font-mono font-semibold text-foreground">
+              {favorite ? <NbaLogo team={favorite} className="size-4" /> : null}
+              {spreadLabel}
+            </span>
+          </div>
+          <div className="mt-1">
+            Total: <span className="font-mono font-semibold text-foreground">{game.odds?.total ?? "—"}</span>
+          </div>
+        </div>
+      </div>
+      <div className="mt-4 grid grid-cols-3 gap-1 rounded-lg border border-line/10 p-1" role="tablist" aria-label="Probability type">
+        {([["moneyline", "Moneyline"], ["cover", "Cover"], ["total", "Total"]] as const).map(([key, label]) => (
+          <button
+            key={key}
+            type="button"
+            role="tab"
+            aria-selected={market === key}
+            onClick={() => setMarket(key)}
+            className={`rounded-md px-2 py-2.5 font-disp text-xs font-semibold uppercase tracking-wider transition-colors sm:text-sm ${market === key ? "bg-acc text-black" : "text-mute hover:bg-line/5 hover:text-foreground"}`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+      {market === "total" ? (
+        <ProbabilityGraph
+          points={points}
+          probabilityKey="overProbability"
+          away={away}
+          home={home}
+          logo={logo}
+          clock={BASKETBALL_CLOCK}
+          totalLine={game.odds?.total ?? undefined}
+          unavailableText="Total probability needs the game's pregame over/under and play-by-play scores, which aren't available for this game yet."
+        />
+      ) : market === "cover" ? (
+        <ProbabilityGraph
+          points={points}
+          probabilityKey="homeCoverProbability"
+          away={away}
+          home={home}
+          logo={logo}
+          clock={BASKETBALL_CLOCK}
+          unavailableText="Cover probability needs the game's pregame spread and ESPN's win probabilities, which aren't available for this game yet."
+        />
+      ) : (
+        <ProbabilityGraph
+          points={points}
+          probabilityKey="homeWinProbability"
+          away={away}
+          home={home}
+          logo={logo}
+          clock={BASKETBALL_CLOCK}
+          unavailableText="ESPN hasn't published win probabilities for this game yet."
+        />
+      )}
+    </Panel>
   );
 }
 

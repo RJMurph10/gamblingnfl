@@ -27,6 +27,7 @@ import {
 } from "./nba";
 import { finalCached, finalLinesStore, readFinal, writeFinal } from "../shared/final-cache.server";
 import { athleteIdOf, findPropPrice, priceToAmerican } from "../shared/props.parse";
+import { buildNbaProbabilities } from "./nba-probabilities";
 
 export type { NbaGame } from "./nba";
 
@@ -786,10 +787,10 @@ function possessionFromSummary(json: any, game: NbaGame, plays: any[]): string |
 
 /** Game detail; a finished game's detail is kept long-term (it can't change any more). */
 export async function fetchNbaGameDetail(gameId: string): Promise<NbaGameDetail> {
-  const stored = await readFinal<NbaGameDetail>(`nba-game-${gameId}`);
+  const stored = await readFinal<NbaGameDetail>(`nba-game-v2-${gameId}`);
   if (stored) return stored;
   const detail = await loadNbaGameDetail(gameId);
-  if (detail.game.status === "final") await writeFinal(`nba-game-${gameId}`, detail);
+  if (detail.game.status === "final") await writeFinal(`nba-game-v2-${gameId}`, detail);
   return detail;
 }
 
@@ -875,6 +876,13 @@ function loadNbaGameDetail(gameId: string): Promise<NbaGameDetail> {
     const winProb: number[] = (json?.winprobability ?? [])
       .map((w: any) => num(w?.homeWinPercentage))
       .filter((v: number | null): v is number => v !== null);
+    const probabilities = buildNbaProbabilities(
+      (json?.winprobability ?? [])
+        .map((w: any) => ({ homeWinPercentage: num(w?.homeWinPercentage), playId: w?.playId ? String(w.playId) : undefined }))
+        .filter((w: { homeWinPercentage: number | null }) => w.homeWinPercentage !== null),
+      plays,
+      game,
+    );
 
     const injuries = (json?.injuries ?? []).flatMap((t: any) =>
       (t?.injuries ?? []).map((i: any) => ({
@@ -897,7 +905,7 @@ function loadNbaGameDetail(gameId: string): Promise<NbaGameDetail> {
       })),
     );
 
-    return { game, teamStats, box, plays, winProb, injuries, leaders };
+    return { game, teamStats, box, plays, winProb, probabilities, injuries, leaders };
   });
 }
 
