@@ -2,7 +2,10 @@
  * Per-play probability series for an NBA game's Markets tab (the same chart as the NFL page):
  * moneyline from ESPN's win probability, plus cover and over/under estimated the way the NFL page
  * estimates them (a normal model on the score, the clock, ESPN's win probability and the pregame
- * spread / total), with NBA settings: final margins vary by about 12 points and totals by about 17.
+ * spread / total). The NBA settings come from 1,315 real 2024-25 games (play-by-play plus closing
+ * lines): the points still to come in a game track the pregame total, not the pace so far (a fast
+ * or slow first half says almost nothing about the rest), and they vary by about 18 points over a
+ * full game (15 for the margin), plus a few for end-of-game fouling and overtime.
  *
  * Pure functions (browser- and server-safe).
  */
@@ -12,9 +15,11 @@ import { normCdf, type NbaGame, type NbaPlay } from "./nba";
 const QUARTER_SECONDS = 720;
 const REGULATION_SECONDS = 4 * QUARTER_SECONDS;
 const OT_SECONDS = 300;
-/** Final-margin and final-total spread around a pregame expectation (same as the NBA model). */
-const MARGIN_SD = 12;
-const TOTAL_SD = 17;
+/** How much the rest-of-game margin and points vary, per full game still to play. */
+const MARGIN_SD = 15;
+const TOTAL_SD = 18;
+/** Extra variance (points²) for end-of-game fouling and overtime, faded out over the final minute. */
+const LATE_TOTAL_VAR = 30;
 
 /** ESPN's win-probability sample: home win chance and the play it follows. */
 export interface NbaWinProbSample {
@@ -23,7 +28,7 @@ export interface NbaWinProbSample {
 }
 
 const clockSeconds = (clock: string): number | undefined => {
-  const m = /^(\d+):(\d{2})/.exec(clock);
+  const m = /^(\d+):(\d{1,2}(?:\.\d+)?)/.exec(clock); // "5:07", "0:9.1"
   if (m) return Number(m[1]) * 60 + Number(m[2]);
   const n = Number(clock);
   return Number.isFinite(n) ? n : undefined;
@@ -65,13 +70,17 @@ export function buildNbaProbabilities(
   const out: GameProbabilityPoint[] = samples.map((s, index) => {
     const play = s.playId ? playById.get(s.playId) : undefined;
     // Scores only go up; carry the last known score across plays without one.
-    if (play?.awayScore !== null && play?.awayScore !== undefined) lastAway = Math.max(lastAway ?? 0, play.awayScore);
-    if (play?.homeScore !== null && play?.homeScore !== undefined) lastHome = Math.max(lastHome ?? 0, play.homeScore);
+    if (play?.awayScore !== null && play?.awayScore !== undefined)
+      lastAway = Math.max(lastAway ?? 0, play.awayScore);
+    if (play?.homeScore !== null && play?.homeScore !== undefined)
+      lastHome = Math.max(lastHome ?? 0, play.homeScore);
     const p = Math.max(0, Math.min(1, s.homeWinPercentage));
     const secondsLeft = secondsLeftAt(play);
     const point: GameProbabilityPoint = {
       homeWinProbability: p,
-      ...(play ? { playId: play.id, quarter: play.period, clock: play.clock, playText: play.text } : {}),
+      ...(play
+        ? { playId: play.id, quarter: play.period, clock: play.clock, playText: play.text }
+        : {}),
       ...(secondsLeft !== undefined ? { secondsLeft } : {}),
       ...(lastAway !== undefined ? { awayScore: lastAway } : {}),
       ...(lastHome !== undefined ? { homeScore: lastHome } : {}),
@@ -98,7 +107,8 @@ export function buildNbaProbabilities(
       // Win probability saturates near 0/1 (a 25-point lead reads as 99.9%), so lean on the real
       // score margin only at the extremes.
       const wScore = Math.max(0, Math.min(1, (Math.abs(pc - 0.5) - 0.35) / 0.14));
-      const mu = muFromScore === undefined ? muFromWin : (1 - wScore) * muFromWin + wScore * muFromScore;
+      const mu =
+        muFromScore === undefined ? muFromWin : (1 - wScore) * muFromWin + wScore * muFromScore;
       point.homeCoverProbability = normCdf((mu + spread) / sigma);
       estimated.push("cover");
     }
@@ -107,11 +117,11 @@ export function buildNbaProbabilities(
       if (scored > totalLine) overLocked = true;
       if (overLocked) point.overProbability = 1;
       else {
-        const sigma = TOTAL_SD * Math.sqrt(fraction);
-        const played = 1 - Math.min(1, rawFraction);
-        const observedRate = played > 0.15 ? scored / played : totalLine;
-        const rate = played > 0.15 ? 0.75 * totalLine + 0.25 * observedRate : totalLine;
-        const expected = scored + rate * fraction;
+        const lastMinute = inOvertime ? 1 : Math.min(1, (secondsLeft ?? 60) / 60);
+        const sigma = Math.sqrt(TOTAL_SD ** 2 * fraction + LATE_TOTAL_VAR * lastMinute);
+        // The rest of the game is expected at the pregame total's rate, so the chance only drifts as
+        // the score runs ahead of or behind that pace (a basket nudges it up, empty time down).
+        const expected = scored + totalLine * fraction;
         // Never certain before the score actually clears the line.
         point.overProbability = Math.min(0.99, 1 - normCdf((totalLine - expected) / sigma));
       }
@@ -124,29 +134,13 @@ export function buildNbaProbabilities(
     return point;
   });
 
-  // Smooth the estimated series a little (they otherwise jump at every basket), keeping the ends.
-  for (const key of ["homeCoverProbability", "overProbability"] as const) {
-    const raw = out.map((pt) => pt[key]);
-    const radius = 3;
-    out.forEach((pt, i) => {
-      const v = raw[i];
-      if (typeof v !== "number" || i === 0 || i === out.length - 1) return;
-      if (key === "overProbability" && v === 1) return; // a locked Over stays locked
-      let sum = 0;
-      let weight = 0;
-      for (let j = Math.max(0, i - radius); j <= Math.min(out.length - 1, i + radius); j++) {
-        const n = raw[j];
-        if (typeof n !== "number") continue;
-        const w = radius + 1 - Math.abs(j - i);
-        sum += n * w;
-        weight += w;
-      }
-      if (weight > 0) pt[key] = key === "overProbability" ? Math.min(0.99, sum / weight) : sum / weight;
-    });
-  }
-
   // A finished game ends on its actual result against the lines.
-  if (game.status === "final" && game.away.score !== null && game.home.score !== null && out.length) {
+  if (
+    game.status === "final" &&
+    game.away.score !== null &&
+    game.home.score !== null &&
+    out.length
+  ) {
     const last = out[out.length - 1];
     const a = game.away.score;
     const h = game.home.score;

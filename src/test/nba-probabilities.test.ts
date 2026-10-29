@@ -53,6 +53,23 @@ describe("NBA market probabilities", () => {
     for (const p of out.slice(0, firstOver)) expect(p.overProbability!).toBeLessThan(1);
   });
 
+  it("follows the pregame total's pace, not the pace so far, and reads sub-minute clocks", () => {
+    // Exactly on the total's pace all game (8 points every 2 minutes ≈ 192 over 48 minutes).
+    const ps = plays();
+    const samples = ps.map((p) => ({ playId: p.id, homeWinPercentage: 0.3 }));
+    const live = { ...game(0, 0, -1.5, 192), status: "live" } as NbaGame;
+    const out = buildNbaProbabilities(samples, ps, live);
+    for (const p of out.slice(0, -1)) expect(Math.abs(p.overProbability! - 0.5)).toBeLessThan(0.05);
+    // A "0:9.1" clock is 9.1 seconds left in the quarter.
+    const late: NbaPlay = { ...ps[ps.length - 1], id: "late", clock: "0:9.1" };
+    const [pt] = buildNbaProbabilities(
+      [{ playId: "late", homeWinPercentage: 0.3 }, { playId: "late", homeWinPercentage: 0.3 }],
+      [late],
+      live,
+    );
+    expect(pt.secondsLeft).toBeCloseTo(9.1);
+  });
+
   it("returns nothing without win probabilities", () => {
     expect(buildNbaProbabilities([], plays(), game(1, 2, -1, 200))).toEqual([]);
   });

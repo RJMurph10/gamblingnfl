@@ -37,7 +37,7 @@ const periodLabel = (q: number | undefined, gc: GraphClock) => {
 
 function clockToSeconds(clock?: string): number | undefined {
   if (!clock) return undefined;
-  const match = clock.match(/^(\d+):(\d{2})/);
+  const match = clock.match(/^(\d+):(\d{1,2}(?:\.\d+)?)/); // "5:07", "0:9.1"
   if (match) return Number(match[1]) * 60 + Number(match[2]);
   const seconds = Number(clock);
   return Number.isFinite(seconds) ? seconds : undefined;
