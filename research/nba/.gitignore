@@ -1,0 +1,5 @@
+# Raw downloads and files the scripts rebuild (only data/games.csv is kept in git)
+sources
+data/*.csv
+!data/games.csv
+__pycache__/
