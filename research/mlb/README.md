@@ -25,3 +25,12 @@ stay the only one.
 Lesson: an early version of the run-line grader "fixed" prices by assuming −1.5 always pays more than
 +1.5. That's false for heavy favorites (ML −250: −1.5 ≈ −125, +1.5 ≈ +100), and the bad fix made
 "big home favorites −1.5" look like +9% ROI. With the real prices it's −9%.
+
+## Round 3: park by park, and model v2 (`results_round3.txt`)
+
+- `scripts/park_lab.py`: 322 park-specific angles (30 parks × wind out/in/cross, calm, heat, cold, day, night ×
+  over/under). 27 passed both periods; shuffled data passes 28 on average. No more than chance.
+- `scripts/model_v2.py`: v1 plus platoon (lineup handedness vs the starter), temperature, wind by direction,
+  Wrigley wind, umpire, bullpen workload, day-after-night. The new terms are real (temperature z ≈ 18), but the
+  moneyline log loss doesn't improve (0.6797 vs market 0.6734) and totals stay worse than the market. Betting
+  its edges at the close loses, except 8%+ unders at about +0.8%, too thin to bet.
