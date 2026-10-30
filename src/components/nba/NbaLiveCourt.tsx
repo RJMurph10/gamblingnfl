@@ -15,20 +15,17 @@ import {
   nbaTimeoutsLeft,
 } from "@/lib/nba/nba-live";
 
-/**
- * A flat, top-down court drawn short and wide like the NFL field strip. Lengths run true (94 ft
- * across); the width is compressed, and circles and the 3-point arc are drawn as real circles so
- * it reads as a flat 2D court.
- */
-const W = 940; // 10 units per foot along the court
-const VH = 170; // court height in svg units
+/** A flat, top-down court in true NBA proportions (94 × 50 ft, 10 svg units per foot). */
+const W = 940;
+const VH = 500;
 const MID = VH / 2;
 const PAINT_LEN = 190; // 19 ft
-const PAINT_HALF = 30;
-const FT_RADIUS = 22;
+const PAINT_HALF = 80; // 16 ft wide
+const FT_RADIUS = 60; // 6 ft
 const HOOP_X = 52.5; // 5.25 ft from the baseline
-const ARC_RADIUS = MID - 18; // corner threes run 18 units inside the sidelines
-const ARC_CENTER = 290 - ARC_RADIUS; // the arc's top sits 29 ft (23.75 ft past the hoop) out
+const ARC_RADIUS = 237.5; // 23.75 ft from the hoop
+const CORNER_OFF = 220; // corner threes: 22 ft from the hoop, 3 ft inside the sideline
+const CORNER_LEN = HOOP_X + Math.sqrt(ARC_RADIUS ** 2 - CORNER_OFF ** 2); // where the arc starts
 const LINE = {
   stroke: "currentColor",
   strokeOpacity: 0.3,
@@ -37,33 +34,27 @@ const LINE = {
   vectorEffect: "non-scaling-stroke",
 } as const;
 
-/** Is a point (distance from the baseline, offset from the middle) inside the drawn 3-point line? */
+/** Is a point (distance from the baseline, offset from the middle) inside the 3-point line? */
 function insideArc(depth: number, off: number): boolean {
-  if (depth <= ARC_CENTER) return Math.abs(off) <= ARC_RADIUS;
-  return Math.hypot(depth - ARC_CENTER, off) <= ARC_RADIUS;
+  if (depth <= CORNER_LEN) return Math.abs(off) <= CORNER_OFF;
+  return Math.hypot(depth - HOOP_X, off) <= ARC_RADIUS;
 }
 
 /**
- * Map an ESPN shot spot (feet across 0–50, feet from the baseline) onto the drawn court, keeping
- * threes outside the drawn arc and twos inside it.
+ * Map an ESPN shot spot (feet across 0–50, feet from the baseline) onto the court. ESPN's spots
+ * are rounded, so a three right on the line is nudged just outside it and a two just inside.
  */
 function shotPoint(x: number, y: number, value: number): { depth: number; off: number } {
-  let depth = Math.min(460, Math.max(8, (y + 5) * 10));
-  let off = Math.min(MID - 9, Math.max(-(MID - 9), ((x - 25) / 25) * MID));
+  let depth = Math.min(460, Math.max(10, (y + 5) * 10));
+  let off = Math.min(MID - 14, Math.max(-(MID - 14), (x - 25) * 10));
   const inside = insideArc(depth, off);
-  if (value === 3 && inside) {
-    if (depth <= ARC_CENTER) off = Math.sign(off || 1) * (ARC_RADIUS + (MID - ARC_RADIUS) / 2);
+  if ((value === 3 && inside) || (value === 2 && !inside)) {
+    const out = value === 3 ? 12 : -12;
+    if (depth <= CORNER_LEN) off = Math.sign(off || 1) * Math.min(MID - 14, CORNER_OFF + out);
     else {
-      const a = Math.atan2(off, depth - ARC_CENTER);
-      depth = ARC_CENTER + Math.cos(a) * (ARC_RADIUS + 10);
-      off = Math.sin(a) * (ARC_RADIUS + 10);
-    }
-  } else if (value === 2 && !inside) {
-    if (depth <= ARC_CENTER) off = Math.sign(off) * (ARC_RADIUS - 8);
-    else {
-      const a = Math.atan2(off, depth - ARC_CENTER);
-      depth = ARC_CENTER + Math.cos(a) * (ARC_RADIUS - 10);
-      off = Math.sin(a) * (ARC_RADIUS - 10);
+      const a = Math.atan2(off, depth - HOOP_X);
+      depth = HOOP_X + Math.cos(a) * (ARC_RADIUS + out);
+      off = Math.sin(a) * (ARC_RADIUS + out);
     }
   }
   return { depth, off };
@@ -108,14 +99,14 @@ function Basket({ side, color }: { side: "left" | "right"; color: string }) {
       />
       <circle cx={at(PAINT_LEN)} cy={MID} r={FT_RADIUS} {...LINE} />
       <path
-        d={`M ${at(0)} ${MID - ARC_RADIUS} L ${at(ARC_CENTER)} ${MID - ARC_RADIUS} A ${ARC_RADIUS} ${ARC_RADIUS} 0 0 ${sweep} ${at(ARC_CENTER)} ${MID + ARC_RADIUS} L ${at(0)} ${MID + ARC_RADIUS}`}
+        d={`M ${at(0)} ${MID - CORNER_OFF} L ${at(CORNER_LEN)} ${MID - CORNER_OFF} A ${ARC_RADIUS} ${ARC_RADIUS} 0 0 ${sweep} ${at(CORNER_LEN)} ${MID + CORNER_OFF} L ${at(0)} ${MID + CORNER_OFF}`}
         {...LINE}
       />
       <line
         x1={at(40)}
         x2={at(40)}
-        y1={MID - 12}
-        y2={MID + 12}
+        y1={MID - 30}
+        y2={MID + 30}
         stroke="currentColor"
         strokeOpacity={0.6}
         strokeWidth={2.5}
@@ -124,7 +115,7 @@ function Basket({ side, color }: { side: "left" | "right"; color: string }) {
       <circle
         cx={at(HOOP_X)}
         cy={MID}
-        r={6}
+        r={7.5}
         stroke="var(--court-rim)"
         strokeWidth={2}
         vectorEffect="non-scaling-stroke"
@@ -213,7 +204,7 @@ export function NbaLiveScoreboard({ game, plays }: { game: NbaGame; plays: NbaPl
       </div>
 
       <div
-        className="mt-4 overflow-hidden rounded-lg border p-3"
+        className="mx-auto mt-4 max-w-2xl overflow-hidden rounded-lg border p-3"
         style={{
           borderColor: "var(--court-edge)",
           background: "color-mix(in oklch, var(--court) 70%, black)",
@@ -252,7 +243,7 @@ export function NbaLiveScoreboard({ game, plays }: { game: NbaGame; plays: NbaPl
           <line x1={W / 2} x2={W / 2} y1={0} y2={VH} {...LINE} />
           <circle cx={W / 2} cy={MID} r={FT_RADIUS} {...LINE} />
           {!onBreak ? (
-            <foreignObject x={W / 2 - 16} y={MID - 16} width={32} height={32}>
+            <foreignObject x={W / 2 - 36} y={MID - 36} width={72} height={72}>
               <NbaLogo team={home.team} className="size-full opacity-85" />
             </foreignObject>
           ) : null}
@@ -263,28 +254,28 @@ export function NbaLiveScoreboard({ game, plays }: { game: NbaGame; plays: NbaPl
               <circle
                 cx={marker.x}
                 cy={marker.y}
-                r={10}
+                r={14}
                 fill="none"
                 stroke="currentColor"
                 strokeOpacity={0.5}
                 strokeWidth={2}
               >
-                <animate attributeName="r" values="10;20;10" dur="1.6s" repeatCount="indefinite" />
+                <animate attributeName="r" values="14;30;14" dur="1.6s" repeatCount="indefinite" />
               </circle>
               <circle
                 cx={marker.x}
                 cy={marker.y}
-                r={9}
+                r={13}
                 fill={marker.color}
                 stroke="currentColor"
                 strokeOpacity={0.9}
                 strokeWidth={2.5}
               />
               <text
-                x={marker.x + (marker.x > W / 2 ? -16 : 16)}
-                y={marker.y + 7}
+                x={marker.x + (marker.x > W / 2 ? -22 : 22)}
+                y={marker.y + 10}
                 textAnchor={marker.x > W / 2 ? "end" : "start"}
-                fontSize={22}
+                fontSize={30}
                 fontWeight={800}
                 fill="currentColor"
                 className="font-disp"
@@ -299,9 +290,9 @@ export function NbaLiveScoreboard({ game, plays }: { game: NbaGame; plays: NbaPl
               <rect width={W} height={VH} rx={8} fill="var(--bg)" fillOpacity={0.55} />
               <text
                 x={W / 2}
-                y={MID + 18}
+                y={MID + 26}
                 textAnchor="middle"
-                fontSize={52}
+                fontSize={78}
                 fontWeight={800}
                 letterSpacing={6}
                 fill="currentColor"
