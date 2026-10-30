@@ -33,7 +33,7 @@ const tone = (c: number | null): "win" | "loss" | "mute" =>
   c === null || c === 0 ? "mute" : c > 0 ? "win" : "loss";
 
 function MlbDashboard() {
-  const { games, isLoading, isError, error } = useMlbSchedule(60_000);
+  const { games, isLoading, isError, error, linesLoading } = useMlbSchedule(60_000);
   const weekAgo = useMemo(() => new Date(Date.now() - 7 * 24 * 3_600_000), []);
   const grade = useMemo(() => gradeMlbSeason(games), [games]);
   const prev = useMemo(() => gradeMlbSeason(games, weekAgo), [games, weekAgo]);
@@ -129,6 +129,9 @@ function MlbDashboard() {
           />
         </div>
         <p className="mt-2 font-mono text-[10px] uppercase tracking-wider text-faint">
+          {linesLoading ? (
+            <span className="text-acc">Loading closing lines · {linesLoading} games left · </span>
+          ) : null}
           {grade.games} games graded · flat 1u per pick at the closing ESPN odds · each game
           projected from earlier games only ·{" "}
           <Link to="/mlb/model" className="text-acc">
