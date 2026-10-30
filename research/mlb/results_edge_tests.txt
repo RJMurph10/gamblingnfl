@@ -1,0 +1,47 @@
+NOTE: the 'runs vs closing total' lines below are NOT centered. Every game averages about +0.4 runs over the line (runs skew right), so subtract ~0.4; the centered version is in results_edge_tests2.txt.
+
+
+=== Wrigley wind out 10+ → over ===
+  bets 144, won 59.0%  (95% CI -2.4% to +28.4% ROI; point +12.5%)
+  runs vs closing total: +1.63 per game in our favor (95% CI +0.78 to +2.50), avg line 10.21
+  selection-adjusted p (best of 342 angles with ≥144 games doing this well by luck): 0.918
+  mechanism at this park: runs/game 11.69 vs 8.27 other games; HR per PA 4.55% vs 2.65% (+72%, 95% CI +55% to +88%), 11872 PA
+  does the market adjust? closing total 10.21 in these games vs 8.19 otherwise (+2.02); actual runs +3.42
+  by season (bets, units): {2010: (11, 2.4), 2011: (6, -2.2), 2012: (5, 0.7), 2013: (9, 4.4), 2014: (7, 0.6), 2015: (10, -4.3), 2016: (8, -2.3), 2017: (11, 8.1), 2018: (10, 3.4), 2019: (15, -1.6), 2020: (1, -1.0), 2021: (10, 3.4), 2022: (15, 2.1), 2023: (11, 0.4), 2024: (7, -1.3), 2025: (8, 5.3)}
+  winning seasons: 10 of 16
+
+=== Petco crosswind 10+ → over ===
+  bets 377, won 56.0%  (95% CI -2.9% to +16.1% ROI; point +6.9%)
+  runs vs closing total: +0.52 per game in our favor (95% CI -0.13 to +1.07), avg line 7.57
+  selection-adjusted p (best of 342 angles with ≥377 games doing this well by luck): 0.972
+  mechanism at this park: runs/game 8.07 vs 7.81 other games; HR per PA 2.56% vs 2.68% (-4%, 95% CI -12% to +4%), 29829 PA
+  does the market adjust? closing total 7.57 in these games vs 7.50 otherwise (+0.06); actual runs +0.26
+  by season (bets, units): {2010: (31, 1.5), 2011: (38, 2.1), 2012: (23, -0.1), 2013: (17, 0.2), 2014: (31, 1.5), 2015: (19, 2.0), 2016: (29, 11.1), 2017: (30, -3.3), 2018: (25, 3.6), 2019: (30, -9.0), 2020: (5, 0.7), 2021: (28, 14.0), 2022: (19, 2.3), 2023: (19, 1.8), 2024: (19, 4.2), 2025: (14, -6.5)}
+  winning seasons: 12 of 16
+
+=== White Sox day games → under ===
+  bets 419, won 56.6%  (95% CI -1.2% to +17.0% ROI; point +7.9%)
+  runs vs closing total: +0.07 per game in our favor (95% CI -0.34 to +0.49), avg line 8.54
+  selection-adjusted p (best of 342 angles with ≥419 games doing this well by luck): 0.798
+  mechanism at this park: runs/game 8.39 vs 9.09 other games; HR per PA 3.02% vs 3.14% (-4%, 95% CI -11% to +4%), 34660 PA
+  does the market adjust? closing total 8.54 in these games vs 8.51 otherwise (+0.03); actual runs -0.69
+  by season (bets, units): {2010: (21, -1.9), 2011: (23, 1.8), 2012: (27, -2.2), 2013: (24, 10.4), 2014: (29, -4.2), 2015: (27, 3.5), 2016: (24, 6.5), 2017: (23, 3.7), 2018: (33, -0.5), 2019: (33, 1.4), 2020: (12, -0.5), 2021: (26, 6.5), 2022: (29, 0.8), 2023: (31, 5.1), 2024: (30, 3.1), 2025: (27, -0.3)}
+  winning seasons: 10 of 16
+
+=== Nationals Park 85°F+ → over ===
+  bets 287, won 56.8%  (95% CI -2.5% to +19.1% ROI; point +8.4%)
+  runs vs closing total: +1.01 per game in our favor (95% CI +0.47 to +1.58), avg line 8.60
+  selection-adjusted p (best of 342 angles with ≥287 games doing this well by luck): 0.948
+  mechanism at this park: runs/game 9.65 vs 8.58 other games; HR per PA 3.18% vs 2.79% (+14%, 95% CI +4% to +25%), 24005 PA
+  does the market adjust? closing total 8.60 in these games vs 8.10 otherwise (+0.50); actual runs +1.08
+  by season (bets, units): {2010: (27, -4.1), 2011: (26, -3.1), 2012: (17, 4.0), 2013: (10, 5.3), 2014: (15, 2.2), 2015: (18, -0.8), 2016: (26, 0.7), 2017: (11, 2.4), 2018: (22, 2.8), 2019: (22, 6.6), 2020: (14, -2.5), 2021: (19, 5.8), 2022: (14, 3.4), 2023: (16, 1.0), 2024: (20, -3.0), 2025: (10, 3.5)}
+  winning seasons: 11 of 16
+
+=== Target Field 85°F+ → over ===
+  bets 114, won 58.8%  (95% CI -6.5% to +29.0% ROI; point +12.0%)
+  runs vs closing total: +1.23 per game in our favor (95% CI +0.36 to +2.11), avg line 8.93
+  selection-adjusted p (best of 342 angles with ≥114 games doing this well by luck): 0.994
+  mechanism at this park: runs/game 10.12 vs 9.19 other games; HR per PA 3.16% vs 2.88% (+10%, 95% CI -3% to +23%), 9261 PA
+  does the market adjust? closing total 8.93 in these games vs 8.54 otherwise (+0.39); actual runs +0.93
+  by season (bets, units): {2010: (6, -0.3), 2011: (11, -3.4), 2012: (15, 4.1), 2013: (7, 0.6), 2014: (4, -2.1), 2015: (6, -0.3), 2016: (4, 1.7), 2017: (6, -0.3), 2018: (5, 2.6), 2019: (3, -1.1), 2021: (16, 3.1), 2022: (6, -0.4), 2023: (10, 3.1), 2024: (5, 4.5), 2025: (10, 1.7)}
+  winning seasons: 8 of 15
