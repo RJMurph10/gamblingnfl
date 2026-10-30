@@ -15,12 +15,59 @@ import {
   nbaTimeoutsLeft,
 } from "@/lib/nba/nba-live";
 
-const FT = 10; // svg units per foot; the court is 94 × 50 feet
-const W = 94 * FT;
-const H = 50 * FT;
-/** The court is drawn squashed top to bottom, like a tilted TV view, to keep the card short. */
-const K = 0.42;
-const VH = H * K;
+/**
+ * A flat, top-down court drawn short and wide like the NFL field strip. Lengths run true (94 ft
+ * across); the width is compressed, and circles and the 3-point arc are drawn as real circles so
+ * it reads as a flat 2D court.
+ */
+const W = 940; // 10 units per foot along the court
+const VH = 170; // court height in svg units
+const MID = VH / 2;
+const PAINT_LEN = 190; // 19 ft
+const PAINT_HALF = 30;
+const FT_RADIUS = 22;
+const HOOP_X = 52.5; // 5.25 ft from the baseline
+const ARC_RADIUS = MID - 18; // corner threes run 18 units inside the sidelines
+const ARC_CENTER = 290 - ARC_RADIUS; // the arc's top sits 29 ft (23.75 ft past the hoop) out
+const LINE = {
+  stroke: "currentColor",
+  strokeOpacity: 0.3,
+  strokeWidth: 1.5,
+  fill: "none",
+  vectorEffect: "non-scaling-stroke",
+} as const;
+
+/** Is a point (distance from the baseline, offset from the middle) inside the drawn 3-point line? */
+function insideArc(depth: number, off: number): boolean {
+  if (depth <= ARC_CENTER) return Math.abs(off) <= ARC_RADIUS;
+  return Math.hypot(depth - ARC_CENTER, off) <= ARC_RADIUS;
+}
+
+/**
+ * Map an ESPN shot spot (feet across 0–50, feet from the baseline) onto the drawn court, keeping
+ * threes outside the drawn arc and twos inside it.
+ */
+function shotPoint(x: number, y: number, value: number): { depth: number; off: number } {
+  let depth = Math.min(460, Math.max(8, (y + 5) * 10));
+  let off = Math.min(MID - 9, Math.max(-(MID - 9), ((x - 25) / 25) * MID));
+  const inside = insideArc(depth, off);
+  if (value === 3 && inside) {
+    if (depth <= ARC_CENTER) off = Math.sign(off || 1) * (ARC_RADIUS + (MID - ARC_RADIUS) / 2);
+    else {
+      const a = Math.atan2(off, depth - ARC_CENTER);
+      depth = ARC_CENTER + Math.cos(a) * (ARC_RADIUS + 10);
+      off = Math.sin(a) * (ARC_RADIUS + 10);
+    }
+  } else if (value === 2 && !inside) {
+    if (depth <= ARC_CENTER) off = Math.sign(off) * (ARC_RADIUS - 8);
+    else {
+      const a = Math.atan2(off, depth - ARC_CENTER);
+      depth = ARC_CENTER + Math.cos(a) * (ARC_RADIUS - 10);
+      off = Math.sin(a) * (ARC_RADIUS - 10);
+    }
+  }
+  return { depth, off };
+}
 
 const periodName = (p: number) =>
   p > 4 ? (p === 5 ? "OT" : `${p - 4}OT`) : (["1st", "2nd", "3rd", "4th"][p - 1] ?? "");
@@ -40,47 +87,44 @@ function courtColor(hex: string): string {
 
 function Basket({ side, color }: { side: "left" | "right"; color: string }) {
   const left = side === "left";
-  const base = left ? 0 : W;
-  const s = left ? 1 : -1;
-  const hoop = base + s * 5.25 * FT;
-  const arcX = hoop + s * Math.sqrt(23.75 ** 2 - 22 ** 2) * FT;
-  const line = {
-    stroke: "currentColor",
-    strokeOpacity: 0.28,
-    strokeWidth: 1.5,
-    fill: "none",
-    vectorEffect: "non-scaling-stroke",
-  } as const;
+  const at = (d: number) => (left ? d : W - d); // distance from this baseline → x
+  const sweep = left ? 1 : 0;
   return (
     <g>
       <rect
-        x={left ? 0 : W - 19 * FT}
-        y={17 * FT}
-        width={19 * FT}
-        height={16 * FT}
+        x={left ? 0 : W - PAINT_LEN}
+        y={MID - PAINT_HALF}
+        width={PAINT_LEN}
+        height={PAINT_HALF * 2}
         fill={color}
         fillOpacity={0.28}
       />
-      <rect x={left ? 0 : W - 19 * FT} y={17 * FT} width={19 * FT} height={16 * FT} {...line} />
-      <circle cx={base + s * 19 * FT} cy={H / 2} r={6 * FT} {...line} />
+      <rect
+        x={left ? 0 : W - PAINT_LEN}
+        y={MID - PAINT_HALF}
+        width={PAINT_LEN}
+        height={PAINT_HALF * 2}
+        {...LINE}
+      />
+      <circle cx={at(PAINT_LEN)} cy={MID} r={FT_RADIUS} {...LINE} />
       <path
-        d={`M ${base} ${3 * FT} L ${arcX} ${3 * FT} A ${23.75 * FT} ${23.75 * FT} 0 0 ${left ? 1 : 0} ${arcX} ${H - 3 * FT} L ${base} ${H - 3 * FT}`}
-        {...line}
+        d={`M ${at(0)} ${MID - ARC_RADIUS} L ${at(ARC_CENTER)} ${MID - ARC_RADIUS} A ${ARC_RADIUS} ${ARC_RADIUS} 0 0 ${sweep} ${at(ARC_CENTER)} ${MID + ARC_RADIUS} L ${at(0)} ${MID + ARC_RADIUS}`}
+        {...LINE}
       />
       <line
-        x1={base + s * 4 * FT}
-        x2={base + s * 4 * FT}
-        y1={H / 2 - 3 * FT}
-        y2={H / 2 + 3 * FT}
+        x1={at(40)}
+        x2={at(40)}
+        y1={MID - 12}
+        y2={MID + 12}
         stroke="currentColor"
         strokeOpacity={0.6}
         strokeWidth={2.5}
         vectorEffect="non-scaling-stroke"
       />
       <circle
-        cx={hoop}
-        cy={H / 2}
-        r={0.75 * FT}
+        cx={at(HOOP_X)}
+        cy={MID}
+        r={6}
         stroke="var(--court-rim)"
         strokeWidth={2}
         vectorEffect="non-scaling-stroke"
@@ -119,48 +163,49 @@ export function NbaLiveScoreboard({ game, plays }: { game: NbaGame; plays: NbaPl
   // Away shoots at the right basket, home at the left (like the NFL field's drive arrow).
   let marker: { x: number; y: number; color: string; value: number } | undefined;
   if (shot) {
-    const depth = Math.min(47, Math.max(0, shot.y + 5)) * FT;
-    const across = Math.min(50, Math.max(0, shot.x)) * FT;
+    const { depth, off } = shotPoint(shot.x, shot.y, shot.value);
     marker =
       shot.teamId === away.team.id
-        ? { x: W - depth, y: across * K, color: awayColor, value: shot.value }
-        : { x: depth, y: (H - across) * K, color: homeColor, value: shot.value };
+        ? { x: W - depth, y: MID + off, color: awayColor, value: shot.value }
+        : { x: depth, y: MID - off, color: homeColor, value: shot.value };
   }
   const lastTeam = teamFor(last?.teamId);
   const runTeam = teamFor(run?.teamId);
 
+  // Same sizes as the NFL live scoreboard and the NBA final header.
   const side = (s: typeof away, i: number) => (
-    <div
-      className={`flex min-w-0 items-center gap-2 sm:gap-4 ${i === 1 ? "flex-row-reverse" : ""}`}
-    >
+    <div className={`flex items-center gap-3 sm:gap-6 ${i === 1 ? "flex-row-reverse" : ""}`}>
       <TimeoutDots remaining={i === 0 ? timeouts.away : timeouts.home} total={7} />
-      <Link to="/nba/teams/$teamId" params={{ teamId: s.team.id }} className="shrink-0">
-        <NbaLogo team={s.team} className="size-10 sm:size-14" />
+      <Link
+        to="/nba/teams/$teamId"
+        params={{ teamId: s.team.id }}
+        className="group flex flex-col items-center gap-1 text-center"
+      >
+        <NbaLogo
+          team={s.team}
+          className="size-10 transition-transform group-hover:scale-105 sm:size-14"
+        />
+        <span className="font-mono text-xs text-mute group-hover:text-acc">{s.record ?? ""}</span>
       </Link>
-      <div className="flex flex-col items-center">
-        <span className="font-mono text-3xl font-bold tabular-nums sm:text-5xl">
-          {s.score ?? 0}
-        </span>
-        <span className="font-mono text-[10px] text-mute sm:text-xs">{s.record ?? ""}</span>
-      </div>
+      <span className="font-mono text-3xl font-bold tabular-nums sm:text-5xl">{s.score ?? 0}</span>
     </div>
   );
 
   return (
     <Panel className="mb-6">
-      <div className="mx-auto flex max-w-2xl items-center justify-between gap-2">
+      <div className="mx-auto flex max-w-2xl items-center justify-between">
         {side(away, 0)}
-        <div className="flex shrink-0 flex-col items-center gap-1.5 text-center">
+        <div className="flex flex-col items-center justify-center gap-1.5 px-2 text-center">
           {badge ? (
-            <span className="whitespace-nowrap rounded border border-win/30 bg-win/10 px-1.5 py-0.5 font-mono text-[9px] font-semibold uppercase tracking-wider text-win sm:px-3 sm:text-xs">
+            <span className="whitespace-nowrap rounded border border-win/30 bg-win/10 px-2 py-0.5 font-mono text-[11px] font-bold uppercase tracking-wider text-win">
               {badge}
             </span>
           ) : null}
           <span
-            className="flex items-center gap-1.5 font-disp text-base font-bold tracking-wide text-win sm:text-2xl"
+            className="flex items-center gap-1.5 font-mono text-xs font-semibold tracking-wider text-win sm:text-sm"
             suppressHydrationWarning
           >
-            <span className="size-2 animate-pulse rounded-full bg-win sm:size-2.5" />
+            <span className="size-2 animate-pulse rounded-full bg-win" />
             {clockText}
           </span>
         </div>
@@ -168,13 +213,13 @@ export function NbaLiveScoreboard({ game, plays }: { game: NbaGame; plays: NbaPl
       </div>
 
       <div
-        className="mx-auto mt-4 max-w-lg rounded-lg border p-2 sm:p-3"
+        className="mt-4 overflow-hidden rounded-lg border p-3"
         style={{
           borderColor: "var(--court-edge)",
           background: "color-mix(in oklch, var(--court) 70%, black)",
         }}
       >
-        <div className="mb-2 flex flex-col gap-1 font-mono text-[11px] sm:flex-row sm:items-center sm:justify-between sm:gap-3 sm:text-xs">
+        <div className="mb-2 flex flex-col gap-1 font-mono text-[11px] sm:flex-row sm:items-center sm:justify-between sm:gap-3">
           {last ? (
             <span className="flex min-w-0 items-center gap-1.5">
               {lastTeam ? <NbaLogo team={lastTeam} className="size-4 sm:size-5" /> : null}
@@ -201,91 +246,45 @@ export function NbaLiveScoreboard({ game, plays }: { game: NbaGame; plays: NbaPl
           role="img"
           aria-label="Court with the latest made basket"
         >
-          <rect width={W} height={VH} rx={10} fill="var(--court)" />
-          <g transform={`scale(1 ${K})`}>
-            <Basket side="left" color={homeColor} />
-            <Basket side="right" color={awayColor} />
-            <line
-              x1={W / 2}
-              x2={W / 2}
-              y1={0}
-              y2={H}
-              stroke="currentColor"
-              strokeOpacity={0.28}
-              strokeWidth={1.5}
-              vectorEffect="non-scaling-stroke"
-            />
-            <circle
-              cx={W / 2}
-              cy={H / 2}
-              r={6 * FT}
-              stroke="currentColor"
-              strokeOpacity={0.28}
-              strokeWidth={1.5}
-              vectorEffect="non-scaling-stroke"
-              fill="none"
-            />
-            <circle
-              cx={W / 2}
-              cy={H / 2}
-              r={4.4 * FT}
-              fill={homeColor}
-              fillOpacity={0.15}
-              stroke={homeColor}
-              strokeOpacity={0.5}
-              strokeWidth={1.5}
-              vectorEffect="non-scaling-stroke"
-            />
-          </g>
+          <rect width={W} height={VH} rx={8} fill="var(--court)" />
+          <Basket side="left" color={homeColor} />
+          <Basket side="right" color={awayColor} />
+          <line x1={W / 2} x2={W / 2} y1={0} y2={VH} {...LINE} />
+          <circle cx={W / 2} cy={MID} r={FT_RADIUS} {...LINE} />
           {!onBreak ? (
-            <foreignObject
-              x={W / 2 - 1.7 * FT}
-              y={VH / 2 - 1.7 * FT}
-              width={3.4 * FT}
-              height={3.4 * FT}
-            >
+            <foreignObject x={W / 2 - 16} y={MID - 16} width={32} height={32}>
               <NbaLogo team={home.team} className="size-full opacity-85" />
             </foreignObject>
           ) : null}
-          <rect
-            x={1}
-            y={1}
-            width={W - 2}
-            height={VH - 2}
-            rx={10}
-            fill="none"
-            stroke="currentColor"
-            strokeOpacity={0.28}
-            strokeWidth={2}
-          />
+          <rect x={1} y={1} width={W - 2} height={VH - 2} rx={8} {...LINE} />
 
           {marker ? (
             <g>
               <circle
                 cx={marker.x}
                 cy={marker.y}
-                r={14}
+                r={10}
                 fill="none"
                 stroke="currentColor"
                 strokeOpacity={0.5}
                 strokeWidth={2}
               >
-                <animate attributeName="r" values="14;30;14" dur="1.6s" repeatCount="indefinite" />
+                <animate attributeName="r" values="10;20;10" dur="1.6s" repeatCount="indefinite" />
               </circle>
               <circle
                 cx={marker.x}
                 cy={marker.y}
-                r={13}
+                r={9}
                 fill={marker.color}
                 stroke="currentColor"
                 strokeOpacity={0.9}
-                strokeWidth={3}
+                strokeWidth={2.5}
               />
               <text
-                x={marker.x + (marker.x > W / 2 ? 18 : -18)}
-                y={marker.y < 60 ? marker.y + 44 : marker.y - 24}
-                textAnchor={marker.x > W / 2 ? "start" : "end"}
-                fontSize={26}
+                x={marker.x + (marker.x > W / 2 ? -16 : 16)}
+                y={marker.y + 7}
+                textAnchor={marker.x > W / 2 ? "end" : "start"}
+                fontSize={22}
                 fontWeight={800}
                 fill="currentColor"
                 className="font-disp"
@@ -297,12 +296,12 @@ export function NbaLiveScoreboard({ game, plays }: { game: NbaGame; plays: NbaPl
 
           {onBreak ? (
             <g>
-              <rect width={W} height={VH} rx={10} fill="var(--bg)" fillOpacity={0.55} />
+              <rect width={W} height={VH} rx={8} fill="var(--bg)" fillOpacity={0.55} />
               <text
                 x={W / 2}
-                y={VH / 2 + 24}
+                y={MID + 18}
                 textAnchor="middle"
-                fontSize={70}
+                fontSize={52}
                 fontWeight={800}
                 letterSpacing={6}
                 fill="currentColor"
