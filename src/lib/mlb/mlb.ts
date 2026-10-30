@@ -149,6 +149,26 @@ export function lineText(n: number | null | undefined, signed = true): string {
   return signed && n > 0 ? `+${n}` : String(n);
 }
 
+/** Profit per unit staked at American odds. */
+const payoutOf = (price: number) => (price < 0 ? 100 / -price : price / 100);
+
+/**
+ * Run-line prices that make sense, or null. The −1.5 side always pays more than the +1.5 side
+ * (it's the harder bet), so prices the other way round are attached to the wrong teams and get
+ * swapped; identical prices on both sides (−110/−110) are placeholders, not real run-line prices.
+ */
+export function runLinePrices(
+  o: Pick<MlbOdds, "spread" | "spreadOddsHome" | "spreadOddsAway"> | null | undefined,
+): { home: number; away: number } | null {
+  const h = o?.spreadOddsHome;
+  const a = o?.spreadOddsAway;
+  if (!o || o.spread == null || o.spread === 0 || h == null || a == null || h === a) return null;
+  const homeIsMinus = o.spread < 0;
+  const minus = homeIsMinus ? h : a;
+  const plus = homeIsMinus ? a : h;
+  return payoutOf(minus) > payoutOf(plus) ? { home: h, away: a } : { home: a, away: h };
+}
+
 export const hasScore = (g: MlbGame) => g.away.score !== null && g.home.score !== null;
 
 export const ordinal = (n: number) => {
@@ -357,8 +377,9 @@ export function mlbTeamBetting(games: MlbGame[], teamId: string): MlbTeamBetting
       grade(out.moneyline, us - them, ml);
       grade(ml < opp ? out.asFavorite : out.asUnderdog, us - them, ml);
     }
-    // Only with real run-line prices: ±1.5 is never close to −110.
-    const rlPrice = home ? o.spreadOddsHome : o.spreadOddsAway;
+    // Only with real, sensible run-line prices: ±1.5 is never close to −110.
+    const rl = runLinePrices(o);
+    const rlPrice = rl ? (home ? rl.home : rl.away) : null;
     if (o.spread != null && o.spread !== 0 && rlPrice != null) {
       const line = home ? o.spread : -o.spread;
       grade(out.runLine, us - them + line, rlPrice);

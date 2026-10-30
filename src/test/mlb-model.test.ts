@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { mlbMarketRows, mlbRatings, projectMlbGame } from "@/lib/mlb/mlb-model";
 import { parseEvent, parseOdds } from "@/lib/mlb/mlb.server";
-import { buildMlbStandings, mlbTeamBetting, type MlbGame } from "@/lib/mlb/mlb";
+import { buildMlbStandings, mlbTeamBetting, runLinePrices, type MlbGame } from "@/lib/mlb/mlb";
 
 const team = (id: string, abbr: string) => ({
   id,
@@ -240,5 +240,32 @@ describe("no leakage in grading", () => {
     const b = mlbTeamBetting([g], "1");
     expect(b.runLine.wins + b.runLine.losses).toBe(0);
     expect(b.moneyline.losses).toBe(1);
+  });
+});
+
+describe("run-line prices", () => {
+  it("keeps sensible prices, swaps backwards ones and drops placeholders", () => {
+    // Home -1.5 at +140, away +1.5 at -160: fine.
+    expect(runLinePrices({ spread: -1.5, spreadOddsHome: 140, spreadOddsAway: -160 })).toEqual({
+      home: 140,
+      away: -160,
+    });
+    // Same prices on the wrong teams: swapped back.
+    expect(runLinePrices({ spread: -1.5, spreadOddsHome: -160, spreadOddsAway: 140 })).toEqual({
+      home: 140,
+      away: -160,
+    });
+    // Away is the -1.5 side.
+    expect(runLinePrices({ spread: 1.5, spreadOddsHome: 130, spreadOddsAway: -150 })).toEqual({
+      home: -150,
+      away: 130,
+    });
+    // Heavy favorite: -1.5 at -120 still pays more than +1.5 at -250.
+    expect(runLinePrices({ spread: -1.5, spreadOddsHome: -120, spreadOddsAway: -250 })).toEqual({
+      home: -120,
+      away: -250,
+    });
+    expect(runLinePrices({ spread: -1.5, spreadOddsHome: -110, spreadOddsAway: -110 })).toBeNull();
+    expect(runLinePrices({ spread: -1.5, spreadOddsHome: null, spreadOddsAway: -160 })).toBeNull();
   });
 });
