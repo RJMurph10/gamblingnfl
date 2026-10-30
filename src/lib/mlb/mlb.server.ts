@@ -17,9 +17,10 @@ import {
   type MlbStatus,
   type MlbTeamRef,
 } from "./mlb";
-import { finalCached } from "../shared/final-cache.server";
+import { finalCached, finalLinesStore } from "../shared/final-cache.server";
 
 const SITE = "https://site.api.espn.com/apis/site/v2/sports/baseball/mlb";
+const CORE = "https://sports.core.api.espn.com/v2/sports/baseball/leagues/mlb";
 
 const MINUTE = 60_000;
 const HOUR = 60 * MINUTE;
@@ -318,7 +319,7 @@ function fetchRange(from: Date, to: Date, ttl: number): Promise<MlbGame[]> {
 }
 
 /** The season so far (late March through the World Series) plus the next two weeks. */
-export async function fetchMlbSchedule(): Promise<MlbGame[]> {
+async function loadMlbSchedule(): Promise<MlbGame[]> {
   const now = new Date();
   const season = mlbSeasonYear(now);
   const start = new Date(season, 2, 15);
@@ -349,6 +350,117 @@ export async function fetchMlbSchedule(): Promise<MlbGame[]> {
   const byId = new Map<string, MlbGame>();
   for (const r of ok) for (const g of r.value) byId.set(g.id, g);
   return [...byId.values()].sort((a, b) => a.date.localeCompare(b.date));
+}
+
+/* ---------- closing lines for live and finished games ---------- */
+
+// ESPN's scoreboard drops the lines once a game starts, so live and final games get theirs from the
+// core odds feed (any provider), then the game summary's pick center, like the NBA and NFL pages.
+// Without this every finished game has no line and the season can't be graded.
+const oddsBackfill = new Map<string, { at: number; odds: MlbOdds | null }>();
+const finalLines = finalLinesStore<MlbOdds>("mlb");
+/** New lookups per schedule refresh; finished games are stored for good once found. */
+const LOOKUPS_PER_REFRESH = 60;
+
+async function loadClosingOdds(game: MlbGame): Promise<MlbOdds | null> {
+  const acc: MlbOdds = { spread: null, total: null, mlHome: null, mlAway: null };
+  const absorb = (raw: any) => {
+    const o = parseOdds(raw);
+    if (!o) return;
+    for (const k of [
+      "spread",
+      "total",
+      "mlHome",
+      "mlAway",
+      "spreadOddsHome",
+      "spreadOddsAway",
+      "overOdds",
+      "underOdds",
+    ] as const) {
+      if (acc[k] == null && o[k] != null) acc[k] = o[k] as number;
+    }
+    if (!acc.open && o.open) acc.open = o.open;
+    if (!acc.provider && o.provider) acc.provider = o.provider;
+  };
+  try {
+    const data = await fetchJson(`${CORE}/events/${game.id}/competitions/${game.id}/odds`);
+    for (const item of Array.isArray(data?.items) ? data.items : []) absorb(item);
+  } catch {
+    // fall through to the summary feed
+  }
+  if (acc.mlHome === null || acc.total === null) {
+    try {
+      const summary = await fetchJson(`${SITE}/summary?event=${game.id}`);
+      for (const pick of Array.isArray(summary?.pickcenter) ? summary.pickcenter : []) absorb(pick);
+    } catch {
+      // keep whatever was found
+    }
+  }
+  return acc.spread === null && acc.total === null && acc.mlHome === null ? null : acc;
+}
+
+const backfillTtl = (hit: { odds: MlbOdds | null } | undefined, g: MlbGame) =>
+  hit?.odds ? 12 * HOUR : g.status === "live" ? MINUTE : 10 * MINUTE;
+
+async function closingOdds(game: MlbGame): Promise<MlbOdds | null> {
+  const hit = oddsBackfill.get(game.id);
+  if (hit && Date.now() - hit.at < backfillTtl(hit, game)) return hit.odds;
+  const odds = await loadClosingOdds(game);
+  oddsBackfill.set(game.id, { at: Date.now(), odds });
+  return odds;
+}
+
+/** Fills in missing lines on live and finished games: stored lines first, then a bounded batch of lookups. */
+async function withClosingOdds(games: MlbGame[]): Promise<MlbGame[]> {
+  const missing = (g: MlbGame) =>
+    (g.status === "live" || g.status === "final") &&
+    (g.odds?.mlHome == null || g.odds?.total == null);
+  const todo = games.filter(missing).sort((a, b) => b.date.localeCompare(a.date));
+  if (!todo.length) return games;
+  const fresh = (g: MlbGame) => {
+    const hit = oddsBackfill.get(g.id);
+    return Boolean(hit && Date.now() - hit.at < backfillTtl(hit, g));
+  };
+  const finals = todo.filter((g) => g.status === "final");
+  const stored = finals.length
+    ? await finalLines.get(finals).catch(() => new Map<string, MlbOdds>())
+    : new Map<string, MlbOdds>();
+  const rest = todo.filter((g) => !stored.has(g.id));
+  const lookups = [
+    ...rest.filter(fresh),
+    ...rest.filter((g) => !fresh(g)).slice(0, LOOKUPS_PER_REFRESH),
+  ];
+  const found = new Map<string, MlbOdds>(stored);
+  let next = 0;
+  await Promise.all(
+    Array.from({ length: 8 }, async () => {
+      while (next < lookups.length) {
+        const g = lookups[next++];
+        const o = await closingOdds(g).catch(() => null);
+        if (o) found.set(g.id, o);
+      }
+    }),
+  );
+  const newFinals = lookups
+    .filter(
+      (g) =>
+        g.status === "final" && found.get(g.id)?.mlHome != null && found.get(g.id)?.total != null,
+    )
+    .map((g) => ({ id: g.id, date: g.date, odds: found.get(g.id) as MlbOdds }));
+  if (newFinals.length) await finalLines.save(newFinals).catch(() => undefined);
+  return games.map((g) => {
+    const o = found.get(g.id);
+    if (!o) return g;
+    const merged: MlbOdds = { ...o };
+    for (const [k, v] of Object.entries(g.odds ?? {})) {
+      if (v != null) (merged as any)[k] = v;
+    }
+    return { ...g, odds: merged };
+  });
+}
+
+export async function fetchMlbSchedule(): Promise<MlbGame[]> {
+  return withClosingOdds(await loadMlbSchedule());
 }
 
 /* ---------- one game (summary: play-by-play, box score) ---------- */
