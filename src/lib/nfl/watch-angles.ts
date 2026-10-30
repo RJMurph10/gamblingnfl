@@ -21,7 +21,8 @@ import { homeLine } from "../shared/season-pulse";
 import { getStadiumForGame, NFL_STADIUMS } from "./stadiums";
 
 /** Kickoff conditions. `outdoor` false = dome or closed roof. Null when unknown. */
-export type AngleId = "cold-visitor" | "qb-change" | "west-coast-east" | "east-at-west-night";
+export type AngleId =
+  "cold-visitor" | "qb-change" | "west-coast-east" | "east-at-west-night" | "road-dog";
 
 export interface AngleDefinition {
   id: AngleId;
@@ -84,6 +85,12 @@ export const WATCH_ANGLES: AngleDefinition[] = [
     title: "East team at a West night game → home team",
     bet: "The home team against the spread",
     why: "A cross-country trip for a late kickoff may cost the visitor more than the line allows. Neutral-site and international games don't count.",
+  },
+  {
+    id: "road-dog",
+    title: `Road underdog of ${MODEL_SETTINGS.bigUnderdogPts}+ → the underdog`,
+    bet: "The road team against the spread",
+    why: "Dropped from the ★ best bets in October 2026: over 1999–2025 road underdogs of 7+ went 792-767 at closing lines (−47u), about a coin flip that loses to the vig, while home underdogs won. Tracked here so a real comeback would show.",
   },
 ];
 
@@ -154,6 +161,23 @@ export function travelHitsForGame(
     });
   }
   return out;
+}
+
+/** The road-underdog angle for one game (former ★ rule, now tracked). */
+export function roadDogHitsForGame(game: Game, season: number): AngleHit[] {
+  const line = homeLine(game);
+  if (line === null || line > -MODEL_SETTINGS.bigUnderdogPts) return [];
+  const final = game.status === "final";
+  const s = gameScore(game);
+  return [
+    {
+      angle: "road-dog",
+      game,
+      season,
+      label: `${abbrOf(game.awayTeamId)} ${lineText(-line)}`,
+      ...settle(final ? s.away - s.home - line : null, final),
+    },
+  ];
 }
 
 export type AngleResult = "win" | "loss" | "push" | "pending";
@@ -300,6 +324,7 @@ export function buildWatchList(
       const game = historyGameToGame(h);
       if (game) {
         hits.push(...angleHitsForGame(game, h.season, recordedConditions(h)));
+        hits.push(...roadDogHitsForGame(game, h.season));
         hits.push(
           ...travelHitsForGame(game, h.season, {
             neutral: !!h.neutral,
@@ -314,6 +339,7 @@ export function buildWatchList(
   for (const game of schedule) {
     const c = game.status === "final" ? recorded.get(game.id) : forecasts[game.id];
     hits.push(...angleHitsForGame(game, currentSeason, c ?? null));
+    hits.push(...roadDogHitsForGame(game, currentSeason));
     hits.push(
       ...travelHitsForGame(game, currentSeason, {
         neutral: !!getStadiumForGame(game.homeTeamId, game.venue)?.international,
