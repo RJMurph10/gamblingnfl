@@ -167,7 +167,14 @@ describe("MLB standings and team betting", () => {
       inning: 9,
       away: { team: away, score: a },
       home: { team: home, score: h },
-      odds: { spread: -1.5, total: 8.5, mlHome: -150, mlAway: 130 },
+      odds: {
+        spread: -1.5,
+        total: 8.5,
+        mlHome: -150,
+        mlAway: 130,
+        spreadOddsHome: 140,
+        spreadOddsAway: -160,
+      },
     }) as unknown as import("@/lib/mlb/mlb").MlbGame;
   const games = [mk(1, NYY, BOS, 5, 3), mk(2, NYY, BOS, 2, 4), mk(3, BOS, NYY, 1, 6)];
 
@@ -194,3 +201,44 @@ describe("MLB standings and team betting", () => {
   });
 });
 const rec3 = (r: { wins: number; losses: number; pushes: number }) => [r.wins, r.losses, r.pushes];
+
+describe("no leakage in grading", () => {
+  it("ignores the starter's ERA once a game is final (ESPN's ERA already includes it)", () => {
+    const base = mlbRatings([]);
+    const mk = (status: "final" | "scheduled", era: number) =>
+      ({
+        id: "x",
+        date: "2025-06-01T23:00Z",
+        status,
+        statusDetail: "",
+        part: "reg",
+        inning: 9,
+        away: { team: team("1", "AAA"), score: null, probable: { id: "a", name: "", era } },
+        home: { team: team("2", "BBB"), score: null, probable: { id: "b", name: "", era: 4.2 } },
+      }) as unknown as MlbGame;
+    expect(projectMlbGame(mk("final", 1.5), base).pHome).toBeCloseTo(
+      projectMlbGame(mk("final", 7.5), base).pHome,
+      9,
+    );
+    expect(projectMlbGame(mk("scheduled", 1.5), base).pHome).toBeLessThan(
+      projectMlbGame(mk("scheduled", 7.5), base).pHome,
+    );
+  });
+
+  it("only grades a team's run line with real prices", () => {
+    const g = {
+      id: "y",
+      date: "2025-06-01T23:00Z",
+      status: "final",
+      statusDetail: "Final",
+      part: "reg",
+      inning: 9,
+      away: { team: team("1", "AAA"), score: 3 },
+      home: { team: team("2", "BBB"), score: 4 },
+      odds: { spread: -1.5, total: 8.5, mlHome: -150, mlAway: 130 },
+    } as unknown as MlbGame;
+    const b = mlbTeamBetting([g], "1");
+    expect(b.runLine.wins + b.runLine.losses).toBe(0);
+    expect(b.moneyline.losses).toBe(1);
+  });
+});
