@@ -244,28 +244,49 @@ describe("no leakage in grading", () => {
 });
 
 describe("run-line prices", () => {
-  it("keeps sensible prices, swaps backwards ones and drops placeholders", () => {
-    // Home -1.5 at +140, away +1.5 at -160: fine.
-    expect(runLinePrices({ spread: -1.5, spreadOddsHome: 140, spreadOddsAway: -160 })).toEqual({
+  const ml = { mlHome: -150, mlAway: 130 };
+  it("keeps normal prices", () => {
+    expect(
+      runLinePrices({ spread: -1.5, spreadOddsHome: 140, spreadOddsAway: -170, ...ml }),
+    ).toEqual({
       home: 140,
-      away: -160,
+      away: -170,
     });
-    // Same prices on the wrong teams: swapped back.
-    expect(runLinePrices({ spread: -1.5, spreadOddsHome: -160, spreadOddsAway: 140 })).toEqual({
+  });
+  it("keeps a heavy favorite's -1.5 at a minus price (it's normal)", () => {
+    expect(
+      runLinePrices({
+        spread: -1.5,
+        spreadOddsHome: -150,
+        spreadOddsAway: 125,
+        mlHome: -320,
+        mlAway: 260,
+      }),
+    ).toEqual({ home: -150, away: 125 });
+  });
+  it("swaps prices that are clearly on the wrong teams", () => {
+    expect(
+      runLinePrices({ spread: -1.5, spreadOddsHome: -170, spreadOddsAway: 140, ...ml }),
+    ).toEqual({
       home: 140,
-      away: -160,
+      away: -170,
     });
-    // Away is the -1.5 side.
-    expect(runLinePrices({ spread: 1.5, spreadOddsHome: 130, spreadOddsAway: -150 })).toEqual({
-      home: -150,
-      away: 130,
-    });
-    // Heavy favorite: -1.5 at -120 still pays more than +1.5 at -250.
-    expect(runLinePrices({ spread: -1.5, spreadOddsHome: -120, spreadOddsAway: -250 })).toEqual({
-      home: -120,
-      away: -250,
-    });
-    expect(runLinePrices({ spread: -1.5, spreadOddsHome: -110, spreadOddsAway: -110 })).toBeNull();
-    expect(runLinePrices({ spread: -1.5, spreadOddsHome: null, spreadOddsAway: -160 })).toBeNull();
+    expect(
+      runLinePrices({
+        spread: 1.5,
+        spreadOddsHome: 150,
+        spreadOddsAway: -180,
+        mlHome: 135,
+        mlAway: -155,
+      }),
+    ).toEqual({ home: -180, away: 150 });
+  });
+  it("drops placeholders and missing prices", () => {
+    expect(
+      runLinePrices({ spread: -1.5, spreadOddsHome: -110, spreadOddsAway: -110, ...ml }),
+    ).toBeNull();
+    expect(
+      runLinePrices({ spread: -1.5, spreadOddsHome: null, spreadOddsAway: -160, ...ml }),
+    ).toBeNull();
   });
 });

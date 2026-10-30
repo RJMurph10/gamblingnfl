@@ -149,24 +149,41 @@ export function lineText(n: number | null | undefined, signed = true): string {
   return signed && n > 0 ? `+${n}` : String(n);
 }
 
-/** Profit per unit staked at American odds. */
-const payoutOf = (price: number) => (price < 0 ? 100 / -price : price / 100);
+/** Implied probability of American odds (vig included). */
+const impliedOf = (price: number) => (price < 0 ? -price / (-price + 100) : 100 / (price + 100));
 
 /**
- * Run-line prices that make sense, or null. The −1.5 side always pays more than the +1.5 side
- * (it's the harder bet), so prices the other way round are attached to the wrong teams and get
- * swapped; identical prices on both sides (−110/−110) are placeholders, not real run-line prices.
+ * Run-line prices that make sense, or null.
+ *
+ * Prices that are clearly on the wrong teams get swapped back. The test uses the moneyline: the
+ * favorite covers −1.5 about 15 points less often than it wins (2022–25 DraftKings/FanDuel), so
+ * whichever assignment of the two prices lands closer to that is the right one. A swap needs a
+ * clear margin, because near a 50% cover chance either way looks plausible (on clean 2022–25 lines
+ * this swaps 0.03% of games and catches about two-thirds of deliberately swapped ones). Note a
+ * heavy favorite's −1.5 often pays LESS than the dog's +1.5; that's normal, not a swap.
+ * −110/−110 is a placeholder, not a real run-line price.
  */
 export function runLinePrices(
-  o: Pick<MlbOdds, "spread" | "spreadOddsHome" | "spreadOddsAway"> | null | undefined,
+  o:
+    | Pick<MlbOdds, "spread" | "spreadOddsHome" | "spreadOddsAway" | "mlHome" | "mlAway">
+    | null
+    | undefined,
 ): { home: number; away: number } | null {
   const h = o?.spreadOddsHome;
   const a = o?.spreadOddsAway;
-  if (!o || o.spread == null || o.spread === 0 || h == null || a == null || h === a) return null;
-  const homeIsMinus = o.spread < 0;
-  const minus = homeIsMinus ? h : a;
-  const plus = homeIsMinus ? a : h;
-  return payoutOf(minus) > payoutOf(plus) ? { home: h, away: a } : { home: a, away: h };
+  if (!o || o.spread == null || o.spread === 0 || h == null || a == null) return null;
+  if (h === -110 && a === -110) return null;
+  if (o.mlHome == null || o.mlAway == null) return { home: h, away: a };
+  const homeFav = o.spread < 0; // the run-line favorite (−1.5)
+  const ph = impliedOf(o.mlHome);
+  const pa = impliedOf(o.mlAway);
+  const pFav = (homeFav ? ph : pa) / (ph + pa);
+  const fav = homeFav ? h : a;
+  const dog = homeFav ? a : h;
+  const q = impliedOf(fav) / (impliedOf(fav) + impliedOf(dog)); // fav covers, as priced
+  const expected = pFav - 0.15;
+  const swapped = Math.abs(1 - q - expected) + 0.1 < Math.abs(q - expected);
+  return swapped ? { home: a, away: h } : { home: h, away: a };
 }
 
 export const hasScore = (g: MlbGame) => g.away.score !== null && g.home.score !== null;
