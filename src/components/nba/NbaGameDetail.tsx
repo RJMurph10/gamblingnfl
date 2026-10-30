@@ -121,18 +121,21 @@ export function NbaGameDetailView({ gameId }: { gameId: string }) {
           {data?.leaders.length ? <Leaders game={game} leaders={data.leaders} /> : null}
           {started ? (
             <div className="grid gap-6 lg:grid-cols-12">
-              <Panel className="min-w-0 lg:col-span-7">
+              <Panel className={`min-w-0 ${game.status === "live" ? "lg:col-span-12" : "lg:col-span-7"}`}>
                 <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">Play-by-play</h2>
                 <div className="mt-3">
                   <Plays game={game} plays={data?.plays ?? []} started={started} />
                 </div>
               </Panel>
-              <Panel className="min-w-0 lg:col-span-5">
-                <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">Win probability</h2>
-                <div className="mt-3">
-                  <WinProb game={game} detail={data} />
-                </div>
-              </Panel>
+              {/* Live games show the full probability chart on the Markets tab instead. */}
+              {game.status !== "live" ? (
+                <Panel className="min-w-0 lg:col-span-5">
+                  <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">Win probability</h2>
+                  <div className="mt-3">
+                    <WinProb game={game} detail={data} />
+                  </div>
+                </Panel>
+              ) : null}
             </div>
           ) : null}
         </div>
