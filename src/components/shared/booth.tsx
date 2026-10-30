@@ -308,10 +308,10 @@ export function MatchupPredictor({ game, away, home }: { game: Game; away: Team;
 }
 
 /** Three vertical dots showing a team's timeouts: white = remaining, darker shade of the same dot = used. */
-export function TimeoutDots({ remaining }: { remaining: number }) {
+export function TimeoutDots({ remaining, total = 3 }: { remaining: number; total?: number }) {
   return (
     <div className="flex flex-col items-center gap-1" aria-label={`${remaining} timeouts remaining`}>
-      {[0, 1, 2].map((i) => (
+      {Array.from({ length: total }, (_, i) => i).map((i) => (
         <span
           key={i}
           className={`size-1.5 rounded-full sm:size-2 ${i < remaining ? "bg-foreground" : "bg-foreground/35"}`}

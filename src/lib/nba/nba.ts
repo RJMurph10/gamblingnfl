@@ -388,6 +388,8 @@ export interface NbaPlay {
   homeScore: number | null;
   scoring: boolean;
   scoreValue: number;
+  /** Where a shot was taken: ESPN's court spot (feet across 0–50, from the baseline). */
+  shot?: { x: number; y: number };
 }
 
 export interface NbaGameDetail {

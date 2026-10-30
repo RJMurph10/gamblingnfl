@@ -707,6 +707,15 @@ export async function fetchNbaPlayerProfile(playerId: string): Promise<NbaPlayer
 
 /* ---------- game summary ---------- */
 
+/** ESPN's court spot for a shot; non-shots carry huge sentinel numbers, so keep only real spots. */
+function shotSpot(p: any): { shot?: { x: number; y: number } } {
+  const x = Number(p?.coordinate?.x);
+  const y = Number(p?.coordinate?.y);
+  if (!p?.shootingPlay || !Number.isFinite(x) || !Number.isFinite(y)) return {};
+  if (x < 0 || x > 50 || y < -6 || y > 94) return {};
+  return { shot: { x, y } };
+}
+
 /**
  * Prefer ESPN's explicit possession field. The play-by-play fallback only returns a team after
  * a clear event; ambiguous missed shots/free throws deliberately clear possession until resolved.
@@ -867,6 +876,7 @@ function loadNbaGameDetail(gameId: string): Promise<NbaGameDetail> {
       homeScore: num(p?.homeScore),
       scoring: Boolean(p?.scoringPlay),
       scoreValue: numOr(p?.scoreValue),
+      ...shotSpot(p),
     }));
     if (game.status === "live") {
       const possessionTeamId = possessionFromSummary(json, game, rawPlays);
