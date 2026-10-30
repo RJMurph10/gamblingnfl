@@ -111,7 +111,12 @@ function MlbDashboard() {
             label="Run line · model"
             value={fmt(winPct(grade.runLine))}
             unit={winPct(grade.runLine) === null ? undefined : "%"}
-            note={loading ?? note(changeText(rlC), `${rec(grade.runLine)} on the run line`)}
+            note={
+              loading ??
+              (grade.runLine.wins + grade.runLine.losses
+                ? note(changeText(rlC), `${rec(grade.runLine)} on the run line`)
+                : "graded only with real run-line prices · none from ESPN yet")
+            }
             tone={tone(rlC)}
           />
           <StatCard

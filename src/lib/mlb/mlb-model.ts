@@ -124,8 +124,12 @@ export function projectMlbGame(game: MlbGame, ratings: MlbRatings): MlbProjectio
   const team = (id: string) => ratings.teams.get(id) ?? { off: 1, def: 1, games: 0 };
   const a = team(game.away.team.id);
   const h = team(game.home.team.id);
-  const spAway = shrunkEra(game.away.probable?.era) / LEAGUE_ERA; // the away starter faces the home lineup
-  const spHome = shrunkEra(game.home.probable?.era) / LEAGUE_ERA;
+  // ESPN reports a starter's ERA as of now, so for a finished game it already includes that game
+  // (and every later start). Using it there leaks the result into the projection: on 2024 lines
+  // that turned a −277u model into a +206u one. Finished games are projected without it.
+  const sp = game.status !== "final";
+  const spAway = shrunkEra(sp ? game.away.probable?.era : null) / LEAGUE_ERA; // faces the home lineup
+  const spHome = shrunkEra(sp ? game.home.probable?.era : null) / LEAGUE_ERA;
   const park = ratings.parks.get(game.home.team.id) ?? 1;
   const awayRuns = L * a.off * (0.55 * spHome + 0.45 * h.def) * 0.985 * park;
   const homeRuns = L * h.off * (0.55 * spAway + 0.45 * a.def) * 1.015 * park;
@@ -384,7 +388,14 @@ export function gradeMlbSeason(games: MlbGame[], before?: Date): MlbSeasonGrade 
           r.units -= 1;
         }
       }
-      if (o.spread != null && o.spread !== 0) {
+      // Run lines are only graded with real prices: ±1.5 is never priced near −110, and assuming
+      // it is makes backing +1.5 look hugely profitable.
+      if (
+        o.spread != null &&
+        o.spread !== 0 &&
+        o.spreadOddsHome != null &&
+        o.spreadOddsAway != null
+      ) {
         const home = p.pHomeCover(o.spread) >= 0.5;
         const m = home ? h - a + o.spread : a - h - o.spread;
         const r = out.runLine;

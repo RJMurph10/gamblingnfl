@@ -357,9 +357,11 @@ export function mlbTeamBetting(games: MlbGame[], teamId: string): MlbTeamBetting
       grade(out.moneyline, us - them, ml);
       grade(ml < opp ? out.asFavorite : out.asUnderdog, us - them, ml);
     }
-    if (o.spread != null && o.spread !== 0) {
+    // Only with real run-line prices: ±1.5 is never close to −110.
+    const rlPrice = home ? o.spreadOddsHome : o.spreadOddsAway;
+    if (o.spread != null && o.spread !== 0 && rlPrice != null) {
       const line = home ? o.spread : -o.spread;
-      grade(out.runLine, us - them + line, home ? o.spreadOddsHome : o.spreadOddsAway);
+      grade(out.runLine, us - them + line, rlPrice);
     }
     if (o.total != null) {
       const t = us + them;
