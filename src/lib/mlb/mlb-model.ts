@@ -29,58 +29,65 @@ export interface MlbRatings {
   parks: Map<string, number>;
 }
 
+const isDone = (g: MlbGame) =>
+  g.status === "final" && g.away.score !== null && g.home.score !== null;
+
+/** Running totals behind the ratings, so a season can be replayed game by game. */
+class RatingsAcc {
+  runs = 0;
+  games = 0;
+  teams = new Map<string, { rs: number; ra: number; g: number }>();
+  venue = new Map<string, { home: number; hg: number; road: number; rg: number }>();
+  add(g: MlbGame) {
+    const as = g.away.score as number;
+    const hs = g.home.score as number;
+    this.runs += as + hs;
+    this.games += 1;
+    for (const [t, rs, ra] of [
+      [g.away.team.id, as, hs],
+      [g.home.team.id, hs, as],
+    ] as const) {
+      const x = this.teams.get(t) ?? { rs: 0, ra: 0, g: 0 };
+      x.rs += rs;
+      x.ra += ra;
+      x.g += 1;
+      this.teams.set(t, x);
+    }
+    const h = this.venue.get(g.home.team.id) ?? { home: 0, hg: 0, road: 0, rg: 0 };
+    h.home += as + hs;
+    h.hg += 1;
+    this.venue.set(g.home.team.id, h);
+    const a = this.venue.get(g.away.team.id) ?? { home: 0, hg: 0, road: 0, rg: 0 };
+    a.road += as + hs;
+    a.rg += 1;
+    this.venue.set(g.away.team.id, a);
+  }
+  snapshot(): MlbRatings {
+    const league = this.games ? this.runs / (2 * this.games) : 4.4;
+    const teams = new Map<string, { off: number; def: number; games: number }>();
+    for (const [t, x] of this.teams)
+      teams.set(t, {
+        off: (x.rs + PRIOR_GAMES * league) / (x.g + PRIOR_GAMES) / league,
+        def: (x.ra + PRIOR_GAMES * league) / (x.g + PRIOR_GAMES) / league,
+        games: x.g,
+      });
+    // Park: total runs per game in a team's home games vs its road games, with 40 games of 1.0 mixed in.
+    const parks = new Map<string, number>();
+    for (const [t, v] of this.venue) {
+      if (!v.hg || !v.rg) continue;
+      const raw = v.home / v.hg / (v.road / v.rg);
+      const n = Math.min(v.hg, v.rg);
+      parks.set(t, (raw * n + 40) / (n + 40));
+    }
+    return { league, teams, parks };
+  }
+}
+
 /** Team run ratings from finished games before `before` (ISO date). */
 export function mlbRatings(games: MlbGame[], before?: string): MlbRatings {
-  const done = games.filter(
-    (g) =>
-      g.status === "final" &&
-      g.away.score !== null &&
-      g.home.score !== null &&
-      (!before || g.date < before),
-  );
-  const runs = done.reduce((s, g) => s + (g.away.score as number) + (g.home.score as number), 0);
-  const league = done.length ? runs / (2 * done.length) : 4.4;
-  const acc = new Map<string, { rs: number; ra: number; g: number }>();
-  for (const g of done) {
-    for (const [t, rs, ra] of [
-      [g.away.team.id, g.away.score as number, g.home.score as number],
-      [g.home.team.id, g.home.score as number, g.away.score as number],
-    ] as const) {
-      const a = acc.get(t) ?? { rs: 0, ra: 0, g: 0 };
-      a.rs += rs;
-      a.ra += ra;
-      a.g += 1;
-      acc.set(t, a);
-    }
-  }
-  const teams = new Map<string, { off: number; def: number; games: number }>();
-  for (const [t, a] of acc)
-    teams.set(t, {
-      off: (a.rs + PRIOR_GAMES * league) / (a.g + PRIOR_GAMES) / league,
-      def: (a.ra + PRIOR_GAMES * league) / (a.g + PRIOR_GAMES) / league,
-      games: a.g,
-    });
-  // Park: total runs per game in a team's home games vs its road games, with 40 games of 1.0 mixed in.
-  const venue = new Map<string, { home: number; hg: number; road: number; rg: number }>();
-  for (const g of done) {
-    const t = (g.away.score as number) + (g.home.score as number);
-    const h = venue.get(g.home.team.id) ?? { home: 0, hg: 0, road: 0, rg: 0 };
-    h.home += t;
-    h.hg += 1;
-    venue.set(g.home.team.id, h);
-    const a = venue.get(g.away.team.id) ?? { home: 0, hg: 0, road: 0, rg: 0 };
-    a.road += t;
-    a.rg += 1;
-    venue.set(g.away.team.id, a);
-  }
-  const parks = new Map<string, number>();
-  for (const [t, v] of venue) {
-    if (!v.hg || !v.rg) continue;
-    const raw = v.home / v.hg / (v.road / v.rg);
-    const n = Math.min(v.hg, v.rg);
-    parks.set(t, (raw * n + 40) / (n + 40));
-  }
-  return { league, teams, parks };
+  const acc = new RatingsAcc();
+  for (const g of games) if (isDone(g) && (!before || g.date < before)) acc.add(g);
+  return acc.snapshot();
 }
 
 function nbPmf(mu: number, r: number): number[] {
@@ -306,4 +313,108 @@ export function mlbMarketRows(
     );
   }
   return rows;
+}
+
+/* ---------- the season so far, graded ---------- */
+
+export interface MlbRecord {
+  wins: number;
+  losses: number;
+  pushes: number;
+  units: number;
+}
+const blank = (): MlbRecord => ({ wins: 0, losses: 0, pushes: 0, units: 0 });
+export const winPct = (r: MlbRecord) =>
+  r.wins + r.losses ? (100 * r.wins) / (r.wins + r.losses) : null;
+
+export interface MlbSeasonGrade {
+  games: number;
+  /** Picking the winner (the side the model gives over 50%), at the closing moneyline. */
+  moneyline: MlbRecord;
+  /** The side of the run line the model favors. */
+  runLine: MlbRecord;
+  /** Over / under the closing total, by the model. */
+  total: MlbRecord;
+  avgRuns: number | null;
+  avgLine: number | null;
+}
+
+const win = (price: number | null | undefined) =>
+  price == null ? 100 / 110 : price < 0 ? 100 / -price : price / 100;
+
+/**
+ * Every finished game this season, each projected only from the games before it, graded against
+ * the result at the closing prices (−110 where a price is missing). `before` stops the replay early
+ * (for week-over-week changes).
+ */
+export function gradeMlbSeason(games: MlbGame[], before?: Date): MlbSeasonGrade {
+  const done = games.filter(isDone).sort((a, b) => a.date.localeCompare(b.date));
+  const acc = new RatingsAcc();
+  const out: MlbSeasonGrade = {
+    games: 0,
+    moneyline: blank(),
+    runLine: blank(),
+    total: blank(),
+    avgRuns: null,
+    avgLine: null,
+  };
+  let runs = 0;
+  let lineSum = 0;
+  let lineN = 0;
+  const cutoff = before ? before.toISOString() : null;
+  for (const g of done) {
+    if (cutoff && g.date >= cutoff) break;
+    // Wait for a couple of weeks of results before grading.
+    if (acc.games >= 150 && g.odds) {
+      const p = projectMlbGame(g, acc.snapshot());
+      const a = g.away.score as number;
+      const h = g.home.score as number;
+      const o = g.odds;
+      out.games += 1;
+      runs += a + h;
+      if (o.mlHome != null && o.mlAway != null) {
+        const home = p.pHome >= 0.5;
+        const won = home ? h > a : a > h;
+        const r = out.moneyline;
+        if (won) {
+          r.wins += 1;
+          r.units += win(home ? o.mlHome : o.mlAway);
+        } else {
+          r.losses += 1;
+          r.units -= 1;
+        }
+      }
+      if (o.spread != null && o.spread !== 0) {
+        const home = p.pHomeCover(o.spread) >= 0.5;
+        const m = home ? h - a + o.spread : a - h - o.spread;
+        const r = out.runLine;
+        if (m > 0) {
+          r.wins += 1;
+          r.units += win(home ? o.spreadOddsHome : o.spreadOddsAway);
+        } else if (m < 0) {
+          r.losses += 1;
+          r.units -= 1;
+        } else r.pushes += 1;
+      }
+      if (o.total != null) {
+        lineSum += o.total;
+        lineN += 1;
+        const over = p.pOver(o.total) >= 0.5;
+        const t = a + h;
+        const r = out.total;
+        if (t === o.total) r.pushes += 1;
+        else if (over === t > o.total) {
+          r.wins += 1;
+          r.units += win(over ? o.overOdds : o.underOdds);
+        } else {
+          r.losses += 1;
+          r.units -= 1;
+        }
+      }
+    }
+    acc.add(g);
+  }
+  out.avgRuns = out.games ? runs / out.games : null;
+  out.avgLine = lineN ? lineSum / lineN : null;
+  return out;
 }

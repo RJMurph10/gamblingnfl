@@ -279,11 +279,35 @@ export function mlbSeasonYear(now = new Date()): number {
 const allFinal = (games: MlbGame[]) =>
   games.length > 0 && games.every((g) => g.status === "final" || g.status === "postponed");
 
+function fetchDay(day: Date, ttl: number): Promise<MlbGame[]> {
+  return cached(`day-${ymd(day)}`, ttl, async () =>
+    parseEvents(await fetchJson(`${SITE}/scoreboard?dates=${ymd(day)}&limit=100`)),
+  );
+}
+
 function loadRange(from: Date, to: Date, ttl: number): Promise<MlbGame[]> {
   const range = `${ymd(from)}-${ymd(to)}`;
-  return cached(`range-${range}`, ttl, async () =>
-    parseEvents(await fetchJson(`${SITE}/scoreboard?dates=${range}&limit=1000`)),
-  );
+  return cached(`range-${range}`, ttl, async () => {
+    try {
+      return parseEvents(await fetchJson(`${SITE}/scoreboard?dates=${range}&limit=500`));
+    } catch (first) {
+      // ESPN sometimes rejects the range form; ask day by day instead.
+      console.error(`MLB schedule range ${range} failed, falling back to single days:`, first);
+      const days: Date[] = [];
+      for (
+        let d = new Date(from);
+        d <= to;
+        d = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1)
+      )
+        days.push(new Date(d));
+      const perDay = await Promise.allSettled(days.map((d) => fetchDay(d, ttl)));
+      const ok = perDay.filter(
+        (r): r is PromiseFulfilledResult<MlbGame[]> => r.status === "fulfilled",
+      );
+      if (!ok.length) throw first;
+      return ok.flatMap((r) => r.value);
+    }
+  });
 }
 
 function fetchRange(from: Date, to: Date, ttl: number): Promise<MlbGame[]> {
@@ -303,9 +327,9 @@ export async function fetchMlbSchedule(): Promise<MlbGame[]> {
   for (
     let d = new Date(start);
     d <= end;
-    d = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 7)
+    d = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 14)
   ) {
-    const to = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 6);
+    const to = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 13);
     chunks.push([new Date(d), to > end ? new Date(end) : to]);
   }
   const results = await Promise.allSettled(
