@@ -329,10 +329,6 @@ function Header({ game, plays }: { game: NbaGame; plays: NbaPlay[] }) {
     const homeWon = hasScore(game) && (game.home.score as number) > (game.away.score as number);
     return (
       <>
-        <PageTitle
-          eyebrow={[game.part === "pre" ? "Preseason" : game.part === "play-in" ? "Play-in" : game.part === "post" ? "Playoffs" : "NBA", game.note].filter(Boolean).join(" · ")}
-          title={`${game.away.team.abbr} @ ${game.home.team.abbr}`}
-        />
         <Panel className="mb-6">
           <div className="mx-auto flex max-w-2xl items-center justify-between gap-2">
             <div className="flex min-w-0 items-center gap-2 sm:gap-4">
@@ -373,10 +369,6 @@ function Header({ game, plays }: { game: NbaGame; plays: NbaPlay[] }) {
   if (game.status === "live") {
     return (
       <>
-        <PageTitle
-          eyebrow={[game.part === "pre" ? "Preseason" : game.part === "play-in" ? "Play-in" : game.part === "post" ? "Playoffs" : "NBA", game.note].filter(Boolean).join(" · ")}
-          title={`${game.away.team.abbr} @ ${game.home.team.abbr}`}
-        />
         <NbaLiveScoreboard game={game} plays={plays} />
       </>
     );
@@ -384,10 +376,6 @@ function Header({ game, plays }: { game: NbaGame; plays: NbaPlay[] }) {
 
   return (
     <>
-      <PageTitle
-        eyebrow={[game.part === "pre" ? "Preseason" : game.part === "play-in" ? "Play-in" : game.part === "post" ? "Playoffs" : "NBA", game.note].filter(Boolean).join(" · ")}
-        title={`${game.away.team.abbr} @ ${game.home.team.abbr}`}
-      />
       <Panel className="mb-6">
         <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
           {[game.away, game.home].map((s, i) => (

@@ -18,6 +18,9 @@ import {
 const FT = 10; // svg units per foot; the court is 94 × 50 feet
 const W = 94 * FT;
 const H = 50 * FT;
+/** The court is drawn squashed top to bottom, like a tilted TV view, to keep the card short. */
+const K = 0.42;
+const VH = H * K;
 
 const periodName = (p: number) =>
   p > 4 ? (p === 5 ? "OT" : `${p - 4}OT`) : (["1st", "2nd", "3rd", "4th"][p - 1] ?? "");
@@ -41,7 +44,13 @@ function Basket({ side, color }: { side: "left" | "right"; color: string }) {
   const s = left ? 1 : -1;
   const hoop = base + s * 5.25 * FT;
   const arcX = hoop + s * Math.sqrt(23.75 ** 2 - 22 ** 2) * FT;
-  const line = { stroke: "currentColor", strokeOpacity: 0.28, strokeWidth: 2, fill: "none" };
+  const line = {
+    stroke: "currentColor",
+    strokeOpacity: 0.28,
+    strokeWidth: 1.5,
+    fill: "none",
+    vectorEffect: "non-scaling-stroke",
+  } as const;
   return (
     <g>
       <rect
@@ -65,14 +74,16 @@ function Basket({ side, color }: { side: "left" | "right"; color: string }) {
         y2={H / 2 + 3 * FT}
         stroke="currentColor"
         strokeOpacity={0.6}
-        strokeWidth={3}
+        strokeWidth={2.5}
+        vectorEffect="non-scaling-stroke"
       />
       <circle
         cx={hoop}
         cy={H / 2}
         r={0.75 * FT}
         stroke="var(--court-rim)"
-        strokeWidth={2.5}
+        strokeWidth={2}
+        vectorEffect="non-scaling-stroke"
         fill="none"
       />
     </g>
@@ -112,8 +123,8 @@ export function NbaLiveScoreboard({ game, plays }: { game: NbaGame; plays: NbaPl
     const across = Math.min(50, Math.max(0, shot.x)) * FT;
     marker =
       shot.teamId === away.team.id
-        ? { x: W - depth, y: across, color: awayColor, value: shot.value }
-        : { x: depth, y: H - across, color: homeColor, value: shot.value };
+        ? { x: W - depth, y: across * K, color: awayColor, value: shot.value }
+        : { x: depth, y: (H - across) * K, color: homeColor, value: shot.value };
   }
   const lastTeam = teamFor(last?.teamId);
   const runTeam = teamFor(run?.teamId);
@@ -124,7 +135,7 @@ export function NbaLiveScoreboard({ game, plays }: { game: NbaGame; plays: NbaPl
     >
       <TimeoutDots remaining={i === 0 ? timeouts.away : timeouts.home} total={7} />
       <Link to="/nba/teams/$teamId" params={{ teamId: s.team.id }} className="shrink-0">
-        <NbaLogo team={s.team} className="size-10 sm:size-16" />
+        <NbaLogo team={s.team} className="size-10 sm:size-14" />
       </Link>
       <div className="flex flex-col items-center">
         <span className="font-mono text-3xl font-bold tabular-nums sm:text-5xl">
@@ -137,7 +148,7 @@ export function NbaLiveScoreboard({ game, plays }: { game: NbaGame; plays: NbaPl
 
   return (
     <Panel className="mb-6">
-      <div className="mx-auto flex max-w-3xl items-center justify-between gap-2">
+      <div className="mx-auto flex max-w-2xl items-center justify-between gap-2">
         {side(away, 0)}
         <div className="flex shrink-0 flex-col items-center gap-1.5 text-center">
           {badge ? (
@@ -157,7 +168,7 @@ export function NbaLiveScoreboard({ game, plays }: { game: NbaGame; plays: NbaPl
       </div>
 
       <div
-        className="mx-auto mt-4 max-w-3xl rounded-lg border p-2 sm:p-3"
+        className="mx-auto mt-4 max-w-lg rounded-lg border p-2 sm:p-3"
         style={{
           borderColor: "var(--court-edge)",
           background: "color-mix(in oklch, var(--court) 70%, black)",
@@ -185,48 +196,53 @@ export function NbaLiveScoreboard({ game, plays }: { game: NbaGame; plays: NbaPl
         </div>
 
         <svg
-          viewBox={`0 0 ${W} ${H}`}
+          viewBox={`0 0 ${W} ${VH}`}
           className="block w-full text-foreground"
           role="img"
           aria-label="Court with the latest made basket"
         >
-          <rect width={W} height={H} rx={10} fill="var(--court)" />
-          <Basket side="left" color={homeColor} />
-          <Basket side="right" color={awayColor} />
-          <line
-            x1={W / 2}
-            x2={W / 2}
-            y1={0}
-            y2={H}
-            stroke="currentColor"
-            strokeOpacity={0.28}
-            strokeWidth={2}
-          />
-          <circle
-            cx={W / 2}
-            cy={H / 2}
-            r={6 * FT}
-            stroke="currentColor"
-            strokeOpacity={0.28}
-            strokeWidth={2}
-            fill="none"
-          />
-          <circle
-            cx={W / 2}
-            cy={H / 2}
-            r={4.4 * FT}
-            fill={homeColor}
-            fillOpacity={0.15}
-            stroke={homeColor}
-            strokeOpacity={0.5}
-            strokeWidth={2}
-          />
+          <rect width={W} height={VH} rx={10} fill="var(--court)" />
+          <g transform={`scale(1 ${K})`}>
+            <Basket side="left" color={homeColor} />
+            <Basket side="right" color={awayColor} />
+            <line
+              x1={W / 2}
+              x2={W / 2}
+              y1={0}
+              y2={H}
+              stroke="currentColor"
+              strokeOpacity={0.28}
+              strokeWidth={1.5}
+              vectorEffect="non-scaling-stroke"
+            />
+            <circle
+              cx={W / 2}
+              cy={H / 2}
+              r={6 * FT}
+              stroke="currentColor"
+              strokeOpacity={0.28}
+              strokeWidth={1.5}
+              vectorEffect="non-scaling-stroke"
+              fill="none"
+            />
+            <circle
+              cx={W / 2}
+              cy={H / 2}
+              r={4.4 * FT}
+              fill={homeColor}
+              fillOpacity={0.15}
+              stroke={homeColor}
+              strokeOpacity={0.5}
+              strokeWidth={1.5}
+              vectorEffect="non-scaling-stroke"
+            />
+          </g>
           {!onBreak ? (
             <foreignObject
-              x={W / 2 - 3.2 * FT}
-              y={H / 2 - 3.2 * FT}
-              width={6.4 * FT}
-              height={6.4 * FT}
+              x={W / 2 - 1.7 * FT}
+              y={VH / 2 - 1.7 * FT}
+              width={3.4 * FT}
+              height={3.4 * FT}
             >
               <NbaLogo team={home.team} className="size-full opacity-85" />
             </foreignObject>
@@ -235,7 +251,7 @@ export function NbaLiveScoreboard({ game, plays }: { game: NbaGame; plays: NbaPl
             x={1}
             y={1}
             width={W - 2}
-            height={H - 2}
+            height={VH - 2}
             rx={10}
             fill="none"
             stroke="currentColor"
@@ -267,7 +283,7 @@ export function NbaLiveScoreboard({ game, plays }: { game: NbaGame; plays: NbaPl
               />
               <text
                 x={marker.x + (marker.x > W / 2 ? 18 : -18)}
-                y={marker.y - 24}
+                y={marker.y < 60 ? marker.y + 44 : marker.y - 24}
                 textAnchor={marker.x > W / 2 ? "start" : "end"}
                 fontSize={26}
                 fontWeight={800}
@@ -281,12 +297,12 @@ export function NbaLiveScoreboard({ game, plays }: { game: NbaGame; plays: NbaPl
 
           {onBreak ? (
             <g>
-              <rect width={W} height={H} rx={10} fill="var(--bg)" fillOpacity={0.55} />
+              <rect width={W} height={VH} rx={10} fill="var(--bg)" fillOpacity={0.55} />
               <text
                 x={W / 2}
-                y={H / 2 + 26}
+                y={VH / 2 + 24}
                 textAnchor="middle"
-                fontSize={78}
+                fontSize={70}
                 fontWeight={800}
                 letterSpacing={6}
                 fill="currentColor"
