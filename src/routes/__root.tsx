@@ -44,6 +44,12 @@ const nhlNav = [
   { to: "/nhl/model", label: "Model" },
 ] as const;
 
+const mlbNav = [
+  { to: "/mlb", label: "Dashboard" },
+  { to: "/mlb/games", label: "Games" },
+  { to: "/mlb/model", label: "Model" },
+] as const;
+
 const cfbNav = [
   { to: "/cfb", label: "Dashboard" },
   { to: "/cfb/teams", label: "Teams" },
@@ -59,6 +65,7 @@ const LEAGUE_DOT: Record<string, string> = {
   cfb: "var(--acc-cfb)",
   nba: "var(--acc-nba)",
   nhl: "var(--acc-nhl)",
+  mlb: "var(--acc-mlb)",
 };
 
 function Logo({ league }: { league: League }) {
@@ -157,7 +164,7 @@ function SiteHeader() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const league = leagueFromPath(pathname);
   const nav =
-    league.id === "cfb" ? cfbNav : league.id === "nba" ? nbaNav : league.id === "nhl" ? nhlNav : nflNav;
+    league.id === "cfb" ? cfbNav : league.id === "nba" ? nbaNav : league.id === "nhl" ? nhlNav : league.id === "mlb" ? mlbNav : nflNav;
   return (
     <header className="glass sticky top-0 z-40 rounded-none border-x-0 border-t-0">
       <div className="mx-auto flex max-w-[1400px] items-center gap-4 px-4 py-3 sm:px-5">
@@ -187,7 +194,7 @@ function SiteFooter() {
     <footer className="mt-10 border-t border-line/10 px-4 py-5 sm:px-5">
       <p className="mx-auto max-w-[1400px] font-mono text-[10px] uppercase leading-relaxed tracking-wider text-faint">
         Gambling{league.short} · {league.name} analytics & betting research · live data from ESPN
-        {league.id === "nba" || league.id === "nhl" ? "" : " and nflverse"} · for research, not betting advice
+        {league.id === "nba" || league.id === "nhl" || league.id === "mlb" ? "" : " and nflverse"} · for research, not betting advice
       </p>
     </footer>
   );

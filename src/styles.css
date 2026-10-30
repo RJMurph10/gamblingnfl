@@ -80,6 +80,7 @@
   --acc-cfb: oklch(0.782 0.129 212);
   --acc-nba: oklch(0.782 0.129 212);
   --acc-nhl: oklch(0.782 0.129 212);
+  --acc-mlb: oklch(0.782 0.129 212);
 
   --background: var(--bg);
   --foreground: var(--ink);
@@ -178,4 +179,8 @@
 /* NHL pages use the same cyan accent too. */
 [data-league="nhl"] {
   --acc: var(--acc-nhl);
+}
+
+[data-league="mlb"] {
+  --acc: var(--acc-mlb);
 }
