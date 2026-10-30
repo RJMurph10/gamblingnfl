@@ -1,0 +1,22 @@
+                                    angle  n_disc  u_disc  roi_disc  n_conf  u_conf  roi_conf  hit%   u_all    p
+                  Wind out 10+ mph → over    2180  -66.64     -3.06    1557  -81.86     -5.26 50.36 -148.50 0.67
+                  Wind in 10+ mph → under    1123  -53.91     -4.80     665  -12.59     -1.89 50.50  -66.50 0.69
+              Wrigley wind out 10+ → over      60   10.64     17.73      65    5.37      8.26 59.20   16.01 0.05
+              Wrigley wind in 10+ → under     104    1.00      0.96      77    1.26      1.63 53.04    2.26 0.46
+                Hot 88°F+ outdoors → over    1320    8.73      0.66    1004  -46.57     -4.64 51.64  -37.84 0.12
+                       Cold ≤50°F → under     470  -23.27     -4.95     347    0.16      0.05 50.92  -23.12 0.62
+            High-run umpire (+0.3) → over    6543 -403.36     -6.16    6621 -300.48     -4.54 49.68 -703.85 0.47
+            Low-run umpire (−0.3) → under     226  -14.09     -6.23      44   -3.93     -8.94 48.89  -18.03 0.76
+             Model total ≥ line +1 → over    1997  -95.55     -4.78    1945 -123.53     -6.35 49.77 -219.07 0.79
+            Model total ≤ line −1 → under     335    8.64      2.58     606    2.32      0.38 53.67   10.95 0.03
+                     Totals 10.5+ → under     705  -17.73     -2.51    1080    4.51      0.42 52.16  -13.22 0.07
+                        Totals ≤ 7 → over    2784 -124.64     -4.48     759  -12.98     -1.71 50.61 -137.62 0.48
+                    Home dog +130 or more    1761 -121.68     -6.91    2091   49.61      2.37 38.27  -72.06  NaN
+                    Road dog +150 or more    3554 -153.29     -4.31    3187  -89.19     -2.80 34.28 -242.48  NaN
+           Big home favorite −200 or more    1661    6.80      0.41    1949  -37.76     -1.94 70.08  -30.96  NaN
+Fade team on 6+ win streak (bet opponent)     293   21.91      7.48     289   -8.32     -2.88 44.16   13.59  NaN
+     Back team on 6+ losing streak (home)     332   -7.02     -2.11     280   17.48      6.24 49.02   10.46  NaN
+     Back team on 6+ losing streak (road)     310   35.79     11.55     311  -21.86     -7.03 43.32   13.93  NaN
+                          April home dogs     616  -52.24     -8.48     565  -12.47     -2.21 41.74  -64.71  NaN
+                  Model edge ≥ 6% on home     812  -33.41     -4.11    1047   37.11      3.54 39.54    3.71  NaN
+                  Model edge ≥ 6% on road    3464 -215.95     -6.23    3187  -36.42     -1.14 36.51 -252.37  NaN
