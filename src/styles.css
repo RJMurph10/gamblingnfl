@@ -70,6 +70,11 @@
   --court: oklch(0.235 0.022 70);
   --court-edge: oklch(0.33 0.035 70);
   --court-rim: oklch(0.72 0.16 50);
+  /* NHL live rink: dark ice, red and blue lines. */
+  --rink: oklch(0.255 0.03 255);
+  --rink-edge: oklch(0.36 0.04 255);
+  --rink-red: oklch(0.62 0.19 18);
+  --rink-blue: oklch(0.6 0.14 258);
   /* League accents: each league's pages swap --acc for its own color (see [data-league]). */
   --acc-nfl: oklch(0.782 0.129 212);
   --acc-cfb: oklch(0.782 0.129 212);

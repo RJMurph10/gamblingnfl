@@ -6,7 +6,10 @@
 import {
   nhlHeadshot,
   nhlLogoFor,
+  type NhlBoxGroup,
   type NhlGame,
+  type NhlGameDetail,
+  type NhlPlay,
   type NhlOdds,
   type NhlPlayer,
   type NhlPlayerIndex,
@@ -673,4 +676,94 @@ export function fetchNhlGameProps(gameId: string, awayId: string, homeId: string
     }
     return { available: offers.length > 0, offers, fetchedAt: Date.now() };
   });
+}
+
+/* ---------- game detail (summary: play-by-play, box score, team stats) ---------- */
+
+/** ESPN's rink spot for a play; plays without one carry huge sentinel numbers. */
+function rinkSpot(p: any): { spot?: { x: number; y: number } } {
+  const x = Number(p?.coordinate?.x);
+  const y = Number(p?.coordinate?.y);
+  if (!Number.isFinite(x) || !Number.isFinite(y) || Math.abs(x) > 100 || Math.abs(y) > 42.5)
+    return {};
+  if (x === 0 && y === 0 && !p?.shootingPlay) return {};
+  return { spot: { x, y } };
+}
+
+export function parseNhlSummary(json: any, gameId: string): NhlGameDetail | null {
+  const header = json?.header;
+  const game = header ? parseEvent({ ...header, id: header.id ?? gameId }) : null;
+  if (!game) return null;
+
+  const plays: NhlPlay[] = (Array.isArray(json?.plays) ? json.plays : []).map(
+    (p: any, i: number) => ({
+      id: String(p?.id ?? i),
+      period: Number(p?.period?.number ?? 0) || 0,
+      clock: String(p?.clock?.displayValue ?? ""),
+      text: String(p?.text ?? p?.shortText ?? ""),
+      type: String(p?.type?.text ?? p?.type?.type ?? ""),
+      ...(p?.team?.id ? { teamId: String(p.team.id) } : {}),
+      awayScore: num(p?.awayScore),
+      homeScore: num(p?.homeScore),
+      scoring: Boolean(p?.scoringPlay),
+      ...rinkSpot(p),
+      ...(p?.strength?.text ? { strength: String(p.strength.text) } : {}),
+    }),
+  );
+
+  // Team statistics: a flat list, or groups of stats; flatten either way.
+  const teamStats = (json?.boxscore?.teams ?? []).map((t: any) => {
+    const flat: any[] = (t?.statistics ?? []).flatMap((s: any) =>
+      Array.isArray(s?.stats) ? s.stats : [s],
+    );
+    return {
+      teamId: String(t?.team?.id ?? ""),
+      stats: flat
+        .filter((s) => s && (s.displayValue !== undefined || s.value !== undefined))
+        .map((s) => ({
+          name: String(s.name ?? s.abbreviation ?? ""),
+          label: String(s.label ?? s.displayName ?? s.shortDisplayName ?? s.name ?? ""),
+          value: String(s.displayValue ?? s.value),
+        })),
+    };
+  });
+
+  const box = (json?.boxscore?.players ?? []).map((t: any) => ({
+    teamId: String(t?.team?.id ?? ""),
+    groups: (t?.statistics ?? []).map((g: any): NhlBoxGroup => ({
+      name: String(g?.name ?? g?.text ?? ""),
+      labels: (g?.labels ?? []).map(String),
+      athletes: (g?.athletes ?? []).map((a: any) => ({
+        id: String(a?.athlete?.id ?? ""),
+        name: String(a?.athlete?.displayName ?? a?.athlete?.shortName ?? ""),
+        ...(a?.athlete?.position?.abbreviation
+          ? { position: String(a.athlete.position.abbreviation) }
+          : {}),
+        ...(a?.athlete?.headshot?.href ? { headshot: String(a.athlete.headshot.href) } : {}),
+        stats: (a?.stats ?? []).map(String),
+      })),
+    })),
+  }));
+
+  const injuries = (json?.injuries ?? []).flatMap((t: any) =>
+    (t?.injuries ?? []).map((i: any) => ({
+      teamId: String(t?.team?.id ?? ""),
+      name: String(i?.athlete?.displayName ?? ""),
+      status: String(i?.status ?? ""),
+      ...(i?.details?.detail || i?.details?.type
+        ? { detail: String(i.details.detail ?? i.details.type) }
+        : {}),
+    })),
+  );
+
+  return { game, plays, teamStats, box, injuries };
+}
+
+/** Play-by-play, box score and team stats for one game (15 s while live; finished games kept). */
+export function fetchNhlGameDetail(gameId: string): Promise<NhlGameDetail | null> {
+  const load = () =>
+    cached(`game-${gameId}`, 15_000, async () =>
+      parseNhlSummary(await fetchJson(`${SITE}/summary?event=${gameId}`), gameId),
+    );
+  return finalCached(`nhl-game-v1-${gameId}`, load, (d) => d?.game.status === "final");
 }

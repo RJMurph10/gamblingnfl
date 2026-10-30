@@ -398,3 +398,39 @@ export interface NhlPropBoard {
   offers: NhlPropOffer[];
   fetchedAt: number;
 }
+
+/* ---------- game detail (ESPN summary) ---------- */
+
+export interface NhlPlay {
+  id: string;
+  period: number;
+  /** Time left in the period, as ESPN shows it ("5:24"). */
+  clock: string;
+  text: string;
+  /** ESPN's play type, e.g. "Goal", "Shot", "Penalty", "Faceoff". */
+  type: string;
+  teamId?: string;
+  awayScore: number | null;
+  homeScore: number | null;
+  scoring: boolean;
+  /** ESPN's rink spot, in feet from center ice (x along the rink, y across it). */
+  spot?: { x: number; y: number };
+  /** "Even Strength", "Power Play", "Shorthanded" (goals). */
+  strength?: string;
+}
+
+export interface NhlBoxGroup {
+  /** "forwards", "defenses", "goalies"… as ESPN names them. */
+  name: string;
+  labels: string[];
+  athletes: { id: string; name: string; position?: string; headshot?: string; stats: string[] }[];
+}
+
+export interface NhlGameDetail {
+  game: NhlGame;
+  plays: NhlPlay[];
+  /** Team statistics as ESPN lists them (shots, power plays, faceoffs, hits…). */
+  teamStats: { teamId: string; stats: { name: string; label: string; value: string }[] }[];
+  box: { teamId: string; groups: NhlBoxGroup[] }[];
+  injuries: { teamId: string; name: string; status: string; detail?: string }[];
+}
