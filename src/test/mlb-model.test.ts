@@ -1,7 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { mlbMarketRows, mlbRatings, projectMlbGame } from "@/lib/mlb/mlb-model";
 import { parseEvent, parseOdds } from "@/lib/mlb/mlb.server";
-import { buildMlbStandings, mlbTeamBetting, type MlbGame } from "@/lib/mlb/mlb";
+import {
+  buildMlbStandings,
+  isWrigleyBestBet,
+  mlbTeamBetting,
+  wrigleyWind,
+  type MlbGame,
+} from "@/lib/mlb/mlb";
 
 const team = (id: string, abbr: string) => ({
   id,
@@ -240,5 +246,16 @@ describe("no leakage in grading", () => {
     const b = mlbTeamBetting([g], "1");
     expect(b.runLine.wins + b.runLine.losses).toBe(0);
     expect(b.moneyline.losses).toBe(1);
+  });
+});
+
+describe("Wrigley wind best bet", () => {
+  it("counts wind from the south through the west at 10+ mph as blowing out", () => {
+    expect(isWrigleyBestBet(wrigleyWind(14, "SW"))).toBe(true);
+    expect(isWrigleyBestBet(wrigleyWind(10, "W"))).toBe(true);
+    expect(isWrigleyBestBet(wrigleyWind(9, "SW"))).toBe(false);
+    expect(isWrigleyBestBet(wrigleyWind(20, "NE"))).toBe(false); // blowing in
+    expect(isWrigleyBestBet(wrigleyWind(20, "E"))).toBe(false);
+    expect(isWrigleyBestBet(null)).toBe(false);
   });
 });
