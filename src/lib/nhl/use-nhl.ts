@@ -1,7 +1,7 @@
 /** NHL data hooks for the /nhl page. */
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { getNhlGameProps, getNhlPlayerIndex, getNhlSchedule } from "./nhl.functions";
+import { getNhlGameDetail, getNhlGameProps, getNhlPlayerIndex, getNhlSchedule } from "./nhl.functions";
 import type { NhlGame } from "./nhl";
 import { inputsFromPlayerIndex, type NhlModelInputs } from "./nhl-model-v2";
 
@@ -52,4 +52,15 @@ export function useNhlModelInputs(): { inputs: NhlModelInputs | null; isLoading:
   const q = useNhlPlayerIndex();
   const inputs = useMemo(() => (q.data ? inputsFromPlayerIndex(q.data) : null), [q.data]);
   return { inputs, isLoading: q.isLoading };
+}
+
+/** Play-by-play and box score for one game (refreshed every 15 seconds while it's live). */
+export function useNhlGameDetail(gameId: string, live: boolean) {
+  return useQuery({
+    queryKey: ["nhl-game", gameId],
+    queryFn: () => getNhlGameDetail({ data: { gameId } }),
+    refetchInterval: live ? 15_000 : false,
+    staleTime: 10_000,
+    retry: 1,
+  });
 }
