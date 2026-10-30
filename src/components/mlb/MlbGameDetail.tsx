@@ -210,10 +210,17 @@ function Header({ game }: { game: MlbGame }) {
       : null;
   const side = (s: MlbGame["away"], won: boolean, i: number) => (
     <div className={`flex items-center gap-3 sm:gap-6 ${i === 1 ? "flex-row-reverse" : ""}`}>
-      <div className="flex flex-col items-center gap-1 text-center">
-        <MlbLogo team={s.team} className="size-10 sm:size-14" />
-        <span className="font-mono text-xs text-mute">{s.record ?? ""}</span>
-      </div>
+      <Link
+        to="/mlb/teams/$teamId"
+        params={{ teamId: s.team.id }}
+        className="group flex flex-col items-center gap-1 text-center"
+      >
+        <MlbLogo
+          team={s.team}
+          className="size-10 transition-transform group-hover:scale-105 sm:size-14"
+        />
+        <span className="font-mono text-xs text-mute group-hover:text-acc">{s.record ?? ""}</span>
+      </Link>
       <span
         className={`font-mono text-3xl font-bold tabular-nums sm:text-5xl ${won ? "text-acc" : ""}`}
       >

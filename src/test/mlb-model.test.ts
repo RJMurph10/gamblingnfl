@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { mlbMarketRows, mlbRatings, projectMlbGame } from "@/lib/mlb/mlb-model";
 import { parseEvent, parseOdds } from "@/lib/mlb/mlb.server";
-import type { MlbGame } from "@/lib/mlb/mlb";
+import { buildMlbStandings, mlbTeamBetting, type MlbGame } from "@/lib/mlb/mlb";
 
 const team = (id: string, abbr: string) => ({
   id,
@@ -145,3 +145,52 @@ describe("MLB ESPN parsing", () => {
     expect(parseEvent({ id: "2", season: { type: 1 }, competitions: [comp("pre")] })).toBeNull();
   });
 });
+
+describe("MLB standings and team betting", () => {
+  const t = (id: string, abbr: string) => ({
+    id,
+    abbr,
+    name: abbr,
+    nickname: abbr,
+    color: "#000000",
+    logo: "",
+  });
+  const NYY = t("10", "NYY");
+  const BOS = t("2", "BOS");
+  const mk = (day: number, away: typeof NYY, home: typeof NYY, a: number, h: number) =>
+    ({
+      id: `g${day}`,
+      date: `2025-04-${String(day).padStart(2, "0")}T23:00Z`,
+      status: "final",
+      statusDetail: "Final",
+      part: "reg",
+      inning: 9,
+      away: { team: away, score: a },
+      home: { team: home, score: h },
+      odds: { spread: -1.5, total: 8.5, mlHome: -150, mlAway: 130 },
+    }) as unknown as import("@/lib/mlb/mlb").MlbGame;
+  const games = [mk(1, NYY, BOS, 5, 3), mk(2, NYY, BOS, 2, 4), mk(3, BOS, NYY, 1, 6)];
+
+  it("builds records, games behind and streaks", () => {
+    const s = buildMlbStandings(games);
+    const nyy = s.find((r) => r.teamId === "10")!;
+    const bos = s.find((r) => r.teamId === "2")!;
+    expect([nyy.wins, nyy.losses, nyy.gb, nyy.streak]).toEqual([2, 1, 0, "W1"]);
+    expect([bos.wins, bos.losses, bos.gb, bos.division]).toEqual([1, 2, 1, "AL East"]);
+    expect(nyy.home).toEqual([1, 0]);
+    expect(nyy.runsFor).toBe(13);
+  });
+
+  it("grades a team against the closing lines", () => {
+    const b = mlbTeamBetting(games, "10");
+    expect(rec3(b.moneyline)).toEqual([2, 1, 0]);
+    expect(rec3(b.asUnderdog)).toEqual([1, 1, 0]);
+    expect(rec3(b.asFavorite)).toEqual([1, 0, 0]);
+    // Underdog win at +130 = 1.3u, underdog loss −1, favorite win at −150 = 0.667u.
+    expect(b.moneyline.units).toBeCloseTo(1.3 - 1 + 100 / 150, 3);
+    // Run line: +1.5 covers the 5-3 win, misses the 2-4 loss; -1.5 covers the 6-1 win.
+    expect(rec3(b.runLine)).toEqual([2, 1, 0]);
+    expect(rec3(b.overUnder)).toEqual([0, 3, 0]);
+  });
+});
+const rec3 = (r: { wins: number; losses: number; pushes: number }) => [r.wins, r.losses, r.pushes];

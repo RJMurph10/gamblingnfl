@@ -82,7 +82,11 @@ export function MlbLiveScoreboard({ game }: { game: MlbGame }) {
   // Same sizes as the NFL, NBA and NHL scoreboards.
   const side = (x: typeof away, i: number) => (
     <div className={`flex items-center gap-3 sm:gap-6 ${i === 1 ? "flex-row-reverse" : ""}`}>
-      <Link to="/mlb/games" className="group flex flex-col items-center gap-1 text-center">
+      <Link
+        to="/mlb/teams/$teamId"
+        params={{ teamId: x.team.id }}
+        className="group flex flex-col items-center gap-1 text-center"
+      >
         <MlbLogo
           team={x.team}
           className="size-10 transition-transform group-hover:scale-105 sm:size-14"

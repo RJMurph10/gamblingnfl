@@ -2,14 +2,8 @@ import { useMemo } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageTitle, Panel, PanelHeader, StatCard } from "@/components/shared/booth";
 import { MlbLogo } from "@/components/mlb/MlbBits";
-import {
-  americanText,
-  etDayKey,
-  hasScore,
-  inningText,
-  type MlbGame,
-  type MlbTeamRef,
-} from "@/lib/mlb/mlb";
+import { MlbGamesTable } from "@/components/mlb/MlbGamesTable";
+import { buildMlbStandings, etDayKey, hasScore } from "@/lib/mlb/mlb";
 import { gradeMlbSeason, winPct, type MlbRecord } from "@/lib/mlb/mlb-model";
 import { useMlbSchedule } from "@/lib/mlb/use-mlb";
 
@@ -61,24 +55,7 @@ function MlbDashboard() {
         .slice(0, 8),
     [games],
   );
-  const standings = useMemo(() => {
-    const t = new Map<string, { team: MlbTeamRef; w: number; l: number }>();
-    for (const g of games) {
-      if (g.status !== "final" || !hasScore(g) || g.part !== "reg") continue;
-      for (const [s, won] of [
-        [g.away, (g.away.score as number) > (g.home.score as number)],
-        [g.home, (g.home.score as number) > (g.away.score as number)],
-      ] as const) {
-        const x = t.get(s.team.id) ?? { team: s.team, w: 0, l: 0 };
-        if (won) x.w += 1;
-        else x.l += 1;
-        t.set(s.team.id, x);
-      }
-    }
-    return [...t.values()].sort(
-      (a, b) => b.w / Math.max(1, b.w + b.l) - a.w / Math.max(1, a.w + a.l),
-    );
-  }, [games]);
+  const standings = useMemo(() => buildMlbStandings(games), [games]);
   const teams = useMemo(
     () => [...standings.map((s) => s.team)].sort((a, b) => a.name.localeCompare(b.name)),
     [standings],
@@ -162,9 +139,9 @@ function MlbDashboard() {
 
       <div className="grid gap-6 lg:grid-cols-12">
         <section className="min-w-0 space-y-6 lg:col-span-8">
-          {live.length ? <GamesTable title="Live now" games={live} live /> : null}
+          {live.length ? <MlbGamesTable title="Live now" games={live} live /> : null}
           {upcoming.length ? (
-            <GamesTable
+            <MlbGamesTable
               title="Upcoming games"
               aside={`${new Date(upcoming[0].date).toLocaleDateString([], { weekday: "short", month: "short", day: "numeric" })} · ${upcoming.length} games`}
               games={upcoming}
@@ -185,7 +162,7 @@ function MlbDashboard() {
               </p>
             </Panel>
           )}
-          <GamesTable
+          <MlbGamesTable
             title="Recent games"
             games={recent}
             link
@@ -200,15 +177,17 @@ function MlbDashboard() {
             <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">Team grid</h2>
             <p className="label-mono mb-3">{teams.length || 30} clubs</p>
             <div className="grid grid-cols-5 gap-2">
-              {teams.slice(0, 15).map((team) => (
-                <div
+              {teams.map((team) => (
+                <Link
                   key={team.id}
-                  className="glass grid aspect-square place-items-center rounded-xl"
+                  to="/mlb/teams/$teamId"
+                  params={{ teamId: team.id }}
+                  className="glass grid aspect-square place-items-center rounded-xl transition-transform hover:scale-105"
                   style={{ boxShadow: `inset 0 0 0 1px ${team.color}44` }}
                   title={team.name}
                 >
                   <MlbLogo team={team} className="size-8" />
-                </div>
+                </Link>
               ))}
             </div>
           </Panel>
@@ -217,14 +196,19 @@ function MlbDashboard() {
             {standings.length ? (
               <div className="divide-y divide-line/5">
                 {standings.slice(0, 10).map((r, i) => (
-                  <div key={r.team.id} className="flex items-center gap-3 px-4 py-2">
+                  <Link
+                    key={r.team.id}
+                    to="/mlb/teams/$teamId"
+                    params={{ teamId: r.teamId }}
+                    className="flex items-center gap-3 px-4 py-2 hover:bg-line/5"
+                  >
                     <span className="w-4 font-mono text-[10px] text-faint">{i + 1}</span>
                     <MlbLogo team={r.team} className="size-5" />
                     <span className="min-w-0 flex-1 truncate text-sm">{r.team.name}</span>
                     <span className="font-mono text-xs tabular-nums text-mute">
-                      {r.w}-{r.l}
+                      {r.wins}-{r.losses}
                     </span>
-                  </div>
+                  </Link>
                 ))}
               </div>
             ) : (
@@ -252,145 +236,5 @@ function MlbDashboard() {
         </aside>
       </div>
     </>
-  );
-}
-
-function GamesTable({
-  title,
-  aside,
-  games,
-  live = false,
-  link = false,
-  emptyText,
-}: {
-  title: string;
-  aside?: string;
-  games: MlbGame[];
-  live?: boolean;
-  link?: boolean;
-  emptyText?: string;
-}) {
-  return (
-    <Panel padded={false}>
-      <PanelHeader
-        title={title}
-        aside={
-          link ? (
-            <Link to="/mlb/games" className="font-mono text-[11px] text-acc">
-              View all →
-            </Link>
-          ) : aside ? (
-            <span className="label-mono">{aside}</span>
-          ) : undefined
-        }
-      />
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-[640px] text-sm">
-          <thead>
-            <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
-              <th className="px-4 py-2 font-normal">{live ? "Inning" : "Date"}</th>
-              <th className="px-2 py-2 font-normal">{live ? "" : "Time"}</th>
-              <th className="px-2 py-2 font-normal">Matchup</th>
-              <th className="px-2 py-2 font-normal">Starters</th>
-              <th className="px-2 py-2 font-normal">Moneyline</th>
-              <th className="px-4 py-2 text-right font-normal">Total</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-line/5">
-            {games.length ? (
-              games.map((g) => <Row key={g.id} game={g} live={live} />)
-            ) : (
-              <tr>
-                <td colSpan={6} className="px-4 py-6 text-center font-mono text-xs text-mute">
-                  {emptyText ?? "No games."}
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-    </Panel>
-  );
-}
-
-function Row({ game, live }: { game: MlbGame; live: boolean }) {
-  const started = game.status === "live" || game.status === "final";
-  const d = new Date(game.date);
-  const fav =
-    game.odds?.mlHome != null && game.odds?.mlAway != null
-      ? game.odds.mlHome < game.odds.mlAway
-        ? "home"
-        : "away"
-      : null;
-  const winner =
-    game.status === "final" && hasScore(game)
-      ? (game.home.score as number) > (game.away.score as number)
-        ? "home"
-        : "away"
-      : null;
-  const t = game.odds?.total;
-  const tot =
-    started && hasScore(game) ? (game.away.score as number) + (game.home.score as number) : null;
-  return (
-    <tr className="hover:bg-line/5">
-      <td
-        className={`px-4 py-2.5 font-mono text-xs ${live ? "text-win" : "text-mute"}`}
-        suppressHydrationWarning
-      >
-        {live ? inningText(game) : d.toLocaleDateString([], { month: "numeric", day: "numeric" })}
-      </td>
-      <td className="px-2 py-2.5 font-mono text-xs text-mute" suppressHydrationWarning>
-        {live ? "" : d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}
-      </td>
-      <td className="px-2 py-2.5">
-        <Link
-          to="/mlb/games/$gameId"
-          params={{ gameId: game.id }}
-          className="flex items-center gap-2 hover:text-acc"
-        >
-          {started ? (
-            <span
-              className={`w-5 text-right font-mono tabular-nums ${winner === "away" ? "text-acc" : ""}`}
-            >
-              {game.away.score}
-            </span>
-          ) : null}
-          <MlbLogo team={game.away.team} className="size-6" />
-          <span className="text-faint">@</span>
-          <MlbLogo team={game.home.team} className="size-6" />
-          {started ? (
-            <span className={`w-5 font-mono tabular-nums ${winner === "home" ? "text-acc" : ""}`}>
-              {game.home.score}
-            </span>
-          ) : null}
-        </Link>
-      </td>
-      <td className="max-w-[220px] truncate px-2 py-2.5 font-mono text-[11px] text-mute">
-        {game.away.probable?.name ?? "TBD"} / {game.home.probable?.name ?? "TBD"}
-      </td>
-      <td className="px-2 py-2.5">
-        {fav ? (
-          <span className="inline-flex items-center gap-1.5 font-mono text-xs">
-            <MlbLogo team={game[fav].team} className="size-4" />
-            {americanText(fav === "home" ? game.odds?.mlHome : game.odds?.mlAway)}
-          </span>
-        ) : (
-          <span className="font-mono text-xs text-mute">—</span>
-        )}
-      </td>
-      <td
-        className={`px-4 py-2.5 text-right font-mono text-xs ${
-          game.status === "final" && t != null && tot !== null
-            ? tot > t
-              ? "text-win"
-              : tot < t
-                ? "text-loss"
-                : "text-mute"
-            : ""
-        }`}
-      >
-        {t ?? "—"}
-      </td>
-    </tr>
   );
 }

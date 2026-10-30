@@ -46,6 +46,7 @@ const nhlNav = [
 
 const mlbNav = [
   { to: "/mlb", label: "Dashboard" },
+  { to: "/mlb/teams", label: "Teams" },
   { to: "/mlb/games", label: "Games" },
   { to: "/mlb/model", label: "Model" },
 ] as const;
@@ -174,7 +175,7 @@ function SiteHeader() {
             <Link
               key={item.to}
               to={item.to}
-              activeOptions={{ exact: item.to === "/" || item.to === "/cfb" || item.to === "/nba" }}
+              activeOptions={{ exact: ["/", "/cfb", "/nba", "/nhl", "/mlb"].includes(item.to) }}
               className="shrink-0 rounded-lg px-3 py-1.5 text-sm text-mute hover:text-ink"
               activeProps={{ className: "bg-acc/10 text-acc ring-1 ring-acc/25" }}
             >
