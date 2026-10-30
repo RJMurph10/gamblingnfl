@@ -362,7 +362,7 @@ const finalLines = finalLinesStore<MlbOdds>("mlb");
 /** New lookups per schedule refresh; finished games are stored for good once found. */
 const LOOKUPS_PER_REFRESH = 60;
 
-async function loadClosingOdds(game: MlbGame): Promise<MlbOdds | null> {
+async function loadClosingOdds(game: Pick<MlbGame, "id">): Promise<MlbOdds | null> {
   const acc: MlbOdds = { spread: null, total: null, mlHome: null, mlAway: null };
   const absorb = (raw: any) => {
     const o = parseOdds(raw);
@@ -399,10 +399,10 @@ async function loadClosingOdds(game: MlbGame): Promise<MlbOdds | null> {
   return acc.spread === null && acc.total === null && acc.mlHome === null ? null : acc;
 }
 
-const backfillTtl = (hit: { odds: MlbOdds | null } | undefined, g: MlbGame) =>
+const backfillTtl = (hit: { odds: MlbOdds | null } | undefined, g: Pick<MlbGame, "status">) =>
   hit?.odds ? 12 * HOUR : g.status === "live" ? MINUTE : 10 * MINUTE;
 
-async function closingOdds(game: MlbGame): Promise<MlbOdds | null> {
+async function closingOdds(game: Pick<MlbGame, "id" | "status">): Promise<MlbOdds | null> {
   const hit = oddsBackfill.get(game.id);
   if (hit && Date.now() - hit.at < backfillTtl(hit, game)) return hit.odds;
   const odds = await loadClosingOdds(game);
@@ -457,6 +457,43 @@ async function withClosingOdds(games: MlbGame[]): Promise<MlbGame[]> {
     }
     return { ...g, odds: merged };
   });
+}
+
+/** Most finished games one closing-lines request looks up (keeps each request well inside Workers limits). */
+export const MLB_LINES_BATCH = 20;
+
+/**
+ * Closing lines for a batch of finished games, so the browser can fill in the whole season at once
+ * instead of waiting on the schedule's 60-per-refresh backfill. Stored lines come back without a
+ * lookup; new ones are looked up and stored for good. Send one month per request: lines are stored
+ * by month, so parallel requests for the same month could overwrite each other's saves.
+ */
+export async function fetchMlbClosingLines(
+  games: { id: string; date: string }[],
+): Promise<Record<string, MlbOdds>> {
+  const batch = games.slice(0, MLB_LINES_BATCH);
+  const stored = await finalLines.get(batch).catch(() => new Map<string, MlbOdds>());
+  const out: Record<string, MlbOdds> = {};
+  for (const g of batch) {
+    const o = stored.get(g.id);
+    if (o) out[g.id] = o;
+  }
+  const rest = batch.filter((g) => !out[g.id]);
+  let next = 0;
+  await Promise.all(
+    Array.from({ length: 6 }, async () => {
+      while (next < rest.length) {
+        const g = rest[next++];
+        const o = await closingOdds({ id: g.id, status: "final" }).catch(() => null);
+        if (o) out[g.id] = o;
+      }
+    }),
+  );
+  const fresh = rest
+    .filter((g) => out[g.id]?.mlHome != null && out[g.id]?.total != null)
+    .map((g) => ({ id: g.id, date: g.date, odds: out[g.id] }));
+  if (fresh.length) await finalLines.save(fresh).catch(() => undefined);
+  return out;
 }
 
 export async function fetchMlbSchedule(): Promise<MlbGame[]> {
