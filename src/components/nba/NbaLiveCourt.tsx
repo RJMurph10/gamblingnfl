@@ -137,7 +137,7 @@ export function NbaLiveScoreboard({ game, plays }: { game: NbaGame; plays: NbaPl
 
   return (
     <Panel className="mb-6">
-      <div className="mx-auto flex max-w-3xl items-center justify-between gap-2">
+      <div className="mx-auto flex max-w-2xl items-center justify-between gap-2">
         {side(away, 0)}
         <div className="flex shrink-0 flex-col items-center gap-1.5 text-center">
           {badge ? (
@@ -157,7 +157,7 @@ export function NbaLiveScoreboard({ game, plays }: { game: NbaGame; plays: NbaPl
       </div>
 
       <div
-        className="mx-auto mt-4 max-w-3xl rounded-lg border p-2 sm:p-3"
+        className="mx-auto mt-4 max-w-lg rounded-lg border p-2 sm:p-3"
         style={{
           borderColor: "var(--court-edge)",
           background: "color-mix(in oklch, var(--court) 70%, black)",
