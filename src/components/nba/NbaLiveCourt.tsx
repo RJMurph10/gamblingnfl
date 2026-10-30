@@ -19,7 +19,7 @@ const FT = 10; // svg units per foot; the court is 94 × 50 feet
 const W = 94 * FT;
 const H = 50 * FT;
 /** The court is drawn squashed top to bottom, like a tilted TV view, to keep the card short. */
-const K = 0.6;
+const K = 0.42;
 const VH = H * K;
 
 const periodName = (p: number) =>
@@ -239,10 +239,10 @@ export function NbaLiveScoreboard({ game, plays }: { game: NbaGame; plays: NbaPl
           </g>
           {!onBreak ? (
             <foreignObject
-              x={W / 2 - 2.1 * FT}
-              y={VH / 2 - 2.1 * FT}
-              width={4.2 * FT}
-              height={4.2 * FT}
+              x={W / 2 - 1.7 * FT}
+              y={VH / 2 - 1.7 * FT}
+              width={3.4 * FT}
+              height={3.4 * FT}
             >
               <NbaLogo team={home.team} className="size-full opacity-85" />
             </foreignObject>
