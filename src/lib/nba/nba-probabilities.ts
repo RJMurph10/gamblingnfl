@@ -20,6 +20,8 @@ const MARGIN_SD = 15;
 const TOTAL_SD = 18;
 /** Extra variance (points²) for end-of-game fouling and overtime, faded out over the final minute. */
 const LATE_TOTAL_VAR = 30;
+/** The same for the margin (end-of-game fouling): sharper cover odds in the last few minutes. */
+const LATE_MARGIN_VAR = 8;
 
 /** ESPN's win-probability sample: home win chance and the play it follows. */
 export interface NbaWinProbSample {
@@ -99,7 +101,8 @@ export function buildNbaProbabilities(
     const estimated: ("cover" | "over")[] = [];
 
     if (spread !== undefined && spread !== null) {
-      const sigma = MARGIN_SD * Math.sqrt(fraction);
+      const lastMinuteM = inOvertime ? 1 : Math.min(1, (secondsLeft ?? 60) / 60);
+      const sigma = Math.sqrt(MARGIN_SD ** 2 * fraction + LATE_MARGIN_VAR * lastMinuteM);
       const pc = Math.max(0.0005, Math.min(0.9995, p));
       const muFromWin = sigma * normalInverse(pc);
       const hasScore = lastAway !== undefined && lastHome !== undefined;
