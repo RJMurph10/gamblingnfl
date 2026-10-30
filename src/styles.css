@@ -66,6 +66,10 @@
   --acc: oklch(0.782 0.129 212);
   --win: oklch(0.753 0.141 158);
   --loss: oklch(0.676 0.173 19);
+  /* NBA live court: dark hardwood, its border and the rim. */
+  --court: oklch(0.235 0.022 70);
+  --court-edge: oklch(0.33 0.035 70);
+  --court-rim: oklch(0.72 0.16 50);
   /* League accents: each league's pages swap --acc for its own color (see [data-league]). */
   --acc-nfl: oklch(0.782 0.129 212);
   --acc-cfb: oklch(0.782 0.129 212);

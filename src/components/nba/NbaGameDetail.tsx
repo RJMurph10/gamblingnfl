@@ -7,6 +7,7 @@ import { Link } from "@tanstack/react-router";
 import { PageTitle, Panel, PanelHeader } from "@/components/shared/booth";
 import { BASKETBALL_CLOCK, ProbabilityGraph } from "@/components/shared/ProbabilityGraph";
 import { NbaLogo, oddsLine, statusText } from "@/components/nba/NbaBits";
+import { NbaLiveScoreboard } from "@/components/nba/NbaLiveCourt";
 import {
   atsResult,
   hasScore,
@@ -80,7 +81,7 @@ export function NbaGameDetailView({ gameId }: { gameId: string }) {
   ];
   return (
     <>
-      <Header game={game} />
+      <Header game={game} plays={data?.plays ?? []} />
       <nav
         className={`grid border-b border-line/15 ${tabs.length === 4 ? "grid-cols-4" : "grid-cols-5"}`}
         aria-label="Game details tabs"
@@ -310,7 +311,7 @@ function GameInfo({ game }: { game: NbaGame }) {
   );
 }
 
-function Header({ game }: { game: NbaGame }) {
+function Header({ game, plays }: { game: NbaGame; plays: NbaPlay[] }) {
   const when = game.date
     ? new Date(game.date).toLocaleString([], { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })
     : "";
@@ -369,6 +370,18 @@ function Header({ game }: { game: NbaGame }) {
     );
   }
 
+  if (game.status === "live") {
+    return (
+      <>
+        <PageTitle
+          eyebrow={[game.part === "pre" ? "Preseason" : game.part === "play-in" ? "Play-in" : game.part === "post" ? "Playoffs" : "NBA", game.note].filter(Boolean).join(" · ")}
+          title={`${game.away.team.abbr} @ ${game.home.team.abbr}`}
+        />
+        <NbaLiveScoreboard game={game} plays={plays} />
+      </>
+    );
+  }
+
   return (
     <>
       <PageTitle
@@ -399,7 +412,7 @@ function Header({ game }: { game: NbaGame }) {
             </div>
           ))}
           <div className="order-2 text-center">
-            <p className={`font-mono text-xs uppercase tracking-wider ${game.status === "live" ? "text-win" : "text-mute"}`} suppressHydrationWarning>
+            <p className="font-mono text-xs uppercase tracking-wider text-mute" suppressHydrationWarning>
               {statusText(game)}
             </p>
             <p className="mt-1 font-mono text-[10px] uppercase tracking-wider text-faint" suppressHydrationWarning>
