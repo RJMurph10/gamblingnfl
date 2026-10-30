@@ -12,6 +12,7 @@ export function MlbGamesTable({
   live = false,
   link = false,
   emptyText,
+  starred,
 }: {
   title: string;
   aside?: ReactNode;
@@ -19,6 +20,8 @@ export function MlbGamesTable({
   live?: boolean;
   link?: boolean;
   emptyText?: string;
+  /** Games that are ★ best bets (over the total). */
+  starred?: Set<string>;
 }) {
   return (
     <Panel padded={false}>
@@ -50,7 +53,7 @@ export function MlbGamesTable({
           </thead>
           <tbody className="divide-y divide-line/5">
             {games.length ? (
-              games.map((g) => <Row key={g.id} game={g} live={live} />)
+              games.map((g) => <Row key={g.id} game={g} live={live} star={starred?.has(g.id)} />)
             ) : (
               <tr>
                 <td colSpan={6} className="px-4 py-6 text-center font-mono text-xs text-mute">
@@ -65,7 +68,7 @@ export function MlbGamesTable({
   );
 }
 
-function Row({ game, live }: { game: MlbGame; live: boolean }) {
+function Row({ game, live, star }: { game: MlbGame; live: boolean; star?: boolean }) {
   const started = game.status === "live" || game.status === "final";
   const d = new Date(game.date);
   const fav =
@@ -141,6 +144,11 @@ function Row({ game, live }: { game: MlbGame; live: boolean }) {
             : ""
         }`}
       >
+        {star ? (
+          <span className="mr-1 text-acc" title="Best bet: over (Wrigley wind blowing out)">
+            ★ o
+          </span>
+        ) : null}
         {t ?? "—"}
       </td>
     </tr>
