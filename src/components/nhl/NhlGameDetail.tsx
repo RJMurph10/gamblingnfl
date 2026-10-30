@@ -24,7 +24,6 @@ import {
 import { clockDisplay, isShootoutPeriod, shotsOnGoal } from "@/lib/nhl/nhl-live";
 import type { NhlMarketRow } from "@/lib/nhl/nhl-model";
 import { marketRowsV2, projectGameV2, type NhlV2Projection } from "@/lib/nhl/nhl-model-v2";
-import { buildNhlProbabilities, pregameRates } from "@/lib/nhl/nhl-probabilities";
 import { useNhlGameDetail, useNhlModelInputs, useNhlSchedule } from "@/lib/nhl/use-nhl";
 
 type GameTab = "gamecast" | "stats" | "markets" | "props" | "information";
@@ -161,7 +160,7 @@ export function NhlGameDetailView({ gameId }: { gameId: string }) {
         </div>
       ) : null}
 
-      {activeTab === "markets" ? <Markets game={game} games={games} plays={plays} /> : null}
+      {activeTab === "markets" ? <Markets game={game} games={games} /> : null}
 
       {activeTab === "props" ? (
         <div className="mt-6">
@@ -758,7 +757,7 @@ function Injuries({ game, injuries }: { game: NhlGame; injuries: NhlGameDetail["
 
 const pct = (p: number, digits = 0) => `${(p * 100).toFixed(digits)}%`;
 
-function Markets({ game, games, plays }: { game: NhlGame; games: NhlGame[]; plays: NhlPlay[] }) {
+function Markets({ game, games }: { game: NhlGame; games: NhlGame[] }) {
   const { inputs } = useNhlModelInputs();
   const projection = useMemo(
     () => (game.status === "postponed" ? null : projectGameV2(game, games, inputs)),
@@ -768,7 +767,6 @@ function Markets({ game, games, plays }: { game: NhlGame; games: NhlGame[]; play
   const rows = useMemo(() => (p ? marketRowsV2(game, p) : []), [game, p]);
   return (
     <div className="mt-6 space-y-6">
-      <Probabilities game={game} plays={plays} projection={p} />
       <div className="grid gap-6 lg:grid-cols-2">
         {p ? <ModelCard game={game} p={p} rows={rows} /> : null}
         <LinesCard game={game} />
@@ -785,138 +783,6 @@ function puckLineLabel(game: NhlGame): { team: NhlGame["home"]["team"] | null; t
     team: s < 0 ? game.home.team : game.away.team,
     text: `-${Math.abs(s).toFixed(1).replace(/\.0$/, "")}`,
   };
-}
-
-function Probabilities({
-  game,
-  plays,
-  projection,
-}: {
-  game: NhlGame;
-  plays: NhlPlay[];
-  projection: NhlV2Projection | null;
-}) {
-  const [market, setMarket] = useState<"moneyline" | "cover" | "total">("moneyline");
-  const rates = useMemo(
-    () =>
-      pregameRates(
-        game,
-        projection ? { away: projection.awayGoals, home: projection.homeGoals } : undefined,
-      ),
-    [game, projection],
-  );
-  const started = game.status === "live" || game.status === "final";
-  const points = useMemo(
-    () => (rates && started ? buildNhlProbabilities(plays, game, rates) : []),
-    [rates, started, plays, game],
-  );
-  const clock: GraphClock = {
-    ...FOOTBALL_CLOCK,
-    periodSeconds: 1200,
-    periods: 3,
-    otSeconds: game.part === "post" ? 1200 : 300,
-    otUnderLockPoints: undefined,
-  };
-  const pl = puckLineLabel(game);
-  const away = game.away.team;
-  const home = game.home.team;
-  const logo = (t: typeof away) => <NhlLogo team={t} className="size-8" />;
-  const notStarted = "The chart fills in from puck drop.";
-  return (
-    <Panel>
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">Probabilities</h2>
-        <div className="text-right text-xs text-mute">
-          <div className="flex items-center justify-end gap-1.5">
-            Puck line:{" "}
-            <span className="inline-flex items-center gap-1 font-mono font-semibold text-foreground">
-              {pl.team ? <NhlLogo team={pl.team} className="size-4" /> : null}
-              {pl.text}
-            </span>
-          </div>
-          <div className="mt-1">
-            Total:{" "}
-            <span className="font-mono font-semibold text-foreground">
-              {game.odds?.total ?? "—"}
-            </span>
-          </div>
-        </div>
-      </div>
-      <div
-        className="mt-4 grid grid-cols-3 gap-1 rounded-lg border border-line/10 p-1"
-        role="tablist"
-        aria-label="Probability type"
-      >
-        {(
-          [
-            ["moneyline", "Moneyline"],
-            ["cover", "Puck line"],
-            ["total", "Total"],
-          ] as const
-        ).map(([key, label]) => (
-          <button
-            key={key}
-            type="button"
-            role="tab"
-            aria-selected={market === key}
-            onClick={() => setMarket(key)}
-            className={`rounded-md px-2 py-2.5 font-disp text-xs font-semibold uppercase tracking-wider transition-colors sm:text-sm ${market === key ? "bg-acc text-black" : "text-mute hover:bg-line/5 hover:text-foreground"}`}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
-      {market === "total" ? (
-        <ProbabilityGraph
-          points={points}
-          probabilityKey="overProbability"
-          away={away}
-          home={home}
-          logo={logo}
-          clock={clock}
-          totalLine={game.odds?.total ?? undefined}
-          unavailableText={
-            started
-              ? "Total probability needs the game's over/under, which isn't posted for this game."
-              : notStarted
-          }
-        />
-      ) : market === "cover" ? (
-        <ProbabilityGraph
-          points={points}
-          probabilityKey="homeCoverProbability"
-          away={away}
-          home={home}
-          logo={logo}
-          clock={clock}
-          unavailableText={
-            started
-              ? "Puck-line probability needs the game's puck line, which isn't posted for this game."
-              : notStarted
-          }
-        />
-      ) : (
-        <ProbabilityGraph
-          points={points}
-          probabilityKey="homeWinProbability"
-          away={away}
-          home={home}
-          logo={logo}
-          clock={clock}
-          unavailableText={
-            started
-              ? "Win probability needs the game's lines or the model, which aren't available for this game."
-              : notStarted
-          }
-        />
-      )}
-      <p className="mt-3 text-[11px] text-mute">
-        Estimated from the score, the clock and the pregame lines: goals still to come are Poisson
-        for each team, faster late in close games (empty nets); a tie goes to overtime, whose winner
-        gets one more goal.
-      </p>
-    </Panel>
-  );
 }
 
 /** The best-priced side of a market by the model (largest positive edge), if any. */
