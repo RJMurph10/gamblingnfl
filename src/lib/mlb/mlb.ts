@@ -196,3 +196,176 @@ export function firstFive(side: MlbSide): number | null {
   if (inn.length < 5) return null;
   return inn.slice(0, 5).reduce<number>((s, v) => s + (v ?? 0), 0);
 }
+
+/* ---------- divisions and standings ---------- */
+
+export const MLB_DIVISIONS: { name: string; league: "AL" | "NL"; teams: string[] }[] = [
+  { name: "AL East", league: "AL", teams: ["BAL", "BOS", "NYY", "TB", "TOR"] },
+  { name: "AL Central", league: "AL", teams: ["CHW", "CLE", "DET", "KC", "MIN"] },
+  { name: "AL West", league: "AL", teams: ["ATH", "OAK", "HOU", "LAA", "SEA", "TEX"] },
+  { name: "NL East", league: "NL", teams: ["ATL", "MIA", "NYM", "PHI", "WSH"] },
+  { name: "NL Central", league: "NL", teams: ["CHC", "CIN", "MIL", "PIT", "STL"] },
+  { name: "NL West", league: "NL", teams: ["ARI", "COL", "LAD", "SD", "SF"] },
+];
+
+export const mlbDivisionOf = (abbr: string) =>
+  MLB_DIVISIONS.find((d) => d.teams.includes(abbr.toUpperCase()));
+
+export interface MlbStandingRow {
+  teamId: string;
+  team: MlbTeamRef;
+  division: string;
+  league: "AL" | "NL" | "";
+  wins: number;
+  losses: number;
+  pct: number;
+  /** Games behind the division leader (0 for the leader). */
+  gb: number;
+  runsFor: number;
+  runsAgainst: number;
+  home: [number, number];
+  road: [number, number];
+  last10: [number, number];
+  /** "W3" / "L2". */
+  streak: string;
+}
+
+/** Regular-season standings from finished games, best record first within each division. */
+export function buildMlbStandings(games: MlbGame[]): MlbStandingRow[] {
+  const done = games
+    .filter((g) => g.part === "reg" && g.status === "final" && hasScore(g))
+    .sort((a, b) => a.date.localeCompare(b.date));
+  const rows = new Map<string, MlbStandingRow & { results: boolean[] }>();
+  const row = (t: MlbTeamRef) => {
+    let r = rows.get(t.id);
+    if (!r) {
+      const d = mlbDivisionOf(t.abbr);
+      r = {
+        teamId: t.id,
+        team: t,
+        division: d?.name ?? "",
+        league: d?.league ?? "",
+        wins: 0,
+        losses: 0,
+        pct: 0,
+        gb: 0,
+        runsFor: 0,
+        runsAgainst: 0,
+        home: [0, 0],
+        road: [0, 0],
+        last10: [0, 0],
+        streak: "",
+        results: [],
+      };
+      rows.set(t.id, r);
+    }
+    return r;
+  };
+  for (const g of done) {
+    const a = g.away.score as number;
+    const h = g.home.score as number;
+    for (const [side, rf, ra, isHome] of [
+      [g.away, a, h, false],
+      [g.home, h, a, true],
+    ] as const) {
+      const r = row(side.team);
+      const won = rf > ra;
+      if (won) r.wins += 1;
+      else r.losses += 1;
+      r.runsFor += rf;
+      r.runsAgainst += ra;
+      const split = isHome ? r.home : r.road;
+      split[won ? 0 : 1] += 1;
+      r.results.push(won);
+    }
+  }
+  const out = [...rows.values()].map(({ results, ...r }) => {
+    const last = results.slice(-10);
+    let n = 0;
+    for (let i = results.length - 1; i >= 0 && results[i] === results[results.length - 1]; i--)
+      n += 1;
+    return {
+      ...r,
+      pct: r.wins + r.losses ? r.wins / (r.wins + r.losses) : 0,
+      last10: [last.filter(Boolean).length, last.filter((x) => !x).length] as [number, number],
+      streak: results.length ? `${results[results.length - 1] ? "W" : "L"}${n}` : "",
+    };
+  });
+  for (const d of MLB_DIVISIONS) {
+    const div = out.filter((r) => r.division === d.name);
+    const lead = div.reduce((m, r) => Math.max(m, r.wins - r.losses), -Infinity);
+    for (const r of div) r.gb = (lead - (r.wins - r.losses)) / 2;
+  }
+  return out.sort(
+    (x, y) => y.pct - x.pct || y.runsFor - y.runsAgainst - (x.runsFor - x.runsAgainst),
+  );
+}
+
+/* ---------- a team's record against the closing lines ---------- */
+
+export interface MlbBetRecord {
+  wins: number;
+  losses: number;
+  pushes: number;
+  /** Profit in units staking 1 unit per game at the closing price (−110 if missing). */
+  units: number;
+}
+
+export interface MlbTeamBetting {
+  /** Backing the team on the moneyline every game. */
+  moneyline: MlbBetRecord;
+  asFavorite: MlbBetRecord;
+  asUnderdog: MlbBetRecord;
+  /** Backing the team on the run line (±1.5) every game. */
+  runLine: MlbBetRecord;
+  /** Overs and unders in the team's games (wins = overs). */
+  overUnder: MlbBetRecord;
+}
+
+const payout = (price: number | null | undefined) =>
+  price == null ? 100 / 110 : price < 0 ? 100 / -price : price / 100;
+const blankBet = (): MlbBetRecord => ({ wins: 0, losses: 0, pushes: 0, units: 0 });
+const grade = (r: MlbBetRecord, margin: number, price: number | null | undefined) => {
+  if (margin > 0) {
+    r.wins += 1;
+    r.units += payout(price);
+  } else if (margin < 0) {
+    r.losses += 1;
+    r.units -= 1;
+  } else r.pushes += 1;
+};
+
+/** How the team did against the closing lines in finished regular-season games. */
+export function mlbTeamBetting(games: MlbGame[], teamId: string): MlbTeamBetting {
+  const out: MlbTeamBetting = {
+    moneyline: blankBet(),
+    asFavorite: blankBet(),
+    asUnderdog: blankBet(),
+    runLine: blankBet(),
+    overUnder: blankBet(),
+  };
+  for (const g of games) {
+    if (g.part !== "reg" || g.status !== "final" || !hasScore(g) || !g.odds) continue;
+    const home = g.home.team.id === teamId;
+    if (!home && g.away.team.id !== teamId) continue;
+    const us = (home ? g.home.score : g.away.score) as number;
+    const them = (home ? g.away.score : g.home.score) as number;
+    const o = g.odds;
+    const ml = home ? o.mlHome : o.mlAway;
+    const opp = home ? o.mlAway : o.mlHome;
+    if (ml != null && opp != null) {
+      grade(out.moneyline, us - them, ml);
+      grade(ml < opp ? out.asFavorite : out.asUnderdog, us - them, ml);
+    }
+    if (o.spread != null && o.spread !== 0) {
+      const line = home ? o.spread : -o.spread;
+      grade(out.runLine, us - them + line, home ? o.spreadOddsHome : o.spreadOddsAway);
+    }
+    if (o.total != null) {
+      const t = us + them;
+      // Wins = overs; units = backing the over every game.
+      grade(out.overUnder, t - o.total, o.overOdds);
+    }
+  }
+  return out;
+}
