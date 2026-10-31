@@ -1,0 +1,72 @@
+{
+ "id": "401671668",
+ "league": "nfl",
+ "date": "2024-09-15T20:25Z",
+ "name": "PIT @ DEN",
+ "seasonType": 2,
+ "away": {
+  "id": "23",
+  "abbr": "PIT",
+  "name": "Pittsburgh Steelers",
+  "score": 13
+ },
+ "home": {
+  "id": "7",
+  "abbr": "DEN",
+  "name": "Denver Broncos",
+  "score": 6
+ },
+ "final": {
+  "away": 13,
+  "home": 6
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:41:08.404Z",
+  "books": {
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 37,
+    "rows": [
+  {"a":"4362887","t":"Total Rushing Yards (incl. overtime)","ti":"12","op":[50,null,null],"cur":[50,null,null]},
+  {"a":"4362887","t":"Total Rushing Yards (incl. overtime)","ti":"12","op":[70,null,null],"cur":[70,null,null]},
+  {"a":"4362887","t":"Total Rushing Yards (incl. overtime)","ti":"12","op":[45,null,null],"cur":[45,null,null]},
+  {"a":"4362887","t":"Total Rushing Yards (incl. overtime)","ti":"12","op":[60,null,null],"cur":[60,null,null]},
+  {"a":"4362887","t":"Total Rushing Yards (incl. overtime)","ti":"12","op":[40,null,null],"cur":[40,null,null]},
+  {"a":"3128429","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[40,null,null],"cur":[40,null,null]},
+  {"a":"3128429","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[60,null,null],"cur":[60,null,null]},
+  {"a":"3128429","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[70,null,null],"cur":[70,null,null]},
+  {"a":"3128429","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[50,null,null],"cur":[50,null,null]},
+  {"a":"3128429","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[45,null,null],"cur":[45,null,null]},
+  {"a":"4241457","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[10,null,null],"cur":[10,null,null]},
+  {"a":"4241457","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[15,null,null],"cur":[15,null,null]},
+  {"a":"4241457","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[20,null,null],"cur":[20,null,null]},
+  {"a":"4241457","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[5,null,null],"cur":[5,null,null]},
+  {"a":"4686472","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[10,null,null],"cur":[10,null,null]},
+  {"a":"4686472","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[20,null,null],"cur":[20,null,null]},
+  {"a":"4686472","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[25,null,null],"cur":[25,null,null]},
+  {"a":"4686472","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[15,null,null],"cur":[15,null,null]},
+  {"a":"4686472","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[5,null,null],"cur":[5,null,null]},
+  {"a":"4362887","t":"Total Passing Attempts (incl. overtime)","ti":"16","op":[35,null,null],"cur":[35,null,null]},
+  {"a":"4362887","t":"Total Passing Attempts (incl. overtime)","ti":"16","op":[15,null,null],"cur":[15,null,null]},
+  {"a":"4362887","t":"Total Passing Attempts (incl. overtime)","ti":"16","op":[25,null,null],"cur":[25,null,null]},
+  {"a":"4362887","t":"Total Passing Attempts (incl. overtime)","ti":"16","op":[30,null,null],"cur":[30,null,null]},
+  {"a":"4362887","t":"Total Passing Attempts (incl. overtime)","ti":"16","op":[20,null,null],"cur":[20,null,null]},
+  {"a":"4050373","t":"First Touchdown Scorer","ti":"29","op":[null,4000,null],"cur":[null,4000,null]},
+  {"a":"4430802","t":"First Touchdown Scorer","ti":"29","op":[null,6000,null],"cur":[null,6000,null]},
+  {"a":"4430802","t":"Anytime Touchdown Scorer","ti":"31","op":[1,null,null],"cur":[1,null,null]},
+  {"a":"3914397","t":"1st Half Touchdown Scorer","ti":"66","op":[1,null,null],"cur":[1,null,null]},
+  {"a":"4430802","t":"1st Half Touchdown Scorer","ti":"66","op":[1,null,null],"cur":[1,null,null]},
+  {"a":"3128429","t":"1st Quarter Touchdown Scorer","ti":"67","op":[1,null,null],"cur":[1,null,null]},
+  {"a":"3911853","t":"1st Quarter Touchdown Scorer","ti":"67","op":[1,null,null],"cur":[1,null,null]},
+  {"a":"3914397","t":"1st Quarter Touchdown Scorer","ti":"67","op":[1,null,null],"cur":[1,null,null]},
+  {"a":"4241961","t":"1st Quarter Touchdown Scorer","ti":"67","op":[1,null,null],"cur":[1,null,null]},
+  {"a":"4362887","t":"1st Quarter Touchdown Scorer","ti":"67","op":[1,null,null],"cur":[1,null,null]},
+  {"a":"4430802","t":"1st Quarter Touchdown Scorer","ti":"67","op":[1,null,null],"cur":[1,null,null]},
+  {"a":"4569987","t":"1st Quarter Touchdown Scorer","ti":"67","op":[1,null,null],"cur":[1,null,null]},
+  {"a":"4686472","t":"1st Quarter Touchdown Scorer","ti":"67","op":[1,null,null],"cur":[1,null,null]}
+ ]
+   }
+  }
+ }
+}

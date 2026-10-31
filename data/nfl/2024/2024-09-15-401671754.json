@@ -1,0 +1,110 @@
+{
+ "id": "401671754",
+ "league": "nfl",
+ "date": "2024-09-15T20:05Z",
+ "name": "LAR @ ARI",
+ "seasonType": 2,
+ "away": {
+  "id": "14",
+  "abbr": "LAR",
+  "name": "Los Angeles Rams",
+  "score": 10
+ },
+ "home": {
+  "id": "22",
+  "abbr": "ARI",
+  "name": "Arizona Cardinals",
+  "score": 41
+ },
+ "final": {
+  "away": 10,
+  "home": 41
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:41:08.438Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 68,
+    "rows": [
+  {"a":"3043116","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[60,null,null],"cur":[60,null,null]},
+  {"a":"3043116","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[45,null,null],"cur":[45,null,null]},
+  {"a":"3043116","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[40,null,null],"cur":[40,null,null]},
+  {"a":"3043116","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[50,null,null],"cur":[50,null,null]},
+  {"a":"3043116","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[70,null,null],"cur":[70,null,null]},
+  {"a":"4432708","t":"Total Receptions (incl. overtime)","ti":"14","op":[9,null,null],"cur":[9,null,null]},
+  {"a":"4432708","t":"Total Receptions (incl. overtime)","ti":"14","op":[5,null,null],"cur":[5,null,null]},
+  {"a":"4432708","t":"Total Receptions (incl. overtime)","ti":"14","op":[7,null,null],"cur":[7,null,null]},
+  {"a":"4432708","t":"Total Receptions (incl. overtime)","ti":"14","op":[3,null,null],"cur":[3,null,null]},
+  {"a":"3127287","t":"Total Tackles Plus Assists (incl. overtime)","ti":"27","op":[7.5,null,-105],"cur":[7.5,null,-105]},
+  {"a":"3127287","t":"Total Tackles Plus Assists (incl. overtime)","ti":"27","op":[7.5,-125,null],"cur":[7.5,-125,null]},
+  {"a":"4249128","t":"Total Tackles Plus Assists (incl. overtime)","ti":"27","op":[7.5,110,null],"cur":[6.5,-120,null]},
+  {"a":"4249128","t":"Total Tackles Plus Assists (incl. overtime)","ti":"27","op":[7.5,null,-140],"cur":[6.5,null,-110]},
+  {"a":"12483","t":"First Touchdown Scorer","ti":"29","op":[null,5000,null],"cur":[null,5000,null]},
+  {"a":"2310331","t":"First Touchdown Scorer","ti":"29","op":[null,1600,null],"cur":[null,1600,null]},
+  {"a":"2977187","t":"First Touchdown Scorer","ti":"29","op":[null,600,null],"cur":[null,600,null]},
+  {"a":"3043116","t":"First Touchdown Scorer","ti":"29","op":[null,1300,null],"cur":[null,1300,null]},
+  {"a":"3045147","t":"First Touchdown Scorer","ti":"29","op":[null,550,null],"cur":[null,550,null]},
+  {"a":"3917315","t":"First Touchdown Scorer","ti":"29","op":[null,1000,null],"cur":[null,1000,null]},
+  {"a":"4037235","t":"First Touchdown Scorer","ti":"29","op":[null,1800,null],"cur":[null,1800,null]},
+  {"a":"4239944","t":"First Touchdown Scorer","ti":"29","op":[null,5000,null],"cur":[null,5000,null]},
+  {"a":"4240631","t":"First Touchdown Scorer","ti":"29","op":[null,6000,null],"cur":[null,6000,null]},
+  {"a":"4242557","t":"First Touchdown Scorer","ti":"29","op":[null,1800,null],"cur":[null,1800,null]},
+  {"a":"4243003","t":"First Touchdown Scorer","ti":"29","op":[null,3000,null],"cur":[null,3000,null]},
+  {"a":"4360761","t":"First Touchdown Scorer","ti":"29","op":[null,1500,null],"cur":[null,1500,null]},
+  {"a":"4360797","t":"First Touchdown Scorer","ti":"29","op":[null,4000,null],"cur":[null,4000,null]},
+  {"a":"4361307","t":"First Touchdown Scorer","ti":"29","op":[null,1000,null],"cur":[null,1000,null]},
+  {"a":"4362478","t":"First Touchdown Scorer","ti":"29","op":[null,4000,null],"cur":[null,4000,null]},
+  {"a":"4429096","t":"First Touchdown Scorer","ti":"29","op":[null,4000,null],"cur":[null,4000,null]},
+  {"a":"4429275","t":"First Touchdown Scorer","ti":"29","op":[null,2000,null],"cur":[null,2000,null]},
+  {"a":"4430737","t":"First Touchdown Scorer","ti":"29","op":[null,500,null],"cur":[null,500,null]},
+  {"a":"4432708","t":"First Touchdown Scorer","ti":"29","op":[null,900,null],"cur":[null,900,null]},
+  {"a":"4569382","t":"First Touchdown Scorer","ti":"29","op":[null,3500,null],"cur":[null,3500,null]},
+  {"a":"4696700","t":"First Touchdown Scorer","ti":"29","op":[null,6000,null],"cur":[null,6000,null]},
+  {"a":"12483","t":"Last Touchdown Scorer","ti":"30","op":[null,5000,null],"cur":[null,5000,null]},
+  {"a":"2310331","t":"Last Touchdown Scorer","ti":"30","op":[null,1400,null],"cur":[null,1400,null]},
+  {"a":"2977187","t":"Last Touchdown Scorer","ti":"30","op":[null,600,null],"cur":[null,600,null]},
+  {"a":"3043116","t":"Last Touchdown Scorer","ti":"30","op":[null,1200,null],"cur":[null,1200,null]},
+  {"a":"3045147","t":"Last Touchdown Scorer","ti":"30","op":[null,650,null],"cur":[null,650,null]},
+  {"a":"3917315","t":"Last Touchdown Scorer","ti":"30","op":[null,1100,null],"cur":[null,1100,null]},
+  {"a":"4037235","t":"Last Touchdown Scorer","ti":"30","op":[null,1800,null],"cur":[null,1800,null]},
+  {"a":"4239944","t":"Last Touchdown Scorer","ti":"30","op":[null,4000,null],"cur":[null,4000,null]},
+  {"a":"4240631","t":"Last Touchdown Scorer","ti":"30","op":[null,7500,null],"cur":[null,7500,null]},
+  {"a":"4242557","t":"Last Touchdown Scorer","ti":"30","op":[null,1500,null],"cur":[null,1500,null]},
+  {"a":"4243003","t":"Last Touchdown Scorer","ti":"30","op":[null,3000,null],"cur":[null,3000,null]},
+  {"a":"4360761","t":"Last Touchdown Scorer","ti":"30","op":[null,1600,null],"cur":[null,1600,null]},
+  {"a":"4360797","t":"Last Touchdown Scorer","ti":"30","op":[null,3000,null],"cur":[null,3000,null]},
+  {"a":"4361307","t":"Last Touchdown Scorer","ti":"30","op":[null,1000,null],"cur":[null,1000,null]},
+  {"a":"4362478","t":"Last Touchdown Scorer","ti":"30","op":[null,3500,null],"cur":[null,3500,null]},
+  {"a":"4429096","t":"Last Touchdown Scorer","ti":"30","op":[null,4000,null],"cur":[null,4000,null]},
+  {"a":"4429275","t":"Last Touchdown Scorer","ti":"30","op":[null,2000,null],"cur":[null,2000,null]},
+  {"a":"4430737","t":"Last Touchdown Scorer","ti":"30","op":[null,500,null],"cur":[null,500,null]},
+  {"a":"4432708","t":"Last Touchdown Scorer","ti":"30","op":[null,1000,null],"cur":[null,1000,null]},
+  {"a":"4569382","t":"Last Touchdown Scorer","ti":"30","op":[null,3000,null],"cur":[null,3000,null]},
+  {"a":"4696700","t":"Last Touchdown Scorer","ti":"30","op":[null,6000,null],"cur":[null,6000,null]},
+  {"a":"4362478","t":"Anytime Touchdown Scorer","ti":"31","op":[2,null,null],"cur":[2,null,null]},
+  {"a":"4362478","t":"Anytime Touchdown Scorer","ti":"31","op":[1,null,null],"cur":[1,null,null]},
+  {"a":"4432708","t":"Anytime Touchdown Scorer","ti":"31","op":[2,null,null],"cur":[2,null,null]},
+  {"a":"4432708","t":"Anytime Touchdown Scorer","ti":"31","op":[1,null,null],"cur":[1,null,null]},
+  {"a":"4250621","t":"To record a sack (incl. overtime)","ti":"34","op":[0.5,null,-165],"cur":[0.5,null,-165]},
+  {"a":"4250621","t":"To record a sack (incl. overtime)","ti":"34","op":[0.5,130,null],"cur":[0.5,130,null]},
+  {"a":"4362478","t":"1st Half Touchdown Scorer","ti":"66","op":[1,null,null],"cur":[1,null,null]},
+  {"a":"4362478","t":"1st Half Touchdown Scorer","ti":"66","op":[2,null,null],"cur":[2,null,null]},
+  {"a":"4432708","t":"1st Half Touchdown Scorer","ti":"66","op":[2,null,null],"cur":[2,null,null]},
+  {"a":"4432708","t":"1st Half Touchdown Scorer","ti":"66","op":[1,null,null],"cur":[1,null,null]},
+  {"a":"4362478","t":"1st Quarter Touchdown Scorer","ti":"67","op":[1,null,null],"cur":[1,null,null]},
+  {"a":"4432708","t":"1st Quarter Touchdown Scorer","ti":"67","op":[2,null,null]},
+  {"a":"4432708","t":"1st Quarter Touchdown Scorer","ti":"67","op":[1,null,null],"cur":[1,null,null]}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 1,
+    "rows": [
+  {"a":"4239944","t":"First Touchdown Scorer","ti":"29","op":[null,5000,null],"cur":[null,5000,null]}
+ ]
+   }
+  }
+ }
+}
