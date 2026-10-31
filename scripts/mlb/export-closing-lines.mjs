@@ -71,6 +71,10 @@ async function closing(id) {
   for (const it of list?.items ?? [])
     items.push(it?.$ref && Object.keys(it).length === 1 ? await get(it.$ref) : it);
   const books = items.filter(Boolean);
+  if (!sampled && books.length) {
+    sampled = true;
+    await writeFile("scripts/mlb/sample-odds.json", JSON.stringify(books.slice(0, 3), null, 1));
+  }
   books.sort((x, y) => (String(y?.provider?.id) === "100") - (String(x?.provider?.id) === "100"));
   for (const b of books) {
     const l = lineOf(b);
@@ -84,6 +88,7 @@ async function closing(id) {
   return null;
 }
 
+let sampled = false;
 const out = {};
 let games = 0;
 let found = 0;
