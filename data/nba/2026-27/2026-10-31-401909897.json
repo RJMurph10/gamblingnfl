@@ -1,0 +1,876 @@
+{
+ "id": "401909897",
+ "league": "nba",
+ "date": "2026-10-31T22:00Z",
+ "name": "PHI @ CHA",
+ "away": {
+  "id": "20",
+  "abbr": "PHI",
+  "name": "Philadelphia 76ers",
+  "score": 0
+ },
+ "home": {
+  "id": "30",
+  "abbr": "CHA",
+  "name": "Charlotte Hornets",
+  "score": 0
+ },
+ "neutral": false,
+ "venue": "Spectrum Center",
+ "seasonType": 2,
+ "state": "pre",
+ "lines": {
+  "open": {
+   "at": "2026-10-31T08:02:20.928Z",
+   "scoreboard": [
+    {
+     "provider": {
+      "id": "100",
+      "name": "Draft Kings",
+      "priority": 1
+     },
+     "details": "PHI -1.5",
+     "overUnder": 215.5,
+     "spread": 1.5,
+     "awayTeamOdds": {
+      "favorite": true,
+      "underdog": false,
+      "team": {
+       "id": "20",
+       "uid": "s:40~l:46~t:20",
+       "abbreviation": "PHI",
+       "name": "76ers",
+       "displayName": "Philadelphia 76ers",
+       "logo": "https://a.espncdn.com/i/teamlogos/nba/500/scoreboard/phi.png"
+      },
+      "favoriteAtOpen": true
+     },
+     "homeTeamOdds": {
+      "favorite": false,
+      "underdog": true,
+      "team": {
+       "id": "30",
+       "uid": "s:40~l:46~t:30",
+       "abbreviation": "CHA",
+       "name": "Hornets",
+       "displayName": "Charlotte Hornets",
+       "logo": "https://a.espncdn.com/i/teamlogos/nba/500/scoreboard/cha.png"
+      },
+      "favoriteAtOpen": false
+     },
+     "moneyline": {
+      "displayName": "Moneyline",
+      "shortDisplayName": "ML",
+      "home": {
+       "close": {
+        "odds": "+100",
+        "link": {
+         "language": "en-US",
+         "rel": [
+          "home",
+          "desktop",
+          "bets",
+          "draft-kings"
+         ],
+         "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34924861%3Foutcomes%3D0ML86994135_1",
+         "text": "Home Bet",
+         "shortText": "Home Bet",
+         "isExternal": true,
+         "isPremium": false,
+         "tracking": {
+          "campaign": "betting-integrations",
+          "tags": {
+           "league": "nba",
+           "sport": "basketball",
+           "gameId": 401909897,
+           "betSide": "home",
+           "betType": "straight"
+          }
+         }
+        }
+       },
+       "open": {
+        "odds": "+100"
+       }
+      },
+      "away": {
+       "close": {
+        "odds": "-120",
+        "link": {
+         "language": "en-US",
+         "rel": [
+          "away",
+          "desktop",
+          "bets",
+          "draft-kings"
+         ],
+         "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34924861%3Foutcomes%3D0ML86994135_3",
+         "text": "Away Bet",
+         "shortText": "Away Bet",
+         "isExternal": true,
+         "isPremium": false,
+         "tracking": {
+          "campaign": "betting-integrations",
+          "tags": {
+           "league": "nba",
+           "sport": "basketball",
+           "gameId": 401909897,
+           "betSide": "away",
+           "betType": "straight"
+          }
+         }
+        }
+       },
+       "open": {
+        "odds": "-120"
+       }
+      }
+     },
+     "pointSpread": {
+      "displayName": "Spread",
+      "shortDisplayName": "Spread",
+      "home": {
+       "close": {
+        "line": "+1.5",
+        "odds": "-110",
+        "link": {
+         "language": "en-US",
+         "rel": [
+          "homeSpread",
+          "desktop",
+          "bets"
+         ],
+         "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34924861%3Foutcomes%3D0HC86994135P150_1",
+         "text": "Home Point Spread",
+         "shortText": "Home Point Spread",
+         "isExternal": true,
+         "isPremium": false,
+         "tracking": {
+          "campaign": "betting-integrations",
+          "tags": {
+           "league": "nba",
+           "sport": "basketball",
+           "gameId": 401909897,
+           "betSide": "none",
+           "betType": "straight",
+           "betDetails": "Spread:CHA+1.5"
+          }
+         }
+        }
+       },
+       "open": {
+        "line": "+1.5",
+        "odds": "-110"
+       }
+      },
+      "away": {
+       "close": {
+        "line": "-1.5",
+        "odds": "-110",
+        "link": {
+         "language": "en-US",
+         "rel": [
+          "awaySpread",
+          "desktop",
+          "bets"
+         ],
+         "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34924861%3Foutcomes%3D0HC86994135N150_3",
+         "text": "Away Point Spread",
+         "shortText": "Away Point Spread",
+         "isExternal": true,
+         "isPremium": false,
+         "tracking": {
+          "campaign": "betting-integrations",
+          "tags": {
+           "league": "nba",
+           "sport": "basketball",
+           "gameId": 401909897,
+           "betSide": "none",
+           "betType": "straight",
+           "betDetails": "Spread:PHI-1.5"
+          }
+         }
+        }
+       },
+       "open": {
+        "line": "-1.5",
+        "odds": "-110"
+       }
+      }
+     },
+     "total": {
+      "displayName": "Total",
+      "shortDisplayName": "Total",
+      "over": {
+       "close": {
+        "line": "o215.5",
+        "odds": "-105",
+        "link": {
+         "language": "en-US",
+         "rel": [
+          "over",
+          "desktop",
+          "bets"
+         ],
+         "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34924861%3Foutcomes%3D0OU86994135O21550_1",
+         "text": "Over Odds",
+         "shortText": "Over Odds",
+         "isExternal": true,
+         "isPremium": false,
+         "tracking": {
+          "campaign": "betting-integrations",
+          "tags": {
+           "league": "nba",
+           "sport": "basketball",
+           "gameId": 401909897,
+           "betSide": "over",
+           "betType": "straight",
+           "betDetails": "Over:215.5"
+          }
+         }
+        }
+       },
+       "open": {
+        "line": "o216.5",
+        "odds": "-115"
+       }
+      },
+      "under": {
+       "close": {
+        "line": "u215.5",
+        "odds": "-115",
+        "link": {
+         "language": "en-US",
+         "rel": [
+          "under",
+          "desktop",
+          "bets"
+         ],
+         "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34924861%3Foutcomes%3D0OU86994135U21550_3",
+         "text": "Under Odds",
+         "shortText": "Under Odds",
+         "isExternal": true,
+         "isPremium": false,
+         "tracking": {
+          "campaign": "betting-integrations",
+          "tags": {
+           "league": "nba",
+           "sport": "basketball",
+           "gameId": 401909897,
+           "betSide": "under",
+           "betType": "straight",
+           "betDetails": "Under:215.5"
+          }
+         }
+        }
+       },
+       "open": {
+        "line": "u216.5",
+        "odds": "-105"
+       }
+      }
+     },
+     "link": {
+      "language": "en-US",
+      "rel": [
+       "game",
+       "desktop",
+       "bets"
+      ],
+      "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34924861",
+      "text": "See More Odds",
+      "shortText": "Game",
+      "isExternal": true,
+      "isPremium": false,
+      "tracking": {
+       "campaign": "betting-integrations",
+       "tags": {
+        "league": "nba",
+        "sport": "basketball",
+        "gameId": 401909897,
+        "betSide": "none",
+        "betType": "straight"
+       }
+      }
+     },
+     "header": {
+      "logo": {
+       "dark": "https://a.espncdn.com/i/espnbet/dark/espn-bet-square-off.svg",
+       "light": "https://a.espncdn.com/i/espnbet/espn-bet-square-off.svg",
+       "exclusivesLogoDark": "https://a.espncdn.com/i/espnbet/espn-bet-square-mint.svg",
+       "exclusivesLogoLight": "https://a.espncdn.com/i/espnbet/espn-bet-square-mint.svg"
+      },
+      "text": "Game Odds"
+     },
+     "footer": {
+      "disclaimer": "GAMBLING PROBLEM? CALL 1-800-GAMBLER or 1-800-MY-RESET, (800) 327-5050 or visit gamblinghelplinema.org (MA). Call 877-8-HOPENY/text HOPENY (467369) (NY). Call 888-789-7777/visit ccpg.org (CT), or visit www.mdgamblinghelp.org (MD), 1-800-981-0023 (PR). 21+ and present in most states. (18+ DC/KY/NH/PR/WY). Void in ONT. Eligibility restrictions apply. Terms: draftkings.com/sportsbook. On behalf of Boot Hill Casino (KS). Pass-thru of per wager tax may apply in IL."
+     }
+    }
+   ],
+   "books": [
+    {
+     "provider": {
+      "id": "100",
+      "name": "Draft Kings",
+      "priority": 1
+     },
+     "details": "PHI -1.5",
+     "overUnder": 215.5,
+     "spread": 1.5,
+     "overOdds": -105,
+     "underOdds": -115,
+     "awayTeamOdds": {
+      "favorite": true,
+      "underdog": false,
+      "moneyLine": -120,
+      "spreadOdds": -110,
+      "open": {
+       "favorite": true,
+       "pointSpread": {
+        "alternateDisplayValue": "-1.5",
+        "american": "-1.5"
+       },
+       "spread": {
+        "value": 1.9,
+        "displayValue": "10/11",
+        "alternateDisplayValue": "-110",
+        "decimal": 1.9,
+        "fraction": "10/11",
+        "american": "-110"
+       },
+       "moneyLine": {
+        "value": 1.83,
+        "displayValue": "5/6",
+        "alternateDisplayValue": "-120",
+        "decimal": 1.83,
+        "fraction": "5/6",
+        "american": "-120"
+       }
+      },
+      "current": {
+       "pointSpread": {
+        "alternateDisplayValue": "-1.5",
+        "american": "-1.5"
+       },
+       "spread": {
+        "value": 1.9,
+        "displayValue": "10/11",
+        "alternateDisplayValue": "-110",
+        "decimal": 1.9,
+        "fraction": "10/11",
+        "american": "-110"
+       },
+       "moneyLine": {
+        "value": 1.83,
+        "displayValue": "5/6",
+        "alternateDisplayValue": "-120",
+        "decimal": 1.83,
+        "fraction": "5/6",
+        "american": "-120"
+       }
+      },
+      "team": {
+       "id": "20"
+      }
+     },
+     "homeTeamOdds": {
+      "favorite": false,
+      "underdog": true,
+      "moneyLine": 100,
+      "spreadOdds": -110,
+      "open": {
+       "favorite": false,
+       "pointSpread": {
+        "alternateDisplayValue": "+1.5",
+        "american": "+1.5"
+       },
+       "spread": {
+        "value": 1.9,
+        "displayValue": "10/11",
+        "alternateDisplayValue": "-110",
+        "decimal": 1.9,
+        "fraction": "10/11",
+        "american": "-110"
+       },
+       "moneyLine": {
+        "value": 2,
+        "displayValue": "1/1",
+        "alternateDisplayValue": "+100",
+        "decimal": 2,
+        "fraction": "1/1",
+        "american": "+100"
+       }
+      },
+      "current": {
+       "pointSpread": {
+        "alternateDisplayValue": "+1.5",
+        "american": "+1.5"
+       },
+       "spread": {
+        "value": 1.9,
+        "displayValue": "10/11",
+        "alternateDisplayValue": "-110",
+        "decimal": 1.9,
+        "fraction": "10/11",
+        "american": "-110"
+       },
+       "moneyLine": {
+        "value": 2,
+        "displayValue": "1/1",
+        "alternateDisplayValue": "+100",
+        "decimal": 2,
+        "fraction": "1/1",
+        "american": "+100"
+       }
+      },
+      "team": {
+       "id": "30"
+      }
+     },
+     "moneylineWinner": false,
+     "spreadWinner": false,
+     "open": {
+      "over": {
+       "value": 1.86,
+       "displayValue": "20/23",
+       "alternateDisplayValue": "-115",
+       "decimal": 1.86,
+       "fraction": "20/23",
+       "american": "-115"
+      },
+      "under": {
+       "value": 1.95,
+       "displayValue": "20/21",
+       "alternateDisplayValue": "-105",
+       "decimal": 1.95,
+       "fraction": "20/21",
+       "american": "-105"
+      },
+      "total": {
+       "alternateDisplayValue": "216.5",
+       "american": "216.5"
+      }
+     },
+     "current": {
+      "over": {
+       "value": 1.95,
+       "displayValue": "20/21",
+       "alternateDisplayValue": "-105",
+       "decimal": 1.95,
+       "fraction": "20/21",
+       "american": "-105"
+      },
+      "under": {
+       "value": 1.86,
+       "displayValue": "20/23",
+       "alternateDisplayValue": "-115",
+       "decimal": 1.86,
+       "fraction": "20/23",
+       "american": "-115"
+      },
+      "total": {
+       "alternateDisplayValue": "215.5",
+       "american": "215.5"
+      }
+     }
+    }
+   ]
+  }
+ },
+ "props": {
+  "open": {
+   "at": "2026-10-31T08:02:20.928Z",
+   "provider": 100,
+   "count": 293,
+   "rows": [
+  {"a":"3032979","t":"Total Points","ti":"1","op":[14.5,null,null],"cur":[14.5,null,null]},
+  {"a":"3032979","t":"Total Points","ti":"1","op":[14.5,null,null],"cur":[14.5,null,null]},
+  {"a":"4396971","t":"Total Points","ti":"1","op":[17.5,null,null],"cur":[18.5,null,null]},
+  {"a":"4396971","t":"Total Points","ti":"1","op":[17.5,null,null],"cur":[18.5,null,null]},
+  {"a":"4431678","t":"Total Points","ti":"1","op":[29.5,null,null],"cur":[29.5,null,null]},
+  {"a":"4431678","t":"Total Points","ti":"1","op":[29.5,null,null],"cur":[29.5,null,null]},
+  {"a":"4433287","t":"Total Points","ti":"1","op":[27.5,null,null],"cur":[27.5,null,null]},
+  {"a":"4433287","t":"Total Points","ti":"1","op":[27.5,null,null],"cur":[27.5,null,null]},
+  {"a":"5124612","t":"Total Points","ti":"1","op":[16.5,null,null],"cur":[16.5,null,null]},
+  {"a":"5124612","t":"Total Points","ti":"1","op":[16.5,null,null],"cur":[16.5,null,null]},
+  {"a":"3032979","t":"Total Assists","ti":"2","op":[5.5,null,null],"cur":[5.5,null,null]},
+  {"a":"3032979","t":"Total Assists","ti":"2","op":[5.5,null,null],"cur":[5.5,null,null]},
+  {"a":"4396971","t":"Total Assists","ti":"2","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"4396971","t":"Total Assists","ti":"2","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"4433287","t":"Total Assists","ti":"2","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"4433287","t":"Total Assists","ti":"2","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"3032979","t":"Total Rebounds","ti":"3","op":[3.5,null,null],"cur":[3.5,null,null]},
+  {"a":"3032979","t":"Total Rebounds","ti":"3","op":[3.5,null,null],"cur":[3.5,null,null]},
+  {"a":"4396971","t":"Total Rebounds","ti":"3","op":[8.5,null,null],"cur":[8.5,null,null]},
+  {"a":"4396971","t":"Total Rebounds","ti":"3","op":[8.5,null,null],"cur":[8.5,null,null]},
+  {"a":"4433287","t":"Total Rebounds","ti":"3","op":[5.5,null,null],"cur":[5.5,null,null]},
+  {"a":"4433287","t":"Total Rebounds","ti":"3","op":[5.5,null,null],"cur":[5.5,null,null]},
+  {"a":"3032979","t":"Total 3-Point Field Goals","ti":"4","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":"3032979","t":"Total 3-Point Field Goals","ti":"4","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":"4396971","t":"Total 3-Point Field Goals","ti":"4","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"4396971","t":"Total 3-Point Field Goals","ti":"4","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"4431678","t":"Total 3-Point Field Goals","ti":"4","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"4431678","t":"Total 3-Point Field Goals","ti":"4","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"4433287","t":"Total 3-Point Field Goals","ti":"4","op":[3.5,null,null],"cur":[3.5,null,null]},
+  {"a":"4433287","t":"Total 3-Point Field Goals","ti":"4","op":[3.5,null,null],"cur":[3.5,null,null]},
+  {"a":"5124612","t":"Total 3-Point Field Goals","ti":"4","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":"5124612","t":"Total 3-Point Field Goals","ti":"4","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":"3032979","t":"Total Points and Assists","ti":"87","op":[20.5,null,null],"cur":[20.5,null,null]},
+  {"a":"3032979","t":"Total Points and Assists","ti":"87","op":[20.5,null,null],"cur":[20.5,null,null]},
+  {"a":"4396971","t":"Total Points and Assists","ti":"87","op":[20.5,null,null],"cur":[20.5,null,null]},
+  {"a":"4396971","t":"Total Points and Assists","ti":"87","op":[20.5,null,null],"cur":[20.5,null,null]},
+  {"a":"4433287","t":"Total Points and Assists","ti":"87","op":[30.5,null,null],"cur":[30.5,null,null]},
+  {"a":"4433287","t":"Total Points and Assists","ti":"87","op":[30.5,null,null],"cur":[30.5,null,null]},
+  {"a":"3032979","t":"Total Points and Rebounds","ti":"88","op":[17.5,null,null],"cur":[17.5,null,null]},
+  {"a":"3032979","t":"Total Points and Rebounds","ti":"88","op":[17.5,null,null],"cur":[17.5,null,null]},
+  {"a":"4396971","t":"Total Points and Rebounds","ti":"88","op":[26.5,null,null],"cur":[26.5,null,null]},
+  {"a":"4396971","t":"Total Points and Rebounds","ti":"88","op":[26.5,null,null],"cur":[26.5,null,null]},
+  {"a":"4433287","t":"Total Points and Rebounds","ti":"88","op":[33.5,null,null],"cur":[33.5,null,null]},
+  {"a":"4433287","t":"Total Points and Rebounds","ti":"88","op":[33.5,null,null],"cur":[33.5,null,null]},
+  {"a":"3032979","t":"Total Assists and Rebounds","ti":"89","op":[9.5,null,null],"cur":[9.5,null,null]},
+  {"a":"3032979","t":"Total Assists and Rebounds","ti":"89","op":[9.5,null,null],"cur":[9.5,null,null]},
+  {"a":"4396971","t":"Total Assists and Rebounds","ti":"89","op":[10.5,null,null],"cur":[10.5,null,null]},
+  {"a":"4396971","t":"Total Assists and Rebounds","ti":"89","op":[10.5,null,null],"cur":[10.5,null,null]},
+  {"a":"4433287","t":"Total Assists and Rebounds","ti":"89","op":[8.5,null,null],"cur":[8.5,null,null]},
+  {"a":"4433287","t":"Total Assists and Rebounds","ti":"89","op":[8.5,null,null],"cur":[8.5,null,null]},
+  {"a":"3032979","t":"Total Points, Rebounds, and Assists","ti":"90","op":[24.5,null,null],"cur":[24.5,null,null]},
+  {"a":"3032979","t":"Total Points, Rebounds, and Assists","ti":"90","op":[24.5,null,null],"cur":[24.5,null,null]},
+  {"a":"4396971","t":"Total Points, Rebounds, and Assists","ti":"90","op":[28.5,null,null],"cur":[28.5,null,null]},
+  {"a":"4396971","t":"Total Points, Rebounds, and Assists","ti":"90","op":[28.5,null,null],"cur":[28.5,null,null]},
+  {"a":"4433287","t":"Total Points, Rebounds, and Assists","ti":"90","op":[36.5,null,null],"cur":[36.5,null,null]},
+  {"a":"4433287","t":"Total Points, Rebounds, and Assists","ti":"90","op":[36.5,null,null],"cur":[36.5,null,null]},
+  {"a":"1966","t":"First Basket","ti":"94","cur":[null,840,null]},
+  {"a":"3032979","t":"First Basket","ti":"94","cur":[null,890,null]},
+  {"a":"4396971","t":"First Basket","ti":"94","cur":[null,710,null]},
+  {"a":"4431678","t":"First Basket","ti":"94","cur":[null,475,null]},
+  {"a":"4433249","t":"First Basket","ti":"94","cur":[null,660,null]},
+  {"a":"4433287","t":"First Basket","ti":"94","cur":[null,552,null]},
+  {"a":"4602025","t":"First Basket","ti":"94","cur":[null,950,null]},
+  {"a":"5124612","t":"First Basket","ti":"94","cur":[null,790,null]},
+  {"a":null,"t":"Team Total Points","ti":"98","op":[107.5,null,null],"cur":[107.5,null,null]},
+  {"a":null,"t":"Team Total Points","ti":"98","op":[107.5,null,null],"cur":[107.5,null,null]},
+  {"a":null,"t":"Team Total Points","ti":"98","op":[106.5,null,null],"cur":[107.5,null,null]},
+  {"a":null,"t":"Team Total Points","ti":"98","op":[106.5,null,null],"cur":[107.5,null,null]},
+  {"a":null,"t":"Will There Be Overtime?","ti":"153","cur":[null,1600,null]},
+  {"a":null,"t":"Will There Be Overtime?","ti":"153","cur":[null,-3000,null]},
+  {"a":"1966","t":"Points Milestones","ti":"218","op":[21,null,null],"cur":[20,null,null]},
+  {"a":"1966","t":"Points Milestones","ti":"218","op":[21,null,null],"cur":[25,null,null]},
+  {"a":"1966","t":"Points Milestones","ti":"218","op":[21,null,null],"cur":[30,null,null]},
+  {"a":"1966","t":"Points Milestones","ti":"218","op":[21,null,null],"cur":[35,null,null]},
+  {"a":"1966","t":"Points Milestones","ti":"218","op":[21,null,null],"cur":[21,null,null]},
+  {"a":"1966","t":"Points Milestones","ti":"218","op":[21,null,null],"cur":[40,null,null]},
+  {"a":"3032979","t":"Points Milestones","ti":"218","op":[15,null,null],"cur":[8,null,null]},
+  {"a":"3032979","t":"Points Milestones","ti":"218","op":[15,null,null],"cur":[10,null,null]},
+  {"a":"3032979","t":"Points Milestones","ti":"218","op":[15,null,null],"cur":[12,null,null]},
+  {"a":"3032979","t":"Points Milestones","ti":"218","op":[15,null,null],"cur":[15,null,null]},
+  {"a":"3032979","t":"Points Milestones","ti":"218","op":[15,null,null],"cur":[18,null,null]},
+  {"a":"3032979","t":"Points Milestones","ti":"218","op":[15,null,null],"cur":[20,null,null]},
+  {"a":"3032979","t":"Points Milestones","ti":"218","op":[15,null,null],"cur":[25,null,null]},
+  {"a":"3032979","t":"Points Milestones","ti":"218","op":[15,null,null],"cur":[30,null,null]},
+  {"a":"4396971","t":"Points Milestones","ti":"218","op":[20,null,null],"cur":[10,null,null]},
+  {"a":"4396971","t":"Points Milestones","ti":"218","op":[20,null,null],"cur":[12,null,null]},
+  {"a":"4396971","t":"Points Milestones","ti":"218","op":[20,null,null],"cur":[15,null,null]},
+  {"a":"4396971","t":"Points Milestones","ti":"218","op":[20,null,null],"cur":[18,null,null]},
+  {"a":"4396971","t":"Points Milestones","ti":"218","op":[20,null,null],"cur":[20,null,null]},
+  {"a":"4396971","t":"Points Milestones","ti":"218","op":[20,null,null],"cur":[25,null,null]},
+  {"a":"4396971","t":"Points Milestones","ti":"218","op":[20,null,null],"cur":[30,null,null]},
+  {"a":"4396971","t":"Points Milestones","ti":"218","op":[20,null,null],"cur":[35,null,null]},
+  {"a":"4396971","t":"Points Milestones","ti":"218","op":[20,null,null],"cur":[19,null,null]},
+  {"a":"4431678","t":"Points Milestones","ti":"218","op":[30,null,null],"cur":[18,null,null]},
+  {"a":"4431678","t":"Points Milestones","ti":"218","op":[30,null,null],"cur":[20,null,null]},
+  {"a":"4431678","t":"Points Milestones","ti":"218","op":[30,null,null],"cur":[25,null,null]},
+  {"a":"4431678","t":"Points Milestones","ti":"218","op":[30,null,null],"cur":[30,null,null]},
+  {"a":"4431678","t":"Points Milestones","ti":"218","op":[30,null,null],"cur":[35,null,null]},
+  {"a":"4431678","t":"Points Milestones","ti":"218","op":[30,null,null],"cur":[40,null,null]},
+  {"a":"4431678","t":"Points Milestones","ti":"218","op":[30,null,null],"cur":[45,null,null]},
+  {"a":"4431678","t":"Points Milestones","ti":"218","op":[30,null,null],"cur":[50,null,null]},
+  {"a":"4433249","t":"Points Milestones","ti":"218","op":[10,null,null],"cur":[6,null,null]},
+  {"a":"4433249","t":"Points Milestones","ti":"218","op":[10,null,null],"cur":[8,null,null]},
+  {"a":"4433249","t":"Points Milestones","ti":"218","op":[10,null,null],"cur":[10,null,null]},
+  {"a":"4433249","t":"Points Milestones","ti":"218","op":[10,null,null],"cur":[18,null,null]},
+  {"a":"4433249","t":"Points Milestones","ti":"218","op":[10,null,null],"cur":[9,null,null]},
+  {"a":"4433287","t":"Points Milestones","ti":"218","op":[28,null,null],"cur":[15,null,null]},
+  {"a":"4433287","t":"Points Milestones","ti":"218","op":[28,null,null],"cur":[18,null,null]},
+  {"a":"4433287","t":"Points Milestones","ti":"218","op":[28,null,null],"cur":[20,null,null]},
+  {"a":"4433287","t":"Points Milestones","ti":"218","op":[28,null,null],"cur":[25,null,null]},
+  {"a":"4433287","t":"Points Milestones","ti":"218","op":[28,null,null],"cur":[30,null,null]},
+  {"a":"4433287","t":"Points Milestones","ti":"218","op":[28,null,null],"cur":[35,null,null]},
+  {"a":"4433287","t":"Points Milestones","ti":"218","op":[28,null,null],"cur":[40,null,null]},
+  {"a":"4433287","t":"Points Milestones","ti":"218","op":[28,null,null],"cur":[45,null,null]},
+  {"a":"4433287","t":"Points Milestones","ti":"218","op":[28,null,null],"cur":[28,null,null]},
+  {"a":"4433287","t":"Points Milestones","ti":"218","op":[28,null,null],"cur":[50,null,null]},
+  {"a":"4602025","t":"Points Milestones","ti":"218","cur":[6,null,null]},
+  {"a":"4602025","t":"Points Milestones","ti":"218","op":[7,null,null],"cur":[7,null,null]},
+  {"a":"4602025","t":"Points Milestones","ti":"218","op":[7,null,null],"cur":[12,null,null]},
+  {"a":"5124612","t":"Points Milestones","ti":"218","op":[18,null,null],"cur":[10,null,null]},
+  {"a":"5124612","t":"Points Milestones","ti":"218","op":[18,null,null],"cur":[18,null,null]},
+  {"a":"5124612","t":"Points Milestones","ti":"218","op":[18,null,null],"cur":[25,null,null]},
+  {"a":"5124612","t":"Points Milestones","ti":"218","op":[18,null,null],"cur":[30,null,null]},
+  {"a":"5124612","t":"Points Milestones","ti":"218","op":[18,null,null],"cur":[35,null,null]},
+  {"a":"3032979","t":"Assists Milestones","ti":"219","op":[7,null,null],"cur":[7,null,null]},
+  {"a":"4396971","t":"Assists Milestones","ti":"219","op":[3,null,null],"cur":[3,null,null]},
+  {"a":"4396971","t":"Assists Milestones","ti":"219","op":[3,null,null],"cur":[4,null,null]},
+  {"a":"4396971","t":"Assists Milestones","ti":"219","op":[3,null,null],"cur":[5,null,null]},
+  {"a":"4396971","t":"Assists Milestones","ti":"219","op":[3,null,null],"cur":[6,null,null]},
+  {"a":"4433249","t":"Assists Milestones","ti":"219","op":[3,null,null],"cur":[3,null,null]},
+  {"a":"4433249","t":"Assists Milestones","ti":"219","op":[3,null,null],"cur":[5,null,null]},
+  {"a":"4433249","t":"Assists Milestones","ti":"219","op":[3,null,null],"cur":[6,null,null]},
+  {"a":"4433287","t":"Assists Milestones","ti":"219","op":[4,null,null],"cur":[4,null,null]},
+  {"a":"4602025","t":"Assists Milestones","ti":"219","op":[4,null,null],"cur":[4,null,null]},
+  {"a":"3032979","t":"Rebounds Milestones","ti":"220","op":[4,null,null],"cur":[3,null,null]},
+  {"a":"3032979","t":"Rebounds Milestones","ti":"220","op":[4,null,null],"cur":[4,null,null]},
+  {"a":"3032979","t":"Rebounds Milestones","ti":"220","op":[4,null,null],"cur":[6,null,null]},
+  {"a":"3032979","t":"Rebounds Milestones","ti":"220","op":[4,null,null],"cur":[9,null,null]},
+  {"a":"4396971","t":"Rebounds Milestones","ti":"220","op":[9,null,null],"cur":[5,null,null]},
+  {"a":"4396971","t":"Rebounds Milestones","ti":"220","op":[9,null,null],"cur":[7,null,null]},
+  {"a":"4396971","t":"Rebounds Milestones","ti":"220","op":[9,null,null],"cur":[9,null,null]},
+  {"a":"4396971","t":"Rebounds Milestones","ti":"220","op":[9,null,null],"cur":[12,null,null]},
+  {"a":"4396971","t":"Rebounds Milestones","ti":"220","op":[9,null,null],"cur":[15,null,null]},
+  {"a":"4396971","t":"Rebounds Milestones","ti":"220","op":[9,null,null],"cur":[17,null,null]},
+  {"a":"4433249","t":"Rebounds Milestones","ti":"220","op":[12,null,null],"cur":[12,null,null]},
+  {"a":"4433287","t":"Rebounds Milestones","ti":"220","op":[7,null,null],"cur":[3,null,null]},
+  {"a":"4433287","t":"Rebounds Milestones","ti":"220","op":[7,null,null],"cur":[4,null,null]},
+  {"a":"4433287","t":"Rebounds Milestones","ti":"220","op":[7,null,null],"cur":[5,null,null]},
+  {"a":"4433287","t":"Rebounds Milestones","ti":"220","op":[7,null,null],"cur":[6,null,null]},
+  {"a":"4433287","t":"Rebounds Milestones","ti":"220","op":[7,null,null],"cur":[7,null,null]},
+  {"a":"4433287","t":"Rebounds Milestones","ti":"220","op":[7,null,null],"cur":[8,null,null]},
+  {"a":"4433287","t":"Rebounds Milestones","ti":"220","op":[7,null,null],"cur":[9,null,null]},
+  {"a":"4433287","t":"Rebounds Milestones","ti":"220","op":[7,null,null],"cur":[10,null,null]},
+  {"a":"4602025","t":"Rebounds Milestones","ti":"220","op":[4,null,null],"cur":[4,null,null]},
+  {"a":"4602025","t":"Rebounds Milestones","ti":"220","op":[4,null,null],"cur":[6,null,null]},
+  {"a":"4602025","t":"Rebounds Milestones","ti":"220","op":[4,null,null],"cur":[7,null,null]},
+  {"a":"4602025","t":"Rebounds Milestones","ti":"220","op":[4,null,null],"cur":[8,null,null]},
+  {"a":"4602025","t":"Rebounds Milestones","ti":"220","op":[4,null,null],"cur":[9,null,null]},
+  {"a":"4602025","t":"Rebounds Milestones","ti":"220","op":[4,null,null],"cur":[10,null,null]},
+  {"a":"1966","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[1,null,null]},
+  {"a":"1966","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[2,null,null]},
+  {"a":"1966","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[3,null,null]},
+  {"a":"1966","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[4,null,null]},
+  {"a":"1966","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[5,null,null]},
+  {"a":"1966","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[6,null,null]},
+  {"a":"3032979","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[1,null,null]},
+  {"a":"3032979","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[2,null,null]},
+  {"a":"3032979","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[3,null,null]},
+  {"a":"3032979","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[4,null,null]},
+  {"a":"3032979","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[5,null,null]},
+  {"a":"3917376","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[1,null,null]},
+  {"a":"3917376","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[2,null,null]},
+  {"a":"3917376","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[3,null,null]},
+  {"a":"3917376","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[4,null,null]},
+  {"a":"3917376","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[5,null,null]},
+  {"a":"4396971","t":"3-Point Field Goals Milestones","ti":"221","op":[3,null,null],"cur":[1,null,null]},
+  {"a":"4396971","t":"3-Point Field Goals Milestones","ti":"221","op":[3,null,null],"cur":[2,null,null]},
+  {"a":"4396971","t":"3-Point Field Goals Milestones","ti":"221","op":[3,null,null],"cur":[3,null,null]},
+  {"a":"4396971","t":"3-Point Field Goals Milestones","ti":"221","op":[3,null,null],"cur":[4,null,null]},
+  {"a":"4396971","t":"3-Point Field Goals Milestones","ti":"221","op":[3,null,null],"cur":[5,null,null]},
+  {"a":"4396971","t":"3-Point Field Goals Milestones","ti":"221","op":[3,null,null],"cur":[6,null,null]},
+  {"a":"4396971","t":"3-Point Field Goals Milestones","ti":"221","op":[3,null,null],"cur":[7,null,null]},
+  {"a":"4431678","t":"3-Point Field Goals Milestones","ti":"221","op":[4,null,null],"cur":[1,null,null]},
+  {"a":"4431678","t":"3-Point Field Goals Milestones","ti":"221","op":[4,null,null],"cur":[2,null,null]},
+  {"a":"4431678","t":"3-Point Field Goals Milestones","ti":"221","op":[4,null,null],"cur":[3,null,null]},
+  {"a":"4431678","t":"3-Point Field Goals Milestones","ti":"221","op":[4,null,null],"cur":[4,null,null]},
+  {"a":"4431678","t":"3-Point Field Goals Milestones","ti":"221","op":[4,null,null],"cur":[5,null,null]},
+  {"a":"4431678","t":"3-Point Field Goals Milestones","ti":"221","op":[4,null,null],"cur":[6,null,null]},
+  {"a":"4431678","t":"3-Point Field Goals Milestones","ti":"221","op":[4,null,null],"cur":[7,null,null]},
+  {"a":"4431678","t":"3-Point Field Goals Milestones","ti":"221","op":[4,null,null],"cur":[8,null,null]},
+  {"a":"4433287","t":"3-Point Field Goals Milestones","ti":"221","op":[4,null,null],"cur":[2,null,null]},
+  {"a":"4433287","t":"3-Point Field Goals Milestones","ti":"221","op":[4,null,null],"cur":[3,null,null]},
+  {"a":"4433287","t":"3-Point Field Goals Milestones","ti":"221","op":[4,null,null],"cur":[4,null,null]},
+  {"a":"4433287","t":"3-Point Field Goals Milestones","ti":"221","op":[4,null,null],"cur":[5,null,null]},
+  {"a":"4433287","t":"3-Point Field Goals Milestones","ti":"221","op":[4,null,null],"cur":[6,null,null]},
+  {"a":"4433287","t":"3-Point Field Goals Milestones","ti":"221","op":[4,null,null],"cur":[7,null,null]},
+  {"a":"4433287","t":"3-Point Field Goals Milestones","ti":"221","op":[4,null,null],"cur":[8,null,null]},
+  {"a":"4433287","t":"3-Point Field Goals Milestones","ti":"221","op":[4,null,null],"cur":[9,null,null]},
+  {"a":"4602025","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[2,null,null]},
+  {"a":"4602025","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[3,null,null]},
+  {"a":"4602025","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[4,null,null]},
+  {"a":"4602025","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[5,null,null]},
+  {"a":"5124612","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[1,null,null]},
+  {"a":"5124612","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[2,null,null]},
+  {"a":"5124612","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[3,null,null]},
+  {"a":"5124612","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[4,null,null]},
+  {"a":"5124612","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[5,null,null]},
+  {"a":"5124612","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[6,null,null]},
+  {"a":"3032979","t":"Points + Assists + Rebounds Milestones","ti":"225","op":[25,null,null],"cur":[25,null,null]},
+  {"a":"3032979","t":"Points + Assists + Rebounds Milestones","ti":"225","op":[25,null,null],"cur":[40,null,null]},
+  {"a":"4396971","t":"Points + Assists + Rebounds Milestones","ti":"225","op":[30,null,null],"cur":[15,null,null]},
+  {"a":"4396971","t":"Points + Assists + Rebounds Milestones","ti":"225","op":[30,null,null],"cur":[20,null,null]},
+  {"a":"4396971","t":"Points + Assists + Rebounds Milestones","ti":"225","op":[30,null,null],"cur":[25,null,null]},
+  {"a":"4396971","t":"Points + Assists + Rebounds Milestones","ti":"225","op":[30,null,null],"cur":[30,null,null]},
+  {"a":"4396971","t":"Points + Assists + Rebounds Milestones","ti":"225","op":[30,null,null],"cur":[35,null,null]},
+  {"a":"4396971","t":"Points + Assists + Rebounds Milestones","ti":"225","op":[30,null,null],"cur":[40,null,null]},
+  {"a":"4396971","t":"Points + Assists + Rebounds Milestones","ti":"225","op":[30,null,null],"cur":[45,null,null]},
+  {"a":"4396971","t":"Points + Assists + Rebounds Milestones","ti":"225","op":[30,null,null],"cur":[50,null,null]},
+  {"a":"4433249","t":"Points + Assists + Rebounds Milestones","ti":"225","op":[23,null,null],"cur":[23,null,null]},
+  {"a":"4433249","t":"Points + Assists + Rebounds Milestones","ti":"225","op":[23,null,null],"cur":[30,null,null]},
+  {"a":"4433249","t":"Points + Assists + Rebounds Milestones","ti":"225","op":[23,null,null],"cur":[35,null,null]},
+  {"a":"4433249","t":"Points + Assists + Rebounds Milestones","ti":"225","op":[23,null,null],"cur":[40,null,null]},
+  {"a":"4433287","t":"Points + Assists + Rebounds Milestones","ti":"225","op":[37,null,null],"cur":[20,null,null]},
+  {"a":"4433287","t":"Points + Assists + Rebounds Milestones","ti":"225","op":[37,null,null],"cur":[25,null,null]},
+  {"a":"4433287","t":"Points + Assists + Rebounds Milestones","ti":"225","op":[37,null,null],"cur":[30,null,null]},
+  {"a":"4433287","t":"Points + Assists + Rebounds Milestones","ti":"225","op":[37,null,null],"cur":[35,null,null]},
+  {"a":"4433287","t":"Points + Assists + Rebounds Milestones","ti":"225","op":[37,null,null],"cur":[40,null,null]},
+  {"a":"4433287","t":"Points + Assists + Rebounds Milestones","ti":"225","op":[37,null,null],"cur":[45,null,null]},
+  {"a":"4433287","t":"Points + Assists + Rebounds Milestones","ti":"225","op":[37,null,null],"cur":[55,null,null]},
+  {"a":"4433287","t":"Points + Assists + Rebounds Milestones","ti":"225","op":[37,null,null],"cur":[37,null,null]},
+  {"a":"4602025","t":"Points + Assists + Rebounds Milestones","ti":"225","op":[15,null,null],"cur":[10,null,null]},
+  {"a":"4602025","t":"Points + Assists + Rebounds Milestones","ti":"225","op":[15,null,null],"cur":[15,null,null]},
+  {"a":"4602025","t":"Points + Assists + Rebounds Milestones","ti":"225","op":[15,null,null],"cur":[25,null,null]},
+  {"a":"3032979","t":"Points + Assists Milestones","ti":"226","op":[21,null,null],"cur":[20,null,null]},
+  {"a":"3032979","t":"Points + Assists Milestones","ti":"226","op":[21,null,null],"cur":[21,null,null]},
+  {"a":"3032979","t":"Points + Assists Milestones","ti":"226","op":[21,null,null],"cur":[30,null,null]},
+  {"a":"3032979","t":"Points + Assists Milestones","ti":"226","op":[21,null,null],"cur":[35,null,null]},
+  {"a":"4396971","t":"Points + Assists Milestones","ti":"226","op":[21,null,null],"cur":[20,null,null]},
+  {"a":"4396971","t":"Points + Assists Milestones","ti":"226","op":[21,null,null],"cur":[21,null,null]},
+  {"a":"4396971","t":"Points + Assists Milestones","ti":"226","op":[21,null,null],"cur":[25,null,null]},
+  {"a":"4396971","t":"Points + Assists Milestones","ti":"226","op":[21,null,null],"cur":[40,null,null]},
+  {"a":"4433249","t":"Points + Assists Milestones","ti":"226","op":[12,null,null],"cur":[5,null,null]},
+  {"a":"4433249","t":"Points + Assists Milestones","ti":"226","op":[12,null,null],"cur":[10,null,null]},
+  {"a":"4433249","t":"Points + Assists Milestones","ti":"226","op":[12,null,null],"cur":[15,null,null]},
+  {"a":"4433249","t":"Points + Assists Milestones","ti":"226","op":[12,null,null],"cur":[20,null,null]},
+  {"a":"4433249","t":"Points + Assists Milestones","ti":"226","op":[12,null,null],"cur":[25,null,null]},
+  {"a":"4433249","t":"Points + Assists Milestones","ti":"226","op":[12,null,null],"cur":[12,null,null]},
+  {"a":"4433287","t":"Points + Assists Milestones","ti":"226","op":[31,null,null],"cur":[40,null,null]},
+  {"a":"4433287","t":"Points + Assists Milestones","ti":"226","op":[31,null,null],"cur":[50,null,null]},
+  {"a":"4433287","t":"Points + Assists Milestones","ti":"226","op":[31,null,null],"cur":[31,null,null]},
+  {"a":"4602025","t":"Points + Assists Milestones","ti":"226","op":[10,null,null],"cur":[5,null,null]},
+  {"a":"4602025","t":"Points + Assists Milestones","ti":"226","op":[10,null,null],"cur":[10,null,null]},
+  {"a":"4602025","t":"Points + Assists Milestones","ti":"226","op":[10,null,null],"cur":[15,null,null]},
+  {"a":"4602025","t":"Points + Assists Milestones","ti":"226","op":[10,null,null],"cur":[20,null,null]},
+  {"a":"3032979","t":"Points + Rebounds Milestones","ti":"227","op":[20,null,null],"cur":[20,null,null]},
+  {"a":"3032979","t":"Points + Rebounds Milestones","ti":"227","op":[20,null,null],"cur":[18,null,null]},
+  {"a":"4396971","t":"Points + Rebounds Milestones","ti":"227","op":[27,null,null],"cur":[15,null,null]},
+  {"a":"4396971","t":"Points + Rebounds Milestones","ti":"227","op":[27,null,null],"cur":[20,null,null]},
+  {"a":"4396971","t":"Points + Rebounds Milestones","ti":"227","op":[27,null,null],"cur":[25,null,null]},
+  {"a":"4396971","t":"Points + Rebounds Milestones","ti":"227","op":[27,null,null],"cur":[27,null,null]},
+  {"a":"4396971","t":"Points + Rebounds Milestones","ti":"227","op":[27,null,null],"cur":[30,null,null]},
+  {"a":"4396971","t":"Points + Rebounds Milestones","ti":"227","op":[27,null,null],"cur":[35,null,null]},
+  {"a":"4396971","t":"Points + Rebounds Milestones","ti":"227","op":[27,null,null],"cur":[40,null,null]},
+  {"a":"4396971","t":"Points + Rebounds Milestones","ti":"227","op":[27,null,null],"cur":[45,null,null]},
+  {"a":"4433249","t":"Points + Rebounds Milestones","ti":"227","op":[20,null,null],"cur":[20,null,null]},
+  {"a":"4433287","t":"Points + Rebounds Milestones","ti":"227","op":[35,null,null],"cur":[20,null,null]},
+  {"a":"4433287","t":"Points + Rebounds Milestones","ti":"227","op":[35,null,null],"cur":[25,null,null]},
+  {"a":"4433287","t":"Points + Rebounds Milestones","ti":"227","op":[35,null,null],"cur":[35,null,null]},
+  {"a":"4433287","t":"Points + Rebounds Milestones","ti":"227","op":[35,null,null],"cur":[40,null,null]},
+  {"a":"4433287","t":"Points + Rebounds Milestones","ti":"227","op":[35,null,null],"cur":[45,null,null]},
+  {"a":"4433287","t":"Points + Rebounds Milestones","ti":"227","op":[35,null,null],"cur":[55,null,null]},
+  {"a":"4433287","t":"Points + Rebounds Milestones","ti":"227","op":[35,null,null],"cur":[34,null,null]},
+  {"a":"4602025","t":"Points + Rebounds Milestones","ti":"227","op":[11,null,null],"cur":[11,null,null]},
+  {"a":"4602025","t":"Points + Rebounds Milestones","ti":"227","op":[11,null,null],"cur":[15,null,null]},
+  {"a":"4602025","t":"Points + Rebounds Milestones","ti":"227","op":[11,null,null],"cur":[20,null,null]},
+  {"a":"4602025","t":"Points + Rebounds Milestones","ti":"227","op":[11,null,null],"cur":[25,null,null]},
+  {"a":"3032979","t":"Rebounds + Assists Milestones","ti":"327","op":[10,null,null],"cur":[5,null,null]},
+  {"a":"3032979","t":"Rebounds + Assists Milestones","ti":"327","op":[10,null,null],"cur":[10,null,null]},
+  {"a":"3032979","t":"Rebounds + Assists Milestones","ti":"327","op":[10,null,null],"cur":[15,null,null]},
+  {"a":"3032979","t":"Rebounds + Assists Milestones","ti":"327","op":[10,null,null],"cur":[18,null,null]},
+  {"a":"4396971","t":"Rebounds + Assists Milestones","ti":"327","op":[11,null,null],"cur":[12,null,null]},
+  {"a":"4396971","t":"Rebounds + Assists Milestones","ti":"327","op":[11,null,null],"cur":[18,null,null]},
+  {"a":"4396971","t":"Rebounds + Assists Milestones","ti":"327","op":[11,null,null],"cur":[20,null,null]},
+  {"a":"4396971","t":"Rebounds + Assists Milestones","ti":"327","op":[11,null,null],"cur":[11,null,null]},
+  {"a":"4433249","t":"Rebounds + Assists Milestones","ti":"327","op":[13,null,null],"cur":[13,null,null]},
+  {"a":"4433287","t":"Rebounds + Assists Milestones","ti":"327","op":[10,null,null],"cur":[5,null,null]},
+  {"a":"4433287","t":"Rebounds + Assists Milestones","ti":"327","op":[10,null,null],"cur":[10,null,null]},
+  {"a":"4433287","t":"Rebounds + Assists Milestones","ti":"327","op":[10,null,null],"cur":[9,null,null]},
+  {"a":"4433287","t":"Rebounds + Assists Milestones","ti":"327","op":[10,null,null],"cur":[18,null,null]},
+  {"a":"4602025","t":"Rebounds + Assists Milestones","ti":"327","op":[7,null,null],"cur":[5,null,null]},
+  {"a":"4602025","t":"Rebounds + Assists Milestones","ti":"327","op":[7,null,null],"cur":[7,null,null]},
+  {"a":"4602025","t":"Rebounds + Assists Milestones","ti":"327","op":[7,null,null],"cur":[10,null,null]},
+  {"a":"4602025","t":"Rebounds + Assists Milestones","ti":"327","op":[7,null,null],"cur":[12,null,null]}
+ ],
+   "sample": [
+    {
+     "competition": {
+      "id": "401909897"
+     },
+     "athlete": {
+      "id": "3032979"
+     },
+     "provider": {
+      "id": "100"
+     },
+     "type": {
+      "id": "1",
+      "name": "Total Points"
+     },
+     "odds": {
+      "american": {
+       "value": "-118",
+       "open": "-114"
+      },
+      "decimal": {
+       "value": "1.84",
+       "open": "1.87"
+      },
+      "fraction": {
+       "value": "50/59",
+       "open": "50/57"
+      },
+      "total": {
+       "value": "14.5",
+       "open": "14.5"
+      }
+     },
+     "lastUpdated": "2026-10-31T10:19Z",
+     "current": {
+      "target": {
+       "value": 14.5,
+       "displayValue": "14.5"
+      }
+     },
+     "open": {
+      "target": {
+       "value": 14.5,
+       "displayValue": "14.5"
+      }
+     }
+    },
+    {
+     "competition": {
+      "id": "401909897"
+     },
+     "athlete": {
+      "id": "3032979"
+     },
+     "provider": {
+      "id": "100"
+     },
+     "type": {
+      "id": "1",
+      "name": "Total Points"
+     },
+     "odds": {
+      "american": {
+       "value": "-108",
+       "open": "-112"
+      },
+      "decimal": {
+       "value": "1.92",
+       "open": "1.89"
+      },
+      "fraction": {
+       "value": "25/27",
+       "open": "25/28"
+      },
+      "total": {
+       "value": "14.5",
+       "open": "14.5"
+      }
+     },
+     "lastUpdated": "2026-10-31T10:19Z",
+     "current": {
+      "target": {
+       "value": 14.5,
+       "displayValue": "14.5"
+      }
+     },
+     "open": {
+      "target": {
+       "value": 14.5,
+       "displayValue": "14.5"
+      }
+     }
+    }
+   ]
+  }
+ }
+}
