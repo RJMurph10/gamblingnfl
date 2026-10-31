@@ -7,18 +7,18 @@
   "id": "20",
   "abbr": "PHI",
   "name": "Philadelphia 76ers",
-  "score": 0
+  "score": 38
  },
  "home": {
   "id": "30",
   "abbr": "CHA",
   "name": "Charlotte Hornets",
-  "score": 0
+  "score": 42
  },
  "neutral": false,
  "venue": "Spectrum Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-10-31T08:02:20.928Z",

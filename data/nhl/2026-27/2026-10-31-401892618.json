@@ -7,18 +7,18 @@
   "id": "2",
   "abbr": "BUF",
   "name": "Buffalo Sabres",
-  "score": 2
+  "score": 3
  },
  "home": {
   "id": "8",
   "abbr": "LA",
   "name": "Los Angeles Kings",
-  "score": 1
+  "score": 2
  },
  "neutral": false,
  "venue": "crypto.com Arena",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-10-31T08:02:20.928Z",
@@ -2178,5 +2178,9 @@
     }
    ]
   }
+ },
+ "final": {
+  "away": 3,
+  "home": 2
  }
 }

@@ -7,18 +7,18 @@
   "id": "167",
   "abbr": "UNM",
   "name": "New Mexico Lobos",
-  "score": 14
+  "score": 21
  },
  "home": {
   "id": "23",
   "abbr": "SJSU",
   "name": "San José State Spartans",
-  "score": 9
+  "score": 16
  },
  "neutral": false,
  "venue": "CEFCU Stadium",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-10-31T08:02:20.928Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 21,
+  "home": 16
+ }
 }
