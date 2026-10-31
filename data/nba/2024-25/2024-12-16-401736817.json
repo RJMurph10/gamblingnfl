@@ -1,0 +1,73 @@
+{
+ "id": "401736817",
+ "league": "nba",
+ "date": "2024-12-17T00:30Z",
+ "name": "CHI @ TOR",
+ "seasonType": 2,
+ "away": {
+  "id": "4",
+  "abbr": "CHI",
+  "name": "Chicago Bulls",
+  "score": 122
+ },
+ "home": {
+  "id": "28",
+  "abbr": "TOR",
+  "name": "Toronto Raptors",
+  "score": 121
+ },
+ "final": {
+  "away": 122,
+  "home": 121
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:36:06.114Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 16,
+    "rows": [
+  {"a":"4066421","t":"Total Points","ti":"1","op":[8.5,null,-130],"cur":[8.5,null,-170]},
+  {"a":"4066421","t":"Total Points","ti":"1","op":[8.5,100,null],"cur":[8.5,120,null]},
+  {"a":"4066421","t":"Total Assists","ti":"2","op":[3.5,null,-105],"cur":[3.5,null,-115]},
+  {"a":"4066421","t":"Total Assists","ti":"2","op":[3.5,-125,null],"cur":[3.5,-115,null]},
+  {"a":"4066421","t":"Total Rebounds","ti":"3","op":[3.5,-110,null],"cur":[3.5,115,null]},
+  {"a":"4066421","t":"Total Rebounds","ti":"3","op":[3.5,null,-120],"cur":[3.5,null,-150]},
+  {"a":"4066421","t":"Total 3-Point Field Goals","ti":"4","op":[1.5,null,120],"cur":[1.5,null,120]},
+  {"a":"4066421","t":"Total 3-Point Field Goals","ti":"4","op":[1.5,-170,null],"cur":[1.5,-170,null]},
+  {"a":"4066421","t":"Total Steals","ti":"5","op":[0.5,null,145],"cur":[0.5,null,145]},
+  {"a":"4066421","t":"Total Steals","ti":"5","op":[0.5,-215,null],"cur":[0.5,-215,null]},
+  {"a":"4066421","t":"Total Blocks","ti":"6","op":[0.5,115,null],"cur":[0.5,130,null]},
+  {"a":"4066421","t":"Total Blocks","ti":"6","op":[0.5,null,-160],"cur":[0.5,null,-180]},
+  {"a":"4066421","t":"Total Turnovers","ti":"7","op":[1.5,150,null],"cur":[1.5,160,null]},
+  {"a":"4066421","t":"Total Turnovers","ti":"7","op":[1.5,null,-220],"cur":[1.5,null,-225]},
+  {"a":"4066421","t":"Total Field Goals Made (incl. overtime)","ti":"24","op":[2.5,null,115],"cur":[2.5,null,110]},
+  {"a":"4066421","t":"Total Field Goals Made (incl. overtime)","ti":"24","op":[2.5,-160,null],"cur":[2.5,-155,null]}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 16,
+    "rows": [
+  {"a":"4066421","t":"Total Points","ti":"1","op":[8.5,null,-130],"cur":[5.5,null,-450]},
+  {"a":"4066421","t":"Total Points","ti":"1","op":[8.5,100,null],"cur":[5.5,260,null]},
+  {"a":"4066421","t":"Total Assists","ti":"2","op":[3.5,null,-105],"cur":[6.5,null,-165]},
+  {"a":"4066421","t":"Total Assists","ti":"2","op":[3.5,-125,null],"cur":[6.5,115,null]},
+  {"a":"4066421","t":"Total Rebounds","ti":"3","op":[3.5,-110,null],"cur":[3.5,140,null]},
+  {"a":"4066421","t":"Total Rebounds","ti":"3","op":[3.5,null,-120],"cur":[3.5,null,-200]},
+  {"a":"4066421","t":"Total 3-Point Field Goals","ti":"4","op":[1.5,null,120],"cur":[1.5,null,-2000]},
+  {"a":"4066421","t":"Total 3-Point Field Goals","ti":"4","op":[1.5,-170,null],"cur":[1.5,500,null]},
+  {"a":"4066421","t":"Total Steals","ti":"5","op":[0.5,null,145]},
+  {"a":"4066421","t":"Total Steals","ti":"5","op":[0.5,-215,null]},
+  {"a":"4066421","t":"Total Blocks","ti":"6","op":[0.5,115,null],"cur":[0.5,650,null]},
+  {"a":"4066421","t":"Total Blocks","ti":"6","op":[0.5,null,-160],"cur":[0.5,null,-5000]},
+  {"a":"4066421","t":"Total Turnovers","ti":"7","op":[1.5,150,null]},
+  {"a":"4066421","t":"Total Turnovers","ti":"7","op":[1.5,null,-220]},
+  {"a":"4066421","t":"Total Field Goals Made (incl. overtime)","ti":"24","op":[2.5,-160,null],"cur":[1.5,380,null]},
+  {"a":"4066421","t":"Total Field Goals Made (incl. overtime)","ti":"24","op":[2.5,null,115],"cur":[1.5,null,-900]}
+ ]
+   }
+  }
+ }
+}

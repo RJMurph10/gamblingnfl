@@ -1,0 +1,73 @@
+{
+ "id": "401736810",
+ "league": "nba",
+ "date": "2024-12-15T22:00Z",
+ "name": "NO @ IND",
+ "seasonType": 2,
+ "away": {
+  "id": "3",
+  "abbr": "NO",
+  "name": "New Orleans Pelicans",
+  "score": 104
+ },
+ "home": {
+  "id": "11",
+  "abbr": "IND",
+  "name": "Indiana Pacers",
+  "score": 119
+ },
+ "final": {
+  "away": 104,
+  "home": 119
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:36:05.690Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 16,
+    "rows": [
+  {"a":"5106060","t":"Total Points","ti":"1","op":[4.5,-130,null],"cur":[4.5,-125,null]},
+  {"a":"5106060","t":"Total Points","ti":"1","op":[4.5,null,100],"cur":[4.5,null,-105]},
+  {"a":"5106060","t":"Total Assists","ti":"2","op":[2.5,null,-600],"cur":[1.5,null,-200]},
+  {"a":"5106060","t":"Total Assists","ti":"2","op":[2.5,330,null],"cur":[1.5,130,null]},
+  {"a":"5106060","t":"Total Rebounds","ti":"3","op":[3.5,null,105],"cur":[3.5,null,100]},
+  {"a":"5106060","t":"Total Rebounds","ti":"3","op":[3.5,-135,null],"cur":[3.5,-130,null]},
+  {"a":"5106060","t":"Total 3-Point Field Goals","ti":"4","op":[0.5,null,105],"cur":[0.5,null,115]},
+  {"a":"5106060","t":"Total 3-Point Field Goals","ti":"4","op":[0.5,-135,null],"cur":[0.5,-160,null]},
+  {"a":"5106060","t":"Total Steals","ti":"5","op":[0.5,-160,null],"cur":[0.5,-160,null]},
+  {"a":"5106060","t":"Total Steals","ti":"5","op":[0.5,null,110],"cur":[0.5,null,115]},
+  {"a":"5106060","t":"Total Blocks","ti":"6","op":[0.5,165,null],"cur":[0.5,175,null]},
+  {"a":"5106060","t":"Total Blocks","ti":"6","op":[0.5,null,-250],"cur":[0.5,null,-250]},
+  {"a":"5106060","t":"Total Turnovers","ti":"7","op":[1.5,165,null],"cur":[1.5,160,null]},
+  {"a":"5106060","t":"Total Turnovers","ti":"7","op":[1.5,null,-250],"cur":[1.5,null,-225]},
+  {"a":"5106060","t":"Total Field Goals Made (incl. overtime)","ti":"24","op":[1.5,-140,null],"cur":[1.5,-160,null]},
+  {"a":"5106060","t":"Total Field Goals Made (incl. overtime)","ti":"24","op":[1.5,null,110],"cur":[1.5,null,115]}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 16,
+    "rows": [
+  {"a":"5106060","t":"Total Points","ti":"1","op":[4.5,-130,null],"cur":[7.5,110,null]},
+  {"a":"5106060","t":"Total Points","ti":"1","op":[4.5,null,100],"cur":[7.5,null,-160]},
+  {"a":"5106060","t":"Total Assists","ti":"2","op":[2.5,null,-600],"cur":[1.5,null,-160]},
+  {"a":"5106060","t":"Total Assists","ti":"2","op":[2.5,330,null],"cur":[1.5,110,null]},
+  {"a":"5106060","t":"Total Rebounds","ti":"3","op":[3.5,-135,null],"cur":[4.5,-190,null]},
+  {"a":"5106060","t":"Total Rebounds","ti":"3","op":[3.5,null,105],"cur":[4.5,null,135]},
+  {"a":"5106060","t":"Total 3-Point Field Goals","ti":"4","op":[0.5,null,105],"cur":[0.5,null,-240]},
+  {"a":"5106060","t":"Total 3-Point Field Goals","ti":"4","op":[0.5,-135,null],"cur":[0.5,160,null]},
+  {"a":"5106060","t":"Total Steals","ti":"5","op":[0.5,-160,null],"cur":[0.5,1000,null]},
+  {"a":"5106060","t":"Total Steals","ti":"5","op":[0.5,null,110],"cur":[0.5,null,-10000]},
+  {"a":"5106060","t":"Total Blocks","ti":"6","op":[0.5,165,null],"cur":[0.5,2500,null]},
+  {"a":"5106060","t":"Total Blocks","ti":"6","op":[0.5,null,-250],"cur":[0.5,null,-100000]},
+  {"a":"5106060","t":"Total Turnovers","ti":"7","op":[1.5,165,null],"cur":[0.5,120,null]},
+  {"a":"5106060","t":"Total Turnovers","ti":"7","op":[1.5,null,-250],"cur":[0.5,null,-170]},
+  {"a":"5106060","t":"Total Field Goals Made (incl. overtime)","ti":"24","op":[1.5,-140,null],"cur":[1.5,-170,null]},
+  {"a":"5106060","t":"Total Field Goals Made (incl. overtime)","ti":"24","op":[1.5,null,110],"cur":[1.5,null,120]}
+ ]
+   }
+  }
+ }
+}

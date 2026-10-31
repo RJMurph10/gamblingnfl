@@ -1,0 +1,59 @@
+{
+ "id": "401752955",
+ "league": "nba",
+ "date": "2025-02-17T01:20Z",
+ "name": "KEN @ CHK",
+ "seasonType": 2,
+ "away": {
+  "id": "130581",
+  "abbr": "KEN",
+  "name": "Team Kenny",
+  "score": 32
+ },
+ "home": {
+  "id": "130579",
+  "abbr": "CHK",
+  "name": "Team Chuck",
+  "score": 41
+ },
+ "final": {
+  "away": 32,
+  "home": 41
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:36:50.364Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 24,
+    "rows": [
+  {"a":"3136195","t":"Total Points","ti":"1","op":[5.5,null,-115],"cur":[5.5,null,-115]},
+  {"a":"3136195","t":"Total Points","ti":"1","op":[5.5,-115,null],"cur":[5.5,-115,null]},
+  {"a":"3934672","t":"Total Points","ti":"1","op":[7.5,null,-130],"cur":[7.5,null,-115]},
+  {"a":"3934672","t":"Total Points","ti":"1","op":[7.5,100,null],"cur":[7.5,-115,null]},
+  {"a":"4278073","t":"Total Points","ti":"1","op":[9.5,null,-120],"cur":[9.5,null,-120]},
+  {"a":"4278073","t":"Total Points","ti":"1","op":[9.5,-110,null],"cur":[9.5,-110,null]},
+  {"a":"4432158","t":"Total Points","ti":"1","op":[3.5,105,null],"cur":[3.5,-110,null]},
+  {"a":"4432158","t":"Total Points","ti":"1","op":[3.5,null,-140],"cur":[3.5,null,-120]},
+  {"a":"3112335","t":"Total Assists","ti":"2","op":[3.5,null,-115],"cur":[3.5,null,-105]},
+  {"a":"3112335","t":"Total Assists","ti":"2","op":[3.5,-115,null],"cur":[3.5,-125,null]},
+  {"a":"4432166","t":"Total Assists","ti":"2","op":[2.5,100,null],"cur":[2.5,100,null]},
+  {"a":"4432166","t":"Total Assists","ti":"2","op":[2.5,null,-130],"cur":[2.5,null,-130]},
+  {"a":"4277961","t":"Total Rebounds","ti":"3","op":[2.5,-105,null],"cur":[2.5,-105,null]},
+  {"a":"4277961","t":"Total Rebounds","ti":"3","op":[2.5,null,-125],"cur":[2.5,null,-125]},
+  {"a":"4278073","t":"Total Rebounds","ti":"3","op":[1.5,null,-115],"cur":[1.5,null,-115]},
+  {"a":"4278073","t":"Total Rebounds","ti":"3","op":[1.5,-115,null],"cur":[1.5,-115,null]},
+  {"a":"4594268","t":"Total Rebounds","ti":"3","op":[1.5,100,null],"cur":[1.5,100,null]},
+  {"a":"4594268","t":"Total Rebounds","ti":"3","op":[1.5,null,-130],"cur":[1.5,null,-130]},
+  {"a":"3908809","t":"Total 3-Point Field Goals","ti":"4","op":[1.5,-105,null],"cur":[1.5,-105,null]},
+  {"a":"3908809","t":"Total 3-Point Field Goals","ti":"4","op":[1.5,null,-125],"cur":[1.5,null,-125]},
+  {"a":"4594268","t":"Total 3-Point Field Goals","ti":"4","op":[2.5,null,-150],"cur":[2.5,null,-150]},
+  {"a":"4594268","t":"Total 3-Point Field Goals","ti":"4","op":[2.5,115,null],"cur":[2.5,115,null]},
+  {"a":"5104157","t":"Total 3-Point Field Goals","ti":"4","op":[1.5,-120,null],"cur":[1.5,-120,null]},
+  {"a":"5104157","t":"Total 3-Point Field Goals","ti":"4","op":[1.5,null,-110],"cur":[1.5,null,-110]}
+ ]
+   }
+  }
+ }
+}

@@ -1,0 +1,105 @@
+{
+ "id": "401736800",
+ "league": "nba",
+ "date": "2024-12-13T00:30Z",
+ "name": "TOR @ MIA",
+ "seasonType": 2,
+ "away": {
+  "id": "28",
+  "abbr": "TOR",
+  "name": "Toronto Raptors",
+  "score": 104
+ },
+ "home": {
+  "id": "14",
+  "abbr": "MIA",
+  "name": "Miami Heat",
+  "score": 114
+ },
+ "final": {
+  "away": 104,
+  "home": 114
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:36:04.459Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 34,
+    "rows": [
+  {"a":"4277952","t":"Total Points","ti":"1","op":[7.5,-130,null],"cur":[8.5,105,null]},
+  {"a":"4277952","t":"Total Points","ti":"1","op":[7.5,-130,null],"cur":[7.5,-130,null]},
+  {"a":"4277952","t":"Total Points","ti":"1","op":[7.5,null,100],"cur":[8.5,null,-140]},
+  {"a":"4277952","t":"Total Points","ti":"1","op":[7.5,null,100],"cur":[7.5,null,100]},
+  {"a":"4432848","t":"Total Points","ti":"1","op":[8.5,-120,null],"cur":[8.5,-120,null]},
+  {"a":"4432848","t":"Total Points","ti":"1","op":[8.5,null,-110],"cur":[8.5,null,-110]},
+  {"a":"4277952","t":"Total Assists","ti":"2","op":[2.5,null,-210],"cur":[2.5,null,-200]},
+  {"a":"4277952","t":"Total Assists","ti":"2","op":[2.5,135,null],"cur":[2.5,130,null]},
+  {"a":"4432848","t":"Total Assists","ti":"2","op":[1.5,-160,null],"cur":[1.5,-170,null]},
+  {"a":"4432848","t":"Total Assists","ti":"2","op":[1.5,null,120],"cur":[1.5,null,120]},
+  {"a":"4277952","t":"Total Rebounds","ti":"3","op":[5.5,null,110],"cur":[5.5,null,110]},
+  {"a":"4277952","t":"Total Rebounds","ti":"3","op":[5.5,-140,null],"cur":[5.5,-140,null]},
+  {"a":"4277952","t":"Total Rebounds","ti":"3","op":[5.5,null,110],"cur":[6.5,null,-135]},
+  {"a":"4277952","t":"Total Rebounds","ti":"3","op":[5.5,-140,null],"cur":[6.5,105,null]},
+  {"a":"4432848","t":"Total Rebounds","ti":"3","op":[7.5,null,-2500],"cur":[3.5,null,100]},
+  {"a":"4432848","t":"Total Rebounds","ti":"3","op":[7.5,600,null],"cur":[3.5,-130,null]},
+  {"a":"4432848","t":"Total 3-Point Field Goals","ti":"4","op":[0.5,null,-130],"cur":[0.5,null,-140]},
+  {"a":"4432848","t":"Total 3-Point Field Goals","ti":"4","op":[0.5,100,null],"cur":[0.5,105,null]},
+  {"a":"4277952","t":"Total Steals","ti":"5","op":[0.5,null,-220],"cur":[0.5,null,-215]},
+  {"a":"4277952","t":"Total Steals","ti":"5","op":[0.5,150,null],"cur":[0.5,145,null]},
+  {"a":"4432848","t":"Total Steals","ti":"5","op":[0.5,-180,null],"cur":[0.5,-190,null]},
+  {"a":"4432848","t":"Total Steals","ti":"5","op":[0.5,null,125],"cur":[0.5,null,135]},
+  {"a":"4277952","t":"Total Blocks","ti":"6","op":[0.5,-215,null],"cur":[0.5,-220,null]},
+  {"a":"4277952","t":"Total Blocks","ti":"6","op":[0.5,null,145],"cur":[0.5,null,150]},
+  {"a":"4432848","t":"Total Blocks","ti":"6","op":[0.5,270,null],"cur":[0.5,280,null]},
+  {"a":"4432848","t":"Total Blocks","ti":"6","op":[0.5,null,-500],"cur":[0.5,null,-525]},
+  {"a":"4277952","t":"Total Turnovers","ti":"7","op":[1.5,null,-220],"cur":[1.5,null,-215]},
+  {"a":"4277952","t":"Total Turnovers","ti":"7","op":[1.5,150,null],"cur":[1.5,145,null]},
+  {"a":"4432848","t":"Total Turnovers","ti":"7","op":[3.5,null,-5000],"cur":[1.5,null,-200]},
+  {"a":"4432848","t":"Total Turnovers","ti":"7","op":[3.5,650,null],"cur":[1.5,140,null]},
+  {"a":"4277952","t":"Total Field Goals Made (incl. overtime)","ti":"24","op":[3.5,105,null],"cur":[3.5,105,null]},
+  {"a":"4277952","t":"Total Field Goals Made (incl. overtime)","ti":"24","op":[3.5,null,-150],"cur":[3.5,null,-140]},
+  {"a":"4432848","t":"Total Field Goals Made (incl. overtime)","ti":"24","op":[3.5,null,-135],"cur":[3.5,null,-130]},
+  {"a":"4432848","t":"Total Field Goals Made (incl. overtime)","ti":"24","op":[3.5,105,null],"cur":[3.5,-105,null]}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 30,
+    "rows": [
+  {"a":"4277952","t":"Total Points","ti":"1","op":[7.5,-130,null],"cur":[8.5,100,null]},
+  {"a":"4277952","t":"Total Points","ti":"1","op":[7.5,null,100],"cur":[8.5,null,-140]},
+  {"a":"4432848","t":"Total Points","ti":"1","op":[8.5,null,-110],"cur":[4.5,null,-130]},
+  {"a":"4432848","t":"Total Points","ti":"1","op":[8.5,-120,null],"cur":[4.5,-110,null]},
+  {"a":"4277952","t":"Total Assists","ti":"2","op":[2.5,null,-210],"cur":[2.5,null,-185]},
+  {"a":"4277952","t":"Total Assists","ti":"2","op":[2.5,135,null],"cur":[2.5,130,null]},
+  {"a":"4432848","t":"Total Assists","ti":"2","op":[1.5,-160,null],"cur":[1.5,130,null]},
+  {"a":"4432848","t":"Total Assists","ti":"2","op":[1.5,null,120],"cur":[1.5,null,-185]},
+  {"a":"4277952","t":"Total Rebounds","ti":"3","op":[5.5,null,110],"cur":[6.5,null,-150]},
+  {"a":"4277952","t":"Total Rebounds","ti":"3","op":[5.5,-140,null],"cur":[6.5,105,null]},
+  {"a":"4432848","t":"Total Rebounds","ti":"3","op":[7.5,null,-2500],"cur":[4.5,null,-215]},
+  {"a":"4432848","t":"Total Rebounds","ti":"3","op":[7.5,600,null],"cur":[4.5,145,null]},
+  {"a":"4432848","t":"Total 3-Point Field Goals","ti":"4","op":[0.5,null,-130],"cur":[0.5,null,-100000]},
+  {"a":"4432848","t":"Total 3-Point Field Goals","ti":"4","op":[0.5,100,null],"cur":[0.5,2500,null]},
+  {"a":"4277952","t":"Total Steals","ti":"5","op":[0.5,null,-220],"cur":[0.5,null,-225]},
+  {"a":"4277952","t":"Total Steals","ti":"5","op":[0.5,150,null],"cur":[0.5,150,null]},
+  {"a":"4432848","t":"Total Steals","ti":"5","op":[0.5,-180,null],"cur":[0.5,1000,null]},
+  {"a":"4432848","t":"Total Steals","ti":"5","op":[0.5,null,125],"cur":[0.5,null,-10000]},
+  {"a":"4277952","t":"Total Blocks","ti":"6","op":[0.5,-215,null]},
+  {"a":"4277952","t":"Total Blocks","ti":"6","op":[0.5,null,145]},
+  {"a":"4432848","t":"Total Blocks","ti":"6","op":[0.5,270,null],"cur":[0.5,2500,null]},
+  {"a":"4432848","t":"Total Blocks","ti":"6","op":[0.5,null,-500],"cur":[0.5,null,-100000]},
+  {"a":"4277952","t":"Total Turnovers","ti":"7","op":[1.5,null,-220],"cur":[1.5,null,-250]},
+  {"a":"4277952","t":"Total Turnovers","ti":"7","op":[1.5,150,null],"cur":[1.5,165,null]},
+  {"a":"4432848","t":"Total Turnovers","ti":"7","op":[3.5,null,-5000],"cur":[0.5,null,-650]},
+  {"a":"4432848","t":"Total Turnovers","ti":"7","op":[3.5,650,null],"cur":[0.5,310,null]},
+  {"a":"4277952","t":"Total Field Goals Made (incl. overtime)","ti":"24","op":[3.5,105,null],"cur":[3.5,-180,null]},
+  {"a":"4277952","t":"Total Field Goals Made (incl. overtime)","ti":"24","op":[3.5,null,-150],"cur":[3.5,null,125]},
+  {"a":"4432848","t":"Total Field Goals Made (incl. overtime)","ti":"24","op":[3.5,null,-135],"cur":[3.5,null,-5000]},
+  {"a":"4432848","t":"Total Field Goals Made (incl. overtime)","ti":"24","op":[3.5,105,null],"cur":[3.5,650,null]}
+ ]
+   }
+  }
+ }
+}

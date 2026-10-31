@@ -1,0 +1,73 @@
+{
+ "id": "401736809",
+ "league": "nba",
+ "date": "2024-12-14T03:00Z",
+ "name": "SA @ POR",
+ "seasonType": 2,
+ "away": {
+  "id": "24",
+  "abbr": "SA",
+  "name": "San Antonio Spurs",
+  "score": 118
+ },
+ "home": {
+  "id": "22",
+  "abbr": "POR",
+  "name": "Portland Trail Blazers",
+  "score": 116
+ },
+ "final": {
+  "away": 118,
+  "home": 116
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:36:04.923Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 16,
+    "rows": [
+  {"a":"2991070","t":"Total Points","ti":"1","op":[14.5,null,-115],"cur":[14.5,null,-105]},
+  {"a":"2991070","t":"Total Points","ti":"1","op":[14.5,-115,null],"cur":[14.5,-125,null]},
+  {"a":"2991070","t":"Total Assists","ti":"2","op":[2.5,null,-135],"cur":[2.5,null,-220]},
+  {"a":"2991070","t":"Total Assists","ti":"2","op":[2.5,105,null],"cur":[2.5,140,null]},
+  {"a":"2991070","t":"Total Rebounds","ti":"3","op":[5.5,null,-500],"cur":[3.5,null,-110]},
+  {"a":"2991070","t":"Total Rebounds","ti":"3","op":[5.5,280,null],"cur":[3.5,-120,null]},
+  {"a":"2991070","t":"Total 3-Point Field Goals","ti":"4","op":[1.5,-170,null],"cur":[1.5,-170,null]},
+  {"a":"2991070","t":"Total 3-Point Field Goals","ti":"4","op":[1.5,null,125],"cur":[1.5,null,120]},
+  {"a":"2991070","t":"Total Steals","ti":"5","op":[1.5,140,null],"cur":[1.5,150,null]},
+  {"a":"2991070","t":"Total Steals","ti":"5","op":[1.5,null,-200],"cur":[1.5,null,-220]},
+  {"a":"2991070","t":"Total Blocks","ti":"6","op":[0.5,-200,null],"cur":[0.5,-220,null]},
+  {"a":"2991070","t":"Total Blocks","ti":"6","op":[0.5,null,140],"cur":[0.5,null,150]},
+  {"a":"2991070","t":"Total Turnovers","ti":"7","op":[1.5,null,-170],"cur":[1.5,null,-160]},
+  {"a":"2991070","t":"Total Turnovers","ti":"7","op":[1.5,120,null],"cur":[1.5,115,null]},
+  {"a":"2991070","t":"Total Field Goals Made (incl. overtime)","ti":"24","op":[4.5,null,105],"cur":[4.5,null,105]},
+  {"a":"2991070","t":"Total Field Goals Made (incl. overtime)","ti":"24","op":[4.5,-135,null],"cur":[4.5,-150,null]}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 16,
+    "rows": [
+  {"a":"2991070","t":"Total Points","ti":"1","op":[14.5,null,-115],"cur":[29.5,null,-150]},
+  {"a":"2991070","t":"Total Points","ti":"1","op":[14.5,-115,null],"cur":[29.5,105,null]},
+  {"a":"2991070","t":"Total Assists","ti":"2","op":[2.5,null,-135],"cur":[2.5,null,-3000]},
+  {"a":"2991070","t":"Total Assists","ti":"2","op":[2.5,105,null],"cur":[2.5,575,null]},
+  {"a":"2991070","t":"Total Rebounds","ti":"3","op":[5.5,null,-500],"cur":[4.5,null,-1400]},
+  {"a":"2991070","t":"Total Rebounds","ti":"3","op":[5.5,280,null],"cur":[4.5,450,null]},
+  {"a":"2991070","t":"Total 3-Point Field Goals","ti":"4","op":[1.5,-170,null],"cur":[1.5,-170,null]},
+  {"a":"2991070","t":"Total 3-Point Field Goals","ti":"4","op":[1.5,null,125],"cur":[1.5,null,120]},
+  {"a":"2991070","t":"Total Steals","ti":"5","op":[1.5,null,-200],"cur":[0.5,null,-700]},
+  {"a":"2991070","t":"Total Steals","ti":"5","op":[1.5,140,null],"cur":[0.5,320,null]},
+  {"a":"2991070","t":"Total Blocks","ti":"6","op":[0.5,-200,null],"cur":[0.5,1000,null]},
+  {"a":"2991070","t":"Total Blocks","ti":"6","op":[0.5,null,140],"cur":[0.5,null,-10000]},
+  {"a":"2991070","t":"Total Turnovers","ti":"7","op":[1.5,null,-170],"cur":[1.5,null,-130]},
+  {"a":"2991070","t":"Total Turnovers","ti":"7","op":[1.5,120,null],"cur":[1.5,-110,null]},
+  {"a":"2991070","t":"Total Field Goals Made (incl. overtime)","ti":"24","op":[4.5,null,105],"cur":[9.5,null,140]},
+  {"a":"2991070","t":"Total Field Goals Made (incl. overtime)","ti":"24","op":[4.5,-135,null],"cur":[9.5,-200,null]}
+ ]
+   }
+  }
+ }
+}

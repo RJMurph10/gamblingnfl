@@ -1,0 +1,85 @@
+{
+ "id": "401736814",
+ "league": "nba",
+ "date": "2024-12-16T02:30Z",
+ "name": "MEM @ LAL",
+ "seasonType": 2,
+ "away": {
+  "id": "29",
+  "abbr": "MEM",
+  "name": "Memphis Grizzlies",
+  "score": 110
+ },
+ "home": {
+  "id": "13",
+  "abbr": "LAL",
+  "name": "Los Angeles Lakers",
+  "score": 116
+ },
+ "final": {
+  "away": 110,
+  "home": 116
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:36:05.844Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 28,
+    "rows": [
+  {"a":"4897943","t":"Total Points","ti":"1","op":[8.5,115,null],"cur":[7.5,-150,null]},
+  {"a":"4897943","t":"Total Points","ti":"1","op":[8.5,null,-160],"cur":[8.5,null,-130]},
+  {"a":"4897943","t":"Total Points","ti":"1","op":[8.5,115,null],"cur":[8.5,100,null]},
+  {"a":"4897943","t":"Total Points","ti":"1","op":[8.5,null,-160],"cur":[7.5,null,110]},
+  {"a":"4897943","t":"Total Assists","ti":"2","op":[3.5,null,-10000],"cur":[1.5,null,-425]},
+  {"a":"4897943","t":"Total Assists","ti":"2","op":[3.5,null,-10000],"cur":[0.5,null,125]},
+  {"a":"4897943","t":"Total Assists","ti":"2","op":[3.5,800,null],"cur":[1.5,240,null]},
+  {"a":"4897943","t":"Total Assists","ti":"2","op":[3.5,800,null],"cur":[0.5,-180,null]},
+  {"a":"4897943","t":"Total Rebounds","ti":"3","op":[5.5,360,null],"cur":[4.5,210,null]},
+  {"a":"4897943","t":"Total Rebounds","ti":"3","op":[5.5,360,null],"cur":[3.5,115,null]},
+  {"a":"4897943","t":"Total Rebounds","ti":"3","op":[5.5,null,-700],"cur":[2.5,null,135]},
+  {"a":"4897943","t":"Total Rebounds","ti":"3","op":[5.5,null,-700],"cur":[4.5,null,-325]},
+  {"a":"4897943","t":"Total Rebounds","ti":"3","op":[5.5,null,-700],"cur":[3.5,null,-150]},
+  {"a":"4897943","t":"Total Rebounds","ti":"3","op":[5.5,360,null],"cur":[2.5,-190,null]},
+  {"a":"4897943","t":"Total 3-Point Field Goals","ti":"4","op":[0.5,-500,null],"cur":[1.5,-110,null]},
+  {"a":"4897943","t":"Total 3-Point Field Goals","ti":"4","op":[0.5,-500,null],"cur":[0.5,-500,null]},
+  {"a":"4897943","t":"Total 3-Point Field Goals","ti":"4","op":[0.5,null,275],"cur":[1.5,null,-120]},
+  {"a":"4897943","t":"Total 3-Point Field Goals","ti":"4","op":[0.5,null,275],"cur":[2.5,null,-400]},
+  {"a":"4897943","t":"Total 3-Point Field Goals","ti":"4","op":[0.5,null,275],"cur":[0.5,null,275]},
+  {"a":"4897943","t":"Total 3-Point Field Goals","ti":"4","op":[0.5,-500,null],"cur":[2.5,230,null]},
+  {"a":"4897943","t":"Total Steals","ti":"5","op":[1.5,null,-1200],"cur":[0.5,null,-165]},
+  {"a":"4897943","t":"Total Steals","ti":"5","op":[1.5,500,null],"cur":[0.5,120,null]},
+  {"a":"4897943","t":"Total Blocks","ti":"6","op":[0.5,500,null],"cur":[0.5,500,null]},
+  {"a":"4897943","t":"Total Blocks","ti":"6","op":[0.5,null,-1200],"cur":[0.5,null,-1200]},
+  {"a":"4897943","t":"Total Turnovers","ti":"7","op":[1.5,380,null],"cur":[0.5,-115,null]},
+  {"a":"4897943","t":"Total Turnovers","ti":"7","op":[1.5,null,-800],"cur":[0.5,null,-120]},
+  {"a":"4897943","t":"Total Field Goals Made (incl. overtime)","ti":"24","op":[6.5,null,-5000],"cur":[2.5,null,100]},
+  {"a":"4897943","t":"Total Field Goals Made (incl. overtime)","ti":"24","op":[6.5,1000,null],"cur":[2.5,-135,null]}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 16,
+    "rows": [
+  {"a":"4897943","t":"Total Points","ti":"1","op":[8.5,115,null],"cur":[7.5,105,null]},
+  {"a":"4897943","t":"Total Points","ti":"1","op":[8.5,null,-160],"cur":[7.5,null,-150]},
+  {"a":"4897943","t":"Total Assists","ti":"2","op":[3.5,null,-10000]},
+  {"a":"4897943","t":"Total Assists","ti":"2","op":[3.5,800,null]},
+  {"a":"4897943","t":"Total Rebounds","ti":"3","op":[5.5,360,null]},
+  {"a":"4897943","t":"Total Rebounds","ti":"3","op":[5.5,null,-700]},
+  {"a":"4897943","t":"Total 3-Point Field Goals","ti":"4","op":[0.5,-500,null]},
+  {"a":"4897943","t":"Total 3-Point Field Goals","ti":"4","op":[0.5,null,275]},
+  {"a":"4897943","t":"Total Steals","ti":"5","op":[1.5,null,-1200]},
+  {"a":"4897943","t":"Total Steals","ti":"5","op":[1.5,500,null]},
+  {"a":"4897943","t":"Total Blocks","ti":"6","op":[0.5,500,null]},
+  {"a":"4897943","t":"Total Blocks","ti":"6","op":[0.5,null,-1200]},
+  {"a":"4897943","t":"Total Turnovers","ti":"7","op":[1.5,380,null],"cur":[1.5,260,null]},
+  {"a":"4897943","t":"Total Turnovers","ti":"7","op":[1.5,null,-800],"cur":[1.5,null,-450]},
+  {"a":"4897943","t":"Total Field Goals Made (incl. overtime)","ti":"24","op":[6.5,null,-5000],"cur":[3.5,null,-225]},
+  {"a":"4897943","t":"Total Field Goals Made (incl. overtime)","ti":"24","op":[6.5,1000,null],"cur":[3.5,150,null]}
+ ]
+   }
+  }
+ }
+}
