@@ -1,0 +1,21 @@
+League-wide, total runs minus closing total, relative to the season average (+0.4):
+  wind out 10+   n=  4568  +0.14 (±0.13)
+  wind in 10+    n=  2359  +0.08 (±0.20)
+  crosswind 10+  n=  4018  +0.14 (±0.14)
+  calm           n=  4985  -0.03 (±0.12)
+  hot 85F+       n=  5144  +0.24 (±0.13)
+  cold <=55F     n=  1994  -0.04 (±0.18)
+  day            n= 12366  -0.06 (±0.08)
+  night          n= 23468  +0.03 (±0.06)
+
+173 park angles. Largest |t| by chance (500 shuffles): median 2.90, 95th pct 3.72
+  CHI11 wind out 10+           n=  147  runs vs line +1.21  t=+2.72  share of shuffles with a bigger max |t|: 0.692
+  PHO01 night                  n=  880  runs vs line +0.38  t=+2.51  share of shuffles with a bigger max |t|: 0.892
+  BOS07 night                  n=  796  runs vs line +0.41  t=+2.40  share of shuffles with a bigger max |t|: 0.946
+  CHI12 day                    n=  444  runs vs line -0.50  t=-2.37  share of shuffles with a bigger max |t|: 0.956
+  BOS07 wind out 10+           n=  298  runs vs line +0.67  t=+2.31  share of shuffles with a bigger max |t|: 0.972
+  DEN02 calm                   n=  348  runs vs line +0.61  t=+2.26  share of shuffles with a bigger max |t|: 0.982
+  SEA03 calm                   n=  813  runs vs line -0.31  t=-2.26  share of shuffles with a bigger max |t|: 0.982
+  MIN04 day                    n=  478  runs vs line +0.44  t=+2.09  share of shuffles with a bigger max |t|: 1.000
+  WAS11 hot 85F+               n=  303  runs vs line +0.57  t=+2.08  share of shuffles with a bigger max |t|: 1.000
+  SEA03 day                    n=  365  runs vs line -0.40  t=-1.94  share of shuffles with a bigger max |t|: 1.000

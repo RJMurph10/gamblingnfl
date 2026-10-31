@@ -1,0 +1,29 @@
+ROUND 3 (park by park + model v2), run 2026-10-30
+
+== Park-by-park sweep (scripts/park_lab.py → results_park_lab.csv) ==
+322 angles: 30 parks x 8 conditions (wind out/in/cross 10+, calm, 85F+, <=55F, day, night) x over/under.
+Rule: money in both 2012-18 and 2019-25 at closing prices (totals 2012-21 at -110), 30+ games each half.
+Passing both halves: 27.  Expected by luck (200 within-season shuffles of over/under): mean 28.0, 95th pct 36.
+=> No more passing angles than chance. No condition clusters across parks (e.g. hot→over passes at 5 of 22
+   parks but loses 68u overall; day→under passes at 6 of 30 and loses 146u overall).
+Strongest single results (p = chance a coin-flip version does this well; with 322 tests ~1.6 expected at p<.005):
+  WAS11 hot 85F+ over      231 g  59.3%  +15.6u / +15.0u  p=.001
+  MIN04 hot 85F+ over       97 g  61.9%   +6.5u / +10.9u  p=.004
+  SAN02 crosswind 10+ over 305 g  56.4%  +16.0u /  +7.6u  p=.004
+  CHI12 day game under     366 g  57.1%  +16.4u / +16.2u  p=.005
+  CHI11 wind out 10+ over  125 g  59.2%  +10.6u /  +5.4u  p=.016   (Wrigley, the current best bet)
+None survives a multiple-testing correction (Bonferroni .05/322 = .00016).
+
+== Model v2 (scripts/model_v2.py), walk-forward 2013-25 ==
+Added to v1: lineup platoon advantage vs the starter's arm (Retrosheet rosters), temperature, wind out/in/cross
+speed, Wrigley wind out/in, umpire run tendency, bullpen batters faced in the last 3 days, day-after-night.
+2025 fit (z-scores): temperature 17.6, Wrigley wind out 8.3, wind out 6.4, Wrigley wind in -4.3, day-after-night
+-3.6, bullpen workload 3.2, umpire 3.0, crosswind 3.0, platoon 1.9 (all real effects on scoring).
+Moneyline log loss: market 0.67343, v1 0.67954, v2 0.67969 (no better; market best in all 13 seasons).
+Totals Brier: market 0.24984, v1 0.25374, v2 0.25237 (v2 better than v1, still worse than the market).
+Betting v2 at the close:
+  moneyline edges 2/4/6%, home and away: loses in at least one period every time
+  (home 6%+: -2.1% then +4.6%; away 6%+: -6.1% then -1.9%).
+  totals: only "under with 8%+ edge" positive in both periods: +0.9% then +0.7% (4,354 bets) — too thin to beat
+  price noise; overs lose at every threshold.
+Conclusion: the extra stats are real drivers of runs, but the closing line already prices them.
