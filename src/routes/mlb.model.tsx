@@ -1,8 +1,5 @@
-import { useMemo } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { PageTitle, Panel, PanelHeader, StatCard } from "@/components/shared/booth";
-import { gradeMlbSeason, winPct, type MlbRecord } from "@/lib/mlb/mlb-model";
-import { useMlbSchedule } from "@/lib/mlb/use-mlb";
+import { PageTitle, Panel, PanelHeader } from "@/components/shared/booth";
 
 export const Route = createFileRoute("/mlb/model")({
   head: () => ({
@@ -56,68 +53,11 @@ const ANGLES: [string, number, number, number, number][] = [
 
 const u = (n: number) => `${n > 0 ? "+" : ""}${n.toFixed(1)}u`;
 
-const rec = (r: MlbRecord) => `${r.wins}-${r.losses}${r.pushes ? `-${r.pushes}` : ""}`;
-const pct = (r: MlbRecord) => {
-  const v = winPct(r);
-  return v === null ? "—" : v.toFixed(1);
-};
-
-/** Betting every game the model projects, at the closing prices. Shown for transparency. */
-function EveryPick() {
-  const { games, isLoading } = useMlbSchedule(60_000);
-  const g = useMemo(() => gradeMlbSeason(games), [games]);
-  const all = g.moneyline.units + g.runLine.units + g.total.units;
-  const tone = (n: number) => (n > 0 ? "win" : n < 0 ? "loss" : "mute") as "win" | "loss" | "mute";
-  const loading = isLoading ? "Loading…" : undefined;
-  return (
-    <Panel>
-      <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">
-        If you bet every game
-      </h2>
-      <p className="mt-1 text-sm text-mute">
-        One unit on the model&apos;s side of every moneyline, run line and total this season, at the
-        closing prices. This is why only proven angles get a ★: betting everything loses about the
-        sportsbook&apos;s cut.
-      </p>
-      <div className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatCard
-          label="Moneyline"
-          value={pct(g.moneyline)}
-          unit="%"
-          note={loading ?? `${rec(g.moneyline)} · ${u(g.moneyline.units)}`}
-          tone={tone(g.moneyline.units)}
-        />
-        <StatCard
-          label="Totals"
-          value={pct(g.total)}
-          unit="%"
-          note={loading ?? `${rec(g.total)} · ${u(g.total.units)}`}
-          tone={tone(g.total.units)}
-        />
-        <StatCard
-          label="Run line"
-          value={pct(g.runLine)}
-          unit="%"
-          note={loading ?? `${rec(g.runLine)} · ${u(g.runLine.units)}`}
-          tone={tone(g.runLine.units)}
-        />
-        <StatCard
-          label="Every pick"
-          value={u(all)}
-          note={loading ?? `${g.games} games graded`}
-          tone={tone(all)}
-        />
-      </div>
-    </Panel>
-  );
-}
-
 function MlbModelPage() {
   return (
     <>
       <PageTitle eyebrow="MLB" title="Model" />
       <div className="space-y-6">
-        <EveryPick />
         <Panel>
           <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">
             The short version
