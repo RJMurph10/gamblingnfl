@@ -1,0 +1,89 @@
+{
+ "id": "401560026",
+ "league": "nhl",
+ "date": "2024-02-09T00:00Z",
+ "name": "WPG @ PHI",
+ "seasonType": 2,
+ "away": {
+  "id": "28",
+  "abbr": "WPG",
+  "name": "Winnipeg Jets",
+  "score": 1
+ },
+ "home": {
+  "id": "15",
+  "abbr": "PHI",
+  "name": "Philadelphia Flyers",
+  "score": 4
+ },
+ "final": {
+  "away": 1,
+  "home": 4
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:44:28.223Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 54,
+    "rows": [
+  {"a":"2501107","t":"Total Points","ti":"1","op":[0.5,120,null],"cur":[0.5,120,null]},
+  {"a":"2501107","t":"Total Points","ti":"1","op":[0.5,null,-160],"cur":[0.5,null,-160]},
+  {"a":"2562601","t":"Total Points","ti":"1","op":[0.5,-115,null],"cur":[0.5,-115,null]},
+  {"a":"2562601","t":"Total Points","ti":"1","op":[0.5,null,-115],"cur":[0.5,null,-115]},
+  {"a":"2562632","t":"Total Points","ti":"1","op":[0.5,-140,null],"cur":[0.5,-140,null]},
+  {"a":"2562632","t":"Total Points","ti":"1","op":[0.5,null,105],"cur":[0.5,null,105]},
+  {"a":"2563066","t":"Total Points","ti":"1","op":[0.5,135,null],"cur":[0.5,135,null]},
+  {"a":"2563066","t":"Total Points","ti":"1","op":[0.5,null,-180],"cur":[0.5,null,-180]},
+  {"a":"3041996","t":"Total Points","ti":"1","op":[0.5,105,null],"cur":[0.5,105,null]},
+  {"a":"3041996","t":"Total Points","ti":"1","op":[0.5,null,-140],"cur":[0.5,null,-140]},
+  {"a":"3042016","t":"Total Points","ti":"1","op":[0.5,-105,null],"cur":[0.5,-105,null]},
+  {"a":"3042016","t":"Total Points","ti":"1","op":[0.5,null,-125],"cur":[0.5,null,-125]},
+  {"a":"3114741","t":"Total Points","ti":"1","op":[0.5,105,null],"cur":[0.5,105,null]},
+  {"a":"3114741","t":"Total Points","ti":"1","op":[0.5,null,-140],"cur":[0.5,null,-140]},
+  {"a":"3899952","t":"Total Points","ti":"1","op":[0.5,-175,null],"cur":[0.5,-175,null]},
+  {"a":"3899952","t":"Total Points","ti":"1","op":[0.5,null,130],"cur":[0.5,null,130]},
+  {"a":"3900169","t":"Total Points","ti":"1","op":[0.5,-155,null],"cur":[0.5,-155,null]},
+  {"a":"3900169","t":"Total Points","ti":"1","op":[0.5,null,115],"cur":[0.5,null,115]},
+  {"a":"4233583","t":"Total Points","ti":"1","op":[0.5,105,null],"cur":[0.5,105,null]},
+  {"a":"4233583","t":"Total Points","ti":"1","op":[0.5,null,-140],"cur":[0.5,null,-140]},
+  {"a":"4352750","t":"Total Points","ti":"1","op":[0.5,-105,null],"cur":[0.5,-105,null]},
+  {"a":"4352750","t":"Total Points","ti":"1","op":[0.5,null,-125],"cur":[0.5,null,-125]},
+  {"a":"4392072","t":"Total Points","ti":"1","op":[0.5,-110,null],"cur":[0.5,-110,null]},
+  {"a":"4392072","t":"Total Points","ti":"1","op":[0.5,null,-120],"cur":[0.5,null,-120]},
+  {"a":"2501107","t":"Total Goals","ti":"41","op":[0.5,275,null],"cur":[0.5,275,null]},
+  {"a":"2501107","t":"Total Goals","ti":"41","op":[0.5,null,-420],"cur":[0.5,null,-420]},
+  {"a":"2562601","t":"Total Goals","ti":"41","op":[0.5,260,null],"cur":[0.5,260,null]},
+  {"a":"2562601","t":"Total Goals","ti":"41","op":[0.5,null,-390],"cur":[0.5,null,-390]},
+  {"a":"2562632","t":"Total Goals","ti":"41","op":[0.5,225,null],"cur":[0.5,225,null]},
+  {"a":"2562632","t":"Total Goals","ti":"41","op":[0.5,null,-330],"cur":[0.5,null,-330]},
+  {"a":"3114741","t":"Total Goals","ti":"41","op":[0.5,220,null],"cur":[0.5,220,null]},
+  {"a":"3114741","t":"Total Goals","ti":"41","op":[0.5,null,-320],"cur":[0.5,null,-320]},
+  {"a":"3899952","t":"Total Goals","ti":"41","op":[0.5,160,null],"cur":[0.5,160,null]},
+  {"a":"3899952","t":"Total Goals","ti":"41","op":[0.5,null,-220],"cur":[0.5,null,-220]},
+  {"a":"3900169","t":"Total Goals","ti":"41","op":[0.5,155,null],"cur":[0.5,155,null]},
+  {"a":"3900169","t":"Total Goals","ti":"41","op":[0.5,null,-215],"cur":[0.5,null,-215]},
+  {"a":"4233583","t":"Total Goals","ti":"41","op":[0.5,220,null],"cur":[0.5,220,null]},
+  {"a":"4233583","t":"Total Goals","ti":"41","op":[0.5,null,-320],"cur":[0.5,null,-320]},
+  {"a":"4352750","t":"Total Goals","ti":"41","op":[0.5,260,null],"cur":[0.5,260,null]},
+  {"a":"4352750","t":"Total Goals","ti":"41","op":[0.5,null,-390],"cur":[0.5,null,-390]},
+  {"a":"4392072","t":"Total Goals","ti":"41","op":[0.5,200,null],"cur":[0.5,200,null]},
+  {"a":"4392072","t":"Total Goals","ti":"41","op":[0.5,null,-285],"cur":[0.5,null,-285]},
+  {"a":"2564164","t":"Total Blocked Shots","ti":"44","op":[1.5,-303,null],"cur":[1.5,-280,null]},
+  {"a":"2564164","t":"Total Blocked Shots","ti":"44","op":[1.5,null,210],"cur":[1.5,null,200]},
+  {"a":"2590861","t":"Total Blocked Shots","ti":"44","op":[1.5,-119,null],"cur":[2.5,250,null]},
+  {"a":"2590861","t":"Total Blocked Shots","ti":"44","op":[1.5,null,-114],"cur":[2.5,null,-375]},
+  {"a":"3042016","t":"Total Blocked Shots","ti":"44","op":[2.5,290,null],"cur":[2.5,250,null]},
+  {"a":"3042016","t":"Total Blocked Shots","ti":"44","op":[2.5,null,-455],"cur":[2.5,null,-375]},
+  {"a":"4565235","t":"Total Blocked Shots","ti":"44","op":[2.5,265,null],"cur":[2.5,235,null]},
+  {"a":"4565235","t":"Total Blocked Shots","ti":"44","op":[2.5,null,-400],"cur":[2.5,null,-340]},
+  {"a":"3026526","t":"Total Saves","ti":"45","op":[29.5,110,null],"cur":[27.5,-145,null]},
+  {"a":"3026526","t":"Total Saves","ti":"45","op":[29.5,null,-140],"cur":[27.5,null,110]},
+  {"a":"4587815","t":"Total Saves","ti":"45","op":[24.5,-132,null],"cur":[25.5,105,null]},
+  {"a":"4587815","t":"Total Saves","ti":"45","op":[24.5,null,105],"cur":[25.5,null,-132]}
+ ]
+   }
+  }
+ }
+}
