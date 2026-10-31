@@ -477,5 +477,46 @@
    ]
   }
  },
- "props": {}
+ "props": {
+  "open": {
+   "at": "2026-10-31T16:52:26.778Z",
+   "provider": 100,
+   "count": 1,
+   "rows": [
+  {"a":null,"t":"Will There Be Overtime?","ti":"153","cur":[null,285,null]}
+ ],
+   "sample": [
+    {
+     "competition": {
+      "id": "401892628"
+     },
+     "provider": {
+      "id": "100"
+     },
+     "type": {
+      "id": "153",
+      "name": "Will There Be Overtime?"
+     },
+     "odds": {
+      "american": {
+       "value": "+285",
+       "open": "+285"
+      },
+      "decimal": {
+       "value": "3.85",
+       "open": "3.85"
+      },
+      "fraction": {
+       "value": "57/20",
+       "open": "57/20"
+      },
+      "total": {}
+     },
+     "lastUpdated": "2026-10-31T17:55Z",
+     "current": {},
+     "open": {}
+    }
+   ]
+  }
+ }
 }

@@ -7,18 +7,18 @@
   "id": "189",
   "abbr": "BGSU",
   "name": "Bowling Green Falcons",
-  "score": 0
+  "score": 7
  },
  "home": {
   "id": "2711",
   "abbr": "WMU",
   "name": "Western Michigan Broncos",
-  "score": 0
+  "score": 7
  },
  "neutral": false,
  "venue": "Waldo Stadium",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-10-31T08:02:20.928Z",

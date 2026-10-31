@@ -7,18 +7,18 @@
   "id": "103",
   "abbr": "BC",
   "name": "Boston College Eagles",
-  "score": 0
+  "score": 2
  },
  "home": {
   "id": "150",
   "abbr": "DUKE",
   "name": "Duke Blue Devils",
-  "score": 0
+  "score": 13
  },
  "neutral": false,
  "venue": "Wallace Wade Stadium",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-10-31T08:02:20.928Z",
