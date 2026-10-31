@@ -1,0 +1,45 @@
+{
+ "id": "401636861",
+ "league": "cfb",
+ "date": "2024-09-14T23:30Z",
+ "name": "COLO @ CSU",
+ "seasonType": 2,
+ "away": {
+  "id": "38",
+  "abbr": "COLO",
+  "name": "Colorado Buffaloes",
+  "score": 28
+ },
+ "home": {
+  "id": "36",
+  "abbr": "CSU",
+  "name": "Colorado State Rams",
+  "score": 9
+ },
+ "final": {
+  "away": 28,
+  "home": 9
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:19.365Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 10,
+    "rows": [
+  {"a":"4685415","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685415","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4690143","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4690143","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4875282","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4875282","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685415","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685415","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4708486","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4708486","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

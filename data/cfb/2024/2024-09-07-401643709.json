@@ -1,0 +1,53 @@
+{
+ "id": "401643709",
+ "league": "cfb",
+ "date": "2024-09-08T02:30Z",
+ "name": "ORST @ SDSU",
+ "seasonType": 2,
+ "away": {
+  "id": "204",
+  "abbr": "ORST",
+  "name": "Oregon State Beavers",
+  "score": 21
+ },
+ "home": {
+  "id": "21",
+  "abbr": "SDSU",
+  "name": "San Diego State Aztecs",
+  "score": 0
+ },
+ "final": {
+  "away": 21,
+  "home": 0
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:16.867Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 10,
+    "rows": [
+  {"a":"4429709","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4429709","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685385","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685385","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4879567","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4879567","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685385","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685385","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4879567","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4879567","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 2,
+    "rows": [
+  {"a":"4429709","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4429709","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   }
+  }
+ }
+}

@@ -1,0 +1,39 @@
+{
+ "id": "401628496",
+ "league": "cfb",
+ "date": "2024-09-28T16:00Z",
+ "name": "MD @ IU",
+ "seasonType": 2,
+ "away": {
+  "id": "120",
+  "abbr": "MD",
+  "name": "Maryland Terrapins",
+  "score": 28
+ },
+ "home": {
+  "id": "84",
+  "abbr": "IU",
+  "name": "Indiana Hoosiers",
+  "score": 42
+ },
+ "final": {
+  "away": 28,
+  "home": 42
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:23.749Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 4,
+    "rows": [
+  {"a":"4367069","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4367069","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4565185","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4565185","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

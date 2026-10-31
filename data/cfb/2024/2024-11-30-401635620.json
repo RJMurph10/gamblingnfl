@@ -1,0 +1,53 @@
+{
+ "id": "401635620",
+ "league": "cfb",
+ "date": "2024-11-30T20:00Z",
+ "name": "PITT @ BC",
+ "seasonType": 2,
+ "away": {
+  "id": "221",
+  "abbr": "PITT",
+  "name": "Pittsburgh Panthers",
+  "score": 23
+ },
+ "home": {
+  "id": "103",
+  "abbr": "BC",
+  "name": "Boston College Eagles",
+  "score": 34
+ },
+ "final": {
+  "away": 23,
+  "home": 34
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:48.456Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 6,
+    "rows": [
+  {"a":"4566158","t":"Total Kicking Points (incl. overtime)","ti":"22","op":[6.5,null,null],"cur":[5.5,null,null]},
+  {"a":"4566158","t":"Total Kicking Points (incl. overtime)","ti":"22","op":[6.5,null,null],"cur":[5.5,null,null]},
+  {"a":"4566158","t":"Total Extra Points Made (incl. overtime)","ti":"23","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"4566158","t":"Total Extra Points Made (incl. overtime)","ti":"23","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"4566158","t":"Total Field Goals Made (incl. overtime)","ti":"24","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":"4566158","t":"Total Field Goals Made (incl. overtime)","ti":"24","op":[1.5,null,null],"cur":[1.5,null,null]}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 6,
+    "rows": [
+  {"a":"4566158","t":"Total Kicking Points (incl. overtime)","ti":"22","op":[6.5,null,null],"cur":[5.5,null,null]},
+  {"a":"4566158","t":"Total Kicking Points (incl. overtime)","ti":"22","op":[6.5,null,null],"cur":[5.5,null,null]},
+  {"a":"4566158","t":"Total Extra Points Made (incl. overtime)","ti":"23","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"4566158","t":"Total Extra Points Made (incl. overtime)","ti":"23","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"4566158","t":"Total Field Goals Made (incl. overtime)","ti":"24","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":"4566158","t":"Total Field Goals Made (incl. overtime)","ti":"24","op":[1.5,null,null],"cur":[1.5,null,null]}
+ ]
+   }
+  }
+ }
+}

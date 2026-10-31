@@ -1,0 +1,57 @@
+{
+ "id": "401636879",
+ "league": "cfb",
+ "date": "2024-09-21T16:00Z",
+ "name": "KU @ WVU",
+ "seasonType": 2,
+ "away": {
+  "id": "2305",
+  "abbr": "KU",
+  "name": "Kansas Jayhawks",
+  "score": 28
+ },
+ "home": {
+  "id": "277",
+  "abbr": "WVU",
+  "name": "West Virginia Mountaineers",
+  "score": 32
+ },
+ "final": {
+  "away": 28,
+  "home": 32
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:20.832Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 22,
+    "rows": [
+  {"a":"4429847","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4429847","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4430914","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4430914","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4433830","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4433830","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4596472","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4596472","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4911971","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4911971","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4429847","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4429847","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4430914","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4430914","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4433830","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4433830","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4596472","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4596472","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4682652","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4682652","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4911971","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4911971","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

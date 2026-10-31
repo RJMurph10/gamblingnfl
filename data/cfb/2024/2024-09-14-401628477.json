@@ -1,0 +1,53 @@
+{
+ "id": "401628477",
+ "league": "cfb",
+ "date": "2024-09-14T20:00Z",
+ "name": "TROY @ IOWA",
+ "seasonType": 2,
+ "away": {
+  "id": "2653",
+  "abbr": "TROY",
+  "name": "Troy Trojans",
+  "score": 21
+ },
+ "home": {
+  "id": "2294",
+  "abbr": "IOWA",
+  "name": "Iowa Hawkeyes",
+  "score": 38
+ },
+ "final": {
+  "away": 21,
+  "home": 38
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:18.693Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 10,
+    "rows": [
+  {"a":"4432338","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4432338","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4819231","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4819231","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431485","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4431485","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4432338","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4432338","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4819231","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4819231","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 2,
+    "rows": [
+  {"a":"4819231","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4819231","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   }
+  }
+ }
+}

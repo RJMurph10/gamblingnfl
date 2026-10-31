@@ -1,0 +1,51 @@
+{
+ "id": "401628982",
+ "league": "cfb",
+ "date": "2024-10-19T19:30Z",
+ "name": "ND VS GT",
+ "seasonType": 2,
+ "away": {
+  "id": "87",
+  "abbr": "ND",
+  "name": "Notre Dame Fighting Irish",
+  "score": 31
+ },
+ "home": {
+  "id": "59",
+  "abbr": "GT",
+  "name": "Georgia Tech Yellow Jackets",
+  "score": 13
+ },
+ "final": {
+  "away": 31,
+  "home": 13
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:30.566Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 6,
+    "rows": [
+  {"a":"4683423","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4683423","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4611995","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4611995","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4683423","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4683423","t":"Anytime Touchdown Scorer","ti":"31"}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 4,
+    "rows": [
+  {"a":"4683423","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4683423","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4611995","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4611995","t":"Anytime Touchdown Scorer","ti":"31"}
+ ]
+   }
+  }
+ }
+}

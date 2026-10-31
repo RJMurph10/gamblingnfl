@@ -1,0 +1,71 @@
+{
+ "id": "401628352",
+ "league": "cfb",
+ "date": "2024-09-14T23:30Z",
+ "name": "UNM @ AUB",
+ "seasonType": 2,
+ "away": {
+  "id": "167",
+  "abbr": "UNM",
+  "name": "New Mexico Lobos",
+  "score": 19
+ },
+ "home": {
+  "id": "2",
+  "abbr": "AUB",
+  "name": "Auburn Tigers",
+  "score": 45
+ },
+ "final": {
+  "away": 19,
+  "home": 45
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:19.262Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 28,
+    "rows": [
+  {"a":"4430590","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4430590","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4430870","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4430870","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4605858","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4605858","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4682761","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4682761","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4684525","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4684525","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685699","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685699","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4686271","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4686271","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4710341","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4710341","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4430590","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4430590","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4430870","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4430870","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4605858","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4605858","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4682761","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4682761","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685699","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685699","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4710341","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4710341","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 2,
+    "rows": [
+  {"a":"4710341","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4710341","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   }
+  }
+ }
+}

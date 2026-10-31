@@ -1,0 +1,55 @@
+{
+ "id": "401628353",
+ "league": "cfb",
+ "date": "2024-09-14T19:30Z",
+ "name": "TA&M @ FLA",
+ "seasonType": 2,
+ "away": {
+  "id": "245",
+  "abbr": "TA&M",
+  "name": "Texas A&M Aggies",
+  "score": 33
+ },
+ "home": {
+  "id": "57",
+  "abbr": "FLA",
+  "name": "Florida Gators",
+  "score": 20
+ },
+ "final": {
+  "away": 33,
+  "home": 20
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:18.412Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 20,
+    "rows": [
+  {"a":"4429184","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4429184","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685470","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685470","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685784","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685784","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4718457","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4718457","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4921154","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4921154","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4429184","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4429184","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685470","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685470","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685784","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685784","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4879611","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4879611","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4921154","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4921154","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

@@ -1,0 +1,37 @@
+{
+ "id": "401635558",
+ "league": "cfb",
+ "date": "2024-09-21T18:00Z",
+ "name": "UVA @ CCU",
+ "seasonType": 2,
+ "away": {
+  "id": "258",
+  "abbr": "UVA",
+  "name": "Virginia Cavaliers",
+  "score": 43
+ },
+ "home": {
+  "id": "324",
+  "abbr": "CCU",
+  "name": "Coastal Carolina Chanticleers",
+  "score": 24
+ },
+ "final": {
+  "away": 43,
+  "home": 24
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:21.111Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 2,
+    "rows": [
+  {"a":"4686095","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4686095","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

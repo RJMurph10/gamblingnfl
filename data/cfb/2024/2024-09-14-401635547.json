@@ -1,0 +1,57 @@
+{
+ "id": "401635547",
+ "league": "cfb",
+ "date": "2024-09-14T19:30Z",
+ "name": "WVU @ PITT",
+ "seasonType": 2,
+ "away": {
+  "id": "277",
+  "abbr": "WVU",
+  "name": "West Virginia Mountaineers",
+  "score": 34
+ },
+ "home": {
+  "id": "221",
+  "abbr": "PITT",
+  "name": "Pittsburgh Panthers",
+  "score": 38
+ },
+ "final": {
+  "away": 34,
+  "home": 38
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:18.693Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 22,
+    "rows": [
+  {"a":"4429847","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4429847","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4433921","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4433921","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685769","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685769","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4710855","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4710855","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4870912","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4870912","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4433921","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4433921","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685769","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685769","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4710855","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4710855","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4870912","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4870912","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4911971","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4911971","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"5154230","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"5154230","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

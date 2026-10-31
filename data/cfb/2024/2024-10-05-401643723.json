@@ -1,0 +1,59 @@
+{
+ "id": "401643723",
+ "league": "cfb",
+ "date": "2024-10-05T23:00Z",
+ "name": "USU @ BOIS",
+ "seasonType": 2,
+ "away": {
+  "id": "328",
+  "abbr": "USU",
+  "name": "Utah State Aggies",
+  "score": 30
+ },
+ "home": {
+  "id": "68",
+  "abbr": "BOIS",
+  "name": "Boise State Broncos",
+  "score": 62
+ },
+ "final": {
+  "away": 30,
+  "home": 62
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:26.104Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 16,
+    "rows": [
+  {"a":"4687486","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4687486","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4870513","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4870513","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4890973","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4890973","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5081322","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5081322","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4687486","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4687486","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4870513","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4870513","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4890973","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4890973","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"5081322","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"5081322","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 2,
+    "rows": [
+  {"a":"4890973","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4890973","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   }
+  }
+ }
+}

@@ -1,0 +1,37 @@
+{
+ "id": "401628467",
+ "league": "cfb",
+ "date": "2024-09-07T23:30Z",
+ "name": "COLO @ NEB",
+ "seasonType": 2,
+ "away": {
+  "id": "38",
+  "abbr": "COLO",
+  "name": "Colorado Buffaloes",
+  "score": 10
+ },
+ "home": {
+  "id": "158",
+  "abbr": "NEB",
+  "name": "Nebraska Cornhuskers",
+  "score": 28
+ },
+ "final": {
+  "away": 10,
+  "home": 28
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:16.631Z",
+  "books": {
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 2,
+    "rows": [
+  {"a":"4685415","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685415","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   }
+  }
+ }
+}

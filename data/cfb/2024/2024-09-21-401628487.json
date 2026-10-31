@@ -1,0 +1,63 @@
+{
+ "id": "401628487",
+ "league": "cfb",
+ "date": "2024-09-21T23:30Z",
+ "name": "IOWA @ MINN",
+ "seasonType": 2,
+ "away": {
+  "id": "2294",
+  "abbr": "IOWA",
+  "name": "Iowa Hawkeyes",
+  "score": 31
+ },
+ "home": {
+  "id": "135",
+  "abbr": "MINN",
+  "name": "Minnesota Golden Gophers",
+  "score": 14
+ },
+ "final": {
+  "away": 31,
+  "home": 14
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:21.959Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 20,
+    "rows": [
+  {"a":"4430875","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4430875","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4569547","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4569547","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4588298","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4588298","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4602966","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4602966","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4819231","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4819231","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4920901","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4920901","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4430875","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4430875","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4432338","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4432338","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4572267","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4572267","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4920901","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4920901","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 2,
+    "rows": [
+  {"a":"4819231","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4819231","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   }
+  }
+ }
+}

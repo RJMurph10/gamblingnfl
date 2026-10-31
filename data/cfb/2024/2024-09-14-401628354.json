@@ -1,0 +1,57 @@
+{
+ "id": "401628354",
+ "league": "cfb",
+ "date": "2024-09-14T23:30Z",
+ "name": "UGA @ UK",
+ "seasonType": 2,
+ "away": {
+  "id": "61",
+  "abbr": "UGA",
+  "name": "Georgia Bulldogs",
+  "score": 13
+ },
+ "home": {
+  "id": "96",
+  "abbr": "UK",
+  "name": "Kentucky Wildcats",
+  "score": 12
+ },
+ "final": {
+  "away": 13,
+  "home": 12
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:17.688Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 22,
+    "rows": [
+  {"a":"4429105","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4429105","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4430270","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4430270","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4596439","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4596439","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4712579","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4712579","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4429105","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4429105","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4430270","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4430270","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4430841","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4430841","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4596439","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4596439","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4606195","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4606195","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4712579","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4712579","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4713489","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4713489","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

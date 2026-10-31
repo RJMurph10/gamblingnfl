@@ -1,0 +1,43 @@
+{
+ "id": "401641011",
+ "league": "cfb",
+ "date": "2024-10-23T00:00Z",
+ "name": "UTEP @ LT",
+ "seasonType": 2,
+ "away": {
+  "id": "2638",
+  "abbr": "UTEP",
+  "name": "UTEP Miners",
+  "score": 10
+ },
+ "home": {
+  "id": "2348",
+  "abbr": "LT",
+  "name": "Louisiana Tech Bulldogs",
+  "score": 14
+ },
+ "final": {
+  "away": 10,
+  "home": 14
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:32.396Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 1,
+    "rows": [
+  {"a":"4879292","t":"Anytime Touchdown Scorer","ti":"31","op":[1,null,null],"cur":[1,null,null]}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 1,
+    "rows": [
+  {"a":"4879292","t":"Anytime Touchdown Scorer","ti":"31","op":[1,null,null],"cur":[1,null,null]}
+ ]
+   }
+  }
+ }
+}

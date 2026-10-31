@@ -1,0 +1,37 @@
+{
+ "id": "401628371",
+ "league": "cfb",
+ "date": "2024-09-22T00:00Z",
+ "name": "ULM @ TEX",
+ "seasonType": 2,
+ "away": {
+  "id": "2433",
+  "abbr": "ULM",
+  "name": "UL Monroe Warhawks",
+  "score": 3
+ },
+ "home": {
+  "id": "251",
+  "abbr": "TEX",
+  "name": "Texas Longhorns",
+  "score": 51
+ },
+ "final": {
+  "away": 3,
+  "home": 51
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:20.319Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 2,
+    "rows": [
+  {"a":"4870906","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4870906","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   }
+  }
+ }
+}

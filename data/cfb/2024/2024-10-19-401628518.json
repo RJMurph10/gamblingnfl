@@ -1,0 +1,49 @@
+{
+ "id": "401628518",
+ "league": "cfb",
+ "date": "2024-10-19T19:30Z",
+ "name": "MICH @ ILL",
+ "seasonType": 2,
+ "away": {
+  "id": "130",
+  "abbr": "MICH",
+  "name": "Michigan Wolverines",
+  "score": 7
+ },
+ "home": {
+  "id": "356",
+  "abbr": "ILL",
+  "name": "Illinois Fighting Illini",
+  "score": 21
+ },
+ "final": {
+  "away": 7,
+  "home": 21
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:30.857Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 6,
+    "rows": [
+  {"a":"4429121","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4429121","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431536","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431536","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4682640","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4682640","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 2,
+    "rows": [
+  {"a":"4429121","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4429121","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   }
+  }
+ }
+}

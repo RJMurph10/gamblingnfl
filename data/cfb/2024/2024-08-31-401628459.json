@@ -1,0 +1,39 @@
+{
+ "id": "401628459",
+ "league": "cfb",
+ "date": "2024-08-31T23:30Z",
+ "name": "UCLA @ HAW",
+ "seasonType": 2,
+ "away": {
+  "id": "26",
+  "abbr": "UCLA",
+  "name": "UCLA Bruins",
+  "score": 16
+ },
+ "home": {
+  "id": "62",
+  "abbr": "HAW",
+  "name": "Hawai'i Rainbow Warriors",
+  "score": 13
+ },
+ "final": {
+  "away": 16,
+  "home": 13
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:13.392Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 4,
+    "rows": [
+  {"a":"4429068","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4429068","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431234","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4431234","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

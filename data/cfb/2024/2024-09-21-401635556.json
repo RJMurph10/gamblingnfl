@@ -1,0 +1,55 @@
+{
+ "id": "401635556",
+ "league": "cfb",
+ "date": "2024-09-21T16:00Z",
+ "name": "JMU @ UNC",
+ "seasonType": 2,
+ "away": {
+  "id": "256",
+  "abbr": "JMU",
+  "name": "James Madison Dukes",
+  "score": 70
+ },
+ "home": {
+  "id": "153",
+  "abbr": "UNC",
+  "name": "North Carolina Tar Heels",
+  "score": 50
+ },
+ "final": {
+  "away": 70,
+  "home": 50
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:20.828Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 20,
+    "rows": [
+  {"a":"4431045","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431045","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4432387","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4432387","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4596596","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4596596","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4602969","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4602969","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685382","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685382","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431045","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4431045","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4432387","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4432387","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4596596","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4596596","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4602969","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4602969","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685382","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685382","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

@@ -1,0 +1,47 @@
+{
+ "id": "401635548",
+ "league": "cfb",
+ "date": "2024-09-14T22:00Z",
+ "name": "VT @ ODU",
+ "seasonType": 2,
+ "away": {
+  "id": "259",
+  "abbr": "VT",
+  "name": "Virginia Tech Hokies",
+  "score": 37
+ },
+ "home": {
+  "id": "295",
+  "abbr": "ODU",
+  "name": "Old Dominion Monarchs",
+  "score": 17
+ },
+ "final": {
+  "away": 37,
+  "home": 17
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:18.886Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 12,
+    "rows": [
+  {"a":"4427601","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4427601","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4575348","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4575348","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4678010","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4678010","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4427601","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4427601","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4575348","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4575348","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4678010","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4678010","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

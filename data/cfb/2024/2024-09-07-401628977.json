@@ -1,0 +1,51 @@
+{
+ "id": "401628977",
+ "league": "cfb",
+ "date": "2024-09-07T19:30Z",
+ "name": "NIU @ ND",
+ "seasonType": 2,
+ "away": {
+  "id": "2459",
+  "abbr": "NIU",
+  "name": "Northern Illinois Huskies",
+  "score": 16
+ },
+ "home": {
+  "id": "87",
+  "abbr": "ND",
+  "name": "Notre Dame Fighting Irish",
+  "score": 14
+ },
+ "final": {
+  "away": 16,
+  "home": 14
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:14.853Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 16,
+    "rows": [
+  {"a":"4428025","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4428025","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431210","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431210","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4683423","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4683423","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4870808","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4870808","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4426420","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4426420","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4428025","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4428025","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4683423","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4683423","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685512","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685512","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

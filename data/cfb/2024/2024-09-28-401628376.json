@@ -1,0 +1,39 @@
+{
+ "id": "401628376",
+ "league": "cfb",
+ "date": "2024-09-28T23:45Z",
+ "name": "USA @ LSU",
+ "seasonType": 2,
+ "away": {
+  "id": "6",
+  "abbr": "USA",
+  "name": "South Alabama Jaguars",
+  "score": 10
+ },
+ "home": {
+  "id": "99",
+  "abbr": "LSU",
+  "name": "LSU Tigers",
+  "score": 42
+ },
+ "final": {
+  "away": 10,
+  "home": 42
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:23.547Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 4,
+    "rows": [
+  {"a":"4431219","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431219","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431219","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4431219","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

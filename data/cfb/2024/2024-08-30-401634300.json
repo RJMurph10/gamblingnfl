@@ -1,0 +1,47 @@
+{
+ "id": "401634300",
+ "league": "cfb",
+ "date": "2024-08-31T02:30Z",
+ "name": "TCU @ STAN",
+ "seasonType": 2,
+ "away": {
+  "id": "2628",
+  "abbr": "TCU",
+  "name": "TCU Horned Frogs",
+  "score": 34
+ },
+ "home": {
+  "id": "24",
+  "abbr": "STAN",
+  "name": "Stanford Cardinal",
+  "score": 27
+ },
+ "final": {
+  "away": 34,
+  "home": 27
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:11.405Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 12,
+    "rows": [
+  {"a":"107494","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"107494","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431487","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431487","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4883647","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4883647","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"107494","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"107494","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4431487","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4431487","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4883647","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4883647","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

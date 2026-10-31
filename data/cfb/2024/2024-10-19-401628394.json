@@ -1,0 +1,53 @@
+{
+ "id": "401628394",
+ "league": "cfb",
+ "date": "2024-10-19T20:15Z",
+ "name": "TA&M @ MSST",
+ "seasonType": 2,
+ "away": {
+  "id": "245",
+  "abbr": "TA&M",
+  "name": "Texas A&M Aggies",
+  "score": 34
+ },
+ "home": {
+  "id": "344",
+  "abbr": "MSST",
+  "name": "Mississippi State Bulldogs",
+  "score": 24
+ },
+ "final": {
+  "away": 34,
+  "home": 24
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:30.568Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 10,
+    "rows": [
+  {"a":"4685470","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685470","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5153650","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5153650","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685470","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685470","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4879611","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4879611","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"5153650","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"5153650","t":"Anytime Touchdown Scorer","ti":"31"}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 2,
+    "rows": [
+  {"a":"4879611","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4879611","t":"Anytime Touchdown Scorer","ti":"31"}
+ ]
+   }
+  }
+ }
+}

@@ -1,0 +1,45 @@
+{
+ "id": "401636886",
+ "league": "cfb",
+ "date": "2024-09-29T02:15Z",
+ "name": "ARIZ @ UTAH",
+ "seasonType": 2,
+ "away": {
+  "id": "12",
+  "abbr": "ARIZ",
+  "name": "Arizona Wildcats",
+  "score": 23
+ },
+ "home": {
+  "id": "254",
+  "abbr": "UTAH",
+  "name": "Utah Utes",
+  "score": 10
+ },
+ "final": {
+  "away": 23,
+  "home": 10
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:23.443Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 10,
+    "rows": [
+  {"a":"4361014","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4361014","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4694583","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4694583","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4361014","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4361014","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685472","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685472","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4694583","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4694583","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

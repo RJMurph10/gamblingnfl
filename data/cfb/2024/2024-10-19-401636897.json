@@ -1,0 +1,47 @@
+{
+ "id": "401636897",
+ "league": "cfb",
+ "date": "2024-10-19T20:00Z",
+ "name": "COLO @ ARIZ",
+ "seasonType": 2,
+ "away": {
+  "id": "38",
+  "abbr": "COLO",
+  "name": "Colorado Buffaloes",
+  "score": 34
+ },
+ "home": {
+  "id": "12",
+  "abbr": "ARIZ",
+  "name": "Arizona Wildcats",
+  "score": 7
+ },
+ "final": {
+  "away": 34,
+  "home": 7
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:31.776Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 4,
+    "rows": [
+  {"a":"4685472","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685472","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4694583","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4694583","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 2,
+    "rows": [
+  {"a":"4694583","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4694583","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   }
+  }
+ }
+}

@@ -1,0 +1,99 @@
+{
+ "id": "401643757",
+ "league": "cfb",
+ "date": "2024-11-16T20:30Z",
+ "name": "ORST @ AFA",
+ "seasonType": 2,
+ "away": {
+  "id": "204",
+  "abbr": "ORST",
+  "name": "Oregon State Beavers",
+  "score": 0
+ },
+ "home": {
+  "id": "2005",
+  "abbr": "AFA",
+  "name": "Air Force Falcons",
+  "score": 28
+ },
+ "final": {
+  "away": 0,
+  "home": 28
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:43.097Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 35,
+    "rows": [
+  {"a":"4431114","t":"Total Passing Yards (incl. overtime)","ti":"8","op":[225,null,null],"cur":[225,null,null]},
+  {"a":"4431114","t":"Total Passing Yards (incl. overtime)","ti":"8","op":[149.5,null,null],"cur":[174.5,null,null]},
+  {"a":"4431114","t":"Total Passing Yards (incl. overtime)","ti":"8","op":[149.5,null,null],"cur":[174.5,null,null]},
+  {"a":"4431114","t":"Total Passing Yards (incl. overtime)","ti":"8","op":[175,null,null],"cur":[175,null,null]},
+  {"a":"4431114","t":"Total Passing Yards (incl. overtime)","ti":"8","op":[200,null,null],"cur":[200,null,null]},
+  {"a":"4431114","t":"Total Passing Yards (incl. overtime)","ti":"8","op":[150,null,null],"cur":[150,null,null]},
+  {"a":"4685385","t":"Total Rushing Yards (incl. overtime)","ti":"12","op":[79.5,null,null],"cur":[89.5,null,null]},
+  {"a":"4685385","t":"Total Rushing Yards (incl. overtime)","ti":"12","op":[100,null,null],"cur":[100,null,null]},
+  {"a":"4685385","t":"Total Rushing Yards (incl. overtime)","ti":"12","op":[150,null,null],"cur":[150,null,null]},
+  {"a":"4685385","t":"Total Rushing Yards (incl. overtime)","ti":"12","op":[90,null,null],"cur":[90,null,null]},
+  {"a":"4685385","t":"Total Rushing Yards (incl. overtime)","ti":"12","op":[80,null,null],"cur":[80,null,null]},
+  {"a":"4685385","t":"Total Rushing Yards (incl. overtime)","ti":"12","op":[79.5,null,null],"cur":[89.5,null,null]},
+  {"a":"4685385","t":"Total Rushing Yards (incl. overtime)","ti":"12","op":[125,null,null],"cur":[125,null,null]},
+  {"a":"4685385","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[15,null,null],"cur":[15,null,null]},
+  {"a":"4685385","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[25,null,null],"cur":[25,null,null]},
+  {"a":"4685385","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[10,null,null],"cur":[10,null,null]},
+  {"a":"4685385","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[20,null,null],"cur":[20,null,null]},
+  {"a":"4685385","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[5,null,null],"cur":[5,null,null]},
+  {"a":"4879567","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[70,null,null],"cur":[70,null,null]},
+  {"a":"4879567","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[80,null,null],"cur":[80,null,null]},
+  {"a":"4879567","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[79.5,null,null],"cur":[69.5,null,null]},
+  {"a":"4879567","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[90,null,null],"cur":[90,null,null]},
+  {"a":"4879567","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[79.5,null,null],"cur":[69.5,null,null]},
+  {"a":"4879567","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[60,null,null],"cur":[60,null,null]},
+  {"a":"4879567","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[100,null,null],"cur":[100,null,null]},
+  {"a":"4685385","t":"Total Receptions (incl. overtime)","ti":"14","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"4685385","t":"Total Receptions (incl. overtime)","ti":"14","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"4879567","t":"Total Receptions (incl. overtime)","ti":"14","op":[5.5,null,null],"cur":[5.5,null,null]},
+  {"a":"4879567","t":"Total Receptions (incl. overtime)","ti":"14","op":[5.5,null,null],"cur":[5.5,null,null]},
+  {"a":"4570473","t":"Total Kicking Points (incl. overtime)","ti":"22","op":[5.5,null,null],"cur":[5.5,null,null]},
+  {"a":"4570473","t":"Total Kicking Points (incl. overtime)","ti":"22","op":[5.5,null,null],"cur":[5.5,null,null]},
+  {"a":"4570473","t":"Total Extra Points Made (incl. overtime)","ti":"23","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"4570473","t":"Total Extra Points Made (incl. overtime)","ti":"23","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"4570473","t":"Total Field Goals Made (incl. overtime)","ti":"24","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"4570473","t":"Total Field Goals Made (incl. overtime)","ti":"24","op":[0.5,null,null],"cur":[0.5,null,null]}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 23,
+    "rows": [
+  {"a":"4685385","t":"Total Rushing Yards (incl. overtime)","ti":"12","op":[79.5,null,null],"cur":[89.5,null,null]},
+  {"a":"4685385","t":"Total Rushing Yards (incl. overtime)","ti":"12","op":[100,null,null],"cur":[100,null,null]},
+  {"a":"4685385","t":"Total Rushing Yards (incl. overtime)","ti":"12","op":[150,null,null],"cur":[150,null,null]},
+  {"a":"4685385","t":"Total Rushing Yards (incl. overtime)","ti":"12","op":[90,null,null],"cur":[90,null,null]},
+  {"a":"4685385","t":"Total Rushing Yards (incl. overtime)","ti":"12","op":[80,null,null],"cur":[80,null,null]},
+  {"a":"4685385","t":"Total Rushing Yards (incl. overtime)","ti":"12","op":[79.5,null,null],"cur":[89.5,null,null]},
+  {"a":"4685385","t":"Total Rushing Yards (incl. overtime)","ti":"12","op":[125,null,null],"cur":[125,null,null]},
+  {"a":"4685385","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[15,null,null],"cur":[15,null,null]},
+  {"a":"4685385","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[25,null,null],"cur":[25,null,null]},
+  {"a":"4685385","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[10,null,null],"cur":[10,null,null]},
+  {"a":"4685385","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[20,null,null],"cur":[20,null,null]},
+  {"a":"4685385","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[5,null,null],"cur":[5,null,null]},
+  {"a":"4879567","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[70,null,null],"cur":[70,null,null]},
+  {"a":"4879567","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[80,null,null],"cur":[80,null,null]},
+  {"a":"4879567","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[79.5,null,null],"cur":[69.5,null,null]},
+  {"a":"4879567","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[90,null,null],"cur":[90,null,null]},
+  {"a":"4879567","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[79.5,null,null],"cur":[69.5,null,null]},
+  {"a":"4879567","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[60,null,null],"cur":[60,null,null]},
+  {"a":"4879567","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[100,null,null],"cur":[100,null,null]},
+  {"a":"4685385","t":"Total Receptions (incl. overtime)","ti":"14","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"4685385","t":"Total Receptions (incl. overtime)","ti":"14","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"4879567","t":"Total Receptions (incl. overtime)","ti":"14","op":[5.5,null,null],"cur":[5.5,null,null]},
+  {"a":"4879567","t":"Total Receptions (incl. overtime)","ti":"14","op":[5.5,null,null],"cur":[5.5,null,null]}
+ ]
+   }
+  }
+ }
+}

@@ -1,0 +1,45 @@
+{
+ "id": "401628499",
+ "league": "cfb",
+ "date": "2024-09-28T16:00Z",
+ "name": "NEB @ PUR",
+ "seasonType": 2,
+ "away": {
+  "id": "158",
+  "abbr": "NEB",
+  "name": "Nebraska Cornhuskers",
+  "score": 28
+ },
+ "home": {
+  "id": "2509",
+  "abbr": "PUR",
+  "name": "Purdue Boilermakers",
+  "score": 10
+ },
+ "final": {
+  "away": 28,
+  "home": 10
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:23.755Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 10,
+    "rows": [
+  {"a":"4571935","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4571935","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4923252","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4923252","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4428116","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4428116","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4571935","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4571935","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4923252","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4923252","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

@@ -1,0 +1,39 @@
+{
+ "id": "401628364",
+ "league": "cfb",
+ "date": "2024-09-21T16:45Z",
+ "name": "OHIO @ UK",
+ "seasonType": 2,
+ "away": {
+  "id": "195",
+  "abbr": "OHIO",
+  "name": "Ohio Bobcats",
+  "score": 6
+ },
+ "home": {
+  "id": "96",
+  "abbr": "UK",
+  "name": "Kentucky Wildcats",
+  "score": 41
+ },
+ "final": {
+  "away": 6,
+  "home": 41
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:20.930Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 4,
+    "rows": [
+  {"a":"4432782","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4432782","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4432782","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4432782","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

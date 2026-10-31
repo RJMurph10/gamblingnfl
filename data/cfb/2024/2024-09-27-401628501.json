@@ -1,0 +1,43 @@
+{
+ "id": "401628501",
+ "league": "cfb",
+ "date": "2024-09-28T00:00Z",
+ "name": "WASH @ RUTG",
+ "seasonType": 2,
+ "away": {
+  "id": "264",
+  "abbr": "WASH",
+  "name": "Washington Huskies",
+  "score": 18
+ },
+ "home": {
+  "id": "164",
+  "abbr": "RUTG",
+  "name": "Rutgers Scarlet Knights",
+  "score": 21
+ },
+ "final": {
+  "away": 18,
+  "home": 21
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:22.875Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 8,
+    "rows": [
+  {"a":"4427569","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4427569","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4608686","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4608686","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4427569","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4427569","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4608686","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4608686","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

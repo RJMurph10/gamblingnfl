@@ -1,0 +1,47 @@
+{
+ "id": "401636884",
+ "league": "cfb",
+ "date": "2024-09-29T00:00Z",
+ "name": "CIN @ TTU",
+ "seasonType": 2,
+ "away": {
+  "id": "2132",
+  "abbr": "CIN",
+  "name": "Cincinnati Bearcats",
+  "score": 41
+ },
+ "home": {
+  "id": "2641",
+  "abbr": "TTU",
+  "name": "Texas Tech Red Raiders",
+  "score": 44
+ },
+ "final": {
+  "away": 41,
+  "home": 44
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:24.914Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 12,
+    "rows": [
+  {"a":"4429299","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4429299","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431044","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431044","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4565859","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4565859","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4429299","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4429299","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4431044","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4431044","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4565859","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4565859","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

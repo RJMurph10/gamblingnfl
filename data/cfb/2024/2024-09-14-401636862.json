@@ -1,0 +1,47 @@
+{
+ "id": "401636862",
+ "league": "cfb",
+ "date": "2024-09-15T00:00Z",
+ "name": "RICE @ HOU",
+ "seasonType": 2,
+ "away": {
+  "id": "242",
+  "abbr": "RICE",
+  "name": "Rice Owls",
+  "score": 7
+ },
+ "home": {
+  "id": "248",
+  "abbr": "HOU",
+  "name": "Houston Cougars",
+  "score": 33
+ },
+ "final": {
+  "away": 7,
+  "home": 33
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:19.529Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 12,
+    "rows": [
+  {"a":"4429949","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4429949","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4432551","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4432551","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4683227","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4683227","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4690977","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4690977","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4429949","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4429949","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4432551","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4432551","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

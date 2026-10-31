@@ -1,0 +1,39 @@
+{
+ "id": "401636608",
+ "league": "cfb",
+ "date": "2024-09-01T02:30Z",
+ "name": "UNM @ ARIZ",
+ "seasonType": 2,
+ "away": {
+  "id": "167",
+  "abbr": "UNM",
+  "name": "New Mexico Lobos",
+  "score": 39
+ },
+ "home": {
+  "id": "12",
+  "abbr": "ARIZ",
+  "name": "Arizona Wildcats",
+  "score": 61
+ },
+ "final": {
+  "away": 39,
+  "home": 61
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:12.141Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 4,
+    "rows": [
+  {"a":"4801717","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4801717","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4801717","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4801717","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

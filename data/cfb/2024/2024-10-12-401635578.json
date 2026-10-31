@@ -1,0 +1,67 @@
+{
+ "id": "401635578",
+ "league": "cfb",
+ "date": "2024-10-12T19:30Z",
+ "name": "LOU @ UVA",
+ "seasonType": 2,
+ "away": {
+  "id": "97",
+  "abbr": "LOU",
+  "name": "Louisville Cardinals",
+  "score": 24
+ },
+ "home": {
+  "id": "258",
+  "abbr": "UVA",
+  "name": "Virginia Cavaliers",
+  "score": 20
+ },
+ "final": {
+  "away": 24,
+  "home": 20
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:28.567Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 32,
+    "rows": [
+  {"a":"4360689","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4360689","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4430185","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4430185","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431346","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431346","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431506","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431506","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4682648","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4682648","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4686095","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4686095","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4869961","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4869961","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5044387","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5044387","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4360689","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4360689","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4430185","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4430185","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4431346","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4431346","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4431506","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4431506","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4682648","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4682648","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4686095","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4686095","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4869961","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4869961","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"5044387","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"5044387","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

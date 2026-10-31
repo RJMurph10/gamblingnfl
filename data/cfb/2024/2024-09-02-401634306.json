@@ -1,0 +1,47 @@
+{
+ "id": "401634306",
+ "league": "cfb",
+ "date": "2024-09-02T23:30Z",
+ "name": "BC @ FSU",
+ "seasonType": 2,
+ "away": {
+  "id": "103",
+  "abbr": "BC",
+  "name": "Boston College Eagles",
+  "score": 28
+ },
+ "home": {
+  "id": "52",
+  "abbr": "FSU",
+  "name": "Florida State Seminoles",
+  "score": 13
+ },
+ "final": {
+  "away": 28,
+  "home": 13
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:14.101Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 12,
+    "rows": [
+  {"a":"4430885","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4430885","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685723","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685723","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4773919","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4773919","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4429072","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4429072","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4430885","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4430885","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4773919","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4773919","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

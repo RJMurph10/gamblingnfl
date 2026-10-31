@@ -1,0 +1,93 @@
+{
+ "id": "401636943",
+ "league": "cfb",
+ "date": "2024-11-30T23:00Z",
+ "name": "TCU @ CIN",
+ "seasonType": 2,
+ "away": {
+  "id": "2628",
+  "abbr": "TCU",
+  "name": "TCU Horned Frogs",
+  "score": 20
+ },
+ "home": {
+  "id": "2132",
+  "abbr": "CIN",
+  "name": "Cincinnati Bearcats",
+  "score": 13
+ },
+ "final": {
+  "away": 20,
+  "home": 13
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:48.811Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 26,
+    "rows": [
+  {"a":"4685401","t":"Total Pass Completions (incl. overtime)","ti":"9","op":[23.5,null,null],"cur":[23.5,null,null]},
+  {"a":"4685401","t":"Total Pass Completions (incl. overtime)","ti":"9","op":[23.5,null,null],"cur":[23.5,null,null]},
+  {"a":"4899046","t":"Total Pass Completions (incl. overtime)","ti":"9","op":[19.5,null,null],"cur":[18.5,null,null]},
+  {"a":"4899046","t":"Total Pass Completions (incl. overtime)","ti":"9","op":[19.5,null,null],"cur":[18.5,null,null]},
+  {"a":"4431431","t":"Total Carries (incl. overtime)","ti":"11","op":[17.5,null,null],"cur":[19.5,null,null]},
+  {"a":"4431431","t":"Total Carries (incl. overtime)","ti":"11","op":[17.5,null,null],"cur":[19.5,null,null]},
+  {"a":"4899046","t":"Total Carries (incl. overtime)","ti":"11","op":[9.5,null,null],"cur":[9.5,null,null]},
+  {"a":"4899046","t":"Total Carries (incl. overtime)","ti":"11","op":[9.5,null,null],"cur":[9.5,null,null]},
+  {"a":"4430817","t":"Total Receptions (incl. overtime)","ti":"14","op":[4.5,null,null],"cur":[4.5,null,null]},
+  {"a":"4430817","t":"Total Receptions (incl. overtime)","ti":"14","op":[4.5,null,null],"cur":[4.5,null,null]},
+  {"a":"4431431","t":"Total Receptions (incl. overtime)","ti":"14","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"4431431","t":"Total Receptions (incl. overtime)","ti":"14","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"4431487","t":"Total Receptions (incl. overtime)","ti":"14","op":[3.5,null,null],"cur":[3.5,null,null]},
+  {"a":"4431487","t":"Total Receptions (incl. overtime)","ti":"14","op":[3.5,null,null],"cur":[3.5,null,null]},
+  {"a":"4602185","t":"Total Receptions (incl. overtime)","ti":"14","op":[3.5,null,null],"cur":[3.5,null,null]},
+  {"a":"4602185","t":"Total Receptions (incl. overtime)","ti":"14","op":[3.5,null,null],"cur":[3.5,null,null]},
+  {"a":"4603186","t":"Total Receptions (incl. overtime)","ti":"14","op":[4.5,null,null],"cur":[4.5,null,null]},
+  {"a":"4603186","t":"Total Receptions (incl. overtime)","ti":"14","op":[4.5,null,null],"cur":[4.5,null,null]},
+  {"a":"4685183","t":"Total Receptions (incl. overtime)","ti":"14","op":[4.5,null,null],"cur":[4.5,null,null]},
+  {"a":"4685183","t":"Total Receptions (incl. overtime)","ti":"14","op":[4.5,null,null],"cur":[4.5,null,null]},
+  {"a":"4879499","t":"Total Receptions (incl. overtime)","ti":"14","op":[4.5,null,null],"cur":[4.5,null,null]},
+  {"a":"4879499","t":"Total Receptions (incl. overtime)","ti":"14","op":[4.5,null,null],"cur":[4.5,null,null]},
+  {"a":"4685401","t":"Total Passing Attempts (incl. overtime)","ti":"16","op":[38.5,null,null],"cur":[37.5,null,null]},
+  {"a":"4685401","t":"Total Passing Attempts (incl. overtime)","ti":"16","op":[38.5,null,null],"cur":[37.5,null,null]},
+  {"a":"4899046","t":"Total Passing Attempts (incl. overtime)","ti":"16","op":[32.5,null,null],"cur":[32.5,null,null]},
+  {"a":"4899046","t":"Total Passing Attempts (incl. overtime)","ti":"16","op":[32.5,null,null],"cur":[32.5,null,null]}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 26,
+    "rows": [
+  {"a":"4685401","t":"Total Pass Completions (incl. overtime)","ti":"9","op":[23.5,null,null],"cur":[23.5,null,null]},
+  {"a":"4685401","t":"Total Pass Completions (incl. overtime)","ti":"9","op":[23.5,null,null],"cur":[23.5,null,null]},
+  {"a":"4899046","t":"Total Pass Completions (incl. overtime)","ti":"9","op":[19.5,null,null],"cur":[18.5,null,null]},
+  {"a":"4899046","t":"Total Pass Completions (incl. overtime)","ti":"9","op":[19.5,null,null],"cur":[18.5,null,null]},
+  {"a":"4431431","t":"Total Carries (incl. overtime)","ti":"11","op":[17.5,null,null],"cur":[19.5,null,null]},
+  {"a":"4431431","t":"Total Carries (incl. overtime)","ti":"11","op":[17.5,null,null],"cur":[19.5,null,null]},
+  {"a":"4899046","t":"Total Carries (incl. overtime)","ti":"11","op":[9.5,null,null],"cur":[9.5,null,null]},
+  {"a":"4899046","t":"Total Carries (incl. overtime)","ti":"11","op":[9.5,null,null],"cur":[9.5,null,null]},
+  {"a":"4430817","t":"Total Receptions (incl. overtime)","ti":"14","op":[4.5,null,null],"cur":[4.5,null,null]},
+  {"a":"4430817","t":"Total Receptions (incl. overtime)","ti":"14","op":[4.5,null,null],"cur":[4.5,null,null]},
+  {"a":"4431431","t":"Total Receptions (incl. overtime)","ti":"14","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"4431431","t":"Total Receptions (incl. overtime)","ti":"14","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"4431487","t":"Total Receptions (incl. overtime)","ti":"14","op":[3.5,null,null],"cur":[3.5,null,null]},
+  {"a":"4431487","t":"Total Receptions (incl. overtime)","ti":"14","op":[3.5,null,null],"cur":[3.5,null,null]},
+  {"a":"4602185","t":"Total Receptions (incl. overtime)","ti":"14","op":[3.5,null,null],"cur":[3.5,null,null]},
+  {"a":"4602185","t":"Total Receptions (incl. overtime)","ti":"14","op":[3.5,null,null],"cur":[3.5,null,null]},
+  {"a":"4603186","t":"Total Receptions (incl. overtime)","ti":"14","op":[4.5,null,null],"cur":[4.5,null,null]},
+  {"a":"4603186","t":"Total Receptions (incl. overtime)","ti":"14","op":[4.5,null,null],"cur":[4.5,null,null]},
+  {"a":"4685183","t":"Total Receptions (incl. overtime)","ti":"14","op":[4.5,null,null],"cur":[4.5,null,null]},
+  {"a":"4685183","t":"Total Receptions (incl. overtime)","ti":"14","op":[4.5,null,null],"cur":[4.5,null,null]},
+  {"a":"4879499","t":"Total Receptions (incl. overtime)","ti":"14","op":[4.5,null,null],"cur":[4.5,null,null]},
+  {"a":"4879499","t":"Total Receptions (incl. overtime)","ti":"14","op":[4.5,null,null],"cur":[4.5,null,null]},
+  {"a":"4685401","t":"Total Passing Attempts (incl. overtime)","ti":"16","op":[38.5,null,null],"cur":[37.5,null,null]},
+  {"a":"4685401","t":"Total Passing Attempts (incl. overtime)","ti":"16","op":[38.5,null,null],"cur":[37.5,null,null]},
+  {"a":"4899046","t":"Total Passing Attempts (incl. overtime)","ti":"16","op":[32.5,null,null],"cur":[32.5,null,null]},
+  {"a":"4899046","t":"Total Passing Attempts (incl. overtime)","ti":"16","op":[32.5,null,null],"cur":[32.5,null,null]}
+ ]
+   }
+  }
+ }
+}

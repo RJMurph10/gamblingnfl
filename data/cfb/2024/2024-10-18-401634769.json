@@ -1,0 +1,37 @@
+{
+ "id": "401634769",
+ "league": "cfb",
+ "date": "2024-10-18T23:00Z",
+ "name": "FSU @ DUKE",
+ "seasonType": 2,
+ "away": {
+  "id": "52",
+  "abbr": "FSU",
+  "name": "Florida State Seminoles",
+  "score": 16
+ },
+ "home": {
+  "id": "150",
+  "abbr": "DUKE",
+  "name": "Duke Blue Devils",
+  "score": 23
+ },
+ "final": {
+  "away": 16,
+  "home": 23
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:30.115Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 2,
+    "rows": [
+  {"a":"5084179","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"5084179","t":"Anytime Touchdown Scorer","ti":"31"}
+ ]
+   }
+  }
+ }
+}

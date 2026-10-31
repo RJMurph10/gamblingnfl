@@ -1,0 +1,41 @@
+{
+ "id": "401628322",
+ "league": "cfb",
+ "date": "2024-08-31T19:30Z",
+ "name": "MIA @ FLA",
+ "seasonType": 2,
+ "away": {
+  "id": "2390",
+  "abbr": "MIA",
+  "name": "Miami Hurricanes",
+  "score": 41
+ },
+ "home": {
+  "id": "57",
+  "abbr": "FLA",
+  "name": "Florida Gators",
+  "score": 17
+ },
+ "final": {
+  "away": 41,
+  "home": 17
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:12.273Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 6,
+    "rows": [
+  {"a":"4567784","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4567784","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4808830","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4808830","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4567784","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4567784","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

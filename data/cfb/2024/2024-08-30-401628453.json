@@ -1,0 +1,39 @@
+{
+ "id": "401628453",
+ "league": "cfb",
+ "date": "2024-08-30T23:00Z",
+ "name": "FAU @ MSU",
+ "seasonType": 2,
+ "away": {
+  "id": "2226",
+  "abbr": "FAU",
+  "name": "Florida Atlantic Owls",
+  "score": 10
+ },
+ "home": {
+  "id": "127",
+  "abbr": "MSU",
+  "name": "Michigan State Spartans",
+  "score": 16
+ },
+ "final": {
+  "away": 10,
+  "home": 16
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:11.270Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 4,
+    "rows": [
+  {"a":"4600597","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4600597","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4426530","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4426530","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

@@ -1,0 +1,63 @@
+{
+ "id": "401636866",
+ "league": "cfb",
+ "date": "2024-09-14T23:30Z",
+ "name": "UCF @ TCU",
+ "seasonType": 2,
+ "away": {
+  "id": "2116",
+  "abbr": "UCF",
+  "name": "UCF Knights",
+  "score": 35
+ },
+ "home": {
+  "id": "2628",
+  "abbr": "TCU",
+  "name": "TCU Horned Frogs",
+  "score": 34
+ },
+ "final": {
+  "away": 35,
+  "home": 34
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:19.368Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 20,
+    "rows": [
+  {"a":"4431487","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431487","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4568490","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4568490","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685183","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685183","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4918103","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4918103","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431487","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4431487","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4568490","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4568490","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4603186","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4603186","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685183","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685183","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685401","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685401","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4918103","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4918103","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 2,
+    "rows": [
+  {"a":"4568490","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4568490","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   }
+  }
+ }
+}

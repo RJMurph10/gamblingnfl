@@ -1,0 +1,47 @@
+{
+ "id": "401635538",
+ "league": "cfb",
+ "date": "2024-09-07T16:00Z",
+ "name": "PITT @ CIN",
+ "seasonType": 2,
+ "away": {
+  "id": "221",
+  "abbr": "PITT",
+  "name": "Pittsburgh Panthers",
+  "score": 28
+ },
+ "home": {
+  "id": "2132",
+  "abbr": "CIN",
+  "name": "Cincinnati Bearcats",
+  "score": 27
+ },
+ "final": {
+  "away": 28,
+  "home": 27
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:15.442Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 12,
+    "rows": [
+  {"a":"4430817","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4430817","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431431","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431431","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4710855","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4710855","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4430817","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4430817","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4431431","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4431431","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4710855","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4710855","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

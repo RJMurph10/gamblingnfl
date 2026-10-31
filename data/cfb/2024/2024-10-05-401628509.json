@@ -1,0 +1,45 @@
+{
+ "id": "401628509",
+ "league": "cfb",
+ "date": "2024-10-05T16:00Z",
+ "name": "PUR @ WIS",
+ "seasonType": 2,
+ "away": {
+  "id": "2509",
+  "abbr": "PUR",
+  "name": "Purdue Boilermakers",
+  "score": 6
+ },
+ "home": {
+  "id": "275",
+  "abbr": "WIS",
+  "name": "Wisconsin Badgers",
+  "score": 52
+ },
+ "final": {
+  "away": 6,
+  "home": 52
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:26.103Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 2,
+    "rows": [
+  {"a":"5081926","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5081926","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 2,
+    "rows": [
+  {"a":"5081926","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5081926","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   }
+  }
+ }
+}

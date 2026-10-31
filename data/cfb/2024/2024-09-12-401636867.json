@@ -1,0 +1,65 @@
+{
+ "id": "401636867",
+ "league": "cfb",
+ "date": "2024-09-12T23:30Z",
+ "name": "ASU @ TXST",
+ "seasonType": 2,
+ "away": {
+  "id": "9",
+  "abbr": "ASU",
+  "name": "Arizona State Sun Devils",
+  "score": 31
+ },
+ "home": {
+  "id": "326",
+  "abbr": "TXST",
+  "name": "Texas State Bobcats",
+  "score": 28
+ },
+ "final": {
+  "away": 31,
+  "home": 28
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:17.253Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 22,
+    "rows": [
+  {"a":"4360890","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4360890","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4428594","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4428594","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4432267","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4432267","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4695910","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4695910","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4696981","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4696981","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5084798","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5084798","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4360890","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4360890","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4428594","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4428594","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4432267","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4432267","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4695910","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4695910","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"5084798","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"5084798","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 2,
+    "rows": [
+  {"a":"4696981","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4696981","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   }
+  }
+ }
+}

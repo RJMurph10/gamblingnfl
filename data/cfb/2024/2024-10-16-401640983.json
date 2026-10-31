@@ -1,0 +1,45 @@
+{
+ "id": "401640983",
+ "league": "cfb",
+ "date": "2024-10-17T01:00Z",
+ "name": "FIU @ UTEP",
+ "seasonType": 2,
+ "away": {
+  "id": "2229",
+  "abbr": "FIU",
+  "name": "Florida International Panthers",
+  "score": 21
+ },
+ "home": {
+  "id": "2638",
+  "abbr": "UTEP",
+  "name": "UTEP Miners",
+  "score": 30
+ },
+ "final": {
+  "away": 21,
+  "home": 30
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:29.641Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 2,
+    "rows": [
+  {"a":"4431304","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4431304","t":"Anytime Touchdown Scorer","ti":"31"}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 2,
+    "rows": [
+  {"a":"4431304","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4431304","t":"Anytime Touchdown Scorer","ti":"31"}
+ ]
+   }
+  }
+ }
+}

@@ -1,0 +1,49 @@
+{
+ "id": "401628523",
+ "league": "cfb",
+ "date": "2024-10-19T00:00Z",
+ "name": "ORE @ PUR",
+ "seasonType": 2,
+ "away": {
+  "id": "2483",
+  "abbr": "ORE",
+  "name": "Oregon Ducks",
+  "score": 35
+ },
+ "home": {
+  "id": "2509",
+  "abbr": "PUR",
+  "name": "Purdue Boilermakers",
+  "score": 0
+ },
+ "final": {
+  "away": 35,
+  "home": 0
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:30.095Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 6,
+    "rows": [
+  {"a":"4685397","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685397","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4686065","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4686065","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4432631","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4432631","t":"Anytime Touchdown Scorer","ti":"31"}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 2,
+    "rows": [
+  {"a":"4685397","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685397","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   }
+  }
+ }
+}

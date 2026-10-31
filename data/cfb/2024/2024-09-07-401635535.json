@@ -1,0 +1,45 @@
+{
+ "id": "401635535",
+ "league": "cfb",
+ "date": "2024-09-07T19:30Z",
+ "name": "JVST @ LOU",
+ "seasonType": 2,
+ "away": {
+  "id": "55",
+  "abbr": "JVST",
+  "name": "Jacksonville State Gamecocks",
+  "score": 14
+ },
+ "home": {
+  "id": "97",
+  "abbr": "LOU",
+  "name": "Louisville Cardinals",
+  "score": 49
+ },
+ "final": {
+  "away": 14,
+  "home": 49
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:15.281Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 10,
+    "rows": [
+  {"a":"4360689","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4360689","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431506","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431506","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4837391","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4837391","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431346","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4431346","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4837391","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4837391","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

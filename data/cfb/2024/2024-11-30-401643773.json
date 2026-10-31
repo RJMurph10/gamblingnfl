@@ -1,0 +1,57 @@
+{
+ "id": "401643773",
+ "league": "cfb",
+ "date": "2024-11-30T23:30Z",
+ "name": "WYO @ WSU",
+ "seasonType": 2,
+ "away": {
+  "id": "2751",
+  "abbr": "WYO",
+  "name": "Wyoming Cowboys",
+  "score": 15
+ },
+ "home": {
+  "id": "265",
+  "abbr": "WSU",
+  "name": "Washington State Cougars",
+  "score": 14
+ },
+ "final": {
+  "away": 15,
+  "home": 14
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:48.814Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 8,
+    "rows": [
+  {"a":"4613202","t":"Total Receptions (incl. overtime)","ti":"14","op":[5.5,null,null],"cur":[5.5,null,null]},
+  {"a":"4613202","t":"Total Receptions (incl. overtime)","ti":"14","op":[5.5,null,null],"cur":[5.5,null,null]},
+  {"a":"4569635","t":"Total Kicking Points (incl. overtime)","ti":"22","op":[7.5,null,null],"cur":[7.5,null,null]},
+  {"a":"4569635","t":"Total Kicking Points (incl. overtime)","ti":"22","op":[7.5,null,null],"cur":[7.5,null,null]},
+  {"a":"4569635","t":"Total Extra Points Made (incl. overtime)","ti":"23","op":[4.5,null,null],"cur":[4.5,null,null]},
+  {"a":"4569635","t":"Total Extra Points Made (incl. overtime)","ti":"23","op":[4.5,null,null],"cur":[4.5,null,null]},
+  {"a":"4569635","t":"Total Field Goals Made (incl. overtime)","ti":"24","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":"4569635","t":"Total Field Goals Made (incl. overtime)","ti":"24","op":[1.5,null,null],"cur":[1.5,null,null]}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 8,
+    "rows": [
+  {"a":"4613202","t":"Total Receptions (incl. overtime)","ti":"14","op":[5.5,null,null],"cur":[5.5,null,null]},
+  {"a":"4613202","t":"Total Receptions (incl. overtime)","ti":"14","op":[5.5,null,null],"cur":[5.5,null,null]},
+  {"a":"4569635","t":"Total Kicking Points (incl. overtime)","ti":"22","op":[7.5,null,null],"cur":[7.5,null,null]},
+  {"a":"4569635","t":"Total Kicking Points (incl. overtime)","ti":"22","op":[7.5,null,null],"cur":[7.5,null,null]},
+  {"a":"4569635","t":"Total Extra Points Made (incl. overtime)","ti":"23","op":[4.5,null,null],"cur":[4.5,null,null]},
+  {"a":"4569635","t":"Total Extra Points Made (incl. overtime)","ti":"23","op":[4.5,null,null],"cur":[4.5,null,null]},
+  {"a":"4569635","t":"Total Field Goals Made (incl. overtime)","ti":"24","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":"4569635","t":"Total Field Goals Made (incl. overtime)","ti":"24","op":[1.5,null,null],"cur":[1.5,null,null]}
+ ]
+   }
+  }
+ }
+}

@@ -1,0 +1,43 @@
+{
+ "id": "401643720",
+ "league": "cfb",
+ "date": "2024-09-28T19:30Z",
+ "name": "FRES @ UNLV",
+ "seasonType": 2,
+ "away": {
+  "id": "278",
+  "abbr": "FRES",
+  "name": "Fresno State Bulldogs",
+  "score": 14
+ },
+ "home": {
+  "id": "2439",
+  "abbr": "UNLV",
+  "name": "UNLV Rebels",
+  "score": 59
+ },
+ "final": {
+  "away": 14,
+  "home": 59
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:24.185Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 8,
+    "rows": [
+  {"a":"4431053","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431053","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431479","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431479","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431053","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4431053","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4431479","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4431479","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

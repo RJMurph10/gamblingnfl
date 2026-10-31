@@ -1,0 +1,57 @@
+{
+ "id": "401634765",
+ "league": "cfb",
+ "date": "2024-09-06T23:00Z",
+ "name": "BYU @ SMU",
+ "seasonType": 2,
+ "away": {
+  "id": "252",
+  "abbr": "BYU",
+  "name": "BYU Cougars",
+  "score": 18
+ },
+ "home": {
+  "id": "2567",
+  "abbr": "SMU",
+  "name": "SMU Mustangs",
+  "score": 15
+ },
+ "final": {
+  "away": 18,
+  "home": 15
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:14.438Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 14,
+    "rows": [
+  {"a":"4431197","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431197","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4596602","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4596602","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4687463","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4687463","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4702913","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4702913","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431197","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4431197","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4596602","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4596602","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4702913","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4702913","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 2,
+    "rows": [
+  {"a":"4596602","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4596602","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   }
+  }
+ }
+}

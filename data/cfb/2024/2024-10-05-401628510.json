@@ -1,0 +1,37 @@
+{
+ "id": "401628510",
+ "league": "cfb",
+ "date": "2024-10-05T16:00Z",
+ "name": "UCLA @ PSU",
+ "seasonType": 2,
+ "away": {
+  "id": "26",
+  "abbr": "UCLA",
+  "name": "UCLA Bruins",
+  "score": 11
+ },
+ "home": {
+  "id": "213",
+  "abbr": "PSU",
+  "name": "Penn State Nittany Lions",
+  "score": 27
+ },
+ "final": {
+  "away": 11,
+  "home": 27
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:25.851Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 2,
+    "rows": [
+  {"a":"4431459","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431459","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   }
+  }
+ }
+}

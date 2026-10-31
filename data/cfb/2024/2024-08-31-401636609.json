@@ -1,0 +1,39 @@
+{
+ "id": "401636609",
+ "league": "cfb",
+ "date": "2024-09-01T02:30Z",
+ "name": "WYO @ ASU",
+ "seasonType": 2,
+ "away": {
+  "id": "2751",
+  "abbr": "WYO",
+  "name": "Wyoming Cowboys",
+  "score": 7
+ },
+ "home": {
+  "id": "9",
+  "abbr": "ASU",
+  "name": "Arizona State Sun Devils",
+  "score": 48
+ },
+ "final": {
+  "away": 7,
+  "home": 48
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:13.645Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 4,
+    "rows": [
+  {"a":"4696981","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4696981","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4696981","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4696981","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

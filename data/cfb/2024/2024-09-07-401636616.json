@@ -1,0 +1,51 @@
+{
+ "id": "401636616",
+ "league": "cfb",
+ "date": "2024-09-07T16:00Z",
+ "name": "KSU @ TULN",
+ "seasonType": 2,
+ "away": {
+  "id": "2306",
+  "abbr": "KSU",
+  "name": "Kansas State Wildcats",
+  "score": 34
+ },
+ "home": {
+  "id": "2655",
+  "abbr": "TULN",
+  "name": "Tulane Green Wave",
+  "score": 27
+ },
+ "final": {
+  "away": 34,
+  "home": 27
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:15.062Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 16,
+    "rows": [
+  {"a":"4683237","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4683237","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4816098","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4816098","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4870857","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4870857","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4874509","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4874509","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4683237","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4683237","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4816098","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4816098","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4870857","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4870857","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4874509","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4874509","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

@@ -1,0 +1,61 @@
+{
+ "id": "401628361",
+ "league": "cfb",
+ "date": "2024-09-14T23:00Z",
+ "name": "UTSA @ TEX",
+ "seasonType": 2,
+ "away": {
+  "id": "2636",
+  "abbr": "UTSA",
+  "name": "UTSA Roadrunners",
+  "score": 7
+ },
+ "home": {
+  "id": "251",
+  "abbr": "TEX",
+  "name": "Texas Longhorns",
+  "score": 56
+ },
+ "final": {
+  "away": 7,
+  "home": 56
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:17.652Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 26,
+    "rows": [
+  {"a":"4590532","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4590532","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685279","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685279","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4686728","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4686728","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4686767","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4686767","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4701936","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4701936","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4808839","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4808839","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4871076","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4871076","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4590532","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4590532","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685279","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685279","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4686728","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4686728","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4686767","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4686767","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4701936","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4701936","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4871076","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4871076","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

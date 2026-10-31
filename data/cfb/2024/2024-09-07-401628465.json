@@ -1,0 +1,47 @@
+{
+ "id": "401628465",
+ "league": "cfb",
+ "date": "2024-09-07T19:30Z",
+ "name": "MSU @ MD",
+ "seasonType": 2,
+ "away": {
+  "id": "127",
+  "abbr": "MSU",
+  "name": "Michigan State Spartans",
+  "score": 27
+ },
+ "home": {
+  "id": "120",
+  "abbr": "MD",
+  "name": "Maryland Terrapins",
+  "score": 24
+ },
+ "final": {
+  "away": 27,
+  "home": 24
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:15.642Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 12,
+    "rows": [
+  {"a":"4565185","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4565185","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4592532","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4592532","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685393","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685393","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4565185","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4565185","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4592532","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4592532","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685393","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685393","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

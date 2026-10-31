@@ -1,0 +1,49 @@
+{
+ "id": "401628519",
+ "league": "cfb",
+ "date": "2024-10-19T16:00Z",
+ "name": "NEB @ IU",
+ "seasonType": 2,
+ "away": {
+  "id": "158",
+  "abbr": "NEB",
+  "name": "Nebraska Cornhuskers",
+  "score": 7
+ },
+ "home": {
+  "id": "84",
+  "abbr": "IU",
+  "name": "Indiana Hoosiers",
+  "score": 56
+ },
+ "final": {
+  "away": 7,
+  "home": 56
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:30.712Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 4,
+    "rows": [
+  {"a":"4367069","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4367069","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4429618","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4429618","t":"Anytime Touchdown Scorer","ti":"31"}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 4,
+    "rows": [
+  {"a":"4367069","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4367069","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4429618","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4429618","t":"Anytime Touchdown Scorer","ti":"31"}
+ ]
+   }
+  }
+ }
+}

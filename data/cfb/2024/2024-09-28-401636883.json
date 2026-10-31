@@ -1,0 +1,51 @@
+{
+ "id": "401636883",
+ "league": "cfb",
+ "date": "2024-09-28T16:00Z",
+ "name": "OKST @ KSU",
+ "seasonType": 2,
+ "away": {
+  "id": "197",
+  "abbr": "OKST",
+  "name": "Oklahoma State Cowboys",
+  "score": 20
+ },
+ "home": {
+  "id": "2306",
+  "abbr": "KSU",
+  "name": "Kansas State Wildcats",
+  "score": 42
+ },
+ "final": {
+  "away": 20,
+  "home": 42
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:23.652Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 16,
+    "rows": [
+  {"a":"4430577","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4430577","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431342","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431342","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4711533","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4711533","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4874509","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4874509","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4430577","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4430577","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4431342","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4431342","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4711533","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4711533","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4874509","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4874509","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

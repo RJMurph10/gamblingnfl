@@ -1,0 +1,53 @@
+{
+ "id": "401636898",
+ "league": "cfb",
+ "date": "2024-10-19T02:15Z",
+ "name": "OKST @ BYU",
+ "seasonType": 2,
+ "away": {
+  "id": "197",
+  "abbr": "OKST",
+  "name": "Oklahoma State Cowboys",
+  "score": 35
+ },
+ "home": {
+  "id": "252",
+  "abbr": "BYU",
+  "name": "BYU Cougars",
+  "score": 38
+ },
+ "final": {
+  "away": 35,
+  "home": 38
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:30.009Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 8,
+    "rows": [
+  {"a":"4430577","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4430577","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431342","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431342","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4711533","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4711533","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4711533","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4711533","t":"Anytime Touchdown Scorer","ti":"31"}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 4,
+    "rows": [
+  {"a":"4711533","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4711533","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4711533","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4711533","t":"Anytime Touchdown Scorer","ti":"31"}
+ ]
+   }
+  }
+ }
+}

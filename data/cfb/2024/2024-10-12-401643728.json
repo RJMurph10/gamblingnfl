@@ -1,0 +1,45 @@
+{
+ "id": "401643728",
+ "league": "cfb",
+ "date": "2024-10-13T03:00Z",
+ "name": "BOIS @ HAW",
+ "seasonType": 2,
+ "away": {
+  "id": "68",
+  "abbr": "BOIS",
+  "name": "Boise State Broncos",
+  "score": 28
+ },
+ "home": {
+  "id": "62",
+  "abbr": "HAW",
+  "name": "Hawai'i Rainbow Warriors",
+  "score": 7
+ },
+ "final": {
+  "away": 28,
+  "home": 7
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:28.169Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 2,
+    "rows": [
+  {"a":"4890973","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4890973","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 2,
+    "rows": [
+  {"a":"4890973","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4890973","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   }
+  }
+ }
+}

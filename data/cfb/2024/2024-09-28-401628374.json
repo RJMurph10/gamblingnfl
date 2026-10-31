@@ -1,0 +1,51 @@
+{
+ "id": "401628374",
+ "league": "cfb",
+ "date": "2024-09-28T23:30Z",
+ "name": "UGA @ ALA",
+ "seasonType": 2,
+ "away": {
+  "id": "61",
+  "abbr": "UGA",
+  "name": "Georgia Bulldogs",
+  "score": 34
+ },
+ "home": {
+  "id": "333",
+  "abbr": "ALA",
+  "name": "Alabama Crimson Tide",
+  "score": 41
+ },
+ "final": {
+  "away": 34,
+  "home": 41
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:23.232Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 16,
+    "rows": [
+  {"a":"4432734","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4432734","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685261","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685261","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685441","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685441","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4702559","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4702559","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685261","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685261","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685441","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685441","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685477","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685477","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4702559","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4702559","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

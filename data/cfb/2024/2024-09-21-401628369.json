@@ -1,0 +1,45 @@
+{
+ "id": "401628369",
+ "league": "cfb",
+ "date": "2024-09-21T23:30Z",
+ "name": "TENN @ OU",
+ "seasonType": 2,
+ "away": {
+  "id": "2633",
+  "abbr": "TENN",
+  "name": "Tennessee Volunteers",
+  "score": 25
+ },
+ "home": {
+  "id": "201",
+  "abbr": "OU",
+  "name": "Oklahoma Sooners",
+  "score": 15
+ },
+ "final": {
+  "away": 25,
+  "home": 15
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:20.276Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 10,
+    "rows": [
+  {"a":"4683151","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4683151","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685269","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685269","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4432531","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4432531","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4683151","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4683151","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4870799","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4870799","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

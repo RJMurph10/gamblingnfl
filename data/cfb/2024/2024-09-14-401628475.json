@@ -1,0 +1,49 @@
+{
+ "id": "401628475",
+ "league": "cfb",
+ "date": "2024-09-14T16:00Z",
+ "name": "CMU @ ILL",
+ "seasonType": 2,
+ "away": {
+  "id": "2117",
+  "abbr": "CMU",
+  "name": "Central Michigan Chippewas",
+  "score": 9
+ },
+ "home": {
+  "id": "356",
+  "abbr": "ILL",
+  "name": "Illinois Fighting Illini",
+  "score": 30
+ },
+ "final": {
+  "away": 9,
+  "home": 30
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:18.091Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 14,
+    "rows": [
+  {"a":"4427225","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4427225","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4600981","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4600981","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4427225","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4427225","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4597679","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4597679","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4600981","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4600981","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4682640","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4682640","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4827047","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4827047","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

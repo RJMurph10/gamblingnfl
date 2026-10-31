@@ -1,0 +1,39 @@
+{
+ "id": "401643717",
+ "league": "cfb",
+ "date": "2024-09-22T00:30Z",
+ "name": "PUR @ ORST",
+ "seasonType": 2,
+ "away": {
+  "id": "2509",
+  "abbr": "PUR",
+  "name": "Purdue Boilermakers",
+  "score": 21
+ },
+ "home": {
+  "id": "204",
+  "abbr": "ORST",
+  "name": "Oregon State Beavers",
+  "score": 38
+ },
+ "final": {
+  "away": 21,
+  "home": 38
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:22.094Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 4,
+    "rows": [
+  {"a":"4685385","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685385","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4429709","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4429709","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

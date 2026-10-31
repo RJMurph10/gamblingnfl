@@ -1,0 +1,43 @@
+{
+ "id": "401635562",
+ "league": "cfb",
+ "date": "2024-09-28T20:00Z",
+ "name": "UNC @ DUKE",
+ "seasonType": 2,
+ "away": {
+  "id": "153",
+  "abbr": "UNC",
+  "name": "North Carolina Tar Heels",
+  "score": 20
+ },
+ "home": {
+  "id": "150",
+  "abbr": "DUKE",
+  "name": "Duke Blue Devils",
+  "score": 21
+ },
+ "final": {
+  "away": 20,
+  "home": 21
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:24.398Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 8,
+    "rows": [
+  {"a":"4431045","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431045","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4596596","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4596596","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4430288","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4430288","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4596596","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4596596","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

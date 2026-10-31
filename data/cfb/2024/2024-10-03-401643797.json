@@ -1,0 +1,91 @@
+{
+ "id": "401643797",
+ "league": "cfb",
+ "date": "2024-10-03T23:00Z",
+ "name": "TXST @ TROY",
+ "seasonType": 2,
+ "away": {
+  "id": "326",
+  "abbr": "TXST",
+  "name": "Texas State Bobcats",
+  "score": 38
+ },
+ "home": {
+  "id": "2653",
+  "abbr": "TROY",
+  "name": "Troy Trojans",
+  "score": 17
+ },
+ "final": {
+  "away": 38,
+  "home": 17
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:25.348Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 48,
+    "rows": [
+  {"a":"4360890","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4360890","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4427332","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4427332","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4429632","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4429632","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4432267","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4432267","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4602785","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4602785","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4683889","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4683889","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4700456","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4700456","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4709678","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4709678","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5077873","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5077873","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5084798","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5084798","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5096863","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5096863","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5151528","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5151528","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4360890","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4360890","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4427332","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4427332","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4429632","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4429632","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4432267","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4432267","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4602785","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4602785","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4683889","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4683889","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4700456","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4700456","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4709678","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4709678","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"5077873","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"5077873","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"5084798","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"5084798","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"5096863","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"5096863","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"5151528","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"5151528","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 2,
+    "rows": [
+  {"a":"5084798","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5084798","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   }
+  }
+ }
+}

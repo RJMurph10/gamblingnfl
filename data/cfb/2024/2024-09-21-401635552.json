@@ -1,0 +1,47 @@
+{
+ "id": "401635552",
+ "league": "cfb",
+ "date": "2024-09-21T16:00Z",
+ "name": "NCSU @ CLEM",
+ "seasonType": 2,
+ "away": {
+  "id": "152",
+  "abbr": "NCSU",
+  "name": "NC State Wolfpack",
+  "score": 35
+ },
+ "home": {
+  "id": "228",
+  "abbr": "CLEM",
+  "name": "Clemson Tigers",
+  "score": 59
+ },
+ "final": {
+  "away": 35,
+  "home": 59
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:20.634Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 12,
+    "rows": [
+  {"a":"4428803","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4428803","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431562","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431562","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685413","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685413","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4428803","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4428803","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4431196","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4431196","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4431562","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4431562","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

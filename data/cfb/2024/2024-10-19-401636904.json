@@ -1,0 +1,45 @@
+{
+ "id": "401636904",
+ "league": "cfb",
+ "date": "2024-10-19T23:30Z",
+ "name": "KSU @ WVU",
+ "seasonType": 2,
+ "away": {
+  "id": "2306",
+  "abbr": "KSU",
+  "name": "Kansas State Wildcats",
+  "score": 45
+ },
+ "home": {
+  "id": "277",
+  "abbr": "WVU",
+  "name": "West Virginia Mountaineers",
+  "score": 18
+ },
+ "final": {
+  "away": 45,
+  "home": 18
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:30.670Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 2,
+    "rows": [
+  {"a":"4874509","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4874509","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 2,
+    "rows": [
+  {"a":"4874509","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4874509","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   }
+  }
+ }
+}

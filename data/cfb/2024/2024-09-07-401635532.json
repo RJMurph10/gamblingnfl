@@ -1,0 +1,51 @@
+{
+ "id": "401635532",
+ "league": "cfb",
+ "date": "2024-09-08T00:00Z",
+ "name": "APP @ CLEM",
+ "seasonType": 2,
+ "away": {
+  "id": "2026",
+  "abbr": "APP",
+  "name": "App State Mountaineers",
+  "score": 20
+ },
+ "home": {
+  "id": "228",
+  "abbr": "CLEM",
+  "name": "Clemson Tigers",
+  "score": 66
+ },
+ "final": {
+  "away": 20,
+  "home": 66
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:15.275Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 8,
+    "rows": [
+  {"a":"4431134","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431134","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431562","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431562","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4873237","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4873237","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4873237","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4873237","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 2,
+    "rows": [
+  {"a":"4431562","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431562","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   }
+  }
+ }
+}

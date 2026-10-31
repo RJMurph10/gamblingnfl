@@ -1,0 +1,45 @@
+{
+ "id": "401636617",
+ "league": "cfb",
+ "date": "2024-09-07T23:02Z",
+ "name": "SHSU @ UCF",
+ "seasonType": 2,
+ "away": {
+  "id": "2534",
+  "abbr": "SHSU",
+  "name": "Sam Houston Bearkats",
+  "score": 14
+ },
+ "home": {
+  "id": "2116",
+  "abbr": "UCF",
+  "name": "UCF Knights",
+  "score": 45
+ },
+ "final": {
+  "away": 14,
+  "home": 45
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:16.663Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 2,
+    "rows": [
+  {"a":"4568490","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4568490","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 2,
+    "rows": [
+  {"a":"4568490","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4568490","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   }
+  }
+ }
+}

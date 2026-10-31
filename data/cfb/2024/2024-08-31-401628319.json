@@ -1,0 +1,41 @@
+{
+ "id": "401628319",
+ "league": "cfb",
+ "date": "2024-08-31T23:00Z",
+ "name": "WKU @ ALA",
+ "seasonType": 2,
+ "away": {
+  "id": "98",
+  "abbr": "WKU",
+  "name": "Western Kentucky Hilltoppers",
+  "score": 0
+ },
+ "home": {
+  "id": "333",
+  "abbr": "ALA",
+  "name": "Alabama Crimson Tide",
+  "score": 63
+ },
+ "final": {
+  "away": 0,
+  "home": 63
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:11.825Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 6,
+    "rows": [
+  {"a":"4432734","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4432734","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4432734","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4432734","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4870760","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4870760","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

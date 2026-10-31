@@ -1,0 +1,43 @@
+{
+ "id": "401635546",
+ "league": "cfb",
+ "date": "2024-09-14T16:00Z",
+ "name": "LT @ NCSU",
+ "seasonType": 2,
+ "away": {
+  "id": "2348",
+  "abbr": "LT",
+  "name": "Louisiana Tech Bulldogs",
+  "score": 20
+ },
+ "home": {
+  "id": "152",
+  "abbr": "NCSU",
+  "name": "NC State Wolfpack",
+  "score": 30
+ },
+ "final": {
+  "away": 20,
+  "home": 30
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:18.279Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 8,
+    "rows": [
+  {"a":"4428803","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4428803","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4888723","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4888723","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4428803","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4428803","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4888723","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4888723","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

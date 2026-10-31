@@ -1,0 +1,75 @@
+{
+ "id": "401628508",
+ "league": "cfb",
+ "date": "2024-10-05T20:00Z",
+ "name": "RUTG @ NEB",
+ "seasonType": 2,
+ "away": {
+  "id": "164",
+  "abbr": "RUTG",
+  "name": "Rutgers Scarlet Knights",
+  "score": 7
+ },
+ "home": {
+  "id": "158",
+  "abbr": "NEB",
+  "name": "Nebraska Cornhuskers",
+  "score": 14
+ },
+ "final": {
+  "away": 7,
+  "home": 14
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:26.625Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 40,
+    "rows": [
+  {"a":"4428116","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4428116","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4430235","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4430235","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4432722","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4432722","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4571935","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4571935","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4590292","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4590292","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4608686","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4608686","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4686248","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4686248","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4923252","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4923252","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5075390","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5075390","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5119868","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5119868","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4428116","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4428116","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4430235","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4430235","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4432722","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4432722","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4571935","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4571935","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4590292","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4590292","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4608686","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4608686","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4686248","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4686248","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4923252","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4923252","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"5075390","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"5075390","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"5119868","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"5119868","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

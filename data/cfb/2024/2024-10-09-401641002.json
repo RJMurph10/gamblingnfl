@@ -1,0 +1,45 @@
+{
+ "id": "401641002",
+ "league": "cfb",
+ "date": "2024-10-09T23:30Z",
+ "name": "NMSU @ JVST",
+ "seasonType": 2,
+ "away": {
+  "id": "166",
+  "abbr": "NMSU",
+  "name": "New Mexico State Aggies",
+  "score": 13
+ },
+ "home": {
+  "id": "55",
+  "abbr": "JVST",
+  "name": "Jacksonville State Gamecocks",
+  "score": 54
+ },
+ "final": {
+  "away": 13,
+  "home": 54
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:27.377Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 2,
+    "rows": [
+  {"a":"5093062","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5093062","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 2,
+    "rows": [
+  {"a":"5093062","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5093062","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   }
+  }
+ }
+}

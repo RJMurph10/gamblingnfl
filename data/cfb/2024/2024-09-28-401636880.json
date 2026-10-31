@@ -1,0 +1,53 @@
+{
+ "id": "401636880",
+ "league": "cfb",
+ "date": "2024-09-28T16:00Z",
+ "name": "BYU @ BAY",
+ "seasonType": 2,
+ "away": {
+  "id": "252",
+  "abbr": "BYU",
+  "name": "BYU Cougars",
+  "score": 34
+ },
+ "home": {
+  "id": "239",
+  "abbr": "BAY",
+  "name": "Baylor Bears",
+  "score": 28
+ },
+ "final": {
+  "away": 34,
+  "home": 28
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:23.647Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 18,
+    "rows": [
+  {"a":"4430689","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4430689","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431389","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431389","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431750","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431750","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4954455","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4954455","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5150611","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5150611","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431389","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4431389","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4431750","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4431750","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4687463","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4687463","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4954455","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4954455","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

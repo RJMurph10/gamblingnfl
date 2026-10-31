@@ -1,0 +1,49 @@
+{
+ "id": "401628448",
+ "league": "cfb",
+ "date": "2024-08-30T01:00Z",
+ "name": "UNC @ MINN",
+ "seasonType": 2,
+ "away": {
+  "id": "153",
+  "abbr": "UNC",
+  "name": "North Carolina Tar Heels",
+  "score": 19
+ },
+ "home": {
+  "id": "135",
+  "abbr": "MINN",
+  "name": "Minnesota Golden Gophers",
+  "score": 17
+ },
+ "final": {
+  "away": 19,
+  "home": 17
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:11.041Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 6,
+    "rows": [
+  {"a":"4430875","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4430875","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685382","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685382","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4430875","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4430875","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 2,
+    "rows": [
+  {"a":"4685382","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685382","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   }
+  }
+ }
+}

@@ -1,0 +1,49 @@
+{
+ "id": "401628392",
+ "league": "cfb",
+ "date": "2024-10-19T23:00Z",
+ "name": "LSU @ ARK",
+ "seasonType": 2,
+ "away": {
+  "id": "99",
+  "abbr": "LSU",
+  "name": "LSU Tigers",
+  "score": 34
+ },
+ "home": {
+  "id": "8",
+  "abbr": "ARK",
+  "name": "Arkansas Razorbacks",
+  "score": 10
+ },
+ "final": {
+  "away": 34,
+  "home": 10
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:30.337Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 6,
+    "rows": [
+  {"a":"4431219","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431219","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4690972","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4690972","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5079379","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"5079379","t":"Anytime Touchdown Scorer","ti":"31"}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 2,
+    "rows": [
+  {"a":"4690972","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4690972","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   }
+  }
+ }
+}

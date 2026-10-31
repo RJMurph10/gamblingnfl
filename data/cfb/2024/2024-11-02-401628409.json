@@ -1,0 +1,101 @@
+{
+ "id": "401628409",
+ "league": "cfb",
+ "date": "2024-11-02T20:15Z",
+ "name": "MASS @ MSST",
+ "seasonType": 2,
+ "away": {
+  "id": "113",
+  "abbr": "MASS",
+  "name": "Massachusetts Minutemen",
+  "score": 20
+ },
+ "home": {
+  "id": "344",
+  "abbr": "MSST",
+  "name": "Mississippi State Bulldogs",
+  "score": 45
+ },
+ "final": {
+  "away": 20,
+  "home": 45
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:37.804Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 30,
+    "rows": [
+  {"a":"5153650","t":"Total Rushing Yards (incl. overtime)","ti":"12","op":[90,null,null],"cur":[90,null,null]},
+  {"a":"5153650","t":"Total Rushing Yards (incl. overtime)","ti":"12","op":[150,null,null],"cur":[150,null,null]},
+  {"a":"5153650","t":"Total Rushing Yards (incl. overtime)","ti":"12","op":[125,null,null],"cur":[125,null,null]},
+  {"a":"5153650","t":"Total Rushing Yards (incl. overtime)","ti":"12","op":[99.5,null,null],"cur":[89.5,null,null]},
+  {"a":"5153650","t":"Total Rushing Yards (incl. overtime)","ti":"12","op":[100,null,null],"cur":[100,null,null]},
+  {"a":"5153650","t":"Total Rushing Yards (incl. overtime)","ti":"12","op":[70,null,null],"cur":[70,null,null]},
+  {"a":"5153650","t":"Total Rushing Yards (incl. overtime)","ti":"12","op":[99.5,null,null],"cur":[89.5,null,null]},
+  {"a":"5153650","t":"Total Rushing Yards (incl. overtime)","ti":"12","op":[80,null,null],"cur":[80,null,null]},
+  {"a":"4714379","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[70,null,null],"cur":[70,null,null]},
+  {"a":"4714379","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[40,null,null],"cur":[40,null,null]},
+  {"a":"4714379","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[49.5,null,null],"cur":[49.5,null,null]},
+  {"a":"4714379","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[50,null,null],"cur":[50,null,null]},
+  {"a":"4714379","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[49.5,null,null],"cur":[49.5,null,null]},
+  {"a":"4714379","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[60,null,null],"cur":[60,null,null]},
+  {"a":"4714379","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[45,null,null],"cur":[45,null,null]},
+  {"a":"4714379","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[80,null,null],"cur":[80,null,null]},
+  {"a":"4714379","t":"Total Receptions (incl. overtime)","ti":"14","op":[4.5,null,null],"cur":[4.5,null,null]},
+  {"a":"4714379","t":"Total Receptions (incl. overtime)","ti":"14","op":[4.5,null,null],"cur":[4.5,null,null]},
+  {"a":"5089115","t":"Total Kicking Points (incl. overtime)","ti":"22","op":[4.5,null,null],"cur":[4.5,null,null]},
+  {"a":"5089115","t":"Total Kicking Points (incl. overtime)","ti":"22","op":[4.5,null,null],"cur":[4.5,null,null]},
+  {"a":"5092220","t":"Total Kicking Points (incl. overtime)","ti":"22","op":[7.5,null,null],"cur":[7.5,null,null]},
+  {"a":"5092220","t":"Total Kicking Points (incl. overtime)","ti":"22","op":[7.5,null,null],"cur":[7.5,null,null]},
+  {"a":"5089115","t":"Total Extra Points Made (incl. overtime)","ti":"23","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"5089115","t":"Total Extra Points Made (incl. overtime)","ti":"23","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"5092220","t":"Total Extra Points Made (incl. overtime)","ti":"23","op":[4.5,null,null],"cur":[4.5,null,null]},
+  {"a":"5092220","t":"Total Extra Points Made (incl. overtime)","ti":"23","op":[4.5,null,null],"cur":[4.5,null,null]},
+  {"a":"5089115","t":"Total Field Goals Made (incl. overtime)","ti":"24","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"5089115","t":"Total Field Goals Made (incl. overtime)","ti":"24","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"5092220","t":"Total Field Goals Made (incl. overtime)","ti":"24","op":[1.5,null,null]},
+  {"a":"5092220","t":"Total Field Goals Made (incl. overtime)","ti":"24","op":[1.5,null,null]}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 30,
+    "rows": [
+  {"a":"5153650","t":"Total Rushing Yards (incl. overtime)","ti":"12","op":[90,null,null],"cur":[90,null,null]},
+  {"a":"5153650","t":"Total Rushing Yards (incl. overtime)","ti":"12","op":[150,null,null],"cur":[150,null,null]},
+  {"a":"5153650","t":"Total Rushing Yards (incl. overtime)","ti":"12","op":[125,null,null],"cur":[125,null,null]},
+  {"a":"5153650","t":"Total Rushing Yards (incl. overtime)","ti":"12","op":[99.5,null,null],"cur":[89.5,null,null]},
+  {"a":"5153650","t":"Total Rushing Yards (incl. overtime)","ti":"12","op":[100,null,null],"cur":[100,null,null]},
+  {"a":"5153650","t":"Total Rushing Yards (incl. overtime)","ti":"12","op":[70,null,null],"cur":[70,null,null]},
+  {"a":"5153650","t":"Total Rushing Yards (incl. overtime)","ti":"12","op":[99.5,null,null],"cur":[89.5,null,null]},
+  {"a":"5153650","t":"Total Rushing Yards (incl. overtime)","ti":"12","op":[80,null,null],"cur":[80,null,null]},
+  {"a":"4714379","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[70,null,null],"cur":[70,null,null]},
+  {"a":"4714379","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[40,null,null],"cur":[40,null,null]},
+  {"a":"4714379","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[49.5,null,null],"cur":[49.5,null,null]},
+  {"a":"4714379","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[50,null,null],"cur":[50,null,null]},
+  {"a":"4714379","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[49.5,null,null],"cur":[49.5,null,null]},
+  {"a":"4714379","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[60,null,null],"cur":[60,null,null]},
+  {"a":"4714379","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[45,null,null],"cur":[45,null,null]},
+  {"a":"4714379","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[80,null,null],"cur":[80,null,null]},
+  {"a":"4714379","t":"Total Receptions (incl. overtime)","ti":"14","op":[4.5,null,null],"cur":[4.5,null,null]},
+  {"a":"4714379","t":"Total Receptions (incl. overtime)","ti":"14","op":[4.5,null,null],"cur":[4.5,null,null]},
+  {"a":"5089115","t":"Total Kicking Points (incl. overtime)","ti":"22","op":[4.5,null,null],"cur":[4.5,null,null]},
+  {"a":"5089115","t":"Total Kicking Points (incl. overtime)","ti":"22","op":[4.5,null,null],"cur":[4.5,null,null]},
+  {"a":"5092220","t":"Total Kicking Points (incl. overtime)","ti":"22","op":[7.5,null,null],"cur":[7.5,null,null]},
+  {"a":"5092220","t":"Total Kicking Points (incl. overtime)","ti":"22","op":[7.5,null,null],"cur":[7.5,null,null]},
+  {"a":"5089115","t":"Total Extra Points Made (incl. overtime)","ti":"23","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"5089115","t":"Total Extra Points Made (incl. overtime)","ti":"23","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"5092220","t":"Total Extra Points Made (incl. overtime)","ti":"23","op":[4.5,null,null],"cur":[4.5,null,null]},
+  {"a":"5092220","t":"Total Extra Points Made (incl. overtime)","ti":"23","op":[4.5,null,null],"cur":[4.5,null,null]},
+  {"a":"5089115","t":"Total Field Goals Made (incl. overtime)","ti":"24","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"5089115","t":"Total Field Goals Made (incl. overtime)","ti":"24","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"5092220","t":"Total Field Goals Made (incl. overtime)","ti":"24","op":[1.5,null,null]},
+  {"a":"5092220","t":"Total Field Goals Made (incl. overtime)","ti":"24","op":[1.5,null,null]}
+ ]
+   }
+  }
+ }
+}

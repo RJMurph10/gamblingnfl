@@ -1,0 +1,49 @@
+{
+ "id": "401636881",
+ "league": "cfb",
+ "date": "2024-09-28T23:00Z",
+ "name": "ISU @ HOU",
+ "seasonType": 2,
+ "away": {
+  "id": "66",
+  "abbr": "ISU",
+  "name": "Iowa State Cyclones",
+  "score": 20
+ },
+ "home": {
+  "id": "248",
+  "abbr": "HOU",
+  "name": "Houston Cougars",
+  "score": 0
+ },
+ "final": {
+  "away": 20,
+  "home": 0
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:23.643Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 14,
+    "rows": [
+  {"a":"4429949","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4429949","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4432551","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4432551","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4586312","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4586312","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4877706","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4877706","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4429949","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4429949","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4432551","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4432551","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4586312","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4586312","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

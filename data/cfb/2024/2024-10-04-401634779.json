@@ -1,0 +1,71 @@
+{
+ "id": "401634779",
+ "league": "cfb",
+ "date": "2024-10-05T01:00Z",
+ "name": "SYR @ UNLV",
+ "seasonType": 2,
+ "away": {
+  "id": "183",
+  "abbr": "SYR",
+  "name": "Syracuse Orange",
+  "score": 44
+ },
+ "home": {
+  "id": "2439",
+  "abbr": "UNLV",
+  "name": "UNLV Rebels",
+  "score": 41
+ },
+ "final": {
+  "away": 44,
+  "home": 41
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:25.500Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 28,
+    "rows": [
+  {"a":"4431479","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431479","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4433971","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4433971","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4575862","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4575862","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4595342","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4595342","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4602788","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4602788","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4691315","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4691315","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4911851","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4911851","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431479","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4431479","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4433971","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4433971","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4575862","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4575862","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4595342","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4595342","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4602788","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4602788","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4691315","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4691315","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4911851","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4911851","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 2,
+    "rows": [
+  {"a":"4911851","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4911851","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   }
+  }
+ }
+}

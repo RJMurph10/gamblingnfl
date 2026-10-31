@@ -1,0 +1,53 @@
+{
+ "id": "401643735",
+ "league": "cfb",
+ "date": "2024-10-19T02:30Z",
+ "name": "FRES @ NEV",
+ "seasonType": 2,
+ "away": {
+  "id": "278",
+  "abbr": "FRES",
+  "name": "Fresno State Bulldogs",
+  "score": 24
+ },
+ "home": {
+  "id": "2440",
+  "abbr": "NEV",
+  "name": "Nevada Wolf Pack",
+  "score": 21
+ },
+ "final": {
+  "away": 24,
+  "home": 21
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:30.100Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 8,
+    "rows": [
+  {"a":"4690811","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4690811","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4699761","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4699761","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4429149","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4429149","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4690811","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4690811","t":"Anytime Touchdown Scorer","ti":"31"}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 4,
+    "rows": [
+  {"a":"4699761","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4699761","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4429149","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4429149","t":"Anytime Touchdown Scorer","ti":"31"}
+ ]
+   }
+  }
+ }
+}

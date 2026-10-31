@@ -1,0 +1,67 @@
+{
+ "id": "401643730",
+ "league": "cfb",
+ "date": "2024-10-12T23:00Z",
+ "name": "WSU @ FRES",
+ "seasonType": 2,
+ "away": {
+  "id": "265",
+  "abbr": "WSU",
+  "name": "Washington State Cougars",
+  "score": 25
+ },
+ "home": {
+  "id": "278",
+  "abbr": "FRES",
+  "name": "Fresno State Bulldogs",
+  "score": 17
+ },
+ "final": {
+  "away": 25,
+  "home": 17
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:28.863Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 32,
+    "rows": [
+  {"a":"4429967","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4429967","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4613202","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4613202","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685333","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685333","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4687189","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4687189","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4697630","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4697630","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4832819","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4832819","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4915980","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4915980","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5076654","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5076654","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4429967","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4429967","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4613202","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4613202","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685333","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685333","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4687189","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4687189","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4697630","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4697630","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4832819","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4832819","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4915980","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4915980","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"5076654","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"5076654","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

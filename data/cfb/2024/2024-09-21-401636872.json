@@ -1,0 +1,63 @@
+{
+ "id": "401636872",
+ "league": "cfb",
+ "date": "2024-09-22T02:30Z",
+ "name": "KSU @ BYU",
+ "seasonType": 2,
+ "away": {
+  "id": "2306",
+  "abbr": "KSU",
+  "name": "Kansas State Wildcats",
+  "score": 9
+ },
+ "home": {
+  "id": "252",
+  "abbr": "BYU",
+  "name": "BYU Cougars",
+  "score": 38
+ },
+ "final": {
+  "away": 9,
+  "home": 38
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:20.530Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 20,
+    "rows": [
+  {"a":"4431750","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431750","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4567244","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4567244","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4569948","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4569948","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4683237","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4683237","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4870857","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4870857","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4874509","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4874509","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431750","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4431750","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4569948","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4569948","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4683237","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4683237","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4870857","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4870857","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 2,
+    "rows": [
+  {"a":"4874509","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4874509","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   }
+  }
+ }
+}

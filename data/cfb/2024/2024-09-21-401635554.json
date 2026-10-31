@@ -1,0 +1,53 @@
+{
+ "id": "401635554",
+ "league": "cfb",
+ "date": "2024-09-21T19:30Z",
+ "name": "GT @ LOU",
+ "seasonType": 2,
+ "away": {
+  "id": "59",
+  "abbr": "GT",
+  "name": "Georgia Tech Yellow Jackets",
+  "score": 19
+ },
+ "home": {
+  "id": "97",
+  "abbr": "LOU",
+  "name": "Louisville Cardinals",
+  "score": 31
+ },
+ "final": {
+  "away": 19,
+  "home": 31
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:20.629Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 18,
+    "rows": [
+  {"a":"4360689","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4360689","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431346","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431346","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4837391","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4837391","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4360689","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4360689","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4426459","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4426459","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4428993","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4428993","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4431346","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4431346","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4837391","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4837391","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4923046","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4923046","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

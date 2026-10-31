@@ -1,0 +1,69 @@
+{
+ "id": "401677108",
+ "league": "cfb",
+ "date": "2025-01-04T16:00Z",
+ "name": "BUFF VS LIB",
+ "seasonType": 3,
+ "away": {
+  "id": "2084",
+  "abbr": "BUFF",
+  "name": "Buffalo Bulls",
+  "score": 26
+ },
+ "home": {
+  "id": "2335",
+  "abbr": "LIB",
+  "name": "Liberty Flames",
+  "score": 7
+ },
+ "final": {
+  "away": 26,
+  "home": 7
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:53.943Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 14,
+    "rows": [
+  {"a":"4877296","t":"Total Pass Completions (incl. overtime)","ti":"9","op":[17.5,null,null],"cur":[17.5,null,null]},
+  {"a":"4877296","t":"Total Pass Completions (incl. overtime)","ti":"9","op":[17.5,null,null],"cur":[17.5,null,null]},
+  {"a":"4877296","t":"Total Carries (incl. overtime)","ti":"11","op":[9.5,null,null],"cur":[9.5,null,null]},
+  {"a":"4877296","t":"Total Carries (incl. overtime)","ti":"11","op":[9.5,null,null],"cur":[9.5,null,null]},
+  {"a":"5084967","t":"Total Receptions (incl. overtime)","ti":"14","op":[4.5,null,null],"cur":[4.5,null,null]},
+  {"a":"5084967","t":"Total Receptions (incl. overtime)","ti":"14","op":[4.5,null,null],"cur":[4.5,null,null]},
+  {"a":"4877296","t":"Total Passing Attempts (incl. overtime)","ti":"16","op":[26.5,null,null],"cur":[26.5,null,null]},
+  {"a":"4877296","t":"Total Passing Attempts (incl. overtime)","ti":"16","op":[26.5,null,null],"cur":[26.5,null,null]},
+  {"a":"4891568","t":"Total Kicking Points (incl. overtime)","ti":"22","op":[5.5,null,null],"cur":[5.5,null,null]},
+  {"a":"4891568","t":"Total Kicking Points (incl. overtime)","ti":"22","op":[5.5,null,null],"cur":[5.5,null,null]},
+  {"a":"4891568","t":"Total Extra Points Made (incl. overtime)","ti":"23","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"4891568","t":"Total Extra Points Made (incl. overtime)","ti":"23","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"4891568","t":"Total Field Goals Made (incl. overtime)","ti":"24","op":[0.5,null,null]},
+  {"a":"4891568","t":"Total Field Goals Made (incl. overtime)","ti":"24","op":[0.5,null,null]}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 14,
+    "rows": [
+  {"a":"4877296","t":"Total Pass Completions (incl. overtime)","ti":"9","op":[17.5,null,null],"cur":[17.5,null,null]},
+  {"a":"4877296","t":"Total Pass Completions (incl. overtime)","ti":"9","op":[17.5,null,null],"cur":[17.5,null,null]},
+  {"a":"4877296","t":"Total Carries (incl. overtime)","ti":"11","op":[9.5,null,null],"cur":[9.5,null,null]},
+  {"a":"4877296","t":"Total Carries (incl. overtime)","ti":"11","op":[9.5,null,null],"cur":[9.5,null,null]},
+  {"a":"5084967","t":"Total Receptions (incl. overtime)","ti":"14","op":[4.5,null,null],"cur":[4.5,null,null]},
+  {"a":"5084967","t":"Total Receptions (incl. overtime)","ti":"14","op":[4.5,null,null],"cur":[4.5,null,null]},
+  {"a":"4877296","t":"Total Passing Attempts (incl. overtime)","ti":"16","op":[26.5,null,null],"cur":[26.5,null,null]},
+  {"a":"4877296","t":"Total Passing Attempts (incl. overtime)","ti":"16","op":[26.5,null,null],"cur":[26.5,null,null]},
+  {"a":"4891568","t":"Total Kicking Points (incl. overtime)","ti":"22","op":[5.5,null,null],"cur":[5.5,null,null]},
+  {"a":"4891568","t":"Total Kicking Points (incl. overtime)","ti":"22","op":[5.5,null,null],"cur":[5.5,null,null]},
+  {"a":"4891568","t":"Total Extra Points Made (incl. overtime)","ti":"23","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"4891568","t":"Total Extra Points Made (incl. overtime)","ti":"23","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"4891568","t":"Total Field Goals Made (incl. overtime)","ti":"24","op":[0.5,null,null]},
+  {"a":"4891568","t":"Total Field Goals Made (incl. overtime)","ti":"24","op":[0.5,null,null]}
+ ]
+   }
+  }
+ }
+}

@@ -1,0 +1,53 @@
+{
+ "id": "401628469",
+ "league": "cfb",
+ "date": "2024-09-08T02:00Z",
+ "name": "BOIS @ ORE",
+ "seasonType": 2,
+ "away": {
+  "id": "68",
+  "abbr": "BOIS",
+  "name": "Boise State Broncos",
+  "score": 34
+ },
+ "home": {
+  "id": "2483",
+  "abbr": "ORE",
+  "name": "Oregon Ducks",
+  "score": 37
+ },
+ "final": {
+  "away": 34,
+  "home": 37
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:14.858Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 10,
+    "rows": [
+  {"a":"4608810","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4608810","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685397","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685397","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4427238","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4427238","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4432631","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4432631","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4608810","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4608810","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 2,
+    "rows": [
+  {"a":"4685397","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685397","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   }
+  }
+ }
+}

@@ -1,0 +1,47 @@
+{
+ "id": "401628375",
+ "league": "cfb",
+ "date": "2024-09-28T19:30Z",
+ "name": "OU @ AUB",
+ "seasonType": 2,
+ "away": {
+  "id": "201",
+  "abbr": "OU",
+  "name": "Oklahoma Sooners",
+  "score": 27
+ },
+ "home": {
+  "id": "2",
+  "abbr": "AUB",
+  "name": "Auburn Tigers",
+  "score": 21
+ },
+ "final": {
+  "away": 27,
+  "home": 21
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:23.645Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 12,
+    "rows": [
+  {"a":"4430870","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4430870","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4605858","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4605858","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4710341","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4710341","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4430870","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4430870","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4605858","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4605858","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4710341","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4710341","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

@@ -1,0 +1,47 @@
+{
+ "id": "401628490",
+ "league": "cfb",
+ "date": "2024-09-22T00:00Z",
+ "name": "MSU @ BC",
+ "seasonType": 2,
+ "away": {
+  "id": "127",
+  "abbr": "MSU",
+  "name": "Michigan State Spartans",
+  "score": 19
+ },
+ "home": {
+  "id": "103",
+  "abbr": "BC",
+  "name": "Boston College Eagles",
+  "score": 23
+ },
+ "final": {
+  "away": 19,
+  "home": 23
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:21.962Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 12,
+    "rows": [
+  {"a":"4428783","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4428783","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4600597","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4600597","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4605841","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4605841","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4426530","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4426530","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4428783","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4428783","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4600597","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4600597","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

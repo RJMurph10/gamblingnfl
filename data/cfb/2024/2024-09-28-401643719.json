@@ -1,0 +1,43 @@
+{
+ "id": "401643719",
+ "league": "cfb",
+ "date": "2024-09-29T02:00Z",
+ "name": "WSU @ BOIS",
+ "seasonType": 2,
+ "away": {
+  "id": "265",
+  "abbr": "WSU",
+  "name": "Washington State Cougars",
+  "score": 24
+ },
+ "home": {
+  "id": "68",
+  "abbr": "BOIS",
+  "name": "Boise State Broncos",
+  "score": 45
+ },
+ "final": {
+  "away": 24,
+  "home": 45
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:23.753Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 8,
+    "rows": [
+  {"a":"4613202","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4613202","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4915980","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4915980","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4613202","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4613202","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4915980","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4915980","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

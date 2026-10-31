@@ -1,0 +1,49 @@
+{
+ "id": "401635563",
+ "league": "cfb",
+ "date": "2024-09-29T00:00Z",
+ "name": "FSU @ SMU",
+ "seasonType": 2,
+ "away": {
+  "id": "52",
+  "abbr": "FSU",
+  "name": "Florida State Seminoles",
+  "score": 16
+ },
+ "home": {
+  "id": "2567",
+  "abbr": "SMU",
+  "name": "SMU Mustangs",
+  "score": 42
+ },
+ "final": {
+  "away": 16,
+  "home": 42
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:24.915Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 14,
+    "rows": [
+  {"a":"4430885","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4430885","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4570190","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4570190","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4596602","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4596602","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4430885","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4430885","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4432718","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4432718","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4570190","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4570190","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4596602","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4596602","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

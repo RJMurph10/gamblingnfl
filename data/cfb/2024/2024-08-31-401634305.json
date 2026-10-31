@@ -1,0 +1,49 @@
+{
+ "id": "401634305",
+ "league": "cfb",
+ "date": "2024-08-31T16:00Z",
+ "name": "KENT @ PITT",
+ "seasonType": 2,
+ "away": {
+  "id": "2309",
+  "abbr": "KENT",
+  "name": "Kent State Golden Flashes",
+  "score": 24
+ },
+ "home": {
+  "id": "221",
+  "abbr": "PITT",
+  "name": "Pittsburgh Panthers",
+  "score": 55
+ },
+ "final": {
+  "away": 24,
+  "home": 55
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:12.397Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 6,
+    "rows": [
+  {"a":"4431328","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431328","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431514","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431514","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431328","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4431328","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 2,
+    "rows": [
+  {"a":"4710855","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4710855","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   }
+  }
+ }
+}

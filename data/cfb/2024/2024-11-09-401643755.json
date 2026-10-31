@@ -1,0 +1,65 @@
+{
+ "id": "401643755",
+ "league": "cfb",
+ "date": "2024-11-09T20:30Z",
+ "name": "SJSU @ ORST",
+ "seasonType": 2,
+ "away": {
+  "id": "23",
+  "abbr": "SJSU",
+  "name": "San José State Spartans",
+  "score": 24
+ },
+ "home": {
+  "id": "204",
+  "abbr": "ORST",
+  "name": "Oregon State Beavers",
+  "score": 13
+ },
+ "final": {
+  "away": 24,
+  "home": 13
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:40.244Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 12,
+    "rows": [
+  {"a":"4685385","t":"Total Carries (incl. overtime)","ti":"11","op":[20.5,null,null],"cur":[20.5,null,null]},
+  {"a":"4685385","t":"Total Carries (incl. overtime)","ti":"11","op":[20.5,null,null],"cur":[20.5,null,null]},
+  {"a":"4685385","t":"Total Receptions (incl. overtime)","ti":"14","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"4685385","t":"Total Receptions (incl. overtime)","ti":"14","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"4879567","t":"Total Receptions (incl. overtime)","ti":"14","op":[5.5,null,null],"cur":[5.5,null,null]},
+  {"a":"4879567","t":"Total Receptions (incl. overtime)","ti":"14","op":[5.5,null,null],"cur":[5.5,null,null]},
+  {"a":"4570473","t":"Total Kicking Points (incl. overtime)","ti":"22","op":[5.5,null,null],"cur":[5.5,null,null]},
+  {"a":"4570473","t":"Total Kicking Points (incl. overtime)","ti":"22","op":[5.5,null,null],"cur":[5.5,null,null]},
+  {"a":"4570473","t":"Total Extra Points Made (incl. overtime)","ti":"23","op":[2.5,null,null],"cur":[3.5,null,null]},
+  {"a":"4570473","t":"Total Extra Points Made (incl. overtime)","ti":"23","op":[2.5,null,null],"cur":[3.5,null,null]},
+  {"a":"4570473","t":"Total Field Goals Made (incl. overtime)","ti":"24","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"4570473","t":"Total Field Goals Made (incl. overtime)","ti":"24","op":[0.5,null,null],"cur":[0.5,null,null]}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 12,
+    "rows": [
+  {"a":"4685385","t":"Total Carries (incl. overtime)","ti":"11","op":[20.5,null,null],"cur":[20.5,null,null]},
+  {"a":"4685385","t":"Total Carries (incl. overtime)","ti":"11","op":[20.5,null,null],"cur":[20.5,null,null]},
+  {"a":"4685385","t":"Total Receptions (incl. overtime)","ti":"14","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"4685385","t":"Total Receptions (incl. overtime)","ti":"14","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"4879567","t":"Total Receptions (incl. overtime)","ti":"14","op":[5.5,null,null],"cur":[5.5,null,null]},
+  {"a":"4879567","t":"Total Receptions (incl. overtime)","ti":"14","op":[5.5,null,null],"cur":[5.5,null,null]},
+  {"a":"4570473","t":"Total Kicking Points (incl. overtime)","ti":"22","op":[5.5,null,null],"cur":[5.5,null,null]},
+  {"a":"4570473","t":"Total Kicking Points (incl. overtime)","ti":"22","op":[5.5,null,null],"cur":[5.5,null,null]},
+  {"a":"4570473","t":"Total Extra Points Made (incl. overtime)","ti":"23","op":[2.5,null,null],"cur":[3.5,null,null]},
+  {"a":"4570473","t":"Total Extra Points Made (incl. overtime)","ti":"23","op":[2.5,null,null],"cur":[3.5,null,null]},
+  {"a":"4570473","t":"Total Field Goals Made (incl. overtime)","ti":"24","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"4570473","t":"Total Field Goals Made (incl. overtime)","ti":"24","op":[0.5,null,null],"cur":[0.5,null,null]}
+ ]
+   }
+  }
+ }
+}

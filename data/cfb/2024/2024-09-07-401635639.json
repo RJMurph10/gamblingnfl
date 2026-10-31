@@ -1,0 +1,43 @@
+{
+ "id": "401635639",
+ "league": "cfb",
+ "date": "2024-09-07T23:00Z",
+ "name": "UVA @ WAKE",
+ "seasonType": 2,
+ "away": {
+  "id": "258",
+  "abbr": "UVA",
+  "name": "Virginia Cavaliers",
+  "score": 31
+ },
+ "home": {
+  "id": "154",
+  "abbr": "WAKE",
+  "name": "Wake Forest Demon Deacons",
+  "score": 30
+ },
+ "final": {
+  "away": 31,
+  "home": 30
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:16.445Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 8,
+    "rows": [
+  {"a":"4567044","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4567044","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4686095","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4686095","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4567044","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4567044","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4686095","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4686095","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

@@ -1,0 +1,61 @@
+{
+ "id": "401635622",
+ "league": "cfb",
+ "date": "2024-11-30T17:00Z",
+ "name": "DUKE @ WAKE",
+ "seasonType": 2,
+ "away": {
+  "id": "150",
+  "abbr": "DUKE",
+  "name": "Duke Blue Devils",
+  "score": 23
+ },
+ "home": {
+  "id": "154",
+  "abbr": "WAKE",
+  "name": "Wake Forest Demon Deacons",
+  "score": 17
+ },
+ "final": {
+  "away": 23,
+  "home": 17
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:48.054Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 10,
+    "rows": [
+  {"a":"4567044","t":"Total Receptions (incl. overtime)","ti":"14","op":[3.5,null,null],"cur":[4.5,null,null]},
+  {"a":"4567044","t":"Total Receptions (incl. overtime)","ti":"14","op":[3.5,null,null],"cur":[4.5,null,null]},
+  {"a":"4711408","t":"Total Receptions (incl. overtime)","ti":"14","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"4711408","t":"Total Receptions (incl. overtime)","ti":"14","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"4643646","t":"Total Kicking Points (incl. overtime)","ti":"22","op":[6.5,null,null],"cur":[6.5,null,null]},
+  {"a":"4643646","t":"Total Kicking Points (incl. overtime)","ti":"22","op":[6.5,null,null],"cur":[6.5,null,null]},
+  {"a":"4643646","t":"Total Extra Points Made (incl. overtime)","ti":"23","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"4643646","t":"Total Extra Points Made (incl. overtime)","ti":"23","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"4643646","t":"Total Field Goals Made (incl. overtime)","ti":"24","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":"4643646","t":"Total Field Goals Made (incl. overtime)","ti":"24","op":[1.5,null,null],"cur":[1.5,null,null]}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 10,
+    "rows": [
+  {"a":"4567044","t":"Total Receptions (incl. overtime)","ti":"14","op":[3.5,null,null],"cur":[4.5,null,null]},
+  {"a":"4567044","t":"Total Receptions (incl. overtime)","ti":"14","op":[3.5,null,null],"cur":[4.5,null,null]},
+  {"a":"4711408","t":"Total Receptions (incl. overtime)","ti":"14","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"4711408","t":"Total Receptions (incl. overtime)","ti":"14","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"4643646","t":"Total Kicking Points (incl. overtime)","ti":"22","op":[6.5,null,null],"cur":[6.5,null,null]},
+  {"a":"4643646","t":"Total Kicking Points (incl. overtime)","ti":"22","op":[6.5,null,null],"cur":[6.5,null,null]},
+  {"a":"4643646","t":"Total Extra Points Made (incl. overtime)","ti":"23","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"4643646","t":"Total Extra Points Made (incl. overtime)","ti":"23","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"4643646","t":"Total Field Goals Made (incl. overtime)","ti":"24","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":"4643646","t":"Total Field Goals Made (incl. overtime)","ti":"24","op":[1.5,null,null],"cur":[1.5,null,null]}
+ ]
+   }
+  }
+ }
+}

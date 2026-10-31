@@ -1,0 +1,49 @@
+{
+ "id": "401628337",
+ "league": "cfb",
+ "date": "2024-09-07T19:30Z",
+ "name": "CAL @ AUB",
+ "seasonType": 2,
+ "away": {
+  "id": "25",
+  "abbr": "CAL",
+  "name": "California Golden Bears",
+  "score": 21
+ },
+ "home": {
+  "id": "2",
+  "abbr": "AUB",
+  "name": "Auburn Tigers",
+  "score": 14
+ },
+ "final": {
+  "away": 21,
+  "home": 14
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:15.634Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 6,
+    "rows": [
+  {"a":"4430590","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4430590","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4710341","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4710341","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4430590","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4430590","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 2,
+    "rows": [
+  {"a":"4710341","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4710341","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   }
+  }
+ }
+}

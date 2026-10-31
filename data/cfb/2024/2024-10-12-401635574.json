@@ -1,0 +1,75 @@
+{
+ "id": "401635574",
+ "league": "cfb",
+ "date": "2024-10-13T00:00Z",
+ "name": "SYR @ NCSU",
+ "seasonType": 2,
+ "away": {
+  "id": "183",
+  "abbr": "SYR",
+  "name": "Syracuse Orange",
+  "score": 24
+ },
+ "home": {
+  "id": "152",
+  "abbr": "NCSU",
+  "name": "NC State Wolfpack",
+  "score": 17
+ },
+ "final": {
+  "away": 24,
+  "home": 17
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:29.064Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 40,
+    "rows": [
+  {"a":"4428803","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4428803","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4433971","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4433971","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4575862","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4575862","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4595342","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4595342","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4602788","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4602788","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4870653","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4870653","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4870929","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4870929","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4888723","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4888723","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4911851","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4911851","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4912052","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4912052","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4428803","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4428803","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4433971","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4433971","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4575862","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4575862","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4595342","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4595342","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4602788","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4602788","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4870653","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4870653","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4870929","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4870929","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4888723","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4888723","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4911851","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4911851","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4912052","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4912052","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

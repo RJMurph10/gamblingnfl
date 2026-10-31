@@ -1,0 +1,55 @@
+{
+ "id": "401628502",
+ "league": "cfb",
+ "date": "2024-09-28T19:30Z",
+ "name": "WIS @ USC",
+ "seasonType": 2,
+ "away": {
+  "id": "275",
+  "abbr": "WIS",
+  "name": "Wisconsin Badgers",
+  "score": 21
+ },
+ "home": {
+  "id": "30",
+  "abbr": "USC",
+  "name": "USC Trojans",
+  "score": 38
+ },
+ "final": {
+  "away": 21,
+  "home": 38
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:23.543Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 20,
+    "rows": [
+  {"a":"4432705","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4432705","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4432784","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4432784","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4683114","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4683114","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4870612","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4870612","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4426357","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4426357","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4432705","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4432705","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4683114","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4683114","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4870612","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4870612","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4917949","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4917949","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"5081926","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"5081926","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

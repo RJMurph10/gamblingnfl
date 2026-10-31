@@ -1,0 +1,73 @@
+{
+ "id": "401628504",
+ "league": "cfb",
+ "date": "2024-10-05T19:30Z",
+ "name": "IOWA @ OSU",
+ "seasonType": 2,
+ "away": {
+  "id": "2294",
+  "abbr": "IOWA",
+  "name": "Iowa Hawkeyes",
+  "score": 7
+ },
+ "home": {
+  "id": "194",
+  "abbr": "OSU",
+  "name": "Ohio State Buckeyes",
+  "score": 35
+ },
+ "final": {
+  "away": 7,
+  "home": 35
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:25.696Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 38,
+    "rows": [
+  {"a":"4429115","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4429115","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4429955","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4429955","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4432338","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4432338","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4432710","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4432710","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4602966","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4602966","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685702","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685702","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4819231","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4819231","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4871023","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4871023","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4880236","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4880236","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4429115","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4429115","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4429955","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4429955","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4432338","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4432338","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4432710","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4432710","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4567750","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4567750","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4602966","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4602966","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685702","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685702","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4819231","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4819231","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4871023","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4871023","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4880236","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4880236","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

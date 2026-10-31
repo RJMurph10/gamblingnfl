@@ -1,0 +1,39 @@
+{
+ "id": "401628333",
+ "league": "cfb",
+ "date": "2024-08-31T16:00Z",
+ "name": "VT @ VAN",
+ "seasonType": 2,
+ "away": {
+  "id": "259",
+  "abbr": "VT",
+  "name": "Virginia Tech Hokies",
+  "score": 27
+ },
+ "home": {
+  "id": "238",
+  "abbr": "VAN",
+  "name": "Vanderbilt Commodores",
+  "score": 34
+ },
+ "final": {
+  "away": 27,
+  "home": 34
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:12.172Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 4,
+    "rows": [
+  {"a":"4678010","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4678010","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4678010","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4678010","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

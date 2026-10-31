@@ -1,0 +1,57 @@
+{
+ "id": "401628356",
+ "league": "cfb",
+ "date": "2024-09-14T23:30Z",
+ "name": "TOL @ MSST",
+ "seasonType": 2,
+ "away": {
+  "id": "2649",
+  "abbr": "TOL",
+  "name": "Toledo Rockets",
+  "score": 41
+ },
+ "home": {
+  "id": "344",
+  "abbr": "MSST",
+  "name": "Mississippi State Bulldogs",
+  "score": 17
+ },
+ "final": {
+  "away": 41,
+  "home": 17
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:19.269Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 14,
+    "rows": [
+  {"a":"4428606","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4428606","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4429077","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4429077","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4430254","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4430254","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5153650","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5153650","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4428606","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4428606","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4430254","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4430254","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"5153650","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"5153650","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 2,
+    "rows": [
+  {"a":"4429077","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4429077","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   }
+  }
+ }
+}

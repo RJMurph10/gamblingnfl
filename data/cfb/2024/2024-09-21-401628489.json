@@ -1,0 +1,47 @@
+{
+ "id": "401628489",
+ "league": "cfb",
+ "date": "2024-09-21T19:30Z",
+ "name": "USC @ MICH",
+ "seasonType": 2,
+ "away": {
+  "id": "30",
+  "abbr": "USC",
+  "name": "USC Trojans",
+  "score": 24
+ },
+ "home": {
+  "id": "130",
+  "abbr": "MICH",
+  "name": "Michigan Wolverines",
+  "score": 27
+ },
+ "final": {
+  "away": 24,
+  "home": 27
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:20.425Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 12,
+    "rows": [
+  {"a":"4431536","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431536","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4432784","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4432784","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4426357","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4426357","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4429121","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4429121","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4431536","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4431536","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4432784","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4432784","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

@@ -1,0 +1,51 @@
+{
+ "id": "401628340",
+ "league": "cfb",
+ "date": "2024-09-07T19:30Z",
+ "name": "SC @ UK",
+ "seasonType": 2,
+ "away": {
+  "id": "2579",
+  "abbr": "SC",
+  "name": "South Carolina Gamecocks",
+  "score": 31
+ },
+ "home": {
+  "id": "96",
+  "abbr": "UK",
+  "name": "Kentucky Wildcats",
+  "score": 6
+ },
+ "final": {
+  "away": 31,
+  "home": 6
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:15.641Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 16,
+    "rows": [
+  {"a":"4430270","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4430270","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4430482","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4430482","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4601080","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4601080","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4606195","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4606195","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4430270","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4430270","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4430482","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4430482","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4601080","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4601080","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4606195","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4606195","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

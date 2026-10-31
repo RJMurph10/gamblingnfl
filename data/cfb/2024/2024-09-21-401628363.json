@@ -1,0 +1,45 @@
+{
+ "id": "401628363",
+ "league": "cfb",
+ "date": "2024-09-21T19:30Z",
+ "name": "ARK @ AUB",
+ "seasonType": 2,
+ "away": {
+  "id": "8",
+  "abbr": "ARK",
+  "name": "Arkansas Razorbacks",
+  "score": 24
+ },
+ "home": {
+  "id": "2",
+  "abbr": "AUB",
+  "name": "Auburn Tigers",
+  "score": 14
+ },
+ "final": {
+  "away": 24,
+  "home": 14
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:21.270Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 10,
+    "rows": [
+  {"a":"4431325","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431325","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4605858","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4605858","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4690972","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4690972","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431325","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4431325","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4710341","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4710341","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

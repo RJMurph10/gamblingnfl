@@ -1,0 +1,59 @@
+{
+ "id": "401635589",
+ "league": "cfb",
+ "date": "2024-10-19T16:00Z",
+ "name": "MIA @ LOU",
+ "seasonType": 2,
+ "away": {
+  "id": "2390",
+  "abbr": "MIA",
+  "name": "Miami Hurricanes",
+  "score": 52
+ },
+ "home": {
+  "id": "97",
+  "abbr": "LOU",
+  "name": "Louisville Cardinals",
+  "score": 45
+ },
+ "final": {
+  "away": 52,
+  "home": 45
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:30.397Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 14,
+    "rows": [
+  {"a":"4430185","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4430185","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431353","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431353","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431506","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431506","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4808830","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4808830","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5079349","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5079349","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431353","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4431353","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4431506","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4431506","t":"Anytime Touchdown Scorer","ti":"31"}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 4,
+    "rows": [
+  {"a":"5079349","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5079349","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431353","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4431353","t":"Anytime Touchdown Scorer","ti":"31"}
+ ]
+   }
+  }
+ }
+}

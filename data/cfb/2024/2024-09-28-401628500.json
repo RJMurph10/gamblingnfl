@@ -1,0 +1,51 @@
+{
+ "id": "401628500",
+ "league": "cfb",
+ "date": "2024-09-29T03:00Z",
+ "name": "ORE @ UCLA",
+ "seasonType": 2,
+ "away": {
+  "id": "2483",
+  "abbr": "ORE",
+  "name": "Oregon Ducks",
+  "score": 34
+ },
+ "home": {
+  "id": "26",
+  "abbr": "UCLA",
+  "name": "UCLA Bruins",
+  "score": 13
+ },
+ "final": {
+  "away": 34,
+  "home": 13
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:23.381Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 16,
+    "rows": [
+  {"a":"4427238","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4427238","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4429172","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4429172","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4429811","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4429811","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4608810","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4608810","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4427238","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4427238","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4429172","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4429172","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4429811","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4429811","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4432631","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4432631","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

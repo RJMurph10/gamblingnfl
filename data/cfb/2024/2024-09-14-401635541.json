@@ -1,0 +1,51 @@
+{
+ "id": "401635541",
+ "league": "cfb",
+ "date": "2024-09-15T02:30Z",
+ "name": "SDSU @ CAL",
+ "seasonType": 2,
+ "away": {
+  "id": "21",
+  "abbr": "SDSU",
+  "name": "San Diego State Aztecs",
+  "score": 10
+ },
+ "home": {
+  "id": "25",
+  "abbr": "CAL",
+  "name": "California Golden Bears",
+  "score": 31
+ },
+ "final": {
+  "away": 10,
+  "home": 31
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:19.632Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 8,
+    "rows": [
+  {"a":"4430468","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4430468","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431497","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431497","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4837248","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4837248","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4430468","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4430468","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 2,
+    "rows": [
+  {"a":"4837248","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4837248","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   }
+  }
+ }
+}

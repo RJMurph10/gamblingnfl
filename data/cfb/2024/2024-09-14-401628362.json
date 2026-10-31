@@ -1,0 +1,59 @@
+{
+ "id": "401628362",
+ "league": "cfb",
+ "date": "2024-09-14T23:00Z",
+ "name": "VAN @ GAST",
+ "seasonType": 2,
+ "away": {
+  "id": "238",
+  "abbr": "VAN",
+  "name": "Vanderbilt Commodores",
+  "score": 32
+ },
+ "home": {
+  "id": "2247",
+  "abbr": "GAST",
+  "name": "Georgia State Panthers",
+  "score": 36
+ },
+ "final": {
+  "away": 32,
+  "home": 36
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:18.998Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 16,
+    "rows": [
+  {"a":"4431574","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431574","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4572380","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4572380","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5030333","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5030333","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5084180","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5084180","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431574","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4431574","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4572380","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4572380","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"5030333","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"5030333","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"5078165","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"5078165","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 2,
+    "rows": [
+  {"a":"5084180","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5084180","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   }
+  }
+ }
+}

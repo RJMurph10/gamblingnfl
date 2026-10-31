@@ -1,0 +1,45 @@
+{
+ "id": "401644683",
+ "league": "cfb",
+ "date": "2024-08-31T19:30Z",
+ "name": "M-OH @ NU",
+ "seasonType": 2,
+ "away": {
+  "id": "193",
+  "abbr": "M-OH",
+  "name": "Miami (OH) RedHawks",
+  "score": 6
+ },
+ "home": {
+  "id": "77",
+  "abbr": "NU",
+  "name": "Northwestern Wildcats",
+  "score": 13
+ },
+ "final": {
+  "away": 6,
+  "home": 13
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:12.693Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 10,
+    "rows": [
+  {"a":"4429994","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4429994","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4687475","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4687475","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4429053","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4429053","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4429994","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4429994","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4687475","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4687475","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

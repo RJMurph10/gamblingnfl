@@ -1,0 +1,45 @@
+{
+ "id": "401628398",
+ "league": "cfb",
+ "date": "2024-10-19T23:49Z",
+ "name": "UGA @ TEX",
+ "seasonType": 2,
+ "away": {
+  "id": "61",
+  "abbr": "UGA",
+  "name": "Georgia Bulldogs",
+  "score": 30
+ },
+ "home": {
+  "id": "251",
+  "abbr": "TEX",
+  "name": "Texas Longhorns",
+  "score": 15
+ },
+ "final": {
+  "away": 30,
+  "home": 15
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:30.467Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 2,
+    "rows": [
+  {"a":"4685279","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4685279","t":"Anytime Touchdown Scorer","ti":"31"}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 2,
+    "rows": [
+  {"a":"4685350","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685350","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   }
+  }
+ }
+}

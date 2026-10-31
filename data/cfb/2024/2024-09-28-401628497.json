@@ -1,0 +1,63 @@
+{
+ "id": "401628497",
+ "league": "cfb",
+ "date": "2024-09-28T16:00Z",
+ "name": "MINN @ MICH",
+ "seasonType": 2,
+ "away": {
+  "id": "135",
+  "abbr": "MINN",
+  "name": "Minnesota Golden Gophers",
+  "score": 24
+ },
+ "home": {
+  "id": "130",
+  "abbr": "MICH",
+  "name": "Michigan Wolverines",
+  "score": 27
+ },
+ "final": {
+  "away": 24,
+  "home": 27
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:23.436Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 20,
+    "rows": [
+  {"a":"4429121","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4429121","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431536","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431536","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4572267","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4572267","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4596010","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4596010","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685495","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685495","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4920901","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4920901","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431536","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4431536","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4596010","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4596010","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685495","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685495","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4920901","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4920901","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 2,
+    "rows": [
+  {"a":"4429121","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4429121","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   }
+  }
+ }
+}

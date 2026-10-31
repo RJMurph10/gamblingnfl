@@ -1,0 +1,39 @@
+{
+ "id": "401636875",
+ "league": "cfb",
+ "date": "2024-09-21T18:00Z",
+ "name": "ARST @ ISU",
+ "seasonType": 2,
+ "away": {
+  "id": "2032",
+  "abbr": "ARST",
+  "name": "Arkansas State Red Wolves",
+  "score": 7
+ },
+ "home": {
+  "id": "66",
+  "abbr": "ISU",
+  "name": "Iowa State Cyclones",
+  "score": 52
+ },
+ "final": {
+  "away": 7,
+  "home": 52
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:20.634Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 4,
+    "rows": [
+  {"a":"5078005","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5078005","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5078005","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"5078005","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

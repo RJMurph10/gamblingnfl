@@ -1,0 +1,55 @@
+{
+ "id": "401628360",
+ "league": "cfb",
+ "date": "2024-09-14T23:45Z",
+ "name": "KENT @ TENN",
+ "seasonType": 2,
+ "away": {
+  "id": "2309",
+  "abbr": "KENT",
+  "name": "Kent State Golden Flashes",
+  "score": 0
+ },
+ "home": {
+  "id": "2633",
+  "abbr": "TENN",
+  "name": "Tennessee Volunteers",
+  "score": 71
+ },
+ "final": {
+  "away": 0,
+  "home": 71
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:17.827Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 12,
+    "rows": [
+  {"a":"4869599","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4869599","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5081368","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5081368","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5081397","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5081397","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4566157","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4566157","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4870941","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4870941","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"5081397","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"5081397","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 2,
+    "rows": [
+  {"a":"4870799","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4870799","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   }
+  }
+ }
+}

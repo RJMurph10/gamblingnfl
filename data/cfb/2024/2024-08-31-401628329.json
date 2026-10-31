@@ -1,0 +1,45 @@
+{
+ "id": "401628329",
+ "league": "cfb",
+ "date": "2024-08-31T20:15Z",
+ "name": "ODU @ SC",
+ "seasonType": 2,
+ "away": {
+  "id": "295",
+  "abbr": "ODU",
+  "name": "Old Dominion Monarchs",
+  "score": 19
+ },
+ "home": {
+  "id": "2579",
+  "abbr": "SC",
+  "name": "South Carolina Gamecocks",
+  "score": 23
+ },
+ "final": {
+  "away": 19,
+  "home": 23
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:12.817Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 2,
+    "rows": [
+  {"a":"4601080","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4601080","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 2,
+    "rows": [
+  {"a":"4601080","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4601080","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   }
+  }
+ }
+}

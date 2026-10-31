@@ -1,0 +1,37 @@
+{
+ "id": "401641029",
+ "league": "cfb",
+ "date": "2024-10-04T01:00Z",
+ "name": "SHSU @ UTEP",
+ "seasonType": 2,
+ "away": {
+  "id": "2534",
+  "abbr": "SHSU",
+  "name": "Sam Houston Bearkats",
+  "score": 41
+ },
+ "home": {
+  "id": "2638",
+  "abbr": "UTEP",
+  "name": "UTEP Miners",
+  "score": 21
+ },
+ "final": {
+  "away": 41,
+  "home": 21
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:25.356Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 2,
+    "rows": [
+  {"a":"4431074","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431074","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   }
+  }
+ }
+}

@@ -1,0 +1,45 @@
+{
+ "id": "401636874",
+ "league": "cfb",
+ "date": "2024-09-22T00:00Z",
+ "name": "BAY @ COLO",
+ "seasonType": 2,
+ "away": {
+  "id": "239",
+  "abbr": "BAY",
+  "name": "Baylor Bears",
+  "score": 31
+ },
+ "home": {
+  "id": "38",
+  "abbr": "COLO",
+  "name": "Colorado Buffaloes",
+  "score": 38
+ },
+ "final": {
+  "away": 31,
+  "home": 38
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:21.964Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 10,
+    "rows": [
+  {"a":"4685415","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685415","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4690143","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4690143","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4708486","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4708486","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685415","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685415","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4690143","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4690143","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

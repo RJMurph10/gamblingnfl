@@ -1,0 +1,45 @@
+{
+ "id": "401643803",
+ "league": "cfb",
+ "date": "2024-10-10T23:30Z",
+ "name": "CCU @ JMU",
+ "seasonType": 2,
+ "away": {
+  "id": "324",
+  "abbr": "CCU",
+  "name": "Coastal Carolina Chanticleers",
+  "score": 7
+ },
+ "home": {
+  "id": "256",
+  "abbr": "JMU",
+  "name": "James Madison Dukes",
+  "score": 39
+ },
+ "final": {
+  "away": 7,
+  "home": 39
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:27.511Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 2,
+    "rows": [
+  {"a":"4685494","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685494","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 2,
+    "rows": [
+  {"a":"4685494","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685494","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   }
+  }
+ }
+}

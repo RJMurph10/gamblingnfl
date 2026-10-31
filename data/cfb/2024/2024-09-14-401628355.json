@@ -1,0 +1,65 @@
+{
+ "id": "401628355",
+ "league": "cfb",
+ "date": "2024-09-14T22:30Z",
+ "name": "MISS @ WAKE",
+ "seasonType": 2,
+ "away": {
+  "id": "145",
+  "abbr": "MISS",
+  "name": "Ole Miss Rebels",
+  "score": 40
+ },
+ "home": {
+  "id": "154",
+  "abbr": "WAKE",
+  "name": "Wake Forest Demon Deacons",
+  "score": 6
+ },
+ "final": {
+  "away": 40,
+  "home": 6
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:17.734Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 22,
+    "rows": [
+  {"a":"4431310","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431310","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4686612","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4686612","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4687509","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4687509","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4689114","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4689114","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4426689","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4426689","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4431310","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4431310","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4567033","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4567033","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4567044","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4567044","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4686612","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4686612","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4687509","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4687509","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4689114","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4689114","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 2,
+    "rows": [
+  {"a":"4431310","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431310","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   }
+  }
+ }
+}

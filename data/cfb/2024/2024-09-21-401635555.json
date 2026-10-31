@@ -1,0 +1,57 @@
+{
+ "id": "401635555",
+ "league": "cfb",
+ "date": "2024-09-21T23:00Z",
+ "name": "MIA @ USF",
+ "seasonType": 2,
+ "away": {
+  "id": "2390",
+  "abbr": "MIA",
+  "name": "Miami Hurricanes",
+  "score": 50
+ },
+ "home": {
+  "id": "58",
+  "abbr": "USF",
+  "name": "South Florida Bulls",
+  "score": 15
+ },
+ "final": {
+  "away": 50,
+  "home": 15
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:20.432Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 14,
+    "rows": [
+  {"a":"4431353","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431353","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4571563","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4571563","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4808830","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4808830","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431353","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4431353","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4571563","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4571563","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4808830","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4808830","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4880272","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4880272","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 2,
+    "rows": [
+  {"a":"4808830","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4808830","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   }
+  }
+ }
+}

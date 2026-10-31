@@ -1,0 +1,45 @@
+{
+ "id": "401628359",
+ "league": "cfb",
+ "date": "2024-09-14T16:00Z",
+ "name": "LSU @ SC",
+ "seasonType": 2,
+ "away": {
+  "id": "99",
+  "abbr": "LSU",
+  "name": "LSU Tigers",
+  "score": 36
+ },
+ "home": {
+  "id": "2579",
+  "abbr": "SC",
+  "name": "South Carolina Gamecocks",
+  "score": 33
+ },
+ "final": {
+  "away": 36,
+  "home": 33
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:17.926Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 10,
+    "rows": [
+  {"a":"4431219","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431219","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4568024","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4568024","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431219","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4431219","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4568024","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4568024","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4870839","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4870839","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

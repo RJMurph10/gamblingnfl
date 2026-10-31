@@ -1,0 +1,39 @@
+{
+ "id": "401635525",
+ "league": "cfb",
+ "date": "2024-08-24T16:00Z",
+ "name": "FSU VS GT",
+ "seasonType": 2,
+ "away": {
+  "id": "52",
+  "abbr": "FSU",
+  "name": "Florida State Seminoles",
+  "score": 21
+ },
+ "home": {
+  "id": "59",
+  "abbr": "GT",
+  "name": "Georgia Tech Yellow Jackets",
+  "score": 24
+ },
+ "final": {
+  "away": 21,
+  "home": 24
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:09.773Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 4,
+    "rows": [
+  {"a":"4611995","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4611995","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4611995","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4611995","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

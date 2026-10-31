@@ -1,0 +1,53 @@
+{
+ "id": "401628462",
+ "league": "cfb",
+ "date": "2024-09-07T23:00Z",
+ "name": "KU @ ILL",
+ "seasonType": 2,
+ "away": {
+  "id": "2305",
+  "abbr": "KU",
+  "name": "Kansas Jayhawks",
+  "score": 17
+ },
+ "home": {
+  "id": "356",
+  "abbr": "ILL",
+  "name": "Illinois Fighting Illini",
+  "score": 23
+ },
+ "final": {
+  "away": 17,
+  "home": 23
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:15.170Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 10,
+    "rows": [
+  {"a":"4430914","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4430914","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4682652","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4682652","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4430914","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4430914","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4600981","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4600981","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4682652","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4682652","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 2,
+    "rows": [
+  {"a":"4682652","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4682652","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   }
+  }
+ }
+}

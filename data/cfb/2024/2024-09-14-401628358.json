@@ -1,0 +1,45 @@
+{
+ "id": "401628358",
+ "league": "cfb",
+ "date": "2024-09-14T19:30Z",
+ "name": "TULN @ OU",
+ "seasonType": 2,
+ "away": {
+  "id": "2655",
+  "abbr": "TULN",
+  "name": "Tulane Green Wave",
+  "score": 19
+ },
+ "home": {
+  "id": "201",
+  "abbr": "OU",
+  "name": "Oklahoma Sooners",
+  "score": 34
+ },
+ "final": {
+  "away": 19,
+  "home": 34
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:17.927Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 10,
+    "rows": [
+  {"a":"4565297","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4565297","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4683151","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4683151","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685269","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685269","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4565297","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4565297","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4683151","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4683151","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

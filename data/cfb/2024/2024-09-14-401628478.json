@@ -1,0 +1,37 @@
+{
+ "id": "401628478",
+ "league": "cfb",
+ "date": "2024-09-15T00:00Z",
+ "name": "MD @ UVA",
+ "seasonType": 2,
+ "away": {
+  "id": "120",
+  "abbr": "MD",
+  "name": "Maryland Terrapins",
+  "score": 27
+ },
+ "home": {
+  "id": "258",
+  "abbr": "UVA",
+  "name": "Virginia Cavaliers",
+  "score": 13
+ },
+ "final": {
+  "away": 27,
+  "home": 13
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:19.436Z",
+  "books": {
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 2,
+    "rows": [
+  {"a":"4565185","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4565185","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   }
+  }
+ }
+}

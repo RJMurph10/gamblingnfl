@@ -1,0 +1,39 @@
+{
+ "id": "401635561",
+ "league": "cfb",
+ "date": "2024-09-28T23:00Z",
+ "name": "STAN @ CLEM",
+ "seasonType": 2,
+ "away": {
+  "id": "24",
+  "abbr": "STAN",
+  "name": "Stanford Cardinal",
+  "score": 14
+ },
+ "home": {
+  "id": "228",
+  "abbr": "CLEM",
+  "name": "Clemson Tigers",
+  "score": 40
+ },
+ "final": {
+  "away": 14,
+  "home": 40
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:23.542Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 4,
+    "rows": [
+  {"a":"4431196","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431196","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431196","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4431196","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

@@ -1,0 +1,43 @@
+{
+ "id": "401628492",
+ "league": "cfb",
+ "date": "2024-09-21T16:00Z",
+ "name": "MRSH @ OSU",
+ "seasonType": 2,
+ "away": {
+  "id": "276",
+  "abbr": "MRSH",
+  "name": "Marshall Thundering Herd",
+  "score": 14
+ },
+ "home": {
+  "id": "194",
+  "abbr": "OSU",
+  "name": "Ohio State Buckeyes",
+  "score": 49
+ },
+ "final": {
+  "away": 14,
+  "home": 49
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:20.285Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 8,
+    "rows": [
+  {"a":"4429955","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4429955","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4567750","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4567750","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685702","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685702","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4429955","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4429955","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

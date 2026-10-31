@@ -1,0 +1,63 @@
+{
+ "id": "401628368",
+ "league": "cfb",
+ "date": "2024-09-21T20:15Z",
+ "name": "VAN @ MIZ",
+ "seasonType": 2,
+ "away": {
+  "id": "238",
+  "abbr": "VAN",
+  "name": "Vanderbilt Commodores",
+  "score": 27
+ },
+ "home": {
+  "id": "142",
+  "abbr": "MIZ",
+  "name": "Missouri Tigers",
+  "score": 30
+ },
+ "final": {
+  "away": 27,
+  "home": 30
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:20.424Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 28,
+    "rows": [
+  {"a":"4426535","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4426535","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4430828","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4430828","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4576318","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4576318","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685278","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685278","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4870869","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4870869","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5030333","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5030333","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5078165","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5078165","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4426535","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4426535","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4430828","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4430828","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4576318","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4576318","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685278","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685278","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"5030333","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"5030333","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"5078165","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"5078165","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"5084180","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"5084180","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

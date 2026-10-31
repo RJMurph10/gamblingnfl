@@ -1,0 +1,47 @@
+{
+ "id": "401634767",
+ "league": "cfb",
+ "date": "2024-09-27T23:30Z",
+ "name": "VT @ MIA",
+ "seasonType": 2,
+ "away": {
+  "id": "259",
+  "abbr": "VT",
+  "name": "Virginia Tech Hokies",
+  "score": 34
+ },
+ "home": {
+  "id": "2390",
+  "abbr": "MIA",
+  "name": "Miami Hurricanes",
+  "score": 38
+ },
+ "final": {
+  "away": 34,
+  "home": 38
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:22.889Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 12,
+    "rows": [
+  {"a":"4678010","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4678010","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4688380","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4688380","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4808830","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4808830","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4575348","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4575348","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4808830","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4808830","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4882093","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4882093","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

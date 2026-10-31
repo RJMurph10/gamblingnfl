@@ -1,0 +1,41 @@
+{
+ "id": "401635659",
+ "league": "cfb",
+ "date": "2024-09-28T19:30Z",
+ "name": "UL @ WAKE",
+ "seasonType": 2,
+ "away": {
+  "id": "309",
+  "abbr": "UL",
+  "name": "Louisiana Ragin' Cajuns",
+  "score": 41
+ },
+ "home": {
+  "id": "154",
+  "abbr": "WAKE",
+  "name": "Wake Forest Demon Deacons",
+  "score": 38
+ },
+ "final": {
+  "away": 41,
+  "home": 38
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:24.181Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 6,
+    "rows": [
+  {"a":"4428808","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4428808","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4711408","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4711408","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4567044","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4567044","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

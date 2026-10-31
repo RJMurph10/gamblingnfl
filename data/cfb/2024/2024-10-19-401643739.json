@@ -1,0 +1,49 @@
+{
+ "id": "401643739",
+ "league": "cfb",
+ "date": "2024-10-20T02:00Z",
+ "name": "UNLV @ ORST",
+ "seasonType": 2,
+ "away": {
+  "id": "2439",
+  "abbr": "UNLV",
+  "name": "UNLV Rebels",
+  "score": 33
+ },
+ "home": {
+  "id": "204",
+  "abbr": "ORST",
+  "name": "Oregon State Beavers",
+  "score": 25
+ },
+ "final": {
+  "away": 33,
+  "home": 25
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:32.093Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 6,
+    "rows": [
+  {"a":"4685385","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685385","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4571364","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4571364","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4887446","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4887446","t":"Anytime Touchdown Scorer","ti":"31"}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 2,
+    "rows": [
+  {"a":"4685385","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685385","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   }
+  }
+ }
+}

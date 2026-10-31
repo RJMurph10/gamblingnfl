@@ -1,0 +1,43 @@
+{
+ "id": "401645331",
+ "league": "cfb",
+ "date": "2024-09-26T23:30Z",
+ "name": "ARMY @ TEM",
+ "seasonType": 2,
+ "away": {
+  "id": "349",
+  "abbr": "ARMY",
+  "name": "Army Black Knights",
+  "score": 42
+ },
+ "home": {
+  "id": "218",
+  "abbr": "TEM",
+  "name": "Temple Owls",
+  "score": 14
+ },
+ "final": {
+  "away": 42,
+  "home": 14
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:22.736Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 8,
+    "rows": [
+  {"a":"4428938","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4428938","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5150313","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5150313","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4428938","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4428938","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"5150313","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"5150313","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

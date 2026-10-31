@@ -1,0 +1,51 @@
+{
+ "id": "401629034",
+ "league": "cfb",
+ "date": "2024-10-19T16:00Z",
+ "name": "WAKE @ CONN",
+ "seasonType": 2,
+ "away": {
+  "id": "154",
+  "abbr": "WAKE",
+  "name": "Wake Forest Demon Deacons",
+  "score": 23
+ },
+ "home": {
+  "id": "41",
+  "abbr": "CONN",
+  "name": "UConn Huskies",
+  "score": 20
+ },
+ "final": {
+  "away": 23,
+  "home": 20
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:30.958Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 6,
+    "rows": [
+  {"a":"4567044","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4567044","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4832846","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4832846","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4832846","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4832846","t":"Anytime Touchdown Scorer","ti":"31"}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 4,
+    "rows": [
+  {"a":"4832846","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4832846","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4832846","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4832846","t":"Anytime Touchdown Scorer","ti":"31"}
+ ]
+   }
+  }
+ }
+}

@@ -1,0 +1,55 @@
+{
+ "id": "401628343",
+ "league": "cfb",
+ "date": "2024-09-08T02:30Z",
+ "name": "MSST @ ASU",
+ "seasonType": 2,
+ "away": {
+  "id": "344",
+  "abbr": "MSST",
+  "name": "Mississippi State Bulldogs",
+  "score": 23
+ },
+ "home": {
+  "id": "9",
+  "abbr": "ASU",
+  "name": "Arizona State Sun Devils",
+  "score": 30
+ },
+ "final": {
+  "away": 23,
+  "home": 30
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:16.862Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 20,
+    "rows": [
+  {"a":"4565315","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4565315","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4682509","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4682509","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4696981","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4696981","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4714379","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4714379","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5078810","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5078810","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4429066","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4429066","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4565315","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4565315","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4696981","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4696981","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4714379","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4714379","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"5078810","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"5078810","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

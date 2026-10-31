@@ -1,0 +1,57 @@
+{
+ "id": "401628357",
+ "league": "cfb",
+ "date": "2024-09-14T16:45Z",
+ "name": "BC @ MIZ",
+ "seasonType": 2,
+ "away": {
+  "id": "103",
+  "abbr": "BC",
+  "name": "Boston College Eagles",
+  "score": 21
+ },
+ "home": {
+  "id": "142",
+  "abbr": "MIZ",
+  "name": "Missouri Tigers",
+  "score": 27
+ },
+ "final": {
+  "away": 21,
+  "home": 27
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:17.829Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 22,
+    "rows": [
+  {"a":"4426535","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4426535","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4429435","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4429435","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4430828","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4430828","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685278","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685278","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4773919","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4773919","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4426535","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4426535","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4429435","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4429435","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4430828","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4430828","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4576318","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4576318","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685278","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685278","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4773919","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4773919","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

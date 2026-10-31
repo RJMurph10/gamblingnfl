@@ -1,0 +1,43 @@
+{
+ "id": "401635534",
+ "league": "cfb",
+ "date": "2024-09-07T16:00Z",
+ "name": "GT @ SYR",
+ "seasonType": 2,
+ "away": {
+  "id": "59",
+  "abbr": "GT",
+  "name": "Georgia Tech Yellow Jackets",
+  "score": 28
+ },
+ "home": {
+  "id": "183",
+  "abbr": "SYR",
+  "name": "Syracuse Orange",
+  "score": 31
+ },
+ "final": {
+  "away": 28,
+  "home": 31
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:15.274Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 8,
+    "rows": [
+  {"a":"4428993","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4428993","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4911851","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4911851","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4428993","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4428993","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4611995","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4611995","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

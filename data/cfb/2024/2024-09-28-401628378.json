@@ -1,0 +1,57 @@
+{
+ "id": "401628378",
+ "league": "cfb",
+ "date": "2024-09-28T20:15Z",
+ "name": "MSST @ TEX",
+ "seasonType": 2,
+ "away": {
+  "id": "344",
+  "abbr": "MSST",
+  "name": "Mississippi State Bulldogs",
+  "score": 13
+ },
+ "home": {
+  "id": "251",
+  "abbr": "TEX",
+  "name": "Texas Longhorns",
+  "score": 35
+ },
+ "final": {
+  "away": 13,
+  "home": 35
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:23.135Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 14,
+    "rows": [
+  {"a":"4685279","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685279","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4686728","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4686728","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4701936","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4701936","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4808839","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4808839","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5153650","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5153650","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685307","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685307","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"5153650","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"5153650","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 2,
+    "rows": [
+  {"a":"4685279","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685279","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   }
+  }
+ }
+}

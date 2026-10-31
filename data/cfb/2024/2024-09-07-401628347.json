@@ -1,0 +1,41 @@
+{
+ "id": "401628347",
+ "league": "cfb",
+ "date": "2024-09-07T16:00Z",
+ "name": "TEX @ MICH",
+ "seasonType": 2,
+ "away": {
+  "id": "251",
+  "abbr": "TEX",
+  "name": "Texas Longhorns",
+  "score": 31
+ },
+ "home": {
+  "id": "130",
+  "abbr": "MICH",
+  "name": "Michigan Wolverines",
+  "score": 12
+ },
+ "final": {
+  "away": 31,
+  "home": 12
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:14.757Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 6,
+    "rows": [
+  {"a":"4431536","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431536","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4686728","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4686728","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4723086","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4723086","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

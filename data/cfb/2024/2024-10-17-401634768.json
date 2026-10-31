@@ -1,0 +1,47 @@
+{
+ "id": "401634768",
+ "league": "cfb",
+ "date": "2024-10-17T23:30Z",
+ "name": "BC @ VT",
+ "seasonType": 2,
+ "away": {
+  "id": "103",
+  "abbr": "BC",
+  "name": "Boston College Eagles",
+  "score": 21
+ },
+ "home": {
+  "id": "259",
+  "abbr": "VT",
+  "name": "Virginia Tech Hokies",
+  "score": 42
+ },
+ "final": {
+  "away": 21,
+  "home": 42
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:29.828Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 4,
+    "rows": [
+  {"a":"4678010","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4678010","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4678010","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4678010","t":"Anytime Touchdown Scorer","ti":"31"}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 2,
+    "rows": [
+  {"a":"4678010","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4678010","t":"Anytime Touchdown Scorer","ti":"31"}
+ ]
+   }
+  }
+ }
+}

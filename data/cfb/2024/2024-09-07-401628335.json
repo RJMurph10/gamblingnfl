@@ -1,0 +1,57 @@
+{
+ "id": "401628335",
+ "league": "cfb",
+ "date": "2024-09-07T23:00Z",
+ "name": "USF @ ALA",
+ "seasonType": 2,
+ "away": {
+  "id": "58",
+  "abbr": "USF",
+  "name": "South Florida Bulls",
+  "score": 16
+ },
+ "home": {
+  "id": "333",
+  "abbr": "ALA",
+  "name": "Alabama Crimson Tide",
+  "score": 42
+ },
+ "final": {
+  "away": 16,
+  "home": 42
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:14.642Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 14,
+    "rows": [
+  {"a":"4432734","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4432734","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4596545","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4596545","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685441","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685441","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4870760","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4870760","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4596545","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4596545","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685477","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685477","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4870760","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4870760","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 2,
+    "rows": [
+  {"a":"4870760","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4870760","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   }
+  }
+ }
+}

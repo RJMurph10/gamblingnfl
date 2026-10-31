@@ -1,0 +1,55 @@
+{
+ "id": "401628377",
+ "league": "cfb",
+ "date": "2024-09-28T16:00Z",
+ "name": "UK @ MISS",
+ "seasonType": 2,
+ "away": {
+  "id": "96",
+  "abbr": "UK",
+  "name": "Kentucky Wildcats",
+  "score": 20
+ },
+ "home": {
+  "id": "145",
+  "abbr": "MISS",
+  "name": "Ole Miss Rebels",
+  "score": 17
+ },
+ "final": {
+  "away": 20,
+  "home": 17
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:23.130Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 12,
+    "rows": [
+  {"a":"4431310","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431310","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4686612","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4686612","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4687509","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4687509","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4686612","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4686612","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4687509","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4687509","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4689114","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4689114","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 2,
+    "rows": [
+  {"a":"4431310","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431310","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   }
+  }
+ }
+}

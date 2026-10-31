@@ -1,0 +1,47 @@
+{
+ "id": "401636864",
+ "league": "cfb",
+ "date": "2024-09-14T00:00Z",
+ "name": "ARIZ @ KSU",
+ "seasonType": 2,
+ "away": {
+  "id": "12",
+  "abbr": "ARIZ",
+  "name": "Arizona Wildcats",
+  "score": 7
+ },
+ "home": {
+  "id": "2306",
+  "abbr": "KSU",
+  "name": "Kansas State Wildcats",
+  "score": 31
+ },
+ "final": {
+  "away": 7,
+  "home": 31
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:17.405Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 12,
+    "rows": [
+  {"a":"4683237","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4683237","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685472","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685472","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4874509","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4874509","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4683237","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4683237","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685472","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685472","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4874509","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4874509","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

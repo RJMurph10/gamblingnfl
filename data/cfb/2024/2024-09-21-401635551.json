@@ -1,0 +1,43 @@
+{
+ "id": "401635551",
+ "league": "cfb",
+ "date": "2024-09-21T23:00Z",
+ "name": "CAL @ FSU",
+ "seasonType": 2,
+ "away": {
+  "id": "25",
+  "abbr": "CAL",
+  "name": "California Golden Bears",
+  "score": 9
+ },
+ "home": {
+  "id": "52",
+  "abbr": "FSU",
+  "name": "Florida State Seminoles",
+  "score": 14
+ },
+ "final": {
+  "away": 9,
+  "home": 14
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:21.762Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 8,
+    "rows": [
+  {"a":"4429020","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4429020","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685723","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685723","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4429020","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4429020","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685723","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685723","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

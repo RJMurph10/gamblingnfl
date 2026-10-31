@@ -1,0 +1,45 @@
+{
+ "id": "401628495",
+ "league": "cfb",
+ "date": "2024-09-28T23:30Z",
+ "name": "ILL @ PSU",
+ "seasonType": 2,
+ "away": {
+  "id": "356",
+  "abbr": "ILL",
+  "name": "Illinois Fighting Illini",
+  "score": 7
+ },
+ "home": {
+  "id": "213",
+  "abbr": "PSU",
+  "name": "Penn State Nittany Lions",
+  "score": 21
+ },
+ "final": {
+  "away": 7,
+  "home": 21
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:23.415Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 10,
+    "rows": [
+  {"a":"4431459","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431459","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685246","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685246","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431459","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4431459","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685246","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685246","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4714771","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4714771","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

@@ -1,0 +1,45 @@
+{
+ "id": "401643810",
+ "league": "cfb",
+ "date": "2024-10-17T23:00Z",
+ "name": "GAST @ MRSH",
+ "seasonType": 2,
+ "away": {
+  "id": "2247",
+  "abbr": "GAST",
+  "name": "Georgia State Panthers",
+  "score": 20
+ },
+ "home": {
+  "id": "276",
+  "abbr": "MRSH",
+  "name": "Marshall Thundering Herd",
+  "score": 35
+ },
+ "final": {
+  "away": 20,
+  "home": 35
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:29.859Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 2,
+    "rows": [
+  {"a":"5082548","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5082548","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 2,
+    "rows": [
+  {"a":"5082548","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5082548","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   }
+  }
+ }
+}

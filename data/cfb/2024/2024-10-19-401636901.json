@@ -1,0 +1,53 @@
+{
+ "id": "401636901",
+ "league": "cfb",
+ "date": "2024-10-19T19:30Z",
+ "name": "HOU @ KU",
+ "seasonType": 2,
+ "away": {
+  "id": "248",
+  "abbr": "HOU",
+  "name": "Houston Cougars",
+  "score": 14
+ },
+ "home": {
+  "id": "2305",
+  "abbr": "KU",
+  "name": "Kansas Jayhawks",
+  "score": 42
+ },
+ "final": {
+  "away": 14,
+  "home": 42
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:31.270Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 8,
+    "rows": [
+  {"a":"4432326","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4432326","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4433830","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4433830","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4682652","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4682652","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4682652","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4682652","t":"Anytime Touchdown Scorer","ti":"31"}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 4,
+    "rows": [
+  {"a":"4682652","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4682652","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4682652","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4682652","t":"Anytime Touchdown Scorer","ti":"31"}
+ ]
+   }
+  }
+ }
+}

@@ -1,0 +1,39 @@
+{
+ "id": "401635564",
+ "league": "cfb",
+ "date": "2024-09-28T16:00Z",
+ "name": "NIU @ NCSU",
+ "seasonType": 2,
+ "away": {
+  "id": "2459",
+  "abbr": "NIU",
+  "name": "Northern Illinois Huskies",
+  "score": 17
+ },
+ "home": {
+  "id": "152",
+  "abbr": "NCSU",
+  "name": "NC State Wolfpack",
+  "score": 24
+ },
+ "final": {
+  "away": 17,
+  "home": 24
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:23.855Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 4,
+    "rows": [
+  {"a":"4912052","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4912052","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4912052","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4912052","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

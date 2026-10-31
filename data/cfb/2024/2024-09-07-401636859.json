@@ -1,0 +1,47 @@
+{
+ "id": "401636859",
+ "league": "cfb",
+ "date": "2024-09-08T02:00Z",
+ "name": "TTU @ WSU",
+ "seasonType": 2,
+ "away": {
+  "id": "2641",
+  "abbr": "TTU",
+  "name": "Texas Tech Red Raiders",
+  "score": 16
+ },
+ "home": {
+  "id": "265",
+  "abbr": "WSU",
+  "name": "Washington State Cougars",
+  "score": 37
+ },
+ "final": {
+  "away": 16,
+  "home": 37
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:16.762Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 4,
+    "rows": [
+  {"a":"4613202","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4613202","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4613202","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4613202","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 2,
+    "rows": [
+  {"a":"4613202","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4613202","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   }
+  }
+ }
+}

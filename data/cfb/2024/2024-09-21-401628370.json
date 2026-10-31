@@ -1,0 +1,49 @@
+{
+ "id": "401628370",
+ "league": "cfb",
+ "date": "2024-09-21T23:30Z",
+ "name": "AKR @ SC",
+ "seasonType": 2,
+ "away": {
+  "id": "2006",
+  "abbr": "AKR",
+  "name": "Akron Zips",
+  "score": 7
+ },
+ "home": {
+  "id": "2579",
+  "abbr": "SC",
+  "name": "South Carolina Gamecocks",
+  "score": 50
+ },
+ "final": {
+  "away": 7,
+  "home": 50
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:21.954Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 14,
+    "rows": [
+  {"a":"4430482","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4430482","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4697512","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4697512","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4700453","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4700453","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4427630","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4427630","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4430482","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4430482","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4697512","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4697512","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4700453","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4700453","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

@@ -1,0 +1,49 @@
+{
+ "id": "401628451",
+ "league": "cfb",
+ "date": "2024-08-31T16:00Z",
+ "name": "CONN @ MD",
+ "seasonType": 2,
+ "away": {
+  "id": "41",
+  "abbr": "CONN",
+  "name": "UConn Huskies",
+  "score": 7
+ },
+ "home": {
+  "id": "120",
+  "abbr": "MD",
+  "name": "Maryland Terrapins",
+  "score": 50
+ },
+ "final": {
+  "away": 7,
+  "home": 50
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:12.391Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 14,
+    "rows": [
+  {"a":"4565185","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4565185","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4588200","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4588200","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685393","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685393","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4565185","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4565185","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4588200","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4588200","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685393","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685393","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685416","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685416","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

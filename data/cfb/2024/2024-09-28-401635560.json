@@ -1,0 +1,49 @@
+{
+ "id": "401635560",
+ "league": "cfb",
+ "date": "2024-09-28T16:00Z",
+ "name": "WKU @ BC",
+ "seasonType": 2,
+ "away": {
+  "id": "98",
+  "abbr": "WKU",
+  "name": "Western Kentucky Hilltoppers",
+  "score": 20
+ },
+ "home": {
+  "id": "103",
+  "abbr": "BC",
+  "name": "Boston College Eagles",
+  "score": 21
+ },
+ "final": {
+  "away": 20,
+  "home": 21
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:23.856Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 14,
+    "rows": [
+  {"a":"4433945","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4433945","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4683159","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4683159","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4773919","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4773919","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4869991","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4869991","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4433945","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4433945","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4773919","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4773919","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4869991","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4869991","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

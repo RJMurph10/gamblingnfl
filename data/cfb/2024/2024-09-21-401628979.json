@@ -1,0 +1,41 @@
+{
+ "id": "401628979",
+ "league": "cfb",
+ "date": "2024-09-21T19:30Z",
+ "name": "M-OH @ ND",
+ "seasonType": 2,
+ "away": {
+  "id": "193",
+  "abbr": "M-OH",
+  "name": "Miami (OH) RedHawks",
+  "score": 3
+ },
+ "home": {
+  "id": "87",
+  "abbr": "ND",
+  "name": "Notre Dame Fighting Irish",
+  "score": 28
+ },
+ "final": {
+  "away": 3,
+  "home": 28
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:20.536Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 6,
+    "rows": [
+  {"a":"4683423","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4683423","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4683423","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4683423","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685512","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685512","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

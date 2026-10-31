@@ -1,0 +1,51 @@
+{
+ "id": "401628524",
+ "league": "cfb",
+ "date": "2024-10-19T16:00Z",
+ "name": "UCLA @ RUTG",
+ "seasonType": 2,
+ "away": {
+  "id": "26",
+  "abbr": "UCLA",
+  "name": "UCLA Bruins",
+  "score": 35
+ },
+ "home": {
+  "id": "164",
+  "abbr": "RUTG",
+  "name": "Rutgers Scarlet Knights",
+  "score": 32
+ },
+ "final": {
+  "away": 35,
+  "home": 32
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:30.986Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 8,
+    "rows": [
+  {"a":"4427634","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4427634","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4430843","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4430843","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4775266","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4775266","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5086027","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5086027","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 2,
+    "rows": [
+  {"a":"5086027","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5086027","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   }
+  }
+ }
+}

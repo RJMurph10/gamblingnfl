@@ -1,0 +1,39 @@
+{
+ "id": "401628473",
+ "league": "cfb",
+ "date": "2024-09-07T19:30Z",
+ "name": "EMU @ WASH",
+ "seasonType": 2,
+ "away": {
+  "id": "2199",
+  "abbr": "EMU",
+  "name": "Eastern Michigan Eagles",
+  "score": 9
+ },
+ "home": {
+  "id": "264",
+  "abbr": "WASH",
+  "name": "Washington Huskies",
+  "score": 30
+ },
+ "final": {
+  "away": 9,
+  "home": 30
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:15.759Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 4,
+    "rows": [
+  {"a":"4429963","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4429963","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4429963","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4429963","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

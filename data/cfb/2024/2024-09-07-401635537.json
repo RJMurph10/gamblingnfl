@@ -1,0 +1,55 @@
+{
+ "id": "401635537",
+ "league": "cfb",
+ "date": "2024-09-07T19:30Z",
+ "name": "CLT @ UNC",
+ "seasonType": 2,
+ "away": {
+  "id": "2429",
+  "abbr": "CLT",
+  "name": "Charlotte 49ers",
+  "score": 20
+ },
+ "home": {
+  "id": "153",
+  "abbr": "UNC",
+  "name": "North Carolina Tar Heels",
+  "score": 38
+ },
+ "final": {
+  "away": 20,
+  "home": 38
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:15.968Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 12,
+    "rows": [
+  {"a":"4596596","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4596596","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4602969","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4602969","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685382","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685382","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4596596","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4596596","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4602969","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4602969","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4801306","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4801306","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 2,
+    "rows": [
+  {"a":"4685382","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685382","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   }
+  }
+ }
+}

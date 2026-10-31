@@ -1,0 +1,65 @@
+{
+ "id": "401628342",
+ "league": "cfb",
+ "date": "2024-09-07T20:15Z",
+ "name": "MTSU @ MISS",
+ "seasonType": 2,
+ "away": {
+  "id": "2393",
+  "abbr": "MTSU",
+  "name": "Middle Tennessee Blue Raiders",
+  "score": 3
+ },
+ "home": {
+  "id": "145",
+  "abbr": "MISS",
+  "name": "Ole Miss Rebels",
+  "score": 52
+ },
+ "final": {
+  "away": 3,
+  "home": 52
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:14.855Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 22,
+    "rows": [
+  {"a":"4431310","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431310","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4682518","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4682518","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4686612","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4686612","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4687509","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4687509","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4689114","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4689114","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4426689","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4426689","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4431310","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4431310","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4682518","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4682518","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4686612","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4686612","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4687509","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4687509","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4689114","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4689114","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 2,
+    "rows": [
+  {"a":"4431310","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431310","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   }
+  }
+ }
+}

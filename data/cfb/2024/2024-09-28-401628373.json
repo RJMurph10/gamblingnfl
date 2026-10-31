@@ -1,0 +1,39 @@
+{
+ "id": "401628373",
+ "league": "cfb",
+ "date": "2024-09-28T19:30Z",
+ "name": "ARK VS TA&M",
+ "seasonType": 2,
+ "away": {
+  "id": "8",
+  "abbr": "ARK",
+  "name": "Arkansas Razorbacks",
+  "score": 17
+ },
+ "home": {
+  "id": "245",
+  "abbr": "TA&M",
+  "name": "Texas A&M Aggies",
+  "score": 21
+ },
+ "final": {
+  "away": 17,
+  "home": 21
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:23.747Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 4,
+    "rows": [
+  {"a":"4429313","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4429313","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4429313","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4429313","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

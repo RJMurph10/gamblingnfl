@@ -1,0 +1,53 @@
+{
+ "id": "401628481",
+ "league": "cfb",
+ "date": "2024-09-14T19:30Z",
+ "name": "NEV @ MINN",
+ "seasonType": 2,
+ "away": {
+  "id": "2440",
+  "abbr": "NEV",
+  "name": "Nevada Wolf Pack",
+  "score": 0
+ },
+ "home": {
+  "id": "135",
+  "abbr": "MINN",
+  "name": "Minnesota Golden Gophers",
+  "score": 27
+ },
+ "final": {
+  "away": 0,
+  "home": 27
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:18.518Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 10,
+    "rows": [
+  {"a":"4426484","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4426484","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4569547","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4569547","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4920901","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4920901","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4426484","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4426484","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4569547","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4569547","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 2,
+    "rows": [
+  {"a":"4920901","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4920901","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   }
+  }
+ }
+}

@@ -1,0 +1,47 @@
+{
+ "id": "401628334",
+ "league": "cfb",
+ "date": "2024-09-01T23:30Z",
+ "name": "USC VS LSU",
+ "seasonType": 2,
+ "away": {
+  "id": "30",
+  "abbr": "USC",
+  "name": "USC Trojans",
+  "score": 27
+ },
+ "home": {
+  "id": "99",
+  "abbr": "LSU",
+  "name": "LSU Tigers",
+  "score": 20
+ },
+ "final": {
+  "away": 27,
+  "home": 20
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:13.929Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 12,
+    "rows": [
+  {"a":"4431219","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431219","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431580","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431580","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4870612","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4870612","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431580","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4431580","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4870612","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4870612","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4870839","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4870839","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

@@ -1,0 +1,41 @@
+{
+ "id": "401628332",
+ "league": "cfb",
+ "date": "2024-08-31T23:30Z",
+ "name": "ND @ TA&M",
+ "seasonType": 2,
+ "away": {
+  "id": "87",
+  "abbr": "ND",
+  "name": "Notre Dame Fighting Irish",
+  "score": 23
+ },
+ "home": {
+  "id": "245",
+  "abbr": "TA&M",
+  "name": "Texas A&M Aggies",
+  "score": 13
+ },
+ "final": {
+  "away": 23,
+  "home": 13
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:11.856Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 6,
+    "rows": [
+  {"a":"4685470","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685470","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4683423","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4683423","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685470","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685470","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

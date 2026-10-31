@@ -1,0 +1,47 @@
+{
+ "id": "401636876",
+ "league": "cfb",
+ "date": "2024-09-21T20:00Z",
+ "name": "UTAH @ OKST",
+ "seasonType": 2,
+ "away": {
+  "id": "254",
+  "abbr": "UTAH",
+  "name": "Utah Utes",
+  "score": 22
+ },
+ "home": {
+  "id": "197",
+  "abbr": "OKST",
+  "name": "Oklahoma State Cowboys",
+  "score": 19
+ },
+ "final": {
+  "away": 22,
+  "home": 19
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:20.526Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 12,
+    "rows": [
+  {"a":"4426696","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4426696","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4430577","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4430577","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431342","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431342","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4426696","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4426696","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4430577","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4430577","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4431342","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4431342","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

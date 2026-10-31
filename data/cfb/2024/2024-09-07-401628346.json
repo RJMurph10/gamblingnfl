@@ -1,0 +1,57 @@
+{
+ "id": "401628346",
+ "league": "cfb",
+ "date": "2024-09-07T23:30Z",
+ "name": "TENN VS NCSU",
+ "seasonType": 2,
+ "away": {
+  "id": "2633",
+  "abbr": "TENN",
+  "name": "Tennessee Volunteers",
+  "score": 51
+ },
+ "home": {
+  "id": "152",
+  "abbr": "NCSU",
+  "name": "NC State Wolfpack",
+  "score": 10
+ },
+ "final": {
+  "away": 51,
+  "home": 10
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:15.065Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 14,
+    "rows": [
+  {"a":"4870653","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4870653","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5081368","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5081368","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5081397","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5081397","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4870653","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4870653","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"5081368","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"5081368","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"5081397","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"5081397","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"5091739","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"5091739","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 2,
+    "rows": [
+  {"a":"5081397","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5081397","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   }
+  }
+ }
+}

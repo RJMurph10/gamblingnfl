@@ -1,0 +1,47 @@
+{
+ "id": "401636885",
+ "league": "cfb",
+ "date": "2024-09-28T20:20Z",
+ "name": "COLO @ UCF",
+ "seasonType": 2,
+ "away": {
+  "id": "38",
+  "abbr": "COLO",
+  "name": "Colorado Buffaloes",
+  "score": 48
+ },
+ "home": {
+  "id": "2116",
+  "abbr": "UCF",
+  "name": "UCF Knights",
+  "score": 21
+ },
+ "final": {
+  "away": 48,
+  "home": 21
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:24.484Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 12,
+    "rows": [
+  {"a":"4429056","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4429056","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685415","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685415","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4690143","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4690143","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4432762","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4432762","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685415","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685415","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4708486","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4708486","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

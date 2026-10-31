@@ -1,0 +1,65 @@
+{
+ "id": "401628570",
+ "league": "cfb",
+ "date": "2024-11-30T20:30Z",
+ "name": "FRES @ UCLA",
+ "seasonType": 2,
+ "away": {
+  "id": "278",
+  "abbr": "FRES",
+  "name": "Fresno State Bulldogs",
+  "score": 13
+ },
+ "home": {
+  "id": "26",
+  "abbr": "UCLA",
+  "name": "UCLA Bruins",
+  "score": 20
+ },
+ "final": {
+  "away": 13,
+  "home": 20
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:48.594Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 12,
+    "rows": [
+  {"a":"4432731","t":"Total Receptions (incl. overtime)","ti":"14","op":[3.5,null,null],"cur":[3.5,null,null]},
+  {"a":"4432731","t":"Total Receptions (incl. overtime)","ti":"14","op":[3.5,null,null],"cur":[3.5,null,null]},
+  {"a":"4710344","t":"Total Receptions (incl. overtime)","ti":"14","op":[3.5,null,null],"cur":[3.5,null,null]},
+  {"a":"4710344","t":"Total Receptions (incl. overtime)","ti":"14","op":[3.5,null,null],"cur":[3.5,null,null]},
+  {"a":"5127885","t":"Total Receptions (incl. overtime)","ti":"14","op":[2.5,null,null],"cur":[3.5,null,null]},
+  {"a":"5127885","t":"Total Receptions (incl. overtime)","ti":"14","op":[2.5,null,null],"cur":[3.5,null,null]},
+  {"a":"5161141","t":"Total Kicking Points (incl. overtime)","ti":"22","op":[7.5,null,null],"cur":[7.5,null,null]},
+  {"a":"5161141","t":"Total Kicking Points (incl. overtime)","ti":"22","op":[7.5,null,null],"cur":[7.5,null,null]},
+  {"a":"5161141","t":"Total Extra Points Made (incl. overtime)","ti":"23","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"5161141","t":"Total Extra Points Made (incl. overtime)","ti":"23","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"5161141","t":"Total Field Goals Made (incl. overtime)","ti":"24","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":"5161141","t":"Total Field Goals Made (incl. overtime)","ti":"24","op":[1.5,null,null],"cur":[1.5,null,null]}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 12,
+    "rows": [
+  {"a":"4432731","t":"Total Receptions (incl. overtime)","ti":"14","op":[3.5,null,null],"cur":[3.5,null,null]},
+  {"a":"4432731","t":"Total Receptions (incl. overtime)","ti":"14","op":[3.5,null,null],"cur":[3.5,null,null]},
+  {"a":"4710344","t":"Total Receptions (incl. overtime)","ti":"14","op":[3.5,null,null],"cur":[3.5,null,null]},
+  {"a":"4710344","t":"Total Receptions (incl. overtime)","ti":"14","op":[3.5,null,null],"cur":[3.5,null,null]},
+  {"a":"5127885","t":"Total Receptions (incl. overtime)","ti":"14","op":[2.5,null,null],"cur":[3.5,null,null]},
+  {"a":"5127885","t":"Total Receptions (incl. overtime)","ti":"14","op":[2.5,null,null],"cur":[3.5,null,null]},
+  {"a":"5161141","t":"Total Kicking Points (incl. overtime)","ti":"22","op":[7.5,null,null],"cur":[7.5,null,null]},
+  {"a":"5161141","t":"Total Kicking Points (incl. overtime)","ti":"22","op":[7.5,null,null],"cur":[7.5,null,null]},
+  {"a":"5161141","t":"Total Extra Points Made (incl. overtime)","ti":"23","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"5161141","t":"Total Extra Points Made (incl. overtime)","ti":"23","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"5161141","t":"Total Field Goals Made (incl. overtime)","ti":"24","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":"5161141","t":"Total Field Goals Made (incl. overtime)","ti":"24","op":[1.5,null,null],"cur":[1.5,null,null]}
+ ]
+   }
+  }
+ }
+}

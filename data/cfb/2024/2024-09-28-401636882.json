@@ -1,0 +1,47 @@
+{
+ "id": "401636882",
+ "league": "cfb",
+ "date": "2024-09-28T19:30Z",
+ "name": "TCU @ KU",
+ "seasonType": 2,
+ "away": {
+  "id": "2628",
+  "abbr": "TCU",
+  "name": "TCU Horned Frogs",
+  "score": 38
+ },
+ "home": {
+  "id": "2305",
+  "abbr": "KU",
+  "name": "Kansas Jayhawks",
+  "score": 27
+ },
+ "final": {
+  "away": 38,
+  "home": 27
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:24.181Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 12,
+    "rows": [
+  {"a":"4430914","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4430914","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4433830","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4433830","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4682652","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4682652","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4433830","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4433830","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4682652","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4682652","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4686382","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4686382","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

@@ -1,0 +1,47 @@
+{
+ "id": "401628350",
+ "league": "cfb",
+ "date": "2024-09-14T16:00Z",
+ "name": "ALA @ WIS",
+ "seasonType": 2,
+ "away": {
+  "id": "333",
+  "abbr": "ALA",
+  "name": "Alabama Crimson Tide",
+  "score": 42
+ },
+ "home": {
+  "id": "275",
+  "abbr": "WIS",
+  "name": "Wisconsin Badgers",
+  "score": 10
+ },
+ "final": {
+  "away": 42,
+  "home": 10
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:17.699Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 12,
+    "rows": [
+  {"a":"4432734","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4432734","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685441","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685441","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4693370","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4693370","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4432734","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4432734","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685441","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685441","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4870760","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4870760","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

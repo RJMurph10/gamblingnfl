@@ -1,0 +1,51 @@
+{
+ "id": "401628455",
+ "league": "cfb",
+ "date": "2024-08-31T19:30Z",
+ "name": "AKR @ OSU",
+ "seasonType": 2,
+ "away": {
+  "id": "2006",
+  "abbr": "AKR",
+  "name": "Akron Zips",
+  "score": 6
+ },
+ "home": {
+  "id": "194",
+  "abbr": "OSU",
+  "name": "Ohio State Buckeyes",
+  "score": 52
+ },
+ "final": {
+  "away": 6,
+  "home": 52
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:11.621Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 8,
+    "rows": [
+  {"a":"4429955","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4429955","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4432710","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4432710","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4429955","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4429955","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4432710","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4432710","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 2,
+    "rows": [
+  {"a":"4432710","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4432710","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   }
+  }
+ }
+}

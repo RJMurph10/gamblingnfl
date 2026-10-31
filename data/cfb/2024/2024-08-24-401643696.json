@@ -1,0 +1,45 @@
+{
+ "id": "401643696",
+ "league": "cfb",
+ "date": "2024-08-25T00:00Z",
+ "name": "SMU @ NEV",
+ "seasonType": 2,
+ "away": {
+  "id": "2567",
+  "abbr": "SMU",
+  "name": "SMU Mustangs",
+  "score": 29
+ },
+ "home": {
+  "id": "2440",
+  "abbr": "NEV",
+  "name": "Nevada Wolf Pack",
+  "score": 24
+ },
+ "final": {
+  "away": 29,
+  "home": 24
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:09.853Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 10,
+    "rows": [
+  {"a":"4429043","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4429043","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4570190","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4570190","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4429043","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4429043","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4432718","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4432718","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4570190","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4570190","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

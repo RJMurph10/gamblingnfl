@@ -1,0 +1,53 @@
+{
+ "id": "401636899",
+ "league": "cfb",
+ "date": "2024-10-19T16:00Z",
+ "name": "ASU @ CIN",
+ "seasonType": 2,
+ "away": {
+  "id": "9",
+  "abbr": "ASU",
+  "name": "Arizona State Sun Devils",
+  "score": 14
+ },
+ "home": {
+  "id": "2132",
+  "abbr": "CIN",
+  "name": "Cincinnati Bearcats",
+  "score": 24
+ },
+ "final": {
+  "away": 14,
+  "home": 24
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:30.982Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 10,
+    "rows": [
+  {"a":"4428594","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4428594","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4429066","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4429066","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4430817","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4430817","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431431","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431431","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4696981","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4696981","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 2,
+    "rows": [
+  {"a":"4696981","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4696981","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   }
+  }
+ }
+}

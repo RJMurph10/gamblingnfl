@@ -1,0 +1,39 @@
+{
+ "id": "401628336",
+ "league": "cfb",
+ "date": "2024-09-07T16:00Z",
+ "name": "ARK @ OKST",
+ "seasonType": 2,
+ "away": {
+  "id": "8",
+  "abbr": "ARK",
+  "name": "Arkansas Razorbacks",
+  "score": 31
+ },
+ "home": {
+  "id": "197",
+  "abbr": "OKST",
+  "name": "Oklahoma State Cowboys",
+  "score": 39
+ },
+ "final": {
+  "away": 31,
+  "home": 39
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:15.062Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 4,
+    "rows": [
+  {"a":"4431342","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431342","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431342","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4431342","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

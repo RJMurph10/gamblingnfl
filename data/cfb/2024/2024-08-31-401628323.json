@@ -1,0 +1,53 @@
+{
+ "id": "401628323",
+ "league": "cfb",
+ "date": "2024-08-31T16:00Z",
+ "name": "CLEM VS UGA",
+ "seasonType": 2,
+ "away": {
+  "id": "228",
+  "abbr": "CLEM",
+  "name": "Clemson Tigers",
+  "score": 3
+ },
+ "home": {
+  "id": "61",
+  "abbr": "UGA",
+  "name": "Georgia Bulldogs",
+  "score": 34
+ },
+ "final": {
+  "away": 3,
+  "home": 34
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:11.727Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 18,
+    "rows": [
+  {"a":"4431196","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431196","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431562","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431562","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4596439","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4596439","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4713489","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4713489","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4379471","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4379471","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4431196","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4431196","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4431562","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4431562","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685413","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4685413","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4713489","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4713489","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   }
+  }
+ }
+}

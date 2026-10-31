@@ -1,0 +1,51 @@
+{
+ "id": "401628486",
+ "league": "cfb",
+ "date": "2024-09-21T16:00Z",
+ "name": "CLT @ IU",
+ "seasonType": 2,
+ "away": {
+  "id": "2429",
+  "abbr": "CLT",
+  "name": "Charlotte 49ers",
+  "score": 14
+ },
+ "home": {
+  "id": "84",
+  "abbr": "IU",
+  "name": "Indiana Hoosiers",
+  "score": 52
+ },
+ "final": {
+  "away": 14,
+  "home": 52
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:20.733Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 8,
+    "rows": [
+  {"a":"4367069","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4367069","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4430431","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4430431","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4367069","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4367069","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4430431","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4430431","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 2,
+    "rows": [
+  {"a":"4367069","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4367069","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   }
+  }
+ }
+}

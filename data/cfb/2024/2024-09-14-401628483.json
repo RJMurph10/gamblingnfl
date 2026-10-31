@@ -1,0 +1,37 @@
+{
+ "id": "401628483",
+ "league": "cfb",
+ "date": "2024-09-14T19:30Z",
+ "name": "ORE @ ORST",
+ "seasonType": 2,
+ "away": {
+  "id": "2483",
+  "abbr": "ORE",
+  "name": "Oregon Ducks",
+  "score": 49
+ },
+ "home": {
+  "id": "204",
+  "abbr": "ORST",
+  "name": "Oregon State Beavers",
+  "score": 14
+ },
+ "final": {
+  "away": 49,
+  "home": 14
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:45:17.818Z",
+  "books": {
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 2,
+    "rows": [
+  {"a":"4685397","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685397","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   }
+  }
+ }
+}
