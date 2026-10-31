@@ -1,0 +1,81 @@
+{
+ "id": "401584845",
+ "league": "nba",
+ "date": "2023-11-21T00:00Z",
+ "name": "BOS @ CHA",
+ "seasonType": 2,
+ "away": {
+  "id": "2",
+  "abbr": "BOS",
+  "name": "Boston Celtics",
+  "score": 118
+ },
+ "home": {
+  "id": "30",
+  "abbr": "CHA",
+  "name": "Charlotte Hornets",
+  "score": 121
+ },
+ "final": {
+  "away": 118,
+  "home": 121
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:36:07.755Z",
+  "books": {
+   "40": {
+    "name": "DraftKings",
+    "count": 14,
+    "rows": [
+  {"a":"4432816","t":"Total Points","ti":"1","op":[26.5,-105,null],"cur":[25.5,-120,null]},
+  {"a":"4432816","t":"Total Points","ti":"1","op":[26.5,null,-125],"cur":[25.5,null,-105]},
+  {"a":"4432816","t":"Total Assists","ti":"2","op":[7.5,-130,null],"cur":[7.5,-130,null]},
+  {"a":"4432816","t":"Total Assists","ti":"2","op":[7.5,null,100],"cur":[7.5,null,100]},
+  {"a":"4432816","t":"Total Rebounds","ti":"3","op":[5.5,-141,null],"cur":[6.5,115,null]},
+  {"a":"4432816","t":"Total Rebounds","ti":"3","op":[5.5,null,110],"cur":[6.5,null,-149]},
+  {"a":"4432816","t":"Total 3-Point Field Goals","ti":"4","op":[3.5,-130,null],"cur":[3.5,-130,null]},
+  {"a":"4432816","t":"Total 3-Point Field Goals","ti":"4","op":[3.5,null,100],"cur":[3.5,null,100]},
+  {"a":"4432816","t":"Total Steals","ti":"5","op":[1.5,175,null],"cur":[1.5,175,null]},
+  {"a":"4432816","t":"Total Steals","ti":"5","op":[1.5,null,-227],"cur":[1.5,null,-227]},
+  {"a":"4432816","t":"Total Blocks","ti":"6","op":[0.5,340,null],"cur":[0.5,340,null]},
+  {"a":"4432816","t":"Total Blocks","ti":"6","op":[0.5,null,-455],"cur":[0.5,null,-455]},
+  {"a":"4432816","t":"Total Turnovers","ti":"7","op":[3.5,-135,null],"cur":[3.5,-130,null]},
+  {"a":"4432816","t":"Total Turnovers","ti":"7","op":[3.5,null,105],"cur":[3.5,null,100]}
+ ]
+   },
+   "47": {
+    "name": "MGM",
+    "count": 14,
+    "rows": [
+  {"a":"4432816","t":"Total Points","ti":"1","op":[26.5,-105,null],"cur":[25.5,-125,null]},
+  {"a":"4432816","t":"Total Points","ti":"1","op":[26.5,null,-125],"cur":[25.5,null,-105]},
+  {"a":"4432816","t":"Total Assists","ti":"2","op":[7.5,-133,null],"cur":[7.5,-128,null]},
+  {"a":"4432816","t":"Total Assists","ti":"2","op":[7.5,null,100],"cur":[7.5,null,-105]},
+  {"a":"4432816","t":"Total Rebounds","ti":"3","op":[5.5,-154,null],"cur":[6.5,115,null]},
+  {"a":"4432816","t":"Total Rebounds","ti":"3","op":[5.5,null,115],"cur":[6.5,null,-154]},
+  {"a":"4432816","t":"Total 3-Point Field Goals","ti":"4","op":[3.5,-133,null],"cur":[3.5,-133,null]},
+  {"a":"4432816","t":"Total 3-Point Field Goals","ti":"4","op":[3.5,null,100],"cur":[3.5,null,100]},
+  {"a":"4432816","t":"Total Steals","ti":"5","op":[1.5,170,null],"cur":[1.5,175,null]},
+  {"a":"4432816","t":"Total Steals","ti":"5","op":[1.5,null,-227],"cur":[1.5,null,-238]},
+  {"a":"4432816","t":"Total Blocks","ti":"6","op":[0.5,320,null],"cur":[0.5,320,null]},
+  {"a":"4432816","t":"Total Blocks","ti":"6","op":[0.5,null,-500],"cur":[0.5,null,-500]},
+  {"a":"4432816","t":"Total Turnovers","ti":"7","op":[3.5,-133,null],"cur":[3.5,-128,null]},
+  {"a":"4432816","t":"Total Turnovers","ti":"7","op":[3.5,null,105],"cur":[3.5,null,100]}
+ ]
+   },
+   "48": {
+    "name": "PointsBet",
+    "count": 6,
+    "rows": [
+  {"a":"4432816","t":"Total Points","ti":"1","op":[26.5,-105,null],"cur":[25.5,-115,null]},
+  {"a":"4432816","t":"Total Points","ti":"1","op":[26.5,null,-125],"cur":[25.5,null,-115]},
+  {"a":"4432816","t":"Total Assists","ti":"2","op":[7.5,-125,null],"cur":[7.5,-125,null]},
+  {"a":"4432816","t":"Total Assists","ti":"2","op":[7.5,null,-105],"cur":[7.5,null,-105]},
+  {"a":"4432816","t":"Total Rebounds","ti":"3","op":[5.5,-145,null],"cur":[6.5,110,null]},
+  {"a":"4432816","t":"Total Rebounds","ti":"3","op":[5.5,null,110],"cur":[6.5,null,-145]}
+ ]
+   }
+  }
+ }
+}

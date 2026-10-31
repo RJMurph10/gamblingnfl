@@ -1,0 +1,101 @@
+{
+ "id": "401584852",
+ "league": "nba",
+ "date": "2023-11-21T03:00Z",
+ "name": "HOU @ GS",
+ "seasonType": 2,
+ "away": {
+  "id": "10",
+  "abbr": "HOU",
+  "name": "Houston Rockets",
+  "score": 116
+ },
+ "home": {
+  "id": "9",
+  "abbr": "GS",
+  "name": "Golden State Warriors",
+  "score": 121
+ },
+ "final": {
+  "away": 116,
+  "home": 121
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:36:08.212Z",
+  "books": {
+   "40": {
+    "name": "DraftKings",
+    "count": 14,
+    "rows": [
+  {"a":"3975","t":"Total Points","ti":"1","op":[28.5,-120,null],"cur":[28.5,-120,null]},
+  {"a":"3975","t":"Total Points","ti":"1","op":[28.5,null,-105],"cur":[28.5,null,-105]},
+  {"a":"3975","t":"Total Assists","ti":"2","op":[4.5,120,null],"cur":[4.5,120,null]},
+  {"a":"3975","t":"Total Assists","ti":"2","op":[4.5,null,-154],"cur":[4.5,null,-154]},
+  {"a":"3975","t":"Total Rebounds","ti":"3","op":[4.5,-141,null],"cur":[4.5,-141,null]},
+  {"a":"3975","t":"Total Rebounds","ti":"3","op":[4.5,null,110],"cur":[4.5,null,110]},
+  {"a":"3975","t":"Total 3-Point Field Goals","ti":"4","op":[5.5,110,null],"cur":[5.5,115,null]},
+  {"a":"3975","t":"Total 3-Point Field Goals","ti":"4","op":[5.5,null,-141],"cur":[5.5,null,-149]},
+  {"a":"3975","t":"Total Steals","ti":"5","op":[0.5,-175,null],"cur":[0.5,-196,null]},
+  {"a":"3975","t":"Total Steals","ti":"5","op":[0.5,null,135],"cur":[0.5,null,150]},
+  {"a":"3975","t":"Total Blocks","ti":"6","op":[0.5,190,null],"cur":[0.5,190,null]},
+  {"a":"3975","t":"Total Blocks","ti":"6","op":[0.5,null,-244],"cur":[0.5,null,-244]},
+  {"a":"3975","t":"Total Turnovers","ti":"7","op":[3.5,114,null],"cur":[3.5,105,null]},
+  {"a":"3975","t":"Total Turnovers","ti":"7","op":[3.5,null,-145],"cur":[3.5,null,-135]}
+ ]
+   },
+   "45": {
+    "name": "Caesars Sportsbook (New Jersey)",
+    "count": 14,
+    "rows": [
+  {"a":"3975","t":"Total Points","ti":"1","op":[28.5,-118,null],"cur":[28.5,-118,null]},
+  {"a":"3975","t":"Total Points","ti":"1","op":[28.5,null,-118],"cur":[28.5,null,-118]},
+  {"a":"3975","t":"Total Assists","ti":"2","op":[4.5,116,null],"cur":[4.5,116,null]},
+  {"a":"3975","t":"Total Assists","ti":"2","op":[4.5,null,-161],"cur":[4.5,null,-161]},
+  {"a":"3975","t":"Total Rebounds","ti":"3","op":[4.5,-152,null],"cur":[4.5,-152,null]},
+  {"a":"3975","t":"Total Rebounds","ti":"3","op":[4.5,null,110],"cur":[4.5,null,110]},
+  {"a":"3975","t":"Total 3-Point Field Goals","ti":"4","op":[5.5,106,null],"cur":[5.5,106,null]},
+  {"a":"3975","t":"Total 3-Point Field Goals","ti":"4","op":[5.5,null,-145],"cur":[5.5,null,-145]},
+  {"a":"3975","t":"Total Steals","ti":"5","op":[0.5,-179,null],"cur":[0.5,-200,null]},
+  {"a":"3975","t":"Total Steals","ti":"5","op":[0.5,null,129],"cur":[0.5,null,143]},
+  {"a":"3975","t":"Total Blocks","ti":"6","op":[0.5,172,null],"cur":[0.5,172,null]},
+  {"a":"3975","t":"Total Blocks","ti":"6","op":[0.5,null,-244],"cur":[0.5,null,-244]},
+  {"a":"3975","t":"Total Turnovers","ti":"7","op":[3.5,110,null],"cur":[3.5,102,null]},
+  {"a":"3975","t":"Total Turnovers","ti":"7","op":[3.5,null,-152],"cur":[3.5,null,-139]}
+ ]
+   },
+   "47": {
+    "name": "MGM",
+    "count": 14,
+    "rows": [
+  {"a":"3975","t":"Total Points","ti":"1","op":[28.5,-120,null],"cur":[28.5,-118,null]},
+  {"a":"3975","t":"Total Points","ti":"1","op":[28.5,null,-110],"cur":[28.5,null,-115]},
+  {"a":"3975","t":"Total Assists","ti":"2","op":[4.5,120,null],"cur":[4.5,115,null]},
+  {"a":"3975","t":"Total Assists","ti":"2","op":[4.5,null,-161],"cur":[4.5,null,-154]},
+  {"a":"3975","t":"Total Rebounds","ti":"3","op":[4.5,-143,null],"cur":[4.5,-143,null]},
+  {"a":"3975","t":"Total Rebounds","ti":"3","op":[4.5,null,110],"cur":[4.5,null,110]},
+  {"a":"3975","t":"Total 3-Point Field Goals","ti":"4","op":[5.5,110,null],"cur":[5.5,115,null]},
+  {"a":"3975","t":"Total 3-Point Field Goals","ti":"4","op":[5.5,null,-143],"cur":[5.5,null,-154]},
+  {"a":"3975","t":"Total Steals","ti":"5","op":[0.5,-175,null],"cur":[0.5,-200,null]},
+  {"a":"3975","t":"Total Steals","ti":"5","op":[0.5,null,135],"cur":[0.5,null,145]},
+  {"a":"3975","t":"Total Blocks","ti":"6","op":[0.5,185,null],"cur":[0.5,185,null]},
+  {"a":"3975","t":"Total Blocks","ti":"6","op":[0.5,null,-250],"cur":[0.5,null,-250]},
+  {"a":"3975","t":"Total Turnovers","ti":"7","op":[3.5,110,null],"cur":[3.5,105,null]},
+  {"a":"3975","t":"Total Turnovers","ti":"7","op":[3.5,null,-149],"cur":[3.5,null,-139]}
+ ]
+   },
+   "48": {
+    "name": "PointsBet",
+    "count": 6,
+    "rows": [
+  {"a":"3975","t":"Total Points","ti":"1","op":[28.5,-115,null],"cur":[29.5,100,null]},
+  {"a":"3975","t":"Total Points","ti":"1","op":[28.5,null,-115],"cur":[29.5,null,-130]},
+  {"a":"3975","t":"Total Assists","ti":"2","op":[4.5,115,null],"cur":[4.5,120,null]},
+  {"a":"3975","t":"Total Assists","ti":"2","op":[4.5,null,-149],"cur":[4.5,null,-159]},
+  {"a":"3975","t":"Total Rebounds","ti":"3","op":[4.5,-145,null],"cur":[4.5,-141,null]},
+  {"a":"3975","t":"Total Rebounds","ti":"3","op":[4.5,null,110],"cur":[4.5,null,105]}
+ ]
+   }
+  }
+ }
+}
