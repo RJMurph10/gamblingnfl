@@ -409,3 +409,35 @@ export function mlbTeamBetting(games: MlbGame[], teamId: string): MlbTeamBetting
   }
   return out;
 }
+
+/* ---------- best bets: Wrigley Field wind blowing out ---------- */
+
+/**
+ * The one MLB angle that held up in testing: Cubs home games at Wrigley with the wind blowing out
+ * at 10+ mph → over (59.2% over in 125 games, profitable in both 2012–18 and 2019–25 at closing
+ * prices). Home plate faces center field to the northeast, so wind blowing out comes FROM the
+ * south through the west (toward left, center or right field).
+ */
+export const WRIGLEY_OUT_FROM = ["S", "SSW", "SW", "WSW", "W"] as const;
+export const WRIGLEY_MIN_MPH = 10;
+
+export interface WrigleyWind {
+  /** Forecast wind speed at first pitch, mph. */
+  mph: number | null;
+  /** Compass direction the wind blows FROM ("SW"). */
+  from: string | null;
+  /** Blowing out to left, center or right field. */
+  out: boolean;
+}
+
+export const isWrigleyGame = (g: Pick<MlbGame, "home" | "venue">) =>
+  g.home.team.abbr.toUpperCase() === "CHC" && (!g.venue || /wrigley/i.test(g.venue));
+
+export function wrigleyWind(mph: number | null, from: string | null): WrigleyWind {
+  const dir = (from ?? "").toUpperCase();
+  return { mph, from: dir || null, out: (WRIGLEY_OUT_FROM as readonly string[]).includes(dir) };
+}
+
+/** A ★ best bet: wind out at 10+ mph. */
+export const isWrigleyBestBet = (w: WrigleyWind | null | undefined) =>
+  Boolean(w?.out && w.mph != null && w.mph >= WRIGLEY_MIN_MPH);

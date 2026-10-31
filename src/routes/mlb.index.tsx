@@ -3,9 +3,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageTitle, Panel, PanelHeader, StatCard } from "@/components/shared/booth";
 import { MlbLogo } from "@/components/mlb/MlbBits";
 import { MlbGamesTable } from "@/components/mlb/MlbGamesTable";
-import { buildMlbStandings, etDayKey, hasScore } from "@/lib/mlb/mlb";
+import { buildMlbStandings, etDayKey, hasScore, isWrigleyBestBet, localTip } from "@/lib/mlb/mlb";
 import { gradeMlbSeason, winPct, type MlbRecord } from "@/lib/mlb/mlb-model";
-import { useMlbSchedule } from "@/lib/mlb/use-mlb";
+import { useMlbSchedule, useWrigleyWind } from "@/lib/mlb/use-mlb";
 
 export const Route = createFileRoute("/mlb/")({
   head: () => ({
@@ -56,6 +56,12 @@ function MlbDashboard() {
     [games],
   );
   const standings = useMemo(() => buildMlbStandings(games), [games]);
+  const wrigley = useWrigleyWind(games);
+  const bestBets = useMemo(
+    () =>
+      new Set(wrigley.games.filter((g) => isWrigleyBestBet(wrigley.wind[g.id])).map((g) => g.id)),
+    [wrigley.games, wrigley.wind],
+  );
   const teams = useMemo(
     () => [...standings.map((s) => s.team)].sort((a, b) => a.name.localeCompare(b.name)),
     [standings],
@@ -130,7 +136,9 @@ function MlbDashboard() {
               note(
                 hasPrev &&
                   `${all - allPrev > 0 ? "▲" : all - allPrev < 0 ? "▼" : "—"} ${Math.abs(all - allPrev).toFixed(2)}u wk/wk`,
-                "no ★ best bets for baseball",
+                bestBets.size
+                  ? `${bestBets.size} ★ best bet${bestBets.size > 1 ? "s" : ""} now`
+                  : "★ best bets: Wrigley wind-out overs only",
               )
             }
             tone={all > 0 ? "win" : all < 0 ? "loss" : "mute"}
@@ -150,12 +158,15 @@ function MlbDashboard() {
 
       <div className="grid gap-6 lg:grid-cols-12">
         <section className="min-w-0 space-y-6 lg:col-span-8">
-          {live.length ? <MlbGamesTable title="Live now" games={live} live /> : null}
+          {live.length ? (
+            <MlbGamesTable title="Live now" games={live} live starred={bestBets} />
+          ) : null}
           {upcoming.length ? (
             <MlbGamesTable
               title="Upcoming games"
               aside={`${new Date(upcoming[0].date).toLocaleDateString([], { weekday: "short", month: "short", day: "numeric" })} · ${upcoming.length} games`}
               games={upcoming}
+              starred={bestBets}
             />
           ) : (
             <Panel>
@@ -229,13 +240,56 @@ function MlbDashboard() {
             )}
           </Panel>
           <Panel>
-            <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">Watch list</h2>
+            <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">
+              <span className="text-acc">★</span> Best bets
+            </h2>
             <p className="mt-2 text-sm text-mute">
               <span className="font-semibold text-foreground">
                 Wrigley Field, wind blowing out 10+ mph → over.
               </span>{" "}
-              59.2% over in 125 games, profitable in both 2012–18 and 2019–25. About 9 games a
-              season; check the wind before Cubs home games.
+              59.2% over in 125 games, profitable in both 2012–18 and 2019–25. The only MLB angle
+              that held up out of 49 tested.
+            </p>
+            <div className="mt-3 divide-y divide-line/5 rounded-lg border border-line/10">
+              {wrigley.games.length ? (
+                wrigley.games.map((g) => {
+                  const w = wrigley.wind[g.id];
+                  const bet = isWrigleyBestBet(w);
+                  return (
+                    <Link
+                      key={g.id}
+                      to="/mlb/games/$gameId"
+                      params={{ gameId: g.id }}
+                      className="flex items-center gap-2 px-3 py-2 font-mono text-[11px] hover:bg-line/5"
+                    >
+                      <span className={`w-3 ${bet ? "text-acc" : "text-transparent"}`}>★</span>
+                      <span className="min-w-0 flex-1 truncate" suppressHydrationWarning>
+                        {g.away.team.abbr} @ CHC · {localTip(g.date)}
+                      </span>
+                      <span className={bet ? "font-semibold text-acc" : "text-mute"}>
+                        {w
+                          ? `${w.mph != null ? Math.round(w.mph) : "?"} mph ${w.out ? "out" : `from ${w.from ?? "?"}`}`
+                          : wrigley.isLoading
+                            ? "…"
+                            : "no forecast yet"}
+                      </span>
+                      {bet ? (
+                        <span className="font-semibold text-foreground">
+                          o{g.odds?.total ?? "—"}
+                        </span>
+                      ) : null}
+                    </Link>
+                  );
+                })
+              ) : (
+                <p className="px-3 py-3 font-mono text-[11px] text-mute">
+                  No Cubs home games in the next 7 days. Forecasts appear about a week out.
+                </p>
+              )}
+            </div>
+            <p className="mt-2 font-mono text-[10px] text-faint">
+              Wind is the National Weather Service forecast for first pitch; check it again before
+              betting. Everything else the model sees, the market already prices in.
             </p>
             <Link
               to="/mlb/model"

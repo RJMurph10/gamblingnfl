@@ -1,7 +1,14 @@
 import { describe, expect, it } from "vitest";
 import { mlbMarketRows, mlbRatings, projectMlbGame } from "@/lib/mlb/mlb-model";
 import { parseEvent, parseOdds } from "@/lib/mlb/mlb.server";
-import { buildMlbStandings, mlbTeamBetting, runLinePrices, type MlbGame } from "@/lib/mlb/mlb";
+import {
+  buildMlbStandings,
+  isWrigleyBestBet,
+  mlbTeamBetting,
+  runLinePrices,
+  wrigleyWind,
+  type MlbGame,
+} from "@/lib/mlb/mlb";
 
 const team = (id: string, abbr: string) => ({
   id,
@@ -288,5 +295,16 @@ describe("run-line prices", () => {
     expect(
       runLinePrices({ spread: -1.5, spreadOddsHome: null, spreadOddsAway: -160, ...ml }),
     ).toBeNull();
+  });
+});
+
+describe("Wrigley wind best bet", () => {
+  it("counts wind from the south through the west at 10+ mph as blowing out", () => {
+    expect(isWrigleyBestBet(wrigleyWind(14, "SW"))).toBe(true);
+    expect(isWrigleyBestBet(wrigleyWind(10, "W"))).toBe(true);
+    expect(isWrigleyBestBet(wrigleyWind(9, "SW"))).toBe(false);
+    expect(isWrigleyBestBet(wrigleyWind(20, "NE"))).toBe(false); // blowing in
+    expect(isWrigleyBestBet(wrigleyWind(20, "E"))).toBe(false);
+    expect(isWrigleyBestBet(null)).toBe(false);
   });
 });

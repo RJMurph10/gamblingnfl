@@ -1,0 +1,32 @@
+opening lines matched: {2012: 0.0, 2013: 0.0, 2014: 0.0, 2015: 0.0, 2016: 0.0, 2017: 0.0, 2018: 0.0, 2019: 0.0, 2020: 0.0, 2021: 0.93, 2022: 0.96, 2023: 0.98, 2024: 0.98, 2025: 0.7}
+                                               angle kind  n_disc   u_disc  roi_disc  n_conf   u_conf  roi_conf   hit%    u_all  p_one  passes
+                      Tired home pen (45+ BF) → over  std    4441 -267.727    -6.029    5506 -367.300    -6.671 49.120 -635.027  1.000   False
+                      Tired road pen (45+ BF) → over  std    3738 -139.364    -3.728    5009 -309.123    -6.171 49.777 -448.487  1.000   False
+                        Both pens tired (40+) → over  std    2824 -143.636    -5.086    4280 -233.302    -5.451 49.690 -376.939  1.000   False
+                 Fade tired home pen (45+) → road ML  std    4684 -171.043    -3.652    5683 -297.499    -5.235 46.986 -468.542  1.000   False
+                 Fade tired road pen (45+) → home ML  std    3912 -160.985    -4.115    5188 -137.530    -2.651 54.000 -298.516  1.000   False
+Pen edge: home rested (≤15), road tired (40+) → home  std     113  -11.367   -10.059      64   -3.514    -5.491 54.237  -14.881  0.902   False
+Pen edge: road rested (≤15), home tired (40+) → road  std     135    5.975     4.426      71   -4.828    -6.801 50.971    1.147  0.469   False
+          Road team day-after-night → fade (home ML)  std      33    3.902    11.824      10   -0.983    -9.834 60.465    2.918  0.310   False
+          Home team day-after-night → fade (road ML)  std      47  -10.059   -21.402      32   -8.403   -26.259 35.443  -18.462  0.973   False
+                    Day-after-night (either) → under  std    3184  -37.818    -1.188    2643  -11.182    -0.423 52.085  -49.001  0.750   False
+         Road team off yesterday, home not → road ML  std     594  -28.856    -4.858     486  -11.962    -2.461 46.944  -40.818  0.879   False
+         Home team off yesterday, road not → home ML  std     558    5.049     0.905     560  -35.707    -6.376 54.114  -30.658  0.837   False
+                    Model total ≤ line −0.75 → under  std     839    2.909     0.347    1096   -6.123    -0.559 52.868   -3.214  0.531   False
+                    Model total ≤ line −1.25 → under  std     144    4.909     3.409     359    1.100     0.306 53.678    6.009  0.388    True
+              Model ≤ line −1 & wind in/dome → under  std      66    6.545     9.917     132  -10.272    -7.782 52.020   -3.727  0.610   False
+                                       Home dog +1.5   rl    1615  -44.668    -2.766    1354  -43.242    -3.194 56.079  -87.911  0.968   False
+                                       Road dog +1.5   rl    2366  -94.017    -3.974    2033  -47.846    -2.353 57.536 -141.862  0.994   False
+                         Big home fav (−200) at −1.5   rl     637  -21.511    -3.377     506  -23.790    -4.701 51.619  -45.301  0.924   False
+                         Big road fav (−200) at −1.5   rl     156  -32.194   -20.637     108   -2.932    -2.715 50.379  -35.126  0.994   False
+                        Model likes home −1.5 by 4%+   rl       6   -1.000   -16.667       5   -2.600   -52.000 27.273   -3.600  0.827   False
+                 Steam on home (+3% to close) → home move     891  -56.344    -6.324    1290  -89.618    -6.947 55.800 -145.962  1.000   False
+                 Steam on road (+3% to close) → road move     544  -72.736   -13.371     825  -23.223    -2.815 50.767  -95.958  0.997   False
+                     Fade steam on home (+3%) → road move     891  -14.121    -1.585    1290  -25.298    -1.961 44.200  -39.419  0.768   False
+                     Fade steam on road (+3%) → home move     544   46.489     8.546     825  -50.473    -6.118 49.233   -3.984  0.540   False
+                                Total up 0.5+ → over move    1348 -150.450   -11.161    1740  -57.388    -3.298 48.446 -207.838  1.000   False
+                               Total up 0.5+ → under move    1348   15.142     1.123    1740 -122.945    -7.066 51.554 -107.803  0.981   False
+                             Total down 0.5+ → under move    1075  -71.539    -6.655    1972  -64.547    -3.273 49.754 -136.086  0.995   False
+                              Total down 0.5+ → over move    1075  -41.055    -3.819    1972 -142.320    -7.217 50.246 -183.375  1.000   False
+
+angles tested: 28 | passing both halves: 1 | expected by luck alone ≈ 7.0

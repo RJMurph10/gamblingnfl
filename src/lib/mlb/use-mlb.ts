@@ -1,8 +1,13 @@
 /** MLB data hooks for the /mlb pages. */
 import { useEffect, useMemo, useSyncExternalStore } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { getMlbClosingLines, getMlbGameDetail, getMlbSchedule } from "./mlb.functions";
-import type { MlbGame, MlbOdds } from "./mlb";
+import {
+  getMlbClosingLines,
+  getMlbGameDetail,
+  getMlbSchedule,
+  getWrigleyWind,
+} from "./mlb.functions";
+import { isWrigleyGame, type MlbGame, type MlbOdds, type WrigleyWind } from "./mlb";
 
 /* ---------- loading every finished game's closing line ---------- */
 
@@ -112,4 +117,30 @@ export function useMlbGameDetail(gameId: string, live: boolean) {
     staleTime: 10_000,
     retry: 1,
   });
+}
+
+/** Upcoming Cubs home games within the forecast window (about a week), with first-pitch wind. */
+export function useWrigleyWind(games: MlbGame[]) {
+  const soon = useMemo(() => {
+    const now = Date.now();
+    return games
+      .filter(
+        (g) =>
+          (g.status === "scheduled" || g.status === "live") &&
+          isWrigleyGame(g) &&
+          Date.parse(g.date) - now < 7 * 24 * 3_600_000,
+      )
+      .sort((a, b) => a.date.localeCompare(b.date))
+      .slice(0, 20);
+  }, [games]);
+  const query = useQuery({
+    queryKey: ["mlb-wrigley-wind", soon.map((g) => `${g.id}@${g.date}`).join(",")],
+    queryFn: () =>
+      getWrigleyWind({ data: { games: soon.map((g) => ({ id: g.id, date: g.date })) } }),
+    enabled: soon.length > 0,
+    staleTime: 30 * 60_000,
+    refetchInterval: 60 * 60_000,
+  });
+  const wind: Record<string, WrigleyWind | null> = query.data ?? {};
+  return { games: soon, wind, isLoading: query.isLoading && soon.length > 0 };
 }
