@@ -1,0 +1,39 @@
+{
+ "id": "401814782",
+ "league": "mlb",
+ "date": "2026-04-03T01:45Z",
+ "name": "NYM @ SF",
+ "seasonType": 2,
+ "away": {
+  "id": "21",
+  "abbr": "NYM",
+  "name": "New York Mets",
+  "score": 2
+ },
+ "home": {
+  "id": "26",
+  "abbr": "SF",
+  "name": "San Francisco Giants",
+  "score": 7
+ },
+ "final": {
+  "away": 2,
+  "home": 7
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:44:19.356Z",
+  "books": {
+   "100": {
+    "name": "DraftKings",
+    "count": 4,
+    "rows": [
+  {"a":"42623","t":"Total Singles Hit","ti":"48","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"42623","t":"Total Singles Hit","ti":"48","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"42623","t":"Singles Milestones","ti":"241","op":[1,null,null],"cur":[1,null,null]},
+  {"a":"42623","t":"Strikeouts (Batter) Milestones","ti":"249","op":[2,null,null],"cur":[2,null,null]}
+ ]
+   }
+  }
+ }
+}
