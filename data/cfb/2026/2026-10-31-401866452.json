@@ -477,7 +477,7 @@
    ]
   },
   "close": {
-   "at": "2026-10-31T13:56:06.646Z",
+   "at": "2026-10-31T14:50:38.221Z",
    "scoreboard": [
     {
      "provider": {
@@ -588,7 +588,7 @@
       "home": {
        "close": {
         "line": "-14",
-        "odds": "-110",
+        "odds": "-112",
         "link": {
          "language": "en-US",
          "rel": [
@@ -622,7 +622,7 @@
       "away": {
        "close": {
         "line": "+14",
-        "odds": "-110",
+        "odds": "-108",
         "link": {
          "language": "en-US",
          "rel": [
@@ -779,7 +779,7 @@
       "favorite": false,
       "underdog": true,
       "moneyLine": 455,
-      "spreadOdds": -110,
+      "spreadOdds": -108,
       "open": {
        "favorite": false,
        "pointSpread": {
@@ -809,12 +809,12 @@
         "american": "+14"
        },
        "spread": {
-        "value": 1.9,
-        "displayValue": "10/11",
-        "alternateDisplayValue": "-110",
-        "decimal": 1.9,
-        "fraction": "10/11",
-        "american": "-110"
+        "value": 1.92,
+        "displayValue": "25/27",
+        "alternateDisplayValue": "-108",
+        "decimal": 1.92,
+        "fraction": "25/27",
+        "american": "-108"
        },
        "moneyLine": {
         "value": 5.55,
@@ -833,7 +833,7 @@
       "favorite": true,
       "underdog": false,
       "moneyLine": -625,
-      "spreadOdds": -110,
+      "spreadOdds": -112,
       "open": {
        "favorite": true,
        "pointSpread": {
@@ -863,12 +863,12 @@
         "american": "-14"
        },
        "spread": {
-        "value": 1.9,
-        "displayValue": "10/11",
-        "alternateDisplayValue": "-110",
-        "decimal": 1.9,
-        "fraction": "10/11",
-        "american": "-110"
+        "value": 1.89,
+        "displayValue": "25/28",
+        "alternateDisplayValue": "-112",
+        "decimal": 1.89,
+        "fraction": "25/28",
+        "american": "-112"
        },
        "moneyLine": {
         "value": 1.16,

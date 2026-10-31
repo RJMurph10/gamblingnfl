@@ -477,7 +477,7 @@
    ]
   },
   "close": {
-   "at": "2026-10-31T13:56:06.646Z",
+   "at": "2026-10-31T14:50:38.221Z",
    "scoreboard": [
     {
      "provider": {
@@ -779,7 +779,7 @@
       "favorite": true,
       "underdog": false,
       "moneyLine": -355,
-      "spreadOdds": -110,
+      "spreadOdds": -115,
       "open": {
        "favorite": true,
        "pointSpread": {
@@ -809,12 +809,12 @@
         "american": "-9.5"
        },
        "spread": {
-        "value": 1.9,
-        "displayValue": "10/11",
-        "alternateDisplayValue": "-110",
-        "decimal": 1.9,
-        "fraction": "10/11",
-        "american": "-110"
+        "value": 1.86,
+        "displayValue": "20/23",
+        "alternateDisplayValue": "-115",
+        "decimal": 1.86,
+        "fraction": "20/23",
+        "american": "-115"
        },
        "moneyLine": {
         "value": 1.28,
@@ -833,7 +833,7 @@
       "favorite": false,
       "underdog": true,
       "moneyLine": 280,
-      "spreadOdds": -110,
+      "spreadOdds": -105,
       "open": {
        "favorite": false,
        "pointSpread": {
@@ -863,12 +863,12 @@
         "american": "+9.5"
        },
        "spread": {
-        "value": 1.9,
-        "displayValue": "10/11",
-        "alternateDisplayValue": "-110",
-        "decimal": 1.9,
-        "fraction": "10/11",
-        "american": "-110"
+        "value": 1.95,
+        "displayValue": "20/21",
+        "alternateDisplayValue": "-105",
+        "decimal": 1.95,
+        "fraction": "20/21",
+        "american": "-105"
        },
        "moneyLine": {
         "value": 3.8,
