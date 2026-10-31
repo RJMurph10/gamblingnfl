@@ -1,0 +1,82 @@
+{
+ "id": "401437803",
+ "league": "nfl",
+ "date": "2022-10-24T00:20Z",
+ "name": "PIT @ MIA",
+ "seasonType": 2,
+ "away": {
+  "id": "23",
+  "abbr": "PIT",
+  "name": "Pittsburgh Steelers",
+  "score": 10
+ },
+ "home": {
+  "id": "15",
+  "abbr": "MIA",
+  "name": "Miami Dolphins",
+  "score": 16
+ },
+ "final": {
+  "away": 10,
+  "home": 16
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:39:41.297Z",
+  "books": {
+   "40": {
+    "name": "DraftKings",
+    "count": 2,
+    "rows": [
+  {"a":"4240703","t":"Total Passing Interceptions (incl. overtime)","ti":"15","op":[0.5,-175,null],"cur":[0.5,-180,null]},
+  {"a":"4240703","t":"Total Passing Interceptions (incl. overtime)","ti":"15","op":[0.5,null,130],"cur":[0.5,null,135]}
+ ]
+   },
+   "41": {
+    "name": "SugarHouse",
+    "count": 2,
+    "rows": [
+  {"a":"4240703","t":"Total Passing Interceptions (incl. overtime)","ti":"15","op":[0.5,-175,null],"cur":[0.5,-182,null]},
+  {"a":"4240703","t":"Total Passing Interceptions (incl. overtime)","ti":"15","op":[0.5,null,132],"cur":[0.5,null,140]}
+ ]
+   },
+   "45": {
+    "name": "Caesars Sportsbook (New Jersey)",
+    "count": 7,
+    "rows": [
+  {"a":"4240703","t":"Total Passing Interceptions (incl. overtime)","ti":"15","op":[0.5,-169,null],"cur":[0.5,-184,null]},
+  {"a":"4240703","t":"Total Passing Interceptions (incl. overtime)","ti":"15","op":[0.5,null,123],"cur":[0.5,null,133]},
+  {"a":"3039707","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"3039707","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4046692","t":"Last Touchdown Scorer","ti":"30","op":[null,850,null],"cur":[null,800,null]},
+  {"a":"4046692","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,2000,null],"cur":[null,1600,null]},
+  {"a":"4046692","t":"Player to score 3 or more touchdowns","ti":"33"}
+ ]
+   },
+   "47": {
+    "name": "MGM",
+    "count": 5,
+    "rows": [
+  {"a":"4240703","t":"Total Passing Interceptions (incl. overtime)","ti":"15","op":[0.5,-175,null],"cur":[0.5,-175,null]},
+  {"a":"4240703","t":"Total Passing Interceptions (incl. overtime)","ti":"15","op":[0.5,null,130],"cur":[0.5,null,130]},
+  {"a":"4046692","t":"Last Touchdown Scorer","ti":"30","op":[null,2200,null],"cur":[null,2200,null]},
+  {"a":"4046692","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,1800,null],"cur":[null,1800,null]},
+  {"a":"4046692","t":"Player to score 3 or more touchdowns","ti":"33","op":[null,10000,null],"cur":[null,10000,null]}
+ ]
+   },
+   "52": {
+    "name": "Caesars Sportsbook (Colorado)",
+    "count": 7,
+    "rows": [
+  {"a":"4240703","t":"Total Passing Interceptions (incl. overtime)","ti":"15","op":[0.5,-169,null],"cur":[0.5,-184,null]},
+  {"a":"4240703","t":"Total Passing Interceptions (incl. overtime)","ti":"15","op":[0.5,null,123],"cur":[0.5,null,133]},
+  {"a":"3039707","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"3039707","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4046692","t":"Last Touchdown Scorer","ti":"30","op":[null,850,null],"cur":[null,800,null]},
+  {"a":"4046692","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,2000,null],"cur":[null,1600,null]},
+  {"a":"4046692","t":"Player to score 3 or more touchdowns","ti":"33"}
+ ]
+   }
+  }
+ }
+}

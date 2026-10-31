@@ -1,0 +1,93 @@
+{
+ "id": "401437775",
+ "league": "nfl",
+ "date": "2022-10-10T00:20Z",
+ "name": "CIN @ BAL",
+ "seasonType": 2,
+ "away": {
+  "id": "4",
+  "abbr": "CIN",
+  "name": "Cincinnati Bengals",
+  "score": 17
+ },
+ "home": {
+  "id": "33",
+  "abbr": "BAL",
+  "name": "Baltimore Ravens",
+  "score": 19
+ },
+ "final": {
+  "away": 17,
+  "home": 19
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:39:37.020Z",
+  "books": {
+   "45": {
+    "name": "Caesars Sportsbook (New Jersey)",
+    "count": 22,
+    "rows": [
+  {"a":"2574511","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"2574591","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"2979843","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"3025433","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"3123986","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"3699902","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"3923392","t":"First Touchdown Scorer","ti":"29","op":[null,2800,null]},
+  {"a":"4046522","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4046530","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4240719","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"2574511","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"2574591","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"2979843","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"3025433","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"3123986","t":"Last Touchdown Scorer","ti":"30","op":[null,2600,null],"cur":[null,3000,null]},
+  {"a":"3699902","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"3923392","t":"Last Touchdown Scorer","ti":"30","op":[null,2900,null]},
+  {"a":"4046522","t":"Last Touchdown Scorer","ti":"30","op":[null,2800,null],"cur":[null,2900,null]},
+  {"a":"4046530","t":"Last Touchdown Scorer","ti":"30","cur":[null,2700,null]},
+  {"a":"4240719","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"2979843","t":"Player to score 2 or more touchdowns","ti":"32"},
+  {"a":"3025433","t":"Player to score 2 or more touchdowns","ti":"32"}
+ ]
+   },
+   "47": {
+    "name": "MGM",
+    "count": 2,
+    "rows": [
+  {"a":"3923392","t":"First Touchdown Scorer","ti":"29","op":[null,8000,null],"cur":[null,8000,null]},
+  {"a":"3923392","t":"Last Touchdown Scorer","ti":"30","op":[null,6600,null],"cur":[null,6600,null]}
+ ]
+   },
+   "52": {
+    "name": "Caesars Sportsbook (Colorado)",
+    "count": 22,
+    "rows": [
+  {"a":"2574511","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"2574591","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"2979843","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"3025433","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"3123986","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"3699902","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"3923392","t":"First Touchdown Scorer","ti":"29","op":[null,2800,null]},
+  {"a":"4046522","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4046530","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4240719","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"2574511","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"2574591","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"2979843","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"3025433","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"3123986","t":"Last Touchdown Scorer","ti":"30","op":[null,2600,null],"cur":[null,3000,null]},
+  {"a":"3699902","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"3923392","t":"Last Touchdown Scorer","ti":"30","op":[null,2900,null]},
+  {"a":"4046522","t":"Last Touchdown Scorer","ti":"30","op":[null,2800,null],"cur":[null,2900,null]},
+  {"a":"4046530","t":"Last Touchdown Scorer","ti":"30","cur":[null,2700,null]},
+  {"a":"4240719","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"2979843","t":"Player to score 2 or more touchdowns","ti":"32"},
+  {"a":"3025433","t":"Player to score 2 or more touchdowns","ti":"32"}
+ ]
+   }
+  }
+ }
+}

@@ -1,0 +1,61 @@
+{
+ "id": "401437756",
+ "league": "nfl",
+ "date": "2022-10-02T17:00Z",
+ "name": "JAX @ PHI",
+ "seasonType": 2,
+ "away": {
+  "id": "30",
+  "abbr": "JAX",
+  "name": "Jacksonville Jaguars",
+  "score": 21
+ },
+ "home": {
+  "id": "21",
+  "abbr": "PHI",
+  "name": "Philadelphia Eagles",
+  "score": 29
+ },
+ "final": {
+  "away": 21,
+  "home": 29
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:39:33.281Z",
+  "books": {
+   "45": {
+    "name": "Caesars Sportsbook (New Jersey)",
+    "count": 4,
+    "rows": [
+  {"a":"15072","t":"Player to score 3 or more touchdowns","ti":"33"},
+  {"a":"3059722","t":"Player to score 3 or more touchdowns","ti":"33","cur":[null,6000,null]},
+  {"a":"4035312","t":"Player to score 3 or more touchdowns","ti":"33","op":[null,2700,null]},
+  {"a":"4052042","t":"Player to score 3 or more touchdowns","ti":"33"}
+ ]
+   },
+   "47": {
+    "name": "MGM",
+    "count": 6,
+    "rows": [
+  {"a":"15072","t":"Player to score 3 or more touchdowns","ti":"33","op":[null,8000,null],"cur":[null,8000,null]},
+  {"a":"3051439","t":"Player to score 3 or more touchdowns","ti":"33","op":[null,0,null]},
+  {"a":"3059722","t":"Player to score 3 or more touchdowns","ti":"33","op":[null,6600,null],"cur":[null,6600,null]},
+  {"a":"4035312","t":"Player to score 3 or more touchdowns","ti":"33","op":[null,1400,null],"cur":[null,1400,null]},
+  {"a":"4050373","t":"Player to score 3 or more touchdowns","ti":"33","op":[null,15000,null],"cur":[null,15000,null]},
+  {"a":"4052042","t":"Player to score 3 or more touchdowns","ti":"33","op":[null,1200,null],"cur":[null,1200,null]}
+ ]
+   },
+   "52": {
+    "name": "Caesars Sportsbook (Colorado)",
+    "count": 4,
+    "rows": [
+  {"a":"15072","t":"Player to score 3 or more touchdowns","ti":"33"},
+  {"a":"3059722","t":"Player to score 3 or more touchdowns","ti":"33","cur":[null,6000,null]},
+  {"a":"4035312","t":"Player to score 3 or more touchdowns","ti":"33","op":[null,2700,null],"cur":[null,2800,null]},
+  {"a":"4052042","t":"Player to score 3 or more touchdowns","ti":"33","cur":[null,2800,null]}
+ ]
+   }
+  }
+ }
+}

@@ -1,0 +1,89 @@
+{
+ "id": "401437948",
+ "league": "nfl",
+ "date": "2023-01-08T18:00Z",
+ "name": "TB @ ATL",
+ "seasonType": 2,
+ "away": {
+  "id": "27",
+  "abbr": "TB",
+  "name": "Tampa Bay Buccaneers",
+  "score": 17
+ },
+ "home": {
+  "id": "1",
+  "abbr": "ATL",
+  "name": "Atlanta Falcons",
+  "score": 30
+ },
+ "final": {
+  "away": 17,
+  "home": 30
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:40:04.605Z",
+  "books": {
+   "45": {
+    "name": "Caesars Sportsbook (New Jersey)",
+    "count": 9,
+    "rows": [
+  {"a":"13982","t":"Player to score 2 or more touchdowns","ti":"32"},
+  {"a":"15826","t":"Player to score 2 or more touchdowns","ti":"32"},
+  {"a":"17453","t":"Player to score 2 or more touchdowns","ti":"32"},
+  {"a":"2577667","t":"Player to score 2 or more touchdowns","ti":"32"},
+  {"a":"3115364","t":"Player to score 2 or more touchdowns","ti":"32","cur":[null,950,null]},
+  {"a":"3115378","t":"Player to score 2 or more touchdowns","ti":"32","cur":[null,1900,null]},
+  {"a":"4239086","t":"Player to score 2 or more touchdowns","ti":"32"},
+  {"a":"4374187","t":"Player to score 2 or more touchdowns","ti":"32"},
+  {"a":"3115364","t":"Player to score 3 or more touchdowns","ti":"33","cur":[null,4000,null]}
+ ]
+   },
+   "47": {
+    "name": "MGM",
+    "count": 24,
+    "rows": [
+  {"a":"2330","t":"First Touchdown Scorer","ti":"29","op":[null,7000,null],"cur":[null,7000,null]},
+  {"a":"13982","t":"First Touchdown Scorer","ti":"29","op":[null,2800,null],"cur":[null,2800,null]},
+  {"a":"14054","t":"First Touchdown Scorer","ti":"29","op":[null,8000,null],"cur":[null,8000,null]},
+  {"a":"17315","t":"First Touchdown Scorer","ti":"29","op":[null,5000,null],"cur":[null,5000,null]},
+  {"a":"17453","t":"First Touchdown Scorer","ti":"29","op":[null,2800,null],"cur":[null,2800,null]},
+  {"a":"2577667","t":"First Touchdown Scorer","ti":"29","op":[null,2500,null],"cur":[null,2500,null]},
+  {"a":"2972460","t":"First Touchdown Scorer","ti":"29","op":[null,4000,null],"cur":[null,4000,null]},
+  {"a":"3115364","t":"First Touchdown Scorer","ti":"29","op":[null,900,null],"cur":[null,900,null]},
+  {"a":"3115378","t":"First Touchdown Scorer","ti":"29","op":[null,1800,null],"cur":[null,1800,null]},
+  {"a":"3917612","t":"First Touchdown Scorer","ti":"29","op":[null,3000,null],"cur":[null,1600,null]},
+  {"a":"4047836","t":"First Touchdown Scorer","ti":"29","op":[null,3300,null],"cur":[null,3300,null]},
+  {"a":"4239086","t":"First Touchdown Scorer","ti":"29","op":[null,1000,null],"cur":[null,1000,null]},
+  {"a":"2330","t":"Last Touchdown Scorer","ti":"30","op":[null,7000,null],"cur":[null,7000,null]},
+  {"a":"13982","t":"Last Touchdown Scorer","ti":"30","op":[null,2800,null],"cur":[null,2800,null]},
+  {"a":"14054","t":"Last Touchdown Scorer","ti":"30","op":[null,7000,null],"cur":[null,7000,null]},
+  {"a":"17315","t":"Last Touchdown Scorer","ti":"30","op":[null,4000,null],"cur":[null,4000,null]},
+  {"a":"17453","t":"Last Touchdown Scorer","ti":"30","op":[null,2500,null],"cur":[null,2500,null]},
+  {"a":"2577667","t":"Last Touchdown Scorer","ti":"30","op":[null,2200,null],"cur":[null,2200,null]},
+  {"a":"2972460","t":"Last Touchdown Scorer","ti":"30","op":[null,3300,null],"cur":[null,3300,null]},
+  {"a":"3115364","t":"Last Touchdown Scorer","ti":"30","op":[null,900,null],"cur":[null,900,null]},
+  {"a":"3115378","t":"Last Touchdown Scorer","ti":"30","op":[null,1600,null],"cur":[null,1600,null]},
+  {"a":"3917612","t":"Last Touchdown Scorer","ti":"30","op":[null,1800,null],"cur":[null,1800,null]},
+  {"a":"4047836","t":"Last Touchdown Scorer","ti":"30","op":[null,7000,null],"cur":[null,3000,null]},
+  {"a":"4239086","t":"Last Touchdown Scorer","ti":"30","op":[null,1000,null],"cur":[null,1000,null]}
+ ]
+   },
+   "52": {
+    "name": "Caesars Sportsbook (Colorado)",
+    "count": 9,
+    "rows": [
+  {"a":"13982","t":"Player to score 2 or more touchdowns","ti":"32"},
+  {"a":"15826","t":"Player to score 2 or more touchdowns","ti":"32"},
+  {"a":"17453","t":"Player to score 2 or more touchdowns","ti":"32"},
+  {"a":"2577667","t":"Player to score 2 or more touchdowns","ti":"32"},
+  {"a":"3115364","t":"Player to score 2 or more touchdowns","ti":"32","cur":[null,950,null]},
+  {"a":"3115378","t":"Player to score 2 or more touchdowns","ti":"32","cur":[null,1900,null]},
+  {"a":"4239086","t":"Player to score 2 or more touchdowns","ti":"32"},
+  {"a":"4374187","t":"Player to score 2 or more touchdowns","ti":"32"},
+  {"a":"3115364","t":"Player to score 3 or more touchdowns","ti":"33","cur":[null,4000,null]}
+ ]
+   }
+  }
+ }
+}

@@ -1,0 +1,58 @@
+{
+ "id": "401437750",
+ "league": "nfl",
+ "date": "2022-10-02T17:00Z",
+ "name": "BUF @ BAL",
+ "seasonType": 2,
+ "away": {
+  "id": "2",
+  "abbr": "BUF",
+  "name": "Buffalo Bills",
+  "score": 23
+ },
+ "home": {
+  "id": "33",
+  "abbr": "BAL",
+  "name": "Baltimore Ravens",
+  "score": 20
+ },
+ "final": {
+  "away": 23,
+  "home": 20
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:39:33.585Z",
+  "books": {
+   "45": {
+    "name": "Caesars Sportsbook (New Jersey)",
+    "count": 3,
+    "rows": [
+  {"a":"2979843","t":"Player to score 2 or more touchdowns","ti":"32"},
+  {"a":"3025433","t":"Player to score 2 or more touchdowns","ti":"32"},
+  {"a":"3128724","t":"Player to score 2 or more touchdowns","ti":"32"}
+ ]
+   },
+   "47": {
+    "name": "MGM",
+    "count": 5,
+    "rows": [
+  {"a":"2979843","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,20000,null]},
+  {"a":"3025433","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,20000,null],"cur":[null,20000,null]},
+  {"a":"3085107","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,25000,null],"cur":[null,25000,null]},
+  {"a":"3122818","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,15000,null],"cur":[null,15000,null]},
+  {"a":"3128724","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,1100,null],"cur":[null,1100,null]}
+ ]
+   },
+   "52": {
+    "name": "Caesars Sportsbook (Colorado)",
+    "count": 3,
+    "rows": [
+  {"a":"2979843","t":"Player to score 2 or more touchdowns","ti":"32"},
+  {"a":"3025433","t":"Player to score 2 or more touchdowns","ti":"32"},
+  {"a":"3128724","t":"Player to score 2 or more touchdowns","ti":"32"}
+ ]
+   }
+  }
+ }
+}

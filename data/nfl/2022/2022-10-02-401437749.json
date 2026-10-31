@@ -1,0 +1,74 @@
+{
+ "id": "401437749",
+ "league": "nfl",
+ "date": "2022-10-02T17:00Z",
+ "name": "CLE @ ATL",
+ "seasonType": 2,
+ "away": {
+  "id": "5",
+  "abbr": "CLE",
+  "name": "Cleveland Browns",
+  "score": 20
+ },
+ "home": {
+  "id": "1",
+  "abbr": "ATL",
+  "name": "Atlanta Falcons",
+  "score": 23
+ },
+ "final": {
+  "away": 20,
+  "home": 23
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:39:32.896Z",
+  "books": {
+   "45": {
+    "name": "Caesars Sportsbook (New Jersey)",
+    "count": 9,
+    "rows": [
+  {"a":"2576980","t":"Player to score 2 or more touchdowns","ti":"32","cur":[null,1100,null]},
+  {"a":"2577667","t":"Player to score 2 or more touchdowns","ti":"32"},
+  {"a":"3128720","t":"Player to score 2 or more touchdowns","ti":"32","cur":[null,310,null]},
+  {"a":"4035826","t":"Player to score 2 or more touchdowns","ti":"32","cur":[null,6500,null]},
+  {"a":"4038818","t":"Player to score 2 or more touchdowns","ti":"32"},
+  {"a":"4258195","t":"Player to score 2 or more touchdowns","ti":"32","cur":[null,2300,null]},
+  {"a":"4360174","t":"Player to score 2 or more touchdowns","ti":"32"},
+  {"a":"4371986","t":"Player to score 2 or more touchdowns","ti":"32","cur":[null,6500,null]},
+  {"a":"4570409","t":"Player to score 2 or more touchdowns","ti":"32","cur":[null,6000,null]}
+ ]
+   },
+   "47": {
+    "name": "MGM",
+    "count": 9,
+    "rows": [
+  {"a":"17315","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,30000,null],"cur":[null,30000,null]},
+  {"a":"2576980","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,1100,null],"cur":[null,1100,null]},
+  {"a":"2577667","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,25000,null],"cur":[null,25000,null]},
+  {"a":"3128720","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,140,null],"cur":[null,140,null]},
+  {"a":"4035826","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,15000,null],"cur":[null,15000,null]},
+  {"a":"4038818","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,6600,null],"cur":[null,6600,null]},
+  {"a":"4258195","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,1800,null],"cur":[null,1800,null]},
+  {"a":"4371986","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,20000,null],"cur":[null,20000,null]},
+  {"a":"4570409","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,20000,null],"cur":[null,20000,null]}
+ ]
+   },
+   "52": {
+    "name": "Caesars Sportsbook (Colorado)",
+    "count": 9,
+    "rows": [
+  {"a":"2576980","t":"Player to score 2 or more touchdowns","ti":"32","cur":[null,1100,null]},
+  {"a":"2577667","t":"Player to score 2 or more touchdowns","ti":"32"},
+  {"a":"3128720","t":"Player to score 2 or more touchdowns","ti":"32","cur":[null,310,null]},
+  {"a":"4035826","t":"Player to score 2 or more touchdowns","ti":"32","cur":[null,6500,null]},
+  {"a":"4038818","t":"Player to score 2 or more touchdowns","ti":"32"},
+  {"a":"4258195","t":"Player to score 2 or more touchdowns","ti":"32","cur":[null,2300,null]},
+  {"a":"4360174","t":"Player to score 2 or more touchdowns","ti":"32"},
+  {"a":"4371986","t":"Player to score 2 or more touchdowns","ti":"32","cur":[null,6500,null]},
+  {"a":"4570409","t":"Player to score 2 or more touchdowns","ti":"32","cur":[null,6000,null]}
+ ]
+   }
+  }
+ }
+}

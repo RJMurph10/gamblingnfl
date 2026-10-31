@@ -1,0 +1,84 @@
+{
+ "id": "401437761",
+ "league": "nfl",
+ "date": "2022-10-04T00:15Z",
+ "name": "LAR @ SF",
+ "seasonType": 2,
+ "away": {
+  "id": "14",
+  "abbr": "LAR",
+  "name": "Los Angeles Rams",
+  "score": 9
+ },
+ "home": {
+  "id": "25",
+  "abbr": "SF",
+  "name": "San Francisco 49ers",
+  "score": 24
+ },
+ "final": {
+  "away": 9,
+  "home": 24
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:39:34.168Z",
+  "books": {
+   "40": {
+    "name": "DraftKings",
+    "count": 6,
+    "rows": [
+  {"a":"16760","t":"Total Passing Interceptions (incl. overtime)","ti":"15","op":[0.5,100,null],"cur":[0.5,-110,null]},
+  {"a":"16760","t":"Total Passing Interceptions (incl. overtime)","ti":"15","op":[0.5,null,-135],"cur":[0.5,null,-120]},
+  {"a":"3115337","t":"Total Tackles (incl. overtime)","ti":"26","op":[3.5,120,null],"cur":[3.5,125,null]},
+  {"a":"3115337","t":"Total Tackles (incl. overtime)","ti":"26","op":[3.5,null,-160],"cur":[3.5,null,-170]},
+  {"a":"4040968","t":"Total Tackles (incl. overtime)","ti":"26","op":[1.5,-130,null],"cur":[1.5,100,null]},
+  {"a":"4040968","t":"Total Tackles (incl. overtime)","ti":"26","op":[1.5,null,100],"cur":[1.5,null,-130]}
+ ]
+   },
+   "45": {
+    "name": "Caesars Sportsbook (New Jersey)",
+    "count": 7,
+    "rows": [
+  {"a":"16760","t":"Total Passing Interceptions (incl. overtime)","ti":"15","op":[0.5,-101,null],"cur":[0.5,-119,null]},
+  {"a":"16760","t":"Total Passing Interceptions (incl. overtime)","ti":"15","op":[0.5,null,-135],"cur":[0.5,null,-115]},
+  {"a":"16760","t":"First Touchdown Scorer","ti":"29","cur":[null,2500,null]},
+  {"a":"2573401","t":"First Touchdown Scorer","ti":"29","cur":[null,850,null]},
+  {"a":"3124092","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4035656","t":"First Touchdown Scorer","ti":"29","cur":[null,1000,null]},
+  {"a":"4039359","t":"First Touchdown Scorer","ti":"29","cur":[null,1500,null]}
+ ]
+   },
+   "47": {
+    "name": "MGM",
+    "count": 11,
+    "rows": [
+  {"a":"16760","t":"Total Passing Interceptions (incl. overtime)","ti":"15","op":[0.5,100,null],"cur":[0.5,100,null]},
+  {"a":"16760","t":"Total Passing Interceptions (incl. overtime)","ti":"15","op":[0.5,null,-135],"cur":[0.5,null,-135]},
+  {"a":"3115337","t":"Total Tackles (incl. overtime)","ti":"26","op":[3.5,120,null],"cur":[3.5,125,null]},
+  {"a":"3115337","t":"Total Tackles (incl. overtime)","ti":"26","op":[3.5,null,-160],"cur":[3.5,null,-165]},
+  {"a":"4040968","t":"Total Tackles (incl. overtime)","ti":"26","op":[1.5,-135,null],"cur":[1.5,100,null]},
+  {"a":"4040968","t":"Total Tackles (incl. overtime)","ti":"26","op":[1.5,null,100],"cur":[1.5,null,-135]},
+  {"a":"16760","t":"First Touchdown Scorer","ti":"29","op":[null,3300,null],"cur":[null,3300,null]},
+  {"a":"2573401","t":"First Touchdown Scorer","ti":"29","op":[null,1200,null],"cur":[null,1200,null]},
+  {"a":"2582410","t":"First Touchdown Scorer","ti":"29","op":[null,2500,null]},
+  {"a":"4035656","t":"First Touchdown Scorer","ti":"29","op":[null,2500,null],"cur":[null,2500,null]},
+  {"a":"4039359","t":"First Touchdown Scorer","ti":"29","op":[null,1000,null],"cur":[null,1000,null]}
+ ]
+   },
+   "52": {
+    "name": "Caesars Sportsbook (Colorado)",
+    "count": 7,
+    "rows": [
+  {"a":"16760","t":"Total Passing Interceptions (incl. overtime)","ti":"15","op":[0.5,-101,null],"cur":[0.5,-119,null]},
+  {"a":"16760","t":"Total Passing Interceptions (incl. overtime)","ti":"15","op":[0.5,null,-135],"cur":[0.5,null,-115]},
+  {"a":"16760","t":"First Touchdown Scorer","ti":"29","cur":[null,2500,null]},
+  {"a":"2573401","t":"First Touchdown Scorer","ti":"29","cur":[null,850,null]},
+  {"a":"3124092","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4035656","t":"First Touchdown Scorer","ti":"29","cur":[null,1000,null]},
+  {"a":"4039359","t":"First Touchdown Scorer","ti":"29","cur":[null,1500,null]}
+ ]
+   }
+  }
+ }
+}

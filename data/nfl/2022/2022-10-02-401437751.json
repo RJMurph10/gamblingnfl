@@ -1,0 +1,121 @@
+{
+ "id": "401437751",
+ "league": "nfl",
+ "date": "2022-10-02T17:00Z",
+ "name": "WSH @ DAL",
+ "seasonType": 2,
+ "away": {
+  "id": "28",
+  "abbr": "WSH",
+  "name": "Washington Commanders",
+  "score": 10
+ },
+ "home": {
+  "id": "6",
+  "abbr": "DAL",
+  "name": "Dallas Cowboys",
+  "score": 25
+ },
+ "final": {
+  "away": 10,
+  "home": 25
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:39:32.894Z",
+  "books": {
+   "40": {
+    "name": "DraftKings",
+    "count": 4,
+    "rows": [
+  {"a":"2573079","t":"Total Passing Interceptions (incl. overtime)","ti":"15","op":[0.5,-170,null],"cur":[0.5,-190,null]},
+  {"a":"2573079","t":"Total Passing Interceptions (incl. overtime)","ti":"15","op":[0.5,null,130],"cur":[0.5,null,140]},
+  {"a":"2972515","t":"Total Passing Interceptions (incl. overtime)","ti":"15","op":[0.5,-115,null],"cur":[0.5,-115,null]},
+  {"a":"2972515","t":"Total Passing Interceptions (incl. overtime)","ti":"15","op":[0.5,null,-115],"cur":[0.5,null,-115]}
+ ]
+   },
+   "41": {
+    "name": "SugarHouse",
+    "count": 4,
+    "rows": [
+  {"a":"2573079","t":"Total Passing Interceptions (incl. overtime)","ti":"15","op":[0.5,-177,null],"cur":[0.5,-177,null]},
+  {"a":"2573079","t":"Total Passing Interceptions (incl. overtime)","ti":"15","op":[0.5,null,133],"cur":[0.5,null,133]},
+  {"a":"2972515","t":"Total Passing Interceptions (incl. overtime)","ti":"15","op":[0.5,-118,null],"cur":[0.5,-118,null]},
+  {"a":"2972515","t":"Total Passing Interceptions (incl. overtime)","ti":"15","op":[0.5,null,-110],"cur":[0.5,null,-110]}
+ ]
+   },
+   "45": {
+    "name": "Caesars Sportsbook (New Jersey)",
+    "count": 19,
+    "rows": [
+  {"a":"2573079","t":"Total Passing Interceptions (incl. overtime)","ti":"15","op":[0.5,-179,null],"cur":[0.5,-179,null]},
+  {"a":"2573079","t":"Total Passing Interceptions (incl. overtime)","ti":"15","op":[0.5,null,129],"cur":[0.5,null,129]},
+  {"a":"2972515","t":"Total Passing Interceptions (incl. overtime)","ti":"15","op":[0.5,-123,null],"cur":[0.5,-113,null]},
+  {"a":"2972515","t":"Total Passing Interceptions (incl. overtime)","ti":"15","op":[0.5,null,-111],"cur":[0.5,null,-121]},
+  {"a":"16813","t":"Last Touchdown Scorer","ti":"30","cur":[null,1200,null]},
+  {"a":"2565969","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"2572861","t":"Last Touchdown Scorer","ti":"30","cur":[null,1300,null]},
+  {"a":"2573079","t":"Last Touchdown Scorer","ti":"30","cur":[null,2200,null]},
+  {"a":"2972515","t":"Last Touchdown Scorer","ti":"30","cur":[null,2400,null]},
+  {"a":"2980077","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"3115252","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"3115314","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"3122449","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4036348","t":"Last Touchdown Scorer","ti":"30","cur":[null,1000,null]},
+  {"a":"4056052","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4258248","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4360739","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4361438","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4036348","t":"Player to score 3 or more touchdowns","ti":"33"}
+ ]
+   },
+   "47": {
+    "name": "MGM",
+    "count": 16,
+    "rows": [
+  {"a":"2573079","t":"Total Passing Interceptions (incl. overtime)","ti":"15","op":[0.5,-185,null],"cur":[0.5,-190,null]},
+  {"a":"2573079","t":"Total Passing Interceptions (incl. overtime)","ti":"15","op":[0.5,null,140],"cur":[0.5,null,140]},
+  {"a":"2972515","t":"Total Passing Interceptions (incl. overtime)","ti":"15","op":[0.5,-110,null],"cur":[0.5,-115,null]},
+  {"a":"2972515","t":"Total Passing Interceptions (incl. overtime)","ti":"15","op":[0.5,null,-115],"cur":[0.5,null,-110]},
+  {"a":"16813","t":"Last Touchdown Scorer","ti":"30","op":[null,2000,null],"cur":[null,2000,null]},
+  {"a":"2573079","t":"Last Touchdown Scorer","ti":"30","op":[null,3300,null],"cur":[null,3300,null]},
+  {"a":"2972515","t":"Last Touchdown Scorer","ti":"30","op":[null,4000,null],"cur":[null,4000,null]},
+  {"a":"2980077","t":"Last Touchdown Scorer","ti":"30","op":[null,8000,null],"cur":[null,8000,null]},
+  {"a":"3115314","t":"Last Touchdown Scorer","ti":"30","op":[null,6600,null],"cur":[null,6600,null]},
+  {"a":"4036348","t":"Last Touchdown Scorer","ti":"30","op":[null,1200,null],"cur":[null,1200,null]},
+  {"a":"4056052","t":"Last Touchdown Scorer","ti":"30","op":[null,10000,null],"cur":[null,10000,null]},
+  {"a":"4258248","t":"Last Touchdown Scorer","ti":"30","op":[null,3300,null],"cur":[null,3300,null]},
+  {"a":"4360739","t":"Last Touchdown Scorer","ti":"30","op":[null,3300,null],"cur":[null,3300,null]},
+  {"a":"4361438","t":"Last Touchdown Scorer","ti":"30","op":[null,12500,null],"cur":[null,12500,null]},
+  {"a":"16813","t":"Player to score 3 or more touchdowns","ti":"33","op":[null,12500,null],"cur":[null,12500,null]},
+  {"a":"4036348","t":"Player to score 3 or more touchdowns","ti":"33","op":[null,6600,null],"cur":[null,6600,null]}
+ ]
+   },
+   "52": {
+    "name": "Caesars Sportsbook (Colorado)",
+    "count": 19,
+    "rows": [
+  {"a":"2573079","t":"Total Passing Interceptions (incl. overtime)","ti":"15","op":[0.5,-179,null],"cur":[0.5,-179,null]},
+  {"a":"2573079","t":"Total Passing Interceptions (incl. overtime)","ti":"15","op":[0.5,null,129],"cur":[0.5,null,129]},
+  {"a":"2972515","t":"Total Passing Interceptions (incl. overtime)","ti":"15","op":[0.5,-123,null],"cur":[0.5,-113,null]},
+  {"a":"2972515","t":"Total Passing Interceptions (incl. overtime)","ti":"15","op":[0.5,null,-111],"cur":[0.5,null,-121]},
+  {"a":"16813","t":"Last Touchdown Scorer","ti":"30","cur":[null,1200,null]},
+  {"a":"2565969","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"2572861","t":"Last Touchdown Scorer","ti":"30","cur":[null,1300,null]},
+  {"a":"2573079","t":"Last Touchdown Scorer","ti":"30","cur":[null,2200,null]},
+  {"a":"2972515","t":"Last Touchdown Scorer","ti":"30","cur":[null,2400,null]},
+  {"a":"2980077","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"3115252","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"3115314","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"3122449","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4036348","t":"Last Touchdown Scorer","ti":"30","cur":[null,1000,null]},
+  {"a":"4056052","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4258248","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4360739","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4361438","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4036348","t":"Player to score 3 or more touchdowns","ti":"33"}
+ ]
+   }
+  }
+ }
+}
