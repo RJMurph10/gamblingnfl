@@ -1,0 +1,37 @@
+{
+ "id": "401570689",
+ "league": "mlb",
+ "date": "2024-09-14T17:05Z",
+ "name": "KC @ PIT",
+ "seasonType": 2,
+ "away": {
+  "id": "7",
+  "abbr": "KC",
+  "name": "Kansas City Royals",
+  "score": 5
+ },
+ "home": {
+  "id": "23",
+  "abbr": "PIT",
+  "name": "Pittsburgh Pirates",
+  "score": 1
+ },
+ "final": {
+  "away": 5,
+  "home": 1
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:44:33.054Z",
+  "books": {
+   "59": {
+    "name": "ESPN BET - Live Odds",
+    "count": 2,
+    "rows": [
+  {"a":"33722","t":"To Record Win","ti":"47","cur":[null,450,null]},
+  {"a":"33722","t":"To Record Win","ti":"47","cur":[null,-1100,null]}
+ ]
+   }
+  }
+ }
+}

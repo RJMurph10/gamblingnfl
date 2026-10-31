@@ -1,0 +1,37 @@
+{
+ "id": "401570561",
+ "league": "mlb",
+ "date": "2024-09-05T01:38Z",
+ "name": "LAD @ LAA",
+ "seasonType": 2,
+ "away": {
+  "id": "19",
+  "abbr": "LAD",
+  "name": "Los Angeles Dodgers",
+  "score": 1
+ },
+ "home": {
+  "id": "3",
+  "abbr": "LAA",
+  "name": "Los Angeles Angels",
+  "score": 10
+ },
+ "final": {
+  "away": 1,
+  "home": 10
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:44:28.489Z",
+  "books": {
+   "59": {
+    "name": "ESPN BET - Live Odds",
+    "count": 2,
+    "rows": [
+  {"a":"4326703","t":"To Record Win","ti":"47","cur":[null,-220,null]},
+  {"a":"4326703","t":"To Record Win","ti":"47","cur":[null,150,null]}
+ ]
+   }
+  }
+ }
+}

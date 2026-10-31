@@ -1,0 +1,65 @@
+{
+ "id": "401568833",
+ "league": "mlb",
+ "date": "2024-04-24T22:50Z",
+ "name": "DET @ TB",
+ "seasonType": 2,
+ "away": {
+  "id": "6",
+  "abbr": "DET",
+  "name": "Detroit Tigers",
+  "score": 5
+ },
+ "home": {
+  "id": "30",
+  "abbr": "TB",
+  "name": "Tampa Bay Rays",
+  "score": 7
+ },
+ "final": {
+  "away": 5,
+  "home": 7
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:43:27.591Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 30,
+    "rows": [
+  {"a":"32127","t":"Total Home Runs Hit","ti":"51","op":[0.5,600,null],"cur":[0.5,700,null]},
+  {"a":"32127","t":"Total Home Runs Hit","ti":"51","op":[0.5,null,-1400],"cur":[0.5,null,-2000]},
+  {"a":"41223","t":"Total Home Runs Hit","ti":"51","op":[0.5,750,null],"cur":[0.5,650,null]},
+  {"a":"41223","t":"Total Home Runs Hit","ti":"51","op":[0.5,null,-2500],"cur":[0.5,null,-1600]},
+  {"a":"41586","t":"Total Home Runs Hit","ti":"51","op":[0.5,700,null],"cur":[0.5,700,null]},
+  {"a":"41586","t":"Total Home Runs Hit","ti":"51","op":[0.5,null,-2000],"cur":[0.5,null,-2000]},
+  {"a":"42179","t":"Total Home Runs Hit","ti":"51","op":[0.5,550,null],"cur":[0.5,450,null]},
+  {"a":"42179","t":"Total Home Runs Hit","ti":"51","op":[0.5,null,-1200],"cur":[0.5,null,-900]},
+  {"a":"42985","t":"Total Home Runs Hit","ti":"51","op":[0.5,950,null],"cur":[0.5,950,null]},
+  {"a":"42985","t":"Total Home Runs Hit","ti":"51","op":[0.5,null,-3500],"cur":[0.5,null,-3500]},
+  {"a":"32127","t":"Total Hits","ti":"53","op":[0.5,-190,null],"cur":[0.5,-175,null]},
+  {"a":"32127","t":"Total Hits","ti":"53","op":[0.5,null,140],"cur":[0.5,null,130]},
+  {"a":"41223","t":"Total Hits","ti":"53","op":[0.5,105,null],"cur":[0.5,-105,null]},
+  {"a":"41223","t":"Total Hits","ti":"53","op":[0.5,null,-135],"cur":[0.5,null,-125]},
+  {"a":"41586","t":"Total Hits","ti":"53","op":[0.5,-210,null],"cur":[0.5,-215,null]},
+  {"a":"41586","t":"Total Hits","ti":"53","op":[0.5,null,150],"cur":[0.5,null,160]},
+  {"a":"42179","t":"Total Hits","ti":"53","op":[0.5,-190,null],"cur":[0.5,-200,null]},
+  {"a":"42179","t":"Total Hits","ti":"53","op":[0.5,null,140],"cur":[0.5,null,145]},
+  {"a":"42985","t":"Total Hits","ti":"53","op":[0.5,-140,null],"cur":[0.5,-130,null]},
+  {"a":"42985","t":"Total Hits","ti":"53","op":[0.5,null,110],"cur":[0.5,null,100]},
+  {"a":"32127","t":"Total RBIs","ti":"59","op":[0.5,210,null],"cur":[0.5,230,null]},
+  {"a":"32127","t":"Total RBIs","ti":"59","op":[0.5,null,-300],"cur":[0.5,null,-350]},
+  {"a":"41223","t":"Total RBIs","ti":"59","op":[0.5,300,null],"cur":[0.5,280,null]},
+  {"a":"41223","t":"Total RBIs","ti":"59","op":[0.5,null,-550],"cur":[0.5,null,-450]},
+  {"a":"41586","t":"Total RBIs","ti":"59","op":[0.5,230,null],"cur":[0.5,230,null]},
+  {"a":"41586","t":"Total RBIs","ti":"59","op":[0.5,null,-350],"cur":[0.5,null,-350]},
+  {"a":"42179","t":"Total RBIs","ti":"59","op":[0.5,185,null],"cur":[0.5,175,null]},
+  {"a":"42179","t":"Total RBIs","ti":"59","op":[0.5,null,-260],"cur":[0.5,null,-250]},
+  {"a":"42985","t":"Total RBIs","ti":"59","op":[0.5,250,null],"cur":[0.5,280,null]},
+  {"a":"42985","t":"Total RBIs","ti":"59","op":[0.5,null,-400],"cur":[0.5,null,-450]}
+ ]
+   }
+  }
+ }
+}

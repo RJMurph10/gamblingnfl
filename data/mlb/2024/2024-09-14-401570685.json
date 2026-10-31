@@ -1,0 +1,37 @@
+{
+ "id": "401570685",
+ "league": "mlb",
+ "date": "2024-09-14T17:05Z",
+ "name": "BOS @ NYY",
+ "seasonType": 2,
+ "away": {
+  "id": "2",
+  "abbr": "BOS",
+  "name": "Boston Red Sox",
+  "score": 7
+ },
+ "home": {
+  "id": "10",
+  "abbr": "NYY",
+  "name": "New York Yankees",
+  "score": 1
+ },
+ "final": {
+  "away": 7,
+  "home": 1
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:44:33.055Z",
+  "books": {
+   "59": {
+    "name": "ESPN BET - Live Odds",
+    "count": 2,
+    "rows": [
+  {"a":"32081","t":"To Record Win","ti":"47","cur":[null,-110,null]},
+  {"a":"32081","t":"To Record Win","ti":"47","cur":[null,-125,null]}
+ ]
+   }
+  }
+ }
+}
