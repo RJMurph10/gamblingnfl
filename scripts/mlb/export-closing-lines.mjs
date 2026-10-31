@@ -91,6 +91,7 @@ async function closing(id) {
 }
 
 const out = {};
+const schedule = [];
 const starters = {};
 const outsOf = (ip) => {
   const [w, f] = String(ip ?? "").split(".");
@@ -133,6 +134,14 @@ for (
       done.slice(i, i + 6).map(async (e) => {
         games += 1;
         const comp = e.competitions[0];
+        const t = (h) => comp.competitors.find((x) => x.homeAway === h);
+        schedule.push({
+          id: e.id,
+          date: e.date,
+          part: e.season?.type === 3 ? "post" : "reg",
+          away: { id: t("away")?.team?.id, abbr: t("away")?.team?.abbreviation, score: Number(t("away")?.score) },
+          home: { id: t("home")?.team?.id, abbr: t("home")?.team?.abbreviation, score: Number(t("home")?.score) },
+        });
         const side = (h) => comp.competitors.find((x) => x.homeAway === h)?.team?.id;
         const [c, sp] = await Promise.all([
           closing(e.id),
@@ -180,4 +189,5 @@ ${Object.keys(starters)
 };
 `,
 );
+await writeFile(`scripts/mlb/games-${SEASON}.json`, JSON.stringify(schedule));
 console.log(`${SEASON}: ${found} of ${games} finished games have closing lines`);

@@ -23,7 +23,7 @@ jobs:
       - run: |
           git config user.name "line-history-bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add src/data/mlb/closing-lines.ts
+          git add src/data/mlb/closing-lines.ts scripts/mlb/games-*.json
           git diff --cached --quiet && exit 0
           git commit -q -m "MLB closing lines $(head -1 scripts/mlb/closing-lines.trigger)"
           git push
