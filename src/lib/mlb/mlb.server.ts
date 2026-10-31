@@ -19,6 +19,7 @@ import {
   type MlbTeamRef,
 } from "./mlb";
 import { finalCached, finalLinesStore } from "../shared/final-cache.server";
+import { MLB_CLOSING_LINES } from "@/data/mlb/closing-lines";
 
 const SITE = "https://site.api.espn.com/apis/site/v2/sports/baseball/mlb";
 const CORE = "https://sports.core.api.espn.com/v2/sports/baseball/leagues/mlb";
@@ -118,8 +119,16 @@ export function parseOdds(o: any): MlbOdds | undefined {
     total: total !== null && total > 0 ? total : null,
     mlHome,
     mlAway,
-    spreadOddsHome: american(homeO?.spreadOdds) ?? american(o.pointSpread?.home?.close?.odds),
-    spreadOddsAway: american(awayO?.spreadOdds) ?? american(o.pointSpread?.away?.close?.odds),
+    spreadOddsHome:
+      american(homeO?.spreadOdds) ??
+      american(homeO?.close?.spread?.american) ??
+      american(homeO?.current?.spread?.american) ??
+      american(o.pointSpread?.home?.close?.odds),
+    spreadOddsAway:
+      american(awayO?.spreadOdds) ??
+      american(awayO?.close?.spread?.american) ??
+      american(awayO?.current?.spread?.american) ??
+      american(o.pointSpread?.away?.close?.odds),
     overOdds: american(o.overOdds) ?? american(o.total?.over?.close?.odds),
     underOdds: american(o.underOdds) ?? american(o.total?.under?.close?.odds),
   };
@@ -501,8 +510,40 @@ export async function fetchMlbClosingLines(
   return out;
 }
 
+/**
+ * Finished games' closing lines from the bundled file (scripts/mlb/export-closing-lines.mjs), so the
+ * whole season is graded the moment the dashboard loads. Lines ESPN still sends win; the file only
+ * fills what's missing.
+ */
+export function withStoredClosingLines(games: MlbGame[]): MlbGame[] {
+  return games.map((g) => {
+    const row = g.status === "final" ? MLB_CLOSING_LINES[g.id] : undefined;
+    if (!row) return g;
+    const [mlHome, mlAway, spread, spreadOddsHome, spreadOddsAway, total, overOdds, underOdds] =
+      row;
+    const stored: MlbOdds = {
+      spread,
+      total,
+      mlHome,
+      mlAway,
+      spreadOddsHome,
+      spreadOddsAway,
+      overOdds,
+      underOdds,
+    };
+    const merged: MlbOdds = { ...stored };
+    for (const [k, v] of Object.entries(g.odds ?? {})) {
+      if (v != null) (merged as unknown as Record<string, unknown>)[k] = v;
+    }
+    const rl = runLinePrices(merged);
+    merged.spreadOddsHome = rl?.home ?? null;
+    merged.spreadOddsAway = rl?.away ?? null;
+    return { ...g, odds: merged };
+  });
+}
+
 export async function fetchMlbSchedule(): Promise<MlbGame[]> {
-  return withClosingOdds(await loadMlbSchedule());
+  return withClosingOdds(withStoredClosingLines(await loadMlbSchedule()));
 }
 
 /* ---------- one game (summary: play-by-play, box score) ---------- */
