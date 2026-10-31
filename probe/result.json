@@ -1,1941 +1,1121 @@
-[
- {
-  "l": "nfl",
-  "day": "20241110",
-  "id": "401671803",
-  "p": "58",
-  "provider": "ESPN BET",
-  "count": 596,
-  "types": {
-   "Total Passing Yards (incl. overtime)": 15,
-   "Total Pass Completions (incl. overtime)": 19,
-   "Total Passing Touchdowns (incl. overtime)": 13,
-   "Total Carries (incl. overtime)": 10,
-   "Total Rushing Yards (incl. overtime)": 32,
-   "Total Receiving Yards (incl. overtime)": 77,
-   "Total Receptions (incl. overtime)": 74,
-   "Total Passing Attempts (incl. overtime)": 15,
-   "Longest Passing Completion (incl. overtime)": 14,
-   "Total Passing Plus Rushing Yards (incl. overtime)": 15,
-   "Longest Reception (incl. overtime)": 22,
-   "Total Rushing Plus Receiving Yards (incl. overtime)": 27,
-   "Longest Rush (incl. overtime)": 10,
-   "Total Kicking Points (incl. overtime)": 4,
-   "Total Extra Points Made (incl. overtime)": 4,
-   "Total Field Goals Made (incl. overtime)": 4,
-   "Total Tackles Plus Assists (incl. overtime)": 28,
-   "Total Sacks (incl. overtime)": 8,
-   "First Touchdown Scorer": 23,
-   "Last Touchdown Scorer": 23,
-   "Anytime Touchdown Scorer": 43,
-   "To throw an interception (incl. overtime)": 4,
-   "1st Half Passing Touchdowns": 6,
-   "1st Quarter Passing Touchdowns": 5,
-   "1st Half Touchdown Scorer": 46,
-   "1st Quarter Touchdown Scorer": 46,
-   "Passing + Rushing Touchdowns": 9
-  },
-  "examples": [
-   {
-    "competition": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/events/401671803/competitions/401671803?lang=en&region=us"
+{
+ "secs": 2.073,
+ "req": 19,
+ "out": [
+  {
+   "l": "nfl",
+   "day": "20241110",
+   "id": "401671873",
+   "p": "58",
+   "total": 651,
+   "refOnly": 0,
+   "types": {
+    "Total Passing Yards (incl. overtime)": {
+     "n": 15,
+     "priced": 4,
+     "lined": 15,
+     "players": 2
     },
-    "athlete": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/seasons/2024/athletes/3917792?lang=en&region=us"
+    "Total Pass Completions (incl. overtime)": {
+     "n": 12,
+     "priced": 4,
+     "lined": 12,
+     "players": 2
     },
-    "provider": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/casinos/58?lang=en&region=us"
+    "Total Passing Touchdowns (incl. overtime)": {
+     "n": 13,
+     "priced": 2,
+     "lined": 11,
+     "players": 2
     },
-    "type": {
-     "id": "8",
-     "name": "Total Passing Yards (incl. overtime)"
+    "Total Carries (incl. overtime)": {
+     "n": 12,
+     "priced": 12,
+     "lined": 12,
+     "players": 6
     },
-    "lastUpdated": "2024-11-10T21:04Z",
-    "current": {
-     "target": {
-      "value": 175,
-      "displayValue": "175"
-     }
+    "Total Rushing Yards (incl. overtime)": {
+     "n": 41,
+     "priced": 8,
+     "lined": 41,
+     "players": 6
     },
-    "open": {
-     "target": {
-      "value": 175,
-      "displayValue": "175"
-     }
-    }
-   },
-   {
-    "competition": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/events/401671803/competitions/401671803?lang=en&region=us"
+    "Total Receiving Yards (incl. overtime)": {
+     "n": 92,
+     "priced": 20,
+     "lined": 92,
+     "players": 13
     },
-    "athlete": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/seasons/2024/athletes/3917792?lang=en&region=us"
+    "Total Receptions (incl. overtime)": {
+     "n": 82,
+     "priced": 24,
+     "lined": 82,
+     "players": 12
     },
-    "provider": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/casinos/58?lang=en&region=us"
+    "Total Passing Attempts (incl. overtime)": {
+     "n": 14,
+     "priced": 4,
+     "lined": 14,
+     "players": 2
     },
-    "type": {
-     "id": "8",
-     "name": "Total Passing Yards (incl. overtime)"
+    "Longest Passing Completion (incl. overtime)": {
+     "n": 14,
+     "priced": 4,
+     "lined": 14,
+     "players": 2
     },
-    "lastUpdated": "2024-11-10T21:04Z",
-    "current": {
-     "target": {
-      "value": 250,
-      "displayValue": "250"
-     }
+    "Total Passing Plus Rushing Yards (incl. overtime)": {
+     "n": 16,
+     "priced": 4,
+     "lined": 16,
+     "players": 2
     },
-    "open": {
-     "target": {
-      "value": 250,
-      "displayValue": "250"
-     }
-    }
-   }
-  ]
- },
- {
-  "l": "nfl",
-  "day": "20241110",
-  "id": "401671803",
-  "p": "59",
-  "provider": "ESPN Bet - Live Odds",
-  "count": 618,
-  "types": {
-   "Total Passing Yards (incl. overtime)": 19,
-   "Total Pass Completions (incl. overtime)": 19,
-   "Total Passing Touchdowns (incl. overtime)": 13,
-   "Total Carries (incl. overtime)": 10,
-   "Total Rushing Yards (incl. overtime)": 40,
-   "Total Receiving Yards (incl. overtime)": 99,
-   "Total Receptions (incl. overtime)": 76,
-   "Total Passing Attempts (incl. overtime)": 15,
-   "Longest Passing Completion (incl. overtime)": 14,
-   "Total Passing Plus Rushing Yards (incl. overtime)": 15,
-   "Longest Reception (incl. overtime)": 22,
-   "Total Rushing Plus Receiving Yards (incl. overtime)": 27,
-   "Longest Rush (incl. overtime)": 10,
-   "Total Kicking Points (incl. overtime)": 4,
-   "Total Extra Points Made (incl. overtime)": 4,
-   "Total Field Goals Made (incl. overtime)": 4,
-   "Total Tackles Plus Assists (incl. overtime)": 30,
-   "Total Sacks (incl. overtime)": 8,
-   "First Touchdown Scorer": 20,
-   "Last Touchdown Scorer": 20,
-   "Anytime Touchdown Scorer": 45,
-   "To throw an interception (incl. overtime)": 4,
-   "1st Half Passing Touchdowns": 6,
-   "1st Quarter Passing Touchdowns": 5,
-   "1st Half Touchdown Scorer": 40,
-   "1st Quarter Touchdown Scorer": 40,
-   "Passing + Rushing Touchdowns": 9
-  },
-  "examples": [
-   {
-    "competition": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/events/401671803/competitions/401671803?lang=en&region=us"
+    "Longest Reception (incl. overtime)": {
+     "n": 26,
+     "priced": 26,
+     "lined": 26,
+     "players": 13
     },
-    "athlete": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/seasons/2024/athletes/3917792?lang=en&region=us"
+    "Total Rushing Plus Receiving Yards (incl. overtime)": {
+     "n": 40,
+     "priced": 20,
+     "lined": 40,
+     "players": 10
     },
-    "provider": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/casinos/59?lang=en&region=us"
+    "Longest Rush (incl. overtime)": {
+     "n": 12,
+     "priced": 12,
+     "lined": 12,
+     "players": 6
     },
-    "type": {
-     "id": "8",
-     "name": "Total Passing Yards (incl. overtime)"
+    "Total Kicking Points (incl. overtime)": {
+     "n": 4,
+     "priced": 4,
+     "lined": 4,
+     "players": 2
     },
-    "lastUpdated": "2024-11-10T17:33Z",
-    "current": {
-     "target": {
-      "value": 175,
-      "displayValue": "175"
-     }
+    "Total Extra Points Made (incl. overtime)": {
+     "n": 4,
+     "priced": 4,
+     "lined": 4,
+     "players": 2
     },
-    "open": {
-     "target": {
-      "value": 175,
-      "displayValue": "175"
-     }
-    }
-   },
-   {
-    "competition": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/events/401671803/competitions/401671803?lang=en&region=us"
+    "Total Field Goals Made (incl. overtime)": {
+     "n": 4,
+     "priced": 4,
+     "lined": 4,
+     "players": 2
     },
-    "athlete": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/seasons/2024/athletes/3917792?lang=en&region=us"
+    "Total Tackles Plus Assists (incl. overtime)": {
+     "n": 26,
+     "priced": 26,
+     "lined": 26,
+     "players": 13
     },
-    "provider": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/casinos/59?lang=en&region=us"
+    "Total Sacks (incl. overtime)": {
+     "n": 10,
+     "priced": 10,
+     "lined": 10,
+     "players": 5
     },
-    "type": {
-     "id": "8",
-     "name": "Total Passing Yards (incl. overtime)"
+    "First Touchdown Scorer": {
+     "n": 24,
+     "priced": 24,
+     "lined": 0,
+     "players": 24
     },
-    "lastUpdated": "2024-11-10T17:33Z",
-    "current": {
-     "target": {
-      "value": 250,
-      "displayValue": "250"
-     }
+    "Last Touchdown Scorer": {
+     "n": 22,
+     "priced": 22,
+     "lined": 0,
+     "players": 22
     },
-    "open": {
-     "target": {
-      "value": 250,
-      "displayValue": "250"
-     }
+    "Anytime Touchdown Scorer": {
+     "n": 49,
+     "priced": 0,
+     "lined": 49,
+     "players": 24
+    },
+    "To throw an interception (incl. overtime)": {
+     "n": 4,
+     "priced": 4,
+     "lined": 4,
+     "players": 2
+    },
+    "1st Half Passing Touchdowns": {
+     "n": 6,
+     "priced": 0,
+     "lined": 6,
+     "players": 2
+    },
+    "1st Quarter Passing Touchdowns": {
+     "n": 5,
+     "priced": 0,
+     "lined": 5,
+     "players": 2
+    },
+    "1st Half Touchdown Scorer": {
+     "n": 48,
+     "priced": 0,
+     "lined": 47,
+     "players": 24
+    },
+    "1st Quarter Touchdown Scorer": {
+     "n": 47,
+     "priced": 0,
+     "lined": 41,
+     "players": 24
+    },
+    "Passing + Rushing Touchdowns": {
+     "n": 9,
+     "priced": 0,
+     "lined": 9,
+     "players": 2
     }
    }
-  ]
- },
- {
-  "l": "nfl",
-  "day": "20231105",
-  "id": "401547230",
-  "p": "45",
-  "provider": "Caesars Sportsbook (New Jersey)",
-  "count": 24,
-  "types": {
-   "First Touchdown Scorer": 10,
-   "Last Touchdown Scorer": 10,
-   "Player to score 2 or more touchdowns": 4
   },
-  "examples": [
-   {
-    "competition": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/events/401547230/competitions/401547230?lang=en&region=us"
+  {
+   "l": "nfl",
+   "day": "20251102",
+   "id": "401772871",
+   "p": "58",
+   "total": 1058,
+   "refOnly": 0,
+   "types": {
+    "Total Passing Yards (incl. overtime)": {
+     "n": 19,
+     "priced": 4,
+     "lined": 19,
+     "players": 2
     },
-    "athlete": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/seasons/2023/athletes/13987?lang=en&region=us"
+    "Total Pass Completions (incl. overtime)": {
+     "n": 16,
+     "priced": 4,
+     "lined": 16,
+     "players": 2
     },
-    "provider": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/casinos/45?lang=en&region=us"
+    "Total Passing Touchdowns (incl. overtime)": {
+     "n": 13,
+     "priced": 4,
+     "lined": 13,
+     "players": 2
     },
-    "type": {
-     "id": "29",
-     "name": "First Touchdown Scorer"
+    "Total Carries (incl. overtime)": {
+     "n": 21,
+     "priced": 6,
+     "lined": 21,
+     "players": 3
     },
-    "lastUpdated": "2023-11-05T17:33Z"
-   },
-   {
-    "competition": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/events/401547230/competitions/401547230?lang=en&region=us"
+    "Total Rushing Yards (incl. overtime)": {
+     "n": 74,
+     "priced": 12,
+     "lined": 74,
+     "players": 6
     },
-    "athlete": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/seasons/2023/athletes/16665?lang=en&region=us"
+    "Total Receiving Yards (incl. overtime)": {
+     "n": 120,
+     "priced": 24,
+     "lined": 120,
+     "players": 12
     },
-    "provider": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/casinos/45?lang=en&region=us"
+    "Total Receptions (incl. overtime)": {
+     "n": 75,
+     "priced": 20,
+     "lined": 75,
+     "players": 10
     },
-    "type": {
-     "id": "29",
-     "name": "First Touchdown Scorer"
+    "Total Passing Interceptions (incl. overtime)": {
+     "n": 8,
+     "priced": 4,
+     "lined": 8,
+     "players": 2
     },
-    "lastUpdated": "2023-11-05T17:33Z"
-   }
-  ]
- },
- {
-  "l": "nfl",
-  "day": "20231105",
-  "id": "401547230",
-  "p": "47",
-  "provider": "MGM",
-  "count": 22,
-  "types": {
-   "First Touchdown Scorer": 7,
-   "Last Touchdown Scorer": 7,
-   "Player to score 2 or more touchdowns": 5,
-   "Player to score 3 or more touchdowns": 3
-  },
-  "examples": [
-   {
-    "competition": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/events/401547230/competitions/401547230?lang=en&region=us"
+    "Total Passing Attempts (incl. overtime)": {
+     "n": 12,
+     "priced": 4,
+     "lined": 12,
+     "players": 2
     },
-    "athlete": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/seasons/2023/athletes/16782?lang=en&region=us"
+    "Longest Passing Completion (incl. overtime)": {
+     "n": 19,
+     "priced": 4,
+     "lined": 19,
+     "players": 2
     },
-    "provider": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/casinos/47?lang=en&region=us"
+    "Total Passing Plus Rushing Yards (incl. overtime)": {
+     "n": 10,
+     "priced": 2,
+     "lined": 10,
+     "players": 1
     },
-    "type": {
-     "id": "29",
-     "name": "First Touchdown Scorer"
+    "Longest Reception (incl. overtime)": {
+     "n": 79,
+     "priced": 18,
+     "lined": 79,
+     "players": 9
     },
-    "lastUpdated": "2023-11-05T18:56Z",
-    "current": {
-     "over": {
-      "value": 17,
-      "displayValue": "16/1",
-      "alternateDisplayValue": "+1600",
-      "decimal": 17,
-      "fraction": "16/1",
-      "american": "+1600"
-     }
+    "Total Rushing Plus Receiving Yards (incl. overtime)": {
+     "n": 44,
+     "priced": 6,
+     "lined": 44,
+     "players": 3
     },
-    "open": {
-     "over": {
-      "value": 21,
-      "displayValue": "20/1",
-      "alternateDisplayValue": "+2000",
-      "decimal": 21,
-      "fraction": "20/1",
-      "american": "+2000"
-     }
-    }
-   },
-   {
-    "competition": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/events/401547230/competitions/401547230?lang=en&region=us"
+    "Longest Rush (incl. overtime)": {
+     "n": 43,
+     "priced": 10,
+     "lined": 43,
+     "players": 5
     },
-    "athlete": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/seasons/2023/athletes/2514206?lang=en&region=us"
+    "Total Kicking Points (incl. overtime)": {
+     "n": 11,
+     "priced": 4,
+     "lined": 11,
+     "players": 2
     },
-    "provider": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/casinos/47?lang=en&region=us"
+    "Total Extra Points Made (incl. overtime)": {
+     "n": 9,
+     "priced": 4,
+     "lined": 9,
+     "players": 2
     },
-    "type": {
-     "id": "29",
-     "name": "First Touchdown Scorer"
+    "Total Field Goals Made (incl. overtime)": {
+     "n": 11,
+     "priced": 4,
+     "lined": 11,
+     "players": 2
     },
-    "lastUpdated": "2023-11-05T17:33Z",
-    "current": {
-     "over": {
-      "value": 81,
-      "displayValue": "80/1",
-      "alternateDisplayValue": "+8000",
-      "decimal": 81,
-      "fraction": "80/1",
-      "american": "+8000"
-     }
+    "Total Tackles (incl. overtime)": {
+     "n": 12,
+     "priced": 12,
+     "lined": 12,
+     "players": 6
     },
-    "open": {
-     "over": {
-      "value": 81,
-      "displayValue": "80/1",
-      "alternateDisplayValue": "+8000",
-      "decimal": 81,
-      "fraction": "80/1",
-      "american": "+8000"
-     }
-    }
-   }
-  ]
- },
- {
-  "l": "nfl",
-  "day": "20231105",
-  "id": "401547230",
-  "p": "48",
-  "provider": "PointsBet",
-  "count": 28,
-  "types": {
-   "First Touchdown Scorer": 7,
-   "Last Touchdown Scorer": 7,
-   "Player to score 2 or more touchdowns": 7,
-   "Player to score 3 or more touchdowns": 7
-  },
-  "examples": [
-   {
-    "competition": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/events/401547230/competitions/401547230?lang=en&region=us"
+    "Total Tackles Plus Assists (incl. overtime)": {
+     "n": 8,
+     "priced": 8,
+     "lined": 8,
+     "players": 4
     },
-    "athlete": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/seasons/2023/athletes/16782?lang=en&region=us"
+    "Total Sacks (incl. overtime)": {
+     "n": 12,
+     "priced": 12,
+     "lined": 12,
+     "players": 6
     },
-    "provider": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/casinos/48?lang=en&region=us"
+    "First Touchdown Scorer": {
+     "n": 26,
+     "priced": 26,
+     "lined": 0,
+     "players": 26
     },
-    "type": {
-     "id": "29",
-     "name": "First Touchdown Scorer"
+    "Last Touchdown Scorer": {
+     "n": 25,
+     "priced": 25,
+     "lined": 0,
+     "players": 25
     },
-    "lastUpdated": "2023-11-05T18:56Z",
-    "current": {
-     "over": {
-      "value": 16,
-      "displayValue": "15/1",
-      "alternateDisplayValue": "+1500",
-      "decimal": 16,
-      "fraction": "15/1",
-      "american": "+1500"
-     }
+    "Anytime Touchdown Scorer": {
+     "n": 79,
+     "priced": 0,
+     "lined": 66,
+     "players": 26
     },
-    "open": {
-     "over": {
-      "value": 16,
-      "displayValue": "15/1",
-      "alternateDisplayValue": "+1500",
-      "decimal": 16,
-      "fraction": "15/1",
-      "american": "+1500"
-     }
-    }
-   },
-   {
-    "competition": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/events/401547230/competitions/401547230?lang=en&region=us"
+    "Total Defensive Interceptions": {
+     "n": 8,
+     "priced": 0,
+     "lined": 8,
+     "players": 8
     },
-    "athlete": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/seasons/2023/athletes/2514206?lang=en&region=us"
+    "1st Half Total": {
+     "n": 2,
+     "priced": 2,
+     "lined": 2,
+     "players": 1
     },
-    "provider": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/casinos/48?lang=en&region=us"
+    "1st Half Moneyline": {
+     "n": 2,
+     "priced": 0,
+     "lined": 0,
+     "players": 1
     },
-    "type": {
-     "id": "29",
-     "name": "First Touchdown Scorer"
+    "1st Half Spread": {
+     "n": 2,
+     "priced": 0,
+     "lined": 2,
+     "players": 1
     },
-    "lastUpdated": "2023-11-05T17:33Z",
-    "current": {
-     "over": {
-      "value": 91,
-      "displayValue": "90/1",
-      "alternateDisplayValue": "+9000",
-      "decimal": 91,
-      "fraction": "90/1",
-      "american": "+9000"
-     }
+    "1st Quarter Total": {
+     "n": 2,
+     "priced": 2,
+     "lined": 2,
+     "players": 1
     },
-    "open": {
-     "over": {
-      "value": 26,
-      "displayValue": "25/1",
-      "alternateDisplayValue": "+2500",
-      "decimal": 26,
-      "fraction": "25/1",
-      "american": "+2500"
-     }
-    }
-   }
-  ]
- },
- {
-  "l": "nfl",
-  "day": "20231105",
-  "id": "401547230",
-  "p": "40",
-  "provider": "DraftKings (old)",
-  "count": 27,
-  "types": {
-   "First Touchdown Scorer": 7,
-   "Last Touchdown Scorer": 7,
-   "Player to score 2 or more touchdowns": 7,
-   "Player to score 3 or more touchdowns": 6
-  },
-  "examples": [
-   {
-    "competition": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/events/401547230/competitions/401547230?lang=en&region=us"
+    "1st Quarter Moneyline": {
+     "n": 2,
+     "priced": 0,
+     "lined": 0,
+     "players": 1
     },
-    "athlete": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/seasons/2023/athletes/16782?lang=en&region=us"
+    "1st Quarter Spread": {
+     "n": 2,
+     "priced": 0,
+     "lined": 2,
+     "players": 1
     },
-    "provider": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/casinos/40?lang=en&region=us"
+    "Team Total Points": {
+     "n": 8,
+     "priced": 8,
+     "lined": 8,
+     "players": 1
     },
-    "type": {
-     "id": "29",
-     "name": "First Touchdown Scorer"
+    "Team 1st Half Total Points": {
+     "n": 4,
+     "priced": 4,
+     "lined": 4,
+     "players": 1
     },
-    "lastUpdated": "2023-11-05T18:56Z",
-    "current": {
-     "over": {
-      "value": 17,
-      "displayValue": "16/1",
-      "alternateDisplayValue": "+1600",
-      "decimal": 17,
-      "fraction": "16/1",
-      "american": "+1600"
-     }
+    "Will There Be Overtime?": {
+     "n": 2,
+     "priced": 1,
+     "lined": 0,
+     "players": 1
     },
-    "open": {
-     "over": {
-      "value": 19,
-      "displayValue": "18/1",
-      "alternateDisplayValue": "+1800",
-      "decimal": 19,
-      "fraction": "18/1",
-      "american": "+1800"
-     }
-    }
-   },
-   {
-    "competition": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/events/401547230/competitions/401547230?lang=en&region=us"
+    "Football Team Prop": {
+     "n": 46,
+     "priced": 12,
+     "lined": 16,
+     "players": 1
     },
-    "athlete": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/seasons/2023/athletes/2514206?lang=en&region=us"
+    "Football Game Prop": {
+     "n": 6,
+     "priced": 6,
+     "lined": 6,
+     "players": 1
     },
-    "provider": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/casinos/40?lang=en&region=us"
+    "1st Half Total Passing Yards": {
+     "n": 16,
+     "priced": 4,
+     "lined": 16,
+     "players": 2
     },
-    "type": {
-     "id": "29",
-     "name": "First Touchdown Scorer"
+    "1st Half Total Receiving Yards": {
+     "n": 69,
+     "priced": 14,
+     "lined": 69,
+     "players": 7
     },
-    "lastUpdated": "2023-11-05T17:33Z",
-    "current": {
-     "over": {
-      "value": 61,
-      "displayValue": "60/1",
-      "alternateDisplayValue": "+6000",
-      "decimal": 61,
-      "fraction": "60/1",
-      "american": "+6000"
-     }
+    "1st Half Total Rushing Yards": {
+     "n": 51,
+     "priced": 8,
+     "lined": 51,
+     "players": 4
     },
-    "open": {
-     "over": {
-      "value": 61,
-      "displayValue": "60/1",
-      "alternateDisplayValue": "+6000",
-      "decimal": 61,
-      "fraction": "60/1",
-      "american": "+6000"
-     }
+    "1st Quarter Total Passing Yards": {
+     "n": 12,
+     "priced": 4,
+     "lined": 12,
+     "players": 2
+    },
+    "1st Quarter Total Receiving Yards": {
+     "n": 41,
+     "priced": 8,
+     "lined": 41,
+     "players": 4
+    },
+    "1st Quarter Total Rushing Yards": {
+     "n": 37,
+     "priced": 8,
+     "lined": 37,
+     "players": 4
     }
    }
-  ]
- },
- {
-  "l": "nfl",
-  "day": "20221106",
-  "id": "401437820",
-  "p": "45",
-  "provider": "Caesars Sportsbook (New Jersey)",
-  "count": 43,
-  "types": {
-   "Total Passing Interceptions (incl. overtime)": 2,
-   "First Touchdown Scorer": 16,
-   "Last Touchdown Scorer": 16,
-   "Player to score 2 or more touchdowns": 8,
-   "Player to score 3 or more touchdowns": 1
   },
-  "examples": [
-   {
-    "competition": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/events/401437820/competitions/401437820?lang=en&region=us"
+  {
+   "l": "nba",
+   "day": "20250115",
+   "id": "401705128",
+   "p": "58",
+   "total": 935,
+   "refOnly": 0,
+   "types": {
+    "Total Points": {
+     "n": 4,
+     "priced": 4,
+     "lined": 4,
+     "players": 1
     },
-    "athlete": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/seasons/2022/athletes/2576980?lang=en&region=us"
+    "Total Assists": {
+     "n": 2,
+     "priced": 2,
+     "lined": 2,
+     "players": 1
     },
-    "provider": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/casinos/45?lang=en&region=us"
+    "Total Rebounds": {
+     "n": 2,
+     "priced": 2,
+     "lined": 2,
+     "players": 1
     },
-    "type": {
-     "id": "15",
-     "name": "Total Passing Interceptions (incl. overtime)"
+    "Total 3-Point Field Goals": {
+     "n": 2,
+     "priced": 2,
+     "lined": 2,
+     "players": 1
     },
-    "lastUpdated": "2022-11-06T21:03Z",
-    "current": {
-     "over": {
-      "value": 2.16,
-      "displayValue": "29/25",
-      "alternateDisplayValue": "+116",
-      "decimal": 2.16,
-      "fraction": "29/25",
-      "american": "+116"
-     },
-     "target": {
-      "value": 0.5,
-      "displayValue": "0.5"
-     }
+    "Total Turnovers": {
+     "n": 2,
+     "priced": 2,
+     "lined": 2,
+     "players": 1
     },
-    "open": {
-     "over": {
-      "value": 2.16,
-      "displayValue": "29/25",
-      "alternateDisplayValue": "+116",
-      "decimal": 2.16,
-      "fraction": "29/25",
-      "american": "+116"
-     },
-     "target": {
-      "value": 0.5,
-      "displayValue": "0.5"
-     }
-    }
-   },
-   {
-    "competition": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/events/401437820/competitions/401437820?lang=en&region=us"
+    "Total Field Goals Made (incl. overtime)": {
+     "n": 2,
+     "priced": 2,
+     "lined": 2,
+     "players": 1
     },
-    "athlete": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/seasons/2022/athletes/2576980?lang=en&region=us"
+    "1st Half Moneyline": {
+     "n": 2,
+     "priced": 2,
+     "lined": 0,
+     "players": 1
     },
-    "provider": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/casinos/45?lang=en&region=us"
+    "1st Half Spread": {
+     "n": 2,
+     "priced": 2,
+     "lined": 2,
+     "players": 1
     },
-    "type": {
-     "id": "15",
-     "name": "Total Passing Interceptions (incl. overtime)"
+    "1st Quarter Spread": {
+     "n": 2,
+     "priced": 2,
+     "lined": 2,
+     "players": 1
     },
-    "lastUpdated": "2022-11-06T21:03Z",
-    "current": {
-     "under": {
-      "value": 1.62,
-      "displayValue": "5/8",
-      "alternateDisplayValue": "-160",
-      "decimal": 1.62,
-      "fraction": "5/8",
-      "american": "-160"
-     },
-     "target": {
-      "value": 0.5,
-      "displayValue": "0.5"
-     }
+    "2nd Quarter Spread": {
+     "n": 2,
+     "priced": 2,
+     "lined": 2,
+     "players": 1
     },
-    "open": {
-     "under": {
-      "value": 1.62,
-      "displayValue": "5/8",
-      "alternateDisplayValue": "-160",
-      "decimal": 1.62,
-      "fraction": "5/8",
-      "american": "-160"
-     },
-     "target": {
-      "value": 0.5,
-      "displayValue": "0.5"
-     }
+    "3rd Quarter Spread": {
+     "n": 2,
+     "priced": 2,
+     "lined": 2,
+     "players": 1
+    },
+    "4th Quarter Moneyline": {
+     "n": 2,
+     "priced": 2,
+     "lined": 0,
+     "players": 1
+    },
+    "4th Quarter Spread": {
+     "n": 2,
+     "priced": 2,
+     "lined": 2,
+     "players": 1
+    },
+    "Total Points and Assists": {
+     "n": 183,
+     "priced": 148,
+     "lined": 183,
+     "players": 17
+    },
+    "Total Points and Rebounds": {
+     "n": 198,
+     "priced": 155,
+     "lined": 198,
+     "players": 17
+    },
+    "Total Assists and Rebounds": {
+     "n": 160,
+     "priced": 129,
+     "lined": 160,
+     "players": 17
+    },
+    "Total Points, Rebounds, and Assists": {
+     "n": 212,
+     "priced": 168,
+     "lined": 212,
+     "players": 17
+    },
+    "Total Steals and Blocks": {
+     "n": 92,
+     "priced": 79,
+     "lined": 92,
+     "players": 17
+    },
+    "To Record a Double Double": {
+     "n": 4,
+     "priced": 4,
+     "lined": 0,
+     "players": 2
+    },
+    "To Record a Triple Double": {
+     "n": 3,
+     "priced": 2,
+     "lined": 0,
+     "players": 2
+    },
+    "First Basket": {
+     "n": 3,
+     "priced": 2,
+     "lined": 0,
+     "players": 2
+    },
+    "1st 3PT FG Scorer": {
+     "n": 10,
+     "priced": 10,
+     "lined": 0,
+     "players": 10
+    },
+    "1st Team FG Scorer": {
+     "n": 10,
+     "priced": 10,
+     "lined": 0,
+     "players": 10
+    },
+    "1st Team FG Scorer Exact": {
+     "n": 10,
+     "priced": 10,
+     "lined": 0,
+     "players": 5
+    },
+    "Team Total Points": {
+     "n": 4,
+     "priced": 4,
+     "lined": 4,
+     "players": 1
+    },
+    "Team 1st Half Total Points": {
+     "n": 4,
+     "priced": 4,
+     "lined": 4,
+     "players": 1
+    },
+    "Team Total Assists": {
+     "n": 4,
+     "priced": 4,
+     "lined": 4,
+     "players": 1
+    },
+    "Team Total 3-Pointers Made": {
+     "n": 4,
+     "priced": 4,
+     "lined": 4,
+     "players": 1
+    },
+    "Team Total Steals": {
+     "n": 2,
+     "priced": 2,
+     "lined": 2,
+     "players": 1
+    },
+    "Team Total Blocks": {
+     "n": 4,
+     "priced": 4,
+     "lined": 4,
+     "players": 1
     }
    }
-  ]
- },
- {
-  "l": "nfl",
-  "day": "20221106",
-  "id": "401437820",
-  "p": "47",
-  "provider": "MGM",
-  "count": 42,
-  "types": {
-   "Total Passing Interceptions (incl. overtime)": 2,
-   "First Touchdown Scorer": 13,
-   "Last Touchdown Scorer": 13,
-   "Player to score 2 or more touchdowns": 11,
-   "Player to score 3 or more touchdowns": 3
   },
-  "examples": [
-   {
-    "competition": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/events/401437820/competitions/401437820?lang=en&region=us"
+  {
+   "l": "nba",
+   "day": "20240115",
+   "id": "401585184",
+   "p": "58",
+   "total": 206,
+   "refOnly": 0,
+   "types": {
+    "Total Points": {
+     "n": 30,
+     "priced": 30,
+     "lined": 30,
+     "players": 15
     },
-    "athlete": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/seasons/2022/athletes/2576980?lang=en&region=us"
+    "Total Assists": {
+     "n": 32,
+     "priced": 32,
+     "lined": 32,
+     "players": 16
     },
-    "provider": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/casinos/47?lang=en&region=us"
+    "Total Rebounds": {
+     "n": 30,
+     "priced": 30,
+     "lined": 30,
+     "players": 15
     },
-    "type": {
-     "id": "15",
-     "name": "Total Passing Interceptions (incl. overtime)"
+    "Total 3-Point Field Goals": {
+     "n": 24,
+     "priced": 24,
+     "lined": 24,
+     "players": 12
     },
-    "lastUpdated": "2022-11-06T21:03Z",
-    "current": {
-     "over": {
-      "value": 2.3,
-      "displayValue": "13/10",
-      "alternateDisplayValue": "+130",
-      "decimal": 2.3,
-      "fraction": "13/10",
-      "american": "+130"
-     },
-     "target": {
-      "value": 0.5,
-      "displayValue": "0.5"
-     }
+    "Total Steals": {
+     "n": 30,
+     "priced": 30,
+     "lined": 30,
+     "players": 15
     },
-    "open": {
-     "over": {
-      "value": 2.2,
-      "displayValue": "6/5",
-      "alternateDisplayValue": "+120",
-      "decimal": 2.2,
-      "fraction": "6/5",
-      "american": "+120"
-     },
-     "target": {
-      "value": 0.5,
-      "displayValue": "0.5"
-     }
-    }
-   },
-   {
-    "competition": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/events/401437820/competitions/401437820?lang=en&region=us"
+    "Total Blocks": {
+     "n": 30,
+     "priced": 30,
+     "lined": 30,
+     "players": 15
     },
-    "athlete": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/seasons/2022/athletes/2576980?lang=en&region=us"
-    },
-    "provider": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/casinos/47?lang=en&region=us"
-    },
-    "type": {
-     "id": "15",
-     "name": "Total Passing Interceptions (incl. overtime)"
-    },
-    "lastUpdated": "2022-11-06T21:03Z",
-    "current": {
-     "under": {
-      "value": 1.57,
-      "displayValue": "4/7",
-      "alternateDisplayValue": "-175",
-      "decimal": 1.57,
-      "fraction": "4/7",
-      "american": "-175"
-     },
-     "target": {
-      "value": 0.5,
-      "displayValue": "0.5"
-     }
-    },
-    "open": {
-     "under": {
-      "value": 1.62,
-      "displayValue": "8/13",
-      "alternateDisplayValue": "-160",
-      "decimal": 1.62,
-      "fraction": "8/13",
-      "american": "-160"
-     },
-     "target": {
-      "value": 0.5,
-      "displayValue": "0.5"
-     }
+    "Total Turnovers": {
+     "n": 30,
+     "priced": 30,
+     "lined": 30,
+     "players": 15
     }
    }
-  ]
- },
- {
-  "l": "nfl",
-  "day": "20221106",
-  "id": "401437820",
-  "p": "52",
-  "provider": "Caesars Sportsbook (Colorado)",
-  "count": 43,
-  "types": {
-   "Total Passing Interceptions (incl. overtime)": 2,
-   "First Touchdown Scorer": 16,
-   "Last Touchdown Scorer": 16,
-   "Player to score 2 or more touchdowns": 8,
-   "Player to score 3 or more touchdowns": 1
   },
-  "examples": [
-   {
-    "competition": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/events/401437820/competitions/401437820?lang=en&region=us"
+  {
+   "l": "nba",
+   "day": "20230115",
+   "id": "401468804",
+   "p": "40",
+   "total": 204,
+   "refOnly": 0,
+   "types": {
+    "Total Points": {
+     "n": 30,
+     "priced": 30,
+     "lined": 30,
+     "players": 15
     },
-    "athlete": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/seasons/2022/athletes/2576980?lang=en&region=us"
+    "Total Assists": {
+     "n": 28,
+     "priced": 28,
+     "lined": 28,
+     "players": 14
     },
-    "provider": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/casinos/52?lang=en&region=us"
+    "Total Rebounds": {
+     "n": 30,
+     "priced": 30,
+     "lined": 30,
+     "players": 15
     },
-    "type": {
-     "id": "15",
-     "name": "Total Passing Interceptions (incl. overtime)"
+    "Total 3-Point Field Goals": {
+     "n": 28,
+     "priced": 28,
+     "lined": 28,
+     "players": 14
     },
-    "lastUpdated": "2022-11-06T21:03Z",
-    "current": {
-     "over": {
-      "value": 2.16,
-      "displayValue": "29/25",
-      "alternateDisplayValue": "+116",
-      "decimal": 2.16,
-      "fraction": "29/25",
-      "american": "+116"
-     },
-     "target": {
-      "value": 0.5,
-      "displayValue": "0.5"
-     }
+    "Total Steals": {
+     "n": 30,
+     "priced": 30,
+     "lined": 30,
+     "players": 15
     },
-    "open": {
-     "over": {
-      "value": 2.16,
-      "displayValue": "29/25",
-      "alternateDisplayValue": "+116",
-      "decimal": 2.16,
-      "fraction": "29/25",
-      "american": "+116"
-     },
-     "target": {
-      "value": 0.5,
-      "displayValue": "0.5"
-     }
-    }
-   },
-   {
-    "competition": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/events/401437820/competitions/401437820?lang=en&region=us"
+    "Total Blocks": {
+     "n": 28,
+     "priced": 28,
+     "lined": 28,
+     "players": 14
     },
-    "athlete": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/seasons/2022/athletes/2576980?lang=en&region=us"
-    },
-    "provider": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/football/leagues/nfl/casinos/52?lang=en&region=us"
-    },
-    "type": {
-     "id": "15",
-     "name": "Total Passing Interceptions (incl. overtime)"
-    },
-    "lastUpdated": "2022-11-06T21:03Z",
-    "current": {
-     "under": {
-      "value": 1.62,
-      "displayValue": "5/8",
-      "alternateDisplayValue": "-160",
-      "decimal": 1.62,
-      "fraction": "5/8",
-      "american": "-160"
-     },
-     "target": {
-      "value": 0.5,
-      "displayValue": "0.5"
-     }
-    },
-    "open": {
-     "under": {
-      "value": 1.62,
-      "displayValue": "5/8",
-      "alternateDisplayValue": "-160",
-      "decimal": 1.62,
-      "fraction": "5/8",
-      "american": "-160"
-     },
-     "target": {
-      "value": 0.5,
-      "displayValue": "0.5"
-     }
+    "Total Turnovers": {
+     "n": 30,
+     "priced": 30,
+     "lined": 30,
+     "players": 15
     }
    }
-  ]
- },
- {
-  "l": "nba",
-  "day": "20250115",
-  "id": "401705127",
-  "p": "58",
-  "provider": "ESPN BET",
-  "count": 792,
-  "types": {
-   "1st Half Moneyline": 2,
-   "1st Half Spread": 2,
-   "1st Quarter Spread": 2,
-   "2nd Quarter Spread": 2,
-   "3rd Quarter Moneyline": 2,
-   "3rd Quarter Spread": 2,
-   "4th Quarter Moneyline": 2,
-   "4th Quarter Spread": 2,
-   "Total Points and Assists": 153,
-   "Total Points and Rebounds": 169,
-   "Total Assists and Rebounds": 137,
-   "Total Points, Rebounds, and Assists": 181,
-   "Total Steals and Blocks": 77,
-   "To Record a Double Double": 2,
-   "To Record a Triple Double": 2,
-   "First Basket": 3,
-   "1st 3PT FG Scorer": 9,
-   "1st Team FG Scorer": 9,
-   "1st Team FG Scorer Exact": 10,
-   "Team Total Points": 4,
-   "Team 1st Half Total Points": 4,
-   "Team Total Assists": 4,
-   "Team Total 3-Pointers Made": 4,
-   "Team Total Steals": 4,
-   "Team Total Blocks": 4
   },
-  "examples": [
-   {
-    "competition": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/events/401705127/competitions/401705127?lang=en&region=us"
+  {
+   "l": "nba",
+   "day": "20231115",
+   "id": "401584821",
+   "p": "58",
+   "total": 0,
+   "refOnly": 0,
+   "types": {}
+  },
+  {
+   "l": "nfl",
+   "day": "20240915",
+   "id": "401671721",
+   "p": "58",
+   "total": 506,
+   "refOnly": 0,
+   "types": {
+    "Total Passing Yards (incl. overtime)": {
+     "n": 14,
+     "priced": 4,
+     "lined": 14,
+     "players": 2
     },
-    "athlete": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/seasons/2025/athletes/3431?lang=en&region=us"
+    "Total Pass Completions (incl. overtime)": {
+     "n": 12,
+     "priced": 4,
+     "lined": 12,
+     "players": 2
     },
-    "provider": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/casinos/58?lang=en&region=us"
+    "Total Passing Touchdowns (incl. overtime)": {
+     "n": 13,
+     "priced": 4,
+     "lined": 13,
+     "players": 2
     },
-    "type": {
-     "id": "87",
-     "name": "Total Points and Assists"
+    "Total Carries (incl. overtime)": {
+     "n": 10,
+     "priced": 10,
+     "lined": 10,
+     "players": 5
     },
-    "odds": {
-     "american": {
-      "value": "+2500",
-      "open": "+2500"
-     },
-     "decimal": {
-      "value": "26.0000",
-      "open": "26.0000"
-     },
-     "fraction": {
-      "value": "25/1",
-      "open": "25/1"
-     },
-     "total": {
-      "value": "24.5",
-      "open": "24.5"
-     }
+    "Total Rushing Yards (incl. overtime)": {
+     "n": 19,
+     "priced": 4,
+     "lined": 19,
+     "players": 3
     },
-    "lastUpdated": "2025-01-16T05:58Z",
-    "current": {
-     "target": {
-      "value": 24.5,
-      "displayValue": "24.5"
-     }
+    "Total Receiving Yards (incl. overtime)": {
+     "n": 70,
+     "priced": 20,
+     "lined": 70,
+     "players": 10
     },
-    "open": {
-     "target": {
-      "value": 24.5,
-      "displayValue": "24.5"
-     }
-    }
-   },
-   {
-    "competition": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/events/401705127/competitions/401705127?lang=en&region=us"
+    "Total Receptions (incl. overtime)": {
+     "n": 71,
+     "priced": 22,
+     "lined": 71,
+     "players": 11
     },
-    "athlete": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/seasons/2025/athletes/3431?lang=en&region=us"
+    "Total Passing Attempts (incl. overtime)": {
+     "n": 14,
+     "priced": 4,
+     "lined": 14,
+     "players": 2
     },
-    "provider": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/casinos/58?lang=en&region=us"
+    "Longest Passing Completion (incl. overtime)": {
+     "n": 14,
+     "priced": 4,
+     "lined": 14,
+     "players": 2
     },
-    "type": {
-     "id": "87",
-     "name": "Total Points and Assists"
+    "Total Passing Plus Rushing Yards (incl. overtime)": {
+     "n": 9,
+     "priced": 4,
+     "lined": 9,
+     "players": 2
     },
-    "odds": {
-     "american": {
-      "value": "+900",
-      "open": "+900"
-     },
-     "decimal": {
-      "value": "10.0000",
-      "open": "10.0000"
-     },
-     "fraction": {
-      "value": "9/1",
-      "open": "9/1"
-     },
-     "total": {
-      "value": "19.5",
-      "open": "19.5"
-     }
+    "Longest Reception (incl. overtime)": {
+     "n": 22,
+     "priced": 22,
+     "lined": 22,
+     "players": 11
     },
-    "lastUpdated": "2025-01-16T05:58Z",
-    "current": {
-     "target": {
-      "value": 19.5,
-      "displayValue": "19.5"
-     }
+    "Total Rushing Plus Receiving Yards (incl. overtime)": {
+     "n": 25,
+     "priced": 20,
+     "lined": 25,
+     "players": 10
     },
-    "open": {
-     "target": {
-      "value": 19.5,
-      "displayValue": "19.5"
-     }
+    "Longest Rush (incl. overtime)": {
+     "n": 8,
+     "priced": 8,
+     "lined": 8,
+     "players": 4
+    },
+    "Total Kicking Points (incl. overtime)": {
+     "n": 2,
+     "priced": 2,
+     "lined": 2,
+     "players": 1
+    },
+    "Total Extra Points Made (incl. overtime)": {
+     "n": 2,
+     "priced": 2,
+     "lined": 2,
+     "players": 1
+    },
+    "Total Field Goals Made (incl. overtime)": {
+     "n": 2,
+     "priced": 2,
+     "lined": 2,
+     "players": 1
+    },
+    "Total Tackles Plus Assists (incl. overtime)": {
+     "n": 16,
+     "priced": 16,
+     "lined": 16,
+     "players": 8
+    },
+    "Total Sacks (incl. overtime)": {
+     "n": 2,
+     "priced": 2,
+     "lined": 2,
+     "players": 1
+    },
+    "First Touchdown Scorer": {
+     "n": 21,
+     "priced": 21,
+     "lined": 0,
+     "players": 21
+    },
+    "Last Touchdown Scorer": {
+     "n": 21,
+     "priced": 21,
+     "lined": 0,
+     "players": 21
+    },
+    "Anytime Touchdown Scorer": {
+     "n": 48,
+     "priced": 0,
+     "lined": 48,
+     "players": 21
+    },
+    "To record a sack (incl. overtime)": {
+     "n": 2,
+     "priced": 2,
+     "lined": 2,
+     "players": 1
+    },
+    "To throw an interception (incl. overtime)": {
+     "n": 4,
+     "priced": 4,
+     "lined": 4,
+     "players": 2
+    },
+    "1st Half Passing Touchdowns": {
+     "n": 7,
+     "priced": 0,
+     "lined": 7,
+     "players": 2
+    },
+    "1st Quarter Passing Touchdowns": {
+     "n": 6,
+     "priced": 0,
+     "lined": 6,
+     "players": 2
+    },
+    "1st Half Touchdown Scorer": {
+     "n": 39,
+     "priced": 0,
+     "lined": 39,
+     "players": 21
+    },
+    "1st Quarter Touchdown Scorer": {
+     "n": 24,
+     "priced": 0,
+     "lined": 24,
+     "players": 20
+    },
+    "Passing + Rushing Touchdowns": {
+     "n": 9,
+     "priced": 0,
+     "lined": 9,
+     "players": 2
     }
    }
-  ]
- },
- {
-  "l": "nba",
-  "day": "20250115",
-  "id": "401705127",
-  "p": "59",
-  "provider": "ESPN Bet - Live Odds",
-  "count": 775,
-  "types": {
-   "Total Points and Assists": 153,
-   "Total Points and Rebounds": 169,
-   "Total Assists and Rebounds": 137,
-   "Total Points, Rebounds, and Assists": 181,
-   "Total Steals and Blocks": 77,
-   "To Record a Double Double": 2,
-   "To Record a Triple Double": 2,
-   "First Basket": 2,
-   "1st 3PT FG Scorer": 9,
-   "1st Team FG Scorer": 9,
-   "1st Team FG Scorer Exact": 10,
-   "Team Total Points": 4,
-   "Team 1st Half Total Points": 4,
-   "Team Total Assists": 4,
-   "Team Total 3-Pointers Made": 4,
-   "Team Total Steals": 4,
-   "Team Total Blocks": 4
   },
-  "examples": [
-   {
-    "competition": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/events/401705127/competitions/401705127?lang=en&region=us"
+  {
+   "l": "nhl",
+   "day": "20250115",
+   "id": "401688305",
+   "p": "58",
+   "total": 216,
+   "refOnly": 0,
+   "types": {
+    "Total Points": {
+     "n": 26,
+     "priced": 26,
+     "lined": 26,
+     "players": 13
     },
-    "athlete": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/seasons/2025/athletes/3431?lang=en&region=us"
+    "Total Assists": {
+     "n": 26,
+     "priced": 26,
+     "lined": 26,
+     "players": 13
     },
-    "provider": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/casinos/59?lang=en&region=us"
+    "First Goalscorer": {
+     "n": 34,
+     "priced": 34,
+     "lined": 0,
+     "players": 34
     },
-    "type": {
-     "id": "87",
-     "name": "Total Points and Assists"
+    "Last Goalscorer": {
+     "n": 34,
+     "priced": 34,
+     "lined": 0,
+     "players": 34
     },
-    "odds": {
-     "american": {
-      "value": "-160",
-      "open": "-8000"
-     },
-     "decimal": {
-      "value": "1.6250",
-      "open": "1.0125"
-     },
-     "fraction": {
-      "value": "5/8",
-      "open": "1/80"
-     },
-     "total": {
-      "value": "13.5",
-      "open": "23.5"
-     }
+    "Total Goals": {
+     "n": 70,
+     "priced": 70,
+     "lined": 70,
+     "players": 35
     },
-    "lastUpdated": "2025-01-16T03:56Z",
-    "current": {
-     "under": {
-      "value": 1.625,
-      "displayValue": "5/8",
-      "alternateDisplayValue": "-160",
-      "decimal": 1.625,
-      "fraction": "5/8",
-      "american": "-160"
-     },
-     "target": {
-      "value": 13.5,
-      "displayValue": "13.5"
-     }
+    "Total Power Play Points": {
+     "n": 18,
+     "priced": 18,
+     "lined": 18,
+     "players": 9
     },
-    "open": {
-     "under": {
-      "value": 1.0125,
-      "displayValue": "1/80",
-      "alternateDisplayValue": "-8000",
-      "decimal": 1.0125,
-      "fraction": "1/80",
-      "american": "-8000"
-     },
-     "target": {
-      "value": 23.5,
-      "displayValue": "23.5"
-     }
-    }
-   },
-   {
-    "competition": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/events/401705127/competitions/401705127?lang=en&region=us"
+    "Total Blocked Shots": {
+     "n": 4,
+     "priced": 4,
+     "lined": 4,
+     "players": 2
     },
-    "athlete": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/seasons/2025/athletes/3431?lang=en&region=us"
-    },
-    "provider": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/casinos/59?lang=en&region=us"
-    },
-    "type": {
-     "id": "87",
-     "name": "Total Points and Assists"
-    },
-    "odds": {
-     "american": {
-      "value": "+2500",
-      "open": "+2500"
-     },
-     "decimal": {
-      "value": "26.0000",
-      "open": "26.0000"
-     },
-     "fraction": {
-      "value": "25/1",
-      "open": "25/1"
-     },
-     "total": {
-      "value": "24.5",
-      "open": "24.5"
-     }
-    },
-    "lastUpdated": "2025-01-16T03:13Z",
-    "current": {
-     "target": {
-      "value": 24.5,
-      "displayValue": "24.5"
-     }
-    },
-    "open": {
-     "target": {
-      "value": 24.5,
-      "displayValue": "24.5"
-     }
+    "Total Saves": {
+     "n": 4,
+     "priced": 4,
+     "lined": 4,
+     "players": 2
     }
    }
-  ]
- },
- {
-  "l": "nba",
-  "day": "20240115",
-  "id": "401585183",
-  "p": "58",
-  "provider": "ESPN BET",
-  "count": 210,
-  "types": {
-   "Total Points": 30,
-   "Total Assists": 30,
-   "Total Rebounds": 30,
-   "Total 3-Point Field Goals": 30,
-   "Total Steals": 30,
-   "Total Blocks": 30,
-   "Total Turnovers": 30
   },
-  "examples": [
-   {
-    "competition": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/events/401585183/competitions/401585183?lang=en&region=us"
+  {
+   "l": "mlb",
+   "day": "20250615",
+   "id": "401695966",
+   "p": "58",
+   "total": 427,
+   "refOnly": 0,
+   "types": {
+    "Total Strikeouts": {
+     "n": 8,
+     "priced": 8,
+     "lined": 8,
+     "players": 2
     },
-    "athlete": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/seasons/2024/athletes/3209?lang=en&region=us"
+    "To Record Win": {
+     "n": 2,
+     "priced": 2,
+     "lined": 0,
+     "players": 1
     },
-    "provider": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/casinos/58?lang=en&region=us"
+    "Total Singles Hit": {
+     "n": 36,
+     "priced": 36,
+     "lined": 36,
+     "players": 18
     },
-    "type": {
-     "id": "1",
-     "name": "Total Points"
+    "Total Doubles Hit": {
+     "n": 36,
+     "priced": 36,
+     "lined": 36,
+     "players": 18
     },
-    "odds": {
-     "american": {
-      "value": "-120",
-      "open": "-115"
-     },
-     "decimal": {
-      "value": "1.83",
-      "open": "1.87"
-     },
-     "fraction": {
-      "value": "5/6",
-      "open": "20/23"
-     },
-     "total": {
-      "value": "4.5",
-      "open": "4.5"
-     }
+    "Total Home Runs Hit": {
+     "n": 71,
+     "priced": 71,
+     "lined": 71,
+     "players": 18
     },
-    "lastUpdated": "2024-01-15T21:11Z",
-    "current": {
-     "over": {
-      "value": 1.83,
-      "displayValue": "5/6",
-      "alternateDisplayValue": "-120",
-      "decimal": 1.83,
-      "fraction": "5/6",
-      "american": "-120"
-     },
-     "target": {
-      "value": 4.5,
-      "displayValue": "4.5"
-     }
+    "Total Bases": {
+     "n": 42,
+     "priced": 42,
+     "lined": 42,
+     "players": 18
     },
-    "open": {
-     "over": {
-      "value": 1.87,
-      "displayValue": "20/23",
-      "alternateDisplayValue": "-115",
-      "decimal": 1.87,
-      "fraction": "20/23",
-      "american": "-115"
-     },
-     "target": {
-      "value": 4.5,
-      "displayValue": "4.5"
-     }
-    }
-   },
-   {
-    "competition": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/events/401585183/competitions/401585183?lang=en&region=us"
+    "Total Hits": {
+     "n": 36,
+     "priced": 36,
+     "lined": 36,
+     "players": 18
     },
-    "athlete": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/seasons/2024/athletes/3209?lang=en&region=us"
+    "Total Hits Allowed": {
+     "n": 2,
+     "priced": 2,
+     "lined": 2,
+     "players": 1
     },
-    "provider": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/casinos/58?lang=en&region=us"
+    "Earned Runs Allowed": {
+     "n": 2,
+     "priced": 2,
+     "lined": 2,
+     "players": 1
     },
-    "type": {
-     "id": "1",
-     "name": "Total Points"
+    "Total Hits + Runs + RBIs": {
+     "n": 36,
+     "priced": 36,
+     "lined": 36,
+     "players": 18
     },
-    "odds": {
-     "american": {
-      "value": "-110",
-      "open": "-115"
-     },
-     "decimal": {
-      "value": "1.91",
-      "open": "1.87"
-     },
-     "fraction": {
-      "value": "10/11",
-      "open": "20/23"
-     },
-     "total": {
-      "value": "4.5",
-      "open": "4.5"
-     }
+    "Total Outs Recorded": {
+     "n": 2,
+     "priced": 2,
+     "lined": 2,
+     "players": 1
     },
-    "lastUpdated": "2024-01-15T21:11Z",
-    "current": {
-     "under": {
-      "value": 1.91,
-      "displayValue": "10/11",
-      "alternateDisplayValue": "-110",
-      "decimal": 1.91,
-      "fraction": "10/11",
-      "american": "-110"
-     },
-     "target": {
-      "value": 4.5,
-      "displayValue": "4.5"
-     }
+    "Total Runs Scored": {
+     "n": 36,
+     "priced": 36,
+     "lined": 36,
+     "players": 18
     },
-    "open": {
-     "under": {
-      "value": 1.87,
-      "displayValue": "20/23",
-      "alternateDisplayValue": "-115",
-      "decimal": 1.87,
-      "fraction": "20/23",
-      "american": "-115"
-     },
-     "target": {
-      "value": 4.5,
-      "displayValue": "4.5"
-     }
+    "Total RBIs": {
+     "n": 36,
+     "priced": 36,
+     "lined": 36,
+     "players": 18
+    },
+    "Total Stolen Bases": {
+     "n": 16,
+     "priced": 16,
+     "lined": 16,
+     "players": 8
+    },
+    "Total Walks Allowed": {
+     "n": 2,
+     "priced": 2,
+     "lined": 2,
+     "players": 1
+    },
+    "First Home Run Hitter": {
+     "n": 36,
+     "priced": 36,
+     "lined": 0,
+     "players": 18
+    },
+    "Winning Margin": {
+     "n": 6,
+     "priced": 6,
+     "lined": 0,
+     "players": 1
+    },
+    "1st 5 Innings Moneyline": {
+     "n": 2,
+     "priced": 2,
+     "lined": 0,
+     "players": 1
+    },
+    "1st 5 Innings Run Line": {
+     "n": 4,
+     "priced": 4,
+     "lined": 4,
+     "players": 1
+    },
+    "1st 5 Innings Total Runs": {
+     "n": 2,
+     "priced": 2,
+     "lined": 2,
+     "players": 1
+    },
+    "1st Inning Team to Score": {
+     "n": 4,
+     "priced": 4,
+     "lined": 4,
+     "players": 1
+    },
+    "Team Total Runs": {
+     "n": 8,
+     "priced": 8,
+     "lined": 8,
+     "players": 1
+    },
+    "First Team to Score": {
+     "n": 2,
+     "priced": 2,
+     "lined": 0,
+     "players": 1
     }
    }
-  ]
- },
- {
-  "l": "nba",
-  "day": "20240115",
-  "id": "401585183",
-  "p": "47",
-  "provider": "MGM",
-  "count": 194,
-  "types": {
-   "Total Points": 28,
-   "Total Assists": 28,
-   "Total Rebounds": 28,
-   "Total 3-Point Field Goals": 26,
-   "Total Steals": 28,
-   "Total Blocks": 28,
-   "Total Turnovers": 28
-  },
-  "examples": [
-   {
-    "competition": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/events/401585183/competitions/401585183?lang=en&region=us"
-    },
-    "athlete": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/seasons/2024/athletes/3209?lang=en&region=us"
-    },
-    "provider": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/casinos/47?lang=en&region=us"
-    },
-    "type": {
-     "id": "1",
-     "name": "Total Points"
-    },
-    "odds": {
-     "american": {
-      "value": "-120",
-      "open": "-115"
-     },
-     "decimal": {
-      "value": "1.83",
-      "open": "1.87"
-     },
-     "fraction": {
-      "value": "5/6",
-      "open": "87/100"
-     },
-     "total": {
-      "value": "4.5",
-      "open": "4.5"
-     }
-    },
-    "lastUpdated": "2024-01-15T21:11Z",
-    "current": {
-     "over": {
-      "value": 1.83,
-      "displayValue": "5/6",
-      "alternateDisplayValue": "-120",
-      "decimal": 1.83,
-      "fraction": "5/6",
-      "american": "-120"
-     },
-     "target": {
-      "value": 4.5,
-      "displayValue": "4.5"
-     }
-    },
-    "open": {
-     "over": {
-      "value": 1.87,
-      "displayValue": "87/100",
-      "alternateDisplayValue": "-115",
-      "decimal": 1.87,
-      "fraction": "87/100",
-      "american": "-115"
-     },
-     "target": {
-      "value": 4.5,
-      "displayValue": "4.5"
-     }
-    }
-   },
-   {
-    "competition": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/events/401585183/competitions/401585183?lang=en&region=us"
-    },
-    "athlete": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/seasons/2024/athletes/3209?lang=en&region=us"
-    },
-    "provider": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/casinos/47?lang=en&region=us"
-    },
-    "type": {
-     "id": "1",
-     "name": "Total Points"
-    },
-    "odds": {
-     "american": {
-      "value": "-110",
-      "open": "-115"
-     },
-     "decimal": {
-      "value": "1.91",
-      "open": "1.87"
-     },
-     "fraction": {
-      "value": "10/11",
-      "open": "87/100"
-     },
-     "total": {
-      "value": "4.5",
-      "open": "4.5"
-     }
-    },
-    "lastUpdated": "2024-01-15T21:11Z",
-    "current": {
-     "under": {
-      "value": 1.91,
-      "displayValue": "10/11",
-      "alternateDisplayValue": "-110",
-      "decimal": 1.91,
-      "fraction": "10/11",
-      "american": "-110"
-     },
-     "target": {
-      "value": 4.5,
-      "displayValue": "4.5"
-     }
-    },
-    "open": {
-     "under": {
-      "value": 1.87,
-      "displayValue": "87/100",
-      "alternateDisplayValue": "-115",
-      "decimal": 1.87,
-      "fraction": "87/100",
-      "american": "-115"
-     },
-     "target": {
-      "value": 4.5,
-      "displayValue": "4.5"
-     }
-    }
-   }
-  ]
- },
- {
-  "l": "nba",
-  "day": "20240115",
-  "id": "401585183",
-  "p": "45",
-  "provider": "Caesars Sportsbook (New Jersey)",
-  "count": 164,
-  "types": {
-   "Total Points": 22,
-   "Total Assists": 20,
-   "Total Rebounds": 22,
-   "Total 3-Point Field Goals": 30,
-   "Total Steals": 20,
-   "Total Blocks": 20,
-   "Total Turnovers": 30
-  },
-  "examples": [
-   {
-    "competition": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/events/401585183/competitions/401585183?lang=en&region=us"
-    },
-    "athlete": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/seasons/2024/athletes/3416?lang=en&region=us"
-    },
-    "provider": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/casinos/45?lang=en&region=us"
-    },
-    "type": {
-     "id": "1",
-     "name": "Total Points"
-    },
-    "odds": {
-     "american": {
-      "value": "-109",
-      "open": "-109"
-     },
-     "decimal": {
-      "value": "1.92",
-      "open": "1.92"
-     },
-     "fraction": {
-      "value": "23/25",
-      "open": "23/25"
-     },
-     "total": {
-      "value": "5.5",
-      "open": "5.5"
-     }
-    },
-    "lastUpdated": "2024-01-15T21:11Z",
-    "current": {
-     "over": {
-      "value": 1.92,
-      "displayValue": "23/25",
-      "alternateDisplayValue": "-109",
-      "decimal": 1.92,
-      "fraction": "23/25",
-      "american": "-109"
-     },
-     "target": {
-      "value": 5.5,
-      "displayValue": "5.5"
-     }
-    },
-    "open": {
-     "over": {
-      "value": 1.92,
-      "displayValue": "23/25",
-      "alternateDisplayValue": "-109",
-      "decimal": 1.92,
-      "fraction": "23/25",
-      "american": "-109"
-     },
-     "target": {
-      "value": 5.5,
-      "displayValue": "5.5"
-     }
-    }
-   },
-   {
-    "competition": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/events/401585183/competitions/401585183?lang=en&region=us"
-    },
-    "athlete": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/seasons/2024/athletes/3416?lang=en&region=us"
-    },
-    "provider": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/casinos/45?lang=en&region=us"
-    },
-    "type": {
-     "id": "1",
-     "name": "Total Points"
-    },
-    "odds": {
-     "american": {
-      "value": "-125",
-      "open": "-125"
-     },
-     "decimal": {
-      "value": "1.80",
-      "open": "1.80"
-     },
-     "fraction": {
-      "value": "4/5",
-      "open": "4/5"
-     },
-     "total": {
-      "value": "5.5",
-      "open": "5.5"
-     }
-    },
-    "lastUpdated": "2024-01-15T21:11Z",
-    "current": {
-     "under": {
-      "value": 1.8,
-      "displayValue": "4/5",
-      "alternateDisplayValue": "-125",
-      "decimal": 1.8,
-      "fraction": "4/5",
-      "american": "-125"
-     },
-     "target": {
-      "value": 5.5,
-      "displayValue": "5.5"
-     }
-    },
-    "open": {
-     "under": {
-      "value": 1.8,
-      "displayValue": "4/5",
-      "alternateDisplayValue": "-125",
-      "decimal": 1.8,
-      "fraction": "4/5",
-      "american": "-125"
-     },
-     "target": {
-      "value": 5.5,
-      "displayValue": "5.5"
-     }
-    }
-   }
-  ]
- },
- {
-  "l": "nba",
-  "day": "20230115",
-  "id": "401468803",
-  "p": "40",
-  "provider": "DraftKings (old)",
-  "count": 200,
-  "types": {
-   "Total Points": 30,
-   "Total Assists": 22,
-   "Total Rebounds": 30,
-   "Total 3-Point Field Goals": 28,
-   "Total Steals": 30,
-   "Total Blocks": 30,
-   "Total Turnovers": 30
-  },
-  "examples": [
-   {
-    "competition": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/events/401468803/competitions/401468803?lang=en&region=us"
-    },
-    "athlete": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/seasons/2023/athletes/3593?lang=en&region=us"
-    },
-    "provider": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/casinos/40?lang=en&region=us"
-    },
-    "type": {
-     "id": "1",
-     "name": "Total Points"
-    },
-    "odds": {
-     "american": {
-      "value": "-115",
-      "open": "-115"
-     },
-     "decimal": {
-      "value": "1.87",
-      "open": "1.87"
-     },
-     "fraction": {
-      "value": "87/100",
-      "open": "87/100"
-     },
-     "total": {
-      "value": "20.5",
-      "open": "20.5"
-     }
-    },
-    "lastUpdated": "2023-01-15T21:10Z",
-    "current": {
-     "over": {
-      "value": 1.87,
-      "displayValue": "87/100",
-      "alternateDisplayValue": "-115",
-      "decimal": 1.87,
-      "fraction": "87/100",
-      "american": "-115"
-     },
-     "target": {
-      "value": 20.5,
-      "displayValue": "20.5"
-     }
-    },
-    "open": {
-     "over": {
-      "value": 1.87,
-      "displayValue": "87/100",
-      "alternateDisplayValue": "-115",
-      "decimal": 1.87,
-      "fraction": "87/100",
-      "american": "-115"
-     },
-     "target": {
-      "value": 20.5,
-      "displayValue": "20.5"
-     }
-    }
-   },
-   {
-    "competition": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/events/401468803/competitions/401468803?lang=en&region=us"
-    },
-    "athlete": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/seasons/2023/athletes/3593?lang=en&region=us"
-    },
-    "provider": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/casinos/40?lang=en&region=us"
-    },
-    "type": {
-     "id": "1",
-     "name": "Total Points"
-    },
-    "odds": {
-     "american": {
-      "value": "-115",
-      "open": "-115"
-     },
-     "decimal": {
-      "value": "1.87",
-      "open": "1.87"
-     },
-     "fraction": {
-      "value": "87/100",
-      "open": "87/100"
-     },
-     "total": {
-      "value": "20.5",
-      "open": "20.5"
-     }
-    },
-    "lastUpdated": "2023-01-15T21:10Z",
-    "current": {
-     "under": {
-      "value": 1.87,
-      "displayValue": "87/100",
-      "alternateDisplayValue": "-115",
-      "decimal": 1.87,
-      "fraction": "87/100",
-      "american": "-115"
-     },
-     "target": {
-      "value": 20.5,
-      "displayValue": "20.5"
-     }
-    },
-    "open": {
-     "under": {
-      "value": 1.87,
-      "displayValue": "87/100",
-      "alternateDisplayValue": "-115",
-      "decimal": 1.87,
-      "fraction": "87/100",
-      "american": "-115"
-     },
-     "target": {
-      "value": 20.5,
-      "displayValue": "20.5"
-     }
-    }
-   }
-  ]
- },
- {
-  "l": "nba",
-  "day": "20230115",
-  "id": "401468803",
-  "p": "47",
-  "provider": "MGM",
-  "count": 180,
-  "types": {
-   "Total Points": 26,
-   "Total Assists": 26,
-   "Total Rebounds": 26,
-   "Total 3-Point Field Goals": 24,
-   "Total Steals": 26,
-   "Total Blocks": 26,
-   "Total Turnovers": 26
-  },
-  "examples": [
-   {
-    "competition": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/events/401468803/competitions/401468803?lang=en&region=us"
-    },
-    "athlete": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/seasons/2023/athletes/6429?lang=en&region=us"
-    },
-    "provider": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/casinos/47?lang=en&region=us"
-    },
-    "type": {
-     "id": "1",
-     "name": "Total Points"
-    },
-    "odds": {
-     "american": {
-      "value": "-128",
-      "open": "-128"
-     },
-     "decimal": {
-      "value": "1.78",
-      "open": "1.78"
-     },
-     "fraction": {
-      "value": "39/50",
-      "open": "39/50"
-     },
-     "total": {
-      "value": "12.5",
-      "open": "12.5"
-     }
-    },
-    "lastUpdated": "2023-01-15T22:57Z",
-    "current": {
-     "over": {
-      "value": 1.78,
-      "displayValue": "39/50",
-      "alternateDisplayValue": "-128",
-      "decimal": 1.78,
-      "fraction": "39/50",
-      "american": "-128"
-     },
-     "target": {
-      "value": 12.5,
-      "displayValue": "12.5"
-     }
-    },
-    "open": {
-     "over": {
-      "value": 1.78,
-      "displayValue": "39/50",
-      "alternateDisplayValue": "-128",
-      "decimal": 1.78,
-      "fraction": "39/50",
-      "american": "-128"
-     },
-     "target": {
-      "value": 12.5,
-      "displayValue": "12.5"
-     }
-    }
-   },
-   {
-    "competition": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/events/401468803/competitions/401468803?lang=en&region=us"
-    },
-    "athlete": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/seasons/2023/athletes/6429?lang=en&region=us"
-    },
-    "provider": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/casinos/47?lang=en&region=us"
-    },
-    "type": {
-     "id": "1",
-     "name": "Total Points"
-    },
-    "odds": {
-     "american": {
-      "value": "-105",
-      "open": "-105"
-     },
-     "decimal": {
-      "value": "1.95",
-      "open": "1.95"
-     },
-     "fraction": {
-      "value": "20/21",
-      "open": "20/21"
-     },
-     "total": {
-      "value": "12.5",
-      "open": "12.5"
-     }
-    },
-    "lastUpdated": "2023-01-15T22:57Z",
-    "current": {
-     "under": {
-      "value": 1.95,
-      "displayValue": "20/21",
-      "alternateDisplayValue": "-105",
-      "decimal": 1.95,
-      "fraction": "20/21",
-      "american": "-105"
-     },
-     "target": {
-      "value": 12.5,
-      "displayValue": "12.5"
-     }
-    },
-    "open": {
-     "under": {
-      "value": 1.95,
-      "displayValue": "20/21",
-      "alternateDisplayValue": "-105",
-      "decimal": 1.95,
-      "fraction": "20/21",
-      "american": "-105"
-     },
-     "target": {
-      "value": 12.5,
-      "displayValue": "12.5"
-     }
-    }
-   }
-  ]
- },
- {
-  "l": "nba",
-  "day": "20230115",
-  "id": "401468803",
-  "p": "45",
-  "provider": "Caesars Sportsbook (New Jersey)",
-  "count": 158,
-  "types": {
-   "Total Points": 30,
-   "Total Assists": 24,
-   "Total Rebounds": 30,
-   "Total Steals": 22,
-   "Total Blocks": 22,
-   "Total Turnovers": 30
-  },
-  "examples": [
-   {
-    "competition": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/events/401468803/competitions/401468803?lang=en&region=us"
-    },
-    "athlete": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/seasons/2023/athletes/3593?lang=en&region=us"
-    },
-    "provider": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/casinos/45?lang=en&region=us"
-    },
-    "type": {
-     "id": "1",
-     "name": "Total Points"
-    },
-    "odds": {
-     "american": {
-      "value": "-125",
-      "open": "-125"
-     },
-     "decimal": {
-      "value": "1.80",
-      "open": "1.80"
-     },
-     "fraction": {
-      "value": "4/5",
-      "open": "4/5"
-     },
-     "total": {
-      "value": "20.5",
-      "open": "20.5"
-     }
-    },
-    "lastUpdated": "2023-01-15T21:10Z",
-    "current": {
-     "over": {
-      "value": 1.8,
-      "displayValue": "4/5",
-      "alternateDisplayValue": "-125",
-      "decimal": 1.8,
-      "fraction": "4/5",
-      "american": "-125"
-     },
-     "target": {
-      "value": 20.5,
-      "displayValue": "20.5"
-     }
-    },
-    "open": {
-     "over": {
-      "value": 1.8,
-      "displayValue": "4/5",
-      "alternateDisplayValue": "-125",
-      "decimal": 1.8,
-      "fraction": "4/5",
-      "american": "-125"
-     },
-     "target": {
-      "value": 20.5,
-      "displayValue": "20.5"
-     }
-    }
-   },
-   {
-    "competition": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/events/401468803/competitions/401468803?lang=en&region=us"
-    },
-    "athlete": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/seasons/2023/athletes/3593?lang=en&region=us"
-    },
-    "provider": {
-     "$ref": "http://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/casinos/45?lang=en&region=us"
-    },
-    "type": {
-     "id": "1",
-     "name": "Total Points"
-    },
-    "odds": {
-     "american": {
-      "value": "-109",
-      "open": "-109"
-     },
-     "decimal": {
-      "value": "1.92",
-      "open": "1.92"
-     },
-     "fraction": {
-      "value": "23/25",
-      "open": "23/25"
-     },
-     "total": {
-      "value": "20.5",
-      "open": "20.5"
-     }
-    },
-    "lastUpdated": "2023-01-15T21:10Z",
-    "current": {
-     "under": {
-      "value": 1.92,
-      "displayValue": "23/25",
-      "alternateDisplayValue": "-109",
-      "decimal": 1.92,
-      "fraction": "23/25",
-      "american": "-109"
-     },
-     "target": {
-      "value": 20.5,
-      "displayValue": "20.5"
-     }
-    },
-    "open": {
-     "under": {
-      "value": 1.92,
-      "displayValue": "23/25",
-      "alternateDisplayValue": "-109",
-      "decimal": 1.92,
-      "fraction": "23/25",
-      "american": "-109"
-     },
-     "target": {
-      "value": 20.5,
-      "displayValue": "20.5"
-     }
-    }
-   }
-  ]
- }
-]
+  }
+ ]
+}
