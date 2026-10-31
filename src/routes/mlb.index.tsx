@@ -105,7 +105,7 @@ function MlbDashboard() {
               loading ??
               note(
                 changeText(totC),
-                `${rec(grade.total)} O/U`,
+                `${rec(grade.total)} O/U · ${units(grade.total.units)}`,
                 grade.avgRuns !== null &&
                   grade.avgLine !== null &&
                   `games avg ${grade.avgRuns.toFixed(1)} vs line ${grade.avgLine.toFixed(1)}`,
@@ -120,7 +120,10 @@ function MlbDashboard() {
             note={
               loading ??
               (grade.runLine.wins + grade.runLine.losses
-                ? note(changeText(rlC), `${rec(grade.runLine)} on the run line`)
+                ? note(
+                    changeText(rlC),
+                    `${rec(grade.runLine)} on the run line · ${units(grade.runLine.units)}`,
+                  )
                 : "graded only with real run-line prices · none from ESPN yet")
             }
             tone={tone(rlC)}

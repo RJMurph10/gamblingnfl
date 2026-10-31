@@ -9,7 +9,7 @@
  *
  * Pure functions (browser- and server-safe).
  */
-import type { MlbGame, MlbOdds } from "./mlb";
+import { runLinePrices, type MlbGame, type MlbOdds } from "./mlb";
 
 /** Negative-binomial size for a team's runs (full game, first five innings), from 2012-2025. */
 const R_FULL = 4.08;
@@ -273,6 +273,7 @@ export function mlbMarketRows(
   const s = odds?.spread ?? null;
   if (s !== null && s !== 0) {
     const pHome = p.pHomeCover(s);
+    const rl = runLinePrices(odds);
     rows.push(
       ...pair(
         "Run line",
@@ -280,14 +281,14 @@ export function mlbMarketRows(
           label: `${A} ${fmt(-s)}`,
           line: fmt(-s),
           side: "away",
-          price: odds?.spreadOddsAway ?? null,
+          price: rl?.away ?? null,
           pModel: 1 - pHome,
         },
         {
           label: `${H} ${fmt(s)}`,
           line: fmt(s),
           side: "home",
-          price: odds?.spreadOddsHome ?? null,
+          price: rl?.home ?? null,
           pModel: pHome,
         },
       ),
@@ -389,19 +390,15 @@ export function gradeMlbSeason(games: MlbGame[], before?: Date): MlbSeasonGrade 
         }
       }
       // Run lines are only graded with real prices: ±1.5 is never priced near −110, and assuming
-      // it is makes backing +1.5 look hugely profitable.
-      if (
-        o.spread != null &&
-        o.spread !== 0 &&
-        o.spreadOddsHome != null &&
-        o.spreadOddsAway != null
-      ) {
+      // it is makes backing +1.5 look hugely profitable. Prices on the wrong sides are swapped.
+      const rl = runLinePrices(o);
+      if (o.spread != null && o.spread !== 0 && rl) {
         const home = p.pHomeCover(o.spread) >= 0.5;
         const m = home ? h - a + o.spread : a - h - o.spread;
         const r = out.runLine;
         if (m > 0) {
           r.wins += 1;
-          r.units += win(home ? o.spreadOddsHome : o.spreadOddsAway);
+          r.units += win(home ? rl.home : rl.away);
         } else if (m < 0) {
           r.losses += 1;
           r.units -= 1;

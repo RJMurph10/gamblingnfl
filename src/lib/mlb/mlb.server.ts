@@ -6,6 +6,7 @@
  */
 import {
   mlbLogoFor,
+  runLinePrices,
   type MlbBoxGroup,
   type MlbGame,
   type MlbGameDetail,
@@ -122,6 +123,10 @@ export function parseOdds(o: any): MlbOdds | undefined {
     overOdds: american(o.overOdds) ?? american(o.total?.over?.close?.odds),
     underOdds: american(o.underOdds) ?? american(o.total?.under?.close?.odds),
   };
+  // Prices on the wrong sides get swapped; −110/−110 placeholders are dropped.
+  const rl = runLinePrices(out);
+  out.spreadOddsHome = rl?.home ?? null;
+  out.spreadOddsAway = rl?.away ?? null;
   const open = {
     spread: lineNum(o.pointSpread?.home?.open?.line),
     total: lineNum(o.total?.over?.open?.line),
@@ -367,17 +372,17 @@ async function loadClosingOdds(game: Pick<MlbGame, "id">): Promise<MlbOdds | nul
   const absorb = (raw: any) => {
     const o = parseOdds(raw);
     if (!o) return;
-    for (const k of [
-      "spread",
-      "total",
-      "mlHome",
-      "mlAway",
-      "spreadOddsHome",
-      "spreadOddsAway",
-      "overOdds",
-      "underOdds",
-    ] as const) {
-      if (acc[k] == null && o[k] != null) acc[k] = o[k] as number;
+    // Each market comes from one book as a whole, so a line never gets another book's prices.
+    const groups = [
+      ["mlHome", "mlAway"],
+      ["spread", "spreadOddsHome", "spreadOddsAway"],
+      ["total", "overOdds", "underOdds"],
+    ] as const;
+    for (const keys of groups) {
+      const empty = acc[keys[0]] == null || (keys.length === 3 && acc[keys[1]] == null);
+      const has = o[keys[0]] != null && (keys.length < 3 || o[keys[1]] != null);
+      const first = acc[keys[0]] == null && o[keys[0]] != null;
+      if ((empty && has) || first) for (const k of keys) acc[k] = (o[k] ?? null) as number | null;
     }
     if (!acc.open && o.open) acc.open = o.open;
     if (!acc.provider && o.provider) acc.provider = o.provider;

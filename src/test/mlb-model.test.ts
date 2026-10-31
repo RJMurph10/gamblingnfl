@@ -5,6 +5,7 @@ import {
   buildMlbStandings,
   isWrigleyBestBet,
   mlbTeamBetting,
+  runLinePrices,
   wrigleyWind,
   type MlbGame,
 } from "@/lib/mlb/mlb";
@@ -246,6 +247,54 @@ describe("no leakage in grading", () => {
     const b = mlbTeamBetting([g], "1");
     expect(b.runLine.wins + b.runLine.losses).toBe(0);
     expect(b.moneyline.losses).toBe(1);
+  });
+});
+
+describe("run-line prices", () => {
+  const ml = { mlHome: -150, mlAway: 130 };
+  it("keeps normal prices", () => {
+    expect(
+      runLinePrices({ spread: -1.5, spreadOddsHome: 140, spreadOddsAway: -170, ...ml }),
+    ).toEqual({
+      home: 140,
+      away: -170,
+    });
+  });
+  it("keeps a heavy favorite's -1.5 at a minus price (it's normal)", () => {
+    expect(
+      runLinePrices({
+        spread: -1.5,
+        spreadOddsHome: -150,
+        spreadOddsAway: 125,
+        mlHome: -320,
+        mlAway: 260,
+      }),
+    ).toEqual({ home: -150, away: 125 });
+  });
+  it("swaps prices that are clearly on the wrong teams", () => {
+    expect(
+      runLinePrices({ spread: -1.5, spreadOddsHome: -170, spreadOddsAway: 140, ...ml }),
+    ).toEqual({
+      home: 140,
+      away: -170,
+    });
+    expect(
+      runLinePrices({
+        spread: 1.5,
+        spreadOddsHome: 150,
+        spreadOddsAway: -180,
+        mlHome: 135,
+        mlAway: -155,
+      }),
+    ).toEqual({ home: -180, away: 150 });
+  });
+  it("drops placeholders and missing prices", () => {
+    expect(
+      runLinePrices({ spread: -1.5, spreadOddsHome: -110, spreadOddsAway: -110, ...ml }),
+    ).toBeNull();
+    expect(
+      runLinePrices({ spread: -1.5, spreadOddsHome: null, spreadOddsAway: -160, ...ml }),
+    ).toBeNull();
   });
 });
 
