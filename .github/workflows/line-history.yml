@@ -1,0 +1,58 @@
+# Saves opening/closing game lines and DraftKings player props for NFL, college football, NBA, NHL
+# and MLB every hour, so there's a real line history to test models against. Data goes to the
+# `line-history` branch (not main), so the website and Lovable never see it.
+name: Line history
+
+on:
+  schedule:
+    - cron: "17 * * * *" # hourly
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: line-history
+  cancel-in-progress: false
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: Check out the logger (main)
+        uses: actions/checkout@v4
+        with:
+          path: app
+          sparse-checkout: scripts/line-history
+
+      - name: Check out the data (line-history branch)
+        run: |
+          set -e
+          url="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+          if git ls-remote --exit-code --heads "$url" line-history >/dev/null; then
+            git clone --depth 1 --branch line-history "$url" data-repo
+          else
+            mkdir data-repo && cd data-repo
+            git init -b line-history
+            git remote add origin "$url"
+            printf '# Line history\n\nOpening, closing and final game lines plus DraftKings player props, saved hourly by\n`.github/workflows/line-history.yml` on main. One JSON file per game under `data/<league>/<season>/`.\n' > README.md
+          fi
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Snapshot lines and props
+        working-directory: data-repo
+        run: node ../app/scripts/line-history/snapshot.mjs --out data
+
+      - name: Commit
+        working-directory: data-repo
+        run: |
+          git config user.name "line-history-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then echo "no changes"; exit 0; fi
+          git commit -q -m "Lines $(date -u +%Y-%m-%dT%H:%MZ)"
+          git push origin line-history
