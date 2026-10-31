@@ -4,7 +4,7 @@ import { PageTitle, Panel, PanelHeader, StatCard } from "@/components/shared/boo
 import { MlbLogo } from "@/components/mlb/MlbBits";
 import { MlbGamesTable } from "@/components/mlb/MlbGamesTable";
 import { buildMlbStandings, etDayKey, hasScore, isWrigleyBestBet, localTip } from "@/lib/mlb/mlb";
-import { gradeMlbSeason, winPct, type MlbRecord } from "@/lib/mlb/mlb-model";
+import { gradeMlbSeason, mlbAccuracy, winPct, type MlbRecord } from "@/lib/mlb/mlb-model";
 import { useMlbSchedule, useWrigleyWind } from "@/lib/mlb/use-mlb";
 
 export const Route = createFileRoute("/mlb/")({
@@ -36,6 +36,7 @@ function MlbDashboard() {
   const { games, isLoading, isError, error, linesLoading } = useMlbSchedule(60_000);
   const weekAgo = useMemo(() => new Date(Date.now() - 7 * 24 * 3_600_000), []);
   const grade = useMemo(() => gradeMlbSeason(games), [games]);
+  const accuracy = useMemo(() => mlbAccuracy(games), [games]);
   const prev = useMemo(() => gradeMlbSeason(games, weekAgo), [games, weekAgo]);
   const hasPrev = prev.games > 0 && prev.games !== grade.games;
 
@@ -84,74 +85,56 @@ function MlbDashboard() {
         />
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
           <StatCard
-            label="Win rate · model"
-            value={fmt(winPct(grade.moneyline))}
-            unit={winPct(grade.moneyline) === null ? undefined : "%"}
+            label="★ Best bets · tested"
+            value="59.2"
+            unit="%"
+            note="Wrigley wind-out overs · 74-51 over 2010–25 · +16.0u at the close"
+            tone="win"
+          />
+          <StatCard
+            label="★ Best bets · now"
+            value={String(bestBets.size)}
+            note={
+              bestBets.size
+                ? `live this week · see the ★ games below`
+                : seasonOver
+                  ? "offseason · forecasts start a week before Cubs home games"
+                  : "none this week · only Wrigley with wind blowing out 10+ mph"
+            }
+            tone={bestBets.size ? "win" : "mute"}
+          />
+          <StatCard
+            label="Model vs closing line"
+            value={accuracy.gapToMarket === null ? "—" : accuracy.gapToMarket.toFixed(1)}
+            unit={accuracy.gapToMarket === null ? undefined : "pts"}
             note={
               loading ??
               note(
-                changeText(mlC),
-                `${rec(grade.moneyline)} picking winners`,
-                `${units(grade.moneyline.units)} at the close`,
+                "avg gap in win chance",
+                accuracy.agreesWithMarket !== null &&
+                  `same pick as the line in ${Math.round(accuracy.agreesWithMarket * 100)}% of games`,
               )
             }
-            tone={tone(mlC)}
+            tone="mute"
           />
           <StatCard
-            label="Totals · model"
-            value={fmt(winPct(grade.total))}
-            unit={winPct(grade.total) === null ? undefined : "%"}
+            label="Projected totals"
+            value={accuracy.totalMiss ? accuracy.totalMiss.model.toFixed(2) : "—"}
+            unit={accuracy.totalMiss ? "runs" : undefined}
             note={
               loading ??
-              note(
-                changeText(totC),
-                `${rec(grade.total)} O/U · ${units(grade.total.units)}`,
-                grade.avgRuns !== null &&
-                  grade.avgLine !== null &&
-                  `games avg ${grade.avgRuns.toFixed(1)} vs line ${grade.avgLine.toFixed(1)}`,
-              )
+              (accuracy.totalMiss
+                ? `average miss · closing line ${accuracy.totalMiss.line.toFixed(2)}`
+                : undefined)
             }
-            tone={tone(totC)}
-          />
-          <StatCard
-            label="Run line · model"
-            value={fmt(winPct(grade.runLine))}
-            unit={winPct(grade.runLine) === null ? undefined : "%"}
-            note={
-              loading ??
-              (grade.runLine.wins + grade.runLine.losses
-                ? note(
-                    changeText(rlC),
-                    `${rec(grade.runLine)} on the run line · ${units(grade.runLine.units)}`,
-                  )
-                : "graded only with real run-line prices · none from ESPN yet")
-            }
-            tone={tone(rlC)}
-          />
-          <StatCard
-            label="Model · every pick"
-            value={units(all)}
-            note={
-              loading ??
-              note(
-                hasPrev &&
-                  `${all - allPrev > 0 ? "▲" : all - allPrev < 0 ? "▼" : "—"} ${Math.abs(all - allPrev).toFixed(2)}u wk/wk`,
-                bestBets.size
-                  ? `${bestBets.size} ★ best bet${bestBets.size > 1 ? "s" : ""} now`
-                  : "★ best bets: Wrigley wind-out overs only",
-              )
-            }
-            tone={all > 0 ? "win" : all < 0 ? "loss" : "mute"}
+            tone="mute"
           />
         </div>
         <p className="mt-2 font-mono text-[10px] uppercase tracking-wider text-faint">
-          {linesLoading ? (
-            <span className="text-acc">Loading closing lines · {linesLoading} games left · </span>
-          ) : null}
-          {grade.games} games graded · flat 1u per pick at the closing ESPN odds · each game
-          projected from earlier games only ·{" "}
+          {accuracy.games} games projected from earlier games only · ★ only for angles that won in
+          both 2012–18 and 2019–25 ·{" "}
           <Link to="/mlb/model" className="text-acc">
-            What the research found →
+            Every-pick results and research →
           </Link>
         </p>
       </section>

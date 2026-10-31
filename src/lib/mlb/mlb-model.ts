@@ -426,3 +426,70 @@ export function gradeMlbSeason(games: MlbGame[], before?: Date): MlbSeasonGrade 
   out.avgLine = lineN ? lineSum / lineN : null;
   return out;
 }
+
+/* ---------- the season so far: how accurate the model was (not betting it) ---------- */
+
+export interface MlbAccuracy {
+  games: number;
+  /** Share of games the model's pick (over 50%) won. */
+  pickedWinner: number | null;
+  /** Share of games the betting favorite won, for comparison. */
+  favoriteWon: number | null;
+  /** Average gap between the model's win chance and the closing line's (no-vig), in points. */
+  gapToMarket: number | null;
+  /** Share of games where the model and the closing line picked the same team. */
+  agreesWithMarket: number | null;
+  /** Average miss of the projected total vs the closing total, both vs actual runs. */
+  totalMiss: { model: number; line: number } | null;
+}
+
+/** Each finished game projected only from earlier games, compared with the result and the close. */
+export function mlbAccuracy(games: MlbGame[]): MlbAccuracy {
+  const done = games.filter(isDone).sort((a, b) => a.date.localeCompare(b.date));
+  const acc = new RatingsAcc();
+  let n = 0;
+  let picked = 0;
+  let fav = 0;
+  let favN = 0;
+  let gap = 0;
+  let agree = 0;
+  let missModel = 0;
+  let missLine = 0;
+  let totN = 0;
+  for (const g of done) {
+    if (acc.games >= 150) {
+      const p = projectMlbGame(g, acc.snapshot());
+      const a = g.away.score as number;
+      const h = g.home.score as number;
+      if (a !== h) {
+        n += 1;
+        const homeWon = h > a;
+        if (p.pHome >= 0.5 === homeWon) picked += 1;
+        const o = g.odds;
+        if (o?.mlHome != null && o.mlAway != null) {
+          const ph = implied(o.mlHome);
+          const pa = implied(o.mlAway);
+          const mHome = ph / (ph + pa);
+          favN += 1;
+          if (mHome >= 0.5 === homeWon) fav += 1;
+          gap += Math.abs(p.pHome - mHome);
+          if (p.pHome >= 0.5 === mHome >= 0.5) agree += 1;
+        }
+        if (o?.total != null) {
+          totN += 1;
+          missModel += Math.abs(p.expTotal - (a + h));
+          missLine += Math.abs(o.total - (a + h));
+        }
+      }
+    }
+    acc.add(g);
+  }
+  return {
+    games: n,
+    pickedWinner: n ? picked / n : null,
+    favoriteWon: favN ? fav / favN : null,
+    gapToMarket: favN ? (100 * gap) / favN : null,
+    agreesWithMarket: favN ? agree / favN : null,
+    totalMiss: totN ? { model: missModel / totN, line: missLine / totN } : null,
+  };
+}
