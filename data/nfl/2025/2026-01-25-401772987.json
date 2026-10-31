@@ -1,0 +1,39 @@
+{
+ "id": "401772987",
+ "league": "nfl",
+ "date": "2026-01-25T23:30Z",
+ "name": "LAR @ SEA",
+ "seasonType": 3,
+ "away": {
+  "id": "14",
+  "abbr": "LAR",
+  "name": "Los Angeles Rams",
+  "score": 27
+ },
+ "home": {
+  "id": "26",
+  "abbr": "SEA",
+  "name": "Seattle Seahawks",
+  "score": 31
+ },
+ "final": {
+  "away": 27,
+  "home": 31
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:42:20.447Z",
+  "books": {
+   "100": {
+    "name": "Draft Kings",
+    "count": 4,
+    "rows": [
+  {"a":"3912547","t":"Longest Passing Completion (incl. overtime)","ti":"17","op":[36.5,null,null],"cur":[36.5,null,null]},
+  {"a":"3912547","t":"Longest Passing Completion (incl. overtime)","ti":"17","op":[36.5,null,null],"cur":[36.5,null,null]},
+  {"a":"4426515","t":"Longest Reception (incl. overtime)","ti":"19","op":[25.5,null,null],"cur":[26.5,null,null]},
+  {"a":"4426515","t":"Longest Reception (incl. overtime)","ti":"19","op":[25.5,null,null],"cur":[26.5,null,null]}
+ ]
+   }
+  }
+ }
+}
