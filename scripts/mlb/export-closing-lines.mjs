@@ -139,6 +139,9 @@ for (
           id: e.id,
           date: e.date,
           part: e.season?.type === 3 ? "post" : "reg",
+          weather: e.weather ?? comp.weather ?? null,
+          venue: comp.venue?.fullName ?? null,
+          indoor: comp.venue?.indoor ?? null,
           away: { id: t("away")?.team?.id, abbr: t("away")?.team?.abbreviation, score: Number(t("away")?.score) },
           home: { id: t("home")?.team?.id, abbr: t("home")?.team?.abbreviation, score: Number(t("home")?.score) },
         });
