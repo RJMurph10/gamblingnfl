@@ -7,18 +7,18 @@
   "id": "4",
   "abbr": "CHI",
   "name": "Chicago Blackhawks",
-  "score": 0
+  "score": 1
  },
  "home": {
   "id": "1",
   "abbr": "BOS",
   "name": "Boston Bruins",
-  "score": 0
+  "score": 1
  },
  "neutral": false,
  "venue": "TD Garden",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-10-31T08:02:20.928Z",

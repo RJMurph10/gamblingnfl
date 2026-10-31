@@ -7,18 +7,18 @@
   "id": "276",
   "abbr": "MRSH",
   "name": "Marshall Thundering Herd",
-  "score": 0
+  "score": 14
  },
  "home": {
   "id": "295",
   "abbr": "ODU",
   "name": "Old Dominion Monarchs",
-  "score": 0
+  "score": 7
  },
  "neutral": false,
  "venue": "S.B. Ballard Stadium",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-10-31T08:02:20.928Z",
