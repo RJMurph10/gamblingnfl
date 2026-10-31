@@ -4,7 +4,7 @@ import { PageTitle, Panel, PanelHeader, StatCard } from "@/components/shared/boo
 import { MlbLogo } from "@/components/mlb/MlbBits";
 import { MlbGamesTable } from "@/components/mlb/MlbGamesTable";
 import { buildMlbStandings, etDayKey, hasScore, isWrigleyBestBet, localTip } from "@/lib/mlb/mlb";
-import { mlbAccuracy } from "@/lib/mlb/mlb-model";
+import { gradeMlbSeason, winPct, type MlbRecord } from "@/lib/mlb/mlb-model";
 import { useMlbSchedule, useWrigleyWind } from "@/lib/mlb/use-mlb";
 
 export const Route = createFileRoute("/mlb/")({
@@ -21,11 +21,23 @@ export const Route = createFileRoute("/mlb/")({
   component: MlbDashboard,
 });
 
+const rec = (r: MlbRecord) => `${r.wins}-${r.losses}${r.pushes ? `-${r.pushes}` : ""}`;
+const fmt = (v: number | null) => (v === null ? "—" : v.toFixed(1));
+const units = (u: number) => `${u > 0 ? "+" : ""}${u.toFixed(2)}u`;
 const note = (...parts: (string | undefined | false | null)[]) => parts.filter(Boolean).join(" · ");
+const change = (now: number | null, before: number | null) =>
+  now !== null && before !== null ? Math.round((now - before) * 10) / 10 : null;
+const changeText = (c: number | null) =>
+  c === null ? undefined : `${c > 0 ? "▲" : c < 0 ? "▼" : "—"} ${Math.abs(c).toFixed(1)} wk/wk`;
+const tone = (c: number | null): "win" | "loss" | "mute" =>
+  c === null || c === 0 ? "mute" : c > 0 ? "win" : "loss";
 
 function MlbDashboard() {
   const { games, isLoading, isError, error, linesLoading } = useMlbSchedule(60_000);
-  const accuracy = useMemo(() => mlbAccuracy(games), [games]);
+  const weekAgo = useMemo(() => new Date(Date.now() - 7 * 24 * 3_600_000), []);
+  const grade = useMemo(() => gradeMlbSeason(games), [games]);
+  const prev = useMemo(() => gradeMlbSeason(games, weekAgo), [games, weekAgo]);
+  const hasPrev = prev.games > 0 && prev.games !== grade.games;
 
   const live = useMemo(() => games.filter((g) => g.status === "live"), [games]);
   const upcoming = useMemo(() => {
@@ -56,6 +68,11 @@ function MlbDashboard() {
   );
 
   const loading = isLoading ? "Loading…" : undefined;
+  const mlC = hasPrev ? change(winPct(grade.moneyline), winPct(prev.moneyline)) : null;
+  const totC = hasPrev ? change(winPct(grade.total), winPct(prev.total)) : null;
+  const rlC = hasPrev ? change(winPct(grade.runLine), winPct(prev.runLine)) : null;
+  const all = grade.moneyline.units + grade.runLine.units + grade.total.units;
+  const allPrev = prev.moneyline.units + prev.runLine.units + prev.total.units;
   const seasonOver = !live.length && !upcoming.length && recent.length > 0;
 
   return (
@@ -67,57 +84,74 @@ function MlbDashboard() {
         />
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
           <StatCard
-            label="★ Best bets · tested"
-            value="59.2"
-            unit="%"
-            note="Wrigley wind-out overs · 74-51 over 2010–25 · +16.0u at the close"
-            tone="win"
-          />
-          <StatCard
-            label="★ Best bets · now"
-            value={String(bestBets.size)}
-            note={
-              bestBets.size
-                ? `live this week · see the ★ games below`
-                : seasonOver
-                  ? "offseason · forecasts start a week before Cubs home games"
-                  : "none this week · only Wrigley with wind blowing out 10+ mph"
-            }
-            tone={bestBets.size ? "win" : "mute"}
-          />
-          <StatCard
-            label="Picked winners · model"
-            value={accuracy.pickedWinner === null ? "—" : (accuracy.pickedWinner * 100).toFixed(1)}
-            unit={accuracy.pickedWinner === null ? undefined : "%"}
+            label="Win rate · model"
+            value={fmt(winPct(grade.moneyline))}
+            unit={winPct(grade.moneyline) === null ? undefined : "%"}
             note={
               loading ??
               note(
-                accuracy.favoriteWon !== null &&
-                  `betting favorite ${(accuracy.favoriteWon * 100).toFixed(1)}%`,
-                accuracy.agreesWithMarket !== null &&
-                  `same pick as the line in ${Math.round(accuracy.agreesWithMarket * 100)}% of games`,
+                changeText(mlC),
+                `${rec(grade.moneyline)} picking winners`,
+                `${units(grade.moneyline.units)} at the close`,
               )
             }
-            tone="mute"
+            tone={tone(mlC)}
           />
           <StatCard
-            label="Projected totals"
-            value={accuracy.totalMiss ? accuracy.totalMiss.model.toFixed(2) : "—"}
-            unit={accuracy.totalMiss ? "runs" : undefined}
+            label="Totals · model"
+            value={fmt(winPct(grade.total))}
+            unit={winPct(grade.total) === null ? undefined : "%"}
             note={
               loading ??
-              (accuracy.totalMiss
-                ? `average miss · closing line ${accuracy.totalMiss.line.toFixed(2)}`
-                : undefined)
+              note(
+                changeText(totC),
+                `${rec(grade.total)} O/U · ${units(grade.total.units)}`,
+                grade.avgRuns !== null &&
+                  grade.avgLine !== null &&
+                  `games avg ${grade.avgRuns.toFixed(1)} vs line ${grade.avgLine.toFixed(1)}`,
+              )
             }
-            tone="mute"
+            tone={tone(totC)}
+          />
+          <StatCard
+            label="Run line · model"
+            value={fmt(winPct(grade.runLine))}
+            unit={winPct(grade.runLine) === null ? undefined : "%"}
+            note={
+              loading ??
+              (grade.runLine.wins + grade.runLine.losses
+                ? note(
+                    changeText(rlC),
+                    `${rec(grade.runLine)} on the run line · ${units(grade.runLine.units)}`,
+                  )
+                : "graded only with real run-line prices · none from ESPN yet")
+            }
+            tone={tone(rlC)}
+          />
+          <StatCard
+            label="Model · every pick"
+            value={units(all)}
+            note={
+              loading ??
+              note(
+                hasPrev &&
+                  `${all - allPrev > 0 ? "▲" : all - allPrev < 0 ? "▼" : "—"} ${Math.abs(all - allPrev).toFixed(2)}u wk/wk`,
+                bestBets.size
+                  ? `${bestBets.size} ★ best bet${bestBets.size > 1 ? "s" : ""} now`
+                  : "★ best bets: Wrigley wind-out overs only",
+              )
+            }
+            tone={all > 0 ? "win" : all < 0 ? "loss" : "mute"}
           />
         </div>
         <p className="mt-2 font-mono text-[10px] uppercase tracking-wider text-faint">
-          {accuracy.games} games projected from earlier games only · ★ only for angles that won in
-          both 2012–18 and 2019–25 ·{" "}
+          {linesLoading ? (
+            <span className="text-acc">Loading closing lines · {linesLoading} games left · </span>
+          ) : null}
+          {grade.games} games graded · flat 1u per pick at the closing ESPN odds · each game
+          projected from earlier games only ·{" "}
           <Link to="/mlb/model" className="text-acc">
-            Every-pick results and research →
+            What the research found →
           </Link>
         </p>
       </section>
