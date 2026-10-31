@@ -1,0 +1,36 @@
+{
+ "id": "401803513",
+ "league": "nhl",
+ "date": "2026-03-28T23:00Z",
+ "name": "WPG @ COL",
+ "seasonType": 2,
+ "away": {
+  "id": "28",
+  "abbr": "WPG",
+  "name": "Winnipeg Jets",
+  "score": 4
+ },
+ "home": {
+  "id": "17",
+  "abbr": "COL",
+  "name": "Colorado Avalanche",
+  "score": 2
+ },
+ "final": {
+  "away": 4,
+  "home": 2
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:43:26.286Z",
+  "books": {
+   "100": {
+    "name": "DraftKings",
+    "count": 1,
+    "rows": [
+  {"a":"4197014","t":"Total Points","ti":"1","op":[0.5,null,null],"cur":[0.5,null,null]}
+ ]
+   }
+  }
+ }
+}

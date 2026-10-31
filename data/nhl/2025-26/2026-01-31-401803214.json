@@ -1,0 +1,37 @@
+{
+ "id": "401803214",
+ "league": "nhl",
+ "date": "2026-01-31T21:00Z",
+ "name": "SJ @ CGY",
+ "seasonType": 2,
+ "away": {
+  "id": "18",
+  "abbr": "SJ",
+  "name": "San Jose Sharks",
+  "score": 2
+ },
+ "home": {
+  "id": "3",
+  "abbr": "CGY",
+  "name": "Calgary Flames",
+  "score": 3
+ },
+ "final": {
+  "away": 2,
+  "home": 3
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:43:14.503Z",
+  "books": {
+   "100": {
+    "name": "DraftKings",
+    "count": 2,
+    "rows": [
+  {"a":"4392541","t":"Total Shots on Goal","ti":"42","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":"4392541","t":"Total Shots on Goal","ti":"42","op":[1.5,null,null],"cur":[1.5,null,null]}
+ ]
+   }
+  }
+ }
+}

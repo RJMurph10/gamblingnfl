@@ -1,0 +1,44 @@
+{
+ "id": "401803304",
+ "league": "nhl",
+ "date": "2026-03-03T00:00Z",
+ "name": "CBJ @ NYR",
+ "seasonType": 2,
+ "away": {
+  "id": "29",
+  "abbr": "CBJ",
+  "name": "Columbus Blue Jackets",
+  "score": 5
+ },
+ "home": {
+  "id": "13",
+  "abbr": "NYR",
+  "name": "New York Rangers",
+  "score": 4
+ },
+ "final": {
+  "away": 5,
+  "home": 4
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:43:18.792Z",
+  "books": {
+   "100": {
+    "name": "DraftKings",
+    "count": 9,
+    "rows": [
+  {"a":"4874915","t":"Total Points","ti":"1","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"4874915","t":"Total Points","ti":"1","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"4874915","t":"Total Assists","ti":"2","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"4874915","t":"Total Assists","ti":"2","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"4874915","t":"Total Shots on Goal","ti":"42","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"4874915","t":"Total Shots on Goal","ti":"42","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"4874915","t":"Total Blocked Shots","ti":"44","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"4874915","t":"Total Blocked Shots","ti":"44","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"4588750","t":"Goals Milestones","ti":"232","op":[2,null,null],"cur":[2,null,null]}
+ ]
+   }
+  }
+ }
+}

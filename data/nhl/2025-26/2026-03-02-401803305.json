@@ -1,0 +1,57 @@
+{
+ "id": "401803305",
+ "league": "nhl",
+ "date": "2026-03-03T00:30Z",
+ "name": "PHI @ TOR",
+ "seasonType": 2,
+ "away": {
+  "id": "15",
+  "abbr": "PHI",
+  "name": "Philadelphia Flyers",
+  "score": 3
+ },
+ "home": {
+  "id": "21",
+  "abbr": "TOR",
+  "name": "Toronto Maple Leafs",
+  "score": 2
+ },
+ "final": {
+  "away": 3,
+  "home": 2
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:43:18.797Z",
+  "books": {
+   "100": {
+    "name": "DraftKings",
+    "count": 22,
+    "rows": [
+  {"a":"3939658","t":"Total Points","ti":"1","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"3939658","t":"Total Points","ti":"1","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"3941140","t":"Total Points","ti":"1","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"3941140","t":"Total Points","ti":"1","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"3939658","t":"Total Assists","ti":"2","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"3939658","t":"Total Assists","ti":"2","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"3941140","t":"Total Assists","ti":"2","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"3941140","t":"Total Assists","ti":"2","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"3939658","t":"Total Shots on Goal","ti":"42","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"3939658","t":"Total Shots on Goal","ti":"42","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"3941140","t":"Total Shots on Goal","ti":"42","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":"3941140","t":"Total Shots on Goal","ti":"42","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":"3939658","t":"Total Blocked Shots","ti":"44","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"3939658","t":"Total Blocked Shots","ti":"44","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"3941140","t":"Total Blocked Shots","ti":"44","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":"3941140","t":"Total Blocked Shots","ti":"44","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":"3941140","t":"Points Milestones","ti":"218","op":[1,null,null],"cur":[1,null,null]},
+  {"a":"3941140","t":"Assists Milestones","ti":"219","op":[1,null,null],"cur":[1,null,null]},
+  {"a":"3941140","t":"Shots on Goal Milestones","ti":"231","op":[2,null,null],"cur":[2,null,null]},
+  {"a":"4271565","t":"Goals Milestones","ti":"232","op":[2,null,null],"cur":[2,null,null]},
+  {"a":"4588638","t":"Goals Milestones","ti":"232","op":[2,null,null],"cur":[2,null,null]},
+  {"a":"3941140","t":"Blocked Shots Milestones","ti":"233","op":[2,null,null],"cur":[2,null,null]}
+ ]
+   }
+  }
+ }
+}

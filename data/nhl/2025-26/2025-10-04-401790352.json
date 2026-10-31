@@ -1,0 +1,66 @@
+{
+ "id": "401790352",
+ "league": "nhl",
+ "date": "2025-10-05T00:00Z",
+ "name": "SJ @ UTA",
+ "seasonType": 1,
+ "away": {
+  "id": "18",
+  "abbr": "SJ",
+  "name": "San Jose Sharks",
+  "score": 4
+ },
+ "home": {
+  "id": "129764",
+  "abbr": "UTA",
+  "name": "Utah Mammoth",
+  "score": 6
+ },
+ "final": {
+  "away": 4,
+  "home": 6
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:42:30.056Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 31,
+    "rows": [
+  {"a":null,"t":"1st Period Moneyline","ti":"139","cur":[null,140,null]},
+  {"a":null,"t":"1st Period Moneyline","ti":"139","cur":[null,-180,null]},
+  {"a":null,"t":"1st Period Spread","ti":"140","op":[0.5,null,null],"cur":[1.5,null,null]},
+  {"a":null,"t":"1st Period Spread","ti":"140","op":[-0.5,null,null],"cur":[-1.5,null,null]},
+  {"a":null,"t":"1st Period Total Goals","ti":"141","op":[1.5,null,100],"cur":[1.5,null,100]},
+  {"a":null,"t":"1st Period Total Goals","ti":"141","op":[1.5,-130,null],"cur":[1.5,-130,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[2.5,null,-145],"cur":[2.5,null,-145]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[2.5,115,null],"cur":[2.5,115,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,-125],"cur":[3.5,null,-125]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,-105,null],"cur":[3.5,-105,null]},
+  {"a":null,"t":"Both Teams To Score","ti":"152","cur":[null,600,null]},
+  {"a":null,"t":"Both Teams To Score","ti":"152","cur":[null,-1200,null]},
+  {"a":null,"t":"Hockey Team Prop","ti":"165","cur":[null,-10000,null]},
+  {"a":null,"t":"Hockey Team Prop","ti":"165","cur":[null,260,null]},
+  {"a":null,"t":"Hockey Team Prop","ti":"165","cur":[null,3000,null]},
+  {"a":null,"t":"Hockey Team Prop","ti":"165","cur":[null,200,null]},
+  {"a":null,"t":"Hockey Team Prop","ti":"165","cur":[null,130,null]},
+  {"a":null,"t":"Hockey Team Prop","ti":"165","cur":[null,-260,null]},
+  {"a":null,"t":"Hockey Team Prop","ti":"165","cur":[null,-1800,null]},
+  {"a":null,"t":"Hockey Team Prop","ti":"165","cur":[null,800,null]},
+  {"a":null,"t":"Hockey Team Prop","ti":"165","cur":[null,120,null]},
+  {"a":null,"t":"Hockey Team Prop","ti":"165","cur":[null,180,null]},
+  {"a":null,"t":"Hockey Game Prop","ti":"166","cur":[null,-240,null]},
+  {"a":null,"t":"Hockey Game Prop","ti":"166","cur":[null,240,null]},
+  {"a":null,"t":"Hockey Game Prop","ti":"166","cur":[null,-200,null]},
+  {"a":null,"t":"Hockey Game Prop","ti":"166","cur":[null,-375,null]},
+  {"a":null,"t":"Hockey Game Prop","ti":"166","cur":[null,240,null]},
+  {"a":null,"t":"Hockey Game Prop","ti":"166","cur":[null,160,null]},
+  {"a":null,"t":"Hockey Game Prop","ti":"166","cur":[null,230,null]},
+  {"a":null,"t":"Hockey Game Prop","ti":"166","cur":[null,-150,null]},
+  {"a":null,"t":"Hockey Game Prop","ti":"166","cur":[null,360,null]}
+ ]
+   }
+  }
+ }
+}

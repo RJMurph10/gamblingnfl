@@ -1,0 +1,113 @@
+{
+ "id": "401790346",
+ "league": "nhl",
+ "date": "2025-10-04T20:00Z",
+ "name": "ANA @ LA",
+ "seasonType": 1,
+ "away": {
+  "id": "25",
+  "abbr": "ANA",
+  "name": "Anaheim Ducks",
+  "score": 4
+ },
+ "home": {
+  "id": "8",
+  "abbr": "LA",
+  "name": "Los Angeles Kings",
+  "score": 5
+ },
+ "final": {
+  "away": 4,
+  "home": 5
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:42:29.830Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 31,
+    "rows": [
+  {"a":null,"t":"1st Period Moneyline","ti":"139","cur":[null,-165,null]},
+  {"a":null,"t":"1st Period Moneyline","ti":"139","cur":[null,130,null]},
+  {"a":null,"t":"1st Period Spread","ti":"140","op":[-0.5,null,null],"cur":[-1.5,null,null]},
+  {"a":null,"t":"1st Period Spread","ti":"140","op":[0.5,null,null],"cur":[1.5,null,null]},
+  {"a":null,"t":"1st Period Total Goals","ti":"141","op":[1.5,-125,null],"cur":[1.5,-125,null]},
+  {"a":null,"t":"1st Period Total Goals","ti":"141","op":[1.5,null,-105],"cur":[1.5,null,-105]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,-140],"cur":[3.5,null,-150]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,110,null],"cur":[3.5,120,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[2.5,null,-140],"cur":[2.5,null,-135]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[2.5,110,null],"cur":[2.5,105,null]},
+  {"a":null,"t":"Both Teams To Score","ti":"152","cur":[null,-1200,null]},
+  {"a":null,"t":"Both Teams To Score","ti":"152","cur":[null,600,null]},
+  {"a":null,"t":"Hockey Team Prop","ti":"165","cur":[null,-200,null]},
+  {"a":null,"t":"Hockey Team Prop","ti":"165","cur":[null,1000,null]},
+  {"a":null,"t":"Hockey Team Prop","ti":"165","cur":[null,-2500,null]},
+  {"a":null,"t":"Hockey Team Prop","ti":"165","cur":[null,120,null]},
+  {"a":null,"t":"Hockey Team Prop","ti":"165","cur":[null,160,null]},
+  {"a":null,"t":"Hockey Team Prop","ti":"165","cur":[null,230,null]},
+  {"a":null,"t":"Hockey Team Prop","ti":"165","cur":[null,2500,null]},
+  {"a":null,"t":"Hockey Team Prop","ti":"165","cur":[null,-8000,null]},
+  {"a":null,"t":"Hockey Team Prop","ti":"165","cur":[null,135,null]},
+  {"a":null,"t":"Hockey Team Prop","ti":"165","cur":[null,180,null]},
+  {"a":null,"t":"Hockey Game Prop","ti":"166","cur":[null,240,null]},
+  {"a":null,"t":"Hockey Game Prop","ti":"166","cur":[null,-320,null]},
+  {"a":null,"t":"Hockey Game Prop","ti":"166","cur":[null,-220,null]},
+  {"a":null,"t":"Hockey Game Prop","ti":"166","cur":[null,170,null]},
+  {"a":null,"t":"Hockey Game Prop","ti":"166","cur":[null,230,null]},
+  {"a":null,"t":"Hockey Game Prop","ti":"166","cur":[null,-220,null]},
+  {"a":null,"t":"Hockey Game Prop","ti":"166","cur":[null,-170,null]},
+  {"a":null,"t":"Hockey Game Prop","ti":"166","cur":[null,360,null]},
+  {"a":null,"t":"Hockey Game Prop","ti":"166","cur":[null,240,null]}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 41,
+    "rows": [
+  {"a":null,"t":"1st Period Moneyline","ti":"139","cur":[null,-4000,null]},
+  {"a":null,"t":"1st Period Moneyline","ti":"139","cur":[null,1500,null]},
+  {"a":null,"t":"1st Period Total Goals","ti":"141","op":[1.5,null,-105],"cur":[2.5,null,-285]},
+  {"a":null,"t":"1st Period Total Goals","ti":"141","op":[1.5,-125,null],"cur":[2.5,200,null]},
+  {"a":null,"t":"2nd Period Moneyline","ti":"142","cur":[null,-130,null]},
+  {"a":null,"t":"2nd Period Moneyline","ti":"142","cur":[null,100,null]},
+  {"a":null,"t":"2nd Period Total Goals","ti":"144","op":[2.5,null,105],"cur":[0.5,null,-275]},
+  {"a":null,"t":"2nd Period Total Goals","ti":"144","op":[2.5,-140,null],"cur":[0.5,190,null]},
+  {"a":null,"t":"3rd Period Moneyline","ti":"145","cur":[null,600,null]},
+  {"a":null,"t":"3rd Period Moneyline","ti":"145","cur":[null,-1200,null]},
+  {"a":null,"t":"3rd Period Spread","ti":"146","op":[-0.5,null,null],"cur":[-1.5,null,null]},
+  {"a":null,"t":"3rd Period Spread","ti":"146","op":[0.5,null,null],"cur":[1.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,-140],"cur":[3.5,null,-150]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,110,null],"cur":[3.5,120,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[2.5,null,-140],"cur":[2.5,null,-135]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[2.5,110,null],"cur":[2.5,105,null]},
+  {"a":null,"t":"Both Teams To Score","ti":"152","cur":[null,170,null]},
+  {"a":null,"t":"Both Teams To Score","ti":"152","cur":[null,-220,null]},
+  {"a":null,"t":"Hockey Team Prop","ti":"165"},
+  {"a":null,"t":"Hockey Team Prop","ti":"165"},
+  {"a":null,"t":"Hockey Team Prop","ti":"165"},
+  {"a":null,"t":"Hockey Team Prop","ti":"165","cur":[null,220,null]},
+  {"a":null,"t":"Hockey Team Prop","ti":"165"},
+  {"a":null,"t":"Hockey Team Prop","ti":"165","cur":[null,400,null]},
+  {"a":null,"t":"Hockey Team Prop","ti":"165"},
+  {"a":null,"t":"Hockey Team Prop","ti":"165"},
+  {"a":null,"t":"Hockey Team Prop","ti":"165","cur":[null,-130,null]},
+  {"a":null,"t":"Hockey Team Prop","ti":"165","cur":[null,200,null]},
+  {"a":null,"t":"Hockey Game Prop","ti":"166","cur":[null,-6000,null]},
+  {"a":null,"t":"Hockey Game Prop","ti":"166","cur":[null,600,null]},
+  {"a":null,"t":"Hockey Game Prop","ti":"166","cur":[null,-320,null]},
+  {"a":null,"t":"Hockey Game Prop","ti":"166","cur":[null,2000,null]},
+  {"a":null,"t":"Hockey Game Prop","ti":"166","cur":[null,-220,null]},
+  {"a":null,"t":"Hockey Game Prop","ti":"166","cur":[null,-220,null]},
+  {"a":null,"t":"Hockey Game Prop","ti":"166","cur":[null,700,null]},
+  {"a":null,"t":"Hockey Game Prop","ti":"166","cur":[null,360,null]},
+  {"a":null,"t":"Hockey Game Prop","ti":"166","cur":[null,-1400,null]},
+  {"a":null,"t":"Hockey Game Prop","ti":"166","cur":[null,-170,null]},
+  {"a":null,"t":"Hockey Game Prop","ti":"166","cur":[null,-260,null]},
+  {"a":null,"t":"Hockey Game Prop","ti":"166","cur":[null,170,null]},
+  {"a":null,"t":"Hockey Game Prop","ti":"166"}
+ ]
+   }
+  }
+ }
+}

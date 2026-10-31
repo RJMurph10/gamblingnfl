@@ -1,0 +1,113 @@
+{
+ "id": "401790349",
+ "league": "nhl",
+ "date": "2025-10-04T23:00Z",
+ "name": "CBJ @ WSH",
+ "seasonType": 1,
+ "away": {
+  "id": "29",
+  "abbr": "CBJ",
+  "name": "Columbus Blue Jackets",
+  "score": 1
+ },
+ "home": {
+  "id": "23",
+  "abbr": "WSH",
+  "name": "Washington Capitals",
+  "score": 2
+ },
+ "final": {
+  "away": 1,
+  "home": 2
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:42:29.956Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 31,
+    "rows": [
+  {"a":null,"t":"1st Period Moneyline","ti":"139","cur":[null,-165,null]},
+  {"a":null,"t":"1st Period Moneyline","ti":"139","cur":[null,130,null]},
+  {"a":null,"t":"1st Period Spread","ti":"140","op":[-0.5,null,null],"cur":[-1.5,null,null]},
+  {"a":null,"t":"1st Period Spread","ti":"140","op":[0.5,null,null],"cur":[1.5,null,null]},
+  {"a":null,"t":"1st Period Total Goals","ti":"141","op":[1.5,-130,null],"cur":[1.5,-130,null]},
+  {"a":null,"t":"1st Period Total Goals","ti":"141","op":[1.5,null,100],"cur":[1.5,null,100]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,105,null],"cur":[3.5,110,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,-135],"cur":[3.5,null,-140]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[2.5,-105,null],"cur":[2.5,100,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[2.5,null,-125],"cur":[2.5,null,-130]},
+  {"a":null,"t":"Both Teams To Score","ti":"152","cur":[null,600,null]},
+  {"a":null,"t":"Both Teams To Score","ti":"152","cur":[null,-1200,null]},
+  {"a":null,"t":"Hockey Team Prop","ti":"165","cur":[null,-200,null]},
+  {"a":null,"t":"Hockey Team Prop","ti":"165","cur":[null,-2500,null]},
+  {"a":null,"t":"Hockey Team Prop","ti":"165","cur":[null,1000,null]},
+  {"a":null,"t":"Hockey Team Prop","ti":"165","cur":[null,230,null]},
+  {"a":null,"t":"Hockey Team Prop","ti":"165","cur":[null,-8000,null]},
+  {"a":null,"t":"Hockey Team Prop","ti":"165","cur":[null,2500,null]},
+  {"a":null,"t":"Hockey Team Prop","ti":"165","cur":[null,160,null]},
+  {"a":null,"t":"Hockey Team Prop","ti":"165","cur":[null,110,null]},
+  {"a":null,"t":"Hockey Team Prop","ti":"165","cur":[null,135,null]},
+  {"a":null,"t":"Hockey Team Prop","ti":"165","cur":[null,170,null]},
+  {"a":null,"t":"Hockey Game Prop","ti":"166","cur":[null,-320,null]},
+  {"a":null,"t":"Hockey Game Prop","ti":"166","cur":[null,360,null]},
+  {"a":null,"t":"Hockey Game Prop","ti":"166","cur":[null,240,null]},
+  {"a":null,"t":"Hockey Game Prop","ti":"166","cur":[null,160,null]},
+  {"a":null,"t":"Hockey Game Prop","ti":"166","cur":[null,-240,null]},
+  {"a":null,"t":"Hockey Game Prop","ti":"166","cur":[null,230,null]},
+  {"a":null,"t":"Hockey Game Prop","ti":"166","cur":[null,-200,null]},
+  {"a":null,"t":"Hockey Game Prop","ti":"166","cur":[null,-170,null]},
+  {"a":null,"t":"Hockey Game Prop","ti":"166","cur":[null,240,null]}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 41,
+    "rows": [
+  {"a":null,"t":"1st Period Moneyline","ti":"139","cur":[null,-145,null]},
+  {"a":null,"t":"1st Period Moneyline","ti":"139","cur":[null,115,null]},
+  {"a":null,"t":"1st Period Total Goals","ti":"141","op":[1.5,null,100],"cur":[0.5,null,-425]},
+  {"a":null,"t":"1st Period Total Goals","ti":"141","op":[1.5,-130,null],"cur":[0.5,240,null]},
+  {"a":null,"t":"2nd Period Moneyline","ti":"142","cur":[null,-2500,null]},
+  {"a":null,"t":"2nd Period Moneyline","ti":"142","cur":[null,1000,null]},
+  {"a":null,"t":"2nd Period Total Goals","ti":"144","op":[1.5,null,-115],"cur":[2.5,null,-350]},
+  {"a":null,"t":"2nd Period Total Goals","ti":"144","op":[1.5,-120,null],"cur":[2.5,210,null]},
+  {"a":null,"t":"3rd Period Moneyline","ti":"145","cur":[null,-500,null]},
+  {"a":null,"t":"3rd Period Moneyline","ti":"145","cur":[null,340,null]},
+  {"a":null,"t":"3rd Period Spread","ti":"146","op":[-0.5,null,null],"cur":[-1.5,null,null]},
+  {"a":null,"t":"3rd Period Spread","ti":"146","op":[0.5,null,null],"cur":[1.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,105,null],"cur":[3.5,110,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,-135],"cur":[3.5,null,-140]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[2.5,-105,null],"cur":[2.5,100,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[2.5,null,-125],"cur":[2.5,null,-130]},
+  {"a":null,"t":"Both Teams To Score","ti":"152","cur":[null,-350,null]},
+  {"a":null,"t":"Both Teams To Score","ti":"152","cur":[null,250,null]},
+  {"a":null,"t":"Hockey Team Prop","ti":"165","cur":[null,-20000,null]},
+  {"a":null,"t":"Hockey Team Prop","ti":"165"},
+  {"a":null,"t":"Hockey Team Prop","ti":"165"},
+  {"a":null,"t":"Hockey Team Prop","ti":"165","cur":[null,320,null]},
+  {"a":null,"t":"Hockey Team Prop","ti":"165","cur":[null,200,null]},
+  {"a":null,"t":"Hockey Team Prop","ti":"165"},
+  {"a":null,"t":"Hockey Team Prop","ti":"165"},
+  {"a":null,"t":"Hockey Team Prop","ti":"165","cur":[null,4000,null]},
+  {"a":null,"t":"Hockey Team Prop","ti":"165","cur":[null,-110,null]},
+  {"a":null,"t":"Hockey Team Prop","ti":"165","cur":[null,200,null]},
+  {"a":null,"t":"Hockey Game Prop","ti":"166","cur":[null,-320,null]},
+  {"a":null,"t":"Hockey Game Prop","ti":"166","cur":[null,380,null]},
+  {"a":null,"t":"Hockey Game Prop","ti":"166","cur":[null,475,null]},
+  {"a":null,"t":"Hockey Game Prop","ti":"166","cur":[null,-600,null]},
+  {"a":null,"t":"Hockey Game Prop","ti":"166"},
+  {"a":null,"t":"Hockey Game Prop","ti":"166","cur":[null,500,null]},
+  {"a":null,"t":"Hockey Game Prop","ti":"166","cur":[null,3500,null]},
+  {"a":null,"t":"Hockey Game Prop","ti":"166","cur":[null,-240,null]},
+  {"a":null,"t":"Hockey Game Prop","ti":"166","cur":[null,260,null]},
+  {"a":null,"t":"Hockey Game Prop","ti":"166","cur":[null,-800,null]},
+  {"a":null,"t":"Hockey Game Prop","ti":"166","cur":[null,-15000,null]},
+  {"a":null,"t":"Hockey Game Prop","ti":"166","cur":[null,-170,null]},
+  {"a":null,"t":"Hockey Game Prop","ti":"166","cur":[null,-180,null]}
+ ]
+   }
+  }
+ }
+}

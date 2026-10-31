@@ -1,0 +1,41 @@
+{
+ "id": "401803102",
+ "league": "nhl",
+ "date": "2026-01-17T01:00Z",
+ "name": "TB @ STL",
+ "seasonType": 2,
+ "away": {
+  "id": "20",
+  "abbr": "TB",
+  "name": "Tampa Bay Lightning",
+  "score": 2
+ },
+ "home": {
+  "id": "19",
+  "abbr": "STL",
+  "name": "St. Louis Blues",
+  "score": 3
+ },
+ "final": {
+  "away": 2,
+  "home": 3
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:43:10.477Z",
+  "books": {
+   "100": {
+    "name": "DraftKings",
+    "count": 6,
+    "rows": [
+  {"a":null,"t":"1st Period Moneyline","ti":"139","cur":[null,220,null]},
+  {"a":null,"t":"1st Period Moneyline","ti":"139","cur":[null,155,null]},
+  {"a":null,"t":"1st Period Spread","ti":"140","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":null,"t":"1st Period Spread","ti":"140","op":[-0.5,null,null],"cur":[-0.5,null,null]},
+  {"a":null,"t":"1st Period Total Goals","ti":"141","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":null,"t":"1st Period Total Goals","ti":"141","op":[1.5,null,null],"cur":[1.5,null,null]}
+ ]
+   }
+  }
+ }
+}

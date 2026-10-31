@@ -1,0 +1,41 @@
+{
+ "id": "401803103",
+ "league": "nhl",
+ "date": "2026-01-17T02:00Z",
+ "name": "NSH @ COL",
+ "seasonType": 2,
+ "away": {
+  "id": "27",
+  "abbr": "NSH",
+  "name": "Nashville Predators",
+  "score": 7
+ },
+ "home": {
+  "id": "17",
+  "abbr": "COL",
+  "name": "Colorado Avalanche",
+  "score": 3
+ },
+ "final": {
+  "away": 7,
+  "home": 3
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:43:10.464Z",
+  "books": {
+   "100": {
+    "name": "DraftKings",
+    "count": 6,
+    "rows": [
+  {"a":null,"t":"1st Period Moneyline","ti":"139","cur":[null,115,null]},
+  {"a":null,"t":"1st Period Moneyline","ti":"139","cur":[null,285,null]},
+  {"a":null,"t":"1st Period Spread","ti":"140","op":[-0.5,null,null],"cur":[-0.5,null,null]},
+  {"a":null,"t":"1st Period Spread","ti":"140","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":null,"t":"1st Period Total Goals","ti":"141","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":null,"t":"1st Period Total Goals","ti":"141","op":[1.5,null,null],"cur":[1.5,null,null]}
+ ]
+   }
+  }
+ }
+}

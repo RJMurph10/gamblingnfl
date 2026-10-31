@@ -1,0 +1,36 @@
+{
+ "id": "401803309",
+ "league": "nhl",
+ "date": "2026-03-03T03:30Z",
+ "name": "COL @ LA",
+ "seasonType": 2,
+ "away": {
+  "id": "17",
+  "abbr": "COL",
+  "name": "Colorado Avalanche",
+  "score": 4
+ },
+ "home": {
+  "id": "8",
+  "abbr": "LA",
+  "name": "Los Angeles Kings",
+  "score": 2
+ },
+ "final": {
+  "away": 4,
+  "home": 2
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:43:18.884Z",
+  "books": {
+   "100": {
+    "name": "DraftKings",
+    "count": 1,
+    "rows": [
+  {"a":"5136735","t":"Assists Milestones","ti":"219","op":[1,null,null],"cur":[1,null,null]}
+ ]
+   }
+  }
+ }
+}
