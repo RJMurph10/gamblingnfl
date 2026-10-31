@@ -1,0 +1,57 @@
+# Builds the graded prop history: one compressed file per league-season (props from the backfill +
+# player box scores), committed to the props-history branch. Runs when props-history.trigger is pushed.
+name: Build props history
+
+on:
+  push:
+    branches: [props-backfill]
+    paths: [scripts/line-history/props-history.trigger]
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        league: [nba, nfl, nhl, mlb, cfb]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: app
+          sparse-checkout: scripts/line-history
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Build
+        run: |
+          set -e
+          url="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+          git clone -q --depth 1 --branch line-history --filter=blob:none --sparse "$url" src
+          git -C src sparse-checkout set data/${{ matrix.league }}
+          node app/scripts/line-history/build-props-history.mjs --league ${{ matrix.league }} --data src/data --out out
+          for attempt in 1 2 3 4 5 6; do
+            rm -rf dst
+            if git ls-remote --exit-code --heads "$url" props-history >/dev/null; then
+              git clone -q --depth 1 --branch props-history "$url" dst
+            else
+              mkdir dst && git -C dst init -q -b props-history && git -C dst remote add origin "$url"
+              printf '# Player prop history\n\nOne gzipped JSON-lines file per league-season: every book'"'"'s prop rows (open and closing line and prices) plus each player'"'"'s box score. Built from ESPN by `scripts/line-history/build-props-history.mjs`.\n' > dst/README.md
+            fi
+            cp -r out/. dst/
+            cd dst
+            git config user.name "line-history-bot"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add -A
+            git diff --cached --quiet && { echo "nothing new"; exit 0; }
+            git commit -q -m "Props history ${{ matrix.league }}"
+            git push -q origin props-history && { echo pushed; exit 0; }
+            cd ..
+            sleep $((attempt * 20))
+          done
+          exit 1
