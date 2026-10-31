@@ -164,7 +164,11 @@ function Factors({ game, p }: { game: NhlGame; p: NhlV2Projection }) {
   );
 }
 
-export function NhlGameBoard({ game, games }: { game: NhlGame; games: NhlGame[] }) {
+/**
+ * `embedded`: on the game page's Markets tab, where the scoreboard, the model card and the lines card
+ * already show the teams, projections and line movement, only the model-vs-book table is shown.
+ */
+export function NhlGameBoard({ game, games, embedded = false }: { game: NhlGame; games: NhlGame[]; embedded?: boolean }) {
   const { inputs } = useNhlModelInputs();
   const projection = useMemo(
     () => (game.status === "postponed" ? null : projectGameV2(game, games, inputs)),
@@ -176,7 +180,7 @@ export function NhlGameBoard({ game, games }: { game: NhlGame; games: NhlGame[] 
   return (
     <Panel padded={false}>
       <PanelHeader
-        title="Game analysis"
+        title={embedded ? "Model vs sportsbook" : "Game analysis"}
         aside={
           <span
             className={`font-mono text-[10px] uppercase tracking-wider sm:text-xs ${game.status === "live" ? "text-win" : "text-mute"}`}
@@ -187,11 +191,13 @@ export function NhlGameBoard({ game, games }: { game: NhlGame; games: NhlGame[] 
         }
       />
       <div className="space-y-5 px-3 pb-4 sm:px-4">
-        <div className="grid gap-3 sm:grid-cols-2">
-          <Side game={game} side="away" />
-          <Side game={game} side="home" />
-        </div>
-        {game.venue || game.broadcast ? (
+        {!embedded ? (
+          <div className="grid gap-3 sm:grid-cols-2">
+            <Side game={game} side="away" />
+            <Side game={game} side="home" />
+          </div>
+        ) : null}
+        {!embedded && (game.venue || game.broadcast) ? (
           <p className="font-mono text-[10px] uppercase tracking-wider text-faint">
             {[game.venue, game.broadcast].filter(Boolean).join(" · ")}
           </p>
@@ -210,11 +216,11 @@ export function NhlGameBoard({ game, games }: { game: NhlGame; games: NhlGame[] 
                 Pregame model: uses only games played before puck drop.
               </p>
             ) : null}
-            <ModelSummary game={game} p={projection} />
+            {!embedded ? <ModelSummary game={game} p={projection} /> : null}
             <Factors game={game} p={projection} />
 
             <div>
-              <h3 className="label-mono mb-2">Markets · model vs sportsbook</h3>
+              {!embedded ? <h3 className="label-mono mb-2">Markets · model vs sportsbook</h3> : null}
               {!hasBook ? (
                 <p className="mb-2 text-xs text-mute">
                   No sportsbook lines are posted for this game yet, so there is no price to compare. Model probabilities and
@@ -234,10 +240,12 @@ export function NhlGameBoard({ game, games }: { game: NhlGame; games: NhlGame[] 
               ) : null}
             </div>
 
-            <div>
-              <h3 className="label-mono mb-2">Line movement</h3>
-              <Movement game={game} />
-            </div>
+            {!embedded ? (
+              <div>
+                <h3 className="label-mono mb-2">Line movement</h3>
+                <Movement game={game} />
+              </div>
+            ) : null}
 
             <details className="rounded-lg border border-line/10 bg-panel2/20 px-3 py-2 text-xs text-mute">
               <summary className="cursor-pointer font-mono text-[10px] uppercase tracking-wider text-faint">

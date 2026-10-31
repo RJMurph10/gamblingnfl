@@ -8,9 +8,23 @@ import { NhlEmpty, NhlLogo } from "@/components/nhl/NhlBits";
 import { NhlGameBoard } from "@/components/nhl/NhlGameBoard";
 import { NhlLiveScoreboard } from "@/components/nhl/NhlLiveRink";
 import { Panel, PanelHeader } from "@/components/shared/booth";
-import { hasScore, type NhlGame, type NhlGameDetail, type NhlPlay } from "@/lib/nhl/nhl";
+import {
+  FOOTBALL_CLOCK,
+  ProbabilityGraph,
+  type GraphClock,
+} from "@/components/shared/ProbabilityGraph";
+import {
+  americanText,
+  hasScore,
+  lineText,
+  type NhlGame,
+  type NhlGameDetail,
+  type NhlPlay,
+} from "@/lib/nhl/nhl";
 import { clockDisplay, isShootoutPeriod, shotsOnGoal } from "@/lib/nhl/nhl-live";
-import { useNhlGameDetail, useNhlSchedule } from "@/lib/nhl/use-nhl";
+import type { NhlMarketRow } from "@/lib/nhl/nhl-model";
+import { marketRowsV2, projectGameV2, type NhlV2Projection } from "@/lib/nhl/nhl-model-v2";
+import { useNhlGameDetail, useNhlModelInputs, useNhlSchedule } from "@/lib/nhl/use-nhl";
 
 type GameTab = "gamecast" | "stats" | "markets" | "props" | "information";
 
@@ -146,11 +160,7 @@ export function NhlGameDetailView({ gameId }: { gameId: string }) {
         </div>
       ) : null}
 
-      {activeTab === "markets" ? (
-        <div className="mt-6">
-          <NhlGameBoard game={game} games={games} />
-        </div>
-      ) : null}
+      {activeTab === "markets" ? <Markets game={game} games={games} /> : null}
 
       {activeTab === "props" ? (
         <div className="mt-6">
@@ -739,6 +749,204 @@ function Injuries({ game, injuries }: { game: NhlGame; injuries: NhlGameDetail["
           );
         })}
       </div>
+    </Panel>
+  );
+}
+
+/* ---------- Markets tab (same layout as the NFL and NBA pages) ---------- */
+
+const pct = (p: number, digits = 0) => `${(p * 100).toFixed(digits)}%`;
+
+function Markets({ game, games }: { game: NhlGame; games: NhlGame[] }) {
+  const { inputs } = useNhlModelInputs();
+  const projection = useMemo(
+    () => (game.status === "postponed" ? null : projectGameV2(game, games, inputs)),
+    [game, games, inputs],
+  );
+  const p = projection?.ok ? projection : null;
+  const rows = useMemo(() => (p ? marketRowsV2(game, p) : []), [game, p]);
+  return (
+    <div className="mt-6 space-y-6">
+      <div className="grid gap-6 lg:grid-cols-2">
+        {p ? <ModelCard game={game} p={p} rows={rows} /> : null}
+        <LinesCard game={game} />
+      </div>
+      <NhlGameBoard game={game} games={games} embedded />
+    </div>
+  );
+}
+
+function puckLineLabel(game: NhlGame): { team: NhlGame["home"]["team"] | null; text: string } {
+  const s = game.odds?.spread;
+  if (s == null || s === 0) return { team: null, text: s === 0 ? "PK" : "—" };
+  return {
+    team: s < 0 ? game.home.team : game.away.team,
+    text: `-${Math.abs(s).toFixed(1).replace(/\.0$/, "")}`,
+  };
+}
+
+/** The best-priced side of a market by the model (largest positive edge), if any. */
+function bestRow(rows: NhlMarketRow[], market: NhlMarketRow["market"]): NhlMarketRow | undefined {
+  return rows
+    .filter((r) => r.market === market && r.edge !== null && r.edge > 0 && r.price !== null)
+    .sort((a, b) => (b.edge as number) - (a.edge as number))[0];
+}
+
+/** Win / loss / push for a row once the game is final. */
+function rowResult(game: NhlGame, r: NhlMarketRow): "win" | "loss" | "push" | null {
+  if (game.status !== "final" || !hasScore(game)) return null;
+  const a = game.away.score as number;
+  const h = game.home.score as number;
+  const isHome = r.label.startsWith(game.home.team.abbr);
+  if (r.market === "Moneyline") return (isHome ? h > a : a > h) ? "win" : "loss";
+  if (r.market === "Puck line") {
+    const line = Number(r.line);
+    const m = (isHome ? h - a : a - h) + line;
+    return m > 0 ? "win" : m < 0 ? "loss" : "push";
+  }
+  const line = Number(r.line);
+  const tot = a + h;
+  if (tot === line) return "push";
+  return /over/i.test(r.label) === tot > line ? "win" : "loss";
+}
+
+function ModelCard({ game, p, rows }: { game: NhlGame; p: NhlV2Projection; rows: NhlMarketRow[] }) {
+  const tone = (r: string | null) => (r === "win" ? "text-win" : r === "loss" ? "text-loss" : "");
+  const pick = (market: NhlMarketRow["market"], none: string) => {
+    const r = bestRow(rows, market);
+    if (!r) return <dd className="font-mono text-mute">{none}</dd>;
+    const res = rowResult(game, r);
+    return (
+      <dd className={`text-right font-mono ${tone(res)}`}>
+        {r.label} {americanText(r.price)} (
+        {r.edge !== null ? `+${(r.edge * 100).toFixed(1)} pp` : ""}){res ? ` · ${res}` : ""}
+      </dd>
+    );
+  };
+  const hasBook = Boolean(game.odds);
+  return (
+    <Panel>
+      <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">Model</h2>
+      <p className="label-mono mb-3">Projected from games before puck drop</p>
+      <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 font-mono tabular-nums">
+        <span className="text-2xl">{p.awayGoals.toFixed(2)}</span>
+        <span className="text-[10px] uppercase tracking-wider text-faint">proj. goals</span>
+        <span className="text-right text-2xl">{p.homeGoals.toFixed(2)}</span>
+      </div>
+      <div className="mt-3 h-2 overflow-hidden rounded-full bg-panel2">
+        <div className="h-2 bg-acc" style={{ width: `${p.pAway * 100}%` }} />
+      </div>
+      <div className="mt-1 flex justify-between font-mono text-[10px] uppercase tracking-wider text-mute">
+        <span>
+          {game.away.team.abbr} {pct(p.pAway)}
+        </span>
+        <span>{pct(p.pOvertime)} OT/SO</span>
+        <span>
+          {game.home.team.abbr} {pct(p.pHome)}
+        </span>
+      </div>
+      <dl className="mt-4 space-y-2 text-sm">
+        <div className="flex justify-between gap-3">
+          <dt className="text-mute">Moneyline</dt>
+          {pick("Moneyline", hasBook ? "No edge" : "No line")}
+        </div>
+        <div className="flex justify-between gap-3">
+          <dt className="text-mute">Puck line</dt>
+          {pick("Puck line", hasBook ? "No edge" : "No line")}
+        </div>
+        <div className="flex justify-between gap-3">
+          <dt className="text-mute">Total</dt>
+          {bestRow(rows, "Total") ? (
+            pick("Total", "")
+          ) : (
+            <dd className="font-mono text-mute">
+              {hasBook ? "No edge" : "No line"} (proj {p.expTotal.toFixed(2)})
+            </dd>
+          )}
+        </div>
+      </dl>
+      <p className="mt-3 text-[11px] text-mute">
+        Edge = model chance − the book's no-vig chance; full table below.
+      </p>
+    </Panel>
+  );
+}
+
+function LinesCard({ game }: { game: NhlGame }) {
+  const o = game.odds;
+  const final = game.status === "final" && hasScore(game);
+  const a = game.away.score ?? 0;
+  const h = game.home.score ?? 0;
+  const pl = puckLineLabel(game);
+  const cover =
+    final && o?.spread != null
+      ? (() => {
+          const m = h - a + (o.spread as number);
+          return m > 0
+            ? `${game.home.team.abbr} covered`
+            : m < 0
+              ? `${game.away.team.abbr} covered`
+              : "push";
+        })()
+      : null;
+  const ou =
+    final && o?.total != null
+      ? a + h > o.total
+        ? "over"
+        : a + h < o.total
+          ? "under"
+          : "push"
+      : null;
+  const moved = (
+    open: number | null | undefined,
+    now: number | null | undefined,
+    fmt: (n: number | null | undefined) => string,
+  ) =>
+    open != null && now != null && open !== now ? (
+      <span className="text-mute">
+        {fmt(open)} → <span className="text-foreground">{fmt(now)}</span>
+      </span>
+    ) : (
+      fmt(now)
+    );
+  return (
+    <Panel>
+      <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">Lines</h2>
+      <p className="label-mono mb-3">
+        {o?.provider ?? "ESPN odds"}
+        {o?.open ? " · open → current" : ""}
+      </p>
+      {o ? (
+        <dl className="space-y-2 text-sm">
+          <div className="flex justify-between gap-3">
+            <dt className="text-mute">Puck line</dt>
+            <dd className="font-mono">
+              <span className="inline-flex items-center gap-1">
+                {pl.team ? <NhlLogo team={pl.team} className="size-4" /> : null}
+                {pl.text}
+              </span>
+              {cover ? ` · ${cover}` : ""}
+            </dd>
+          </div>
+          <div className="flex justify-between gap-3">
+            <dt className="text-mute">Total</dt>
+            <dd className="font-mono">
+              {moved(o.open?.total, o.total, (n) => lineText(n, false))}
+              {ou ? ` · ${ou}` : ""}
+            </dd>
+          </div>
+          <div className="flex justify-between gap-3">
+            <dt className="text-mute">{game.away.team.abbr} moneyline</dt>
+            <dd className="font-mono">{moved(o.open?.mlAway, o.mlAway, americanText)}</dd>
+          </div>
+          <div className="flex justify-between gap-3">
+            <dt className="text-mute">{game.home.team.abbr} moneyline</dt>
+            <dd className="font-mono">{moved(o.open?.mlHome, o.mlHome, americanText)}</dd>
+          </div>
+        </dl>
+      ) : (
+        <p className="font-mono text-xs text-mute">No lines posted yet.</p>
+      )}
     </Panel>
   );
 }
