@@ -7,18 +7,18 @@
   "id": "324",
   "abbr": "CCU",
   "name": "Coastal Carolina Chanticleers",
-  "score": 0
+  "score": 7
  },
  "home": {
   "id": "2247",
   "abbr": "GAST",
   "name": "Georgia State Panthers",
-  "score": 0
+  "score": 3
  },
  "neutral": false,
  "venue": "Center Parc Stadium",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-10-31T08:02:20.928Z",

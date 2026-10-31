@@ -7,18 +7,18 @@
   "id": "20",
   "abbr": "TB",
   "name": "Tampa Bay Lightning",
-  "score": 0
+  "score": 1
  },
  "home": {
   "id": "27",
   "abbr": "NSH",
   "name": "Nashville Predators",
-  "score": 0
+  "score": 1
  },
  "neutral": false,
  "venue": "Bridgestone Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-10-31T08:02:20.928Z",

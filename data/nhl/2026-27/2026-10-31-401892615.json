@@ -7,13 +7,13 @@
   "id": "19",
   "abbr": "STL",
   "name": "St. Louis Blues",
-  "score": 1
+  "score": 2
  },
  "home": {
   "id": "5",
   "abbr": "DET",
   "name": "Detroit Red Wings",
-  "score": 1
+  "score": 3
  },
  "neutral": false,
  "venue": "Little Caesars Arena",

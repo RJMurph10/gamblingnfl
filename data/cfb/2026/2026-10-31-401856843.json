@@ -477,12 +477,12 @@
    ]
   },
   "close": {
-   "at": "2026-10-31T17:48:07.904Z",
+   "at": "2026-10-31T18:59:33.650Z",
    "scoreboard": [
     {
      "provider": {
       "id": "100",
-      "name": "DraftKings",
+      "name": "Draft Kings",
       "priority": 1
      },
      "details": "BYU -16.5",
@@ -519,14 +519,14 @@
       "shortDisplayName": "ML",
       "home": {
        "close": {
-        "odds": "-800",
+        "odds": "-850",
         "link": {
          "language": "en-US",
          "rel": [
           "home",
           "desktop",
           "bets",
-          "draftkings"
+          "draft-kings"
          ],
          "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34876705%3Foutcomes%3D0ML86864992_1",
          "text": "Home Bet",
@@ -551,14 +551,14 @@
       },
       "away": {
        "close": {
-        "odds": "+550",
+        "odds": "+575",
         "link": {
          "language": "en-US",
          "rel": [
           "away",
           "desktop",
           "bets",
-          "draftkings"
+          "draft-kings"
          ],
          "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34876705%3Foutcomes%3D0ML86864992_3",
          "text": "Away Bet",
@@ -588,7 +588,7 @@
       "home": {
        "close": {
         "line": "-16.5",
-        "odds": "-115",
+        "odds": "-118",
         "link": {
          "language": "en-US",
          "rel": [
@@ -622,7 +622,7 @@
       "away": {
        "close": {
         "line": "+16.5",
-        "odds": "-105",
+        "odds": "-102",
         "link": {
          "language": "en-US",
          "rel": [
@@ -767,7 +767,7 @@
     {
      "provider": {
       "id": "100",
-      "name": "DraftKings",
+      "name": "Draft Kings",
       "priority": 1
      },
      "details": "BYU -16.5",
@@ -778,8 +778,8 @@
      "awayTeamOdds": {
       "favorite": false,
       "underdog": true,
-      "moneyLine": 550,
-      "spreadOdds": -105,
+      "moneyLine": 575,
+      "spreadOdds": -102,
       "open": {
        "favorite": false,
        "pointSpread": {
@@ -809,20 +809,20 @@
         "american": "+16.5"
        },
        "spread": {
-        "value": 1.95,
-        "displayValue": "20/21",
-        "alternateDisplayValue": "-105",
-        "decimal": 1.95,
-        "fraction": "20/21",
-        "american": "-105"
+        "value": 1.98,
+        "displayValue": "50/51",
+        "alternateDisplayValue": "-102",
+        "decimal": 1.98,
+        "fraction": "50/51",
+        "american": "-102"
        },
        "moneyLine": {
-        "value": 6.5,
-        "displayValue": "11/2",
-        "alternateDisplayValue": "+550",
-        "decimal": 6.5,
-        "fraction": "11/2",
-        "american": "+550"
+        "value": 6.75,
+        "displayValue": "23/4",
+        "alternateDisplayValue": "+575",
+        "decimal": 6.75,
+        "fraction": "23/4",
+        "american": "+575"
        }
       },
       "team": {
@@ -832,8 +832,8 @@
      "homeTeamOdds": {
       "favorite": true,
       "underdog": false,
-      "moneyLine": -800,
-      "spreadOdds": -115,
+      "moneyLine": -850,
+      "spreadOdds": -118,
       "open": {
        "favorite": true,
        "pointSpread": {
@@ -863,20 +863,20 @@
         "american": "-16.5"
        },
        "spread": {
-        "value": 1.86,
-        "displayValue": "20/23",
-        "alternateDisplayValue": "-115",
-        "decimal": 1.86,
-        "fraction": "20/23",
-        "american": "-115"
+        "value": 1.84,
+        "displayValue": "50/59",
+        "alternateDisplayValue": "-118",
+        "decimal": 1.84,
+        "fraction": "50/59",
+        "american": "-118"
        },
        "moneyLine": {
-        "value": 1.12,
-        "displayValue": "1/8",
-        "alternateDisplayValue": "-800",
-        "decimal": 1.12,
-        "fraction": "1/8",
-        "american": "-800"
+        "value": 1.11,
+        "displayValue": "2/17",
+        "alternateDisplayValue": "-850",
+        "decimal": 1.11,
+        "fraction": "2/17",
+        "american": "-850"
        }
       },
       "team": {
