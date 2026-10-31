@@ -1,0 +1,386 @@
+[
+ {
+  "lg": "nfl",
+  "day": "20231105",
+  "id": "401547230",
+  "name": "MIA VS KC",
+  "oddsStatus": 200,
+  "providers": [
+   "2000",
+   "31",
+   "52",
+   "45",
+   "46",
+   "57",
+   "40",
+   "58",
+   "47",
+   "48",
+   "41",
+   "53",
+   "36",
+   "1001"
+  ],
+  "propStatus": 404,
+  "propCount": 0
+ },
+ {
+  "lg": "nfl",
+  "day": "20231105",
+  "id": "401547518",
+  "name": "MIN @ ATL",
+  "oddsStatus": 200,
+  "providers": [
+   "2000",
+   "31",
+   "52",
+   "45",
+   "46",
+   "57",
+   "40",
+   "58",
+   "47",
+   "48",
+   "41",
+   "53",
+   "36",
+   "1001"
+  ],
+  "propStatus": 404,
+  "propCount": 0
+ },
+ {
+  "lg": "nfl",
+  "day": "20241110",
+  "id": "401671803",
+  "name": "NYG VS CAR",
+  "oddsStatus": 200,
+  "providers": [
+   "2000",
+   "58",
+   "59"
+  ],
+  "propStatus": 404,
+  "propCount": 0
+ },
+ {
+  "lg": "nfl",
+  "day": "20241110",
+  "id": "401671873",
+  "name": "NE @ CHI",
+  "oddsStatus": 200,
+  "providers": [
+   "58",
+   "59"
+  ],
+  "propStatus": 404,
+  "propCount": 0
+ },
+ {
+  "lg": "nfl",
+  "day": "20251102",
+  "id": "401772765",
+  "name": "CHI @ CIN",
+  "oddsStatus": 200,
+  "providers": [
+   "58",
+   "59"
+  ],
+  "propStatus": 404,
+  "propCount": 0
+ },
+ {
+  "lg": "nfl",
+  "day": "20251102",
+  "id": "401772871",
+  "name": "MIN @ DET",
+  "oddsStatus": 200,
+  "providers": [
+   "58",
+   "59"
+  ],
+  "propStatus": 404,
+  "propCount": 0
+ },
+ {
+  "lg": "nfl",
+  "day": "20221106",
+  "id": "401437820",
+  "name": "LAC @ ATL",
+  "oddsStatus": 200,
+  "providers": [
+   "2000",
+   "31",
+   "52",
+   "45",
+   "46",
+   "40",
+   "58",
+   "55",
+   "47",
+   "48",
+   "41",
+   "53",
+   "36",
+   "1001",
+   "1004",
+   "1002"
+  ],
+  "propStatus": 404,
+  "propCount": 0
+ },
+ {
+  "lg": "nfl",
+  "day": "20221106",
+  "id": "401437821",
+  "name": "MIA @ CHI",
+  "oddsStatus": 200,
+  "providers": [
+   "2000",
+   "31",
+   "52",
+   "45",
+   "46",
+   "40",
+   "58",
+   "55",
+   "47",
+   "48",
+   "41",
+   "53",
+   "36",
+   "1001",
+   "1004",
+   "1002"
+  ],
+  "propStatus": 404,
+  "propCount": 0
+ },
+ {
+  "lg": "nba",
+  "day": "20240115",
+  "id": "401585183",
+  "name": "HOU @ PHI",
+  "oddsStatus": 200,
+  "providers": [
+   "50",
+   "52",
+   "45",
+   "46",
+   "57",
+   "40",
+   "58",
+   "47",
+   "41",
+   "53",
+   "36",
+   "1001"
+  ],
+  "propStatus": 404,
+  "propCount": 0
+ },
+ {
+  "lg": "nba",
+  "day": "20240115",
+  "id": "401585184",
+  "name": "NO @ DAL",
+  "oddsStatus": 200,
+  "providers": [
+   "50",
+   "52",
+   "45",
+   "57",
+   "40",
+   "58",
+   "47",
+   "41",
+   "53",
+   "36",
+   "1001"
+  ],
+  "propStatus": 404,
+  "propCount": 0
+ },
+ {
+  "lg": "nba",
+  "day": "20250115",
+  "id": "401705127",
+  "name": "NY @ PHI",
+  "oddsStatus": 200,
+  "providers": [
+   "58",
+   "59"
+  ],
+  "propStatus": 404,
+  "propCount": 0
+ },
+ {
+  "lg": "nba",
+  "day": "20250115",
+  "id": "401705128",
+  "name": "BOS @ TOR",
+  "oddsStatus": 200,
+  "providers": [
+   "58",
+   "59"
+  ],
+  "propStatus": 404,
+  "propCount": 0
+ },
+ {
+  "lg": "nba",
+  "day": "20230115",
+  "id": "401468803",
+  "name": "NY @ DET",
+  "oddsStatus": 200,
+  "providers": [
+   "50",
+   "31",
+   "52",
+   "45",
+   "46",
+   "40",
+   "58",
+   "55",
+   "47",
+   "48",
+   "41",
+   "53",
+   "36",
+   "1001",
+   "1004",
+   "1002"
+  ],
+  "propStatus": 404,
+  "propCount": 0
+ },
+ {
+  "lg": "nba",
+  "day": "20230115",
+  "id": "401468804",
+  "name": "HOU @ LAC",
+  "oddsStatus": 200,
+  "providers": [
+   "50",
+   "31",
+   "52",
+   "45",
+   "46",
+   "40",
+   "58",
+   "55",
+   "47",
+   "48",
+   "41",
+   "53",
+   "36",
+   "1001",
+   "1004",
+   "1002"
+  ],
+  "propStatus": 404,
+  "propCount": 0
+ },
+ {
+  "lg": "nhl",
+  "day": "20250115",
+  "id": "401688304",
+  "name": "CAR @ BUF",
+  "oddsStatus": 200,
+  "providers": [
+   "58",
+   "59"
+  ],
+  "propStatus": 404,
+  "propCount": 0
+ },
+ {
+  "lg": "nhl",
+  "day": "20250115",
+  "id": "401688305",
+  "name": "EDM @ MIN",
+  "oddsStatus": 200,
+  "providers": [
+   "58",
+   "59"
+  ],
+  "propStatus": 404,
+  "propCount": 0
+ },
+ {
+  "lg": "mlb",
+  "day": "20250615",
+  "id": "401695967",
+  "name": "CIN @ DET",
+  "oddsStatus": 200,
+  "providers": [
+   "58",
+   "59"
+  ],
+  "propStatus": 404,
+  "propCount": 0
+ },
+ {
+  "lg": "mlb",
+  "day": "20250615",
+  "id": "401695966",
+  "name": "LAA @ BAL",
+  "oddsStatus": 200,
+  "providers": [
+   "58",
+   "59"
+  ],
+  "propStatus": 404,
+  "propCount": 0
+ },
+ {
+  "lg": "mlb",
+  "day": "20240615",
+  "id": "401569530",
+  "name": "OAK @ MIN",
+  "oddsStatus": 200,
+  "providers": [
+   "58"
+  ],
+  "propStatus": 404,
+  "propCount": 0
+ },
+ {
+  "lg": "mlb",
+  "day": "20240615",
+  "id": "401569534",
+  "name": "STL @ CHC",
+  "oddsStatus": 200,
+  "providers": [
+   "58"
+  ],
+  "propStatus": 404,
+  "propCount": 0
+ },
+ {
+  "lg": "cfb",
+  "day": "20241109",
+  "id": "401628543",
+  "name": "MD @ ORE",
+  "oddsStatus": 200,
+  "providers": [
+   "58",
+   "59"
+  ],
+  "propStatus": 404,
+  "propCount": 0
+ },
+ {
+  "lg": "cfb",
+  "day": "20241109",
+  "id": "401628545",
+  "name": "PUR @ OSU",
+  "oddsStatus": 200,
+  "providers": [
+   "58",
+   "59"
+  ],
+  "propStatus": 404,
+  "propCount": 0
+ }
+]
