@@ -308,3 +308,32 @@ describe("Wrigley wind best bet", () => {
     expect(isWrigleyBestBet(null)).toBe(false);
   });
 });
+
+describe("bundled closing lines", () => {
+  it("fills a finished game's missing lines from the bundled file and keeps ESPN's own", async () => {
+    const { withStoredClosingLines } = await import("@/lib/mlb/mlb.server");
+    const { MLB_CLOSING_LINES } = await import("@/data/mlb/closing-lines");
+    const id = Object.keys(MLB_CLOSING_LINES)[0];
+    const row = MLB_CLOSING_LINES[id];
+    const g = {
+      id,
+      date: "2026-04-01T23:00Z",
+      status: "final",
+      statusDetail: "Final",
+      part: "reg",
+      inning: 9,
+      away: { team: team("1", "AAA"), score: 3 },
+      home: { team: team("2", "BBB"), score: 4 },
+    } as unknown as MlbGame;
+    const [filled] = withStoredClosingLines([g]);
+    expect(filled.odds?.mlHome).toBe(row[0]);
+    expect(filled.odds?.total).toBe(row[5]);
+    const [kept] = withStoredClosingLines([
+      { ...g, odds: { spread: null, total: 99, mlHome: null, mlAway: null } },
+    ]);
+    expect(kept.odds?.total).toBe(99);
+    expect(kept.odds?.mlHome).toBe(row[0]);
+    const [upcoming] = withStoredClosingLines([{ ...g, status: "scheduled" } as MlbGame]);
+    expect(upcoming.odds).toBeUndefined();
+  });
+});

@@ -1,0 +1,29 @@
+# Regenerates src/data/mlb/closing-lines.ts (every finished MLB game's closing lines) from ESPN and
+# commits it to the branch it ran on. Runs when scripts/mlb/closing-lines.trigger is pushed.
+name: MLB closing lines
+
+on:
+  push:
+    paths: [scripts/mlb/closing-lines.trigger]
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: node scripts/mlb/export-closing-lines.mjs "$(cat scripts/mlb/closing-lines.trigger | head -1)"
+      - run: |
+          git config user.name "line-history-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/data/mlb/closing-lines.ts
+          git diff --cached --quiet && exit 0
+          git commit -q -m "MLB closing lines $(head -1 scripts/mlb/closing-lines.trigger)"
+          git push
