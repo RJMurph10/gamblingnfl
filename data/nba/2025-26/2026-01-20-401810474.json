@@ -1,0 +1,41 @@
+{
+ "id": "401810474",
+ "league": "nba",
+ "date": "2026-01-21T03:00Z",
+ "name": "MIA @ SAC",
+ "seasonType": 2,
+ "away": {
+  "id": "14",
+  "abbr": "MIA",
+  "name": "Miami Heat",
+  "score": 130
+ },
+ "home": {
+  "id": "23",
+  "abbr": "SAC",
+  "name": "Sacramento Kings",
+  "score": 117
+ },
+ "final": {
+  "away": 130,
+  "home": 117
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:40:18.253Z",
+  "books": {
+   "100": {
+    "name": "Draft Kings",
+    "count": 6,
+    "rows": [
+  {"a":null,"t":"1st Quarter Moneyline","ti":"76","cur":[null,-135,null]},
+  {"a":"3059319","t":"Total Points and Rebounds","ti":"88","op":[21.5,null,null],"cur":[20.5,null,null]},
+  {"a":"3155942","t":"Total Points and Rebounds","ti":"88","op":[21.5,null,null],"cur":[21.5,null,null]},
+  {"a":"3059319","t":"Total Assists and Rebounds","ti":"89","op":[8.5,null,null],"cur":[7.5,null,null]},
+  {"a":"4066261","t":"Blocks Milestones","ti":"223","op":[1,null,null],"cur":[1,null,null]},
+  {"a":"3978","t":"Points + Assists Milestones","ti":"226","op":[24,null,null],"cur":[25,null,null]}
+ ]
+   }
+  }
+ }
+}

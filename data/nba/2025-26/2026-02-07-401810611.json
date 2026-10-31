@@ -1,0 +1,36 @@
+{
+ "id": "401810611",
+ "league": "nba",
+ "date": "2026-02-08T03:00Z",
+ "name": "CLE @ SAC",
+ "seasonType": 2,
+ "away": {
+  "id": "5",
+  "abbr": "CLE",
+  "name": "Cleveland Cavaliers",
+  "score": 132
+ },
+ "home": {
+  "id": "23",
+  "abbr": "SAC",
+  "name": "Sacramento Kings",
+  "score": 126
+ },
+ "final": {
+  "away": 132,
+  "home": 126
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:40:23.307Z",
+  "books": {
+   "100": {
+    "name": "Draft Kings",
+    "count": 1,
+    "rows": [
+  {"a":"3908809","t":"Total Points and Rebounds","ti":"88","op":[32.5,null,null],"cur":[31.5,null,null]}
+ ]
+   }
+  }
+ }
+}

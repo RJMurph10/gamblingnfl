@@ -1,0 +1,38 @@
+{
+ "id": "401869407",
+ "league": "nba",
+ "date": "2026-04-30T02:00Z",
+ "name": "HOU @ LAL",
+ "seasonType": 3,
+ "away": {
+  "id": "10",
+  "abbr": "HOU",
+  "name": "Houston Rockets",
+  "score": 99
+ },
+ "home": {
+  "id": "13",
+  "abbr": "LAL",
+  "name": "Los Angeles Lakers",
+  "score": 93
+ },
+ "final": {
+  "away": 99,
+  "home": 93
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:40:44.143Z",
+  "books": {
+   "100": {
+    "name": "Draft Kings",
+    "count": 3,
+    "rows": [
+  {"a":"3913174","t":"Total Assists and Rebounds","ti":"89","op":[6.5,null,null],"cur":[6.5,null,null]},
+  {"a":"3913174","t":"Total Assists and Rebounds","ti":"89","op":[6.5,null,null],"cur":[6.5,null,null]},
+  {"a":"2990992","t":"Points + Assists Milestones","ti":"226","op":[17,null,null],"cur":[16,null,null]}
+ ]
+   }
+  }
+ }
+}

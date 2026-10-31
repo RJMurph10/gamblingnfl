@@ -1,0 +1,36 @@
+{
+ "id": "401810737",
+ "league": "nba",
+ "date": "2026-03-03T03:00Z",
+ "name": "LAC @ GS",
+ "seasonType": 2,
+ "away": {
+  "id": "12",
+  "abbr": "LAC",
+  "name": "LA Clippers",
+  "score": 114
+ },
+ "home": {
+  "id": "9",
+  "abbr": "GS",
+  "name": "Golden State Warriors",
+  "score": 101
+ },
+ "final": {
+  "away": 114,
+  "home": 101
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:40:28.464Z",
+  "books": {
+   "100": {
+    "name": "Draft Kings",
+    "count": 1,
+    "rows": [
+  {"a":"4066436","t":"Rebounds Milestones","ti":"220","op":[4,null,null],"cur":[2,null,null]}
+ ]
+   }
+  }
+ }
+}

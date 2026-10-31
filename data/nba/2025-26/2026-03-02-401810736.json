@@ -1,0 +1,36 @@
+{
+ "id": "401810736",
+ "league": "nba",
+ "date": "2026-03-03T02:00Z",
+ "name": "DEN @ UTAH",
+ "seasonType": 2,
+ "away": {
+  "id": "7",
+  "abbr": "DEN",
+  "name": "Denver Nuggets",
+  "score": 128
+ },
+ "home": {
+  "id": "26",
+  "abbr": "UTAH",
+  "name": "Utah Jazz",
+  "score": 125
+ },
+ "final": {
+  "away": 128,
+  "home": 125
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:40:28.464Z",
+  "books": {
+   "100": {
+    "name": "Draft Kings",
+    "count": 1,
+    "rows": [
+  {"a":"4432181","t":"Rebounds Milestones","ti":"220","op":[4,null,null],"cur":[2,null,null]}
+ ]
+   }
+  }
+ }
+}

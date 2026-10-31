@@ -1,0 +1,38 @@
+{
+ "id": "401810734",
+ "league": "nba",
+ "date": "2026-03-03T00:00Z",
+ "name": "HOU @ WSH",
+ "seasonType": 2,
+ "away": {
+  "id": "10",
+  "abbr": "HOU",
+  "name": "Houston Rockets",
+  "score": 123
+ },
+ "home": {
+  "id": "27",
+  "abbr": "WSH",
+  "name": "Washington Wizards",
+  "score": 118
+ },
+ "final": {
+  "away": 123,
+  "home": 118
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:40:28.469Z",
+  "books": {
+   "100": {
+    "name": "Draft Kings",
+    "count": 3,
+    "rows": [
+  {"a":"5238230","t":"Total Assists and Rebounds","ti":"89","op":[4.5,null,null],"cur":[4.5,null,null]},
+  {"a":"5238230","t":"Total Assists and Rebounds","ti":"89","op":[4.5,null,null],"cur":[4.5,null,null]},
+  {"a":"4711272","t":"Rebounds Milestones","ti":"220","op":[4,null,null],"cur":[2,null,null]}
+ ]
+   }
+  }
+ }
+}

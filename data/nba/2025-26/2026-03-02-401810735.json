@@ -1,0 +1,38 @@
+{
+ "id": "401810735",
+ "league": "nba",
+ "date": "2026-03-03T00:30Z",
+ "name": "BOS @ MIL",
+ "seasonType": 2,
+ "away": {
+  "id": "2",
+  "abbr": "BOS",
+  "name": "Boston Celtics",
+  "score": 108
+ },
+ "home": {
+  "id": "15",
+  "abbr": "MIL",
+  "name": "Milwaukee Bucks",
+  "score": 81
+ },
+ "final": {
+  "away": 108,
+  "home": 81
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:40:28.465Z",
+  "books": {
+   "100": {
+    "name": "Draft Kings",
+    "count": 3,
+    "rows": [
+  {"a":"4683689","t":"Total Points and Assists","ti":"87","op":[6.5,null,null],"cur":[6.5,null,null]},
+  {"a":"4683689","t":"Total Points and Assists","ti":"87","op":[6.5,null,null],"cur":[6.5,null,null]},
+  {"a":"4591725","t":"Points Milestones - 1st Quarter","ti":"228","op":[6,null,null],"cur":[3,null,null]}
+ ]
+   }
+  }
+ }
+}

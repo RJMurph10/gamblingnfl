@@ -1,0 +1,36 @@
+{
+ "id": "401810971",
+ "league": "nba",
+ "date": "2026-04-03T01:30Z",
+ "name": "LAL @ OKC",
+ "seasonType": 2,
+ "away": {
+  "id": "13",
+  "abbr": "LAL",
+  "name": "Los Angeles Lakers",
+  "score": 96
+ },
+ "home": {
+  "id": "25",
+  "abbr": "OKC",
+  "name": "Oklahoma City Thunder",
+  "score": 139
+ },
+ "final": {
+  "away": 96,
+  "home": 139
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:40:37.258Z",
+  "books": {
+   "100": {
+    "name": "Draft Kings",
+    "count": 1,
+    "rows": [
+  {"a":"4592691","t":"To Record a Double Double","ti":"92","cur":[null,4100,null]}
+ ]
+   }
+  }
+ }
+}
