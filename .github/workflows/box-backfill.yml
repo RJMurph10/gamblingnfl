@@ -1,0 +1,47 @@
+# Adds player box scores to the backfilled prop files on the line-history branch, so props can be
+# graded. Runs when the box-score script is pushed to the props-backfill branch, or on demand.
+name: Box score backfill
+
+on:
+  push:
+    branches: [props-backfill]
+    paths: [scripts/line-history/box.trigger] # touch this file to run it
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  box:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        league: [nba, nfl, nhl, mlb, cfb]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: app
+          sparse-checkout: scripts/line-history
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Box scores
+        run: |
+          set -e
+          url="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+          git clone -q --depth 1 --branch line-history "$url" data-repo
+          node app/scripts/line-history/backfill-box.mjs --league ${{ matrix.league }} --data data-repo/data
+          cd data-repo
+          git config user.name "line-history-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet && { echo "nothing new"; exit 0; }
+          git commit -q -m "Box scores ${{ matrix.league }}"
+          for attempt in 1 2 3 4 5 6; do
+            git fetch -q --depth=100 origin line-history && git rebase -q FETCH_HEAD && git push -q origin HEAD:line-history && { echo pushed; exit 0; }
+            sleep $((attempt * 20))
+          done
+          exit 1
