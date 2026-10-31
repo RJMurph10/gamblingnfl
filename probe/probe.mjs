@@ -1,32 +1,34 @@
-// Deep look: what do old prop items contain (lines, prices)?
+// Which markets have lines + prices, per season? Are list items $ref-only?
 import fs from "node:fs";
 const H = { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36", Accept: "application/json", Referer: "https://www.espn.com/", Origin: "https://www.espn.com" };
-const get = async (u) => { try { const r = await fetch(u, { headers: H }); return r.ok ? await r.json() : { _status: r.status }; } catch (e) { return { _err: String(e) }; } };
+const get = async (u) => { try { const r = await fetch(u, { headers: H }); return r.ok ? await r.json() : null; } catch { return null; } };
 const C = (s, l, id) => `https://sports.core.api.espn.com/v2/sports/${s}/leagues/${l}/events/${id}/competitions/${id}/odds`;
-const cases = [
-  ["football","nfl","401671789","58"], ["football","nfl","401671789","59"],   // placeholder ids replaced below
-];
-const pick = async (s, l, day, n) => (await get(`https://site.api.espn.com/apis/site/v2/sports/${s}/${l}/scoreboard?dates=${day}`)).events?.[n]?.id;
-const plan = [
-  ["football","nfl","20241110",["58","59"]], ["football","nfl","20231105",["45","47","48","40"]], ["football","nfl","20221106",["45","47","52"]],
-  ["basketball","nba","20250115",["58","59"]], ["basketball","nba","20240115",["58","47","45"]], ["basketball","nba","20230115",["40","47","45"]],
-];
+const plan = [["football","nfl","20241110","58"],["football","nfl","20251102","58"],["basketball","nba","20250115","58"],["basketball","nba","20240115","58"],["basketball","nba","20230115","40"],["basketball","nba","20231115","58"],["football","nfl","20240915","58"],["hockey","nhl","20250115","58"],["baseball","mlb","20250615","58"]];
 const out = [];
-for (const [s, l, day, provs] of plan) {
-  const id = await pick(s, l, day, 0);
-  for (const p of provs) {
-    const all = [];
-    const first = await get(`${C(s, l, id)}/${p}/propBets?limit=1000&page=1`);
-    all.push(...(first.items ?? []));
-    for (let pg = 2; pg <= Math.min(first.pageCount || 1, 5); pg++) all.push(...((await get(`${C(s, l, id)}/${p}/propBets?limit=1000&page=${pg}`)).items ?? []));
-    const resolved = [];
-    for (const it of all.slice(0, 1200)) resolved.push(!it.type && it.$ref ? await get(it.$ref) : it);
-    const types = {};
-    for (const x of resolved) { const t = x?.type?.name ?? "?"; types[t] = (types[t] || 0) + 1; }
-    const yards = resolved.filter((x) => /pass|points|yards|rebound/i.test(x?.type?.name ?? "")).slice(0, 2);
-    const provider = (await get(`https://sports.core.api.espn.com/v2/sports/${s}/leagues/${l}/casinos/${p}`))?.name ?? p;
-    out.push({ l, day, id, p, provider, count: resolved.length, types, examples: yards.length ? yards : resolved.slice(0, 2) });
+const t0 = Date.now();
+let req = 0;
+for (const [s, l, day, p] of plan) {
+  const sb = await get(`https://site.api.espn.com/apis/site/v2/sports/${s}/${l}/scoreboard?dates=${day}`); req++;
+  const id = sb?.events?.[1]?.id ?? sb?.events?.[0]?.id;
+  const first = await get(`${C(s, l, id)}/${p}/propBets?limit=1000&page=1`); req++;
+  const items = [...(first?.items ?? [])];
+  for (let pg = 2; pg <= Math.min(first?.pageCount || 1, 5); pg++) { items.push(...((await get(`${C(s, l, id)}/${p}/propBets?limit=1000&page=${pg}`))?.items ?? [])); req++; }
+  const refOnly = items.filter((x) => !x.type && x.$ref).length;
+  const resolved = [];
+  for (let i = 0; i < items.length; i += 25) {
+    const chunk = await Promise.all(items.slice(i, i + 25).map((x) => (!x.type && x.$ref ? (req++, get(x.$ref)) : x)));
+    resolved.push(...chunk.filter(Boolean));
   }
+  const types = {};
+  for (const x of resolved) {
+    const t = x?.type?.name ?? "?";
+    const priced = Boolean(x?.odds?.american?.value || x?.current?.over?.american || x?.current?.under?.american);
+    const lined = x?.current?.target?.value != null || x?.odds?.total?.value != null;
+    types[t] ??= { n: 0, priced: 0, lined: 0, players: new Set() };
+    types[t].n++; if (priced) types[t].priced++; if (lined) types[t].lined++;
+    types[t].players.add(x?.athlete?.$ref?.match(/athletes\/(\d+)/)?.[1]);
+  }
+  for (const v of Object.values(types)) v.players = v.players.size;
+  out.push({ l, day, id, p, total: items.length, refOnly, types });
 }
-fs.writeFileSync("probe/result.json", JSON.stringify(out, null, 1));
-console.log("done");
+fs.writeFileSync("probe/result.json", JSON.stringify({ secs: (Date.now() - t0) / 1000, req, out }, null, 1));
