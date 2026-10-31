@@ -7,13 +7,13 @@
   "id": "2",
   "abbr": "AUB",
   "name": "Auburn Tigers",
-  "score": 9
+  "score": 15
  },
  "home": {
   "id": "145",
   "abbr": "MISS",
   "name": "Ole Miss Rebels",
-  "score": 17
+  "score": 38
  },
  "neutral": false,
  "venue": "Vaught-Hemingway Stadium",

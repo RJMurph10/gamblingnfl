@@ -13,12 +13,12 @@
   "id": "2335",
   "abbr": "LIB",
   "name": "Liberty Flames",
-  "score": 0
+  "score": 7
  },
  "neutral": false,
  "venue": "Williams Stadium (VA)",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-10-31T08:02:20.928Z",

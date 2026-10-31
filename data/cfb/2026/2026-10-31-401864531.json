@@ -7,7 +7,7 @@
   "id": "2638",
   "abbr": "UTEP",
   "name": "UTEP Miners",
-  "score": 0
+  "score": 7
  },
  "home": {
   "id": "2449",
@@ -18,7 +18,7 @@
  "neutral": false,
  "venue": "Fargodome",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-10-31T08:02:20.928Z",

@@ -7,18 +7,18 @@
   "id": "2348",
   "abbr": "LT",
   "name": "Louisiana Tech Bulldogs",
-  "score": 0
+  "score": 7
  },
  "home": {
   "id": "6",
   "abbr": "USA",
   "name": "South Alabama Jaguars",
-  "score": 0
+  "score": 14
  },
  "neutral": false,
  "venue": "Hancock Whitney Stadium",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-10-31T08:02:20.928Z",

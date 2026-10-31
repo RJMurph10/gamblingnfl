@@ -7,13 +7,13 @@
   "id": "4",
   "abbr": "CHI",
   "name": "Chicago Blackhawks",
-  "score": 2
+  "score": 4
  },
  "home": {
   "id": "1",
   "abbr": "BOS",
   "name": "Boston Bruins",
-  "score": 2
+  "score": 4
  },
  "neutral": false,
  "venue": "TD Garden",

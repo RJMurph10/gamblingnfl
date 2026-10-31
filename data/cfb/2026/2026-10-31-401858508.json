@@ -477,12 +477,12 @@
    ]
   },
   "close": {
-   "at": "2026-10-31T18:59:33.650Z",
+   "at": "2026-10-31T19:50:42.483Z",
    "scoreboard": [
     {
      "provider": {
       "id": "100",
-      "name": "Draft Kings",
+      "name": "DraftKings",
       "priority": 1
      },
      "details": "UCLA -22.5",
@@ -519,14 +519,14 @@
       "shortDisplayName": "ML",
       "home": {
        "close": {
-        "odds": "-1800",
+        "odds": "-2100",
         "link": {
          "language": "en-US",
          "rel": [
           "home",
           "desktop",
           "bets",
-          "draft-kings"
+          "draftkings"
          ],
          "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34876696%3Foutcomes%3D0ML86864983_1",
          "text": "Home Bet",
@@ -551,14 +551,14 @@
       },
       "away": {
        "close": {
-        "odds": "+1000",
+        "odds": "+1100",
         "link": {
          "language": "en-US",
          "rel": [
           "away",
           "desktop",
           "bets",
-          "draft-kings"
+          "draftkings"
          ],
          "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34876696%3Foutcomes%3D0ML86864983_3",
          "text": "Away Bet",
@@ -588,7 +588,7 @@
       "home": {
        "close": {
         "line": "-22.5",
-        "odds": "-110",
+        "odds": "-115",
         "link": {
          "language": "en-US",
          "rel": [
@@ -622,7 +622,7 @@
       "away": {
        "close": {
         "line": "+22.5",
-        "odds": "-110",
+        "odds": "-105",
         "link": {
          "language": "en-US",
          "rel": [
@@ -767,7 +767,7 @@
     {
      "provider": {
       "id": "100",
-      "name": "Draft Kings",
+      "name": "DraftKings",
       "priority": 1
      },
      "details": "UCLA -22.5",
@@ -778,8 +778,8 @@
      "awayTeamOdds": {
       "favorite": false,
       "underdog": true,
-      "moneyLine": 1000,
-      "spreadOdds": -110,
+      "moneyLine": 1100,
+      "spreadOdds": -105,
       "open": {
        "favorite": false,
        "pointSpread": {
@@ -809,20 +809,20 @@
         "american": "+22.5"
        },
        "spread": {
-        "value": 1.9,
-        "displayValue": "10/11",
-        "alternateDisplayValue": "-110",
-        "decimal": 1.9,
-        "fraction": "10/11",
-        "american": "-110"
+        "value": 1.95,
+        "displayValue": "20/21",
+        "alternateDisplayValue": "-105",
+        "decimal": 1.95,
+        "fraction": "20/21",
+        "american": "-105"
        },
        "moneyLine": {
-        "value": 11,
-        "displayValue": "10/1",
-        "alternateDisplayValue": "+1000",
-        "decimal": 11,
-        "fraction": "10/1",
-        "american": "+1000"
+        "value": 12,
+        "displayValue": "11/1",
+        "alternateDisplayValue": "+1100",
+        "decimal": 12,
+        "fraction": "11/1",
+        "american": "+1100"
        }
       },
       "team": {
@@ -832,8 +832,8 @@
      "homeTeamOdds": {
       "favorite": true,
       "underdog": false,
-      "moneyLine": -1800,
-      "spreadOdds": -110,
+      "moneyLine": -2100,
+      "spreadOdds": -115,
       "open": {
        "favorite": true,
        "pointSpread": {
@@ -863,20 +863,20 @@
         "american": "-22.5"
        },
        "spread": {
-        "value": 1.9,
-        "displayValue": "10/11",
-        "alternateDisplayValue": "-110",
-        "decimal": 1.9,
-        "fraction": "10/11",
-        "american": "-110"
+        "value": 1.86,
+        "displayValue": "20/23",
+        "alternateDisplayValue": "-115",
+        "decimal": 1.86,
+        "fraction": "20/23",
+        "american": "-115"
        },
        "moneyLine": {
-        "value": 1.05,
-        "displayValue": "1/18",
-        "alternateDisplayValue": "-1800",
-        "decimal": 1.05,
-        "fraction": "1/18",
-        "american": "-1800"
+        "value": 1.04,
+        "displayValue": "1/21",
+        "alternateDisplayValue": "-2100",
+        "decimal": 1.04,
+        "fraction": "1/21",
+        "american": "-2100"
        }
       },
       "team": {

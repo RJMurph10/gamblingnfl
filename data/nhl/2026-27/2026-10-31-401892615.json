@@ -7,18 +7,18 @@
   "id": "19",
   "abbr": "STL",
   "name": "St. Louis Blues",
-  "score": 2
+  "score": 5
  },
  "home": {
   "id": "5",
   "abbr": "DET",
   "name": "Detroit Red Wings",
-  "score": 3
+  "score": 4
  },
  "neutral": false,
  "venue": "Little Caesars Arena",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-10-31T08:02:20.928Z",
@@ -2144,5 +2144,9 @@
     }
    ]
   }
+ },
+ "final": {
+  "away": 5,
+  "home": 4
  }
 }
