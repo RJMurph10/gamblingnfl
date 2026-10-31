@@ -477,7 +477,7 @@
    ]
   },
   "close": {
-   "at": "2026-10-31T14:50:38.221Z",
+   "at": "2026-10-31T15:50:13.117Z",
    "scoreboard": [
     {
      "provider": {
@@ -519,7 +519,7 @@
       "shortDisplayName": "ML",
       "home": {
        "close": {
-        "odds": "-265",
+        "odds": "-278",
         "link": {
          "language": "en-US",
          "rel": [
@@ -551,7 +551,7 @@
       },
       "away": {
        "close": {
-        "odds": "+215",
+        "odds": "+225",
         "link": {
          "language": "en-US",
          "rel": [
@@ -660,7 +660,7 @@
       "over": {
        "close": {
         "line": "o49.5",
-        "odds": "-105",
+        "odds": "-108",
         "link": {
          "language": "en-US",
          "rel": [
@@ -694,7 +694,7 @@
       "under": {
        "close": {
         "line": "u49.5",
-        "odds": "-115",
+        "odds": "-112",
         "link": {
          "language": "en-US",
          "rel": [
@@ -773,12 +773,12 @@
      "details": "DUKE -7",
      "overUnder": 49.5,
      "spread": -7,
-     "overOdds": -105,
-     "underOdds": -115,
+     "overOdds": -108,
+     "underOdds": -112,
      "awayTeamOdds": {
       "favorite": false,
       "underdog": true,
-      "moneyLine": 215,
+      "moneyLine": 225,
       "spreadOdds": -112,
       "open": {
        "favorite": false,
@@ -817,12 +817,12 @@
         "american": "-112"
        },
        "moneyLine": {
-        "value": 3.15,
-        "displayValue": "43/20",
-        "alternateDisplayValue": "+215",
-        "decimal": 3.15,
-        "fraction": "43/20",
-        "american": "+215"
+        "value": 3.25,
+        "displayValue": "9/4",
+        "alternateDisplayValue": "+225",
+        "decimal": 3.25,
+        "fraction": "9/4",
+        "american": "+225"
        }
       },
       "team": {
@@ -832,7 +832,7 @@
      "homeTeamOdds": {
       "favorite": true,
       "underdog": false,
-      "moneyLine": -265,
+      "moneyLine": -278,
       "spreadOdds": -108,
       "open": {
        "favorite": true,
@@ -871,12 +871,12 @@
         "american": "-108"
        },
        "moneyLine": {
-        "value": 1.37,
-        "displayValue": "20/53",
-        "alternateDisplayValue": "-265",
-        "decimal": 1.37,
-        "fraction": "20/53",
-        "american": "-265"
+        "value": 1.35,
+        "displayValue": "50/139",
+        "alternateDisplayValue": "-278",
+        "decimal": 1.35,
+        "fraction": "50/139",
+        "american": "-278"
        }
       },
       "team": {
@@ -909,20 +909,20 @@
      },
      "current": {
       "over": {
-       "value": 1.95,
-       "displayValue": "20/21",
-       "alternateDisplayValue": "-105",
-       "decimal": 1.95,
-       "fraction": "20/21",
-       "american": "-105"
+       "value": 1.92,
+       "displayValue": "25/27",
+       "alternateDisplayValue": "-108",
+       "decimal": 1.92,
+       "fraction": "25/27",
+       "american": "-108"
       },
       "under": {
-       "value": 1.86,
-       "displayValue": "20/23",
-       "alternateDisplayValue": "-115",
-       "decimal": 1.86,
-       "fraction": "20/23",
-       "american": "-115"
+       "value": 1.89,
+       "displayValue": "25/28",
+       "alternateDisplayValue": "-112",
+       "decimal": 1.89,
+       "fraction": "25/28",
+       "american": "-112"
       },
       "total": {
        "alternateDisplayValue": "49.5",

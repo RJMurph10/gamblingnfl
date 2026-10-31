@@ -477,7 +477,7 @@
    ]
   },
   "close": {
-   "at": "2026-10-31T14:50:38.221Z",
+   "at": "2026-10-31T15:50:13.117Z",
    "scoreboard": [
     {
      "provider": {
@@ -773,8 +773,8 @@
      "details": "TTU -3.5",
      "overUnder": 54.5,
      "spread": -3.5,
-     "overOdds": -110,
-     "underOdds": -110,
+     "overOdds": -115,
+     "underOdds": -105,
      "awayTeamOdds": {
       "favorite": false,
       "underdog": true,
@@ -909,20 +909,20 @@
      },
      "current": {
       "over": {
-       "value": 1.9,
-       "displayValue": "10/11",
-       "alternateDisplayValue": "-110",
-       "decimal": 1.9,
-       "fraction": "10/11",
-       "american": "-110"
+       "value": 1.86,
+       "displayValue": "20/23",
+       "alternateDisplayValue": "-115",
+       "decimal": 1.86,
+       "fraction": "20/23",
+       "american": "-115"
       },
       "under": {
-       "value": 1.9,
-       "displayValue": "10/11",
-       "alternateDisplayValue": "-110",
-       "decimal": 1.9,
-       "fraction": "10/11",
-       "american": "-110"
+       "value": 1.95,
+       "displayValue": "20/21",
+       "alternateDisplayValue": "-105",
+       "decimal": 1.95,
+       "fraction": "20/21",
+       "american": "-105"
       },
       "total": {
        "alternateDisplayValue": "54.5",
