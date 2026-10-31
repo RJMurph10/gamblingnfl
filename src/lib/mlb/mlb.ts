@@ -92,7 +92,14 @@ export interface MlbGame {
   home: MlbSide;
   odds?: MlbOdds;
   situation?: MlbSituation;
+  /**
+   * Finished games only: each team's starting pitcher and his line (bundled file), away then home:
+   * [ESPN id, outs, ER, K, BB, HR]. Lets the model rate starters from their earlier starts.
+   */
+  starters?: [MlbStarterLine, MlbStarterLine];
 }
+
+export type MlbStarterLine = [string, number, number, number, number, number] | null;
 
 export interface MlbPlay {
   id: string;

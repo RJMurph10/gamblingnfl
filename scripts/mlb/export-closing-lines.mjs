@@ -91,6 +91,31 @@ async function closing(id) {
 }
 
 const out = {};
+const starters = {};
+const outsOf = (ip) => {
+  const [w, f] = String(ip ?? "").split(".");
+  const n = Number(w);
+  return Number.isFinite(n) ? n * 3 + (Number(f) || 0) : null;
+};
+/** Each team's starting pitcher and his line: [id, outs, ER, K, BB, HR] (first pitcher listed). */
+async function startersOf(id, awayId, homeId) {
+  const s = await get(`${SITE}/summary?event=${id}`);
+  const row = (teamId) => {
+    const team = (s?.boxscore?.players ?? []).find((t) => String(t?.team?.id) === String(teamId));
+    const grp = (team?.statistics ?? []).find(
+      (x) => /pitch/i.test(x?.name ?? x?.type ?? "") || (x?.labels ?? []).includes("IP"),
+    );
+    const a = grp?.athletes?.[0];
+    if (!a?.athlete?.id) return null;
+    const L = grp.labels ?? [];
+    const v = (k) => Number(a.stats?.[L.indexOf(k)]);
+    const outs = outsOf(a.stats?.[L.indexOf("IP")]);
+    return outs == null
+      ? null
+      : [String(a.athlete.id), outs, v("ER") || 0, v("K") || 0, v("BB") || 0, v("HR") || 0];
+  };
+  return [row(awayId), row(homeId)];
+}
 let games = 0;
 let found = 0;
 for (
@@ -107,7 +132,13 @@ for (
     await Promise.all(
       done.slice(i, i + 6).map(async (e) => {
         games += 1;
-        const c = await closing(e.id);
+        const comp = e.competitions[0];
+        const side = (h) => comp.competitors.find((x) => x.homeAway === h)?.team?.id;
+        const [c, sp] = await Promise.all([
+          closing(e.id),
+          startersOf(e.id, side("away"), side("home")),
+        ]);
+        if (sp[0] || sp[1]) starters[e.id] = sp;
         if (c) {
           out[e.id] = c.line;
           found += 1;
@@ -136,6 +167,16 @@ export const MLB_CLOSING_SEASON = ${SEASON};
 
 export const MLB_CLOSING_LINES: Record<string, MlbClosingRow> = {
 ${body}
+};
+
+/** Starting pitcher line per game, away then home: [ESPN id, outs, ER, K, BB, HR]. */
+export type MlbStarterLine = [string, number, number, number, number, number] | null;
+
+export const MLB_STARTERS: Record<string, [MlbStarterLine, MlbStarterLine]> = {
+${Object.keys(starters)
+  .sort()
+  .map((id) => `  "${id}": ${JSON.stringify(starters[id])},`)
+  .join("\n")}
 };
 `,
 );
