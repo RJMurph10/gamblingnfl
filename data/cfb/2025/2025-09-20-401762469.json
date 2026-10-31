@@ -1,0 +1,107 @@
+{
+ "id": "401762469",
+ "league": "cfb",
+ "date": "2025-09-20T16:00Z",
+ "name": "UNT @ ARMY",
+ "seasonType": 2,
+ "away": {
+  "id": "249",
+  "abbr": "UNT",
+  "name": "North Texas Mean Green",
+  "score": 45
+ },
+ "home": {
+  "id": "349",
+  "abbr": "ARMY",
+  "name": "Army Black Knights",
+  "score": 38
+ },
+ "final": {
+  "away": 45,
+  "home": 38
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:46:25.325Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 33,
+    "rows": [
+  {"a":"4879931","t":"Anytime Touchdown Scorer","ti":"31","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"4879931","t":"Anytime Touchdown Scorer","ti":"31","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"4879931","t":"Anytime Touchdown Scorer","ti":"31","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":"5082142","t":"Anytime Touchdown Scorer","ti":"31","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"5082142","t":"Anytime Touchdown Scorer","ti":"31","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"5082142","t":"Anytime Touchdown Scorer","ti":"31","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":"5082144","t":"Anytime Touchdown Scorer","ti":"31","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"5082144","t":"Anytime Touchdown Scorer","ti":"31","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":"5082144","t":"Anytime Touchdown Scorer","ti":"31","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"5122006","t":"Anytime Touchdown Scorer","ti":"31","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":"5122006","t":"Anytime Touchdown Scorer","ti":"31","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"5122006","t":"Anytime Touchdown Scorer","ti":"31","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"5148787","t":"Anytime Touchdown Scorer","ti":"31","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"5148787","t":"Anytime Touchdown Scorer","ti":"31","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":"5150297","t":"Anytime Touchdown Scorer","ti":"31","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":"5150297","t":"Anytime Touchdown Scorer","ti":"31","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"5150297","t":"Anytime Touchdown Scorer","ti":"31","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"5150316","t":"Anytime Touchdown Scorer","ti":"31","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"5150316","t":"Anytime Touchdown Scorer","ti":"31","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":"5150328","t":"Anytime Touchdown Scorer","ti":"31","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":"5150328","t":"Anytime Touchdown Scorer","ti":"31","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"5150328","t":"Anytime Touchdown Scorer","ti":"31","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"5150333","t":"Anytime Touchdown Scorer","ti":"31","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"5150333","t":"Anytime Touchdown Scorer","ti":"31","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":"5150338","t":"Anytime Touchdown Scorer","ti":"31","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":"5150338","t":"Anytime Touchdown Scorer","ti":"31","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"5150368","t":"Anytime Touchdown Scorer","ti":"31","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":"5150368","t":"Anytime Touchdown Scorer","ti":"31","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"5154278","t":"Anytime Touchdown Scorer","ti":"31","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"5154278","t":"Anytime Touchdown Scorer","ti":"31","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"5154278","t":"Anytime Touchdown Scorer","ti":"31","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":"5219834","t":"Anytime Touchdown Scorer","ti":"31","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"5219834","t":"Anytime Touchdown Scorer","ti":"31","op":[1.5,null,null],"cur":[1.5,null,null]}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 33,
+    "rows": [
+  {"a":"4879931","t":"Anytime Touchdown Scorer","ti":"31","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"4879931","t":"Anytime Touchdown Scorer","ti":"31","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"4879931","t":"Anytime Touchdown Scorer","ti":"31","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":"5082142","t":"Anytime Touchdown Scorer","ti":"31","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"5082142","t":"Anytime Touchdown Scorer","ti":"31","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"5082142","t":"Anytime Touchdown Scorer","ti":"31","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":"5082144","t":"Anytime Touchdown Scorer","ti":"31","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"5082144","t":"Anytime Touchdown Scorer","ti":"31","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":"5082144","t":"Anytime Touchdown Scorer","ti":"31","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"5122006","t":"Anytime Touchdown Scorer","ti":"31","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":"5122006","t":"Anytime Touchdown Scorer","ti":"31","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"5122006","t":"Anytime Touchdown Scorer","ti":"31","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"5148787","t":"Anytime Touchdown Scorer","ti":"31","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"5148787","t":"Anytime Touchdown Scorer","ti":"31","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":"5150297","t":"Anytime Touchdown Scorer","ti":"31","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":"5150297","t":"Anytime Touchdown Scorer","ti":"31","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"5150297","t":"Anytime Touchdown Scorer","ti":"31","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"5150316","t":"Anytime Touchdown Scorer","ti":"31","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"5150316","t":"Anytime Touchdown Scorer","ti":"31","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":"5150328","t":"Anytime Touchdown Scorer","ti":"31","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":"5150328","t":"Anytime Touchdown Scorer","ti":"31","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"5150328","t":"Anytime Touchdown Scorer","ti":"31","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"5150333","t":"Anytime Touchdown Scorer","ti":"31","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"5150333","t":"Anytime Touchdown Scorer","ti":"31","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":"5150338","t":"Anytime Touchdown Scorer","ti":"31","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":"5150338","t":"Anytime Touchdown Scorer","ti":"31","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"5150368","t":"Anytime Touchdown Scorer","ti":"31","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":"5150368","t":"Anytime Touchdown Scorer","ti":"31","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"5154278","t":"Anytime Touchdown Scorer","ti":"31","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"5154278","t":"Anytime Touchdown Scorer","ti":"31","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"5154278","t":"Anytime Touchdown Scorer","ti":"31","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":"5219834","t":"Anytime Touchdown Scorer","ti":"31","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"5219834","t":"Anytime Touchdown Scorer","ti":"31","op":[1.5,null,null],"cur":[1.5,null,null]}
+ ]
+   }
+  }
+ }
+}

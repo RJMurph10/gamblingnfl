@@ -1,0 +1,53 @@
+{
+ "id": "401752672",
+ "league": "cfb",
+ "date": "2025-08-30T23:45Z",
+ "name": "GAST @ MISS",
+ "seasonType": 2,
+ "away": {
+  "id": "2247",
+  "abbr": "GAST",
+  "name": "Georgia State Panthers",
+  "score": 7
+ },
+ "home": {
+  "id": "145",
+  "abbr": "MISS",
+  "name": "Ole Miss Rebels",
+  "score": 63
+ },
+ "final": {
+  "away": 7,
+  "home": 63
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:46:15.068Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 7,
+    "rows": [
+  {"a":"5141684","t":"Total Passing Touchdowns (incl. overtime)","ti":"10","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"5141684","t":"Total Passing Touchdowns (incl. overtime)","ti":"10","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":"5141684","t":"Total Passing Touchdowns (incl. overtime)","ti":"10","op":[3.5,null,null],"cur":[3.5,null,null]},
+  {"a":"5141684","t":"Total Passing Touchdowns (incl. overtime)","ti":"10","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"5141684","t":"Total Passing Touchdowns (incl. overtime)","ti":"10","op":[4.5,null,null],"cur":[4.5,null,null]},
+  {"a":"5141684","t":"Total Passing Touchdowns (incl. overtime)","ti":"10","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"5141684","t":"Total Passing Touchdowns (incl. overtime)","ti":"10","op":[2.5,null,null],"cur":[2.5,null,null]}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 5,
+    "rows": [
+  {"a":"5141684","t":"Total Passing Touchdowns (incl. overtime)","ti":"10","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"5141684","t":"Total Passing Touchdowns (incl. overtime)","ti":"10","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":"5141684","t":"Total Passing Touchdowns (incl. overtime)","ti":"10","op":[3.5,null,null],"cur":[3.5,null,null]},
+  {"a":"5141684","t":"Total Passing Touchdowns (incl. overtime)","ti":"10","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"5141684","t":"Total Passing Touchdowns (incl. overtime)","ti":"10","op":[4.5,null,null],"cur":[4.5,null,null]}
+ ]
+   }
+  }
+ }
+}

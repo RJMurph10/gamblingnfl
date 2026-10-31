@@ -1,0 +1,55 @@
+{
+ "id": "401760371",
+ "league": "cfb",
+ "date": "2025-08-23T20:00Z",
+ "name": "IDST @ UNLV",
+ "seasonType": 2,
+ "away": {
+  "id": "304",
+  "abbr": "IDST",
+  "name": "Idaho State Bengals",
+  "score": 31
+ },
+ "home": {
+  "id": "2439",
+  "abbr": "UNLV",
+  "name": "UNLV Rebels",
+  "score": 38
+ },
+ "final": {
+  "away": 31,
+  "home": 38
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:46:12.898Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 7,
+    "rows": [
+  {"a":"4429077","t":"Football Player Prop","ti":"161"},
+  {"a":"4430827","t":"Football Player Prop","ti":"161"},
+  {"a":"4683111","t":"Football Player Prop","ti":"161"},
+  {"a":"4685495","t":"Football Player Prop","ti":"161"},
+  {"a":"4808744","t":"Football Player Prop","ti":"161"},
+  {"a":"5044387","t":"Football Player Prop","ti":"161"},
+  {"a":"5125754","t":"Football Player Prop","ti":"161"}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 7,
+    "rows": [
+  {"a":"4429077","t":"Football Player Prop","ti":"161"},
+  {"a":"4430827","t":"Football Player Prop","ti":"161"},
+  {"a":"4683111","t":"Football Player Prop","ti":"161"},
+  {"a":"4685495","t":"Football Player Prop","ti":"161"},
+  {"a":"4808744","t":"Football Player Prop","ti":"161"},
+  {"a":"5044387","t":"Football Player Prop","ti":"161"},
+  {"a":"5125754","t":"Football Player Prop","ti":"161"}
+ ]
+   }
+  }
+ }
+}

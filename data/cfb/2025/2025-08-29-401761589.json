@@ -1,0 +1,83 @@
+{
+ "id": "401761589",
+ "league": "cfb",
+ "date": "2025-08-29T23:00Z",
+ "name": "APP VS CLT",
+ "seasonType": 2,
+ "away": {
+  "id": "2026",
+  "abbr": "APP",
+  "name": "App State Mountaineers",
+  "score": 34
+ },
+ "home": {
+  "id": "2429",
+  "abbr": "CLT",
+  "name": "Charlotte 49ers",
+  "score": 11
+ },
+ "final": {
+  "away": 34,
+  "home": 11
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:46:14.362Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 21,
+    "rows": [
+  {"a":"4428167","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431051","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4592835","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4603191","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4613268","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685535","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4717724","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4870743","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4879655","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4883774","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4900025","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4911906","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4915837","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4921304","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5077670","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5078917","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5080819","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5081405","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5081427","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5153730","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5156162","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 21,
+    "rows": [
+  {"a":"4428167","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4431051","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4592835","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4603191","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4613268","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4685535","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4717724","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4870743","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4879655","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4883774","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4900025","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4911906","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4915837","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4921304","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5077670","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5078917","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5080819","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5081405","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5081427","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5153730","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5156162","t":"First Touchdown Scorer","ti":"29"}
+ ]
+   }
+  }
+ }
+}

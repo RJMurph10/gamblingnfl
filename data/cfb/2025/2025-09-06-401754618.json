@@ -1,0 +1,81 @@
+{
+ "id": "401754618",
+ "league": "cfb",
+ "date": "2025-09-06T16:00Z",
+ "name": "CONN @ SYR",
+ "seasonType": 2,
+ "away": {
+  "id": "41",
+  "abbr": "CONN",
+  "name": "UConn Huskies",
+  "score": 20
+ },
+ "home": {
+  "id": "183",
+  "abbr": "SYR",
+  "name": "Syracuse Orange",
+  "score": 27
+ },
+ "final": {
+  "away": 20,
+  "home": 27
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:46:18.014Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 20,
+    "rows": [
+  {"a":"4685694","t":"Total Passing Yards (incl. overtime)","ti":"8","op":[374.5,null,null],"cur":[374.5,null,null]},
+  {"a":"4685694","t":"Total Passing Yards (incl. overtime)","ti":"8","op":[449.5,null,null],"cur":[449.5,null,null]},
+  {"a":"4685694","t":"Total Passing Yards (incl. overtime)","ti":"8","op":[224.5,null,null],"cur":[224.5,null,null]},
+  {"a":"4685694","t":"Total Passing Yards (incl. overtime)","ti":"8","op":[199.5,null,null],"cur":[199.5,null,null]},
+  {"a":"4685694","t":"Total Passing Yards (incl. overtime)","ti":"8","op":[424.5,null,null],"cur":[424.5,null,null]},
+  {"a":"4685694","t":"Total Passing Yards (incl. overtime)","ti":"8","op":[324.5,null,null],"cur":[324.5,null,null]},
+  {"a":"4685694","t":"Total Passing Yards (incl. overtime)","ti":"8","op":[399.5,null,null],"cur":[399.5,null,null]},
+  {"a":"4685694","t":"Total Passing Yards (incl. overtime)","ti":"8","op":[289.5,null,null],"cur":[289.5,null,null]},
+  {"a":"4685694","t":"Total Passing Yards (incl. overtime)","ti":"8","op":[274.5,null,null],"cur":[274.5,null,null]},
+  {"a":"4685694","t":"Total Passing Yards (incl. overtime)","ti":"8","op":[249.5,null,null],"cur":[249.5,null,null]},
+  {"a":"4685694","t":"Total Passing Yards (incl. overtime)","ti":"8","op":[299.5,null,null],"cur":[299.5,null,null]},
+  {"a":"4685694","t":"Total Passing Yards (incl. overtime)","ti":"8","op":[289.5,null,null],"cur":[289.5,null,null]},
+  {"a":"4685694","t":"Total Passing Yards (incl. overtime)","ti":"8","op":[349.5,null,null],"cur":[349.5,null,null]},
+  {"a":"4685694","t":"Total Passing Touchdowns (incl. overtime)","ti":"10","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"4685694","t":"Total Passing Touchdowns (incl. overtime)","ti":"10","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"4685694","t":"Total Passing Touchdowns (incl. overtime)","ti":"10","op":[4.5,null,null],"cur":[4.5,null,null]},
+  {"a":"4685694","t":"Total Passing Touchdowns (incl. overtime)","ti":"10","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"4685694","t":"Total Passing Touchdowns (incl. overtime)","ti":"10","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":"4685694","t":"Total Passing Touchdowns (incl. overtime)","ti":"10","op":[3.5,null,null],"cur":[3.5,null,null]},
+  {"a":"4685694","t":"Total Passing Touchdowns (incl. overtime)","ti":"10","op":[0.5,null,null],"cur":[0.5,null,null]}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 20,
+    "rows": [
+  {"a":"4685694","t":"Total Passing Yards (incl. overtime)","ti":"8","op":[374.5,null,null],"cur":[374.5,null,null]},
+  {"a":"4685694","t":"Total Passing Yards (incl. overtime)","ti":"8","op":[449.5,null,null],"cur":[449.5,null,null]},
+  {"a":"4685694","t":"Total Passing Yards (incl. overtime)","ti":"8","op":[224.5,null,null],"cur":[224.5,null,null]},
+  {"a":"4685694","t":"Total Passing Yards (incl. overtime)","ti":"8","op":[199.5,null,null],"cur":[199.5,null,null]},
+  {"a":"4685694","t":"Total Passing Yards (incl. overtime)","ti":"8","op":[424.5,null,null],"cur":[424.5,null,null]},
+  {"a":"4685694","t":"Total Passing Yards (incl. overtime)","ti":"8","op":[324.5,null,null],"cur":[324.5,null,null]},
+  {"a":"4685694","t":"Total Passing Yards (incl. overtime)","ti":"8","op":[399.5,null,null],"cur":[399.5,null,null]},
+  {"a":"4685694","t":"Total Passing Yards (incl. overtime)","ti":"8","op":[289.5,null,null],"cur":[289.5,null,null]},
+  {"a":"4685694","t":"Total Passing Yards (incl. overtime)","ti":"8","op":[274.5,null,null],"cur":[274.5,null,null]},
+  {"a":"4685694","t":"Total Passing Yards (incl. overtime)","ti":"8","op":[249.5,null,null],"cur":[249.5,null,null]},
+  {"a":"4685694","t":"Total Passing Yards (incl. overtime)","ti":"8","op":[299.5,null,null],"cur":[299.5,null,null]},
+  {"a":"4685694","t":"Total Passing Yards (incl. overtime)","ti":"8","op":[289.5,null,null],"cur":[289.5,null,null]},
+  {"a":"4685694","t":"Total Passing Yards (incl. overtime)","ti":"8","op":[349.5,null,null],"cur":[349.5,null,null]},
+  {"a":"4685694","t":"Total Passing Touchdowns (incl. overtime)","ti":"10","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"4685694","t":"Total Passing Touchdowns (incl. overtime)","ti":"10","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"4685694","t":"Total Passing Touchdowns (incl. overtime)","ti":"10","op":[4.5,null,null],"cur":[4.5,null,null]},
+  {"a":"4685694","t":"Total Passing Touchdowns (incl. overtime)","ti":"10","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"4685694","t":"Total Passing Touchdowns (incl. overtime)","ti":"10","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":"4685694","t":"Total Passing Touchdowns (incl. overtime)","ti":"10","op":[3.5,null,null],"cur":[3.5,null,null]},
+  {"a":"4685694","t":"Total Passing Touchdowns (incl. overtime)","ti":"10","op":[0.5,null,null],"cur":[0.5,null,null]}
+ ]
+   }
+  }
+ }
+}

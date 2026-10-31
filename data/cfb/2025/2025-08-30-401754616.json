@@ -1,0 +1,83 @@
+{
+ "id": "401754616",
+ "league": "cfb",
+ "date": "2025-08-30T22:00Z",
+ "name": "CCU @ UVA",
+ "seasonType": 2,
+ "away": {
+  "id": "324",
+  "abbr": "CCU",
+  "name": "Coastal Carolina Chanticleers",
+  "score": 7
+ },
+ "home": {
+  "id": "258",
+  "abbr": "UVA",
+  "name": "Virginia Cavaliers",
+  "score": 48
+ },
+ "final": {
+  "away": 7,
+  "home": 48
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:46:15.651Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 37,
+    "rows": [
+  {"a":"4692530","t":"Total Passing Touchdowns (incl. overtime)","ti":"10","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"4692530","t":"Total Passing Touchdowns (incl. overtime)","ti":"10","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"4692530","t":"Total Passing Touchdowns (incl. overtime)","ti":"10","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":"4692530","t":"Total Passing Touchdowns (incl. overtime)","ti":"10","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":"4692530","t":"Total Passing Touchdowns (incl. overtime)","ti":"10","op":[3.5,null,null],"cur":[3.5,null,null]},
+  {"a":"4692530","t":"Total Passing Touchdowns (incl. overtime)","ti":"10","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":"4692530","t":"Total Passing Touchdowns (incl. overtime)","ti":"10","op":[4.5,null,null],"cur":[4.5,null,null]},
+  {"a":"4912130","t":"Total Receptions (incl. overtime)","ti":"14","op":[3.5,null,null],"cur":[3.5,null,null]},
+  {"a":"4912130","t":"Total Receptions (incl. overtime)","ti":"14","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"4912130","t":"Total Receptions (incl. overtime)","ti":"14","op":[4.5,null,null],"cur":[4.5,null,null]},
+  {"a":"4912130","t":"Total Receptions (incl. overtime)","ti":"14","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":"4912130","t":"Total Receptions (incl. overtime)","ti":"14","op":[3.5,null,null],"cur":[3.5,null,null]},
+  {"a":"4912130","t":"Total Receptions (incl. overtime)","ti":"14","op":[5.5,null,null],"cur":[5.5,null,null]},
+  {"a":"4912130","t":"Total Receptions (incl. overtime)","ti":"14","op":[3.5,null,null],"cur":[3.5,null,null]},
+  {"a":"4683886","t":"Longest Reception (incl. overtime)","ti":"19","op":[29.5,null,null],"cur":[29.5,null,null]},
+  {"a":"4683886","t":"Longest Reception (incl. overtime)","ti":"19","op":[34.5,null,null],"cur":[34.5,null,null]},
+  {"a":"4683886","t":"Longest Reception (incl. overtime)","ti":"19","op":[14.5,null,null],"cur":[14.5,null,null]},
+  {"a":"4683886","t":"Longest Reception (incl. overtime)","ti":"19","op":[49.5,null,null],"cur":[49.5,null,null]},
+  {"a":"4683886","t":"Longest Reception (incl. overtime)","ti":"19","op":[9.5,null,null],"cur":[9.5,null,null]},
+  {"a":"4683886","t":"Longest Reception (incl. overtime)","ti":"19","op":[39.5,null,null],"cur":[39.5,null,null]},
+  {"a":"4683886","t":"Longest Reception (incl. overtime)","ti":"19","op":[23.5,null,null],"cur":[23.5,null,null]},
+  {"a":"4683886","t":"Longest Reception (incl. overtime)","ti":"19","op":[24.5,null,null],"cur":[24.5,null,null]},
+  {"a":"4683886","t":"Longest Reception (incl. overtime)","ti":"19","op":[23.5,null,null],"cur":[23.5,null,null]},
+  {"a":"4683886","t":"Longest Reception (incl. overtime)","ti":"19","op":[44.5,null,null],"cur":[44.5,null,null]},
+  {"a":"4683886","t":"Longest Reception (incl. overtime)","ti":"19","op":[19.5,null,null],"cur":[19.5,null,null]},
+  {"a":"4871220","t":"Total Field Goals Made (incl. overtime)","ti":"24","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"4871220","t":"Total Field Goals Made (incl. overtime)","ti":"24","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"4871220","t":"Total Field Goals Made (incl. overtime)","ti":"24","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":"4683886","t":"Anytime Touchdown Scorer","ti":"31","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"4683886","t":"Anytime Touchdown Scorer","ti":"31","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"4683886","t":"Anytime Touchdown Scorer","ti":"31","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":"4692530","t":"Anytime Touchdown Scorer","ti":"31","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":"4692530","t":"Anytime Touchdown Scorer","ti":"31","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"4692530","t":"Anytime Touchdown Scorer","ti":"31","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"4912130","t":"Anytime Touchdown Scorer","ti":"31","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"4912130","t":"Anytime Touchdown Scorer","ti":"31","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":"4912130","t":"Anytime Touchdown Scorer","ti":"31","op":[0.5,null,null],"cur":[0.5,null,null]}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 5,
+    "rows": [
+  {"a":"4692530","t":"Total Passing Touchdowns (incl. overtime)","ti":"10","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"4692530","t":"Total Passing Touchdowns (incl. overtime)","ti":"10","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"4692530","t":"Total Passing Touchdowns (incl. overtime)","ti":"10","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":"4692530","t":"Total Passing Touchdowns (incl. overtime)","ti":"10","op":[3.5,null,null],"cur":[3.5,null,null]},
+  {"a":"4692530","t":"Total Passing Touchdowns (incl. overtime)","ti":"10","op":[4.5,null,null],"cur":[4.5,null,null]}
+ ]
+   }
+  }
+ }
+}

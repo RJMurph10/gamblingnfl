@@ -1,0 +1,59 @@
+{
+ "id": "401762848",
+ "league": "cfb",
+ "date": "2025-10-25T16:00Z",
+ "name": "OHIO @ EMU",
+ "seasonType": 2,
+ "away": {
+  "id": "195",
+  "abbr": "OHIO",
+  "name": "Ohio Bobcats",
+  "score": 28
+ },
+ "home": {
+  "id": "2199",
+  "abbr": "EMU",
+  "name": "Eastern Michigan Eagles",
+  "score": 21
+ },
+ "final": {
+  "away": 28,
+  "home": 21
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:46:38.467Z",
+  "books": {
+   "58": {
+    "name": "ESPN BET",
+    "count": 9,
+    "rows": [
+  {"a":"5158749","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[19.5,null,null],"cur":[19.5,null,null]},
+  {"a":"5158749","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[39.5,null,null],"cur":[39.5,null,null]},
+  {"a":"5158749","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[49.5,null,null],"cur":[49.5,null,null]},
+  {"a":"5158749","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[22.5,null,null],"cur":[22.5,null,null]},
+  {"a":"5158749","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[69.5,null,null],"cur":[69.5,null,null]},
+  {"a":"5158749","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[59.5,null,null],"cur":[59.5,null,null]},
+  {"a":"5158749","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[9.5,null,null],"cur":[9.5,null,null]},
+  {"a":"5158749","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[22.5,null,null],"cur":[22.5,null,null]},
+  {"a":"5158749","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[29.5,null,null],"cur":[29.5,null,null]}
+ ]
+   },
+   "59": {
+    "name": "ESPN Bet - Live Odds",
+    "count": 9,
+    "rows": [
+  {"a":"5158749","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[19.5,null,null],"cur":[19.5,null,null]},
+  {"a":"5158749","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[39.5,null,null],"cur":[39.5,null,null]},
+  {"a":"5158749","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[49.5,null,null],"cur":[49.5,null,null]},
+  {"a":"5158749","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[22.5,null,null],"cur":[22.5,null,null]},
+  {"a":"5158749","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[69.5,null,null],"cur":[69.5,null,null]},
+  {"a":"5158749","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[59.5,null,null],"cur":[59.5,null,null]},
+  {"a":"5158749","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[9.5,null,null],"cur":[9.5,null,null]},
+  {"a":"5158749","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[22.5,null,null],"cur":[22.5,null,null]},
+  {"a":"5158749","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[29.5,null,null],"cur":[29.5,null,null]}
+ ]
+   }
+  }
+ }
+}
