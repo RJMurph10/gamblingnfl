@@ -1,0 +1,74 @@
+# One-time backfill of historical player props (and final scores) from ESPN into the line-history
+# branch. Runs when this file or the backfill script is pushed to the props-backfill branch, or on demand.
+name: Props backfill
+
+on:
+  push:
+    branches: [props-backfill]
+    paths: [scripts/line-history/backfill-props.mjs, .github/workflows/props-backfill.yml]
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        include:
+          - { league: nba, from: 2021-10-15, to: 2022-06-30 }
+          - { league: nba, from: 2022-10-15, to: 2023-06-30 }
+          - { league: nba, from: 2023-10-20, to: 2024-06-30 }
+          - { league: nba, from: 2024-10-20, to: 2025-06-30 }
+          - { league: nba, from: 2025-10-20, to: 2026-06-30 }
+          - { league: nfl, from: 2022-09-05, to: 2023-02-15 }
+          - { league: nfl, from: 2023-09-05, to: 2024-02-15 }
+          - { league: nfl, from: 2024-09-01, to: 2025-02-15 }
+          - { league: nfl, from: 2025-09-01, to: 2026-02-15 }
+          - { league: nfl, from: 2026-09-01, to: 2026-10-30 }
+          - { league: nhl, from: 2023-10-08, to: 2024-06-30 }
+          - { league: nhl, from: 2024-10-01, to: 2025-06-30 }
+          - { league: nhl, from: 2025-10-01, to: 2026-06-30 }
+          - { league: mlb, from: 2024-03-15, to: 2024-11-05 }
+          - { league: mlb, from: 2025-03-15, to: 2025-11-05 }
+          - { league: mlb, from: 2026-03-15, to: 2026-10-30 }
+          - { league: cfb, from: 2024-08-20, to: 2025-01-25 }
+          - { league: cfb, from: 2025-08-20, to: 2026-01-25 }
+          - { league: cfb, from: 2026-08-20, to: 2026-10-30 }
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: app
+          sparse-checkout: scripts/line-history
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Backfill
+        run: node app/scripts/line-history/backfill-props.mjs --league ${{ matrix.league }} --from ${{ matrix.from }} --to ${{ matrix.to }} --out out/data
+      - name: Commit to line-history
+        run: |
+          set -e
+          url="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+          for attempt in 1 2 3 4 5 6; do
+            rm -rf data-repo
+            if git ls-remote --exit-code --heads "$url" line-history >/dev/null; then
+              git clone -q --depth 1 --branch line-history "$url" data-repo
+            else
+              mkdir data-repo && git -C data-repo init -q -b line-history && git -C data-repo remote add origin "$url"
+            fi
+            mkdir -p data-repo/data && cp -r out/data/. data-repo/data/
+            cd data-repo
+            git config user.name "line-history-bot"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add -A
+            git diff --cached --quiet && { echo "nothing new"; exit 0; }
+            git commit -q -m "Props backfill ${{ matrix.league }} ${{ matrix.from }}..${{ matrix.to }}"
+            if git push -q origin line-history; then echo pushed; exit 0; fi
+            cd ..
+            sleep $((attempt * 20))
+          done
+          exit 1
