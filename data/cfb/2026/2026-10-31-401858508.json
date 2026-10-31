@@ -13,12 +13,12 @@
   "id": "26",
   "abbr": "UCLA",
   "name": "UCLA Bruins",
-  "score": 0
+  "score": 10
  },
  "neutral": false,
  "venue": "Rose Bowl",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-10-31T08:02:20.928Z",

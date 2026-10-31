@@ -477,13 +477,14 @@
    ]
   },
   "close": {
-   "at": "2026-10-31T19:50:42.483Z",
+   "at": "2026-10-31T20:51:23.298Z",
    "scoreboard": [
     {
      "provider": {
       "id": "100",
       "name": "DraftKings",
-      "priority": 1
+      "priority": 1,
+      "displayName": "DraftKings"
      },
      "details": "GASO -6",
      "overUnder": 55.5,

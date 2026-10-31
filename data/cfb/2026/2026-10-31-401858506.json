@@ -7,18 +7,18 @@
   "id": "2509",
   "abbr": "PUR",
   "name": "Purdue Boilermakers",
-  "score": 0
+  "score": 7
  },
  "home": {
   "id": "213",
   "abbr": "PSU",
   "name": "Penn State Nittany Lions",
-  "score": 0
+  "score": 13
  },
  "neutral": false,
  "venue": "Beaver Stadium",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-10-31T08:02:20.928Z",

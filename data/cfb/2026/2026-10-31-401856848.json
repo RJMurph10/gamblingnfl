@@ -7,18 +7,18 @@
   "id": "254",
   "abbr": "UTAH",
   "name": "Utah Utes",
-  "score": 0
+  "score": 21
  },
  "home": {
   "id": "2132",
   "abbr": "CIN",
   "name": "Cincinnati Bearcats",
-  "score": 0
+  "score": 3
  },
  "neutral": false,
  "venue": "Nippert Stadium",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-10-31T08:02:20.928Z",

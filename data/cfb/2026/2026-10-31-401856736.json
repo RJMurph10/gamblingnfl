@@ -7,7 +7,7 @@
   "id": "2579",
   "abbr": "SC",
   "name": "South Carolina Gamecocks",
-  "score": 0
+  "score": 7
  },
  "home": {
   "id": "201",
@@ -18,7 +18,7 @@
  "neutral": false,
  "venue": "Memorial Stadium (Norman, OK)",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-10-31T08:02:20.928Z",
