@@ -1,0 +1,82 @@
+{
+ "id": "401547756",
+ "league": "nfl",
+ "date": "2024-01-21T01:15Z",
+ "name": "GB @ SF",
+ "seasonType": 3,
+ "away": {
+  "id": "9",
+  "abbr": "GB",
+  "name": "Green Bay Packers",
+  "score": 21
+ },
+ "home": {
+  "id": "25",
+  "abbr": "SF",
+  "name": "San Francisco 49ers",
+  "score": 24
+ },
+ "final": {
+  "away": 21,
+  "home": 24
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:40:50.203Z",
+  "books": {
+   "45": {
+    "name": "Caesars Sportsbook (New Jersey)",
+    "count": 7,
+    "rows": [
+  {"a":"4241555","t":"First Touchdown Scorer","ti":"29","op":[null,2000,null],"cur":[null,1600,null]},
+  {"a":"4259592","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4360290","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4241555","t":"Last Touchdown Scorer","ti":"30","op":[null,2200,null],"cur":[null,1800,null]},
+  {"a":"4259592","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4360290","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4241555","t":"Player to score 2 or more touchdowns","ti":"32","cur":[null,3300,null]}
+ ]
+   },
+   "47": {
+    "name": "MGM",
+    "count": 18,
+    "rows": [
+  {"a":"15235","t":"Total Tackles (incl. overtime)","ti":"26","op":[2.5,-175,null],"cur":[3.5,130,null]},
+  {"a":"15235","t":"Total Tackles (incl. overtime)","ti":"26","op":[2.5,null,130],"cur":[3.5,null,-167]},
+  {"a":"2971275","t":"Total Tackles (incl. overtime)","ti":"26","op":[1.5,110,null],"cur":[1.5,105,null]},
+  {"a":"2971275","t":"Total Tackles (incl. overtime)","ti":"26","op":[1.5,null,-143],"cur":[1.5,null,-139]},
+  {"a":"3916903","t":"Total Tackles (incl. overtime)","ti":"26","op":[4.5,-115,null],"cur":[4.5,-120,null]},
+  {"a":"3916903","t":"Total Tackles (incl. overtime)","ti":"26","op":[4.5,null,-115],"cur":[4.5,null,-110]},
+  {"a":"4258209","t":"Total Tackles (incl. overtime)","ti":"26","op":[3.5,125,null],"cur":[2.5,-182,null]},
+  {"a":"4258209","t":"Total Tackles (incl. overtime)","ti":"26","op":[3.5,null,-167],"cur":[2.5,null,135]},
+  {"a":"4430965","t":"Total Tackles (incl. overtime)","ti":"26","op":[3.5,120,null],"cur":[2.5,-149,null]},
+  {"a":"4430965","t":"Total Tackles (incl. overtime)","ti":"26","op":[3.5,null,-161],"cur":[2.5,null,110]},
+  {"a":"4239934","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4241555","t":"First Touchdown Scorer","ti":"29","op":[null,2500,null],"cur":[null,3000,null]},
+  {"a":"4360290","t":"First Touchdown Scorer","ti":"29","op":[null,6600,null],"cur":[null,6600,null]},
+  {"a":"4239934","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4241555","t":"Last Touchdown Scorer","ti":"30","op":[null,2500,null],"cur":[null,3000,null]},
+  {"a":"4360290","t":"Last Touchdown Scorer","ti":"30","op":[null,6600,null],"cur":[null,6600,null]},
+  {"a":"4239934","t":"Player to score 2 or more touchdowns","ti":"32"},
+  {"a":"4241555","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,5000,null],"cur":[null,5000,null]}
+ ]
+   },
+   "58": {
+    "name": "ESPN BET",
+    "count": 10,
+    "rows": [
+  {"a":"15235","t":"Total Tackles (incl. overtime)","ti":"26","op":[2.5,-165,null],"cur":[3.5,135,null]},
+  {"a":"15235","t":"Total Tackles (incl. overtime)","ti":"26","op":[2.5,null,125],"cur":[3.5,null,-175]},
+  {"a":"3916903","t":"Total Tackles (incl. overtime)","ti":"26","op":[4.5,-110,null],"cur":[4.5,-120,null]},
+  {"a":"3916903","t":"Total Tackles (incl. overtime)","ti":"26","op":[4.5,null,-120],"cur":[4.5,null,-110]},
+  {"a":"4258209","t":"Total Tackles (incl. overtime)","ti":"26","op":[3.5,125,null],"cur":[3.5,135,null]},
+  {"a":"4258209","t":"Total Tackles (incl. overtime)","ti":"26","op":[3.5,null,-165],"cur":[3.5,null,-175]},
+  {"a":"4430965","t":"Total Tackles (incl. overtime)","ti":"26","op":[2.5,-175,null],"cur":[2.5,-155,null]},
+  {"a":"4430965","t":"Total Tackles (incl. overtime)","ti":"26","op":[2.5,null,135],"cur":[2.5,null,115]},
+  {"a":"4241555","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,4000,null],"cur":[null,4000,null]},
+  {"a":"4360290","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,15000,null],"cur":[null,15000,null]}
+ ]
+   }
+  }
+ }
+}

@@ -1,0 +1,112 @@
+{
+ "id": "401547589",
+ "league": "nfl",
+ "date": "2023-12-10T21:05Z",
+ "name": "SEA @ SF",
+ "seasonType": 2,
+ "away": {
+  "id": "26",
+  "abbr": "SEA",
+  "name": "Seattle Seahawks",
+  "score": 16
+ },
+ "home": {
+  "id": "25",
+  "abbr": "SF",
+  "name": "San Francisco 49ers",
+  "score": 28
+ },
+ "final": {
+  "away": 16,
+  "home": 28
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:40:43.545Z",
+  "books": {
+   "40": {
+    "name": "DraftKings",
+    "count": 18,
+    "rows": [
+  {"a":"3916903","t":"Total Tackles (incl. overtime)","ti":"26","op":[5.5,-125,null],"cur":[5.5,100,null]},
+  {"a":"3916903","t":"Total Tackles (incl. overtime)","ti":"26","op":[5.5,null,-105],"cur":[5.5,null,-130]},
+  {"a":"3924327","t":"First Touchdown Scorer","ti":"29","op":[null,4500,null],"cur":[null,7500,null]},
+  {"a":"4043016","t":"First Touchdown Scorer","ti":"29","op":[null,10000,null],"cur":[null,9000,null]},
+  {"a":"4241555","t":"First Touchdown Scorer","ti":"29","op":[null,2800,null],"cur":[null,2500,null]},
+  {"a":"4360290","t":"First Touchdown Scorer","ti":"29","op":[null,6500,null],"cur":[null,6500,null]},
+  {"a":"3924327","t":"Last Touchdown Scorer","ti":"30","op":[null,3500,null],"cur":[null,4500,null]},
+  {"a":"4043016","t":"Last Touchdown Scorer","ti":"30","op":[null,6500,null],"cur":[null,6500,null]},
+  {"a":"4241555","t":"Last Touchdown Scorer","ti":"30","op":[null,2800,null],"cur":[null,2800,null]},
+  {"a":"4360290","t":"Last Touchdown Scorer","ti":"30","op":[null,6500,null],"cur":[null,6500,null]},
+  {"a":"3924327","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,12000,null],"cur":[null,12000,null]},
+  {"a":"4043016","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,20000,null],"cur":[null,20000,null]},
+  {"a":"4241555","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,7000,null],"cur":[null,5500,null]},
+  {"a":"4360290","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,19000,null],"cur":[null,19000,null]},
+  {"a":"3924327","t":"Player to score 3 or more touchdowns","ti":"33","op":[null,25000,null],"cur":[null,25000,null]},
+  {"a":"4043016","t":"Player to score 3 or more touchdowns","ti":"33","op":[null,25000,null],"cur":[null,25000,null]},
+  {"a":"4241555","t":"Player to score 3 or more touchdowns","ti":"33","op":[null,25000,null],"cur":[null,25000,null]},
+  {"a":"4360290","t":"Player to score 3 or more touchdowns","ti":"33","op":[null,25000,null],"cur":[null,25000,null]}
+ ]
+   },
+   "45": {
+    "name": "Caesars Sportsbook (New Jersey)",
+    "count": 16,
+    "rows": [
+  {"a":"3924327","t":"Total Passing Interceptions (incl. overtime)","ti":"15","op":[0.5,-213,null],"cur":[0.5,-213,null]},
+  {"a":"3924327","t":"Total Passing Interceptions (incl. overtime)","ti":"15","op":[0.5,null,152],"cur":[0.5,null,152]},
+  {"a":"2517017","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"3924327","t":"First Touchdown Scorer","ti":"29","cur":[null,5500,null]},
+  {"a":"4043016","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4241555","t":"First Touchdown Scorer","ti":"29","op":[null,2200,null],"cur":[null,2200,null]},
+  {"a":"4243541","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4360290","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"2517017","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"3924327","t":"Last Touchdown Scorer","ti":"30","cur":[null,2000,null]},
+  {"a":"4043016","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4241555","t":"Last Touchdown Scorer","ti":"30","op":[null,2000,null],"cur":[null,2000,null]},
+  {"a":"4243541","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4360290","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"3924327","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,3500,null],"cur":[null,3500,null]},
+  {"a":"4241555","t":"Player to score 2 or more touchdowns","ti":"32","cur":[null,3500,null]}
+ ]
+   },
+   "47": {
+    "name": "MGM",
+    "count": 9,
+    "rows": [
+  {"a":"3916903","t":"Total Tackles (incl. overtime)","ti":"26","op":[5.5,-125,null],"cur":[5.5,100,null]},
+  {"a":"3916903","t":"Total Tackles (incl. overtime)","ti":"26","op":[5.5,null,-105],"cur":[5.5,null,-128]},
+  {"a":"4043016","t":"First Touchdown Scorer","ti":"29","op":[null,12500,null],"cur":[null,12500,null]},
+  {"a":"4241555","t":"First Touchdown Scorer","ti":"29","op":[null,3300,null],"cur":[null,3300,null]},
+  {"a":"4360290","t":"First Touchdown Scorer","ti":"29","op":[null,10000,null],"cur":[null,10000,null]},
+  {"a":"4043016","t":"Last Touchdown Scorer","ti":"30","op":[null,12500,null],"cur":[null,12500,null]},
+  {"a":"4241555","t":"Last Touchdown Scorer","ti":"30","op":[null,3300,null],"cur":[null,3300,null]},
+  {"a":"4360290","t":"Last Touchdown Scorer","ti":"30","op":[null,10000,null],"cur":[null,10000,null]},
+  {"a":"4241555","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,8000,null],"cur":[null,8000,null]}
+ ]
+   },
+   "48": {
+    "name": "PointsBet",
+    "count": 8,
+    "rows": [
+  {"a":"3924327","t":"First Touchdown Scorer","ti":"29","op":[null,3500,null],"cur":[null,4500,null]},
+  {"a":"4241555","t":"First Touchdown Scorer","ti":"29","op":[null,1800,null],"cur":[null,2000,null]},
+  {"a":"3924327","t":"Last Touchdown Scorer","ti":"30","op":[null,4000,null],"cur":[null,5000,null]},
+  {"a":"4241555","t":"Last Touchdown Scorer","ti":"30","op":[null,1900,null],"cur":[null,2500,null]},
+  {"a":"3924327","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,9000,null],"cur":[null,10000,null]},
+  {"a":"4241555","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,2800,null],"cur":[null,4000,null]},
+  {"a":"3924327","t":"Player to score 3 or more touchdowns","ti":"33","op":[null,25000,null],"cur":[null,25000,null]},
+  {"a":"4241555","t":"Player to score 3 or more touchdowns","ti":"33","op":[null,20000,null],"cur":[null,20000,null]}
+ ]
+   },
+   "58": {
+    "name": "ESPN BET",
+    "count": 2,
+    "rows": [
+  {"a":"3916903","t":"Total Assists","ti":"2","op":[2.5,-125,null],"cur":[2.5,-130,null]},
+  {"a":"3916903","t":"Total Assists","ti":"2","op":[2.5,null,-105],"cur":[2.5,null,100]}
+ ]
+   }
+  }
+ }
+}

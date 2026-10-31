@@ -1,0 +1,89 @@
+{
+ "id": "401547757",
+ "league": "nfl",
+ "date": "2024-01-21T20:00Z",
+ "name": "TB @ DET",
+ "seasonType": 3,
+ "away": {
+  "id": "27",
+  "abbr": "TB",
+  "name": "Tampa Bay Buccaneers",
+  "score": 23
+ },
+ "home": {
+  "id": "8",
+  "abbr": "DET",
+  "name": "Detroit Lions",
+  "score": 31
+ },
+ "final": {
+  "away": 23,
+  "home": 31
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:40:50.378Z",
+  "books": {
+   "45": {
+    "name": "Caesars Sportsbook (New Jersey)",
+    "count": 17,
+    "rows": [
+  {"a":"16728","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"3116158","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"3119195","t":"First Touchdown Scorer","ti":"29","op":[null,2000,null],"cur":[null,1600,null]},
+  {"a":"4034946","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4258195","t":"First Touchdown Scorer","ti":"29","cur":[null,3300,null]},
+  {"a":"4373266","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4374187","t":"First Touchdown Scorer","ti":"29","op":[null,2800,null],"cur":[null,3300,null]},
+  {"a":"4430871","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"16728","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"3116158","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"3119195","t":"Last Touchdown Scorer","ti":"30","op":[null,1800,null],"cur":[null,1800,null]},
+  {"a":"4034946","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4258195","t":"Last Touchdown Scorer","ti":"30","op":[null,3300,null],"cur":[null,3300,null]},
+  {"a":"4373266","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4374187","t":"Last Touchdown Scorer","ti":"30","op":[null,2500,null],"cur":[null,2800,null]},
+  {"a":"4430871","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"3119195","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,3300,null],"cur":[null,3300,null]}
+ ]
+   },
+   "47": {
+    "name": "MGM",
+    "count": 18,
+    "rows": [
+  {"a":"3044724","t":"Total Tackles (incl. overtime)","ti":"26","op":[2.5,-161,null],"cur":[2.5,-175,null]},
+  {"a":"3044724","t":"Total Tackles (incl. overtime)","ti":"26","op":[2.5,null,125],"cur":[2.5,null,130]},
+  {"a":"3119195","t":"First Touchdown Scorer","ti":"29","op":[null,3000,null],"cur":[null,3500,null]},
+  {"a":"4258195","t":"First Touchdown Scorer","ti":"29","op":[null,4000,null],"cur":[null,4000,null]},
+  {"a":"4373266","t":"First Touchdown Scorer","ti":"29","op":[null,8000,null],"cur":[null,8000,null]},
+  {"a":"4374187","t":"First Touchdown Scorer","ti":"29","op":[null,4000,null],"cur":[null,6600,null]},
+  {"a":"4429006","t":"First Touchdown Scorer","ti":"29","op":[null,8000,null],"cur":[null,8000,null]},
+  {"a":"4430871","t":"First Touchdown Scorer","ti":"29","op":[null,10000,null],"cur":[null,10000,null]},
+  {"a":"3119195","t":"Last Touchdown Scorer","ti":"30","op":[null,3000,null],"cur":[null,3500,null]},
+  {"a":"4258195","t":"Last Touchdown Scorer","ti":"30","op":[null,4000,null],"cur":[null,4000,null]},
+  {"a":"4373266","t":"Last Touchdown Scorer","ti":"30","op":[null,8000,null],"cur":[null,8000,null]},
+  {"a":"4374187","t":"Last Touchdown Scorer","ti":"30","op":[null,4000,null],"cur":[null,6600,null]},
+  {"a":"4429006","t":"Last Touchdown Scorer","ti":"30","op":[null,8000,null],"cur":[null,8000,null]},
+  {"a":"4430871","t":"Last Touchdown Scorer","ti":"30","op":[null,10000,null],"cur":[null,10000,null]},
+  {"a":"3119195","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,8000,null],"cur":[null,8000,null]},
+  {"a":"4258195","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,15000,null],"cur":[null,15000,null]},
+  {"a":"4374187","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,10000,null],"cur":[null,15000,null]},
+  {"a":"4429006","t":"Player to score 2 or more touchdowns","ti":"32"}
+ ]
+   },
+   "58": {
+    "name": "ESPN BET",
+    "count": 7,
+    "rows": [
+  {"a":"3044724","t":"Total Tackles (incl. overtime)","ti":"26","op":[2.5,-155,null],"cur":[2.5,-175,null]},
+  {"a":"3044724","t":"Total Tackles (incl. overtime)","ti":"26","op":[2.5,null,115],"cur":[2.5,null,135]},
+  {"a":"3119195","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,5000,null],"cur":[null,5000,null]},
+  {"a":"4258195","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,6000,null],"cur":[null,6000,null]},
+  {"a":"4373266","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,15000,null],"cur":[null,15000,null]},
+  {"a":"4374187","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,15000,null],"cur":[null,15000,null]},
+  {"a":"4430871","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,15000,null],"cur":[null,15000,null]}
+ ]
+   }
+  }
+ }
+}

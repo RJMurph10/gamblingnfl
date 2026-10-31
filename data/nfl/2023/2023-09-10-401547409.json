@@ -1,0 +1,66 @@
+{
+ "id": "401547409",
+ "league": "nfl",
+ "date": "2023-09-11T00:20Z",
+ "name": "DAL @ NYG",
+ "seasonType": 2,
+ "away": {
+  "id": "6",
+  "abbr": "DAL",
+  "name": "Dallas Cowboys",
+  "score": 40
+ },
+ "home": {
+  "id": "19",
+  "abbr": "NYG",
+  "name": "New York Giants",
+  "score": 0
+ },
+ "final": {
+  "away": 40,
+  "home": 0
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:40:24.812Z",
+  "books": {
+   "45": {
+    "name": "Caesars Sportsbook (New Jersey)",
+    "count": 19,
+    "rows": [
+  {"a":"14163","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"2576925","t":"First Touchdown Scorer","ti":"29","op":[null,900,null],"cur":[null,850,null]},
+  {"a":"2972515","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"3049916","t":"First Touchdown Scorer","ti":"29","op":[null,1400,null],"cur":[null,1400,null]},
+  {"a":"3917849","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4036348","t":"First Touchdown Scorer","ti":"29","op":[null,1100,null],"cur":[null,950,null]},
+  {"a":"4258248","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4383351","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"14163","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"2576925","t":"Last Touchdown Scorer","ti":"30","op":[null,800,null],"cur":[null,800,null]},
+  {"a":"2972515","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"3049916","t":"Last Touchdown Scorer","ti":"30","op":[null,1600,null],"cur":[null,1500,null]},
+  {"a":"3917849","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4036348","t":"Last Touchdown Scorer","ti":"30","op":[null,1000,null],"cur":[null,1000,null]},
+  {"a":"4258248","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4383351","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"2576925","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,1400,null],"cur":[null,1400,null]},
+  {"a":"3049916","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,2600,null],"cur":[null,2700,null]},
+  {"a":"4036348","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,1900,null],"cur":[null,1900,null]}
+ ]
+   },
+   "47": {
+    "name": "MGM",
+    "count": 6,
+    "rows": [
+  {"a":"2576925","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,1000,null],"cur":[null,1000,null]},
+  {"a":"3049916","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,20000,null],"cur":[null,20000,null]},
+  {"a":"4036348","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,2000,null],"cur":[null,2000,null]},
+  {"a":"4258248","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,10000,null],"cur":[null,10000,null]},
+  {"a":"2576925","t":"Player to score 3 or more touchdowns","ti":"33","op":[null,4000,null],"cur":[null,4000,null]},
+  {"a":"4036348","t":"Player to score 3 or more touchdowns","ti":"33","op":[null,10000,null],"cur":[null,10000,null]}
+ ]
+   }
+  }
+ }
+}

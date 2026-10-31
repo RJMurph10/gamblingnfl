@@ -1,0 +1,64 @@
+{
+ "id": "401547404",
+ "league": "nfl",
+ "date": "2023-09-10T17:00Z",
+ "name": "JAX @ IND",
+ "seasonType": 2,
+ "away": {
+  "id": "30",
+  "abbr": "JAX",
+  "name": "Jacksonville Jaguars",
+  "score": 31
+ },
+ "home": {
+  "id": "11",
+  "abbr": "IND",
+  "name": "Indianapolis Colts",
+  "score": 21
+ },
+ "final": {
+  "away": 31,
+  "home": 21
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:40:24.065Z",
+  "books": {
+   "45": {
+    "name": "Caesars Sportsbook (New Jersey)",
+    "count": 15,
+    "rows": [
+  {"a":"2979520","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"3059722","t":"First Touchdown Scorer","ti":"29","op":[null,800,null],"cur":[null,900,null]},
+  {"a":"3061612","t":"First Touchdown Scorer","ti":"29","op":[null,2300,null],"cur":[null,2000,null]},
+  {"a":"3128724","t":"First Touchdown Scorer","ti":"29","op":[null,1600,null],"cur":[null,1800,null]},
+  {"a":"4240455","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"2979520","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"3059722","t":"Last Touchdown Scorer","ti":"30","op":[null,850,null],"cur":[null,1100,null]},
+  {"a":"3061612","t":"Last Touchdown Scorer","ti":"30","op":[null,1500,null],"cur":[null,1400,null]},
+  {"a":"3128724","t":"Last Touchdown Scorer","ti":"30","op":[null,1400,null],"cur":[null,1400,null]},
+  {"a":"4240455","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"3059722","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,1600,null],"cur":[null,1600,null]},
+  {"a":"3061612","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,3000,null],"cur":[null,3000,null]},
+  {"a":"3128724","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,3000,null],"cur":[null,3000,null]},
+  {"a":"4240455","t":"Player to score 2 or more touchdowns","ti":"32"},
+  {"a":"4240455","t":"Player to score 3 or more touchdowns","ti":"33"}
+ ]
+   },
+   "47": {
+    "name": "MGM",
+    "count": 8,
+    "rows": [
+  {"a":"3059722","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,1400,null],"cur":[null,1400,null]},
+  {"a":"3061612","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,4000,null],"cur":[null,4000,null]},
+  {"a":"3128724","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,3300,null],"cur":[null,3300,null]},
+  {"a":"4240455","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,450,null],"cur":[null,450,null]},
+  {"a":"3059722","t":"Player to score 3 or more touchdowns","ti":"33","op":[null,7000,null],"cur":[null,7000,null]},
+  {"a":"3061612","t":"Player to score 3 or more touchdowns","ti":"33","op":[null,30000,null],"cur":[null,30000,null]},
+  {"a":"3128724","t":"Player to score 3 or more touchdowns","ti":"33","op":[null,25000,null],"cur":[null,25000,null]},
+  {"a":"4240455","t":"Player to score 3 or more touchdowns","ti":"33","op":[null,1400,null],"cur":[null,1400,null]}
+ ]
+   }
+  }
+ }
+}

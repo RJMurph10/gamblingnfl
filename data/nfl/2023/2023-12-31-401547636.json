@@ -1,0 +1,128 @@
+{
+ "id": "401547636",
+ "league": "nfl",
+ "date": "2023-12-31T21:05Z",
+ "name": "PIT @ SEA",
+ "seasonType": 2,
+ "away": {
+  "id": "23",
+  "abbr": "PIT",
+  "name": "Pittsburgh Steelers",
+  "score": 30
+ },
+ "home": {
+  "id": "26",
+  "abbr": "SEA",
+  "name": "Seattle Seahawks",
+  "score": 23
+ },
+ "final": {
+  "away": 30,
+  "home": 23
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:40:47.715Z",
+  "books": {
+   "40": {
+    "name": "DraftKings",
+    "count": 20,
+    "rows": [
+  {"a":"2576002","t":"Total Tackles (incl. overtime)","ti":"26","op":[3.5,100,null],"cur":[3.5,100,null]},
+  {"a":"2576002","t":"Total Tackles (incl. overtime)","ti":"26","op":[3.5,null,-130],"cur":[3.5,null,-130]},
+  {"a":"4243009","t":"Total Tackles (incl. overtime)","ti":"26","op":[3.5,-159,null],"cur":[3.5,-120,null]},
+  {"a":"4243009","t":"Total Tackles (incl. overtime)","ti":"26","op":[3.5,null,124],"cur":[3.5,null,-110]},
+  {"a":"3045238","t":"First Touchdown Scorer","ti":"29","op":[null,8000,null],"cur":[null,10000,null]},
+  {"a":"3116407","t":"First Touchdown Scorer","ti":"29","op":[null,3500,null],"cur":[null,4000,null]},
+  {"a":"3932423","t":"First Touchdown Scorer","ti":"29","op":[null,5500,null],"cur":[null,9000,null]},
+  {"a":"4043016","t":"First Touchdown Scorer","ti":"29","op":[null,6500,null],"cur":[null,6500,null]},
+  {"a":"4430802","t":"First Touchdown Scorer","ti":"29","op":[null,5000,null],"cur":[null,8000,null]},
+  {"a":"3045238","t":"Last Touchdown Scorer","ti":"30","op":[null,7500,null],"cur":[null,7500,null]},
+  {"a":"3116407","t":"Last Touchdown Scorer","ti":"30","op":[null,3000,null],"cur":[null,3000,null]},
+  {"a":"3932423","t":"Last Touchdown Scorer","ti":"30","op":[null,5500,null],"cur":[null,8000,null]},
+  {"a":"4043016","t":"Last Touchdown Scorer","ti":"30","op":[null,6500,null],"cur":[null,6500,null]},
+  {"a":"4430802","t":"Last Touchdown Scorer","ti":"30","op":[null,4500,null],"cur":[null,6000,null]},
+  {"a":"3045238","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,20000,null],"cur":[null,20000,null]},
+  {"a":"3116407","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,9000,null],"cur":[null,9000,null]},
+  {"a":"3932423","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,19000,null],"cur":[null,19000,null]},
+  {"a":"4043016","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,20000,null],"cur":[null,20000,null]},
+  {"a":"4430802","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,16000,null],"cur":[null,20000,null]},
+  {"a":"3116407","t":"Player to score 3 or more touchdowns","ti":"33","op":[null,25000,null],"cur":[null,25000,null]}
+ ]
+   },
+   "41": {
+    "name": "SugarHouse",
+    "count": 2,
+    "rows": [
+  {"a":"3116407","t":"Total Passing Interceptions (incl. overtime)","ti":"15","op":[0.5,-141,null],"cur":[0.5,-147,null]},
+  {"a":"3116407","t":"Total Passing Interceptions (incl. overtime)","ti":"15","op":[0.5,null,108],"cur":[0.5,null,114]}
+ ]
+   },
+   "45": {
+    "name": "Caesars Sportsbook (New Jersey)",
+    "count": 20,
+    "rows": [
+  {"a":"3116407","t":"Total Passing Interceptions (incl. overtime)","ti":"15","op":[0.5,-147,null],"cur":[0.5,-147,null]},
+  {"a":"3116407","t":"Total Passing Interceptions (incl. overtime)","ti":"15","op":[0.5,null,108],"cur":[0.5,null,108]},
+  {"a":"3039707","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"3045238","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"3116407","t":"First Touchdown Scorer","ti":"29","op":[null,2200,null],"cur":[null,2500,null]},
+  {"a":"3924327","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"3932423","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4043016","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4240703","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4250969","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4430802","t":"First Touchdown Scorer","ti":"29","op":[null,2800,null],"cur":[null,3300,null]},
+  {"a":"3039707","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"3045238","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"3116407","t":"Last Touchdown Scorer","ti":"30","op":[null,2200,null],"cur":[null,2500,null]},
+  {"a":"3924327","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"3932423","t":"Last Touchdown Scorer","ti":"30","op":[null,3300,null],"cur":[null,3300,null]},
+  {"a":"4043016","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4240703","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4250969","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4430802","t":"Last Touchdown Scorer","ti":"30","op":[null,2800,null],"cur":[null,2500,null]}
+ ]
+   },
+   "47": {
+    "name": "MGM",
+    "count": 23,
+    "rows": [
+  {"a":"3116407","t":"Total Passing Interceptions (incl. overtime)","ti":"15","op":[0.5,-149,null],"cur":[0.5,-154,null]},
+  {"a":"3116407","t":"Total Passing Interceptions (incl. overtime)","ti":"15","op":[0.5,null,110],"cur":[0.5,null,115]},
+  {"a":"2576002","t":"Total Tackles (incl. overtime)","ti":"26","op":[3.5,100,null],"cur":[3.5,100,null]},
+  {"a":"2576002","t":"Total Tackles (incl. overtime)","ti":"26","op":[3.5,null,-133],"cur":[3.5,null,-128]},
+  {"a":"3047566","t":"Total Tackles (incl. overtime)","ti":"26","op":[3.5,120,null],"cur":[3.5,-111,null]},
+  {"a":"3047566","t":"Total Tackles (incl. overtime)","ti":"26","op":[3.5,null,-161],"cur":[3.5,null,-118]},
+  {"a":"4243009","t":"Total Tackles (incl. overtime)","ti":"26","op":[4.5,125,null],"cur":[3.5,-120,null]},
+  {"a":"4243009","t":"Total Tackles (incl. overtime)","ti":"26","op":[4.5,null,-161],"cur":[3.5,null,-110]},
+  {"a":"3045238","t":"First Touchdown Scorer","ti":"29","op":[null,15000,null],"cur":[null,15000,null]},
+  {"a":"3116407","t":"First Touchdown Scorer","ti":"29","op":[null,6600,null],"cur":[null,6600,null]},
+  {"a":"3932423","t":"First Touchdown Scorer","ti":"29","op":[null,5000,null],"cur":[null,5000,null]},
+  {"a":"4043016","t":"First Touchdown Scorer","ti":"29","op":[null,12500,null],"cur":[null,12500,null]},
+  {"a":"4250969","t":"First Touchdown Scorer","ti":"29","op":[null,12500,null],"cur":[null,12500,null]},
+  {"a":"4430802","t":"First Touchdown Scorer","ti":"29","op":[null,7000,null],"cur":[null,7000,null]},
+  {"a":"3045238","t":"Last Touchdown Scorer","ti":"30","op":[null,15000,null],"cur":[null,15000,null]},
+  {"a":"3116407","t":"Last Touchdown Scorer","ti":"30","op":[null,6600,null],"cur":[null,6600,null]},
+  {"a":"3932423","t":"Last Touchdown Scorer","ti":"30","op":[null,5000,null],"cur":[null,5000,null]},
+  {"a":"4043016","t":"Last Touchdown Scorer","ti":"30","op":[null,12500,null],"cur":[null,12500,null]},
+  {"a":"4250969","t":"Last Touchdown Scorer","ti":"30","op":[null,12500,null],"cur":[null,12500,null]},
+  {"a":"4430802","t":"Last Touchdown Scorer","ti":"30","op":[null,7000,null],"cur":[null,7000,null]},
+  {"a":"3116407","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,25000,null],"cur":[null,25000,null]},
+  {"a":"3932423","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,20000,null],"cur":[null,20000,null]},
+  {"a":"4430802","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,30000,null],"cur":[null,30000,null]}
+ ]
+   },
+   "58": {
+    "name": "ESPN BET",
+    "count": 4,
+    "rows": [
+  {"a":"3116407","t":"Total Passing Interceptions (incl. overtime)","ti":"15","op":[0.5,-145,null],"cur":[0.5,-145,null]},
+  {"a":"3116407","t":"Total Passing Interceptions (incl. overtime)","ti":"15","op":[0.5,null,115],"cur":[0.5,null,115]},
+  {"a":"3116407","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,10000,null],"cur":[null,10000,null]},
+  {"a":"3932423","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,15000,null],"cur":[null,15000,null]}
+ ]
+   }
+  }
+ }
+}

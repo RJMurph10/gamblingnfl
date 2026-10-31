@@ -1,0 +1,90 @@
+{
+ "id": "401547513",
+ "league": "nfl",
+ "date": "2023-11-05T18:00Z",
+ "name": "SEA @ BAL",
+ "seasonType": 2,
+ "away": {
+  "id": "26",
+  "abbr": "SEA",
+  "name": "Seattle Seahawks",
+  "score": 3
+ },
+ "home": {
+  "id": "33",
+  "abbr": "BAL",
+  "name": "Baltimore Ravens",
+  "score": 37
+ },
+ "final": {
+  "away": 3,
+  "home": 37
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:40:36.341Z",
+  "books": {
+   "40": {
+    "name": "DraftKings",
+    "count": 11,
+    "rows": [
+  {"a":"14471","t":"First Touchdown Scorer","ti":"29","op":[null,12000,null],"cur":[null,15000,null]},
+  {"a":"4043016","t":"First Touchdown Scorer","ti":"29","op":[null,8000,null],"cur":[null,10000,null]},
+  {"a":"4596334","t":"First Touchdown Scorer","ti":"29","op":[null,7500,null],"cur":[null,9000,null]},
+  {"a":"14471","t":"Last Touchdown Scorer","ti":"30","op":[null,10000,null],"cur":[null,10000,null]},
+  {"a":"4043016","t":"Last Touchdown Scorer","ti":"30","op":[null,7500,null],"cur":[null,6500,null]},
+  {"a":"4596334","t":"Last Touchdown Scorer","ti":"30","op":[null,6000,null],"cur":[null,9000,null]},
+  {"a":"14471","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,25000,null],"cur":[null,25000,null]},
+  {"a":"4043016","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,25000,null],"cur":[null,25000,null]},
+  {"a":"4596334","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,19000,null],"cur":[null,19000,null]},
+  {"a":"4043016","t":"Player to score 3 or more touchdowns","ti":"33","op":[null,25000,null],"cur":[null,25000,null]},
+  {"a":"4596334","t":"Player to score 3 or more touchdowns","ti":"33","op":[null,25000,null],"cur":[null,25000,null]}
+ ]
+   },
+   "45": {
+    "name": "Caesars Sportsbook (New Jersey)",
+    "count": 10,
+    "rows": [
+  {"a":"17378","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"3126115","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"3924327","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4043016","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4596334","t":"First Touchdown Scorer","ti":"29","op":[null,2600,null],"cur":[null,2800,null]},
+  {"a":"17378","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"3126115","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"3924327","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4043016","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4596334","t":"Last Touchdown Scorer","ti":"30","op":[null,2700,null],"cur":[null,2800,null]}
+ ]
+   },
+   "47": {
+    "name": "MGM",
+    "count": 5,
+    "rows": [
+  {"a":"4043016","t":"First Touchdown Scorer","ti":"29","op":[null,8000,null],"cur":[null,10000,null]},
+  {"a":"4596334","t":"First Touchdown Scorer","ti":"29","op":[null,8000,null],"cur":[null,8000,null]},
+  {"a":"4043016","t":"Last Touchdown Scorer","ti":"30","op":[null,8000,null],"cur":[null,10000,null]},
+  {"a":"4596334","t":"Last Touchdown Scorer","ti":"30","op":[null,8000,null],"cur":[null,8000,null]},
+  {"a":"4043016","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,30000,null],"cur":[null,30000,null]}
+ ]
+   },
+   "48": {
+    "name": "PointsBet",
+    "count": 11,
+    "rows": [
+  {"a":"14471","t":"First Touchdown Scorer","ti":"29","op":[null,10000,null],"cur":[null,15000,null]},
+  {"a":"4043016","t":"First Touchdown Scorer","ti":"29","op":[null,7000,null],"cur":[null,6000,null]},
+  {"a":"4596334","t":"First Touchdown Scorer","ti":"29","op":[null,4000,null],"cur":[null,4000,null]},
+  {"a":"14471","t":"Last Touchdown Scorer","ti":"30","op":[null,13000,null],"cur":[null,12000,null]},
+  {"a":"4043016","t":"Last Touchdown Scorer","ti":"30","op":[null,9000,null],"cur":[null,6000,null]},
+  {"a":"4596334","t":"Last Touchdown Scorer","ti":"30","op":[null,5000,null],"cur":[null,5000,null]},
+  {"a":"14471","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,20000,null],"cur":[null,20000,null]},
+  {"a":"4043016","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,17500,null],"cur":[null,15000,null]},
+  {"a":"4596334","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,10000,null],"cur":[null,15000,null]},
+  {"a":"4043016","t":"Player to score 3 or more touchdowns","ti":"33","op":[null,25000,null],"cur":[null,25000,null]},
+  {"a":"4596334","t":"Player to score 3 or more touchdowns","ti":"33","op":[null,25000,null],"cur":[null,25000,null]}
+ ]
+   }
+  }
+ }
+}

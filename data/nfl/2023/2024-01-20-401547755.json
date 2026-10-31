@@ -1,0 +1,83 @@
+{
+ "id": "401547755",
+ "league": "nfl",
+ "date": "2024-01-20T21:30Z",
+ "name": "HOU @ BAL",
+ "seasonType": 3,
+ "away": {
+  "id": "34",
+  "abbr": "HOU",
+  "name": "Houston Texans",
+  "score": 10
+ },
+ "home": {
+  "id": "33",
+  "abbr": "BAL",
+  "name": "Baltimore Ravens",
+  "score": 34
+ },
+ "final": {
+  "away": 10,
+  "home": 34
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:40:50.191Z",
+  "books": {
+   "45": {
+    "name": "Caesars Sportsbook (New Jersey)",
+    "count": 16,
+    "rows": [
+  {"a":"11394","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"17378","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"2576434","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"3045287","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"3116593","t":"First Touchdown Scorer","ti":"29","op":[null,1800,null],"cur":[null,1800,null]},
+  {"a":"3929637","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4242546","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"11394","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"17378","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"2576434","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"3045287","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"3116593","t":"Last Touchdown Scorer","ti":"30","op":[null,1800,null],"cur":[null,1800,null]},
+  {"a":"3929637","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4242546","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"2576434","t":"Player to score 2 or more touchdowns","ti":"32"},
+  {"a":"3116593","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,3300,null],"cur":[null,3500,null]}
+ ]
+   },
+   "47": {
+    "name": "MGM",
+    "count": 13,
+    "rows": [
+  {"a":"3040145","t":"Total Tackles (incl. overtime)","ti":"26","op":[3.5,-149,null],"cur":[3.5,-139,null]},
+  {"a":"3040145","t":"Total Tackles (incl. overtime)","ti":"26","op":[3.5,null,115],"cur":[3.5,null,105]},
+  {"a":"3045287","t":"Total Tackles (incl. overtime)","ti":"26","op":[2.5,-120,null],"cur":[2.5,-115,null]},
+  {"a":"3045287","t":"Total Tackles (incl. overtime)","ti":"26","op":[2.5,null,-110],"cur":[2.5,null,-115]},
+  {"a":"4567099","t":"Total Tackles (incl. overtime)","ti":"26","op":[4.5,-149,null],"cur":[4.5,-161,null]},
+  {"a":"4567099","t":"Total Tackles (incl. overtime)","ti":"26","op":[4.5,null,115],"cur":[4.5,null,120]},
+  {"a":"2576434","t":"First Touchdown Scorer","ti":"29","op":[null,5000,null],"cur":[null,5000,null]},
+  {"a":"3116593","t":"First Touchdown Scorer","ti":"29","op":[null,4000,null],"cur":[null,4000,null]},
+  {"a":"2576434","t":"Last Touchdown Scorer","ti":"30","op":[null,5000,null],"cur":[null,5000,null]},
+  {"a":"3116593","t":"Last Touchdown Scorer","ti":"30","op":[null,4000,null],"cur":[null,4000,null]},
+  {"a":"2576434","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,15000,null],"cur":[null,15000,null]},
+  {"a":"3116593","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,10000,null],"cur":[null,10000,null]},
+  {"a":"3116593","t":"Player to score 3 or more touchdowns","ti":"33","cur":[null,25000,null]}
+ ]
+   },
+   "58": {
+    "name": "ESPN BET",
+    "count": 7,
+    "rows": [
+  {"a":"3040145","t":"Total Tackles (incl. overtime)","ti":"26","op":[3.5,-155,null],"cur":[3.5,-140,null]},
+  {"a":"3040145","t":"Total Tackles (incl. overtime)","ti":"26","op":[3.5,null,115],"cur":[3.5,null,110]},
+  {"a":"3045287","t":"Total Tackles (incl. overtime)","ti":"26","op":[2.5,-120,null],"cur":[2.5,-115,null]},
+  {"a":"3045287","t":"Total Tackles (incl. overtime)","ti":"26","op":[2.5,null,-110],"cur":[2.5,null,-115]},
+  {"a":"4567099","t":"Total Tackles (incl. overtime)","ti":"26","op":[4.5,-160,null],"cur":[4.5,-160,null]},
+  {"a":"4567099","t":"Total Tackles (incl. overtime)","ti":"26","op":[4.5,null,120],"cur":[4.5,null,120]},
+  {"a":"3116593","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,10000,null],"cur":[null,10000,null]}
+ ]
+   }
+  }
+ }
+}

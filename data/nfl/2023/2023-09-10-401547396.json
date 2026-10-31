@@ -1,0 +1,74 @@
+{
+ "id": "401547396",
+ "league": "nfl",
+ "date": "2023-09-10T17:00Z",
+ "name": "HOU @ BAL",
+ "seasonType": 2,
+ "away": {
+  "id": "34",
+  "abbr": "HOU",
+  "name": "Houston Texans",
+  "score": 9
+ },
+ "home": {
+  "id": "33",
+  "abbr": "BAL",
+  "name": "Baltimore Ravens",
+  "score": 25
+ },
+ "final": {
+  "away": 9,
+  "home": 25
+ },
+ "history": {
+  "source": "espn-core-propBets",
+  "fetched": "2026-10-31T07:40:24.370Z",
+  "books": {
+   "40": {
+    "name": "DraftKings",
+    "count": 4,
+    "rows": [
+  {"a":"3045287","t":"Total Tackles (incl. overtime)","ti":"26","op":[2.5,140,null],"cur":[2.5,140,null]},
+  {"a":"3045287","t":"Total Tackles (incl. overtime)","ti":"26","op":[2.5,null,-179],"cur":[2.5,null,-179]},
+  {"a":"4567099","t":"Total Tackles (incl. overtime)","ti":"26","op":[3.5,-115,null],"cur":[3.5,-115,null]},
+  {"a":"4567099","t":"Total Tackles (incl. overtime)","ti":"26","op":[3.5,null,-115],"cur":[3.5,null,-115]}
+ ]
+   },
+   "45": {
+    "name": "Caesars Sportsbook (New Jersey)",
+    "count": 8,
+    "rows": [
+  {"a":"15168","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"17378","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4242546","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4374045","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"15168","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"17378","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4242546","t":"Last Touchdown Scorer","ti":"30"},
+  {"a":"4374045","t":"Last Touchdown Scorer","ti":"30"}
+ ]
+   },
+   "47": {
+    "name": "MGM",
+    "count": 5,
+    "rows": [
+  {"a":"3045287","t":"Total Tackles (incl. overtime)","ti":"26","op":[2.5,125,null],"cur":[2.5,140,null]},
+  {"a":"3045287","t":"Total Tackles (incl. overtime)","ti":"26","op":[2.5,null,-167],"cur":[2.5,null,-189]},
+  {"a":"4567099","t":"Total Tackles (incl. overtime)","ti":"26","op":[3.5,-125,null],"cur":[3.5,-110,null]},
+  {"a":"4567099","t":"Total Tackles (incl. overtime)","ti":"26","op":[3.5,null,-105],"cur":[3.5,null,-120]},
+  {"a":"4374045","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,30000,null],"cur":[null,30000,null]}
+ ]
+   },
+   "1005": {
+    "name": "FanDuel",
+    "count": 4,
+    "rows": [
+  {"a":"4374045","t":"First Touchdown Scorer","ti":"29","op":[null,11000,null],"cur":[null,8000,null]},
+  {"a":"4374045","t":"Last Touchdown Scorer","ti":"30","op":[null,7500,null],"cur":[null,4200,null]},
+  {"a":"4374045","t":"Player to score 2 or more touchdowns","ti":"32","op":[null,50000,null],"cur":[null,50000,null]},
+  {"a":"4374045","t":"Player to score 3 or more touchdowns","ti":"33","op":[null,50000,null],"cur":[null,50000,null]}
+ ]
+   }
+  }
+ }
+}
