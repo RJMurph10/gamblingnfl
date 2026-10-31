@@ -19,7 +19,7 @@ import {
   type MlbTeamRef,
 } from "./mlb";
 import { finalCached, finalLinesStore } from "../shared/final-cache.server";
-import { MLB_CLOSING_LINES } from "@/data/mlb/closing-lines";
+import { MLB_CLOSING_LINES, MLB_STARTERS } from "@/data/mlb/closing-lines";
 
 const SITE = "https://site.api.espn.com/apis/site/v2/sports/baseball/mlb";
 const CORE = "https://sports.core.api.espn.com/v2/sports/baseball/leagues/mlb";
@@ -516,7 +516,9 @@ export async function fetchMlbClosingLines(
  * fills what's missing.
  */
 export function withStoredClosingLines(games: MlbGame[]): MlbGame[] {
-  return games.map((g) => {
+  return games.map((g0) => {
+    const sp = g0.status === "final" ? MLB_STARTERS[g0.id] : undefined;
+    const g = sp ? { ...g0, starters: sp } : g0;
     const row = g.status === "final" ? MLB_CLOSING_LINES[g.id] : undefined;
     if (!row) return g;
     const [mlHome, mlAway, spread, spreadOddsHome, spreadOddsAway, total, overOdds, underOdds] =

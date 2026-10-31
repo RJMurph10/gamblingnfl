@@ -4,7 +4,7 @@ import { PageTitle, Panel, PanelHeader, StatCard } from "@/components/shared/boo
 import { MlbLogo } from "@/components/mlb/MlbBits";
 import { MlbGamesTable } from "@/components/mlb/MlbGamesTable";
 import { buildMlbStandings, etDayKey, hasScore, isWrigleyBestBet, localTip } from "@/lib/mlb/mlb";
-import { gradeMlbSeason, mlbAccuracy, winPct, type MlbRecord } from "@/lib/mlb/mlb-model";
+import { mlbAccuracy } from "@/lib/mlb/mlb-model";
 import { useMlbSchedule, useWrigleyWind } from "@/lib/mlb/use-mlb";
 
 export const Route = createFileRoute("/mlb/")({
@@ -21,24 +21,11 @@ export const Route = createFileRoute("/mlb/")({
   component: MlbDashboard,
 });
 
-const rec = (r: MlbRecord) => `${r.wins}-${r.losses}${r.pushes ? `-${r.pushes}` : ""}`;
-const fmt = (v: number | null) => (v === null ? "—" : v.toFixed(1));
-const units = (u: number) => `${u > 0 ? "+" : ""}${u.toFixed(2)}u`;
 const note = (...parts: (string | undefined | false | null)[]) => parts.filter(Boolean).join(" · ");
-const change = (now: number | null, before: number | null) =>
-  now !== null && before !== null ? Math.round((now - before) * 10) / 10 : null;
-const changeText = (c: number | null) =>
-  c === null ? undefined : `${c > 0 ? "▲" : c < 0 ? "▼" : "—"} ${Math.abs(c).toFixed(1)} wk/wk`;
-const tone = (c: number | null): "win" | "loss" | "mute" =>
-  c === null || c === 0 ? "mute" : c > 0 ? "win" : "loss";
 
 function MlbDashboard() {
   const { games, isLoading, isError, error, linesLoading } = useMlbSchedule(60_000);
-  const weekAgo = useMemo(() => new Date(Date.now() - 7 * 24 * 3_600_000), []);
-  const grade = useMemo(() => gradeMlbSeason(games), [games]);
   const accuracy = useMemo(() => mlbAccuracy(games), [games]);
-  const prev = useMemo(() => gradeMlbSeason(games, weekAgo), [games, weekAgo]);
-  const hasPrev = prev.games > 0 && prev.games !== grade.games;
 
   const live = useMemo(() => games.filter((g) => g.status === "live"), [games]);
   const upcoming = useMemo(() => {
@@ -69,11 +56,6 @@ function MlbDashboard() {
   );
 
   const loading = isLoading ? "Loading…" : undefined;
-  const mlC = hasPrev ? change(winPct(grade.moneyline), winPct(prev.moneyline)) : null;
-  const totC = hasPrev ? change(winPct(grade.total), winPct(prev.total)) : null;
-  const rlC = hasPrev ? change(winPct(grade.runLine), winPct(prev.runLine)) : null;
-  const all = grade.moneyline.units + grade.runLine.units + grade.total.units;
-  const allPrev = prev.moneyline.units + prev.runLine.units + prev.total.units;
   const seasonOver = !live.length && !upcoming.length && recent.length > 0;
 
   return (
@@ -104,13 +86,14 @@ function MlbDashboard() {
             tone={bestBets.size ? "win" : "mute"}
           />
           <StatCard
-            label="Model vs closing line"
-            value={accuracy.gapToMarket === null ? "—" : accuracy.gapToMarket.toFixed(1)}
-            unit={accuracy.gapToMarket === null ? undefined : "pts"}
+            label="Picked winners · model"
+            value={accuracy.pickedWinner === null ? "—" : (accuracy.pickedWinner * 100).toFixed(1)}
+            unit={accuracy.pickedWinner === null ? undefined : "%"}
             note={
               loading ??
               note(
-                "avg gap in win chance",
+                accuracy.favoriteWon !== null &&
+                  `betting favorite ${(accuracy.favoriteWon * 100).toFixed(1)}%`,
                 accuracy.agreesWithMarket !== null &&
                   `same pick as the line in ${Math.round(accuracy.agreesWithMarket * 100)}% of games`,
               )
