@@ -7,18 +7,18 @@
   "id": "265",
   "abbr": "WSU",
   "name": "Washington State Cougars",
-  "score": 0
+  "score": 7
  },
  "home": {
   "id": "21",
   "abbr": "SDSU",
   "name": "San Diego State Aztecs",
-  "score": 0
+  "score": 14
  },
  "neutral": false,
  "venue": "Snapdragon Stadium",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-10-31T08:02:20.928Z",

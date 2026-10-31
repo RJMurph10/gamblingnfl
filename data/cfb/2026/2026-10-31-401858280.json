@@ -7,18 +7,18 @@
   "id": "228",
   "abbr": "CLEM",
   "name": "Clemson Tigers",
-  "score": 0
+  "score": 10
  },
  "home": {
   "id": "52",
   "abbr": "FSU",
   "name": "Florida State Seminoles",
-  "score": 0
+  "score": 7
  },
  "neutral": false,
  "venue": "Doak Campbell Stadium",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-10-31T08:02:20.928Z",

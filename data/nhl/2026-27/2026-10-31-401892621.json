@@ -7,18 +7,18 @@
   "id": "21",
   "abbr": "TOR",
   "name": "Toronto Maple Leafs",
-  "score": 0
+  "score": 1
  },
  "home": {
   "id": "22",
   "abbr": "VAN",
   "name": "Vancouver Canucks",
-  "score": 0
+  "score": 1
  },
  "neutral": false,
  "venue": "Rogers Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-10-31T08:02:20.928Z",

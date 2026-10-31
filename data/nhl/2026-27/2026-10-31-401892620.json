@@ -7,18 +7,18 @@
   "id": "16",
   "abbr": "PIT",
   "name": "Pittsburgh Penguins",
-  "score": 0
+  "score": 2
  },
  "home": {
   "id": "10",
   "abbr": "MTL",
   "name": "Montreal Canadiens",
-  "score": 0
+  "score": 2
  },
  "neutral": false,
  "venue": "Bell Centre",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-10-31T08:02:20.928Z",
