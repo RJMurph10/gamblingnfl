@@ -7,18 +7,18 @@
   "id": "22",
   "abbr": "POR",
   "name": "Portland Trail Blazers",
-  "score": 77
+  "score": 112
  },
  "home": {
   "id": "26",
   "abbr": "UTAH",
   "name": "Utah Jazz",
-  "score": 57
+  "score": 90
  },
  "neutral": false,
  "venue": "Delta Center",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-10-31T08:02:20.928Z",
@@ -3009,5 +3009,9 @@
     }
    ]
   }
+ },
+ "final": {
+  "away": 112,
+  "home": 90
  }
 }

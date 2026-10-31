@@ -477,7 +477,7 @@
    ]
   },
   "close": {
-   "at": "2026-10-31T20:51:23.298Z",
+   "at": "2026-10-31T21:49:15.096Z",
    "scoreboard": [
     {
      "provider": {
@@ -1411,7 +1411,7 @@
    ]
   },
   "close": {
-   "at": "2026-10-31T20:51:23.298Z",
+   "at": "2026-10-31T21:49:15.096Z",
    "provider": 100,
    "count": 651,
    "rows": [
@@ -1625,7 +1625,6 @@
   {"a":"5080230","t":"To Score 2+ Goals","ti":"39","cur":[null,4500,null]},
   {"a":"5291947","t":"To Score 2+ Goals","ti":"39","cur":[null,3500,null]},
   {"a":"3114","t":"To Score 3+ Goals","ti":"40","cur":[null,9000,null]},
-  {"a":"3124","t":"To Score 3+ Goals","ti":"40","cur":[null,11000,null]},
   {"a":"2562629","t":"To Score 3+ Goals","ti":"40","cur":[null,10000,null]},
   {"a":"4565236","t":"To Score 3+ Goals","ti":"40","cur":[null,3000,null]},
   {"a":"3114","t":"Total Shots on Goal","ti":"42","op":[2.5,null,null],"cur":[2.5,null,null]},
@@ -1668,7 +1667,8 @@
   {"a":"5291947","t":"Total Shots on Goal","ti":"42","op":[1.5,null,null],"cur":[1.5,null,null]},
   {"a":"3942064","t":"Total Blocked Shots","ti":"44","op":[1.5,null,null],"cur":[1.5,null,null]},
   {"a":"3942064","t":"Total Blocked Shots","ti":"44","op":[1.5,null,null],"cur":[1.5,null,null]},
-  {"a":"5188366","t":"Total Saves","ti":"45","op":[26.5,null,null],"cur":[24.5,null,null]},
+  {"a":"5188366","t":"Total Saves","ti":"45","op":[26.5,null,null],"cur":[25.5,null,null]},
+  {"a":"5188366","t":"Total Saves","ti":"45","op":[26.5,null,null],"cur":[25.5,null,null]},
   {"a":"5188437","t":"Total Saves","ti":"45","op":[22.5,null,null],"cur":[23.5,null,null]},
   {"a":"5188437","t":"Total Saves","ti":"45","op":[22.5,null,null],"cur":[23.5,null,null]},
   {"a":null,"t":"1st Period Moneyline","ti":"139","cur":[null,165,null]},
@@ -1922,6 +1922,7 @@
   {"a":"4565236","t":"Shots on Goal Milestones","ti":"231","op":[4,null,null],"cur":[5,null,null]},
   {"a":"4565236","t":"Shots on Goal Milestones","ti":"231","op":[4,null,null],"cur":[6,null,null]},
   {"a":"4565236","t":"Shots on Goal Milestones","ti":"231","op":[4,null,null],"cur":[7,null,null]},
+  {"a":"4565236","t":"Shots on Goal Milestones","ti":"231","op":[4,null,null],"cur":[8,null,null]},
   {"a":"4565237","t":"Shots on Goal Milestones","ti":"231","op":[2,null,null],"cur":[1,null,null]},
   {"a":"4565237","t":"Shots on Goal Milestones","ti":"231","op":[2,null,null],"cur":[2,null,null]},
   {"a":"4565237","t":"Shots on Goal Milestones","ti":"231","op":[2,null,null],"cur":[3,null,null]},
@@ -1965,7 +1966,6 @@
   {"a":"3114","t":"Goals Milestones","ti":"232","op":[2,null,null],"cur":[2,null,null]},
   {"a":"3114","t":"Goals Milestones","ti":"232","op":[2,null,null],"cur":[3,null,null]},
   {"a":"3124","t":"Goals Milestones","ti":"232","op":[2,null,null],"cur":[2,null,null]},
-  {"a":"3124","t":"Goals Milestones","ti":"232","op":[2,null,null],"cur":[3,null,null]},
   {"a":"5164","t":"Goals Milestones","ti":"232","op":[2,null,null],"cur":[2,null,null]},
   {"a":"5833","t":"Goals Milestones","ti":"232","op":[2,null,null],"cur":[2,null,null]},
   {"a":"2562602","t":"Goals Milestones","ti":"232","op":[2,null,null],"cur":[2,null,null]},
@@ -2084,15 +2084,15 @@
      },
      "odds": {
       "american": {
-       "value": "-160",
+       "value": "-175",
        "open": "-160"
       },
       "decimal": {
-       "value": "1.62",
+       "value": "1.57",
        "open": "1.62"
       },
       "fraction": {
-       "value": "5/8",
+       "value": "4/7",
        "open": "5/8"
       },
       "total": {
@@ -2130,15 +2130,15 @@
      },
      "odds": {
       "american": {
-       "value": "+120",
+       "value": "+130",
        "open": "+115"
       },
       "decimal": {
-       "value": "2.20",
+       "value": "2.30",
        "open": "2.15"
       },
       "fraction": {
-       "value": "6/5",
+       "value": "13/10",
        "open": "23/20"
       },
       "total": {

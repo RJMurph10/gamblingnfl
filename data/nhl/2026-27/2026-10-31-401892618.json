@@ -7,13 +7,13 @@
   "id": "2",
   "abbr": "BUF",
   "name": "Buffalo Sabres",
-  "score": 1
+  "score": 2
  },
  "home": {
   "id": "8",
   "abbr": "LA",
   "name": "Los Angeles Kings",
-  "score": 0
+  "score": 1
  },
  "neutral": false,
  "venue": "crypto.com Arena",

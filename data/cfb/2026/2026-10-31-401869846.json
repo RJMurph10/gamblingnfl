@@ -477,7 +477,7 @@
    ]
   },
   "close": {
-   "at": "2026-10-31T20:51:23.298Z",
+   "at": "2026-10-31T21:49:15.096Z",
    "scoreboard": [
     {
      "provider": {
@@ -487,7 +487,7 @@
       "displayName": "DraftKings"
      },
      "details": "GASO -6",
-     "overUnder": 55.5,
+     "overUnder": 54.5,
      "spread": -6,
      "awayTeamOdds": {
       "favorite": false,
@@ -589,7 +589,7 @@
       "home": {
        "close": {
         "line": "-6",
-        "odds": "-110",
+        "odds": "-108",
         "link": {
          "language": "en-US",
          "rel": [
@@ -623,7 +623,7 @@
       "away": {
        "close": {
         "line": "+6",
-        "odds": "-110",
+        "odds": "-112",
         "link": {
          "language": "en-US",
          "rel": [
@@ -660,8 +660,8 @@
       "shortDisplayName": "Total",
       "over": {
        "close": {
-        "line": "o55.5",
-        "odds": "-108",
+        "line": "o54.5",
+        "odds": "-118",
         "link": {
          "language": "en-US",
          "rel": [
@@ -669,7 +669,7 @@
           "desktop",
           "bets"
          ],
-         "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34876672%3Foutcomes%3D0OU86864959O5550_1",
+         "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34876672%3Foutcomes%3D0OU86864959O5450_1",
          "text": "Over Odds",
          "shortText": "Over Odds",
          "isExternal": true,
@@ -682,7 +682,7 @@
            "gameId": 401869846,
            "betSide": "over",
            "betType": "straight",
-           "betDetails": "Over:55.5"
+           "betDetails": "Over:54.5"
           }
          }
         }
@@ -694,8 +694,8 @@
       },
       "under": {
        "close": {
-        "line": "u55.5",
-        "odds": "-112",
+        "line": "u54.5",
+        "odds": "-102",
         "link": {
          "language": "en-US",
          "rel": [
@@ -703,7 +703,7 @@
           "desktop",
           "bets"
          ],
-         "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34876672%3Foutcomes%3D0OU86864959U5550_3",
+         "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34876672%3Foutcomes%3D0OU86864959U5450_3",
          "text": "Under Odds",
          "shortText": "Under Odds",
          "isExternal": true,
@@ -716,7 +716,7 @@
            "gameId": 401869846,
            "betSide": "under",
            "betType": "straight",
-           "betDetails": "Under:55.5"
+           "betDetails": "Under:54.5"
           }
          }
         }
@@ -772,15 +772,15 @@
       "priority": 1
      },
      "details": "GASO -6",
-     "overUnder": 55.5,
+     "overUnder": 54.5,
      "spread": -6,
-     "overOdds": -108,
-     "underOdds": -112,
+     "overOdds": -118,
+     "underOdds": -102,
      "awayTeamOdds": {
       "favorite": false,
       "underdog": true,
       "moneyLine": 185,
-      "spreadOdds": -110,
+      "spreadOdds": -112,
       "open": {
        "favorite": false,
        "pointSpread": {
@@ -810,12 +810,12 @@
         "american": "+6"
        },
        "spread": {
-        "value": 1.9,
-        "displayValue": "10/11",
-        "alternateDisplayValue": "-110",
-        "decimal": 1.9,
-        "fraction": "10/11",
-        "american": "-110"
+        "value": 1.89,
+        "displayValue": "25/28",
+        "alternateDisplayValue": "-112",
+        "decimal": 1.89,
+        "fraction": "25/28",
+        "american": "-112"
        },
        "moneyLine": {
         "value": 2.85,
@@ -834,7 +834,7 @@
       "favorite": true,
       "underdog": false,
       "moneyLine": -225,
-      "spreadOdds": -110,
+      "spreadOdds": -108,
       "open": {
        "favorite": true,
        "pointSpread": {
@@ -864,12 +864,12 @@
         "american": "-6"
        },
        "spread": {
-        "value": 1.9,
-        "displayValue": "10/11",
-        "alternateDisplayValue": "-110",
-        "decimal": 1.9,
-        "fraction": "10/11",
-        "american": "-110"
+        "value": 1.92,
+        "displayValue": "25/27",
+        "alternateDisplayValue": "-108",
+        "decimal": 1.92,
+        "fraction": "25/27",
+        "american": "-108"
        },
        "moneyLine": {
         "value": 1.44,
@@ -910,24 +910,24 @@
      },
      "current": {
       "over": {
-       "value": 1.92,
-       "displayValue": "25/27",
-       "alternateDisplayValue": "-108",
-       "decimal": 1.92,
-       "fraction": "25/27",
-       "american": "-108"
+       "value": 1.84,
+       "displayValue": "50/59",
+       "alternateDisplayValue": "-118",
+       "decimal": 1.84,
+       "fraction": "50/59",
+       "american": "-118"
       },
       "under": {
-       "value": 1.89,
-       "displayValue": "25/28",
-       "alternateDisplayValue": "-112",
-       "decimal": 1.89,
-       "fraction": "25/28",
-       "american": "-112"
+       "value": 1.98,
+       "displayValue": "50/51",
+       "alternateDisplayValue": "-102",
+       "decimal": 1.98,
+       "fraction": "50/51",
+       "american": "-102"
       },
       "total": {
-       "alternateDisplayValue": "55.5",
-       "american": "55.5"
+       "alternateDisplayValue": "54.5",
+       "american": "54.5"
       }
      }
     }
