@@ -7,13 +7,13 @@
   "id": "3",
   "abbr": "CGY",
   "name": "Calgary Flames",
-  "score": 0
+  "score": 1
  },
  "home": {
   "id": "17",
   "abbr": "COL",
   "name": "Colorado Avalanche",
-  "score": 1
+  "score": 4
  },
  "neutral": false,
  "venue": "Ball Arena",
