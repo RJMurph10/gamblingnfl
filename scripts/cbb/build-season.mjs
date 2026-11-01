@@ -92,7 +92,8 @@ async function main() {
   for (const conf of groups?.groups?.[0]?.children ?? []) {
     const cid = String(conf.id ?? conf.uid?.split("~g:")[1] ?? conf.abbreviation ?? "");
     if (!cid) continue;
-    file.conferences[cid] = [String(conf.name ?? ""), String(conf.shortName ?? conf.abbreviation ?? "")];
+    const cname = String(conf.name ?? "");
+    file.conferences[cid] = [cname, String(conf.shortName ?? cname.replace(/\s+Conference$/i, ""))];
     for (const t of conf.teams ?? []) {
       file.teams[t.id] = [
         String(t.abbreviation ?? ""),

@@ -290,18 +290,44 @@ function mergeOdds(live: CbbOdds | undefined, stored: CbbOdds | undefined): CbbO
   return out;
 }
 
+/** Division I conferences and their teams, straight from ESPN (cached for 12 hours). */
+function loadConferences(): Promise<{ conferences: CbbConference[]; teams: CbbTeamRef[] }> {
+  return cached("conferences", 12 * HOUR, async () => {
+    const json = await fetchJson(`${SITE}/groups`);
+    const conferences: CbbConference[] = [];
+    const teams: CbbTeamRef[] = [];
+    for (const conf of json?.groups?.[0]?.children ?? []) {
+      const id = String(conf?.id ?? conf?.uid?.split("~g:")[1] ?? conf?.abbreviation ?? "");
+      if (!id) continue;
+      const name = String(conf.name ?? "");
+      conferences.push({ id, name, short: String(conf.shortName ?? name.replace(/\s+Conference$/i, "")) });
+      for (const t of conf.teams ?? []) teams.push(teamRefFrom(t, id));
+    }
+    return { conferences, teams };
+  });
+}
+
 async function loadSchedule(): Promise<CbbSchedule> {
   const season = cbbSeasonLabel();
   const now = new Date();
   const days: Date[] = [];
   for (let d = -1; d <= 7; d++) days.push(new Date(now.getTime() + d * DAY));
-  const [file, ...live] = await Promise.all([
+  const [file, groups, ...live] = await Promise.all([
     loadSeasonFile(season),
+    loadConferences().catch(() => ({ conferences: [] as CbbConference[], teams: [] as CbbTeamRef[] })),
     ...days.map((d) => fetchDay(d).catch(() => [] as CbbGame[])),
   ]);
   const teams = new Map<string, CbbTeamRef>();
-  for (const [id, t] of Object.entries(file?.teams ?? {})) teams.set(id, teamFromFile(id, t));
-  const conferences: CbbConference[] = Object.entries(file?.conferences ?? {}).map(([id, [name, short]]) => ({ id, name, short }));
+  // ESPN's conference list first (every D-I team, even before it plays), then the season file
+  for (const t of groups.teams) teams.set(t.id, t);
+  for (const [id, t] of Object.entries(file?.teams ?? {})) {
+    const known = teams.get(id);
+    const fromFile = teamFromFile(id, t);
+    teams.set(id, known ? { ...fromFile, ...known, confId: known.confId || fromFile.confId } : fromFile);
+  }
+  const conferences: CbbConference[] = groups.conferences.length
+    ? groups.conferences
+    : Object.entries(file?.conferences ?? {}).map(([id, [name, short]]) => ({ id, name, short }));
 
   const byId = new Map<string, CbbGame>();
   for (const row of file?.games ?? []) byId.set(row[0], gameFromRow(row, teams));
