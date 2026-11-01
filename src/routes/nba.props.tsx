@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageTitle, Panel, PanelHeader } from "@/components/shared/booth";
 import { EmptyPanel, NbaLogo, statusText } from "@/components/nba/NbaBits";
 import { NbaPropsBoard } from "@/components/nba/NbaPropsBoard";
@@ -142,7 +142,14 @@ function NbaPropsPage() {
 
   return (
     <>
-      <PageTitle title="Player Props" />
+      <PageTitle
+        title="Player Props"
+        aside={
+          <Link to="/nba/prop-history" className="font-mono text-[11px] uppercase tracking-wider text-acc">
+            Prop history →
+          </Link>
+        }
+      />
 
       {isLoading ? (
         <EmptyPanel>Loading the schedule…</EmptyPanel>

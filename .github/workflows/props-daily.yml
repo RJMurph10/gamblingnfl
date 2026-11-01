@@ -1,0 +1,71 @@
+# Daily refresh of this season's player prop history (NBA and NFL): downloads every finished game's
+# prop lines and box scores from ESPN, then rebuilds the files the site's Prop history pages read
+# (props-site branch) and the research file (props-history branch).
+name: Props daily
+
+on:
+  schedule:
+    - cron: "23 13 * * *" # 8:23am Central
+  push:
+    branches: [main, prop-history]
+    paths: [scripts/line-history/props-daily.trigger]
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: props-daily
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        league: [nba, nfl]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: app
+          sparse-checkout: scripts/line-history
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Download this season
+        id: season
+        run: |
+          set -e
+          read SEASON START <<< "$(node -e '
+            const lg = process.argv[1]; const d = new Date(); const y = d.getUTCFullYear(), m = d.getUTCMonth() + 1;
+            if (lg === "nfl" || lg === "cfb") { const s = m <= 2 ? y - 1 : y; console.log(s, `${s}-09-01`); }
+            else { const s = m <= 7 ? y - 1 : y; console.log(`${s}-${String(s + 1).slice(2)}`, `${s}-10-01`); }
+          ' ${{ matrix.league }})"
+          TODAY=$(date -u +%Y-%m-%d)
+          echo "season=$SEASON" >> "$GITHUB_OUTPUT"
+          node app/scripts/line-history/backfill-props.mjs --league ${{ matrix.league }} --from "$START" --to "$TODAY" --out work/data
+          node app/scripts/line-history/build-props-history.mjs --league ${{ matrix.league }} --data work/data --out work/ph
+      - name: Publish
+        run: |
+          set -e
+          url="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+          publish() { # branch, build command
+            for attempt in 1 2 3 4 5; do
+              rm -rf dst && git clone -q --depth 1 --branch "$1" "$url" dst
+              ( cd dst && eval "$2" )
+              cd dst
+              git config user.name "line-history-bot"
+              git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+              git add -A
+              if git diff --cached --quiet; then cd ..; return 0; fi
+              git commit -q -m "${{ matrix.league }} ${{ steps.season.outputs.season }} props $(date -u +%Y-%m-%d)"
+              if git push -q origin "$1"; then cd ..; return 0; fi
+              cd ..; sleep $((attempt * 15))
+            done
+            return 1
+          }
+          publish props-site "node ../app/scripts/line-history/build-props-site.mjs --league ${{ matrix.league }} --data ../work/ph --out . --season ${{ steps.season.outputs.season }}"
+          publish props-history "mkdir -p ${{ matrix.league }} && cp ../work/ph/${{ matrix.league }}/*.jsonl.gz ${{ matrix.league }}/"

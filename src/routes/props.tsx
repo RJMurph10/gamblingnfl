@@ -119,7 +119,13 @@ function PropsPage() {
 
   return (
     <>
-      <PageTitle eyebrow={week ? `Week ${week} · player projections` : "Player projections"} title="Player Props" />
+      <PageTitle eyebrow={week ? `Week ${week} · player projections` : "Player projections"} title="Player Props"
+        aside={
+          <Link to="/prop-history" className="font-mono text-[11px] uppercase tracking-wider text-acc">
+            Prop history →
+          </Link>
+        }
+      />
 
       {scheduleQuery.isLoading ? (
         <Panel>
