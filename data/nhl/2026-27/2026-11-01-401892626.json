@@ -517,6 +517,270 @@
      "open": {}
     }
    ]
+  },
+  "latest": {
+   "at": "2026-11-01T01:53:12.077Z",
+   "count": 48,
+   "rows": [
+  {"a":null,"t":"1st Period Moneyline","ti":"139","cur":[null,210,null]},
+  {"a":null,"t":"1st Period Moneyline","ti":"139","cur":[null,160,null]},
+  {"a":null,"t":"1st Period Moneyline","ti":"139","cur":[null,175,null]},
+  {"a":null,"t":"1st Period Spread","ti":"140","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":null,"t":"1st Period Spread","ti":"140","op":[-0.5,null,null],"cur":[-0.5,null,null]},
+  {"a":null,"t":"1st Period Total Goals","ti":"141","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":null,"t":"1st Period Total Goals","ti":"141","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":null,"t":"2nd Period Moneyline","ti":"142","cur":[null,200,null]},
+  {"a":null,"t":"2nd Period Moneyline","ti":"142","cur":[null,140,null]},
+  {"a":null,"t":"2nd Period Moneyline","ti":"142","cur":[null,205,null]},
+  {"a":null,"t":"2nd Period Spread","ti":"143","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":null,"t":"2nd Period Spread","ti":"143","op":[-0.5,null,null],"cur":[-0.5,null,null]},
+  {"a":null,"t":"2nd Period Total Goals","ti":"144","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":null,"t":"2nd Period Total Goals","ti":"144","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":null,"t":"3rd Period Moneyline","ti":"145","cur":[null,200,null]},
+  {"a":null,"t":"3rd Period Moneyline","ti":"145","cur":[null,125,null]},
+  {"a":null,"t":"3rd Period Moneyline","ti":"145","cur":[null,240,null]},
+  {"a":null,"t":"3rd Period Spread","ti":"146","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":null,"t":"3rd Period Spread","ti":"146","op":[-0.5,null,null],"cur":[-0.5,null,null]},
+  {"a":null,"t":"3rd Period Total Goals","ti":"147","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":null,"t":"3rd Period Total Goals","ti":"147","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[2.5,null,null],"cur":[1.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[2.5,null,null],"cur":[3.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[2.5,null,null],"cur":[4.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[2.5,null,null],"cur":[0.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[2.5,null,null],"cur":[5.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[2.5,null,null],"cur":[1.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[2.5,null,null],"cur":[3.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[2.5,null,null],"cur":[4.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[2.5,null,null],"cur":[0.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[2.5,null,null],"cur":[5.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[1.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[2.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[3.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[4.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[0.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[5.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[1.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[2.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[3.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[4.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[0.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[5.5,null,null]},
+  {"a":null,"t":"Both Teams To Score","ti":"152","cur":[null,-1600,null]},
+  {"a":null,"t":"Both Teams To Score","ti":"152","cur":[null,650,null]},
+  {"a":null,"t":"Will There Be Overtime?","ti":"153","cur":[null,280,null]}
+ ]
   }
+ },
+ "names": {
+  "5793": [
+   "Anders Lee",
+   "UTA"
+  ],
+  "2562601": [
+   "Sean Couturier",
+   "PHI"
+  ],
+  "2563036": [
+   "Vincent Trocheck",
+   "UTA"
+  ],
+  "2564164": [
+   "Nick Seeler",
+   "PHI"
+  ],
+  "3024798": [
+   "Nate Schmidt",
+   "UTA"
+  ],
+  "3041999": [
+   "Rasmus Ristolainen",
+   "PHI"
+  ],
+  "3042269": [
+   "MacKenzie Weegar",
+   "UTA"
+  ],
+  "3096237": [
+   "Noel Acciari",
+   "PHI"
+  ],
+  "3114757": [
+   "Travis Sanheim",
+   "PHI"
+  ],
+  "3114770": [
+   "Nick Schmaltz",
+   "UTA"
+  ],
+  "3115035": [
+   "Christian Dvorak",
+   "PHI"
+  ],
+  "3149603": [
+   "Michael Bunting",
+   "PHI"
+  ],
+  "3150468": [
+   "Liam O'Brien",
+   "UTA"
+  ],
+  "3899951": [
+   "Lawson Crouse",
+   "UTA"
+  ],
+  "3900169": [
+   "Travis Konecny",
+   "PHI"
+  ],
+  "3904191": [
+   "Kevin Stenlund",
+   "UTA"
+  ],
+  "3941974": [
+   "John Marino",
+   "UTA"
+  ],
+  "3942065": [
+   "Karel Vejmelka",
+   "UTA"
+  ],
+  "3942459": [
+   "Dan Vladar",
+   "PHI"
+  ],
+  "4024857": [
+   "Clayton Keller",
+   "UTA"
+  ],
+  "4024868": [
+   "Mikhail Sergachev",
+   "UTA"
+  ],
+  "4031645": [
+   "Michael Carcone",
+   "UTA"
+  ],
+  "4064936": [
+   "Andrew Peeke",
+   "UTA"
+  ],
+  "4196959": [
+   "Nick DeSimone",
+   "UTA"
+  ],
+  "4233648": [
+   "Kailer Yamamoto",
+   "UTA"
+  ],
+  "4271575": [
+   "Joseph Woll",
+   "PHI"
+  ],
+  "4352699": [
+   "Barrett Hayton",
+   "UTA"
+  ],
+  "4392072": [
+   "Owen Tippett",
+   "PHI"
+  ],
+  "4392642": [
+   "Simon Benoit",
+   "PHI"
+  ],
+  "4419682": [
+   "Noah Cates",
+   "PHI"
+  ],
+  "4565230": [
+   "Trevor Zegras",
+   "PHI"
+  ],
+  "4565235": [
+   "Cam York",
+   "PHI"
+  ],
+  "4697387": [
+   "Jamie Drysdale",
+   "PHI"
+  ],
+  "4697406": [
+   "Tyson Foerster",
+   "PHI"
+  ],
+  "4697440": [
+   "Helge Grans",
+   "PHI"
+  ],
+  "4755695": [
+   "Jack McBain",
+   "UTA"
+  ],
+  "4874723": [
+   "Dylan Guenther",
+   "UTA"
+  ],
+  "4874732": [
+   "Sebastian Cossa",
+   "UTA"
+  ],
+  "5080143": [
+   "Logan Cooley",
+   "UTA"
+  ],
+  "5080147": [
+   "David Jiricek",
+   "PHI"
+  ],
+  "5080177": [
+   "Maveric Lamoureux",
+   "UTA"
+  ],
+  "5080205": [
+   "Artem Duda",
+   "UTA"
+  ],
+  "5103725": [
+   "Hunter McDonald",
+   "PHI"
+  ],
+  "5149158": [
+   "Dmitri Simashev",
+   "UTA"
+  ],
+  "5149170": [
+   "Matvei Michkov",
+   "PHI"
+  ],
+  "5149183": [
+   "Daniil But",
+   "UTA"
+  ],
+  "5149199": [
+   "Oliver Bonk",
+   "PHI"
+  ],
+  "5173105": [
+   "Denver Barkey",
+   "PHI"
+  ],
+  "5188341": [
+   "Cole Knuble",
+   "PHI"
+  ],
+  "5188356": [
+   "Alex Bump",
+   "PHI"
+  ],
+  "5216881": [
+   "Jett Luchanko",
+   "PHI"
+  ],
+  "5291941": [
+   "Porter Martone",
+   "PHI"
+  ]
  }
 }

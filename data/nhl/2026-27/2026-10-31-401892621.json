@@ -7,7 +7,7 @@
   "id": "21",
   "abbr": "TOR",
   "name": "Toronto Maple Leafs",
-  "score": 3
+  "score": 4
  },
  "home": {
   "id": "22",
@@ -18,7 +18,7 @@
  "neutral": false,
  "venue": "Rogers Arena",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-10-31T08:02:20.928Z",
@@ -2198,5 +2198,9 @@
     }
    ]
   }
+ },
+ "final": {
+  "away": 4,
+  "home": 2
  }
 }

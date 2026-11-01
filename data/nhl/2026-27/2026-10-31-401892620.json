@@ -7,7 +7,7 @@
   "id": "16",
   "abbr": "PIT",
   "name": "Pittsburgh Penguins",
-  "score": 3
+  "score": 4
  },
  "home": {
   "id": "10",
@@ -18,7 +18,7 @@
  "neutral": false,
  "venue": "Bell Centre",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-10-31T08:02:20.928Z",
@@ -2148,5 +2148,9 @@
     }
    ]
   }
+ },
+ "final": {
+  "away": 4,
+  "home": 5
  }
 }

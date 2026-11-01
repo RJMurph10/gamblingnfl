@@ -7,13 +7,13 @@
   "id": "23",
   "abbr": "SAC",
   "name": "Sacramento Kings",
-  "score": 55
+  "score": 72
  },
  "home": {
   "id": "29",
   "abbr": "MEM",
   "name": "Memphis Grizzlies",
-  "score": 66
+  "score": 97
  },
  "neutral": false,
  "venue": "FedExForum",

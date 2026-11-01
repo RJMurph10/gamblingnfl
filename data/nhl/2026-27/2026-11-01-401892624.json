@@ -518,6 +518,295 @@
      "open": {}
     }
    ]
+  },
+  "latest": {
+   "at": "2026-11-01T01:53:12.077Z",
+   "count": 73,
+   "rows": [
+  {"a":"2562632","t":"To Score 2+ Goals","ti":"39","cur":[null,2200,null]},
+  {"a":"2976849","t":"To Score 2+ Goals","ti":"39","cur":[null,3000,null]},
+  {"a":"2989376","t":"To Score 2+ Goals","ti":"39","cur":[null,5000,null]},
+  {"a":"3025662","t":"To Score 2+ Goals","ti":"39","cur":[null,7500,null]},
+  {"a":"3042054","t":"To Score 2+ Goals","ti":"39","cur":[null,4000,null]},
+  {"a":"3114741","t":"To Score 2+ Goals","ti":"39","cur":[null,1600,null]},
+  {"a":"3652598","t":"To Score 2+ Goals","ti":"39","cur":[null,9000,null]},
+  {"a":"3899952","t":"To Score 2+ Goals","ti":"39","cur":[null,1400,null]},
+  {"a":"3904173","t":"To Score 2+ Goals","ti":"39","cur":[null,1200,null]},
+  {"a":"4233583","t":"To Score 2+ Goals","ti":"39","cur":[null,3000,null]},
+  {"a":"4319879","t":"To Score 2+ Goals","ti":"39","cur":[null,6000,null]},
+  {"a":"4352683","t":"To Score 2+ Goals","ti":"39","cur":[null,1400,null]},
+  {"a":"4352692","t":"To Score 2+ Goals","ti":"39","cur":[null,5000,null]},
+  {"a":"4697392","t":"To Score 2+ Goals","ti":"39","cur":[null,2800,null]},
+  {"a":"4697396","t":"To Score 2+ Goals","ti":"39","cur":[null,1500,null]},
+  {"a":"4697401","t":"To Score 2+ Goals","ti":"39","cur":[null,5000,null]},
+  {"a":"4874731","t":"To Score 2+ Goals","ti":"39","cur":[null,9000,null]},
+  {"a":"4874899","t":"To Score 2+ Goals","ti":"39","cur":[null,1800,null]},
+  {"a":"5103645","t":"To Score 2+ Goals","ti":"39","cur":[null,1600,null]},
+  {"a":"5361711","t":"To Score 2+ Goals","ti":"39","cur":[null,6000,null]},
+  {"a":"3114741","t":"To Score 3+ Goals","ti":"40","cur":[null,10000,null]},
+  {"a":"3899952","t":"To Score 3+ Goals","ti":"40","cur":[null,9000,null]},
+  {"a":"3904173","t":"To Score 3+ Goals","ti":"40","cur":[null,7000,null]},
+  {"a":"4352683","t":"To Score 3+ Goals","ti":"40","cur":[null,9000,null]},
+  {"a":"4697396","t":"To Score 3+ Goals","ti":"40","cur":[null,8000,null]},
+  {"a":"4874899","t":"To Score 3+ Goals","ti":"40","cur":[null,10000,null]},
+  {"a":null,"t":"1st Period Moneyline","ti":"139","cur":[null,120,null]},
+  {"a":null,"t":"1st Period Moneyline","ti":"139","cur":[null,270,null]},
+  {"a":null,"t":"1st Period Moneyline","ti":"139","cur":[null,185,null]},
+  {"a":null,"t":"1st Period Spread","ti":"140","op":[-0.5,null,null],"cur":[-0.5,null,null]},
+  {"a":null,"t":"1st Period Spread","ti":"140","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":null,"t":"1st Period Total Goals","ti":"141","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":null,"t":"1st Period Total Goals","ti":"141","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":null,"t":"2nd Period Moneyline","ti":"142","cur":[null,110,null]},
+  {"a":null,"t":"2nd Period Moneyline","ti":"142","cur":[null,275,null]},
+  {"a":null,"t":"2nd Period Moneyline","ti":"142","cur":[null,200,null]},
+  {"a":null,"t":"2nd Period Spread","ti":"143","op":[-0.5,null,null],"cur":[-0.5,null,null]},
+  {"a":null,"t":"2nd Period Spread","ti":"143","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":null,"t":"2nd Period Total Goals","ti":"144","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":null,"t":"2nd Period Total Goals","ti":"144","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":null,"t":"3rd Period Moneyline","ti":"145","cur":[null,-115,null]},
+  {"a":null,"t":"3rd Period Moneyline","ti":"145","cur":[null,275,null]},
+  {"a":null,"t":"3rd Period Moneyline","ti":"145","cur":[null,265,null]},
+  {"a":null,"t":"3rd Period Spread","ti":"146","op":[-0.5,null,null],"cur":[-0.5,null,null]},
+  {"a":null,"t":"3rd Period Spread","ti":"146","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":null,"t":"3rd Period Total Goals","ti":"147","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":null,"t":"3rd Period Total Goals","ti":"147","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[1.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[2.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[3.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[4.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[0.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[5.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[1.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[2.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[3.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[4.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[0.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[5.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[2.5,null,null],"cur":[1.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[2.5,null,null],"cur":[3.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[2.5,null,null],"cur":[4.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[2.5,null,null],"cur":[5.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[2.5,null,null],"cur":[1.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[2.5,null,null],"cur":[3.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[2.5,null,null],"cur":[4.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[2.5,null,null],"cur":[0.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[2.5,null,null],"cur":[5.5,null,null]},
+  {"a":null,"t":"Both Teams To Score","ti":"152","cur":[null,-1200,null]},
+  {"a":null,"t":"Both Teams To Score","ti":"152","cur":[null,550,null]},
+  {"a":null,"t":"Will There Be Overtime?","ti":"153","cur":[null,320,null]}
+ ]
   }
+ },
+ "names": {
+  "3541": [
+   "Jordan Staal",
+   "CAR"
+  ],
+  "5193": [
+   "Nicolas Deslauriers",
+   "CAR"
+  ],
+  "5428": [
+   "Taylor Hall",
+   "CAR"
+  ],
+  "5511": [
+   "Nino Niederreiter",
+   "WPG"
+  ],
+  "5828": [
+   "Nick Bjugstad",
+   "WPG"
+  ],
+  "2562632": [
+   "Mark Scheifele",
+   "WPG"
+  ],
+  "2563066": [
+   "Adam Lowry",
+   "WPG"
+  ],
+  "2563077": [
+   "Mike Reilly",
+   "CAR"
+  ],
+  "2590861": [
+   "Dylan DeMelo",
+   "WPG"
+  ],
+  "2976849": [
+   "Mark Jankowski",
+   "CAR"
+  ],
+  "2989376": [
+   "Jordan Martinook",
+   "CAR"
+  ],
+  "3025662": [
+   "Shayne Gostisbehere",
+   "CAR"
+  ],
+  "3042016": [
+   "Josh Morrissey",
+   "WPG"
+  ],
+  "3042054": [
+   "William Carrier",
+   "CAR"
+  ],
+  "3069836": [
+   "Jaccob Slavin",
+   "CAR"
+  ],
+  "3114735": [
+   "Haydn Fleury",
+   "WPG"
+  ],
+  "3114741": [
+   "Nikolaj Ehlers",
+   "CAR"
+  ],
+  "3652598": [
+   "Alex Iafallo",
+   "WPG"
+  ],
+  "3899952": [
+   "Kyle Connor",
+   "WPG"
+  ],
+  "3904173": [
+   "Sebastian Aho",
+   "CAR"
+  ],
+  "3988847": [
+   "Neal Pionk",
+   "WPG"
+  ],
+  "4063449": [
+   "Jalen Chatfield",
+   "CAR"
+  ],
+  "4233583": [
+   "Gabriel Vilardi",
+   "WPG"
+  ],
+  "4233611": [
+   "Juuso Valimaki",
+   "CAR"
+  ],
+  "4233878": [
+   "Dylan Samberg",
+   "WPG"
+  ],
+  "4233884": [
+   "Mario Ferraro",
+   "WPG"
+  ],
+  "4268767": [
+   "Stuart Skinner",
+   "WPG"
+  ],
+  "4272905": [
+   "Sean Walker",
+   "CAR"
+  ],
+  "4316970": [
+   "Morgan Barron",
+   "WPG"
+  ],
+  "4319879": [
+   "Eric Robinson",
+   "CAR"
+  ],
+  "4319940": [
+   "Walker Duehr",
+   "WPG"
+  ],
+  "4352683": [
+   "Andrei Svechnikov",
+   "CAR"
+  ],
+  "4352692": [
+   "Jesperi Kotkaniemi",
+   "CAR"
+  ],
+  "4352770": [
+   "K'Andre Miller",
+   "CAR"
+  ],
+  "4419679": [
+   "Cole Koepke",
+   "WPG"
+  ],
+  "4565259": [
+   "Pyotr Kochetkov",
+   "CAR"
+  ],
+  "4697392": [
+   "Cole Perfetti",
+   "WPG"
+  ],
+  "4697396": [
+   "Seth Jarvis",
+   "CAR"
+  ],
+  "4697401": [
+   "Dawson Mercer",
+   "WPG"
+  ],
+  "4697648": [
+   "Tyrel Bauer",
+   "WPG"
+  ],
+  "4697683": [
+   "Nico Daws",
+   "WPG"
+  ],
+  "4874731": [
+   "Isak Rosen",
+   "WPG"
+  ],
+  "4874899": [
+   "Logan Stankoven",
+   "CAR"
+  ],
+  "4915850": [
+   "Alexander Nikishin",
+   "CAR"
+  ],
+  "4996097": [
+   "Brandon Bussi",
+   "CAR"
+  ],
+  "5080178": [
+   "Brad Lambert",
+   "WPG"
+  ],
+  "5080223": [
+   "Elias Salomonsson",
+   "WPG"
+  ],
+  "5103645": [
+   "Jackson Blake",
+   "CAR"
+  ],
+  "5104207": [
+   "Garrett Brown",
+   "WPG"
+  ],
+  "5104602": [
+   "Clay Stevenson",
+   "WPG"
+  ],
+  "5361711": [
+   "Viggo Bjorck",
+   "WPG"
+  ],
+  "5361718": [
+   "Alexander Command",
+   "WPG"
+  ]
  }
 }

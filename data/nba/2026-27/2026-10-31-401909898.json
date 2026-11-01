@@ -7,18 +7,18 @@
   "id": "1",
   "abbr": "ATL",
   "name": "Atlanta Hawks",
-  "score": 93
+  "score": 99
  },
  "home": {
   "id": "3",
   "abbr": "NO",
   "name": "New Orleans Pelicans",
-  "score": 119
+  "score": 121
  },
  "neutral": false,
  "venue": "Smoothie King Center",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-10-31T08:02:20.928Z",
@@ -3070,5 +3070,9 @@
     }
    ]
   }
+ },
+ "final": {
+  "away": 99,
+  "home": 121
  }
 }

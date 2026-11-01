@@ -7,13 +7,13 @@
   "id": "5",
   "abbr": "CLE",
   "name": "Cleveland Cavaliers",
-  "score": 81
+  "score": 112
  },
  "home": {
   "id": "15",
   "abbr": "MIL",
   "name": "Milwaukee Bucks",
-  "score": 54
+  "score": 76
  },
  "neutral": false,
  "venue": "Fiserv Forum",

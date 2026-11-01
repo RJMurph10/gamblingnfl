@@ -517,6 +517,274 @@
      "open": {}
     }
    ]
+  },
+  "latest": {
+   "at": "2026-11-01T01:53:12.077Z",
+   "count": 48,
+   "rows": [
+  {"a":null,"t":"1st Period Moneyline","ti":"139","cur":[null,170,null]},
+  {"a":null,"t":"1st Period Moneyline","ti":"139","cur":[null,175,null]},
+  {"a":null,"t":"1st Period Moneyline","ti":"139","cur":[null,195,null]},
+  {"a":null,"t":"1st Period Spread","ti":"140","op":[-0.5,null,null],"cur":[-0.5,null,null]},
+  {"a":null,"t":"1st Period Spread","ti":"140","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":null,"t":"1st Period Total Goals","ti":"141","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":null,"t":"1st Period Total Goals","ti":"141","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":null,"t":"2nd Period Moneyline","ti":"142","cur":[null,165,null]},
+  {"a":null,"t":"2nd Period Moneyline","ti":"142","cur":[null,170,null]},
+  {"a":null,"t":"2nd Period Moneyline","ti":"142","cur":[null,210,null]},
+  {"a":null,"t":"2nd Period Spread","ti":"143","op":[-0.5,null,null],"cur":[-0.5,null,null]},
+  {"a":null,"t":"2nd Period Spread","ti":"143","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":null,"t":"2nd Period Total Goals","ti":"144","op":[1.5,null,null],"cur":[2.5,null,null]},
+  {"a":null,"t":"2nd Period Total Goals","ti":"144","op":[1.5,null,null],"cur":[2.5,null,null]},
+  {"a":null,"t":"3rd Period Moneyline","ti":"145","cur":[null,150,null]},
+  {"a":null,"t":"3rd Period Moneyline","ti":"145","cur":[null,155,null]},
+  {"a":null,"t":"3rd Period Moneyline","ti":"145","cur":[null,255,null]},
+  {"a":null,"t":"3rd Period Spread","ti":"146","op":[-0.5,null,null],"cur":[-0.5,null,null]},
+  {"a":null,"t":"3rd Period Spread","ti":"146","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":null,"t":"3rd Period Total Goals","ti":"147","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":null,"t":"3rd Period Total Goals","ti":"147","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[1.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[2.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[3.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[4.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[0.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[5.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[1.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[2.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[3.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[4.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[0.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[5.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[1.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[2.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[3.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[4.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[0.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[5.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[1.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[2.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[3.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[4.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[0.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[5.5,null,null]},
+  {"a":null,"t":"Both Teams To Score","ti":"152","cur":[null,-2500,null]},
+  {"a":null,"t":"Both Teams To Score","ti":"152","cur":[null,800,null]},
+  {"a":null,"t":"Will There Be Overtime?","ti":"153","cur":[null,280,null]}
+ ]
   }
+ },
+ "names": {
+  "3775": [
+   "Claude Giroux",
+   "OTT"
+  ],
+  "4968": [
+   "Alex Killorn",
+   "ANA"
+  ],
+  "5831": [
+   "Mikael Granlund",
+   "ANA"
+  ],
+  "2563027": [
+   "Nick Cousins",
+   "OTT"
+  ],
+  "3025608": [
+   "Nick Jensen",
+   "ANA"
+  ],
+  "3042044": [
+   "Andre Burakovsky",
+   "OTT"
+  ],
+  "3069285": [
+   "Linus Ullmark",
+   "OTT"
+  ],
+  "3115546": [
+   "Jonas Johansson",
+   "OTT"
+  ],
+  "3149829": [
+   "Michael Amadio",
+   "OTT"
+  ],
+  "3150479": [
+   "Hayden Hodgson",
+   "OTT"
+  ],
+  "3151036": [
+   "Warren Foegele",
+   "OTT"
+  ],
+  "3151137": [
+   "Ville Husso",
+   "ANA"
+  ],
+  "3527554": [
+   "Frank Vatrano",
+   "ANA"
+  ],
+  "3648015": [
+   "A.J. Greer",
+   "ANA"
+  ],
+  "3900219": [
+   "Thomas Chabot",
+   "OTT"
+  ],
+  "3942905": [
+   "Troy Terry",
+   "ANA"
+  ],
+  "4233668": [
+   "Ryan Poehling",
+   "ANA"
+  ],
+  "4271734": [
+   "Drake Batherson",
+   "OTT"
+  ],
+  "4319916": [
+   "Ian Mitchell",
+   "ANA"
+  ],
+  "4565228": [
+   "Dylan Cozens",
+   "OTT"
+  ],
+  "4565255": [
+   "Shane Pinto",
+   "OTT"
+  ],
+  "4565262": [
+   "Jackson LaCombe",
+   "ANA"
+  ],
+  "4565270": [
+   "Drew Helleson",
+   "ANA"
+  ],
+  "4587815": [
+   "Samuel Ersson",
+   "OTT"
+  ],
+  "4587837": [
+   "Fabian Zetterlund",
+   "OTT"
+  ],
+  "4588165": [
+   "Lukas Dostal",
+   "ANA"
+  ],
+  "4588190": [
+   "Jordan Spence",
+   "OTT"
+  ],
+  "4697384": [
+   "Tim Stutzle",
+   "OTT"
+  ],
+  "4697386": [
+   "Jake Sanderson",
+   "OTT"
+  ],
+  "4697411": [
+   "Ridly Greig",
+   "OTT"
+  ],
+  "4697441": [
+   "Sam Colangelo",
+   "ANA"
+  ],
+  "4697448": [
+   "Tyler Kleven",
+   "OTT"
+  ],
+  "4712021": [
+   "Artem Zub",
+   "OTT"
+  ],
+  "4755684": [
+   "Judd Caulfield",
+   "ANA"
+  ],
+  "4755696": [
+   "Nikita Nesterenko",
+   "ANA"
+  ],
+  "4874721": [
+   "William Eklund",
+   "OTT"
+  ],
+  "4895214": [
+   "Jeff Malott",
+   "ANA"
+  ],
+  "4996085": [
+   "Tim Washe",
+   "ANA"
+  ],
+  "5080145": [
+   "Cutter Gauthier",
+   "ANA"
+  ],
+  "5080154": [
+   "Pavel Mintyukov",
+   "ANA"
+  ],
+  "5080210": [
+   "Noah Warren",
+   "ANA"
+  ],
+  "5080220": [
+   "Tristan Luneau",
+   "ANA"
+  ],
+  "5103702": [
+   "Tyson Hinds",
+   "ANA"
+  ],
+  "5136706": [
+   "Stephen Halliday",
+   "OTT"
+  ],
+  "5149153": [
+   "Leo Carlsson",
+   "ANA"
+  ],
+  "5173614": [
+   "Travis Mitchell",
+   "ANA"
+  ],
+  "5174232": [
+   "Nikolas Matinpalo",
+   "OTT"
+  ],
+  "5188523": [
+   "Ian Moore",
+   "ANA"
+  ],
+  "5216858": [
+   "Beckett Sennecke",
+   "ANA"
+  ],
+  "5216868": [
+   "Carter Yakemchuk",
+   "OTT"
+  ],
+  "5291946": [
+   "Roger McQueen",
+   "ANA"
+  ],
+  "5361658": [
+   "Nikita Klepov",
+   "ANA"
+  ],
+  "5452947": [
+   "Elijah Neuenschwander",
+   "ANA"
+  ]
  }
 }

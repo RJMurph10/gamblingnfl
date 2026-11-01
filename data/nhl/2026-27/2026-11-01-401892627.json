@@ -517,6 +517,298 @@
      "open": {}
     }
    ]
+  },
+  "latest": {
+   "at": "2026-11-01T01:53:12.077Z",
+   "count": 48,
+   "rows": [
+  {"a":null,"t":"1st Period Moneyline","ti":"139","cur":[null,190,null]},
+  {"a":null,"t":"1st Period Moneyline","ti":"139","cur":[null,170,null]},
+  {"a":null,"t":"1st Period Moneyline","ti":"139","cur":[null,180,null]},
+  {"a":null,"t":"1st Period Spread","ti":"140","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":null,"t":"1st Period Spread","ti":"140","op":[-0.5,null,null],"cur":[-0.5,null,null]},
+  {"a":null,"t":"1st Period Total Goals","ti":"141","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":null,"t":"1st Period Total Goals","ti":"141","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":null,"t":"2nd Period Moneyline","ti":"142","cur":[null,170,null]},
+  {"a":null,"t":"2nd Period Moneyline","ti":"142","cur":[null,160,null]},
+  {"a":null,"t":"2nd Period Moneyline","ti":"142","cur":[null,210,null]},
+  {"a":null,"t":"2nd Period Spread","ti":"143","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":null,"t":"2nd Period Spread","ti":"143","op":[-0.5,null,null],"cur":[-0.5,null,null]},
+  {"a":null,"t":"2nd Period Total Goals","ti":"144","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":null,"t":"2nd Period Total Goals","ti":"144","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":null,"t":"3rd Period Moneyline","ti":"145","cur":[null,165,null]},
+  {"a":null,"t":"3rd Period Moneyline","ti":"145","cur":[null,140,null]},
+  {"a":null,"t":"3rd Period Moneyline","ti":"145","cur":[null,250,null]},
+  {"a":null,"t":"3rd Period Spread","ti":"146","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":null,"t":"3rd Period Spread","ti":"146","op":[-0.5,null,null],"cur":[-0.5,null,null]},
+  {"a":null,"t":"3rd Period Total Goals","ti":"147","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":null,"t":"3rd Period Total Goals","ti":"147","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[1.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[2.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[3.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[4.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[0.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[5.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[1.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[2.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[3.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[4.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[0.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[5.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[1.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[2.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[3.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[4.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[0.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[5.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[1.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[2.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[3.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[4.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[0.5,null,null]},
+  {"a":null,"t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[5.5,null,null]},
+  {"a":null,"t":"Both Teams To Score","ti":"152","cur":[null,-1800,null]},
+  {"a":null,"t":"Both Teams To Score","ti":"152","cur":[null,650,null]},
+  {"a":null,"t":"Will There Be Overtime?","ti":"153","cur":[null,295,null]}
+ ]
   }
+ },
+ "names": {
+  "3870": [
+   "James Reimer",
+   "NYR"
+  ],
+  "5509": [
+   "Zach Hyman",
+   "EDM"
+  ],
+  "2335062": [
+   "Luke Glendening",
+   "NYR"
+  ],
+  "2517899": [
+   "Frederik Andersen",
+   "EDM"
+  ],
+  "2558631": [
+   "Mattias Ekholm",
+   "EDM"
+  ],
+  "2562618": [
+   "Connor Murphy",
+   "EDM"
+  ],
+  "2562624": [
+   "Ryan Nugent-Hopkins",
+   "EDM"
+  ],
+  "2562637": [
+   "Mika Zibanejad",
+   "NYR"
+  ],
+  "2590852": [
+   "J.T. Miller",
+   "NYR"
+  ],
+  "3042020": [
+   "Tristan Jarry",
+   "EDM"
+  ],
+  "3042062": [
+   "Jason Dickinson",
+   "EDM"
+  ],
+  "3042085": [
+   "Mattias Janmark",
+   "EDM"
+  ],
+  "3042095": [
+   "Oliver Bjorkstrand",
+   "NYR"
+  ],
+  "3067879": [
+   "Justin Dowling",
+   "NYR"
+  ],
+  "3069266": [
+   "Joonas Korpisalo",
+   "NYR"
+  ],
+  "3069614": [
+   "Matt Tomkins",
+   "EDM"
+  ],
+  "3114727": [
+   "Leon Draisaitl",
+   "EDM"
+  ],
+  "3114775": [
+   "Kasperi Kapanen",
+   "EDM"
+  ],
+  "3114995": [
+   "Marcus Pettersson",
+   "NYR"
+  ],
+  "3151136": [
+   "Jake Walman",
+   "EDM"
+  ],
+  "3151297": [
+   "Igor Shesterkin",
+   "NYR"
+  ],
+  "3895074": [
+   "Connor McDavid",
+   "EDM"
+  ],
+  "3941965": [
+   "Mathieu Joseph",
+   "EDM"
+  ],
+  "3942033": [
+   "Ryan Shea",
+   "EDM"
+  ],
+  "3942292": [
+   "Vladislav Gavrikov",
+   "NYR"
+  ],
+  "4024980": [
+   "Max Jones",
+   "EDM"
+  ],
+  "4024997": [
+   "Trent Frederic",
+   "EDM"
+  ],
+  "4063502": [
+   "Taylor Raddysh",
+   "NYR"
+  ],
+  "4197146": [
+   "Adam Fox",
+   "NYR"
+  ],
+  "4233619": [
+   "Urho Vaakanainen",
+   "NYR"
+  ],
+  "4233720": [
+   "Eeli Tolvanen",
+   "NYR"
+  ],
+  "4233882": [
+   "Alex Formenton",
+   "EDM"
+  ],
+  "4331611": [
+   "Alec Regula",
+   "EDM"
+  ],
+  "4352722": [
+   "Evan Bouchard",
+   "EDM"
+  ],
+  "4352804": [
+   "Joe Veleno",
+   "NYR"
+  ],
+  "4378683": [
+   "Sean Durzi",
+   "NYR"
+  ],
+  "4565231": [
+   "Vasily Podkolzin",
+   "EDM"
+  ],
+  "4587566": [
+   "Ty Emberson",
+   "EDM"
+  ],
+  "4587588": [
+   "Pavel Dorofeyev",
+   "NYR"
+  ],
+  "4588331": [
+   "Filip Hallander",
+   "EDM"
+  ],
+  "4588750": [
+   "Tye Kartye",
+   "NYR"
+  ],
+  "4697382": [
+   "Alexis Lafreniere",
+   "NYR"
+  ],
+  "4697402": [
+   "Braden Schneider",
+   "NYR"
+  ],
+  "4697403": [
+   "Shakir Mukhamadullin",
+   "EDM"
+  ],
+  "4697468": [
+   "Will Cuylle",
+   "NYR"
+  ],
+  "4697705": [
+   "Dylan Garand",
+   "NYR"
+  ],
+  "4697820": [
+   "Matt Rempe",
+   "NYR"
+  ],
+  "4867883": [
+   "Juuso Parssinen",
+   "NYR"
+  ],
+  "4874882": [
+   "Scott Morrow",
+   "NYR"
+  ],
+  "4874915": [
+   "Vincent Iorio",
+   "NYR"
+  ],
+  "4874940": [
+   "Colton Dach",
+   "EDM"
+  ],
+  "4894487": [
+   "Devon Levi",
+   "EDM"
+  ],
+  "5080153": [
+   "Matt Savoie",
+   "EDM"
+  ],
+  "5080179": [
+   "Isaac Howard",
+   "EDM"
+  ],
+  "5080232": [
+   "Adam Sykora",
+   "NYR"
+  ],
+  "5149204": [
+   "Gabe Perreault",
+   "NYR"
+  ],
+  "5188370": [
+   "Noah Laba",
+   "NYR"
+  ],
+  "5206840": [
+   "Owen Michaels",
+   "EDM"
+  ],
+  "5334662": [
+   "Alberts Smits",
+   "NYR"
+  ]
  }
 }
