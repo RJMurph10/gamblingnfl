@@ -19,7 +19,7 @@ for (const [s, l] of [["football", "nfl"], ["basketball", "nba"], ["hockey", "nh
     const priced = full.filter((x) => JSON.stringify(x).match(/american|moneyLine|"odds"/i));
     const byType = {};
     for (const x of full) { const t = x?.type?.name ?? "?"; byType[t] ??= { n: 0, priced: 0 }; byType[t].n++; if (JSON.stringify(x).match(/american/i)) byType[t].priced++; }
-    res.books[pid] = { status: pb._status ?? 200, count: pb.count ?? items.length, refOnly: items.filter((x) => !x.type && x.$ref).length, pricedSample: priced.slice(0, 2), unpricedSample: full.filter((x) => !JSON.stringify(x).match(/american/i)).slice(0, 1), byType };
+    res.books[pid] = { rawPairs: full.filter((x) => x?.type?.name === "Total Points" || x?.type?.name === "Total Passing Yards (incl. overtime)").slice(0, 6), status: pb._status ?? 200, count: pb.count ?? items.length, refOnly: items.filter((x) => !x.type && x.$ref).length, pricedSample: priced.slice(0, 2), unpricedSample: full.filter((x) => !JSON.stringify(x).match(/american/i)).slice(0, 1), byType };
   }
   // also the site summary pickcenter / odds for player props?
   const sum = await get(`https://site.api.espn.com/apis/site/v2/sports/${s}/${l}/summary?event=${ev.id}`);
