@@ -85,6 +85,16 @@ function mainLines(rows) {
     const [line, o, u] = cur;
     const opened = r.op?.[0] ?? null;
     const key = `${r.a}|${r.t}`;
+    // unlabeled DraftKings sides (px = [current, open]): first item is the over, the next the under
+    const side = o == null && u == null && r.px ? r.px[0] : null;
+    if (side != null) {
+      const pk = `${key}|${line}`;
+      const p = pairs.get(pk) ?? { a: r.a, t: r.t, line, opened, o: null, u: null };
+      if (p.o == null) p.o = side;
+      else if (p.u == null) p.u = side;
+      pairs.set(pk, p);
+      continue;
+    }
     if (o == null && u == null) {
       const m = bare.get(key) ?? new Map();
       const e = m.get(line) ?? { n: 0, opened };

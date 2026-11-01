@@ -201,6 +201,15 @@ export function compactProp(x) {
     const v = block(x?.odds) ?? block(x);
     if (v) row.cur = v;
   }
+  // DraftKings (2026) sends each side of an over/under as its own item with the price in
+  // odds.american {value, open} and no over/under label: keep it as px = [current, open]. The
+  // builders pair them in feed order (over first, then under).
+  const am = x?.odds?.american;
+  if (am && typeof am === "object" && !row.cur?.[1] && !row.cur?.[2]) {
+    const cur = american(am.value);
+    const open = american(am.open);
+    if (cur != null || open != null) row.px = [cur, open];
+  }
   return row;
 }
 

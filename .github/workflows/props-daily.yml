@@ -7,7 +7,7 @@ on:
   schedule:
     - cron: "23 13 * * *" # 8:23am Central
   push:
-    branches: [main, prop-history]
+    branches: [main, prop-history, prop-prices]
     paths: [scripts/line-history/props-daily.trigger]
   workflow_dispatch: {}
 

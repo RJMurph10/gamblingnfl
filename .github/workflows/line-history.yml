@@ -8,7 +8,7 @@ on:
     - cron: "17 * * * *" # hourly
   workflow_dispatch: {}
   push:
-    branches: [upcoming-from-logger]
+    branches: [upcoming-from-logger, prop-prices]
     paths: [scripts/line-history/upcoming.trigger]
 
 permissions:
