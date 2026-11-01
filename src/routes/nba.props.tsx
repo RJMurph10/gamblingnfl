@@ -146,7 +146,7 @@ function NbaPropsPage() {
         title="Player Props"
         aside={
           <Link to="/nba/prop-history" className="font-mono text-[11px] uppercase tracking-wider text-acc">
-            Prop history →
+            Prop lines →
           </Link>
         }
       />

@@ -3,11 +3,15 @@
  * prices) next to what the player actually did. NBA from 2022-23, NFL from 2024 (2022-23 has mostly
  * touchdown props), refreshed daily during the season.
  */
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { PageTitle, Panel, PanelHeader } from "@/components/shared/booth";
-import { getPropHistory } from "@/lib/shared/prop-history.functions";
-import type { PropHistoryGame, PropHistoryRow } from "@/lib/shared/prop-history.server";
+import { getPropHistory, getUpcomingProps } from "@/lib/shared/prop-history.functions";
+import type {
+  PropHistoryGame,
+  PropHistoryRow,
+  UpcomingPropGame,
+} from "@/lib/shared/prop-history.server";
 
 const american = (n: number | null) => (n == null ? "—" : n > 0 ? `+${n}` : String(n));
 
@@ -78,7 +82,7 @@ function GameChip({
   );
 }
 
-export function PropHistoryPage({ league }: { league: "nba" | "nfl" }) {
+function PastResults({ league, tabs }: { league: "nba" | "nfl"; tabs: ReactNode }) {
   const [season, setSeason] = useState<string | undefined>();
   const [day, setDay] = useState<string | undefined>();
   const [gameId, setGameId] = useState<string | undefined>();
@@ -124,7 +128,7 @@ export function PropHistoryPage({ league }: { league: "nba" | "nfl" }) {
     <>
       <PageTitle
         eyebrow={`${L} · Player props`}
-        title="Prop history"
+        title="Prop lines"
         aside={
           data?.seasons?.length ? (
             <select
@@ -145,6 +149,7 @@ export function PropHistoryPage({ league }: { league: "nba" | "nfl" }) {
           ) : null
         }
       />
+      {tabs}
       <p className="-mt-2 mb-5 max-w-3xl text-sm text-mute">
         Every player prop line the sportsbook posted, at its opening line and price, next to what
         the player actually did.{" "}
@@ -296,5 +301,203 @@ export function PropHistoryPage({ league }: { league: "nba" | "nfl" }) {
         </Panel>
       ) : null}
     </>
+  );
+}
+
+const kickoff = (iso: string) =>
+  new Date(iso).toLocaleString([], {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+
+function Upcoming({ league, tabs }: { league: "nba" | "nfl"; tabs: ReactNode }) {
+  const [gameId, setGameId] = useState<string | undefined>();
+  const [market, setMarket] = useState("All");
+  const [search, setSearch] = useState("");
+  const q = useQuery({
+    queryKey: ["upcoming-props", league],
+    queryFn: () => getUpcomingProps({ data: { league } }),
+    staleTime: 2 * 60_000,
+    refetchInterval: 5 * 60_000,
+  });
+  const games: UpcomingPropGame[] = useMemo(() => q.data ?? [], [q.data]);
+  const game = games.find((g) => g.id === gameId) ?? games[0];
+  const markets = useMemo(
+    () => ["All", ...Array.from(new Set((game?.props ?? []).map((p) => p[2]))).sort()],
+    [game],
+  );
+  const rows = useMemo(() => {
+    const s = search.trim().toLowerCase();
+    return (game?.props ?? []).filter(
+      (p) => (market === "All" || p[2] === market) && (!s || p[0].toLowerCase().includes(s)),
+    );
+  }, [game, market, search]);
+  const L = league.toUpperCase();
+  return (
+    <>
+      <PageTitle eyebrow={`${L} · Player props`} title="Prop lines" />
+      {tabs}
+      <p className="-mt-2 mb-5 max-w-3xl text-sm text-mute">
+        DraftKings player lines for upcoming games as they stand now, with where each line opened.
+        Refreshes every few minutes; lines appear a day or two before the game.
+      </p>
+      <Panel padded={false} className="mb-6">
+        <div className="flex gap-2 overflow-x-auto px-4 py-3">
+          {games.map((g) => (
+            <button
+              key={g.id}
+              type="button"
+              onClick={() => {
+                setGameId(g.id);
+                setMarket("All");
+              }}
+              className={`shrink-0 rounded-lg px-3 py-2 text-left font-mono text-xs ring-1 transition ${
+                g.id === game?.id
+                  ? "bg-acc/10 text-acc ring-acc/30"
+                  : "bg-panel2/40 text-mute ring-line/10 hover:text-acc"
+              }`}
+            >
+              <span className="font-semibold text-foreground">
+                {g.away.abbr} @ {g.home.abbr}
+              </span>
+              <span className="ml-2 text-[10px] text-faint" suppressHydrationWarning>
+                {kickoff(g.date)} · {g.props.length} props
+              </span>
+            </button>
+          ))}
+          {!games.length ? (
+            <p className="font-mono text-xs text-mute">
+              {q.isLoading ? "Loading lines…" : "No player lines posted for upcoming games yet."}
+            </p>
+          ) : null}
+        </div>
+      </Panel>
+      {game ? (
+        <Panel padded={false}>
+          <PanelHeader
+            title={`${game.away.name} @ ${game.home.name}`}
+            aside={
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Find a player"
+                className="w-40 rounded-lg bg-panel2 px-3 py-1.5 font-mono text-xs ring-1 ring-line/10"
+              />
+            }
+          />
+          <div className="flex gap-2 overflow-x-auto px-4 py-3">
+            {markets.map((m) => (
+              <button
+                key={m}
+                type="button"
+                onClick={() => setMarket(m)}
+                className={`shrink-0 rounded-full px-3 py-1 font-mono text-[11px] uppercase tracking-wider ring-1 ${
+                  market === m
+                    ? "bg-acc/10 text-acc ring-acc/25"
+                    : "bg-panel2 text-mute ring-line/10 hover:text-acc"
+                }`}
+              >
+                {m}
+              </button>
+            ))}
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[620px] text-sm">
+              <thead>
+                <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
+                  <th className="px-4 py-2 font-normal">Player</th>
+                  <th className="px-2 py-2 font-normal">Prop</th>
+                  <th className="px-2 py-2 text-right font-normal">Line</th>
+                  <th className="px-2 py-2 text-right font-normal">Opened</th>
+                  <th className="px-2 py-2 text-right font-normal">Move</th>
+                  <th className="px-2 py-2 text-right font-normal">Over</th>
+                  <th className="px-4 py-2 text-right font-normal">Under</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-line/5">
+                {rows.map((r, i) => {
+                  const move = r[6] == null ? null : Math.round((r[3] - r[6]) * 10) / 10;
+                  return (
+                    <tr key={`${r[0]}-${r[2]}-${i}`} className="hover:bg-line/5">
+                      <td className="px-4 py-2">
+                        {r[0]} <span className="font-mono text-[10px] text-faint">{r[1]}</span>
+                      </td>
+                      <td className="px-2 py-2 font-mono text-xs text-mute">{r[2]}</td>
+                      <td className="px-2 py-2 text-right font-mono text-xs font-semibold tabular-nums">
+                        {r[3]}
+                      </td>
+                      <td className="px-2 py-2 text-right font-mono text-xs tabular-nums text-mute">
+                        {r[6] ?? "—"}
+                      </td>
+                      <td
+                        className={`px-2 py-2 text-right font-mono text-xs tabular-nums ${
+                          move ? (move > 0 ? "text-win" : "text-loss") : "text-faint"
+                        }`}
+                      >
+                        {move ? `${move > 0 ? "▲" : "▼"} ${Math.abs(move)}` : "—"}
+                      </td>
+                      <td className="px-2 py-2 text-right font-mono text-xs tabular-nums text-mute">
+                        {american(r[4])}
+                      </td>
+                      <td className="px-4 py-2 text-right font-mono text-xs tabular-nums text-mute">
+                        {american(r[5])}
+                      </td>
+                    </tr>
+                  );
+                })}
+                {!rows.length ? (
+                  <tr>
+                    <td colSpan={7} className="px-4 py-6 text-center font-mono text-xs text-mute">
+                      No props match.
+                    </td>
+                  </tr>
+                ) : null}
+              </tbody>
+            </table>
+          </div>
+          <p className="px-4 py-3 font-mono text-[10px] text-faint">
+            DraftKings via ESPN. "—" for prices means the line is posted without a price in the
+            feed.
+          </p>
+        </Panel>
+      ) : null}
+    </>
+  );
+}
+
+export function PropHistoryPage({ league }: { league: "nba" | "nfl" }) {
+  const [tab, setTab] = useState<"upcoming" | "past">("upcoming");
+  const tabs = (
+    <div className="mb-4 flex gap-2" role="tablist" aria-label="Prop lines">
+      {(
+        [
+          ["upcoming", "Upcoming games"],
+          ["past", "Past results"],
+        ] as const
+      ).map(([k, label]) => (
+        <button
+          key={k}
+          type="button"
+          role="tab"
+          aria-selected={tab === k}
+          onClick={() => setTab(k)}
+          className={`rounded-full px-3 py-1 font-mono text-[11px] uppercase tracking-wider ring-1 ${
+            tab === k
+              ? "bg-acc/10 text-acc ring-acc/25"
+              : "bg-panel2 text-mute ring-line/10 hover:text-acc"
+          }`}
+        >
+          {label}
+        </button>
+      ))}
+    </div>
+  );
+  return tab === "upcoming" ? (
+    <Upcoming league={league} tabs={tabs} />
+  ) : (
+    <PastResults league={league} tabs={tabs} />
   );
 }
