@@ -27,7 +27,7 @@ function Matchup({ game }: { game: CbbGame }) {
       to="/cbb/games/$gameId"
       params={{ gameId: game.id }}
       className="grid w-full grid-cols-[1fr_auto_1fr] items-center gap-1.5 font-mono font-semibold tabular-nums hover:text-acc"
-      title={`${game.away.team.name} ${game.neutral ? "vs" : "at"} ${game.home.team.name}`}
+      title={`${game.away.team.name} at ${game.home.team.name}`}
     >
       <span className="flex justify-end">
         <span className="inline-flex items-center gap-1.5">
@@ -35,7 +35,7 @@ function Matchup({ game }: { game: CbbGame }) {
           <RankedLogo side={game.away} />
         </span>
       </span>
-      <span className="text-center font-sans font-normal text-mute">{game.neutral ? "vs" : "@"}</span>
+      <span className="text-center font-sans font-normal text-mute">@</span>
       <span className="flex justify-start">
         <span className="relative inline-flex items-center gap-1.5">
           <RankedLogo side={game.home} />

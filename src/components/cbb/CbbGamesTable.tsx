@@ -103,7 +103,7 @@ function Row({ game, row, showDate }: { game: CbbGame; row?: CbbModelRow; showDa
             <CbbTeamName side={game.away} />
           </span>
           {started ? <span className="font-mono tabular-nums">{game.away.score}</span> : null}
-          <span className="text-faint">{game.neutral ? "vs" : "@"}</span>
+          <span className="text-faint">@</span>
           <CbbLogo team={game.home.team} className="size-5" />
           <span className={`max-w-[9rem] truncate ${winner === "home" ? "font-semibold" : ""}`}>
             <CbbTeamName side={game.home} />

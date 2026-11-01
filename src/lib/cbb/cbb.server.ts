@@ -22,6 +22,7 @@ import {
 import { readFinal, writeFinal } from "../shared/final-cache.server";
 
 const SITE = "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball";
+const CORE = "https://sports.core.api.espn.com/v2/sports/basketball/leagues/mens-college-basketball";
 const FILES = "https://raw.githubusercontent.com/RJMurph10/gamblingnfl/props-site/cbb";
 
 const MINUTE = 60_000;
@@ -316,6 +317,9 @@ async function loadSchedule(): Promise<CbbSchedule> {
     const stored = byId.get(g.id);
     byId.set(g.id, { ...g, odds: mergeOdds(g.odds, stored?.odds) });
   }
+  // only the recent days: older games without a line in the season file never had one
+  const recent = [...byId.values()].filter((g) => Date.parse(g.date) > now.getTime() - 3 * DAY);
+  await withClosingOdds(recent);
   return {
     season,
     games: [...byId.values()].sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id)),
@@ -323,6 +327,67 @@ async function loadSchedule(): Promise<CbbSchedule> {
     conferences,
     updated: file?.updated ?? null,
   };
+}
+
+/* ---------- closing lines for started games ---------- */
+
+// ESPN's scoreboard drops the lines once a game tips off, and the season file only has games the
+// hourly line saver has finished with. Started games missing a line get it from ESPN's core odds
+// feed (DraftKings first, then ESPN BET, then any book; never a live in-game line), a bounded
+// number per load, newest first.
+const oddsLookups = new Map<string, { at: number; odds: CbbOdds | null }>();
+const LOOKUPS_PER_LOAD = 40;
+
+async function loadClosingOdds(id: string): Promise<CbbOdds | null> {
+  const list = await fetchJson(`${CORE}/events/${id}/competitions/${id}/odds?limit=50`);
+  const items: any[] = await Promise.all(
+    (Array.isArray(list?.items) ? list.items : []).map((it: any) =>
+      it?.$ref && Object.keys(it).length === 1 ? fetchJson(it.$ref).catch(() => null) : it,
+    ),
+  );
+  const rank = (b: any) => {
+    const pid = String(b?.provider?.id ?? "");
+    return ["100", "40"].includes(pid) ? 0 : pid === "58" ? 1 : 2;
+  };
+  const books = items
+    .filter(Boolean)
+    .filter((b) => !/live|accuscore|numberfire|teamrankings/i.test(String(b?.provider?.name ?? "")))
+    .sort((a, b) => rank(a) - rank(b));
+  let fallback: CbbOdds | null = null;
+  for (const b of books) {
+    const o = parseOdds(b);
+    if (!o) continue;
+    if (o.spread !== null && o.total !== null) return o;
+    fallback ??= o;
+  }
+  return fallback;
+}
+
+async function closingOdds(g: CbbGame): Promise<CbbOdds | null> {
+  const hit = oddsLookups.get(g.id);
+  const ttl = hit?.odds ? 12 * HOUR : g.status === "live" ? 2 * MINUTE : 10 * MINUTE;
+  if (hit && Date.now() - hit.at < ttl) return hit.odds;
+  const odds = await loadClosingOdds(g.id).catch(() => null);
+  oddsLookups.set(g.id, { at: Date.now(), odds });
+  return odds;
+}
+
+async function withClosingOdds(games: CbbGame[]): Promise<void> {
+  const missing = games
+    .filter((g) => (g.status === "live" || g.status === "final") && (g.odds?.spread == null || g.odds?.total == null))
+    .sort((a, b) => b.date.localeCompare(a.date));
+  const known = missing.filter((g) => oddsLookups.has(g.id));
+  const todo = [...known, ...missing.filter((g) => !oddsLookups.has(g.id)).slice(0, LOOKUPS_PER_LOAD)];
+  let next = 0;
+  await Promise.all(
+    Array.from({ length: 8 }, async () => {
+      while (next < todo.length) {
+        const g = todo[next++];
+        const o = await closingOdds(g);
+        if (o) g.odds = mergeOdds(g.odds, o);
+      }
+    }),
+  );
 }
 
 export function fetchCbbSchedule(): Promise<CbbSchedule> {
