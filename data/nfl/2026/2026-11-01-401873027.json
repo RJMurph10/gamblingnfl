@@ -7,13 +7,13 @@
   "id": "5",
   "abbr": "CLE",
   "name": "Cleveland Browns",
-  "score": 3
+  "score": 6
  },
  "home": {
   "id": "23",
   "abbr": "PIT",
   "name": "Pittsburgh Steelers",
-  "score": 10
+  "score": 20
  },
  "neutral": false,
  "venue": "Acrisure Stadium",

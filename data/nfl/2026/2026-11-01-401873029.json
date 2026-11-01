@@ -7,13 +7,13 @@
   "id": "13",
   "abbr": "LV",
   "name": "Las Vegas Raiders",
-  "score": 14
+  "score": 21
  },
  "home": {
   "id": "20",
   "abbr": "NYJ",
   "name": "New York Jets",
-  "score": 13
+  "score": 29
  },
  "neutral": false,
  "venue": "MetLife Stadium",
