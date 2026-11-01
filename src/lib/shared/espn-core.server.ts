@@ -332,6 +332,9 @@ export async function fetchHistoricalOdds(
   return value;
 }
 
+/** Most odds lookups one schedule load makes (the rest wait for the next load). */
+const LOOKUPS_PER_LOAD = 48;
+
 /** Odds of finished games never change, so they're kept long-term (shared with every server instance). */
 const finalOddsStores = {
   nfl: finalLinesStore<HistoricalOdds>("nfl-odds"),
@@ -367,17 +370,25 @@ export async function backfillHistoricalOdds(
     if (hit) apply(g, hit);
     else toFetch.push(g);
   }
+  // Newest first, and only so many per load: a fresh server reloading a whole season (hundreds of
+  // FCS games ESPN never lists lines for) otherwise fires so many requests the schedule load fails,
+  // and pages keep showing an old copy (Saturday's games still "live" on Sunday). The rest are
+  // looked up on the next loads.
+  toFetch.sort((a, b) => (b.kickoffIso ?? "").localeCompare(a.kickoffIso ?? ""));
+  const batch = toFetch.slice(0, LOOKUPS_PER_LOAD);
   const found: { id: string; date: string; odds: HistoricalOdds }[] = [];
   const prefix = league === "cfb" ? /^cfb-/ : /^espn-/;
-  for (let i = 0; i < toFetch.length; i += 16) {
+  for (let i = 0; i < batch.length; i += 16) {
     await Promise.all(
-      toFetch.slice(i, i + 16).map(async (g) => {
+      batch.slice(i, i + 16).map(async (g) => {
         try {
           const odds = await fetchHistoricalOdds(g.id.replace(prefix, ""), league);
           apply(g, odds);
-          if (g.status === "final" && (odds.spread || odds.total !== undefined)) {
-            found.push({ id: g.id, date: dateOf(g), odds });
-          }
+          const has = Boolean(odds.spread) || odds.total !== undefined;
+          // A game finished over a day ago with no lines never gets any (mostly FCS opponents):
+          // remember that too, so it isn't looked up again on every load.
+          const old = Date.parse(g.kickoffIso ?? "") < Date.now() - 36 * 3_600_000;
+          if (g.status === "final" && (has || old)) found.push({ id: g.id, date: dateOf(g), odds });
         } catch {
           // leave the dash; it retries the next time the schedule reloads
         }
