@@ -7,18 +7,18 @@
   "id": "17",
   "abbr": "BKN",
   "name": "Brooklyn Nets",
-  "score": 0
+  "score": 24
  },
  "home": {
   "id": "11",
   "abbr": "IND",
   "name": "Indiana Pacers",
-  "score": 0
+  "score": 21
  },
  "neutral": false,
  "venue": "Gainbridge Fieldhouse",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T01:53:12.077Z",

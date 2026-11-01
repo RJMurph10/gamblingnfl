@@ -7,13 +7,13 @@
   "id": "12",
   "abbr": "KC",
   "name": "Kansas City Chiefs",
-  "score": 7
+  "score": 14
  },
  "home": {
   "id": "7",
   "abbr": "DEN",
   "name": "Denver Broncos",
-  "score": 3
+  "score": 13
  },
  "neutral": false,
  "venue": "Empower Field at Mile High",
