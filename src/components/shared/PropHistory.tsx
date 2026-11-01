@@ -10,8 +10,16 @@ import { getPropHistory, getUpcomingProps } from "@/lib/shared/prop-history.func
 import type {
   PropHistoryGame,
   PropHistoryRow,
+  PropLeague,
   UpcomingPropGame,
 } from "@/lib/shared/prop-history.server";
+
+const COVERAGE: Record<PropLeague, string> = {
+  nfl: "Yardage, reception and attempt props from 2024; 2022–23 has mostly touchdown props.",
+  nba: "From the 2022–23 season on.",
+  nhl: "Points, goals, assists, shots, hits, blocks and saves from the 2023–24 season on.",
+  mlb: "Hitter props (hits, home runs, runs, RBIs) and pitcher props (strikeouts, outs, earned runs) from 2024 on.",
+};
 
 const american = (n: number | null) => (n == null ? "—" : n > 0 ? `+${n}` : String(n));
 
@@ -82,7 +90,7 @@ function GameChip({
   );
 }
 
-function PastResults({ league, tabs }: { league: "nba" | "nfl"; tabs: ReactNode }) {
+function PastResults({ league, tabs }: { league: PropLeague; tabs: ReactNode }) {
   const [season, setSeason] = useState<string | undefined>();
   const [day, setDay] = useState<string | undefined>();
   const [gameId, setGameId] = useState<string | undefined>();
@@ -152,11 +160,7 @@ function PastResults({ league, tabs }: { league: "nba" | "nfl"; tabs: ReactNode 
       {tabs}
       <p className="-mt-2 mb-5 max-w-3xl text-sm text-mute">
         Every player prop line the sportsbook posted, at its opening line and price, next to what
-        the player actually did.{" "}
-        {league === "nfl"
-          ? "Yardage, reception and attempt props from 2024; 2022–23 has mostly touchdown props."
-          : "From the 2022–23 season on."}{" "}
-        This season updates daily.
+        the player actually did. {COVERAGE[league]} This season updates daily.
       </p>
 
       <Panel padded={false} className="mb-6">
@@ -313,7 +317,7 @@ const kickoff = (iso: string) =>
     minute: "2-digit",
   });
 
-function Upcoming({ league, tabs }: { league: "nba" | "nfl"; tabs: ReactNode }) {
+function Upcoming({ league, tabs }: { league: PropLeague; tabs: ReactNode }) {
   const [gameId, setGameId] = useState<string | undefined>();
   const [market, setMarket] = useState("All");
   const [search, setSearch] = useState("");
@@ -342,7 +346,8 @@ function Upcoming({ league, tabs }: { league: "nba" | "nfl"; tabs: ReactNode }) 
       {tabs}
       <p className="-mt-2 mb-5 max-w-3xl text-sm text-mute">
         DraftKings player lines for upcoming games, with where each line opened. Updated every few
-        hours, and every hour on game day; lines appear a day or two before the game.
+        hours, and hourly just before games. NFL lines appear a few days early; NBA, NHL and MLB
+        lines usually on game day.
       </p>
       <Panel padded={false} className="mb-6">
         <div className="flex gap-2 overflow-x-auto px-4 py-3">
@@ -468,7 +473,7 @@ function Upcoming({ league, tabs }: { league: "nba" | "nfl"; tabs: ReactNode }) 
   );
 }
 
-export function PropHistoryPage({ league }: { league: "nba" | "nfl" }) {
+export function PropHistoryPage({ league }: { league: PropLeague }) {
   const [tab, setTab] = useState<"upcoming" | "past">("upcoming");
   const tabs = (
     <div className="mb-4 flex gap-2" role="tablist" aria-label="Prop lines">

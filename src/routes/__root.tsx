@@ -48,6 +48,7 @@ const mlbNav = [
   { to: "/mlb", label: "Dashboard" },
   { to: "/mlb/teams", label: "Teams" },
   { to: "/mlb/games", label: "Games" },
+  { to: "/mlb/props", label: "Props" },
   { to: "/mlb/model", label: "Model" },
 ] as const;
 

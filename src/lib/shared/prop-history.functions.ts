@@ -7,7 +7,7 @@ export const getPropHistory = createServerFn({ method: "GET" })
   .inputValidator((data) =>
     z
       .object({
-        league: z.enum(["nba", "nfl"]),
+        league: z.enum(["nba", "nfl", "nhl", "mlb"]),
         season: z.string().max(10).optional(),
         day: z.string().max(10).optional(),
       })
@@ -17,5 +17,5 @@ export const getPropHistory = createServerFn({ method: "GET" })
 
 /** Upcoming games with the DraftKings player lines posted so far (current and opening line). */
 export const getUpcomingProps = createServerFn({ method: "GET" })
-  .inputValidator((data) => z.object({ league: z.enum(["nba", "nfl"]) }).parse(data))
+  .inputValidator((data) => z.object({ league: z.enum(["nba", "nfl", "nhl", "mlb"]) }).parse(data))
   .handler(async ({ data }) => fetchUpcomingProps(data.league));

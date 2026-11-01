@@ -23,7 +23,7 @@ export const LEAGUES: League[] = [
   { id: "cfb", short: "CFB", name: "College football (FBS)", prefix: "/cfb", live: true },
   { id: "nba", short: "NBA", name: "NBA", prefix: "/nba", live: true },
   { id: "nhl", short: "NHL", name: "NHL", prefix: "/nhl", live: true, sections: ["teams", "players", "games", "props", "model"] },
-  { id: "mlb", short: "MLB", name: "MLB", prefix: "/mlb", live: true, sections: ["teams", "games", "model"] },
+  { id: "mlb", short: "MLB", name: "MLB", prefix: "/mlb", live: true, sections: ["teams", "games", "props", "model"] },
 ];
 
 export const leagueById = (id: LeagueId) => LEAGUES.find((l) => l.id === id)!;

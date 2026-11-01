@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageTitle } from "@/components/shared/booth";
 import { NhlPropsBoard } from "@/components/nhl/NhlPropsBoard";
 import { NhlSlate } from "@/components/nhl/NhlSlate";
@@ -25,7 +25,15 @@ function NhlPropsPage() {
   const { games, isLoading, isError } = useNhlSchedule(60_000);
   return (
     <>
-      <PageTitle eyebrow="NHL" title="Player Props" />
+      <PageTitle
+        eyebrow="NHL"
+        title="Player Props"
+        aside={
+          <Link to="/nhl/prop-history" className="font-mono text-[11px] uppercase tracking-wider text-acc">
+            Prop lines →
+          </Link>
+        }
+      />
       <NhlSlate
         games={games}
         isLoading={isLoading}

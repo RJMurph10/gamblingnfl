@@ -26,7 +26,7 @@ jobs:
       fail-fast: false
       max-parallel: 1
       matrix:
-        league: [nba, nfl]
+        league: [nba, nfl, nhl, mlb]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -41,14 +41,17 @@ jobs:
           set -e
           read SEASON START <<< "$(node -e '
             const lg = process.argv[1]; const d = new Date(); const y = d.getUTCFullYear(), m = d.getUTCMonth() + 1;
-            if (lg === "nfl" || lg === "cfb") { const s = m <= 2 ? y - 1 : y; console.log(s, `${s}-09-01`); }
+            if (lg === "mlb") { console.log(m >= 3 && m <= 10 ? `${y} ${y}-03-15` : "off off"); }
+            else if (lg === "nfl" || lg === "cfb") { const s = m <= 2 ? y - 1 : y; console.log(s, `${s}-09-01`); }
             else { const s = m <= 7 ? y - 1 : y; console.log(`${s}-${String(s + 1).slice(2)}`, `${s}-10-01`); }
           ' ${{ matrix.league }})"
           TODAY=$(date -u +%Y-%m-%d)
           echo "season=$SEASON" >> "$GITHUB_OUTPUT"
+          if [ "$SEASON" = "off" ]; then echo "offseason"; mkdir -p work/ph; exit 0; fi
           node app/scripts/line-history/backfill-props.mjs --league ${{ matrix.league }} --from "$START" --to "$TODAY" --out work/data
           node app/scripts/line-history/build-props-history.mjs --league ${{ matrix.league }} --data work/data --out work/ph
       - name: Publish
+        if: steps.season.outputs.season != 'off'
         run: |
           set -e
           url="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
