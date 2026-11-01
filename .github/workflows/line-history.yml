@@ -8,7 +8,7 @@ on:
     - cron: "17 * * * *" # hourly
   workflow_dispatch: {}
   push:
-    branches: [upcoming-from-logger, prop-prices]
+    branches: [upcoming-from-logger, prop-prices, cbb]
     paths: [scripts/line-history/upcoming.trigger]
 
 permissions:
@@ -69,6 +69,8 @@ jobs:
             for lg in nba nfl nhl mlb; do
               node app/scripts/line-history/build-upcoming.mjs --league $lg --data data-repo/data --out site-repo --prices site-repo/$lg/odds-api
             done
+            # men's college basketball: the season's finished games with closing lines
+            node app/scripts/cbb/build-season.mjs --data data-repo/data --out site-repo || echo "CBB season build failed"
             cd site-repo
             git config user.name "line-history-bot"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
