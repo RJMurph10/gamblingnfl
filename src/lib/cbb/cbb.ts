@@ -66,6 +66,8 @@ export interface CbbGame {
   /** e.g. "Maui Invitational", "NCAA Tournament - East Region - 1st Round". */
   note?: string;
   venue?: string;
+  /** "Durham, NC". */
+  location?: string;
   broadcast?: string;
   away: CbbSide;
   home: CbbSide;

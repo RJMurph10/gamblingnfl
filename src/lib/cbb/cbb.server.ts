@@ -124,7 +124,8 @@ interface SeasonFile {
   season?: string;
   conferences?: Record<string, [string, string]>;
   teams?: Record<string, [string, string, string, string, string, string, string]>;
-  games?: [string, string, string, number, string, number, number, number, number, (number | null)[] | null, string?][];
+  /** …, line, note ("" when none), location ("City, ST"). */
+  games?: [string, string, string, number, string, number, number, number, number, (number | null)[] | null, string?, string?][];
 }
 
 function teamFromFile(id: string, t: SeasonFile["teams"] extends Record<string, infer V> | undefined ? V : never): CbbTeamRef {
@@ -204,6 +205,8 @@ export function parseEvent(e: any): CbbGame | null {
   const broadcast = comp.broadcasts?.[0]?.names?.[0] ?? comp.geoBroadcasts?.[0]?.media?.shortName;
   const note = comp.notes?.[0]?.headline ?? e.notes?.[0]?.headline;
   const odds = parseOdds(Array.isArray(comp.odds) ? comp.odds[0] : undefined);
+  const addr = comp.venue?.address;
+  const location = [addr?.city, addr?.state].filter(Boolean).join(", ");
   return {
     id: String(e.id),
     date: String(e.date ?? comp.date ?? ""),
@@ -216,6 +219,7 @@ export function parseEvent(e: any): CbbGame | null {
     conference: Boolean(comp.conferenceCompetition),
     ...(note ? { note: String(note) } : {}),
     ...(comp.venue?.fullName ? { venue: String(comp.venue.fullName) } : {}),
+    ...(location ? { location } : {}),
     ...(broadcast ? { broadcast: String(broadcast) } : {}),
     away: side(away),
     home: side(home),
@@ -244,7 +248,7 @@ function fetchDay(day: Date): Promise<CbbGame[]> {
 /* ---------- the schedule ---------- */
 
 function gameFromRow(row: NonNullable<SeasonFile["games"]>[number], teams: Map<string, CbbTeamRef>): CbbGame {
-  const [id, date, hId, hScore, aId, aScore, neutral, conf, type, line, note] = row;
+  const [id, date, hId, hScore, aId, aScore, neutral, conf, type, line, note, location] = row;
   const team = (tid: string) => teams.get(tid) ?? { id: tid, abbr: "---", name: "Unknown", short: "Unknown", nickname: "", color: "#8899aa", logo: cbbLogoFor(tid), confId: "" };
   const odds: CbbOdds | undefined = line
     ? {
@@ -269,6 +273,7 @@ function gameFromRow(row: NonNullable<SeasonFile["games"]>[number], teams: Map<s
     neutral: Boolean(neutral),
     conference: Boolean(conf),
     ...(note ? { note } : {}),
+    ...(location ? { location } : {}),
     away: { team: team(aId), score: aScore, periods: [] },
     home: { team: team(hId), score: hScore, periods: [] },
     ...(odds ? { odds } : {}),
