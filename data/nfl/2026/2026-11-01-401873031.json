@@ -7,13 +7,13 @@
   "id": "10",
   "abbr": "TEN",
   "name": "Tennessee Titans",
-  "score": 13
+  "score": 28
  },
  "home": {
   "id": "4",
   "abbr": "CIN",
   "name": "Cincinnati Bengals",
-  "score": 14
+  "score": 23
  },
  "neutral": false,
  "venue": "Paycor Stadium",

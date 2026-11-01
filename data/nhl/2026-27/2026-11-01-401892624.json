@@ -13,12 +13,12 @@
   "id": "7",
   "abbr": "CAR",
   "name": "Carolina Hurricanes",
-  "score": 5
+  "score": 7
  },
  "neutral": false,
  "venue": "Lenovo Center",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-10-31T15:50:13.117Z",
@@ -2507,5 +2507,9 @@
    "Alexander Command",
    "WPG"
   ]
+ },
+ "final": {
+  "away": 0,
+  "home": 7
  }
 }

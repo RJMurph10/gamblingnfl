@@ -7,13 +7,13 @@
   "id": "33",
   "abbr": "BAL",
   "name": "Baltimore Ravens",
-  "score": 7
+  "score": 10
  },
  "home": {
   "id": "2",
   "abbr": "BUF",
   "name": "Buffalo Bills",
-  "score": 16
+  "score": 29
  },
  "neutral": false,
  "venue": "Highmark Stadium",

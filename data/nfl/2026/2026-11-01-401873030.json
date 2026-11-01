@@ -7,13 +7,13 @@
   "id": "16",
   "abbr": "MIN",
   "name": "Minnesota Vikings",
-  "score": 7
+  "score": 15
  },
  "home": {
   "id": "8",
   "abbr": "DET",
   "name": "Detroit Lions",
-  "score": 6
+  "score": 12
  },
  "neutral": false,
  "venue": "Ford Field",

@@ -13,12 +13,12 @@
   "id": "27",
   "abbr": "TB",
   "name": "Tampa Bay Buccaneers",
-  "score": 9
+  "score": 16
  },
  "neutral": false,
  "venue": "Raymond James Stadium",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-10-31T08:02:20.928Z",
@@ -6538,5 +6538,9 @@
    "Jack Strand",
    "ATL"
   ]
+ },
+ "final": {
+  "away": 0,
+  "home": 16
  }
 }

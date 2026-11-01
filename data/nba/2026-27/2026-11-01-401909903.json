@@ -7,18 +7,18 @@
   "id": "2",
   "abbr": "BOS",
   "name": "Boston Celtics",
-  "score": 0
+  "score": 11
  },
  "home": {
   "id": "19",
   "abbr": "ORL",
   "name": "Orlando Magic",
-  "score": 0
+  "score": 13
  },
  "neutral": false,
  "venue": "Kia Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T01:53:12.077Z",

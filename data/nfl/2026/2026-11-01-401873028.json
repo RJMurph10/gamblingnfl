@@ -7,13 +7,13 @@
   "id": "11",
   "abbr": "IND",
   "name": "Indianapolis Colts",
-  "score": 0
+  "score": 7
  },
  "home": {
   "id": "30",
   "abbr": "JAX",
   "name": "Jacksonville Jaguars",
-  "score": 28
+  "score": 42
  },
  "neutral": false,
  "venue": "EverBank Stadium",

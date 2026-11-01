@@ -7,13 +7,13 @@
   "id": "22",
   "abbr": "ARI",
   "name": "Arizona Cardinals",
-  "score": 3
+  "score": 17
  },
  "home": {
   "id": "6",
   "abbr": "DAL",
   "name": "Dallas Cowboys",
-  "score": 14
+  "score": 27
  },
  "neutral": false,
  "venue": "AT&T Stadium",
