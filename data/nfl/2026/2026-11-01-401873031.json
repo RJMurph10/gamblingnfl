@@ -7,18 +7,18 @@
   "id": "10",
   "abbr": "TEN",
   "name": "Tennessee Titans",
-  "score": 0
+  "score": 13
  },
  "home": {
   "id": "4",
   "abbr": "CIN",
   "name": "Cincinnati Bengals",
-  "score": 0
+  "score": 7
  },
  "neutral": false,
  "venue": "Paycor Stadium",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-10-31T08:02:20.928Z",

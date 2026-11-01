@@ -477,5 +477,267 @@
    ]
   }
  },
- "props": {}
+ "props": {
+  "open": {
+   "at": "2026-11-01T18:59:42.939Z",
+   "provider": 100,
+   "count": 1,
+   "rows": [
+  {"a":null,"t":"Will There Be Overtime?","ti":"153","cur":[null,290,null]}
+ ],
+   "sample": [
+    {
+     "competition": {
+      "id": "401892630"
+     },
+     "provider": {
+      "id": "100"
+     },
+     "type": {
+      "id": "153",
+      "name": "Will There Be Overtime?"
+     },
+     "odds": {
+      "american": {
+       "value": "+290",
+       "open": "+290"
+      },
+      "decimal": {
+       "value": "3.90",
+       "open": "3.90"
+      },
+      "fraction": {
+       "value": "29/10",
+       "open": "29/10"
+      },
+      "total": {}
+     },
+     "lastUpdated": "2026-11-01T20:12Z",
+     "current": {},
+     "open": {}
+    }
+   ]
+  },
+  "latest": {
+   "at": "2026-11-01T18:59:42.939Z",
+   "count": 1,
+   "rows": [
+  {"a":null,"t":"Will There Be Overtime?","ti":"153","cur":[null,290,null]}
+ ]
+  }
+ },
+ "names": {
+  "3852": [
+   "Brad Marchand",
+   "FLA"
+  ],
+  "3946": [
+   "Lars Eller",
+   "FLA"
+  ],
+  "5246": [
+   "Ben Chiarot",
+   "DET"
+  ],
+  "5328": [
+   "Dmitry Kulikov",
+   "FLA"
+  ],
+  "5452": [
+   "Jacob Markstrom",
+   "FLA"
+  ],
+  "5502": [
+   "Radko Gudas",
+   "FLA"
+  ],
+  "5746": [
+   "Justin Faulk",
+   "DET"
+  ],
+  "2590824": [
+   "John Gibson",
+   "DET"
+  ],
+  "3041970": [
+   "Aleksander Barkov",
+   "FLA"
+  ],
+  "3041992": [
+   "Seth Jones",
+   "FLA"
+  ],
+  "3041995": [
+   "J.T. Compher",
+   "DET"
+  ],
+  "3042088": [
+   "Carter Verhaeghe",
+   "FLA"
+  ],
+  "3042114": [
+   "Andrew Copp",
+   "DET"
+  ],
+  "3114717": [
+   "Aaron Ekblad",
+   "FLA"
+  ],
+  "3114722": [
+   "Sam Reinhart",
+   "FLA"
+  ],
+  "3114732": [
+   "Sam Bennett",
+   "FLA"
+  ],
+  "3114997": [
+   "Andreas Englund",
+   "DET"
+  ],
+  "3120307": [
+   "Viktor Arvidsson",
+   "DET"
+  ],
+  "3149633": [
+   "Garnet Hathaway",
+   "FLA"
+  ],
+  "3151784": [
+   "Gustav Forsling",
+   "FLA"
+  ],
+  "3939856": [
+   "Bokondji Imama",
+   "FLA"
+  ],
+  "3941546": [
+   "Keegan Kolesar",
+   "DET"
+  ],
+  "3942043": [
+   "Mason Appleton",
+   "DET"
+  ],
+  "3942354": [
+   "Niko Mikkola",
+   "FLA"
+  ],
+  "4024854": [
+   "Matthew Tkachuk",
+   "FLA"
+  ],
+  "4063433": [
+   "Alex DeBrincat",
+   "DET"
+  ],
+  "4196931": [
+   "Sheldon Dries",
+   "DET"
+  ],
+  "4233576": [
+   "Michael Rasmussen",
+   "DET"
+  ],
+  "4233877": [
+   "Eetu Luostarinen",
+   "FLA"
+  ],
+  "4233890": [
+   "Jonah Gadjovich",
+   "FLA"
+  ],
+  "4319858": [
+   "Brady Tkachuk",
+   "FLA"
+  ],
+  "4352798": [
+   "Jacob Bernard-Docker",
+   "DET"
+  ],
+  "4419658": [
+   "John Leonard",
+   "DET"
+  ],
+  "4565227": [
+   "Moritz Seider",
+   "DET"
+  ],
+  "4565282": [
+   "Albert Johansson",
+   "DET"
+  ],
+  "4587845": [
+   "Akira Schmid",
+   "FLA"
+  ],
+  "4587994": [
+   "Daniil Tarasov",
+   "DET"
+  ],
+  "4697385": [
+   "Lucas Raymond",
+   "DET"
+  ],
+  "4697395": [
+   "Anton Lundell",
+   "FLA"
+  ],
+  "4697436": [
+   "William Wallinder",
+   "DET"
+  ],
+  "4845286": [
+   "Cole Schwindt",
+   "FLA"
+  ],
+  "4874720": [
+   "Simon Edvinsson",
+   "DET"
+  ],
+  "4894702": [
+   "Cole Reinhardt",
+   "FLA"
+  ],
+  "4997026": [
+   "Carter Mazur",
+   "DET"
+  ],
+  "5080152": [
+   "Marco Kasper",
+   "DET"
+  ],
+  "5103599": [
+   "Sandis Vilmanis",
+   "FLA"
+  ],
+  "5142461": [
+   "Uvis Balinskis",
+   "FLA"
+  ],
+  "5149175": [
+   "Nate Danielson",
+   "DET"
+  ],
+  "5149192": [
+   "Axel Sandin-Pellikka",
+   "DET"
+  ],
+  "5188582": [
+   "Anton Johansson",
+   "DET"
+  ],
+  "5188599": [
+   "Emmitt Finnie",
+   "DET"
+  ],
+  "5206956": [
+   "Cooper Black",
+   "FLA"
+  ],
+  "5216883": [
+   "Michael Brandsegg-Nygard",
+   "DET"
+  ]
+ }
 }

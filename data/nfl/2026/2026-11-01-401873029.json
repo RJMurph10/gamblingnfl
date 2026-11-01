@@ -7,18 +7,18 @@
   "id": "13",
   "abbr": "LV",
   "name": "Las Vegas Raiders",
-  "score": 0
+  "score": 14
  },
  "home": {
   "id": "20",
   "abbr": "NYJ",
   "name": "New York Jets",
-  "score": 0
+  "score": 13
  },
  "neutral": false,
  "venue": "MetLife Stadium",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-10-31T08:02:20.928Z",

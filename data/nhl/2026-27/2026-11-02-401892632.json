@@ -477,5 +477,279 @@
    ]
   }
  },
- "props": {}
+ "props": {
+  "open": {
+   "at": "2026-11-01T18:59:42.939Z",
+   "provider": 100,
+   "count": 1,
+   "rows": [
+  {"a":null,"t":"Will There Be Overtime?","ti":"153","cur":[null,285,null]}
+ ],
+   "sample": [
+    {
+     "competition": {
+      "id": "401892632"
+     },
+     "provider": {
+      "id": "100"
+     },
+     "type": {
+      "id": "153",
+      "name": "Will There Be Overtime?"
+     },
+     "odds": {
+      "american": {
+       "value": "+285",
+       "open": "+285"
+      },
+      "decimal": {
+       "value": "3.85",
+       "open": "3.85"
+      },
+      "fraction": {
+       "value": "57/20",
+       "open": "57/20"
+      },
+      "total": {}
+     },
+     "lastUpdated": "2026-11-01T20:12Z",
+     "current": {},
+     "open": {}
+    }
+   ]
+  },
+  "latest": {
+   "at": "2026-11-01T18:59:42.939Z",
+   "count": 1,
+   "rows": [
+  {"a":null,"t":"Will There Be Overtime?","ti":"153","cur":[null,285,null]}
+ ]
+  }
+ },
+ "names": {
+  "3797": [
+   "Mikael Backlund",
+   "CGY"
+  ],
+  "5550": [
+   "Tyler Toffoli",
+   "SJ"
+  ],
+  "5646": [
+   "Dmitry Orlov",
+   "SJ"
+  ],
+  "2562606": [
+   "Jonathan Huberdeau",
+   "CGY"
+  ],
+  "2562636": [
+   "Ryan Strome",
+   "CGY"
+  ],
+  "2976839": [
+   "Jacob Trouba",
+   "SJ"
+  ],
+  "3041997": [
+   "Darnell Nurse",
+   "SJ"
+  ],
+  "3042017": [
+   "Alexander Wennberg",
+   "SJ"
+  ],
+  "3069411": [
+   "Barclay Goodrow",
+   "SJ"
+  ],
+  "3114994": [
+   "Alex Nedeljkovic",
+   "SJ"
+  ],
+  "3149612": [
+   "Joel Hanley",
+   "CGY"
+  ],
+  "3149839": [
+   "Jake Middleton",
+   "CGY"
+  ],
+  "3942868": [
+   "Adam Gaudette",
+   "SJ"
+  ],
+  "4063429": [
+   "Libor Hajek",
+   "SJ"
+  ],
+  "4233685": [
+   "Morgan Frost",
+   "CGY"
+  ],
+  "4272192": [
+   "Mason Marchment",
+   "SJ"
+  ],
+  "4312877": [
+   "Zach Whitecloud",
+   "CGY"
+  ],
+  "4319911": [
+   "Devin Cooley",
+   "CGY"
+  ],
+  "4329962": [
+   "Kyle Keyser",
+   "SJ"
+  ],
+  "4331604": [
+   "Michael Kesselring",
+   "SJ"
+  ],
+  "4352747": [
+   "Ty Dellandrea",
+   "SJ"
+  ],
+  "4352750": [
+   "Joel Farabee",
+   "CGY"
+  ],
+  "4378686": [
+   "Kevin Bahl",
+   "CGY"
+  ],
+  "4391255": [
+   "Kiefer Sherwood",
+   "SJ"
+  ],
+  "4392883": [
+   "Martin Pospisil",
+   "CGY"
+  ],
+  "4565278": [
+   "Brett Leason",
+   "SJ"
+  ],
+  "4587843": [
+   "Yegor Sharangovich",
+   "CGY"
+  ],
+  "4587952": [
+   "Dustin Wolf",
+   "CGY"
+  ],
+  "4697394": [
+   "Yaroslav Askarov",
+   "SJ"
+  ],
+  "4697453": [
+   "Yan Kuznetsov",
+   "CGY"
+  ],
+  "4755703": [
+   "Patrick Giles",
+   "SJ"
+  ],
+  "4874730": [
+   "Matt Coronato",
+   "CGY"
+  ],
+  "4874733": [
+   "Brennan Othmann",
+   "CGY"
+  ],
+  "4874749": [
+   "Nolan Allan",
+   "SJ"
+  ],
+  "4874881": [
+   "Zack Ostapchuk",
+   "SJ"
+  ],
+  "4874893": [
+   "William Stromgren",
+   "CGY"
+  ],
+  "4915344": [
+   "Simon Nemec",
+   "CGY"
+  ],
+  "5073306": [
+   "Adam Klapka",
+   "CGY"
+  ],
+  "5080175": [
+   "Filip Bystedt",
+   "SJ"
+  ],
+  "5080215": [
+   "Mattias Havelid",
+   "SJ"
+  ],
+  "5104210": [
+   "Michael Fisher",
+   "SJ"
+  ],
+  "5104219": [
+   "Arsenii Sergeev",
+   "CGY"
+  ],
+  "5136607": [
+   "Collin Graf",
+   "SJ"
+  ],
+  "5149155": [
+   "Will Smith",
+   "SJ"
+  ],
+  "5149191": [
+   "Samuel Honzek",
+   "CGY"
+  ],
+  "5149209": [
+   "Quentin Musty",
+   "SJ"
+  ],
+  "5188608": [
+   "Jonathan Castagna",
+   "CGY"
+  ],
+  "5188613": [
+   "Aydar Suniev",
+   "CGY"
+  ],
+  "5206628": [
+   "Macklin Celebrini",
+   "SJ"
+  ],
+  "5212753": [
+   "Maxim Tsyplakov",
+   "CGY"
+  ],
+  "5216878": [
+   "Zayne Parekh",
+   "CGY"
+  ],
+  "5216880": [
+   "Sam Dickinson",
+   "SJ"
+  ],
+  "5216897": [
+   "Matvei Gridin",
+   "CGY"
+  ],
+  "5216907": [
+   "Igor Chernyshov",
+   "SJ"
+  ],
+  "5291934": [
+   "Michael Misa",
+   "SJ"
+  ],
+  "5361709": [
+   "Ivar Stenberg",
+   "SJ"
+  ]
+ }
 }

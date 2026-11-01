@@ -477,5 +477,243 @@
    ]
   }
  },
- "props": {}
+ "props": {
+  "open": {
+   "at": "2026-11-01T18:59:42.939Z",
+   "provider": 100,
+   "count": 1,
+   "rows": [
+  {"a":null,"t":"Will There Be Overtime?","ti":"153","cur":[null,310,null]}
+ ],
+   "sample": [
+    {
+     "competition": {
+      "id": "401892631"
+     },
+     "provider": {
+      "id": "100"
+     },
+     "type": {
+      "id": "153",
+      "name": "Will There Be Overtime?"
+     },
+     "odds": {
+      "american": {
+       "value": "+310",
+       "open": "+310"
+      },
+      "decimal": {
+       "value": "4.10",
+       "open": "4.10"
+      },
+      "fraction": {
+       "value": "31/10",
+       "open": "31/10"
+      },
+      "total": {}
+     },
+     "lastUpdated": "2026-11-01T20:12Z",
+     "current": {},
+     "open": {}
+    }
+   ]
+  },
+  "latest": {
+   "at": "2026-11-01T18:59:42.939Z",
+   "count": 1,
+   "rows": [
+  {"a":null,"t":"Will There Be Overtime?","ti":"153","cur":[null,310,null]}
+ ]
+  }
+ },
+ "names": {
+  "2300": [
+   "Brent Burns",
+   "COL"
+  ],
+  "3735": [
+   "Patrick Kane",
+   "CHI"
+  ],
+  "4991": [
+   "Ian Cole",
+   "CHI"
+  ],
+  "5349": [
+   "Nazem Kadri",
+   "COL"
+  ],
+  "5622": [
+   "Scott Wedgewood",
+   "COL"
+  ],
+  "5798": [
+   "Brock Nelson",
+   "COL"
+  ],
+  "5835": [
+   "Jaden Schwartz",
+   "COL"
+  ],
+  "2562609": [
+   "Gabriel Landeskog",
+   "COL"
+  ],
+  "2590829": [
+   "Josh Manson",
+   "COL"
+  ],
+  "2592095": [
+   "Teuvo Teravainen",
+   "CHI"
+  ],
+  "3041969": [
+   "Nathan MacKinnon",
+   "COL"
+  ],
+  "3042050": [
+   "Artturi Lehkonen",
+   "COL"
+  ],
+  "3042056": [
+   "Tyler Bertuzzi",
+   "CHI"
+  ],
+  "3068665": [
+   "Brett Kulak",
+   "COL"
+  ],
+  "3096249": [
+   "Devon Toews",
+   "COL"
+  ],
+  "3115033": [
+   "Ryan Donato",
+   "CHI"
+  ],
+  "3149619": [
+   "Andrew Mangiapane",
+   "CHI"
+  ],
+  "3900260": [
+   "Jordan Greenway",
+   "CHI"
+  ],
+  "3900504": [
+   "Noah Juulsen",
+   "COL"
+  ],
+  "3904177": [
+   "Mackenzie Blackwood",
+   "COL"
+  ],
+  "3943996": [
+   "Nicolas Roy",
+   "COL"
+  ],
+  "3988782": [
+   "Logan O'Connor",
+   "COL"
+  ],
+  "4197130": [
+   "Cole Smith",
+   "CHI"
+  ],
+  "4233563": [
+   "Cale Makar",
+   "COL"
+  ],
+  "4233586": [
+   "Martin Necas",
+   "COL"
+  ],
+  "4392309": [
+   "Parker Kelly",
+   "COL"
+  ],
+  "4565225": [
+   "Bowen Byram",
+   "CHI"
+  ],
+  "4565234": [
+   "Spencer Knight",
+   "CHI"
+  ],
+  "4565266": [
+   "Alex Vlasic",
+   "CHI"
+  ],
+  "4697717": [
+   "Wyatt Kaiser",
+   "CHI"
+  ],
+  "4874736": [
+   "Fedor Svechkov",
+   "COL"
+  ],
+  "4874744": [
+   "Zachary L'Heureux",
+   "COL"
+  ],
+  "4894726": [
+   "Ethan Del Mastro",
+   "CHI"
+  ],
+  "4894729": [
+   "Arvid Soderblom",
+   "CHI"
+  ],
+  "5080148": [
+   "Kevin Korchinski",
+   "CHI"
+  ],
+  "5080157": [
+   "Frank Nazar",
+   "CHI"
+  ],
+  "5080173": [
+   "Sam Rinzel",
+   "CHI"
+  ],
+  "5080227": [
+   "Ryan Greene",
+   "CHI"
+  ],
+  "5103687": [
+   "Georgii Merkulov",
+   "COL"
+  ],
+  "5136616": [
+   "T.J. Hughes",
+   "COL"
+  ],
+  "5136735": [
+   "Sam Malinski",
+   "COL"
+  ],
+  "5149125": [
+   "Connor Bedard",
+   "CHI"
+  ],
+  "5149194": [
+   "Oliver Moore",
+   "CHI"
+  ],
+  "5149231": [
+   "Roman Kantserov",
+   "CHI"
+  ],
+  "5173765": [
+   "Nick Lardis",
+   "CHI"
+  ],
+  "5206648": [
+   "Artyom Levshunov",
+   "CHI"
+  ],
+  "5291935": [
+   "Anton Frondell",
+   "CHI"
+  ]
+ }
 }

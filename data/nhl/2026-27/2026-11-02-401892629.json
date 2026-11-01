@@ -478,5 +478,263 @@
    ]
   }
  },
- "props": {}
+ "props": {
+  "open": {
+   "at": "2026-11-01T18:59:42.939Z",
+   "provider": 100,
+   "count": 1,
+   "rows": [
+  {"a":null,"t":"Will There Be Overtime?","ti":"153","cur":[null,280,null]}
+ ],
+   "sample": [
+    {
+     "competition": {
+      "id": "401892629"
+     },
+     "provider": {
+      "id": "100"
+     },
+     "type": {
+      "id": "153",
+      "name": "Will There Be Overtime?"
+     },
+     "odds": {
+      "american": {
+       "value": "+280",
+       "open": "+280"
+      },
+      "decimal": {
+       "value": "3.80",
+       "open": "3.80"
+      },
+      "fraction": {
+       "value": "14/5",
+       "open": "14/5"
+      },
+      "total": {}
+     },
+     "lastUpdated": "2026-11-01T20:35Z",
+     "current": {},
+     "open": {}
+    }
+   ]
+  },
+  "latest": {
+   "at": "2026-11-01T18:59:42.939Z",
+   "count": 1,
+   "rows": [
+  {"a":null,"t":"Will There Be Overtime?","ti":"153","cur":[null,280,null]}
+ ]
+  }
+ },
+ "names": {
+  "4013": [
+   "Alex Pietrangelo",
+   "VGK"
+  ],
+  "5202": [
+   "Brayden McNabb",
+   "VGK"
+  ],
+  "5545": [
+   "Mark Stone",
+   "VGK"
+  ],
+  "2563057": [
+   "William Karlsson",
+   "VGK"
+  ],
+  "2564154": [
+   "Sean Kuraly",
+   "BOS"
+  ],
+  "2968818": [
+   "Hampus Lindholm",
+   "BOS"
+  ],
+  "2976844": [
+   "Tomas Hertl",
+   "VGK"
+  ],
+  "3025616": [
+   "Nic Dowd",
+   "VGK"
+  ],
+  "3041994": [
+   "Elias Lindholm",
+   "BOS"
+  ],
+  "3042021": [
+   "Nikita Zadorov",
+   "BOS"
+  ],
+  "3042055": [
+   "Shea Theodore",
+   "VGK"
+  ],
+  "3042191": [
+   "Connor Clifton",
+   "BOS"
+  ],
+  "3114778": [
+   "David Pastrnak",
+   "BOS"
+  ],
+  "3114985": [
+   "Ivan Barbashev",
+   "VGK"
+  ],
+  "3151096": [
+   "Victor Olofsson",
+   "VGK"
+  ],
+  "3648002": [
+   "Jack Eichel",
+   "VGK"
+  ],
+  "3652964": [
+   "Noah Hanifin",
+   "VGK"
+  ],
+  "3899937": [
+   "Mitch Marner",
+   "VGK"
+  ],
+  "3899949": [
+   "Pavel Zacha",
+   "BOS"
+  ],
+  "3904185": [
+   "Jeremy Lauzon",
+   "VGK"
+  ],
+  "3904186": [
+   "Rasmus Andersson",
+   "VGK"
+  ],
+  "3939714": [
+   "Adin Hill",
+   "VGK"
+  ],
+  "3941946": [
+   "Will Borgen",
+   "BOS"
+  ],
+  "3942638": [
+   "Parker Wotherspoon",
+   "VGK"
+  ],
+  "3988803": [
+   "Charlie McAvoy",
+   "BOS"
+  ],
+  "4024989": [
+   "Brett Howden",
+   "VGK"
+  ],
+  "4063606": [
+   "Dylan Coghlan",
+   "VGK"
+  ],
+  "4064582": [
+   "Carter Hart",
+   "VGK"
+  ],
+  "4064780": [
+   "Tanner Jeannot",
+   "BOS"
+  ],
+  "4233575": [
+   "Casey Mittelstadt",
+   "BOS"
+  ],
+  "4268466": [
+   "Morgan Geekie",
+   "BOS"
+  ],
+  "4392137": [
+   "Tanner Laczynski",
+   "VGK"
+  ],
+  "4392308": [
+   "Jonathan Aspirot",
+   "BOS"
+  ],
+  "4392765": [
+   "Michael DiPietro",
+   "BOS"
+  ],
+  "4425678": [
+   "Jonas Rondbjerg",
+   "VGK"
+  ],
+  "4565241": [
+   "Ville Heinola",
+   "VGK"
+  ],
+  "4565258": [
+   "Antti Tuomisto",
+   "VGK"
+  ],
+  "4565261": [
+   "Raphael Lavoie",
+   "VGK"
+  ],
+  "4587985": [
+   "Mark Kastelic",
+   "BOS"
+  ],
+  "4697438": [
+   "JJ Peterka",
+   "BOS"
+  ],
+  "4697442": [
+   "Marat Khusnutdinov",
+   "BOS"
+  ],
+  "4697461": [
+   "Mason Lohrei",
+   "BOS"
+  ],
+  "4712036": [
+   "Jeremy Swayman",
+   "BOS"
+  ],
+  "5080207": [
+   "Fraser Minten",
+   "BOS"
+  ],
+  "5080221": [
+   "Matthew Poitras",
+   "BOS"
+  ],
+  "5103547": [
+   "Marc Gatcomb",
+   "VGK"
+  ],
+  "5103647": [
+   "Frederic Brunet",
+   "BOS"
+  ],
+  "5216887": [
+   "Trevor Connelly",
+   "VGK"
+  ],
+  "5239180": [
+   "Kai Uchacz",
+   "VGK"
+  ],
+  "5272307": [
+   "Braeden Bowman",
+   "VGK"
+  ],
+  "5275337": [
+   "James Hagens",
+   "BOS"
+  ],
+  "5361713": [
+   "Juho Piiparinen",
+   "VGK"
+  ]
+ }
 }
