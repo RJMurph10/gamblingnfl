@@ -7,18 +7,18 @@
   "id": "2459",
   "abbr": "NIU",
   "name": "Northern Illinois Huskies",
-  "score": 0
+  "score": 14
  },
  "home": {
   "id": "2439",
   "abbr": "UNLV",
   "name": "UNLV Rebels",
-  "score": 0
+  "score": 10
  },
  "neutral": false,
  "venue": "Allegiant Stadium",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-10-31T08:02:20.928Z",

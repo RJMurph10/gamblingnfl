@@ -13,12 +13,12 @@
   "id": "17",
   "abbr": "COL",
   "name": "Colorado Avalanche",
-  "score": 0
+  "score": 1
  },
  "neutral": false,
  "venue": "Ball Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-10-31T08:02:20.928Z",
