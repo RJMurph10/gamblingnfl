@@ -13,6 +13,7 @@
 import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { gunzipSync } from "node:zlib";
+import { loadPrices } from "./odds-api-prices.mjs";
 
 const args = process.argv.slice(2);
 const opt = (n, d) => {
@@ -23,6 +24,7 @@ const KEY = opt("league", "nba");
 const DATA = opt("data", "props-history");
 const OUT = opt("out", "props-site");
 const ONLY = opt("season");
+const PRICES = opt("prices"); // saved Odds API pulls (NFL), to fill prices ESPN doesn't show
 
 const num = (v) => {
   const n = Number(String(v ?? "").split(/[-/]/)[0]);
@@ -178,6 +180,7 @@ async function main() {
   } catch {
     // new index
   }
+  const price = await loadPrices(PRICES);
   for (const f of files) {
     const season = f.replace(".jsonl.gz", "");
     if (ONLY && season !== ONLY) continue;
@@ -191,7 +194,12 @@ async function main() {
         const bx = g.box?.[p.a];
         if (!bx || bx.dnp) continue;
         const [label, stat] = MARKETS[p.t];
-        props.push([bx.n, bx.tm, label, p.line, p.o, p.u, stat(bx.s ?? {})]);
+        let { o, u } = p;
+        if (o == null && u == null && price.size) {
+          const px = price(g.home?.name, g.date, bx.n, label, p.line);
+          if (px) [o, u] = px;
+        }
+        props.push([bx.n, bx.tm, label, p.line, o, u, stat(bx.s ?? {})]);
       }
       if (!props.length) continue;
       props.sort(
