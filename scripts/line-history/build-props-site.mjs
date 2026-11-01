@@ -119,11 +119,17 @@ function mainLines(books) {
     for (const r of books[pid].rows) {
       if (!MARKETS[r.t] || !r.a || !r.op || r.op[0] == null) continue;
       const [line, o, u] = r.op;
-      if (o == null && u == null) continue;
       const pk = `${r.a}|${r.t}|${line}`;
+      // unlabeled DraftKings sides: first item is the over, the next the under
+      const side = o == null && u == null && r.px ? (r.px[1] ?? r.px[0]) : null;
+      if (o == null && u == null && side == null) continue;
       const p = pairs.get(pk) ?? { a: r.a, t: r.t, line, o: null, u: null };
       if (o != null) p.o = o;
       if (u != null) p.u = u;
+      if (side != null) {
+        if (p.o == null) p.o = side;
+        else if (p.u == null) p.u = side;
+      }
       pairs.set(pk, p);
     }
     const best = new Map();
