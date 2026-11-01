@@ -7,13 +7,13 @@
   "id": "21",
   "abbr": "TOR",
   "name": "Toronto Maple Leafs",
-  "score": 1
+  "score": 3
  },
  "home": {
   "id": "22",
   "abbr": "VAN",
   "name": "Vancouver Canucks",
-  "score": 1
+  "score": 2
  },
  "neutral": false,
  "venue": "Rogers Arena",

@@ -7,18 +7,18 @@
   "id": "25",
   "abbr": "OKC",
   "name": "Oklahoma City Thunder",
-  "score": 0
+  "score": 37
  },
  "home": {
   "id": "10",
   "abbr": "HOU",
   "name": "Houston Rockets",
-  "score": 0
+  "score": 55
  },
  "neutral": false,
  "venue": "Toyota Center (Houston)",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-10-31T08:02:20.928Z",

@@ -7,13 +7,13 @@
   "id": "16",
   "abbr": "PIT",
   "name": "Pittsburgh Penguins",
-  "score": 2
+  "score": 3
  },
  "home": {
   "id": "10",
   "abbr": "MTL",
   "name": "Montreal Canadiens",
-  "score": 2
+  "score": 5
  },
  "neutral": false,
  "venue": "Bell Centre",

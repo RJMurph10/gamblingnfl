@@ -7,18 +7,18 @@
   "id": "16",
   "abbr": "MIN",
   "name": "Minnesota Timberwolves",
-  "score": 0
+  "score": 61
  },
  "home": {
   "id": "24",
   "abbr": "SA",
   "name": "San Antonio Spurs",
-  "score": 0
+  "score": 62
  },
  "neutral": false,
  "venue": "Frost Bank Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-10-31T08:02:20.928Z",

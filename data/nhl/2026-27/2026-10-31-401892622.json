@@ -13,12 +13,12 @@
   "id": "9",
   "abbr": "DAL",
   "name": "Dallas Stars",
-  "score": 0
+  "score": 2
  },
  "neutral": false,
  "venue": "American Airlines Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-10-31T08:02:20.928Z",

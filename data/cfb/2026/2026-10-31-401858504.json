@@ -7,18 +7,18 @@
   "id": "264",
   "abbr": "WASH",
   "name": "Washington Huskies",
-  "score": 0
+  "score": 3
  },
  "home": {
   "id": "158",
   "abbr": "NEB",
   "name": "Nebraska Cornhuskers",
-  "score": 0
+  "score": 7
  },
  "neutral": false,
  "venue": "Memorial Stadium (Lincoln, NE)",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-10-31T08:02:20.928Z",

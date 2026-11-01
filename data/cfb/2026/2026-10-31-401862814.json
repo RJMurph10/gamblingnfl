@@ -7,18 +7,18 @@
   "id": "349",
   "abbr": "ARMY",
   "name": "Army Black Knights",
-  "score": 0
+  "score": 14
  },
  "home": {
   "id": "235",
   "abbr": "MEM",
   "name": "Memphis Tigers",
-  "score": 0
+  "score": 21
  },
  "neutral": false,
  "venue": "Simmons Bank Liberty Stadium",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-10-31T08:02:20.928Z",

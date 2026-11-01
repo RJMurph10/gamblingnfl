@@ -7,18 +7,18 @@
   "id": "23",
   "abbr": "SAC",
   "name": "Sacramento Kings",
-  "score": 0
+  "score": 55
  },
  "home": {
   "id": "29",
   "abbr": "MEM",
   "name": "Memphis Grizzlies",
-  "score": 0
+  "score": 66
  },
  "neutral": false,
  "venue": "FedExForum",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-10-31T08:02:20.928Z",
