@@ -2,17 +2,17 @@
  "id": "401920912",
  "league": "cbb",
  "date": "2026-11-02T08:00Z",
- "name": "GRAM VS NIU",
+ "name": "NIU VS GRAM",
  "away": {
-  "id": "2755",
-  "abbr": "GRAM",
-  "name": "Grambling Tigers",
-  "score": 0
- },
- "home": {
   "id": "2459",
   "abbr": "NIU",
   "name": "Northern Illinois Huskies",
+  "score": 0
+ },
+ "home": {
+  "id": "2755",
+  "abbr": "GRAM",
+  "name": "Grambling Tigers",
   "score": 0
  },
  "neutral": true,

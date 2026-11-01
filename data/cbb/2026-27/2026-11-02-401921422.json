@@ -2,17 +2,17 @@
  "id": "401921422",
  "league": "cbb",
  "date": "2026-11-02T11:00Z",
- "name": "APP VS MRMK",
+ "name": "MRMK VS APP",
  "away": {
-  "id": "2026",
-  "abbr": "APP",
-  "name": "App State Mountaineers",
-  "score": 0
- },
- "home": {
   "id": "2771",
   "abbr": "MRMK",
   "name": "Merrimack Warriors",
+  "score": 0
+ },
+ "home": {
+  "id": "2026",
+  "abbr": "APP",
+  "name": "App State Mountaineers",
   "score": 0
  },
  "neutral": true,
