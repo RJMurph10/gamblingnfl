@@ -66,7 +66,7 @@ jobs:
           url="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
           for attempt in 1 2 3 4 5; do
             rm -rf site-repo && git clone -q --depth 1 --branch props-site "$url" site-repo
-            for lg in nba nfl; do
+            for lg in nba nfl nhl mlb; do
               node app/scripts/line-history/build-upcoming.mjs --league $lg --data data-repo/data --out site-repo
             done
             cd site-repo

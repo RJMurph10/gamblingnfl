@@ -71,14 +71,38 @@ const FB = {
     (s) => (num(s["passing.YDS"]) ?? 0) + (num(s["rushing.YDS"]) ?? 0),
   ],
 };
+const nhl = (s, k) => num(s[`forwards.${k}`] ?? s[`defenses.${k}`] ?? s[`goalies.${k}`] ?? s[k]);
 const NHL = {
-  "Total Points": ["Points", (s) => num(s["forwards.PTS"] ?? s["defenses.PTS"] ?? s.PTS)],
-  "Total Goals": ["Goals", (s) => num(s["forwards.G"] ?? s["defenses.G"] ?? s.G)],
-  "Total Assists": ["Assists", (s) => num(s["forwards.A"] ?? s["defenses.A"] ?? s.A)],
-  "Total Shots on Goal": ["Shots", (s) => num(s["forwards.S"] ?? s["defenses.S"] ?? s.S)],
-  "Total Saves": ["Saves", (s) => num(s["goalies.SV"] ?? s.SV)],
+  "Total Points": ["Points", (s) => sum(nhl(s, "G"), nhl(s, "A"))],
+  "Total Goals": ["Goals", (s) => nhl(s, "G")],
+  "Total Assists": ["Assists", (s) => nhl(s, "A")],
+  "Total Shots on Goal": ["Shots on goal", (s) => nhl(s, "SOG")],
+  "Total Hits": ["Hits", (s) => nhl(s, "HT")],
+  "Total Blocked Shots": ["Blocked shots", (s) => nhl(s, "BS")],
+  "Total Saves": ["Saves", (s) => nhl(s, "SV")],
 };
-const MARKETS = { nba: NBA, nfl: FB, cfb: FB, nhl: NHL }[KEY] ?? {};
+// MLB box scores mix batting and pitching labels; pitchers are the rows with innings pitched.
+const isPitcher = (s) => s.IP != null;
+const outs = (ip) => {
+  const [w, f] = String(ip ?? "").split(".");
+  const n = Number(w);
+  return Number.isFinite(n) ? n * 3 + (Number(f) || 0) : null;
+};
+const bat = (k) => (s) => (isPitcher(s) && s.AB == null ? null : num(s[k]));
+const pit = (k) => (s) => (isPitcher(s) ? num(s[k]) : null);
+const MLB = {
+  "Total Hits": ["Hits", bat("H")],
+  "Total Home Runs Hit": ["Home runs", bat("HR")],
+  "Total Runs Scored": ["Runs", bat("R")],
+  "Total RBIs": ["RBIs", bat("RBI")],
+  "Total Hits + Runs + RBIs": ["Hits+Runs+RBIs", (s) => sum(bat("H")(s), bat("R")(s), bat("RBI")(s))],
+  "Total Strikeouts": ["Pitcher strikeouts", pit("K")],
+  "Earned Runs Allowed": ["Earned runs allowed", pit("ER")],
+  "Total Walks Allowed": ["Walks allowed", pit("BB")],
+  "Total Hits Allowed": ["Hits allowed", pit("H")],
+  "Total Outs Recorded": ["Outs recorded", (s) => (isPitcher(s) ? outs(s.IP) : null)],
+};
+const MARKETS = { nba: NBA, nfl: FB, cfb: FB, nhl: NHL, mlb: MLB }[KEY] ?? {};
 
 const imp = (o) => (o < 0 ? -o / (-o + 100) : 100 / (o + 100));
 
@@ -89,21 +113,14 @@ function mainLines(books) {
     return rank(a) - rank(b);
   });
   const picked = new Map();
+  // 1) a balanced over/under pair from the most preferred book that has one
   for (const pid of order) {
     const pairs = new Map();
-    const bare = new Map();
     for (const r of books[pid].rows) {
       if (!MARKETS[r.t] || !r.a || !r.op || r.op[0] == null) continue;
-      const key = `${r.a}|${r.t}`;
-      if (picked.has(key)) continue;
       const [line, o, u] = r.op;
-      if (o == null && u == null) {
-        const m = bare.get(key) ?? new Map();
-        m.set(line, (m.get(line) ?? 0) + 1);
-        bare.set(key, m);
-        continue;
-      }
-      const pk = `${key}|${line}`;
+      if (o == null && u == null) continue;
+      const pk = `${r.a}|${r.t}|${line}`;
       const p = pairs.get(pk) ?? { a: r.a, t: r.t, line, o: null, u: null };
       if (o != null) p.o = o;
       if (u != null) p.u = u;
@@ -117,13 +134,29 @@ function mainLines(books) {
       const key = `${p.a}|${p.t}`;
       if (!best.has(key) || bal < best.get(key).bal) best.set(key, { ...p, bal });
     }
-    for (const [key, p] of best) picked.set(key, p);
-    // books without prices (DraftKings via ESPN in 2026): the line ESPN lists as the main one
-    for (const [key, m] of bare) {
+    for (const [key, p] of best) if (!picked.has(key)) picked.set(key, p);
+  }
+  // 2) otherwise the line the preferred book lists most (books without prices, or one-sided
+  //    markets like "1+ goal"), keeping a price when there is one
+  for (const pid of order) {
+    const seen = new Map();
+    for (const r of books[pid].rows) {
+      if (!MARKETS[r.t] || !r.a || !r.op || r.op[0] == null) continue;
+      const key = `${r.a}|${r.t}`;
       if (picked.has(key)) continue;
-      const line = [...m.entries()].sort((x, y) => y[1] - x[1] || x[0] - y[0])[0][0];
+      const [line, o, u] = r.op;
+      const m = seen.get(key) ?? new Map();
+      const e = m.get(line) ?? { n: 0, o: null, u: null };
+      e.n += 1;
+      if (o != null) e.o = o;
+      if (u != null) e.u = u;
+      m.set(line, e);
+      seen.set(key, m);
+    }
+    for (const [key, m] of seen) {
+      const [line, e] = [...m.entries()].sort((x, y) => y[1].n - x[1].n || x[0] - y[0])[0];
       const [a, t] = key.split("|");
-      picked.set(key, { a, t, line, o: null, u: null });
+      picked.set(key, { a, t, line, o: e.o, u: e.u });
     }
   }
   return [...picked.values()];

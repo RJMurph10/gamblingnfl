@@ -9,6 +9,8 @@ const BASE = "https://raw.githubusercontent.com/RJMurph10/gamblingnfl/props-site
 const MINUTE = 60_000;
 
 /** [player, team, market, line, over price, under price, actual] */
+export type PropLeague = "nba" | "nfl" | "nhl" | "mlb";
+
 export type PropHistoryRow = [
   string,
   string,
@@ -52,7 +54,7 @@ async function getJson<T>(url: string, ttl: number): Promise<T | null> {
 }
 
 export async function fetchPropHistory(
-  league: "nba" | "nfl",
+  league: PropLeague,
   season?: string,
   day?: string,
 ): Promise<PropHistoryDay> {
@@ -114,7 +116,7 @@ export interface UpcomingPropGame {
  * Upcoming games with the DraftKings player lines posted so far. Built hourly by the line logger
  * (scripts/line-history/build-upcoming.mjs) from its saved snapshots, so the site needs one small read.
  */
-export async function fetchUpcomingProps(league: "nba" | "nfl"): Promise<UpcomingPropGame[]> {
+export async function fetchUpcomingProps(league: PropLeague): Promise<UpcomingPropGame[]> {
   const games =
     (await getJson<UpcomingPropGame[]>(`${BASE}/${league}/upcoming.json`, 5 * MINUTE)) ?? [];
   const now = Date.now();

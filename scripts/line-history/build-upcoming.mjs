@@ -49,7 +49,28 @@ const LABELS =
       "Total Rushing Plus Receiving Yards (incl. overtime)": "Rush+Rec yds",
       "Total Passing Plus Rushing Yards (incl. overtime)": "Pass+Rush yds",
     },
-  }[KEY] ?? {};
+    nhl: {
+    "Total Points": "Points",
+    "Total Goals": "Goals",
+    "Total Assists": "Assists",
+    "Total Shots on Goal": "Shots on goal",
+    "Total Hits": "Hits",
+    "Total Blocked Shots": "Blocked shots",
+    "Total Saves": "Saves",
+  },
+  mlb: {
+    "Total Hits": "Hits",
+    "Total Home Runs Hit": "Home runs",
+    "Total Runs Scored": "Runs",
+    "Total RBIs": "RBIs",
+    "Total Hits + Runs + RBIs": "Hits+Runs+RBIs",
+    "Total Strikeouts": "Pitcher strikeouts",
+    "Earned Runs Allowed": "Earned runs allowed",
+    "Total Walks Allowed": "Walks allowed",
+    "Total Hits Allowed": "Hits allowed",
+    "Total Outs Recorded": "Outs recorded",
+  },
+}[KEY] ?? {};
 
 const imp = (o) => (o < 0 ? -o / (-o + 100) : 100 / (o + 100));
 
