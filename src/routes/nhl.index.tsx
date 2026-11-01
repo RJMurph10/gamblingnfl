@@ -5,7 +5,7 @@ import { NhlLogo } from "@/components/nhl/NhlBits";
 import { NhlLivePanel, NhlRecentGames, NhlUpcomingGames } from "@/components/nhl/NhlTables";
 import { buildStandings, hasScore, teamsFromGames } from "@/lib/nhl/nhl";
 import { projectGame, unitsText } from "@/lib/nhl/nhl-model";
-import { compareNhlModels, TRACK_EDGE } from "@/lib/nhl/nhl-model-v2";
+import { compareNhlModels, gradeNhlSeason, type NhlBetRecord } from "@/lib/nhl/nhl-model-v2";
 import { useNhlModelInputs, useNhlSchedule } from "@/lib/nhl/use-nhl";
 
 export const Route = createFileRoute("/nhl/")({
@@ -55,9 +55,14 @@ function NhlDashboard() {
   const prev = useMemo(() => compareNhlModels(games, v1, inputs, weekAgo), [games, v1, inputs, weekAgo]);
   const hasPrev = prev.v2.picks.wins + prev.v2.picks.losses > 0;
   const mlChange = hasPrev ? change(all.v2.picks.winPct, prev.v2.picks.winPct) : null;
-  const t = all.tracked;
-  const moved = t.movedToward + t.movedAgainst;
-  const ll = (v: number | null) => (v === null ? "—" : v.toFixed(3));
+  const grade = useMemo(() => gradeNhlSeason(games, inputs), [games, inputs]);
+  const gradePrev = useMemo(() => gradeNhlSeason(games, inputs, weekAgo), [games, inputs, weekAgo]);
+  const pct = (r: NhlBetRecord) => (r.wins + r.losses ? (100 * r.wins) / (r.wins + r.losses) : null);
+  const totChange = hasPrev ? change(pct(grade.total), pct(gradePrev.total)) : null;
+  const plChange = hasPrev ? change(pct(grade.puckLine), pct(gradePrev.puckLine)) : null;
+  const every = grade.moneyline.units + grade.puckLine.units + grade.total.units;
+  const everyPrev = gradePrev.moneyline.units + gradePrev.puckLine.units + gradePrev.total.units;
+  const everyChange = hasPrev ? Math.round((every - everyPrev) * 100) / 100 : null;
   const loading = isLoading ? "Loading…" : undefined;
 
   const standings = useMemo(() => buildStandings(games), [games]);
@@ -88,35 +93,50 @@ function NhlDashboard() {
             tone={tone(mlChange)}
           />
           <StatCard
-            label="Accuracy · log loss"
-            value={ll(all.v2.logLoss)}
+            label="Totals · model"
+            value={fmt(pct(grade.total))}
+            unit={pct(grade.total) === null ? undefined : "%"}
             note={
               loading ??
-              note(`old model ${ll(all.v1.logLoss)}`, all.book.logLoss !== null && `closing line ${ll(all.book.logLoss)}`, "lower is better")
+              note(
+                changeText(totChange),
+                `${rec(grade.total)} O/U · ${unitsText(grade.total.units)}`,
+                grade.avgGoals !== null &&
+                  grade.avgLine !== null &&
+                  `games avg ${grade.avgGoals.toFixed(1)} vs line ${grade.avgLine.toFixed(1)}`,
+              )
             }
-            tone={all.v2.logLoss !== null && all.v1.logLoss !== null ? (all.v2.logLoss < all.v1.logLoss ? "win" : "loss") : "mute"}
+            tone={tone(totChange)}
           />
           <StatCard
-            label={`Tracked · ${Math.round(TRACK_EDGE * 100)}+ pt edges`}
-            value={unitsText(t.units)}
+            label="Puck line · model"
+            value={fmt(pct(grade.puckLine))}
+            unit={pct(grade.puckLine) === null ? undefined : "%"}
             note={
               loading ??
-              (t.bets
-                ? `${t.wins}-${t.losses} · ROI ${t.roi !== null && t.roi > 0 ? "+" : ""}${(t.roi ?? 0).toFixed(1)}% at the opening price`
-                : "No tracked bets yet (needs ESPN opening lines)")
+              (grade.puckLine.wins + grade.puckLine.losses
+                ? note(changeText(plChange), `${rec(grade.puckLine)} on the puck line · ${unitsText(grade.puckLine.units)}`)
+                : "graded only with real puck-line prices · none from ESPN yet")
             }
-            tone={t.units > 0 ? "win" : t.units < 0 ? "loss" : "mute"}
+            tone={tone(plChange)}
           />
           <StatCard
-            label="Line moved our way"
-            value={moved ? ((t.movedToward / moved) * 100).toFixed(0) : "—"}
-            unit={moved ? "%" : undefined}
-            note={loading ?? (moved ? `${t.movedToward} of ${moved} tracked bets beat the closing line` : "Shown once tracked bets close")}
-            tone={moved ? (t.movedToward > t.movedAgainst ? "win" : "loss") : "mute"}
+            label="Model · every pick"
+            value={unitsText(every)}
+            note={
+              loading ??
+              note(
+                everyChange !== null &&
+                  `${everyChange > 0 ? "▲" : everyChange < 0 ? "▼" : "—"} ${Math.abs(everyChange).toFixed(2)}u wk/wk`,
+                `moneyline ${unitsText(grade.moneyline.units)}`,
+                "no ★ best bets for hockey yet",
+              )
+            }
+            tone={every > 0 ? "win" : every < 0 ? "loss" : "mute"}
           />
         </div>
         <p className="mt-2 font-mono text-[10px] uppercase tracking-wider text-faint">
-          {all.games} games graded · tracked bets 1u at the opening moneyline · each game projected from earlier games only ·{" "}
+          {grade.games} games graded · flat 1u per pick at the closing ESPN odds · each game projected from earlier games only ·{" "}
           <Link to="/nhl/model" className="text-acc">
             Model →
           </Link>
