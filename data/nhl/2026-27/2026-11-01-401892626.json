@@ -7,18 +7,18 @@
   "id": "129764",
   "abbr": "UTA",
   "name": "Utah Mammoth",
-  "score": 1
+  "score": 3
  },
  "home": {
   "id": "15",
   "abbr": "PHI",
   "name": "Philadelphia Flyers",
-  "score": 3
+  "score": 6
  },
  "neutral": false,
  "venue": "Xfinity Mobile Arena",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-10-31T15:50:13.117Z",
@@ -2416,5 +2416,9 @@
    "Porter Martone",
    "PHI"
   ]
+ },
+ "final": {
+  "away": 3,
+  "home": 6
  }
 }

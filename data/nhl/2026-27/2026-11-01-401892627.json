@@ -7,7 +7,7 @@
   "id": "6",
   "abbr": "EDM",
   "name": "Edmonton Oilers",
-  "score": 0
+  "score": 2
  },
  "home": {
   "id": "13",
@@ -18,7 +18,7 @@
  "neutral": false,
  "venue": "Madison Square Garden",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-10-31T15:50:13.117Z",

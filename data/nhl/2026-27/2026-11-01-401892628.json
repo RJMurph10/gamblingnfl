@@ -477,13 +477,14 @@
    ]
   },
   "close": {
-   "at": "2026-11-01T22:51:19.445Z",
+   "at": "2026-11-01T23:47:33.650Z",
    "scoreboard": [
     {
      "provider": {
       "id": "100",
       "name": "DraftKings",
-      "priority": 1
+      "priority": 1,
+      "displayName": "DraftKings"
      },
      "details": "OTT -118",
      "overUnder": 6.5,
@@ -975,8 +976,8 @@
    ]
   },
   "latest": {
-   "at": "2026-11-01T22:51:19.445Z",
-   "count": 544,
+   "at": "2026-11-01T23:47:33.650Z",
+   "count": 543,
    "rows": [
   {"a":"3775","t":"Total Points","ti":"1","op":[0.5,null,null],"cur":[0.5,null,null],"px":[100,110]},
   {"a":"3775","t":"Total Points","ti":"1","op":[0.5,null,null],"cur":[0.5,null,null],"px":[-135,-145]},
@@ -1020,8 +1021,8 @@
   {"a":"4271734","t":"Total Assists","ti":"2","op":[0.5,null,null],"cur":[0.5,null,null],"px":[-175,-185]},
   {"a":"4565228","t":"Total Assists","ti":"2","op":[0.5,null,null],"cur":[0.5,null,null],"px":[140,150]},
   {"a":"4565228","t":"Total Assists","ti":"2","op":[0.5,null,null],"cur":[0.5,null,null],"px":[-190,-200]},
-  {"a":"4565255","t":"Total Assists","ti":"2","op":[0.5,null,null],"cur":[0.5,null,null],"px":[205,225]},
-  {"a":"4565255","t":"Total Assists","ti":"2","op":[0.5,null,null],"cur":[0.5,null,null],"px":[-285,-310]},
+  {"a":"4565255","t":"Total Assists","ti":"2","op":[0.5,null,null],"cur":[0.5,null,null],"px":[200,225]},
+  {"a":"4565255","t":"Total Assists","ti":"2","op":[0.5,null,null],"cur":[0.5,null,null],"px":[-275,-310]},
   {"a":"4565262","t":"Total Assists","ti":"2","op":[0.5,null,null],"cur":[0.5,null,null],"px":[-120,-120]},
   {"a":"4565262","t":"Total Assists","ti":"2","op":[0.5,null,null],"cur":[0.5,null,null],"px":[-115,-115]},
   {"a":"4697384","t":"Total Assists","ti":"2","op":[0.5,null,null],"cur":[0.5,null,null],"px":[-125,-115]},
@@ -1281,8 +1282,8 @@
   {"a":"4271734","t":"Assists Milestones","ti":"219","op":[1,null,null],"cur":[2,null,null],"px":[750,135]},
   {"a":"4565228","t":"Assists Milestones","ti":"219","op":[1,null,null],"cur":[1,null,null],"px":[140,150]},
   {"a":"4565228","t":"Assists Milestones","ti":"219","op":[1,null,null],"cur":[2,null,null],"px":[850,150]},
-  {"a":"4565255","t":"Assists Milestones","ti":"219","op":[1,null,null],"cur":[1,null,null],"px":[205,225]},
-  {"a":"4565255","t":"Assists Milestones","ti":"219","op":[1,null,null],"cur":[2,null,null],"px":[1400,225]},
+  {"a":"4565255","t":"Assists Milestones","ti":"219","op":[1,null,null],"cur":[1,null,null],"px":[200,225]},
+  {"a":"4565255","t":"Assists Milestones","ti":"219","op":[1,null,null],"cur":[2,null,null],"px":[1300,225]},
   {"a":"4565262","t":"Assists Milestones","ti":"219","op":[1,null,null],"cur":[1,null,null],"px":[-120,-120]},
   {"a":"4565262","t":"Assists Milestones","ti":"219","op":[1,null,null],"cur":[2,null,null],"px":[425,-120]},
   {"a":"4587837","t":"Assists Milestones","ti":"219","op":[1,null,null],"cur":[1,null,null],"px":[260,270]},
@@ -1356,11 +1357,10 @@
   {"a":"3900219","t":"Shots on Goal Milestones","ti":"231","op":[2,null,null],"cur":[4,null,null],"px":[700,-125]},
   {"a":"3900219","t":"Shots on Goal Milestones","ti":"231","op":[2,null,null],"cur":[5,null,null],"px":[1900,-125]},
   {"a":"4271734","t":"Shots on Goal Milestones","ti":"231","op":[3,null,null],"cur":[1,null,null],"px":[-900,135]},
-  {"a":"4271734","t":"Shots on Goal Milestones","ti":"231","op":[3,null,null],"cur":[2,null,null],"px":[-195,135]},
-  {"a":"4271734","t":"Shots on Goal Milestones","ti":"231","op":[3,null,null],"cur":[3,null,null],"px":[145,135]},
+  {"a":"4271734","t":"Shots on Goal Milestones","ti":"231","op":[3,null,null],"cur":[2,null,null],"px":[-190,135]},
+  {"a":"4271734","t":"Shots on Goal Milestones","ti":"231","op":[3,null,null],"cur":[3,null,null],"px":[150,135]},
   {"a":"4271734","t":"Shots on Goal Milestones","ti":"231","op":[3,null,null],"cur":[4,null,null],"px":[380,135]},
   {"a":"4271734","t":"Shots on Goal Milestones","ti":"231","op":[3,null,null],"cur":[5,null,null],"px":[900,135]},
-  {"a":"4271734","t":"Shots on Goal Milestones","ti":"231","op":[3,null,null],"cur":[6,null,null],"px":[2000,135]},
   {"a":"4565228","t":"Shots on Goal Milestones","ti":"231","op":[3,null,null],"cur":[1,null,null],"px":[-1400,140]},
   {"a":"4565228","t":"Shots on Goal Milestones","ti":"231","op":[3,null,null],"cur":[2,null,null],"px":[-265,140]},
   {"a":"4565228","t":"Shots on Goal Milestones","ti":"231","op":[3,null,null],"cur":[3,null,null],"px":[105,140]},
@@ -1525,9 +1525,9 @@
  ]
   },
   "close": {
-   "at": "2026-11-01T22:51:19.445Z",
+   "at": "2026-11-01T23:47:33.650Z",
    "provider": 100,
-   "count": 544,
+   "count": 543,
    "rows": [
   {"a":"3775","t":"Total Points","ti":"1","op":[0.5,null,null],"cur":[0.5,null,null],"px":[100,110]},
   {"a":"3775","t":"Total Points","ti":"1","op":[0.5,null,null],"cur":[0.5,null,null],"px":[-135,-145]},
@@ -1571,8 +1571,8 @@
   {"a":"4271734","t":"Total Assists","ti":"2","op":[0.5,null,null],"cur":[0.5,null,null],"px":[-175,-185]},
   {"a":"4565228","t":"Total Assists","ti":"2","op":[0.5,null,null],"cur":[0.5,null,null],"px":[140,150]},
   {"a":"4565228","t":"Total Assists","ti":"2","op":[0.5,null,null],"cur":[0.5,null,null],"px":[-190,-200]},
-  {"a":"4565255","t":"Total Assists","ti":"2","op":[0.5,null,null],"cur":[0.5,null,null],"px":[205,225]},
-  {"a":"4565255","t":"Total Assists","ti":"2","op":[0.5,null,null],"cur":[0.5,null,null],"px":[-285,-310]},
+  {"a":"4565255","t":"Total Assists","ti":"2","op":[0.5,null,null],"cur":[0.5,null,null],"px":[200,225]},
+  {"a":"4565255","t":"Total Assists","ti":"2","op":[0.5,null,null],"cur":[0.5,null,null],"px":[-275,-310]},
   {"a":"4565262","t":"Total Assists","ti":"2","op":[0.5,null,null],"cur":[0.5,null,null],"px":[-120,-120]},
   {"a":"4565262","t":"Total Assists","ti":"2","op":[0.5,null,null],"cur":[0.5,null,null],"px":[-115,-115]},
   {"a":"4697384","t":"Total Assists","ti":"2","op":[0.5,null,null],"cur":[0.5,null,null],"px":[-125,-115]},
@@ -1832,8 +1832,8 @@
   {"a":"4271734","t":"Assists Milestones","ti":"219","op":[1,null,null],"cur":[2,null,null],"px":[750,135]},
   {"a":"4565228","t":"Assists Milestones","ti":"219","op":[1,null,null],"cur":[1,null,null],"px":[140,150]},
   {"a":"4565228","t":"Assists Milestones","ti":"219","op":[1,null,null],"cur":[2,null,null],"px":[850,150]},
-  {"a":"4565255","t":"Assists Milestones","ti":"219","op":[1,null,null],"cur":[1,null,null],"px":[205,225]},
-  {"a":"4565255","t":"Assists Milestones","ti":"219","op":[1,null,null],"cur":[2,null,null],"px":[1400,225]},
+  {"a":"4565255","t":"Assists Milestones","ti":"219","op":[1,null,null],"cur":[1,null,null],"px":[200,225]},
+  {"a":"4565255","t":"Assists Milestones","ti":"219","op":[1,null,null],"cur":[2,null,null],"px":[1300,225]},
   {"a":"4565262","t":"Assists Milestones","ti":"219","op":[1,null,null],"cur":[1,null,null],"px":[-120,-120]},
   {"a":"4565262","t":"Assists Milestones","ti":"219","op":[1,null,null],"cur":[2,null,null],"px":[425,-120]},
   {"a":"4587837","t":"Assists Milestones","ti":"219","op":[1,null,null],"cur":[1,null,null],"px":[260,270]},
@@ -1907,11 +1907,10 @@
   {"a":"3900219","t":"Shots on Goal Milestones","ti":"231","op":[2,null,null],"cur":[4,null,null],"px":[700,-125]},
   {"a":"3900219","t":"Shots on Goal Milestones","ti":"231","op":[2,null,null],"cur":[5,null,null],"px":[1900,-125]},
   {"a":"4271734","t":"Shots on Goal Milestones","ti":"231","op":[3,null,null],"cur":[1,null,null],"px":[-900,135]},
-  {"a":"4271734","t":"Shots on Goal Milestones","ti":"231","op":[3,null,null],"cur":[2,null,null],"px":[-195,135]},
-  {"a":"4271734","t":"Shots on Goal Milestones","ti":"231","op":[3,null,null],"cur":[3,null,null],"px":[145,135]},
+  {"a":"4271734","t":"Shots on Goal Milestones","ti":"231","op":[3,null,null],"cur":[2,null,null],"px":[-190,135]},
+  {"a":"4271734","t":"Shots on Goal Milestones","ti":"231","op":[3,null,null],"cur":[3,null,null],"px":[150,135]},
   {"a":"4271734","t":"Shots on Goal Milestones","ti":"231","op":[3,null,null],"cur":[4,null,null],"px":[380,135]},
   {"a":"4271734","t":"Shots on Goal Milestones","ti":"231","op":[3,null,null],"cur":[5,null,null],"px":[900,135]},
-  {"a":"4271734","t":"Shots on Goal Milestones","ti":"231","op":[3,null,null],"cur":[6,null,null],"px":[2000,135]},
   {"a":"4565228","t":"Shots on Goal Milestones","ti":"231","op":[3,null,null],"cur":[1,null,null],"px":[-1400,140]},
   {"a":"4565228","t":"Shots on Goal Milestones","ti":"231","op":[3,null,null],"cur":[2,null,null],"px":[-265,140]},
   {"a":"4565228","t":"Shots on Goal Milestones","ti":"231","op":[3,null,null],"cur":[3,null,null],"px":[105,140]},
