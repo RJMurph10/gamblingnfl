@@ -70,7 +70,7 @@ function CbbGamePage() {
     <>
       <PageTitle
         eyebrow={`Men's college basketball · ${etDayLabel(etDayKey(game.date))}${game.note ? ` · ${game.note}` : ""}`}
-        title={`${game.away.team.short} ${game.neutral ? "vs" : "at"} ${game.home.team.short}`}
+        title={`${game.away.team.short} at ${game.home.team.short}`}
       />
       <div className="space-y-6">
         <Panel>
