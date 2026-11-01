@@ -320,8 +320,8 @@ function Upcoming({ league, tabs }: { league: "nba" | "nfl"; tabs: ReactNode }) 
   const q = useQuery({
     queryKey: ["upcoming-props", league],
     queryFn: () => getUpcomingProps({ data: { league } }),
-    staleTime: 2 * 60_000,
-    refetchInterval: 5 * 60_000,
+    staleTime: 5 * 60_000,
+    refetchInterval: 15 * 60_000,
   });
   const games: UpcomingPropGame[] = useMemo(() => q.data ?? [], [q.data]);
   const game = games.find((g) => g.id === gameId) ?? games[0];
@@ -341,8 +341,8 @@ function Upcoming({ league, tabs }: { league: "nba" | "nfl"; tabs: ReactNode }) 
       <PageTitle eyebrow={`${L} · Player props`} title="Prop lines" />
       {tabs}
       <p className="-mt-2 mb-5 max-w-3xl text-sm text-mute">
-        DraftKings player lines for upcoming games as they stand now, with where each line opened.
-        Refreshes every few minutes; lines appear a day or two before the game.
+        DraftKings player lines for upcoming games, with where each line opened. Updated every few
+        hours, and every hour on game day; lines appear a day or two before the game.
       </p>
       <Panel padded={false} className="mb-6">
         <div className="flex gap-2 overflow-x-auto px-4 py-3">
