@@ -15,7 +15,7 @@ import type {
 } from "@/lib/shared/prop-history.server";
 
 const COVERAGE: Record<PropLeague, string> = {
-  nfl: "Yardage, reception and attempt props from 2024; 2022–23 has mostly touchdown props.",
+  nfl: "Yardage, reception and attempt props from 2024; 2022–23 has mostly touchdown props. DraftKings prices for 2026 come from a weekly pull of the main yardage and reception props.",
   nba: "From the 2022–23 season on.",
   nhl: "Points, goals, assists, shots, hits, blocks and saves from the 2023–24 season on.",
   mlb: "Hitter props (hits, home runs, runs, RBIs) and pitcher props (strikeouts, outs, earned runs) from 2024 on.",

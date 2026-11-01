@@ -70,5 +70,5 @@ jobs:
             done
             return 1
           }
-          publish props-site "node ../app/scripts/line-history/build-props-site.mjs --league ${{ matrix.league }} --data ../work/ph --out . --season ${{ steps.season.outputs.season }}"
+          publish props-site "node ../app/scripts/line-history/build-props-site.mjs --league ${{ matrix.league }} --data ../work/ph --out . --season ${{ steps.season.outputs.season }} --prices ./${{ matrix.league }}/odds-api"
           publish props-history "mkdir -p ${{ matrix.league }} && cp ../work/ph/${{ matrix.league }}/*.jsonl.gz ${{ matrix.league }}/"

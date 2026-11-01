@@ -1,0 +1,59 @@
+name: NFL prop prices (The Odds API)
+
+# DraftKings over/under prices for NFL player props, saved to props-site/nfl/odds-api.
+# Free plan: 500 credits a month; each pull costs 6 credits per game.
+#   Thursday: the Thursday night game.  Saturday night: every Sunday and Monday game.
+# Needs the repository secret ODDS_API_KEY; without it the job does nothing.
+
+on:
+  schedule:
+    - cron: "41 20 * * 4" # Thu 20:41 UTC → games in the next 30h
+    - cron: "41 23 * * 6" # Sat 23:41 UTC → games in the next 60h
+  workflow_dispatch:
+  push:
+    branches: [nfl-prices]
+    paths: [scripts/line-history/odds-api.trigger]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: props-site-odds-api
+  cancel-in-progress: false
+
+jobs:
+  pull:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: app
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Pull prices and publish
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        run: |
+          set -e
+          if [ -z "$ODDS_API_KEY" ]; then echo "ODDS_API_KEY secret not set; skipping."; exit 0; fi
+          HOURS=60
+          if [ "$(date -u +%u)" = "4" ]; then HOURS=30; fi
+          node app/scripts/line-history/odds-api-nfl.mjs --out pull --hours $HOURS
+          if [ -z "$(ls pull 2>/dev/null)" ]; then echo "nothing pulled"; exit 0; fi
+          url="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+          for attempt in 1 2 3 4 5; do
+            rm -rf site-repo && git clone -q --depth 1 --branch props-site "$url" site-repo
+            mkdir -p site-repo/nfl/odds-api && cp pull/*.json site-repo/nfl/odds-api/
+            # the hourly line saver merges these into upcoming.json; the daily props job into past results
+            cd site-repo
+            git config user.name "line-history-bot"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add -A
+            if git diff --cached --quiet; then echo "no changes"; exit 0; fi
+            git commit -q -m "NFL prop prices $(date -u +%Y-%m-%dT%H:%MZ)"
+            if git push -q origin props-site; then exit 0; fi
+            cd ..
+            sleep $((attempt * 15))
+          done
+          exit 1

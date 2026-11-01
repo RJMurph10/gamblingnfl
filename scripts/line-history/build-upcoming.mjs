@@ -9,6 +9,7 @@
  */
 import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
+import { loadPrices } from "./odds-api-prices.mjs";
 
 const args = process.argv.slice(2);
 const opt = (n, d) => {
@@ -19,7 +20,8 @@ const KEY = opt("league", "nba");
 const DATA = opt("data", "data");
 const OUT = opt("out", "props-site");
 const NOW = Date.now();
-const AHEAD = (KEY === "nfl" || KEY === "cfb" ? 8 : 3) * 86_400_000;
+const PRICES = opt("prices"); // saved Odds API pulls (NFL), to fill prices ESPN doesn't show
+const AHEAD =(KEY === "nfl" || KEY === "cfb" ? 8 : 3) * 86_400_000;
 
 const LABELS =
   {
@@ -130,6 +132,8 @@ async function main() {
   const root = join(DATA, KEY);
   const seasons = (await readdir(root).catch(() => [])).sort().slice(-2);
   const games = [];
+  const price = await loadPrices(PRICES);
+  let filled = 0;
   for (const season of seasons) {
     for (const f of await readdir(join(root, season)).catch(() => [])) {
       if (!f.endsWith(".json")) continue;
@@ -146,7 +150,12 @@ async function main() {
       for (const l of mainLines(snap.rows)) {
         const who = names[l.a];
         if (!who) continue;
-        props.push([who[0], who[1], LABELS[l.t], l.line, l.o, l.u, l.opened]);
+        let { o, u } = l;
+        if (o == null && u == null && price.size) {
+          const p = price(rec.home?.name, rec.date, who[0], LABELS[l.t], l.line);
+          if (p) [o, u, filled] = [p[0], p[1], filled + 1];
+        }
+        props.push([who[0], who[1], LABELS[l.t], l.line, o, u, l.opened]);
       }
       if (!props.length) continue;
       props.sort(
@@ -166,7 +175,7 @@ async function main() {
   games.sort((a, b) => a.date.localeCompare(b.date));
   await mkdir(join(OUT, KEY), { recursive: true });
   await writeFile(join(OUT, KEY, "upcoming.json"), JSON.stringify(games));
-  console.log(`${KEY}: ${games.length} upcoming games with prop lines`);
+  console.log(`${KEY}: ${games.length} upcoming games with prop lines${price.size ? `, ${filled} priced from The Odds API` : ""}`);
 }
 
 main().catch((e) => {

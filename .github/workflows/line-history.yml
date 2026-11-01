@@ -67,7 +67,7 @@ jobs:
           for attempt in 1 2 3 4 5; do
             rm -rf site-repo && git clone -q --depth 1 --branch props-site "$url" site-repo
             for lg in nba nfl nhl mlb; do
-              node app/scripts/line-history/build-upcoming.mjs --league $lg --data data-repo/data --out site-repo
+              node app/scripts/line-history/build-upcoming.mjs --league $lg --data data-repo/data --out site-repo --prices site-repo/$lg/odds-api
             done
             cd site-repo
             git config user.name "line-history-bot"
