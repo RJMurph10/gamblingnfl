@@ -7,18 +7,18 @@
   "id": "12",
   "abbr": "KC",
   "name": "Kansas City Chiefs",
-  "score": 0
+  "score": 7
  },
  "home": {
   "id": "7",
   "abbr": "DEN",
   "name": "Denver Broncos",
-  "score": 0
+  "score": 3
  },
  "neutral": false,
  "venue": "Empower Field at Mile High",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-10-31T08:02:20.928Z",

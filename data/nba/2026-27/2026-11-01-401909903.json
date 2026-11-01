@@ -7,13 +7,13 @@
   "id": "2",
   "abbr": "BOS",
   "name": "Boston Celtics",
-  "score": 38
+  "score": 55
  },
  "home": {
   "id": "19",
   "abbr": "ORL",
   "name": "Orlando Magic",
-  "score": 34
+  "score": 50
  },
  "neutral": false,
  "venue": "Kia Center",

@@ -7,13 +7,13 @@
   "id": "24",
   "abbr": "LAC",
   "name": "Los Angeles Chargers",
-  "score": 0
+  "score": 3
  },
  "home": {
   "id": "14",
   "abbr": "LAR",
   "name": "Los Angeles Rams",
-  "score": 0
+  "score": 3
  },
  "neutral": false,
  "venue": "SoFi Stadium",

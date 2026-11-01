@@ -7,18 +7,18 @@
   "id": "17",
   "abbr": "NE",
   "name": "New England Patriots",
-  "score": 0
+  "score": 3
  },
  "home": {
   "id": "15",
   "abbr": "MIA",
   "name": "Miami Dolphins",
-  "score": 0
+  "score": 3
  },
  "neutral": false,
  "venue": "Hard Rock Stadium",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-10-31T08:02:20.928Z",
