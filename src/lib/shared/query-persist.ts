@@ -25,6 +25,18 @@ const VERSION = 1;
 /** Copies older than this are ignored (the season has moved on too much to be useful). */
 const MAX_AGE_MS = 14 * 24 * 3_600_000;
 const SAVE_DELAY_MS = 2_000;
+/** A saved copy older than this can't say which games are live any more. */
+const LIVE_FRESH_MS = 10 * 60_000;
+
+/**
+ * Games that were live when the copy was saved are left out once it's more than a few minutes old:
+ * otherwise last night's games show as "live" (with last night's scores) until the refresh lands.
+ * They come back, with their real status, as soon as the server answers.
+ */
+export function withoutStaleLive(entry: Pick<Saved, "data" | "updatedAt">, now = Date.now()): unknown {
+  if (now - entry.updatedAt < LIVE_FRESH_MS || !Array.isArray(entry.data)) return entry.data;
+  return entry.data.filter((g) => (g as { status?: unknown } | null)?.status !== "live");
+}
 
 interface Saved {
   key: string;
@@ -104,7 +116,7 @@ export function useQueryPersistence(queryClient: QueryClient) {
       // Never overwrite data the server already delivered this visit.
       if (state?.dataUpdatedAt) return;
       // The old timestamp keeps the copy "stale", so the page still refreshes it in the background.
-      queryClient.setQueryData(entry.queryKey, entry.data, { updatedAt: entry.updatedAt });
+      queryClient.setQueryData(entry.queryKey, withoutStaleLive(entry), { updatedAt: entry.updatedAt });
     };
 
     void readAll().then((entries) => {
