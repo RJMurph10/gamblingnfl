@@ -459,8 +459,8 @@ function Upcoming({ league, tabs }: { league: "nba" | "nfl"; tabs: ReactNode }) 
             </table>
           </div>
           <p className="px-4 py-3 font-mono text-[10px] text-faint">
-            DraftKings via ESPN. "—" for prices means the line is posted without a price in the
-            feed.
+            DraftKings via ESPN{game.at ? `, as of ${kickoff(game.at)}` : ""}. "—" for prices means
+            the line is posted without a price in the feed.
           </p>
         </Panel>
       ) : null}
