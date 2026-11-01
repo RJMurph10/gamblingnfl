@@ -194,12 +194,16 @@ async function main() {
         const bx = g.box?.[p.a];
         if (!bx || bx.dnp) continue;
         const [label, stat] = MARKETS[p.t];
-        let { o, u } = p;
+        let { line, o, u } = p;
         if (o == null && u == null && price.size) {
-          const px = price(g.home?.name, g.date, bx.n, label, p.line);
+          // ESPN's NFL lines have no prices: use DraftKings' priced line from the last pull before
+          // kickoff (same line as ESPN's opener when it hasn't moved)
+          const px = price(g.home?.name, g.date, bx.n, label, line) ?? null;
+          const mn = px ? null : price.main(g.home?.name, g.date, bx.n, label);
           if (px) [o, u] = px;
+          else if (mn) [line, o, u] = mn;
         }
-        props.push([bx.n, bx.tm, label, p.line, o, u, stat(bx.s ?? {})]);
+        props.push([bx.n, bx.tm, label, line, o, u, stat(bx.s ?? {})]);
       }
       if (!props.length) continue;
       props.sort(
