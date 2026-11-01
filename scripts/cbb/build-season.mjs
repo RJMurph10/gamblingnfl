@@ -4,7 +4,7 @@
  *   <out>/cbb/season-<YYYY-YY>.json
  *   { updated, season, conferences: { id: [name, short] },
  *     teams: { id: [abbr, name, short, nickname, color, logo, confId] },
- *     games: [[id, date, homeId, homeScore, awayId, awayScore, neutral, conf, type, line|null, note?]] }
+ *     games: [[id, date, homeId, homeScore, awayId, awayScore, neutral, conf, type, line|null, note, location]] }
  * line = [homeSpread, total, mlHome, mlAway, spreadOddsHome, spreadOddsAway, overOdds, underOdds]
  *
  * Finished games only (the site reads live and upcoming games straight from ESPN). Closing lines come
@@ -133,6 +133,8 @@ async function main() {
           ];
       }
       const note = comp.notes?.[0]?.headline;
+      const addr = comp.venue?.address;
+      const location = [addr?.city, addr?.state].filter(Boolean).join(", ");
       const row = [
         String(e.id),
         String(e.date),
@@ -144,7 +146,8 @@ async function main() {
         comp.conferenceCompetition ? 1 : 0,
         Number(e?.season?.type ?? 2),
         games.get(String(e.id))?.[9] ?? null,
-        ...(note ? [String(note)] : []),
+        note ? String(note) : "",
+        location,
       ];
       games.set(row[0], row);
       finals.push(row);
