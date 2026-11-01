@@ -1735,8 +1735,8 @@
    ]
   },
   "latest": {
-   "at": "2026-11-01T05:03:40.916Z",
-   "count": 1518,
+   "at": "2026-11-01T08:16:40.591Z",
+   "count": 1522,
    "rows": [
   {"a":"4426338","t":"Total Passing Yards (incl. overtime)","ti":"8","op":[203.5,null,null],"cur":[201.5,null,null]},
   {"a":"4426338","t":"Total Passing Yards (incl. overtime)","ti":"8","op":[203.5,null,null],"cur":[201.5,null,null]},
@@ -1764,6 +1764,8 @@
   {"a":"4241985","t":"Total Rushing Yards (incl. overtime)","ti":"12","op":[25.5,null,null],"cur":[29.5,null,null]},
   {"a":"4426338","t":"Total Rushing Yards (incl. overtime)","ti":"12","op":[17.5,null,null],"cur":[15.5,null,null]},
   {"a":"4426338","t":"Total Rushing Yards (incl. overtime)","ti":"12","op":[17.5,null,null],"cur":[15.5,null,null]},
+  {"a":"4567048","t":"Total Rushing Yards (incl. overtime)","ti":"12","op":[84.5,null,null],"cur":[88.5,null,null]},
+  {"a":"4567048","t":"Total Rushing Yards (incl. overtime)","ti":"12","op":[84.5,null,null],"cur":[88.5,null,null]},
   {"a":"4702555","t":"Total Rushing Yards (incl. overtime)","ti":"12","op":[37.5,null,null],"cur":[44.5,null,null]},
   {"a":"4702555","t":"Total Rushing Yards (incl. overtime)","ti":"12","op":[37.5,null,null],"cur":[44.5,null,null]},
   {"a":"4832955","t":"Total Rushing Yards (incl. overtime)","ti":"12","op":[7.5,null,null],"cur":[8.5,null,null]},
@@ -2413,6 +2415,7 @@
   {"a":"3128429","t":"Receiving Yards Milestones","ti":"195","op":[45,null,null],"cur":[110,null,null]},
   {"a":"3128429","t":"Receiving Yards Milestones","ti":"195","op":[45,null,null],"cur":[120,null,null]},
   {"a":"3128429","t":"Receiving Yards Milestones","ti":"195","op":[45,null,null],"cur":[130,null,null]},
+  {"a":"3128429","t":"Receiving Yards Milestones","ti":"195","op":[45,null,null],"cur":[140,null,null]},
   {"a":"4240472","t":"Receiving Yards Milestones","ti":"195","op":[13,null,null],"cur":[10,null,null]},
   {"a":"4240472","t":"Receiving Yards Milestones","ti":"195","op":[13,null,null],"cur":[15,null,null]},
   {"a":"4240472","t":"Receiving Yards Milestones","ti":"195","op":[13,null,null],"cur":[20,null,null]},
@@ -2821,6 +2824,7 @@
   {"a":"4382401","t":"Tackles + Assists Milestones","ti":"206","op":[4,null,null],"cur":[6,null,null]},
   {"a":"4382401","t":"Tackles + Assists Milestones","ti":"206","op":[4,null,null],"cur":[7,null,null]},
   {"a":"4382401","t":"Tackles + Assists Milestones","ti":"206","op":[4,null,null],"cur":[8,null,null]},
+  {"a":"4382401","t":"Tackles + Assists Milestones","ti":"206","op":[4,null,null],"cur":[9,null,null]},
   {"a":"4610705","t":"Tackles + Assists Milestones","ti":"206","op":[5,null,null],"cur":[2,null,null]},
   {"a":"4610705","t":"Tackles + Assists Milestones","ti":"206","op":[5,null,null],"cur":[3,null,null]},
   {"a":"4610705","t":"Tackles + Assists Milestones","ti":"206","op":[5,null,null],"cur":[4,null,null]},
