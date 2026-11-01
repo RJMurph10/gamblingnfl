@@ -1,0 +1,340 @@
+
+=== range week Dec 2025
+{
+ "status": 400
+}
+
+=== range opening week Nov 2025
+{
+ "status": 400
+}
+
+=== upcoming odds
+{
+ "events": 182,
+ "odds": {
+  "provider": {
+   "id": "100",
+   "name": "DraftKings",
+   "priority": 1,
+   "logos": [
+    {
+     "href": "https://a.espncdn.com/i/betting/Draftkings_Light.svg",
+     "rel": [
+      "light"
+     ]
+    },
+    {
+     "href": "https://a.espncdn.com/i/betting/Draftkings_Dark.svg",
+     "rel": [
+      "dark"
+     ]
+    }
+   ],
+   "displayName": "DraftKings"
+  },
+  "details": "NIU -5.5",
+  "overUnder": 147.5,
+  "spread": -5.5,
+  "awayTeamOdds": {
+   "favorite": false,
+   "underdog": true,
+   "team": {
+    "id": "2755",
+    "uid": "s:40~l:41~t:2755",
+    "abbreviation": "GRAM",
+    "name": "Tigers",
+    "displayName": "Grambling Tigers",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2755.png"
+   },
+   "favoriteAtOpen": false
+  },
+  "homeTeamOdds": {
+   "favorite": true,
+   "underdog": false,
+   "team": {
+    "id": "2459",
+    "uid": "s:40~l:41~t:2459",
+    "abbreviation": "NIU",
+    "name": "Huskies",
+    "displayName": "Northern Illinois Huskies",
+    "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2459.png"
+   },
+   "favoriteAtOpen": true
+  },
+  "moneyline": {
+   "displayName": "Moneyline",
+   "shortDisplayName": "ML",
+   "home": {
+    "close": {
+     "odds": "-238",
+     "link": {
+      "language": "en-US",
+      "rel": [
+       "home",
+       "desktop",
+       "bets",
+       "draftkings"
+      ],
+      "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34941632%3Foutcomes%3D0ML87039289_1",
+      "text": "Home Bet",
+      "shortText": "Home Bet",
+      "isExternal": true,
+      "isPremium": false,
+      "tracking": {
+       "campaign": "betting-integrations",
+       "tags": {
+        "league": "mens-college-basketball",
+        "sport": "basketball",
+        "gameId": 401920912,
+        "betSide": "home",
+        "betType": "straight"
+       }
+      }
+     }
+    },
+    "open": {
+     "odds": "-238"
+    }
+   },
+   "away": {
+    "close": {
+     "odds": "+195",
+     "link": {
+      "language": "en-US",
+      "rel": [
+       "away",
+       "desktop",
+       "bets",
+       "draftkings"
+      ],
+      "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34941632%3Foutcomes%3D0ML87039289_3",
+      "text
+
+=== standings
+{
+ "status": 200,
+ "keys": [
+  "uid",
+  "id",
+  "name",
+  "abbreviation",
+  "shortName",
+  "children",
+  "parent",
+  "isConference",
+  "season",
+  "links",
+  "seasons"
+ ],
+ "children": 31,
+ "first": [
+  {
+   "id": "1",
+   "name": "America East Conference",
+   "abbreviation": "aeast",
+   "shortName": "Am. East",
+   "entries": 9,
+   "entry0": {
+    "team": "2066",
+    "stats": [
+     [
+      "avgPointsAgainst",
+      "avgpointsagainst",
+      "74.9"
+     ],
+     [
+      "avgPointsFor",
+      "avgpointsfor",
+      "67.9"
+     ],
+     [
+      "gamesBehind",
+      "gamesbehind",
+      "15"
+     ],
+     [
+      "leagueWinPercent",
+      "leaguewinpercent",
+      "0.250"
+     ],
+     [
+      "losses",
+      "losses",
+      "23"
+     ],
+     [
+      "playoffSeed",
+      "playoffseed",
+      "9"
+     ],
+     [
+      "pointDifferential",
+      "pointdifferential",
+      "-216"
+     ],
+     [
+      "pointsAgainst",
+      "pointsagainst",
+      "2321"
+     ],
+     [
+      "pointsFor",
+      "pointsfor",
+      "2105"
+     ],
+     [
+      "streak",
+      "streak",
+      "W2"
+     ],
+     [
+      "winPercent",
+      "winpercent",
+      ".258"
+     ],
+     [
+      "wins",
+      "wins",
+      "8"
+     ],
+     [
+      "gamesAhead",
+      "gamesahead",
+      "-"
+     ],
+     [
+      "overall",
+      "total",
+      "8-23"
+     ],
+     [
+      "avgPointsAgainst",
+      "home_avgpointsagainst",
+      "69.2"
+     ],
+     [
+      "avgPointsFor",
+      "home_avgpointsfor",
+      "69.2"
+     ],
+     [
+      "gamesBehind",
+      "home_gamesbehind",
+      "7"
+     ],
+     [
+      "leagueWinPercent",
+      "home_leaguewinpercent",
+      "0.375"
+     ],
+     [
+      "losses",
+      "home_losses",
+      "8"
+     ],
+     [
+      "playoffSeed",
+      "home_playoffseed",
+      "9"
+     ],
+     [
+      "pointDifferential",
+      "home_pointdifferential",
+      "0"
+     ],
+     [
+      "pointsAgainst",
+      "home_pointsagainst",
+      "1038"
+     ],
+     [
+      "pointsFor",
+      "home_pointsfor",
+      "1038"
+     ],
+     [
+      "streak",
+      "home_streak",
+      "W2"
+     ],
+     [
+      "winPercent",
+      "home_winpercent",
+      ".467"
+     ],
+     [
+      "wins",
+      "home_wins",
+      "7"
+     ],
+     [
+      "gamesAhead",
+      "home_gamesahead",
+      "-"
+     ],
+     [
+      "Home",
+      "home",
+      "7-8"
+     ],
+     [
+      "avgPointsAgainst",
+      "road_avgpointsagainst",
+      "81.3"
+     ],
+     [
+      "avgPointsFor",
+      "road_avgpointsfor",
+      "67.7"
+     ],
+
+=== groups
+{
+ "status": 200,
+ "keys": [
+  "status",
+  "groups"
+ ],
+ "g": "{\"status\":\"success\",\"groups\":[{\"name\":\"NCAA Division I\",\"abbreviation\":\"NCAA\",\"children\":[{\"name\":\"America East Conference\",\"abbreviation\":\"aeast\",\"teams\":[{\"id\":\"160\",\"slug\":\"new-hampshire-wildcats\",\"name\":\"Wildcats\",\"abbreviation\":\"UNH\",\"displayName\":\"New Hampshire Wildcats\",\"shortDisplayName\":\"New Hampshire\",\"logos\":[{\"href\":\"https://a.espncdn.com/i/teamlogos/ncaa/500/160.png\",\"width\":500,\"height\":500,\"alt\":\"\",\"rel\":[\"full\",\"default\"],\"lastUpdated\":\"2018-06-05T12:08Z\"},{\"href\":\"https://a.espncdn.com/i/teamlogos/ncaa/500-dark/160.png\",\"width\":500,\"height\":500,\"alt\":\"\",\"rel\":[\"full\",\"dark\"],\"lastUpdated\":\"2018-06-05T12:08Z\"},{\"href\":\"https://a.espncdn.com/guid/77ab3dcf-42f8-1b94-cd92-bf56fc6eb30c/logos/primary_logo_on_white_color.png\",\"width\":4096,\"height\":4096,\"alt\":\"\",\"rel\":[\"full\",\"primary_logo_on_white_color\"],\"lastUpdated\":\"2026-07-23T17:35Z\"},{\"href\":\"https://a.espncdn.com/guid/77ab3dcf-42f8-1b94-cd92-bf56fc6eb30c/logos/primary_logo_on_black_color.png\",\"width\":4096,\"height\":4096,\"alt\":\"\",\"rel\":[\"full\",\"primary_logo_on_black_color\"],\"lastUpdated\":\"2026-07-23T17:35Z\"},{\"href\":\"https://a.espncdn.com/guid/77ab3dcf-42f8-1b94-cd92-bf56fc6eb30c/logos/primary_logo_on_primary_color.png\",\"width\":4096,\"height\":4096,\"alt\":\"\",\"rel\":[\"full\",\"primary_logo_on_primary_color\"],\"lastUpdated\":\"2026-07-23T17:35Z\"},{\"href\":\"https://a.espncdn.com/guid/77ab3dcf-42f8-1b94-cd92-bf56fc6eb30c/logos/primary_logo_on_secondary_color.png\",\"width\":4096,\"height\":4096,\"alt\":\"\",\"rel\":[\"full\",\"primary_log"
+}
+
+=== rankings
+{
+ "status": 200,
+ "rankings": [
+  {
+   "name": "AP Top 25",
+   "n": 25,
+   "r0": {
+    "current": 1,
+    "team": "57"
+   }
+  },
+  {
+   "name": "Coaches Poll",
+   "n": 25,
+   "r0": {
+    "current": 1,
+    "team": "57"
+   }
+  }
+ ]
+}
+
+=== team schedule
+{
+ "status": 200,
+ "events": 35,
+ "team": {
+  "id": "2509",
+  "abbr": "PUR",
+  "standing": "1st in Big Ten"
+ }
+}
+
+=== teams
+{
+ "status": 200,
+ "n": 362
+}
