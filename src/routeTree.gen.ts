@@ -11,12 +11,25 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ModelRouteImport } from './routes/model'
+import { Route as PropHistoryRouteImport } from './routes/prop-history'
 import { Route as PropsRouteImport } from './routes/props'
 import { Route as CfbIndexRouteImport } from './routes/cfb.index'
 import { Route as CfbModelRouteImport } from './routes/cfb.model'
 import { Route as CfbPropsRouteImport } from './routes/cfb.props'
 import { Route as GamesIndexRouteImport } from './routes/games.index'
 import { Route as GamesGameIdRouteImport } from './routes/games.$gameId'
+import { Route as MlbIndexRouteImport } from './routes/mlb.index'
+import { Route as MlbModelRouteImport } from './routes/mlb.model'
+import { Route as MlbPropsRouteImport } from './routes/mlb.props'
+import { Route as NbaIndexRouteImport } from './routes/nba.index'
+import { Route as NbaModelRouteImport } from './routes/nba.model'
+import { Route as NbaPropHistoryRouteImport } from './routes/nba.prop-history'
+import { Route as NbaPropsRouteImport } from './routes/nba.props'
+import { Route as NhlIndexRouteImport } from './routes/nhl.index'
+import { Route as NhlModelRouteImport } from './routes/nhl.model'
+import { Route as NhlOddsExportRouteImport } from './routes/nhl.odds-export'
+import { Route as NhlPropHistoryRouteImport } from './routes/nhl.prop-history'
+import { Route as NhlPropsRouteImport } from './routes/nhl.props'
 import { Route as PlayersIndexRouteImport } from './routes/players.index'
 import { Route as PlayersPlayerIdRouteImport } from './routes/players.$playerId'
 import { Route as TeamsIndexRouteImport } from './routes/teams.index'
@@ -27,15 +40,22 @@ import { Route as CfbPlayersIndexRouteImport } from './routes/cfb.players.index'
 import { Route as CfbPlayersPlayerIdRouteImport } from './routes/cfb.players.$playerId'
 import { Route as CfbTeamsIndexRouteImport } from './routes/cfb.teams.index'
 import { Route as CfbTeamsTeamIdRouteImport } from './routes/cfb.teams.$teamId'
-import { Route as NbaIndexRouteImport } from './routes/nba.index'
-import { Route as NbaModelRouteImport } from './routes/nba.model'
-import { Route as NbaPropsRouteImport } from './routes/nba.props'
-import { Route as NbaGamesGameIdRouteImport } from './routes/nba.games.$gameId'
-import { Route as NbaPlayersPlayerIdRouteImport } from './routes/nba.players.$playerId'
-import { Route as NbaTeamsTeamIdRouteImport } from './routes/nba.teams.$teamId'
-import { Route as NbaPlayersIndexRouteImport } from './routes/nba.players.index'
-import { Route as NbaTeamsIndexRouteImport } from './routes/nba.teams.index'
+import { Route as MlbGamesIndexRouteImport } from './routes/mlb.games.index'
+import { Route as MlbGamesGameIdRouteImport } from './routes/mlb.games.$gameId'
+import { Route as MlbTeamsIndexRouteImport } from './routes/mlb.teams.index'
+import { Route as MlbTeamsTeamIdRouteImport } from './routes/mlb.teams.$teamId'
 import { Route as NbaGamesIndexRouteImport } from './routes/nba.games.index'
+import { Route as NbaGamesGameIdRouteImport } from './routes/nba.games.$gameId'
+import { Route as NbaPlayersIndexRouteImport } from './routes/nba.players.index'
+import { Route as NbaPlayersPlayerIdRouteImport } from './routes/nba.players.$playerId'
+import { Route as NbaTeamsIndexRouteImport } from './routes/nba.teams.index'
+import { Route as NbaTeamsTeamIdRouteImport } from './routes/nba.teams.$teamId'
+import { Route as NhlGamesIndexRouteImport } from './routes/nhl.games.index'
+import { Route as NhlGamesGameIdRouteImport } from './routes/nhl.games.$gameId'
+import { Route as NhlPlayersIndexRouteImport } from './routes/nhl.players.index'
+import { Route as NhlPlayersPlayerIdRouteImport } from './routes/nhl.players.$playerId'
+import { Route as NhlTeamsIndexRouteImport } from './routes/nhl.teams.index'
+import { Route as NhlTeamsTeamIdRouteImport } from './routes/nhl.teams.$teamId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -45,6 +65,11 @@ const IndexRoute = IndexRouteImport.update({
 const ModelRoute = ModelRouteImport.update({
   id: '/model',
   path: '/model',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PropHistoryRoute = PropHistoryRouteImport.update({
+  id: '/prop-history',
+  path: '/prop-history',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PropsRoute = PropsRouteImport.update({
@@ -75,6 +100,66 @@ const GamesIndexRoute = GamesIndexRouteImport.update({
 const GamesGameIdRoute = GamesGameIdRouteImport.update({
   id: '/games/$gameId',
   path: '/games/$gameId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MlbIndexRoute = MlbIndexRouteImport.update({
+  id: '/mlb/',
+  path: '/mlb/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MlbModelRoute = MlbModelRouteImport.update({
+  id: '/mlb/model',
+  path: '/mlb/model',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MlbPropsRoute = MlbPropsRouteImport.update({
+  id: '/mlb/props',
+  path: '/mlb/props',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NbaIndexRoute = NbaIndexRouteImport.update({
+  id: '/nba/',
+  path: '/nba/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NbaModelRoute = NbaModelRouteImport.update({
+  id: '/nba/model',
+  path: '/nba/model',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NbaPropHistoryRoute = NbaPropHistoryRouteImport.update({
+  id: '/nba/prop-history',
+  path: '/nba/prop-history',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NbaPropsRoute = NbaPropsRouteImport.update({
+  id: '/nba/props',
+  path: '/nba/props',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NhlIndexRoute = NhlIndexRouteImport.update({
+  id: '/nhl/',
+  path: '/nhl/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NhlModelRoute = NhlModelRouteImport.update({
+  id: '/nhl/model',
+  path: '/nhl/model',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NhlOddsExportRoute = NhlOddsExportRouteImport.update({
+  id: '/nhl/odds-export',
+  path: '/nhl/odds-export',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NhlPropHistoryRoute = NhlPropHistoryRouteImport.update({
+  id: '/nhl/prop-history',
+  path: '/nhl/prop-history',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NhlPropsRoute = NhlPropsRouteImport.update({
+  id: '/nhl/props',
+  path: '/nhl/props',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PlayersIndexRoute = PlayersIndexRouteImport.update({
@@ -127,44 +212,24 @@ const CfbTeamsTeamIdRoute = CfbTeamsTeamIdRouteImport.update({
   path: '/cfb/teams/$teamId',
   getParentRoute: () => rootRouteImport,
 } as any)
-const NbaIndexRoute = NbaIndexRouteImport.update({
-  id: '/nba/',
-  path: '/nba/',
+const MlbGamesIndexRoute = MlbGamesIndexRouteImport.update({
+  id: '/mlb/games/',
+  path: '/mlb/games/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const NbaModelRoute = NbaModelRouteImport.update({
-  id: '/nba/model',
-  path: '/nba/model',
+const MlbGamesGameIdRoute = MlbGamesGameIdRouteImport.update({
+  id: '/mlb/games/$gameId',
+  path: '/mlb/games/$gameId',
   getParentRoute: () => rootRouteImport,
 } as any)
-const NbaPropsRoute = NbaPropsRouteImport.update({
-  id: '/nba/props',
-  path: '/nba/props',
+const MlbTeamsIndexRoute = MlbTeamsIndexRouteImport.update({
+  id: '/mlb/teams/',
+  path: '/mlb/teams/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const NbaGamesGameIdRoute = NbaGamesGameIdRouteImport.update({
-  id: '/nba/games/$gameId',
-  path: '/nba/games/$gameId',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const NbaPlayersPlayerIdRoute = NbaPlayersPlayerIdRouteImport.update({
-  id: '/nba/players/$playerId',
-  path: '/nba/players/$playerId',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const NbaTeamsTeamIdRoute = NbaTeamsTeamIdRouteImport.update({
-  id: '/nba/teams/$teamId',
-  path: '/nba/teams/$teamId',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const NbaPlayersIndexRoute = NbaPlayersIndexRouteImport.update({
-  id: '/nba/players/',
-  path: '/nba/players/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const NbaTeamsIndexRoute = NbaTeamsIndexRouteImport.update({
-  id: '/nba/teams/',
-  path: '/nba/teams/',
+const MlbTeamsTeamIdRoute = MlbTeamsTeamIdRouteImport.update({
+  id: '/mlb/teams/$teamId',
+  path: '/mlb/teams/$teamId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const NbaGamesIndexRoute = NbaGamesIndexRouteImport.update({
@@ -172,213 +237,408 @@ const NbaGamesIndexRoute = NbaGamesIndexRouteImport.update({
   path: '/nba/games/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const NbaGamesGameIdRoute = NbaGamesGameIdRouteImport.update({
+  id: '/nba/games/$gameId',
+  path: '/nba/games/$gameId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NbaPlayersIndexRoute = NbaPlayersIndexRouteImport.update({
+  id: '/nba/players/',
+  path: '/nba/players/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NbaPlayersPlayerIdRoute = NbaPlayersPlayerIdRouteImport.update({
+  id: '/nba/players/$playerId',
+  path: '/nba/players/$playerId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NbaTeamsIndexRoute = NbaTeamsIndexRouteImport.update({
+  id: '/nba/teams/',
+  path: '/nba/teams/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NbaTeamsTeamIdRoute = NbaTeamsTeamIdRouteImport.update({
+  id: '/nba/teams/$teamId',
+  path: '/nba/teams/$teamId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NhlGamesIndexRoute = NhlGamesIndexRouteImport.update({
+  id: '/nhl/games/',
+  path: '/nhl/games/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NhlGamesGameIdRoute = NhlGamesGameIdRouteImport.update({
+  id: '/nhl/games/$gameId',
+  path: '/nhl/games/$gameId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NhlPlayersIndexRoute = NhlPlayersIndexRouteImport.update({
+  id: '/nhl/players/',
+  path: '/nhl/players/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NhlPlayersPlayerIdRoute = NhlPlayersPlayerIdRouteImport.update({
+  id: '/nhl/players/$playerId',
+  path: '/nhl/players/$playerId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NhlTeamsIndexRoute = NhlTeamsIndexRouteImport.update({
+  id: '/nhl/teams/',
+  path: '/nhl/teams/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NhlTeamsTeamIdRoute = NhlTeamsTeamIdRouteImport.update({
+  id: '/nhl/teams/$teamId',
+  path: '/nhl/teams/$teamId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/model': typeof ModelRoute
+  '/prop-history': typeof PropHistoryRoute
   '/props': typeof PropsRoute
   '/cfb/model': typeof CfbModelRoute
   '/cfb/props': typeof CfbPropsRoute
   '/games/$gameId': typeof GamesGameIdRoute
+  '/mlb/model': typeof MlbModelRoute
+  '/mlb/props': typeof MlbPropsRoute
+  '/nba/model': typeof NbaModelRoute
+  '/nba/prop-history': typeof NbaPropHistoryRoute
+  '/nba/props': typeof NbaPropsRoute
+  '/nhl/model': typeof NhlModelRoute
+  '/nhl/odds-export': typeof NhlOddsExportRoute
+  '/nhl/prop-history': typeof NhlPropHistoryRoute
+  '/nhl/props': typeof NhlPropsRoute
   '/players/$playerId': typeof PlayersPlayerIdRoute
   '/teams/$teamId': typeof TeamsTeamIdRoute
   '/cfb/': typeof CfbIndexRoute
   '/games/': typeof GamesIndexRoute
+  '/mlb/': typeof MlbIndexRoute
+  '/nba/': typeof NbaIndexRoute
+  '/nhl/': typeof NhlIndexRoute
   '/players/': typeof PlayersIndexRoute
   '/teams/': typeof TeamsIndexRoute
   '/cfb/games/$gameId': typeof CfbGamesGameIdRoute
   '/cfb/players/$playerId': typeof CfbPlayersPlayerIdRoute
   '/cfb/teams/$teamId': typeof CfbTeamsTeamIdRoute
-  '/cfb/games/': typeof CfbGamesIndexRoute
-  '/cfb/players/': typeof CfbPlayersIndexRoute
-  '/cfb/teams/': typeof CfbTeamsIndexRoute
-  '/nba/': typeof NbaIndexRoute
-  '/nba/model': typeof NbaModelRoute
-  '/nba/props': typeof NbaPropsRoute
+  '/mlb/games/$gameId': typeof MlbGamesGameIdRoute
+  '/mlb/teams/$teamId': typeof MlbTeamsTeamIdRoute
   '/nba/games/$gameId': typeof NbaGamesGameIdRoute
   '/nba/players/$playerId': typeof NbaPlayersPlayerIdRoute
   '/nba/teams/$teamId': typeof NbaTeamsTeamIdRoute
+  '/nhl/games/$gameId': typeof NhlGamesGameIdRoute
+  '/nhl/players/$playerId': typeof NhlPlayersPlayerIdRoute
+  '/nhl/teams/$teamId': typeof NhlTeamsTeamIdRoute
+  '/cfb/games/': typeof CfbGamesIndexRoute
+  '/cfb/players/': typeof CfbPlayersIndexRoute
+  '/cfb/teams/': typeof CfbTeamsIndexRoute
+  '/mlb/games/': typeof MlbGamesIndexRoute
+  '/mlb/teams/': typeof MlbTeamsIndexRoute
+  '/nba/games/': typeof NbaGamesIndexRoute
   '/nba/players/': typeof NbaPlayersIndexRoute
   '/nba/teams/': typeof NbaTeamsIndexRoute
-  '/nba/games/': typeof NbaGamesIndexRoute
+  '/nhl/games/': typeof NhlGamesIndexRoute
+  '/nhl/players/': typeof NhlPlayersIndexRoute
+  '/nhl/teams/': typeof NhlTeamsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/model': typeof ModelRoute
+  '/prop-history': typeof PropHistoryRoute
   '/props': typeof PropsRoute
   '/cfb/model': typeof CfbModelRoute
   '/cfb/props': typeof CfbPropsRoute
   '/games/$gameId': typeof GamesGameIdRoute
+  '/mlb/model': typeof MlbModelRoute
+  '/mlb/props': typeof MlbPropsRoute
+  '/nba/model': typeof NbaModelRoute
+  '/nba/prop-history': typeof NbaPropHistoryRoute
+  '/nba/props': typeof NbaPropsRoute
+  '/nhl/model': typeof NhlModelRoute
+  '/nhl/odds-export': typeof NhlOddsExportRoute
+  '/nhl/prop-history': typeof NhlPropHistoryRoute
+  '/nhl/props': typeof NhlPropsRoute
   '/players/$playerId': typeof PlayersPlayerIdRoute
   '/teams/$teamId': typeof TeamsTeamIdRoute
   '/cfb': typeof CfbIndexRoute
   '/games': typeof GamesIndexRoute
+  '/mlb': typeof MlbIndexRoute
+  '/nba': typeof NbaIndexRoute
+  '/nhl': typeof NhlIndexRoute
   '/players': typeof PlayersIndexRoute
   '/teams': typeof TeamsIndexRoute
   '/cfb/games/$gameId': typeof CfbGamesGameIdRoute
   '/cfb/players/$playerId': typeof CfbPlayersPlayerIdRoute
   '/cfb/teams/$teamId': typeof CfbTeamsTeamIdRoute
-  '/cfb/games': typeof CfbGamesIndexRoute
-  '/cfb/players': typeof CfbPlayersIndexRoute
-  '/cfb/teams': typeof CfbTeamsIndexRoute
-  '/nba': typeof NbaIndexRoute
-  '/nba/model': typeof NbaModelRoute
-  '/nba/props': typeof NbaPropsRoute
+  '/mlb/games/$gameId': typeof MlbGamesGameIdRoute
+  '/mlb/teams/$teamId': typeof MlbTeamsTeamIdRoute
   '/nba/games/$gameId': typeof NbaGamesGameIdRoute
   '/nba/players/$playerId': typeof NbaPlayersPlayerIdRoute
   '/nba/teams/$teamId': typeof NbaTeamsTeamIdRoute
+  '/nhl/games/$gameId': typeof NhlGamesGameIdRoute
+  '/nhl/players/$playerId': typeof NhlPlayersPlayerIdRoute
+  '/nhl/teams/$teamId': typeof NhlTeamsTeamIdRoute
+  '/cfb/games': typeof CfbGamesIndexRoute
+  '/cfb/players': typeof CfbPlayersIndexRoute
+  '/cfb/teams': typeof CfbTeamsIndexRoute
+  '/mlb/games': typeof MlbGamesIndexRoute
+  '/mlb/teams': typeof MlbTeamsIndexRoute
+  '/nba/games': typeof NbaGamesIndexRoute
   '/nba/players': typeof NbaPlayersIndexRoute
   '/nba/teams': typeof NbaTeamsIndexRoute
-  '/nba/games': typeof NbaGamesIndexRoute
+  '/nhl/games': typeof NhlGamesIndexRoute
+  '/nhl/players': typeof NhlPlayersIndexRoute
+  '/nhl/teams': typeof NhlTeamsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/model': typeof ModelRoute
+  '/prop-history': typeof PropHistoryRoute
   '/props': typeof PropsRoute
   '/cfb/model': typeof CfbModelRoute
   '/cfb/props': typeof CfbPropsRoute
   '/games/$gameId': typeof GamesGameIdRoute
+  '/mlb/model': typeof MlbModelRoute
+  '/mlb/props': typeof MlbPropsRoute
+  '/nba/model': typeof NbaModelRoute
+  '/nba/prop-history': typeof NbaPropHistoryRoute
+  '/nba/props': typeof NbaPropsRoute
+  '/nhl/model': typeof NhlModelRoute
+  '/nhl/odds-export': typeof NhlOddsExportRoute
+  '/nhl/prop-history': typeof NhlPropHistoryRoute
+  '/nhl/props': typeof NhlPropsRoute
   '/players/$playerId': typeof PlayersPlayerIdRoute
   '/teams/$teamId': typeof TeamsTeamIdRoute
   '/cfb/': typeof CfbIndexRoute
   '/games/': typeof GamesIndexRoute
+  '/mlb/': typeof MlbIndexRoute
+  '/nba/': typeof NbaIndexRoute
+  '/nhl/': typeof NhlIndexRoute
   '/players/': typeof PlayersIndexRoute
   '/teams/': typeof TeamsIndexRoute
   '/cfb/games/$gameId': typeof CfbGamesGameIdRoute
   '/cfb/players/$playerId': typeof CfbPlayersPlayerIdRoute
   '/cfb/teams/$teamId': typeof CfbTeamsTeamIdRoute
-  '/cfb/games/': typeof CfbGamesIndexRoute
-  '/cfb/players/': typeof CfbPlayersIndexRoute
-  '/cfb/teams/': typeof CfbTeamsIndexRoute
-  '/nba/': typeof NbaIndexRoute
-  '/nba/model': typeof NbaModelRoute
-  '/nba/props': typeof NbaPropsRoute
+  '/mlb/games/$gameId': typeof MlbGamesGameIdRoute
+  '/mlb/teams/$teamId': typeof MlbTeamsTeamIdRoute
   '/nba/games/$gameId': typeof NbaGamesGameIdRoute
   '/nba/players/$playerId': typeof NbaPlayersPlayerIdRoute
   '/nba/teams/$teamId': typeof NbaTeamsTeamIdRoute
+  '/nhl/games/$gameId': typeof NhlGamesGameIdRoute
+  '/nhl/players/$playerId': typeof NhlPlayersPlayerIdRoute
+  '/nhl/teams/$teamId': typeof NhlTeamsTeamIdRoute
+  '/cfb/games/': typeof CfbGamesIndexRoute
+  '/cfb/players/': typeof CfbPlayersIndexRoute
+  '/cfb/teams/': typeof CfbTeamsIndexRoute
+  '/mlb/games/': typeof MlbGamesIndexRoute
+  '/mlb/teams/': typeof MlbTeamsIndexRoute
+  '/nba/games/': typeof NbaGamesIndexRoute
   '/nba/players/': typeof NbaPlayersIndexRoute
   '/nba/teams/': typeof NbaTeamsIndexRoute
-  '/nba/games/': typeof NbaGamesIndexRoute
+  '/nhl/games/': typeof NhlGamesIndexRoute
+  '/nhl/players/': typeof NhlPlayersIndexRoute
+  '/nhl/teams/': typeof NhlTeamsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/model'
+    | '/prop-history'
     | '/props'
     | '/cfb/model'
     | '/cfb/props'
     | '/games/$gameId'
+    | '/mlb/model'
+    | '/mlb/props'
+    | '/nba/model'
+    | '/nba/prop-history'
+    | '/nba/props'
+    | '/nhl/model'
+    | '/nhl/odds-export'
+    | '/nhl/prop-history'
+    | '/nhl/props'
     | '/players/$playerId'
     | '/teams/$teamId'
     | '/cfb/'
     | '/games/'
+    | '/mlb/'
+    | '/nba/'
+    | '/nhl/'
     | '/players/'
     | '/teams/'
     | '/cfb/games/$gameId'
     | '/cfb/players/$playerId'
     | '/cfb/teams/$teamId'
-    | '/cfb/games/'
-    | '/cfb/players/'
-    | '/cfb/teams/'
-    | '/nba/'
-    | '/nba/model'
-    | '/nba/props'
+    | '/mlb/games/$gameId'
+    | '/mlb/teams/$teamId'
     | '/nba/games/$gameId'
     | '/nba/players/$playerId'
     | '/nba/teams/$teamId'
+    | '/nhl/games/$gameId'
+    | '/nhl/players/$playerId'
+    | '/nhl/teams/$teamId'
+    | '/cfb/games/'
+    | '/cfb/players/'
+    | '/cfb/teams/'
+    | '/mlb/games/'
+    | '/mlb/teams/'
+    | '/nba/games/'
     | '/nba/players/'
     | '/nba/teams/'
-    | '/nba/games/'
+    | '/nhl/games/'
+    | '/nhl/players/'
+    | '/nhl/teams/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/model'
+    | '/prop-history'
     | '/props'
     | '/cfb/model'
     | '/cfb/props'
     | '/games/$gameId'
+    | '/mlb/model'
+    | '/mlb/props'
+    | '/nba/model'
+    | '/nba/prop-history'
+    | '/nba/props'
+    | '/nhl/model'
+    | '/nhl/odds-export'
+    | '/nhl/prop-history'
+    | '/nhl/props'
     | '/players/$playerId'
     | '/teams/$teamId'
     | '/cfb'
     | '/games'
+    | '/mlb'
+    | '/nba'
+    | '/nhl'
     | '/players'
     | '/teams'
     | '/cfb/games/$gameId'
     | '/cfb/players/$playerId'
     | '/cfb/teams/$teamId'
-    | '/cfb/games'
-    | '/cfb/players'
-    | '/cfb/teams'
-    | '/nba'
-    | '/nba/model'
-    | '/nba/props'
+    | '/mlb/games/$gameId'
+    | '/mlb/teams/$teamId'
     | '/nba/games/$gameId'
     | '/nba/players/$playerId'
     | '/nba/teams/$teamId'
+    | '/nhl/games/$gameId'
+    | '/nhl/players/$playerId'
+    | '/nhl/teams/$teamId'
+    | '/cfb/games'
+    | '/cfb/players'
+    | '/cfb/teams'
+    | '/mlb/games'
+    | '/mlb/teams'
+    | '/nba/games'
     | '/nba/players'
     | '/nba/teams'
-    | '/nba/games'
+    | '/nhl/games'
+    | '/nhl/players'
+    | '/nhl/teams'
   id:
     | '__root__'
     | '/'
     | '/model'
+    | '/prop-history'
     | '/props'
     | '/cfb/model'
     | '/cfb/props'
     | '/games/$gameId'
+    | '/mlb/model'
+    | '/mlb/props'
+    | '/nba/model'
+    | '/nba/prop-history'
+    | '/nba/props'
+    | '/nhl/model'
+    | '/nhl/odds-export'
+    | '/nhl/prop-history'
+    | '/nhl/props'
     | '/players/$playerId'
     | '/teams/$teamId'
     | '/cfb/'
     | '/games/'
+    | '/mlb/'
+    | '/nba/'
+    | '/nhl/'
     | '/players/'
     | '/teams/'
     | '/cfb/games/$gameId'
     | '/cfb/players/$playerId'
     | '/cfb/teams/$teamId'
-    | '/cfb/games/'
-    | '/cfb/players/'
-    | '/cfb/teams/'
-    | '/nba/'
-    | '/nba/model'
-    | '/nba/props'
+    | '/mlb/games/$gameId'
+    | '/mlb/teams/$teamId'
     | '/nba/games/$gameId'
     | '/nba/players/$playerId'
     | '/nba/teams/$teamId'
+    | '/nhl/games/$gameId'
+    | '/nhl/players/$playerId'
+    | '/nhl/teams/$teamId'
+    | '/cfb/games/'
+    | '/cfb/players/'
+    | '/cfb/teams/'
+    | '/mlb/games/'
+    | '/mlb/teams/'
+    | '/nba/games/'
     | '/nba/players/'
     | '/nba/teams/'
-    | '/nba/games/'
+    | '/nhl/games/'
+    | '/nhl/players/'
+    | '/nhl/teams/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ModelRoute: typeof ModelRoute
+  PropHistoryRoute: typeof PropHistoryRoute
   PropsRoute: typeof PropsRoute
   CfbModelRoute: typeof CfbModelRoute
   CfbPropsRoute: typeof CfbPropsRoute
   GamesGameIdRoute: typeof GamesGameIdRoute
+  MlbModelRoute: typeof MlbModelRoute
+  MlbPropsRoute: typeof MlbPropsRoute
+  NbaModelRoute: typeof NbaModelRoute
+  NbaPropHistoryRoute: typeof NbaPropHistoryRoute
+  NbaPropsRoute: typeof NbaPropsRoute
+  NhlModelRoute: typeof NhlModelRoute
+  NhlOddsExportRoute: typeof NhlOddsExportRoute
+  NhlPropHistoryRoute: typeof NhlPropHistoryRoute
+  NhlPropsRoute: typeof NhlPropsRoute
   PlayersPlayerIdRoute: typeof PlayersPlayerIdRoute
   TeamsTeamIdRoute: typeof TeamsTeamIdRoute
   CfbIndexRoute: typeof CfbIndexRoute
   GamesIndexRoute: typeof GamesIndexRoute
+  MlbIndexRoute: typeof MlbIndexRoute
+  NbaIndexRoute: typeof NbaIndexRoute
+  NhlIndexRoute: typeof NhlIndexRoute
   PlayersIndexRoute: typeof PlayersIndexRoute
   TeamsIndexRoute: typeof TeamsIndexRoute
   CfbGamesGameIdRoute: typeof CfbGamesGameIdRoute
   CfbPlayersPlayerIdRoute: typeof CfbPlayersPlayerIdRoute
   CfbTeamsTeamIdRoute: typeof CfbTeamsTeamIdRoute
-  CfbGamesIndexRoute: typeof CfbGamesIndexRoute
-  CfbPlayersIndexRoute: typeof CfbPlayersIndexRoute
-  CfbTeamsIndexRoute: typeof CfbTeamsIndexRoute
-  NbaIndexRoute: typeof NbaIndexRoute
-  NbaModelRoute: typeof NbaModelRoute
-  NbaPropsRoute: typeof NbaPropsRoute
+  MlbGamesGameIdRoute: typeof MlbGamesGameIdRoute
+  MlbTeamsTeamIdRoute: typeof MlbTeamsTeamIdRoute
   NbaGamesGameIdRoute: typeof NbaGamesGameIdRoute
   NbaPlayersPlayerIdRoute: typeof NbaPlayersPlayerIdRoute
   NbaTeamsTeamIdRoute: typeof NbaTeamsTeamIdRoute
+  NhlGamesGameIdRoute: typeof NhlGamesGameIdRoute
+  NhlPlayersPlayerIdRoute: typeof NhlPlayersPlayerIdRoute
+  NhlTeamsTeamIdRoute: typeof NhlTeamsTeamIdRoute
+  CfbGamesIndexRoute: typeof CfbGamesIndexRoute
+  CfbPlayersIndexRoute: typeof CfbPlayersIndexRoute
+  CfbTeamsIndexRoute: typeof CfbTeamsIndexRoute
+  MlbGamesIndexRoute: typeof MlbGamesIndexRoute
+  MlbTeamsIndexRoute: typeof MlbTeamsIndexRoute
+  NbaGamesIndexRoute: typeof NbaGamesIndexRoute
   NbaPlayersIndexRoute: typeof NbaPlayersIndexRoute
   NbaTeamsIndexRoute: typeof NbaTeamsIndexRoute
-  NbaGamesIndexRoute: typeof NbaGamesIndexRoute
+  NhlGamesIndexRoute: typeof NhlGamesIndexRoute
+  NhlPlayersIndexRoute: typeof NhlPlayersIndexRoute
+  NhlTeamsIndexRoute: typeof NhlTeamsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -395,6 +655,13 @@ declare module '@tanstack/react-router' {
       path: '/model'
       fullPath: '/model'
       preLoaderRoute: typeof ModelRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/prop-history': {
+      id: '/prop-history'
+      path: '/prop-history'
+      fullPath: '/prop-history'
+      preLoaderRoute: typeof PropHistoryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/props': {
@@ -437,6 +704,90 @@ declare module '@tanstack/react-router' {
       path: '/games/$gameId'
       fullPath: '/games/$gameId'
       preLoaderRoute: typeof GamesGameIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mlb/': {
+      id: '/mlb/'
+      path: '/mlb'
+      fullPath: '/mlb/'
+      preLoaderRoute: typeof MlbIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mlb/model': {
+      id: '/mlb/model'
+      path: '/mlb/model'
+      fullPath: '/mlb/model'
+      preLoaderRoute: typeof MlbModelRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mlb/props': {
+      id: '/mlb/props'
+      path: '/mlb/props'
+      fullPath: '/mlb/props'
+      preLoaderRoute: typeof MlbPropsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/nba/': {
+      id: '/nba/'
+      path: '/nba'
+      fullPath: '/nba/'
+      preLoaderRoute: typeof NbaIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/nba/model': {
+      id: '/nba/model'
+      path: '/nba/model'
+      fullPath: '/nba/model'
+      preLoaderRoute: typeof NbaModelRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/nba/prop-history': {
+      id: '/nba/prop-history'
+      path: '/nba/prop-history'
+      fullPath: '/nba/prop-history'
+      preLoaderRoute: typeof NbaPropHistoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/nba/props': {
+      id: '/nba/props'
+      path: '/nba/props'
+      fullPath: '/nba/props'
+      preLoaderRoute: typeof NbaPropsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/nhl/': {
+      id: '/nhl/'
+      path: '/nhl'
+      fullPath: '/nhl/'
+      preLoaderRoute: typeof NhlIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/nhl/model': {
+      id: '/nhl/model'
+      path: '/nhl/model'
+      fullPath: '/nhl/model'
+      preLoaderRoute: typeof NhlModelRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/nhl/odds-export': {
+      id: '/nhl/odds-export'
+      path: '/nhl/odds-export'
+      fullPath: '/nhl/odds-export'
+      preLoaderRoute: typeof NhlOddsExportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/nhl/prop-history': {
+      id: '/nhl/prop-history'
+      path: '/nhl/prop-history'
+      fullPath: '/nhl/prop-history'
+      preLoaderRoute: typeof NhlPropHistoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/nhl/props': {
+      id: '/nhl/props'
+      path: '/nhl/props'
+      fullPath: '/nhl/props'
+      preLoaderRoute: typeof NhlPropsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/players/': {
@@ -509,60 +860,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CfbTeamsTeamIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/nba/': {
-      id: '/nba/'
-      path: '/nba'
-      fullPath: '/nba/'
-      preLoaderRoute: typeof NbaIndexRouteImport
+    '/mlb/games/': {
+      id: '/mlb/games/'
+      path: '/mlb/games'
+      fullPath: '/mlb/games/'
+      preLoaderRoute: typeof MlbGamesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/nba/model': {
-      id: '/nba/model'
-      path: '/nba/model'
-      fullPath: '/nba/model'
-      preLoaderRoute: typeof NbaModelRouteImport
+    '/mlb/games/$gameId': {
+      id: '/mlb/games/$gameId'
+      path: '/mlb/games/$gameId'
+      fullPath: '/mlb/games/$gameId'
+      preLoaderRoute: typeof MlbGamesGameIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/nba/props': {
-      id: '/nba/props'
-      path: '/nba/props'
-      fullPath: '/nba/props'
-      preLoaderRoute: typeof NbaPropsRouteImport
+    '/mlb/teams/': {
+      id: '/mlb/teams/'
+      path: '/mlb/teams'
+      fullPath: '/mlb/teams/'
+      preLoaderRoute: typeof MlbTeamsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/nba/games/$gameId': {
-      id: '/nba/games/$gameId'
-      path: '/nba/games/$gameId'
-      fullPath: '/nba/games/$gameId'
-      preLoaderRoute: typeof NbaGamesGameIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/nba/players/$playerId': {
-      id: '/nba/players/$playerId'
-      path: '/nba/players/$playerId'
-      fullPath: '/nba/players/$playerId'
-      preLoaderRoute: typeof NbaPlayersPlayerIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/nba/teams/$teamId': {
-      id: '/nba/teams/$teamId'
-      path: '/nba/teams/$teamId'
-      fullPath: '/nba/teams/$teamId'
-      preLoaderRoute: typeof NbaTeamsTeamIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/nba/players/': {
-      id: '/nba/players/'
-      path: '/nba/players'
-      fullPath: '/nba/players/'
-      preLoaderRoute: typeof NbaPlayersIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/nba/teams/': {
-      id: '/nba/teams/'
-      path: '/nba/teams'
-      fullPath: '/nba/teams/'
-      preLoaderRoute: typeof NbaTeamsIndexRouteImport
+    '/mlb/teams/$teamId': {
+      id: '/mlb/teams/$teamId'
+      path: '/mlb/teams/$teamId'
+      fullPath: '/mlb/teams/$teamId'
+      preLoaderRoute: typeof MlbTeamsTeamIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/nba/games/': {
@@ -572,37 +895,134 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NbaGamesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/nba/games/$gameId': {
+      id: '/nba/games/$gameId'
+      path: '/nba/games/$gameId'
+      fullPath: '/nba/games/$gameId'
+      preLoaderRoute: typeof NbaGamesGameIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/nba/players/': {
+      id: '/nba/players/'
+      path: '/nba/players'
+      fullPath: '/nba/players/'
+      preLoaderRoute: typeof NbaPlayersIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/nba/players/$playerId': {
+      id: '/nba/players/$playerId'
+      path: '/nba/players/$playerId'
+      fullPath: '/nba/players/$playerId'
+      preLoaderRoute: typeof NbaPlayersPlayerIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/nba/teams/': {
+      id: '/nba/teams/'
+      path: '/nba/teams'
+      fullPath: '/nba/teams/'
+      preLoaderRoute: typeof NbaTeamsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/nba/teams/$teamId': {
+      id: '/nba/teams/$teamId'
+      path: '/nba/teams/$teamId'
+      fullPath: '/nba/teams/$teamId'
+      preLoaderRoute: typeof NbaTeamsTeamIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/nhl/games/': {
+      id: '/nhl/games/'
+      path: '/nhl/games'
+      fullPath: '/nhl/games/'
+      preLoaderRoute: typeof NhlGamesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/nhl/games/$gameId': {
+      id: '/nhl/games/$gameId'
+      path: '/nhl/games/$gameId'
+      fullPath: '/nhl/games/$gameId'
+      preLoaderRoute: typeof NhlGamesGameIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/nhl/players/': {
+      id: '/nhl/players/'
+      path: '/nhl/players'
+      fullPath: '/nhl/players/'
+      preLoaderRoute: typeof NhlPlayersIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/nhl/players/$playerId': {
+      id: '/nhl/players/$playerId'
+      path: '/nhl/players/$playerId'
+      fullPath: '/nhl/players/$playerId'
+      preLoaderRoute: typeof NhlPlayersPlayerIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/nhl/teams/': {
+      id: '/nhl/teams/'
+      path: '/nhl/teams'
+      fullPath: '/nhl/teams/'
+      preLoaderRoute: typeof NhlTeamsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/nhl/teams/$teamId': {
+      id: '/nhl/teams/$teamId'
+      path: '/nhl/teams/$teamId'
+      fullPath: '/nhl/teams/$teamId'
+      preLoaderRoute: typeof NhlTeamsTeamIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ModelRoute: ModelRoute,
+  PropHistoryRoute: PropHistoryRoute,
   PropsRoute: PropsRoute,
   CfbModelRoute: CfbModelRoute,
   CfbPropsRoute: CfbPropsRoute,
   GamesGameIdRoute: GamesGameIdRoute,
+  MlbModelRoute: MlbModelRoute,
+  MlbPropsRoute: MlbPropsRoute,
+  NbaModelRoute: NbaModelRoute,
+  NbaPropHistoryRoute: NbaPropHistoryRoute,
+  NbaPropsRoute: NbaPropsRoute,
+  NhlModelRoute: NhlModelRoute,
+  NhlOddsExportRoute: NhlOddsExportRoute,
+  NhlPropHistoryRoute: NhlPropHistoryRoute,
+  NhlPropsRoute: NhlPropsRoute,
   PlayersPlayerIdRoute: PlayersPlayerIdRoute,
   TeamsTeamIdRoute: TeamsTeamIdRoute,
   CfbIndexRoute: CfbIndexRoute,
   GamesIndexRoute: GamesIndexRoute,
+  MlbIndexRoute: MlbIndexRoute,
+  NbaIndexRoute: NbaIndexRoute,
+  NhlIndexRoute: NhlIndexRoute,
   PlayersIndexRoute: PlayersIndexRoute,
   TeamsIndexRoute: TeamsIndexRoute,
   CfbGamesGameIdRoute: CfbGamesGameIdRoute,
   CfbPlayersPlayerIdRoute: CfbPlayersPlayerIdRoute,
   CfbTeamsTeamIdRoute: CfbTeamsTeamIdRoute,
-  CfbGamesIndexRoute: CfbGamesIndexRoute,
-  CfbPlayersIndexRoute: CfbPlayersIndexRoute,
-  CfbTeamsIndexRoute: CfbTeamsIndexRoute,
-  NbaIndexRoute: NbaIndexRoute,
-  NbaModelRoute: NbaModelRoute,
-  NbaPropsRoute: NbaPropsRoute,
+  MlbGamesGameIdRoute: MlbGamesGameIdRoute,
+  MlbTeamsTeamIdRoute: MlbTeamsTeamIdRoute,
   NbaGamesGameIdRoute: NbaGamesGameIdRoute,
   NbaPlayersPlayerIdRoute: NbaPlayersPlayerIdRoute,
   NbaTeamsTeamIdRoute: NbaTeamsTeamIdRoute,
+  NhlGamesGameIdRoute: NhlGamesGameIdRoute,
+  NhlPlayersPlayerIdRoute: NhlPlayersPlayerIdRoute,
+  NhlTeamsTeamIdRoute: NhlTeamsTeamIdRoute,
+  CfbGamesIndexRoute: CfbGamesIndexRoute,
+  CfbPlayersIndexRoute: CfbPlayersIndexRoute,
+  CfbTeamsIndexRoute: CfbTeamsIndexRoute,
+  MlbGamesIndexRoute: MlbGamesIndexRoute,
+  MlbTeamsIndexRoute: MlbTeamsIndexRoute,
+  NbaGamesIndexRoute: NbaGamesIndexRoute,
   NbaPlayersIndexRoute: NbaPlayersIndexRoute,
   NbaTeamsIndexRoute: NbaTeamsIndexRoute,
-  NbaGamesIndexRoute: NbaGamesIndexRoute,
+  NhlGamesIndexRoute: NhlGamesIndexRoute,
+  NhlPlayersIndexRoute: NhlPlayersIndexRoute,
+  NhlTeamsIndexRoute: NhlTeamsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

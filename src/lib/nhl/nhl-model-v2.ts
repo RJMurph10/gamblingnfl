@@ -646,3 +646,92 @@ export function compareNhlModels(
 
 /** Did a finished game go to overtime (re-exported for pages). */
 export { wentToOvertime };
+
+/* ---------- the season graded like the other leagues' dashboards ---------- */
+
+export interface NhlBetRecord {
+  wins: number;
+  losses: number;
+  pushes: number;
+  units: number;
+}
+
+export interface NhlSeasonGrade {
+  games: number;
+  /** The side the model gives over 50%, at the closing moneyline. */
+  moneyline: NhlBetRecord;
+  /** The model's side of the posted puck line, only where ESPN gives the puck-line prices. */
+  puckLine: NhlBetRecord;
+  /** The model's side of the closing total (−110 when the price is missing). */
+  total: NhlBetRecord;
+  avgGoals: number | null;
+  avgLine: number | null;
+}
+
+const blankRecord = (): NhlBetRecord => ({ wins: 0, losses: 0, pushes: 0, units: 0 });
+const settle = (r: NhlBetRecord, margin: number, price: number) => {
+  if (margin > 0) {
+    r.wins += 1;
+    r.units += americanToDecimal(price) - 1;
+  } else if (margin < 0) {
+    r.losses += 1;
+    r.units -= 1;
+  } else r.pushes += 1;
+};
+
+/** Every finished regular-season game, projected from earlier games only, graded at the closing lines. */
+export function gradeNhlSeason(
+  games: NhlGame[],
+  inputs: NhlModelInputs | null,
+  before?: Date,
+  P: NhlModelParams = NHL_MODEL_PARAMS,
+): NhlSeasonGrade {
+  const cutoff = before ? before.getTime() : Infinity;
+  const finals = games
+    .filter((g) => g.part === "reg" && g.status === "final" && hasScore(g) && new Date(g.date).getTime() < cutoff)
+    .sort((a, b) => a.date.localeCompare(b.date));
+  const out: NhlSeasonGrade = {
+    games: 0,
+    moneyline: blankRecord(),
+    puckLine: blankRecord(),
+    total: blankRecord(),
+    avgGoals: null,
+    avgLine: null,
+  };
+  let goals = 0;
+  let lineSum = 0;
+  let lineN = 0;
+  for (const g of finals) {
+    const o = g.odds;
+    if (!o) continue;
+    const p = projectGameV2(g, games, inputs, { pregameOnly: true }, P);
+    if (!p.ok) continue;
+    const h = g.home.score as number;
+    const a = g.away.score as number;
+    out.games += 1;
+    goals += h + a;
+    const rows = marketRowsV2(g, p, o, P);
+    const pick = (market: string) =>
+      rows.filter((r) => r.market === market).sort((x, y) => y.pModel - x.pModel)[0];
+    if (o.mlHome != null && o.mlAway != null) {
+      const home = p.pHome >= 0.5;
+      settle(out.moneyline, home ? h - a : a - h, home ? o.mlHome : o.mlAway);
+    }
+    if (o.spread != null && o.spread !== 0 && o.spreadOddsHome != null && o.spreadOddsAway != null) {
+      const best = pick("Puck line");
+      const home = best?.label.startsWith(g.home.team.abbr) ?? false;
+      settle(out.puckLine, home ? h - a + o.spread : a - h - o.spread, home ? o.spreadOddsHome : o.spreadOddsAway);
+    }
+    if (o.total != null) {
+      lineSum += o.total;
+      lineN += 1;
+      const best = pick("Total");
+      const over = best?.label.startsWith("Over") ?? false;
+      const t = h + a;
+      settle(out.total, over ? t - o.total : o.total - t, (over ? o.overOdds : o.underOdds) ?? -110);
+    }
+  }
+  out.avgGoals = out.games ? goals / out.games : null;
+  out.avgLine = lineN ? lineSum / lineN : null;
+  return out;
+}
