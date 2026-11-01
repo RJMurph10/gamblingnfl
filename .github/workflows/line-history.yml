@@ -7,6 +7,9 @@ on:
   schedule:
     - cron: "17 * * * *" # hourly
   workflow_dispatch: {}
+  push:
+    branches: [upcoming-from-logger]
+    paths: [scripts/line-history/upcoming.trigger]
 
 permissions:
   contents: write
@@ -56,3 +59,24 @@ jobs:
           if git diff --cached --quiet; then echo "no changes"; exit 0; fi
           git commit -q -m "Lines $(date -u +%Y-%m-%dT%H:%MZ)"
           git push origin line-history
+
+      - name: Publish upcoming prop lines for the site
+        run: |
+          set -e
+          url="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+          for attempt in 1 2 3 4 5; do
+            rm -rf site-repo && git clone -q --depth 1 --branch props-site "$url" site-repo
+            for lg in nba nfl; do
+              node app/scripts/line-history/build-upcoming.mjs --league $lg --data data-repo/data --out site-repo
+            done
+            cd site-repo
+            git config user.name "line-history-bot"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add -A
+            if git diff --cached --quiet; then echo "no changes"; exit 0; fi
+            git commit -q -m "Upcoming prop lines $(date -u +%Y-%m-%dT%H:%MZ)"
+            if git push -q origin props-site; then exit 0; fi
+            cd ..
+            sleep $((attempt * 15))
+          done
+          exit 1

@@ -43,6 +43,8 @@ const CLOSE_WINDOW = 3 * HOUR; // keep refreshing the closing snapshot in the la
 const FINAL_AFTER = 3 * HOUR; // read ESPN's final open/close this long after the start…
 const FINAL_UNTIL = 4 * DAY; // …for up to 4 days
 const PROP_PROVIDER = 100; // DraftKings on ESPN's core feed
+const LATEST_WINDOW = 48 * HOUR; // games this close get a fresh "latest" props snapshot…
+const LATEST_EVERY = 3 * HOUR; // …at most this often (the site's Upcoming tab reads it)
 
 const BROWSER = {
   "User-Agent":
@@ -221,6 +223,22 @@ async function props(key, id) {
   return out;
 }
 
+/** athlete id → [name, team abbr] from both teams' rosters. */
+async function names(g) {
+  const { sport, league } = LEAGUES[g.league];
+  const out = {};
+  for (const t of [g.away, g.home]) {
+    const json = await getJson(
+      `https://site.api.espn.com/apis/site/v2/sports/${sport}/${league}/teams/${t.id}/roster`,
+    );
+    const groups = Array.isArray(json?.athletes) ? json.athletes : [];
+    for (const grp of groups)
+      for (const a of Array.isArray(grp?.items) ? grp.items : [grp])
+        if (a?.id && a?.displayName) out[String(a.id)] = [String(a.displayName), t.abbr];
+  }
+  return Object.keys(out).length ? out : undefined;
+}
+
 async function load(path) {
   try {
     return JSON.parse(await readFile(path, "utf8"));
@@ -232,7 +250,7 @@ async function load(path) {
 const stable = (x) => JSON.stringify(x);
 
 /** Decides what to fetch for one game this run and updates its record. Returns true if it changed. */
-export async function updateGame(g, rec, now, fetchers = { gameLines, props }) {
+export async function updateGame(g, rec, now, fetchers = { gameLines, props, names }) {
   const start = Date.parse(g.date);
   const before = stable(rec);
   rec.id = g.id;
@@ -260,7 +278,9 @@ export async function updateGame(g, rec, now, fetchers = { gameLines, props }) {
         if (closing) rec.lines.close = { ...snap };
       }
     }
-    if (!rec.props.open || closing) {
+    const stale = !rec.props.latest || now - Date.parse(rec.props.latest.at) >= LATEST_EVERY;
+    const refresh = untilStart <= LATEST_WINDOW && stale;
+    if (!rec.props.open || closing || refresh) {
       const list = await fetchers.props(g.league, g.id);
       if (list.length) {
         // Compact rows, plus two raw items so the format can be checked later.
@@ -273,6 +293,10 @@ export async function updateGame(g, rec, now, fetchers = { gameLines, props }) {
         };
         if (!rec.props.open) rec.props.open = snap;
         if (closing) rec.props.close = { ...snap };
+        if (closing || refresh)
+          rec.props.latest = { at: stamp, count: snap.count, rows: snap.rows };
+        // player names for the site (ESPN prop rows only carry athlete ids)
+        if (!rec.names && fetchers.names) rec.names = await fetchers.names(g);
       }
     }
   }
@@ -294,7 +318,7 @@ export async function updateGame(g, rec, now, fetchers = { gameLines, props }) {
 export function serialize(rec) {
   const rows = new Map();
   const copy = structuredClone(rec);
-  for (const k of ["open", "close"]) {
+  for (const k of ["open", "close", "latest"]) {
     const snap = copy.props?.[k];
     if (snap?.rows) {
       rows.set(k, snap.rows);
