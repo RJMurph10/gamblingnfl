@@ -81,6 +81,7 @@
   --acc-nba: oklch(0.782 0.129 212);
   --acc-nhl: oklch(0.782 0.129 212);
   --acc-mlb: oklch(0.782 0.129 212);
+  --acc-cbb: oklch(0.782 0.129 212);
 
   --background: var(--bg);
   --foreground: var(--ink);
@@ -183,4 +184,8 @@
 
 [data-league="mlb"] {
   --acc: var(--acc-mlb);
+}
+
+[data-league="cbb"] {
+  --acc: var(--acc-cbb);
 }
