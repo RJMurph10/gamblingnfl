@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /**
- * Line history logger. Saves, for every NFL, college football (FBS), NBA, NHL and MLB game:
+ * Line history logger. Saves, for every NFL, college football (FBS), NBA, NHL, MLB and men's
+ * college basketball (Division I) game:
  *   - opening lines: the first time the game is seen with lines (up to 7 days ahead)
  *   - closing lines: the last snapshot before first pitch / tip-off / kickoff (updated every run in
  *     the 3 hours before the start, so the newest one wins)
@@ -32,6 +33,13 @@ export const LEAGUES = {
   nba: { sport: "basketball", league: "nba" },
   nhl: { sport: "hockey", league: "nhl" },
   mlb: { sport: "baseball", league: "mlb", query: "limit=500" },
+  // men's college basketball, Division I; game lines only (books post few college props)
+  cbb: {
+    sport: "basketball",
+    league: "mens-college-basketball",
+    query: "groups=50&limit=500",
+    noProps: true,
+  },
 };
 const only = opt("leagues", "").split(",").filter(Boolean);
 const ACTIVE = Object.keys(LEAGUES).filter((k) => !only.length || only.includes(k));
@@ -289,7 +297,7 @@ export async function updateGame(g, rec, now, fetchers = { gameLines, props, nam
     }
     const stale = !rec.props.latest || now - Date.parse(rec.props.latest.at) >= LATEST_EVERY;
     const refresh = untilStart <= LATEST_WINDOW && stale;
-    if (!rec.props.open || closing || refresh) {
+    if (!LEAGUES[g.league]?.noProps && (!rec.props.open || closing || refresh)) {
       const list = await fetchers.props(g.league, g.id);
       if (list.length) {
         // Compact rows, plus two raw items so the format can be checked later.
