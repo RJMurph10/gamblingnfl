@@ -477,7 +477,7 @@
    ]
   },
   "close": {
-   "at": "2026-11-02T17:20:26.300Z",
+   "at": "2026-11-02T19:12:51.748Z",
    "scoreboard": [
     {
      "provider": {
@@ -767,7 +767,7 @@
     {
      "provider": {
       "id": "100",
-      "name": "Draft Kings",
+      "name": "DraftKings",
       "priority": 1
      },
      "details": "SJSU -8.5",
