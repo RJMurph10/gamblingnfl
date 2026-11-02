@@ -160,7 +160,7 @@ function PastResults({ league, tabs }: { league: PropLeague; tabs: ReactNode }) 
       {tabs}
       <p className="-mt-2 mb-5 max-w-3xl text-sm text-mute">
         Every player prop line the sportsbook posted, at its opening line and price, next to what
-        the player actually did. {COVERAGE[league]} This season updates daily.
+        the player actually did. {COVERAGE[league]} This season updates four times a day, so finished games show up the same night.
       </p>
 
       <Panel padded={false} className="mb-6">

@@ -1,11 +1,16 @@
-# Daily refresh of this season's player prop history (NBA and NFL): downloads every finished game's
+# Refresh (four times a day) of this season's player prop history (NBA and NFL): downloads every finished game's
 # prop lines and box scores from ESPN, then rebuilds the files the site's Prop history pages read
 # (props-site branch) and the research file (props-history branch).
 name: Props daily
 
 on:
   schedule:
-    - cron: "23 13 * * *" # 8:23am Central
+    - cron: "23 13 * * *" # 7:23am Central (8:23 in summer)
+    # evenings too, so games show up the same night: after the late-afternoon games,
+    # the night games, and the late West Coast / Sunday and Monday night games
+    - cron: "23 1 * * *" # 7:23pm Central
+    - cron: "23 4 * * *" # 10:23pm Central
+    - cron: "23 6 * * *" # 12:23am Central
   push:
     branches: [main, prop-history, prop-prices]
     paths: [scripts/line-history/props-daily.trigger]
