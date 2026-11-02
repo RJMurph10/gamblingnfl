@@ -7,18 +7,18 @@
   "id": "2459",
   "abbr": "NIU",
   "name": "Northern Illinois Huskies",
-  "score": 0
+  "score": 60
  },
  "home": {
   "id": "2755",
   "abbr": "GRAM",
   "name": "Grambling Tigers",
-  "score": 0
+  "score": 65
  },
  "neutral": true,
  "venue": "Rock Hill Sports & Event Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T07:57:03.660Z",
