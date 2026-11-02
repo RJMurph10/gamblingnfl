@@ -7,18 +7,18 @@
   "id": "2771",
   "abbr": "MRMK",
   "name": "Merrimack Warriors",
-  "score": 21
+  "score": 49
  },
  "home": {
   "id": "2026",
   "abbr": "APP",
   "name": "App State Mountaineers",
-  "score": 43
+  "score": 63
  },
  "neutral": true,
  "venue": "Rock Hill Sports & Event Center",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-01T07:57:03.660Z",
@@ -923,5 +923,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 49,
+  "home": 63
+ }
 }

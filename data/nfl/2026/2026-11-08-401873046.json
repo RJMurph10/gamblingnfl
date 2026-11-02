@@ -477,5 +477,692 @@
    ]
   }
  },
- "props": {}
+ "props": {
+  "open": {
+   "at": "2026-11-02T13:27:40.395Z",
+   "provider": 100,
+   "count": 1,
+   "rows": [
+  {"a":"4258173","t":"Anytime Touchdown Scorer","ti":"31"}
+ ],
+   "sample": [
+    {
+     "competition": {
+      "id": "401873046"
+     },
+     "athlete": {
+      "id": "4258173"
+     },
+     "provider": {
+      "id": "100"
+     },
+     "type": {
+      "id": "31",
+      "name": "Anytime Touchdown Scorer"
+     },
+     "lastUpdated": "2026-11-02T15:44Z",
+     "current": {},
+     "open": {}
+    }
+   ]
+  }
+ },
+ "names": {
+  "15151": [
+   "Josh Harris",
+   "LAC"
+  ],
+  "16195": [
+   "Tony Jefferson",
+   "LAC"
+  ],
+  "16710": [
+   "Khalil Mack",
+   "LAC"
+  ],
+  "16734": [
+   "Jadeveon Clowney",
+   "HOU"
+  ],
+  "2576702": [
+   "Bud Dupree",
+   "LAC"
+  ],
+  "2579621": [
+   "Denzel Perryman",
+   "LAC"
+  ],
+  "2969921": [
+   "Mario Edwards Jr.",
+   "HOU"
+  ],
+  "2970204": [
+   "Sheldon Rankins",
+   "HOU"
+  ],
+  "2971573": [
+   "Ka'imi Fairbairn",
+   "HOU"
+  ],
+  "2976117": [
+   "Daniel Brunskill",
+   "LAC"
+  ],
+  "2976560": [
+   "Danielle Hunter",
+   "HOU"
+  ],
+  "2979860": [
+   "Dalvin Tomlinson",
+   "LAC"
+  ],
+  "2983509": [
+   "Dare Ogunbowale",
+   "HOU"
+  ],
+  "3043109": [
+   "Trent Brown",
+   "HOU"
+  ],
+  "3045474": [
+   "Wyatt Teller",
+   "HOU"
+  ],
+  "3050199": [
+   "George Odum",
+   "HOU"
+  ],
+  "3071353": [
+   "E.J. Speed",
+   "HOU"
+  ],
+  "3116679": [
+   "M.J. Stewart",
+   "HOU"
+  ],
+  "3117256": [
+   "Dalton Schultz",
+   "HOU"
+  ],
+  "3121595": [
+   "Braden Smith",
+   "HOU"
+  ],
+  "3123076": [
+   "David Njoku",
+   "LAC"
+  ],
+  "3126368": [
+   "JK Scott",
+   "LAC"
+  ],
+  "3128412": [
+   "Evan Brown",
+   "HOU"
+  ],
+  "3134448": [
+   "Tremon Smith",
+   "HOU"
+  ],
+  "3691739": [
+   "Derwin James Jr.",
+   "LAC"
+  ],
+  "3843769": [
+   "Donte Jackson",
+   "LAC"
+  ],
+  "3843945": [
+   "Foster Moreau",
+   "HOU"
+  ],
+  "3886812": [
+   "Jake Browning",
+   "LAC"
+  ],
+  "3916071": [
+   "Gary Jennings",
+   "LAC"
+  ],
+  "3917668": [
+   "Alec Ingold",
+   "LAC"
+  ],
+  "3919117": [
+   "Azeez Al-Shaair",
+   "HOU"
+  ],
+  "4033812": [
+   "Jake Hansen",
+   "HOU"
+  ],
+  "4035538": [
+   "David Montgomery",
+   "HOU"
+  ],
+  "4035788": [
+   "Tyler Biadasz",
+   "LAC"
+  ],
+  "4037584": [
+   "Bryce Hall",
+   "HOU"
+  ],
+  "4038941": [
+   "Justin Herbert",
+   "LAC"
+  ],
+  "4038946": [
+   "Troy Dye",
+   "LAC"
+  ],
+  "4039164": [
+   "Myles Adams",
+   "LAC"
+  ],
+  "4040842": [
+   "Kayode Awosika",
+   "LAC"
+  ],
+  "4051001": [
+   "Cole Strange",
+   "LAC"
+  ],
+  "4051069": [
+   "Caleb Johnson",
+   "HOU"
+  ],
+  "4240059": [
+   "Ja'Marcus Ingram",
+   "HOU"
+  ],
+  "4240528": [
+   "Del'Shawn Phillips",
+   "LAC"
+  ],
+  "4241223": [
+   "Jalen Pitre",
+   "HOU"
+  ],
+  "4241250": [
+   "Jake Hummel",
+   "HOU"
+  ],
+  "4241263": [
+   "Charlie Kolar",
+   "LAC"
+  ],
+  "4241394": [
+   "Kenneth Murray Jr.",
+   "HOU"
+  ],
+  "4241597": [
+   "Daiyan Henley",
+   "LAC"
+  ],
+  "4242227": [
+   "Ed Ingram",
+   "HOU"
+  ],
+  "4242283": [
+   "Rashawn Slater",
+   "LAC"
+  ],
+  "4242546": [
+   "Davis Mills",
+   "HOU"
+  ],
+  "4243321": [
+   "Ali Gaye",
+   "HOU"
+  ],
+  "4243328": [
+   "Elijah Molden",
+   "LAC"
+  ],
+  "4243956": [
+   "Reed Blankenship",
+   "HOU"
+  ],
+  "4244300": [
+   "Dominique Robinson",
+   "HOU"
+  ],
+  "4248627": [
+   "Trevor Penning",
+   "LAC"
+  ],
+  "4258173": [
+   "Nico Collins",
+   "HOU"
+  ],
+  "4360189": [
+   "Logan Hall",
+   "HOU"
+  ],
+  "4360745": [
+   "Kendall Williamson",
+   "LAC"
+  ],
+  "4361366": [
+   "Tommy Togiai",
+   "HOU"
+  ],
+  "4361689": [
+   "Solomon Byrd",
+   "HOU"
+  ],
+  "4361707": [
+   "Chad Muma",
+   "HOU"
+  ],
+  "4362081": [
+   "Cameron Dicker",
+   "LAC"
+  ],
+  "4362477": [
+   "Derius Davis",
+   "LAC"
+  ],
+  "4362504": [
+   "Brevin Jordan",
+   "HOU"
+  ],
+  "4362617": [
+   "Bryce Oliver",
+   "HOU"
+  ],
+  "4362732": [
+   "Jake Andrews",
+   "HOU"
+  ],
+  "4362910": [
+   "Jaden Crumedy",
+   "HOU"
+  ],
+  "4366031": [
+   "Tank Dell",
+   "HOU"
+  ],
+  "4373273": [
+   "British Brooks",
+   "HOU"
+  ],
+  "4373684": [
+   "Scott Matlock",
+   "LAC"
+  ],
+  "4374066": [
+   "Dylan Horton",
+   "HOU"
+  ],
+  "4374269": [
+   "Teair Tart",
+   "LAC"
+  ],
+  "4383351": [
+   "Trey Lance",
+   "LAC"
+  ],
+  "4411189": [
+   "Trey Pipkins III",
+   "LAC"
+  ],
+  "4426335": [
+   "Graham Mertz",
+   "HOU"
+  ],
+  "4426350": [
+   "Henry To'oTo'o",
+   "HOU"
+  ],
+  "4426434": [
+   "Derek Stingley Jr.",
+   "HOU"
+  ],
+  "4426435": [
+   "Jaden Davis",
+   "HOU"
+  ],
+  "4426496": [
+   "Cade Stover",
+   "HOU"
+  ],
+  "4426535": [
+   "Theo Wease Jr.",
+   "LAC"
+  ],
+  "4427404": [
+   "Cam Hart",
+   "LAC"
+  ],
+  "4428396": [
+   "Hayden Rucci",
+   "LAC"
+  ],
+  "4428656": [
+   "Nate Thomas",
+   "HOU"
+  ],
+  "4428989": [
+   "Chris Braswell",
+   "HOU"
+  ],
+  "4429018": [
+   "RJ Mickens",
+   "LAC"
+  ],
+  "4429020": [
+   "DJ Uiagalelei",
+   "LAC"
+  ],
+  "4429022": [
+   "Kayshon Boutte",
+   "HOU"
+  ],
+  "4429025": [
+   "Quentin Johnston",
+   "LAC"
+  ],
+  "4429059": [
+   "Woody Marks",
+   "HOU"
+  ],
+  "4429190": [
+   "Akheem Mesidor",
+   "LAC"
+  ],
+  "4429693": [
+   "Aireontae Ersery",
+   "HOU"
+  ],
+  "4429811": [
+   "Patrick Herbert",
+   "LAC"
+  ],
+  "4429939": [
+   "Jawhar Jordan",
+   "HOU"
+  ],
+  "4430114": [
+   "Josh Kaltenberger",
+   "LAC"
+  ],
+  "4430870": [
+   "KeAndre Lambert-Smith",
+   "LAC"
+  ],
+  "4430968": [
+   "Kimani Vidal",
+   "LAC"
+  ],
+  "4431212": [
+   "Junior Colson",
+   "LAC"
+  ],
+  "4431442": [
+   "Tuli Tuipulotu",
+   "LAC"
+  ],
+  "4431453": [
+   "Deuce Vaughn",
+   "HOU"
+  ],
+  "4431467": [
+   "Marlowe Wax",
+   "LAC"
+  ],
+  "4431517": [
+   "Calen Bullock",
+   "HOU"
+  ],
+  "4432571": [
+   "Tarheeb Still",
+   "LAC"
+  ],
+  "4432577": [
+   "C.J. Stroud",
+   "HOU"
+  ],
+  "4432631": [
+   "Noah Whittington",
+   "HOU"
+  ],
+  "4432699": [
+   "Blake Fisher",
+   "HOU"
+  ],
+  "4432708": [
+   "Marvin Harrison Jr.",
+   "HOU"
+  ],
+  "4433830": [
+   "Luke Grimm",
+   "LAC"
+  ],
+  "4433914": [
+   "Branson Taylor",
+   "LAC"
+  ],
+  "4567138": [
+   "Justin Eboigbe",
+   "LAC"
+  ],
+  "4567399": [
+   "Kaiir Elam",
+   "LAC"
+  ],
+  "4570033": [
+   "Kai Kroeger",
+   "HOU"
+  ],
+  "4574105": [
+   "Isas Waxter",
+   "LAC"
+  ],
+  "4575558": [
+   "Josh Kelly",
+   "HOU"
+  ],
+  "4577333": [
+   "Andre Carter II",
+   "LAC"
+  ],
+  "4586312": [
+   "Jaylin Noel",
+   "HOU"
+  ],
+  "4594277": [
+   "Jaylin Smith",
+   "HOU"
+  ],
+  "4595342": [
+   "Oronde Gadsden",
+   "LAC"
+  ],
+  "4596334": [
+   "Keaton Mitchell",
+   "LAC"
+  ],
+  "4602699": [
+   "Kamari Lassiter",
+   "HOU"
+  ],
+  "4612826": [
+   "Ladd McConkey",
+   "LAC"
+  ],
+  "4677281": [
+   "Kyonte Hamilton",
+   "HOU"
+  ],
+  "4682506": [
+   "Jake Slaughter",
+   "LAC"
+  ],
+  "4682789": [
+   "Logan Taylor",
+   "LAC"
+  ],
+  "4682818": [
+   "Nick Barrett",
+   "LAC"
+  ],
+  "4683159": [
+   "Lewis Bond",
+   "HOU"
+  ],
+  "4683487": [
+   "Joe Alt",
+   "LAC"
+  ],
+  "4685272": [
+   "Lander Barton",
+   "LAC"
+  ],
+  "4685382": [
+   "Omarion Hampton",
+   "LAC"
+  ],
+  "4685518": [
+   "Kamari Ramsey",
+   "HOU"
+  ],
+  "4685553": [
+   "Brenen Thompson",
+   "LAC"
+  ],
+  "4685724": [
+   "Will Anderson Jr.",
+   "HOU"
+  ],
+  "4686422": [
+   "Xavier Hutchinson",
+   "HOU"
+  ],
+  "4686612": [
+   "Tre' Harris",
+   "LAC"
+  ],
+  "4687188": [
+   "K.C. Ossai",
+   "HOU"
+  ],
+  "4690171": [
+   "Deane Leonard",
+   "LAC"
+  ],
+  "4690999": [
+   "Austin Brinkman",
+   "HOU"
+  ],
+  "4695607": [
+   "Junior Tafuna",
+   "HOU"
+  ],
+  "4695705": [
+   "Marlin Klein",
+   "HOU"
+  ],
+  "4699802": [
+   "Sabastian Harsh",
+   "HOU"
+  ],
+  "4833376": [
+   "Collin Wright",
+   "HOU"
+  ],
+  "4837286": [
+   "Wade Woodaz",
+   "HOU"
+  ],
+  "4838693": [
+   "Rodney Shelley",
+   "LAC"
+  ],
+  "4839498": [
+   "Keylan Rutledge",
+   "HOU"
+  ],
+  "4844640": [
+   "Max Pircher",
+   "HOU"
+  ],
+  "4870893": [
+   "Kayden McDonald",
+   "HOU"
+  ],
+  "4875912": [
+   "Tejhaun Palmer",
+   "LAC"
+  ],
+  "4876006": [
+   "Zaire Mitchell-Paden",
+   "HOU"
+  ],
+  "4876658": [
+   "Travis Burke",
+   "LAC"
+  ],
+  "4877706": [
+   "Jayden Higgins",
+   "HOU"
+  ],
+  "4878878": [
+   "Amar Johnson",
+   "LAC"
+  ],
+  "4879242": [
+   "Sam Hagen",
+   "HOU"
+  ],
+  "4880873": [
+   "Febechi Nwaiwu",
+   "HOU"
+  ],
+  "4911489": [
+   "Caleb Murphy",
+   "LAC"
+  ],
+  "4950551": [
+   "Genesis Smith",
+   "LAC"
+  ],
+  "5081880": [
+   "James Neal III",
+   "HOU"
+  ],
+  "5082312": [
+   "Jacob Spomer",
+   "LAC"
+  ],
+  "5082633": [
+   "Evan Svoboda",
+   "LAC"
+  ],
+  "5082660": [
+   "Alex Harkey",
+   "LAC"
+  ],
+  "5084965": [
+   "Isaiah World",
+   "LAC"
+  ],
+  "5085942": [
+   "Treyvhon Saunders",
+   "HOU"
+  ],
+  "5089178": [
+   "Jamaree Caldwell",
+   "LAC"
+  ],
+  "5152226": [
+   "Terry Webb",
+   "LAC"
+  ],
+  "5211218": [
+   "Laekin Vakalahi",
+   "LAC"
+  ]
+ }
 }
