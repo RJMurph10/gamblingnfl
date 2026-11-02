@@ -477,5 +477,731 @@
    ]
   }
  },
- "props": {}
+ "props": {
+  "open": {
+   "at": "2026-11-02T07:43:05.491Z",
+   "provider": 100,
+   "count": 12,
+   "rows": [
+  {"a":null,"t":"1st Half Total","ti":"72","op":[23.5,null,null],"cur":[23.5,null,null]},
+  {"a":null,"t":"1st Half Total","ti":"72","op":[23.5,null,null],"cur":[23.5,null,null]},
+  {"a":null,"t":"1st Half Moneyline","ti":"73"},
+  {"a":null,"t":"1st Half Moneyline","ti":"73"},
+  {"a":null,"t":"1st Half Spread","ti":"74","op":[0.5,null,null],"cur":[1.5,null,null]},
+  {"a":null,"t":"1st Half Spread","ti":"74","op":[-0.5,null,null],"cur":[-1.5,null,null]},
+  {"a":null,"t":"1st Quarter Total","ti":"75","op":[9.5,null,null],"cur":[9.5,null,null]},
+  {"a":null,"t":"1st Quarter Total","ti":"75","op":[9.5,null,null],"cur":[9.5,null,null]},
+  {"a":null,"t":"1st Quarter Moneyline","ti":"76"},
+  {"a":null,"t":"1st Quarter Moneyline","ti":"76"},
+  {"a":null,"t":"1st Quarter Spread","ti":"77","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":null,"t":"1st Quarter Spread","ti":"77","op":[-0.5,null,null],"cur":[-0.5,null,null]}
+ ],
+   "sample": [
+    {
+     "competition": {
+      "id": "401873049"
+     },
+     "provider": {
+      "id": "100"
+     },
+     "type": {
+      "id": "72",
+      "name": "1st Half Total"
+     },
+     "lastUpdated": "2026-11-02T07:33Z",
+     "current": {
+      "target": {
+       "value": 23.5,
+       "displayValue": "23.5"
+      }
+     },
+     "open": {
+      "target": {
+       "value": 23.5,
+       "displayValue": "23.5"
+      }
+     }
+    },
+    {
+     "competition": {
+      "id": "401873049"
+     },
+     "provider": {
+      "id": "100"
+     },
+     "type": {
+      "id": "72",
+      "name": "1st Half Total"
+     },
+     "lastUpdated": "2026-11-02T07:33Z",
+     "current": {
+      "target": {
+       "value": 23.5,
+       "displayValue": "23.5"
+      }
+     },
+     "open": {
+      "target": {
+       "value": 23.5,
+       "displayValue": "23.5"
+      }
+     }
+    }
+   ]
+  }
+ },
+ "names": {
+  "14163": [
+   "Tyrod Taylor",
+   "GB"
+  ],
+  "14931": [
+   "Kevin Zeitler",
+   "GB"
+  ],
+  "15718": [
+   "Greg Van Roten",
+   "NE"
+  ],
+  "16771": [
+   "Morgan Moses",
+   "NE"
+  ],
+  "16910": [
+   "DaQuan Jones",
+   "NE"
+  ],
+  "2312707": [
+   "John Williams",
+   "GB"
+  ],
+  "2512477": [
+   "Laken Tomlinson",
+   "GB"
+  ],
+  "2574056": [
+   "Kevin Byard",
+   "NE"
+  ],
+  "2983055": [
+   "Javon Hargrave",
+   "GB"
+  ],
+  "2991662": [
+   "Mack Hollins",
+   "NE"
+  ],
+  "3046439": [
+   "Hunter Henry",
+   "NE"
+  ],
+  "3054212": [
+   "Jonnu Smith",
+   "GB"
+  ],
+  "3055886": [
+   "Matt Pryor",
+   "NE"
+  ],
+  "3115328": [
+   "Jalen Hurd",
+   "NE"
+  ],
+  "3122793": [
+   "Harold Landry III",
+   "NE"
+  ],
+  "3124005": [
+   "Zaire Franklin",
+   "GB"
+  ],
+  "3129446": [
+   "Robert Spillane",
+   "NE"
+  ],
+  "3149687": [
+   "Chris Brooks",
+   "GB"
+  ],
+  "3821571": [
+   "Jordan Morgan",
+   "GB"
+  ],
+  "3915525": [
+   "Dre'Mont Jones",
+   "NE"
+  ],
+  "3916923": [
+   "Carlton Davis III",
+   "NE"
+  ],
+  "4035685": [
+   "Mitch Wishnowsky",
+   "NE"
+  ],
+  "4036141": [
+   "Nick Niemann",
+   "GB"
+  ],
+  "4036153": [
+   "Kristian Welch",
+   "GB"
+  ],
+  "4036378": [
+   "Jordan Love",
+   "GB"
+  ],
+  "4036651": [
+   "Kindle Vildor",
+   "NE"
+  ],
+  "4039505": [
+   "Reggie Gilliam",
+   "NE"
+  ],
+  "4046545": [
+   "Mike Onwenu",
+   "NE"
+  ],
+  "4047365": [
+   "Josh Jacobs",
+   "GB"
+  ],
+  "4047422": [
+   "Tanner Conner",
+   "NE"
+  ],
+  "4047646": [
+   "A.J. Brown",
+   "NE"
+  ],
+  "4047941": [
+   "Brenden Schooler",
+   "NE"
+  ],
+  "4239699": [
+   "Milton Williams",
+   "NE"
+  ],
+  "4239947": [
+   "Isaiah McDuffie",
+   "GB"
+  ],
+  "4240042": [
+   "Cory Durden",
+   "NE"
+  ],
+  "4240090": [
+   "Mekhi Becton",
+   "GB"
+  ],
+  "4240391": [
+   "Tommy DeVito",
+   "NE"
+  ],
+  "4240435": [
+   "Zach Bako-Bewele",
+   "GB"
+  ],
+  "4240677": [
+   "Jordon Riley",
+   "GB"
+  ],
+  "4241470": [
+   "Xavier McKinney",
+   "GB"
+  ],
+  "4241720": [
+   "Marcus Jones",
+   "NE"
+  ],
+  "4242390": [
+   "Aaron Banks",
+   "GB"
+  ],
+  "4242996": [
+   "Arron Mosby",
+   "GB"
+  ],
+  "4244310": [
+   "Mike Brown",
+   "NE"
+  ],
+  "4245273": [
+   "Christian Elliss",
+   "NE"
+  ],
+  "4247722": [
+   "Benton Whitley",
+   "NE"
+  ],
+  "4248528": [
+   "Christian Watson",
+   "GB"
+  ],
+  "4248789": [
+   "Daniel Whelan",
+   "GB"
+  ],
+  "4249836": [
+   "Pierre Strong Jr.",
+   "GB"
+  ],
+  "4258206": [
+   "Benjamin St-Juste",
+   "GB"
+  ],
+  "4259186": [
+   "Xavier Newman-Johnson",
+   "NE"
+  ],
+  "4259305": [
+   "Bo Melton",
+   "GB"
+  ],
+  "4259493": [
+   "Keisean Nixon",
+   "GB"
+  ],
+  "4259646": [
+   "Alijah Vera-Tucker",
+   "NE"
+  ],
+  "4259762": [
+   "Jonathan Ford",
+   "GB"
+  ],
+  "4360063": [
+   "Lorenz Metz",
+   "NE"
+  ],
+  "4360086": [
+   "Josh Whyle",
+   "GB"
+  ],
+  "4360887": [
+   "Donovan Jennings",
+   "GB"
+  ],
+  "4361027": [
+   "Thomas Yassmin",
+   "GB"
+  ],
+  "4361423": [
+   "Micah Parsons",
+   "GB"
+  ],
+  "4361432": [
+   "Romeo Doubs",
+   "NE"
+  ],
+  "4361776": [
+   "Brenton Cox Jr.",
+   "GB"
+  ],
+  "4361791": [
+   "Devonte Wyatt",
+   "GB"
+  ],
+  "4361904": [
+   "Travis Glover",
+   "GB"
+  ],
+  "4362249": [
+   "Jayden Reed",
+   "GB"
+  ],
+  "4362890": [
+   "Ben Brown",
+   "NE"
+  ],
+  "4365395": [
+   "Julian Hill",
+   "NE"
+  ],
+  "4368113": [
+   "Charles Woods",
+   "NE"
+  ],
+  "4369466": [
+   "Ryan Miller",
+   "NE"
+  ],
+  "4372026": [
+   "Cameron Latu",
+   "NE"
+  ],
+  "4372030": [
+   "Christian Barmore",
+   "NE"
+  ],
+  "4373423": [
+   "Karl Brooks",
+   "GB"
+  ],
+  "4373814": [
+   "Kahlef Hailassie",
+   "GB"
+  ],
+  "4374037": [
+   "Kitan Oladapo",
+   "GB"
+  ],
+  "4383405": [
+   "Jake Kubas",
+   "NE"
+  ],
+  "4422336": [
+   "Matt Orzech",
+   "GB"
+  ],
+  "4426347": [
+   "Mazi Smith",
+   "GB"
+  ],
+  "4426411": [
+   "Sean Rhyan",
+   "GB"
+  ],
+  "4426972": [
+   "Dalton Cooper",
+   "GB"
+  ],
+  "4427095": [
+   "DeMario Douglas",
+   "NE"
+  ],
+  "4427356": [
+   "Kamal Hadden",
+   "GB"
+  ],
+  "4428037": [
+   "Jacob Monk",
+   "GB"
+  ],
+  "4428072": [
+   "Darius Muasau",
+   "NE"
+  ],
+  "4428085": [
+   "Luke Musgrave",
+   "GB"
+  ],
+  "4428116": [
+   "Isaiah Neyor",
+   "GB"
+  ],
+  "4428232": [
+   "Dell Pettus",
+   "NE"
+  ],
+  "4428394": [
+   "Walter Rouse",
+   "NE"
+  ],
+  "4428512": [
+   "Kedon Slovis",
+   "GB"
+  ],
+  "4428863": [
+   "Evan Williams",
+   "GB"
+  ],
+  "4428930": [
+   "Craig Woodson",
+   "NE"
+  ],
+  "4429023": [
+   "MarShawn Lloyd",
+   "GB"
+  ],
+  "4429136": [
+   "Warren Brinson",
+   "GB"
+  ],
+  "4429466": [
+   "Drake Dabney",
+   "GB"
+  ],
+  "4430191": [
+   "Skyy Moore",
+   "GB"
+  ],
+  "4430438": [
+   "Edgerrin Cooper",
+   "GB"
+  ],
+  "4430965": [
+   "Carrington Valentine",
+   "GB"
+  ],
+  "4431346": [
+   "Mark Redman",
+   "GB"
+  ],
+  "4431431": [
+   "Corey Kiner",
+   "NE"
+  ],
+  "4431452": [
+   "Drake Maye",
+   "NE"
+  ],
+  "4431465": [
+   "Behren Morton",
+   "NE"
+  ],
+  "4431487": [
+   "Savion Williams",
+   "GB"
+  ],
+  "4431526": [
+   "Dametrious Crownover",
+   "NE"
+  ],
+  "4431598": [
+   "Leonard Taylor III",
+   "NE"
+  ],
+  "4432710": [
+   "TreVeyon Henderson",
+   "NE"
+  ],
+  "4432758": [
+   "Jaylen Reed",
+   "NE"
+  ],
+  "4565293": [
+   "Marcus Bryant",
+   "NE"
+  ],
+  "4567171": [
+   "Eric Gregory",
+   "NE"
+  ],
+  "4567406": [
+   "Ty'Ron Hopper",
+   "GB"
+  ],
+  "4569068": [
+   "Jose Ramirez",
+   "NE"
+  ],
+  "4569173": [
+   "Rhamondre Stevenson",
+   "NE"
+  ],
+  "4569661": [
+   "Jager Burton",
+   "GB"
+  ],
+  "4569923": [
+   "Andy Borregales",
+   "NE"
+  ],
+  "4572261": [
+   "Elijah Culp",
+   "GB"
+  ],
+  "4572380": [
+   "Quincy Skinner Jr.",
+   "GB"
+  ],
+  "4572680": [
+   "Tucker Kraft",
+   "GB"
+  ],
+  "4573243": [
+   "Chandler Brayboy",
+   "NE"
+  ],
+  "4578436": [
+   "Coleman Owen",
+   "GB"
+  ],
+  "4581189": [
+   "Dillon Wade",
+   "GB"
+  ],
+  "4599198": [
+   "Jared Wilson",
+   "NE"
+  ],
+  "4606666": [
+   "Karon Prunty",
+   "NE"
+  ],
+  "4611993": [
+   "Joshua Farmer",
+   "NE"
+  ],
+  "4613202": [
+   "Kyle Williams",
+   "NE"
+  ],
+  "4635009": [
+   "J. Michael Sturdivant",
+   "GB"
+  ],
+  "4676889": [
+   "Myles Montgomery",
+   "NE"
+  ],
+  "4683059": [
+   "Collin Oliver",
+   "GB"
+  ],
+  "4683308": [
+   "Tanner Arkin",
+   "NE"
+  ],
+  "4683643": [
+   "Barryn Sorrell",
+   "GB"
+  ],
+  "4685298": [
+   "Will Campbell",
+   "NE"
+  ],
+  "4685315": [
+   "Dani Dennis-Sutton",
+   "GB"
+  ],
+  "4685402": [
+   "Domani Jackson",
+   "GB"
+  ],
+  "4686772": [
+   "Christian Gonzalez",
+   "NE"
+  ],
+  "4686906": [
+   "Lukas Van Ness",
+   "GB"
+  ],
+  "4688366": [
+   "Elliott Davison",
+   "NE"
+  ],
+  "4688432": [
+   "Elijah Ponder",
+   "NE"
+  ],
+  "4688779": [
+   "Channing Canada",
+   "NE"
+  ],
+  "4688930": [
+   "Javon Bullard",
+   "GB"
+  ],
+  "4690606": [
+   "Al'zillion Hamilton",
+   "NE"
+  ],
+  "4695193": [
+   "Efton Chism III",
+   "NE"
+  ],
+  "4695254": [
+   "Julian Ashby",
+   "NE"
+  ],
+  "4698181": [
+   "Quintayvious Hutchins",
+   "NE"
+  ],
+  "4698253": [
+   "Lan Larison",
+   "NE"
+  ],
+  "4701936": [
+   "Matthew Golden",
+   "GB"
+  ],
+  "4709980": [
+   "Johnathan Baldwin II",
+   "GB"
+  ],
+  "4726151": [
+   "Nyjalik Kelly",
+   "GB"
+  ],
+  "4819231": [
+   "Kaleb Johnson",
+   "GB"
+  ],
+  "4820574": [
+   "Chris McClellan",
+   "GB"
+  ],
+  "4831959": [
+   "Eli Raridon",
+   "NE"
+  ],
+  "4837244": [
+   "Gabe Jacas",
+   "NE"
+  ],
+  "4869461": [
+   "Trey Smack",
+   "GB"
+  ],
+  "4873706": [
+   "Anthony Belton",
+   "GB"
+  ],
+  "4877877": [
+   "Xavier Holmes",
+   "NE"
+  ],
+  "4887255": [
+   "Anthony Campbell",
+   "GB"
+  ],
+  "4890074": [
+   "Erick Hunter",
+   "NE"
+  ],
+  "4912116": [
+   "Khalil Jacobs",
+   "NE"
+  ],
+  "4916597": [
+   "Andrew Rupcich",
+   "NE"
+  ],
+  "4921438": [
+   "Caleb Lomu",
+   "NE"
+  ],
+  "5011554": [
+   "Kyle Dixon",
+   "NE"
+  ],
+  "5076652": [
+   "Brandon Cisse",
+   "GB"
+  ],
+  "5081728": [
+   "Jeremiah Pharms Jr.",
+   "NE"
+  ],
+  "5085407": [
+   "Namdi Obiazor",
+   "NE"
+  ],
+  "5150999": [
+   "David Blay Jr.",
+   "GB"
+  ],
+  "5277116": [
+   "Lenny Krieg",
+   "GB"
+  ],
+  "5295981": [
+   "Cameron Dorner",
+   "NE"
+  ]
+ }
 }

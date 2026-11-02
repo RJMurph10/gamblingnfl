@@ -477,5 +477,723 @@
    ]
   }
  },
- "props": {}
+ "props": {
+  "open": {
+   "at": "2026-11-02T07:43:05.491Z",
+   "provider": 100,
+   "count": 12,
+   "rows": [
+  {"a":null,"t":"1st Half Total","ti":"72","op":[23.5,null,null],"cur":[23.5,null,null]},
+  {"a":null,"t":"1st Half Total","ti":"72","op":[23.5,null,null],"cur":[23.5,null,null]},
+  {"a":null,"t":"1st Half Moneyline","ti":"73"},
+  {"a":null,"t":"1st Half Moneyline","ti":"73"},
+  {"a":null,"t":"1st Half Spread","ti":"74","op":[-5.5,null,null],"cur":[-6.5,null,null]},
+  {"a":null,"t":"1st Half Spread","ti":"74","op":[5.5,null,null],"cur":[6.5,null,null]},
+  {"a":null,"t":"1st Quarter Total","ti":"75","op":[9.5,null,null],"cur":[9.5,null,null]},
+  {"a":null,"t":"1st Quarter Total","ti":"75","op":[9.5,null,null],"cur":[9.5,null,null]},
+  {"a":null,"t":"1st Quarter Moneyline","ti":"76"},
+  {"a":null,"t":"1st Quarter Moneyline","ti":"76"},
+  {"a":null,"t":"1st Quarter Spread","ti":"77","op":[-3.5,null,null],"cur":[-3.5,null,null]},
+  {"a":null,"t":"1st Quarter Spread","ti":"77","op":[3.5,null,null],"cur":[3.5,null,null]}
+ ],
+   "sample": [
+    {
+     "competition": {
+      "id": "401873045"
+     },
+     "provider": {
+      "id": "100"
+     },
+     "type": {
+      "id": "72",
+      "name": "1st Half Total"
+     },
+     "lastUpdated": "2026-11-02T07:33Z",
+     "current": {
+      "target": {
+       "value": 23.5,
+       "displayValue": "23.5"
+      }
+     },
+     "open": {
+      "target": {
+       "value": 23.5,
+       "displayValue": "23.5"
+      }
+     }
+    },
+    {
+     "competition": {
+      "id": "401873045"
+     },
+     "provider": {
+      "id": "100"
+     },
+     "type": {
+      "id": "72",
+      "name": "1st Half Total"
+     },
+     "lastUpdated": "2026-11-02T07:33Z",
+     "current": {
+      "target": {
+       "value": 23.5,
+       "displayValue": "23.5"
+      }
+     },
+     "open": {
+      "target": {
+       "value": 23.5,
+       "displayValue": "23.5"
+      }
+     }
+    }
+   ]
+  }
+ },
+ "names": {
+  "14958": [
+   "Demario Davis",
+   "NYJ"
+  ],
+  "15683": [
+   "Justin Tucker",
+   "KC"
+  ],
+  "15847": [
+   "Travis Kelce",
+   "KC"
+  ],
+  "15864": [
+   "Geno Smith",
+   "NYJ"
+  ],
+  "16665": [
+   "James Winchester",
+   "KC"
+  ],
+  "2976592": [
+   "Sterling Shepard",
+   "NYJ"
+  ],
+  "2977740": [
+   "Emmanuel Ogbah",
+   "KC"
+  ],
+  "2983155": [
+   "Thomas Hennessy",
+   "NYJ"
+  ],
+  "3044859": [
+   "Chris Jones",
+   "KC"
+  ],
+  "3055899": [
+   "Harrison Butker",
+   "KC"
+  ],
+  "3116177": [
+   "Troy Reeder",
+   "NYJ"
+  ],
+  "3117255": [
+   "Harrison Phillips",
+   "NYJ"
+  ],
+  "3118892": [
+   "Justin Watson",
+   "KC"
+  ],
+  "3124679": [
+   "Jason Sanders",
+   "NYJ"
+  ],
+  "3125107": [
+   "Andrew Beck",
+   "NYJ"
+  ],
+  "3129310": [
+   "Drue Tranquill",
+   "KC"
+  ],
+  "3129473": [
+   "Chukwuma Okorafor",
+   "NYJ"
+  ],
+  "3134353": [
+   "Tim Patrick",
+   "NYJ"
+  ],
+  "3139477": [
+   "Patrick Mahomes",
+   "KC"
+  ],
+  "3925345": [
+   "Minkah Fitzpatrick",
+   "NYJ"
+  ],
+  "3933407": [
+   "Quinton Bell",
+   "NYJ"
+  ],
+  "4002046": [
+   "David Onyemata",
+   "NYJ"
+  ],
+  "4035433": [
+   "Kristian Fulton",
+   "KC"
+  ],
+  "4035537": [
+   "Kene Nwangwu",
+   "NYJ"
+  ],
+  "4035798": [
+   "Isaiahh Loudermilk",
+   "NYJ"
+  ],
+  "4035824": [
+   "Brandon Stephens",
+   "NYJ"
+  ],
+  "4036959": [
+   "Cole Christiansen",
+   "KC"
+  ],
+  "4039413": [
+   "Alohi Gilman",
+   "KC"
+  ],
+  "4039485": [
+   "Jack Heflin",
+   "NYJ"
+  ],
+  "4040432": [
+   "L'Jarius Sneed",
+   "KC"
+  ],
+  "4043039": [
+   "Mike Caliendo",
+   "KC"
+  ],
+  "4043041": [
+   "Jaylon Moore",
+   "KC"
+  ],
+  "4045299": [
+   "Marcelino McCrary-Ball",
+   "NYJ"
+  ],
+  "4046165": [
+   "Jimmy Morrissey",
+   "NYJ"
+  ],
+  "4076803": [
+   "Jordan Meredith",
+   "NYJ"
+  ],
+  "4240405": [
+   "Kingsley Jonathan",
+   "NYJ"
+  ],
+  "4240472": [
+   "Noah Gray",
+   "KC"
+  ],
+  "4241373": [
+   "Tre Brown",
+   "NYJ"
+  ],
+  "4241385": [
+   "Creed Humphrey",
+   "KC"
+  ],
+  "4241410": [
+   "Jelani Woods",
+   "NYJ"
+  ],
+  "4242000": [
+   "Josh Myers",
+   "NYJ"
+  ],
+  "4242459": [
+   "Trey Smith",
+   "KC"
+  ],
+  "4243375": [
+   "Dylan Parham",
+   "NYJ"
+  ],
+  "4249766": [
+   "Jack Cochrane",
+   "KC"
+  ],
+  "4256074": [
+   "Khyiris Tonga",
+   "KC"
+  ],
+  "4280416": [
+   "Samuel Womack III",
+   "NYJ"
+  ],
+  "4291489": [
+   "Kader Kohou",
+   "KC"
+  ],
+  "4361331": [
+   "Jamien Sherwood",
+   "NYJ"
+  ],
+  "4361340": [
+   "Tyreke Smith",
+   "KC"
+  ],
+  "4361372": [
+   "Jeremy Ruckert",
+   "NYJ"
+  ],
+  "4361418": [
+   "Will Levis",
+   "NYJ"
+  ],
+  "4361496": [
+   "Matt Araiza",
+   "KC"
+  ],
+  "4361767": [
+   "Will McDonald IV",
+   "NYJ"
+  ],
+  "4361939": [
+   "Andre Cisco",
+   "NYJ"
+  ],
+  "4361964": [
+   "Chamarri Conner",
+   "KC"
+  ],
+  "4362094": [
+   "Joseph Ossai",
+   "NYJ"
+  ],
+  "4362759": [
+   "Nick Bolton",
+   "KC"
+  ],
+  "4362840": [
+   "Kingsley Enagbare",
+   "NYJ"
+  ],
+  "4362887": [
+   "Justin Fields",
+   "KC"
+  ],
+  "4362921": [
+   "Tyquan Thornton",
+   "KC"
+  ],
+  "4367645": [
+   "Hunter Nourzad",
+   "KC"
+  ],
+  "4370876": [
+   "Matt Waletzko",
+   "KC"
+  ],
+  "4372070": [
+   "Ben VanSumeren",
+   "KC"
+  ],
+  "4372716": [
+   "Nikko Remigio",
+   "KC"
+  ],
+  "4373280": [
+   "Joshua Ezeudu",
+   "KC"
+  ],
+  "4373656": [
+   "Max Mitchell",
+   "NYJ"
+  ],
+  "4373951": [
+   "Kohl Levao",
+   "NYJ"
+  ],
+  "4426623": [
+   "Brant Banks",
+   "NYJ"
+  ],
+  "4426659": [
+   "George Karlaftis",
+   "KC"
+  ],
+  "4426676": [
+   "Jowon Briggs",
+   "NYJ"
+  ],
+  "4426686": [
+   "Dane Belton",
+   "NYJ"
+  ],
+  "4426817": [
+   "Jarvis Brownlee Jr.",
+   "NYJ"
+  ],
+  "4427366": [
+   "Breece Hall",
+   "NYJ"
+  ],
+  "4427982": [
+   "Austin McNamara",
+   "NYJ"
+  ],
+  "4428331": [
+   "Rashee Rice",
+   "KC"
+  ],
+  "4428383": [
+   "Chris Roland-Wallace",
+   "KC"
+  ],
+  "4428617": [
+   "T'Vondre Sweat",
+   "NYJ"
+  ],
+  "4428681": [
+   "Joe Tippmann",
+   "NYJ"
+  ],
+  "4429005": [
+   "Braiden McGregor",
+   "NYJ"
+  ],
+  "4429105": [
+   "Arian Smith",
+   "NYJ"
+  ],
+  "4429411": [
+   "Jordan Clark",
+   "NYJ"
+  ],
+  "4430185": [
+   "Caullin Lacy",
+   "NYJ"
+  ],
+  "4430723": [
+   "Jared Wiley",
+   "KC"
+  ],
+  "4430893": [
+   "Chip Trayanum",
+   "NYJ"
+  ],
+  "4431060": [
+   "Nick Dawkins",
+   "NYJ"
+  ],
+  "4431142": [
+   "Jimmy Holiday",
+   "KC"
+  ],
+  "4431196": [
+   "Jake Briningstool",
+   "KC"
+  ],
+  "4431534": [
+   "Ethan Downs",
+   "KC"
+  ],
+  "4431561": [
+   "Bryson Eason",
+   "KC"
+  ],
+  "4431582": [
+   "Payton Page",
+   "NYJ"
+  ],
+  "4431595": [
+   "Kingsley Suamataia",
+   "KC"
+  ],
+  "4431809": [
+   "Olu Fashanu",
+   "NYJ"
+  ],
+  "4566190": [
+   "Kahlil Benson",
+   "KC"
+  ],
+  "4567048": [
+   "Kenneth Walker III",
+   "KC"
+  ],
+  "4567747": [
+   "Garrett Nussmeier",
+   "KC"
+  ],
+  "4567826": [
+   "Cooper McDonald",
+   "KC"
+  ],
+  "4569371": [
+   "Isaiah Williams",
+   "NYJ"
+  ],
+  "4569618": [
+   "Garrett Wilson",
+   "NYJ"
+  ],
+  "4569659": [
+   "Josh Simmons",
+   "KC"
+  ],
+  "4570470": [
+   "Nahshon Wright",
+   "NYJ"
+  ],
+  "4571627": [
+   "Ethan Driskell",
+   "KC"
+  ],
+  "4573152": [
+   "Marcus Harris",
+   "KC"
+  ],
+  "4574142": [
+   "Nate Lynn",
+   "NYJ"
+  ],
+  "4591008": [
+   "Omarr Norman-Lott",
+   "KC"
+  ],
+  "4596602": [
+   "Brashard Smith",
+   "KC"
+  ],
+  "4597500": [
+   "Adonai Mitchell",
+   "NYJ"
+  ],
+  "4599158": [
+   "Al-Jay Henderson",
+   "NYJ"
+  ],
+  "4602389": [
+   "Jeffrey Bassa",
+   "KC"
+  ],
+  "4602984": [
+   "Diego Pounds",
+   "KC"
+  ],
+  "4605841": [
+   "Nate Carter",
+   "KC"
+  ],
+  "4610705": [
+   "Nohl Williams",
+   "KC"
+  ],
+  "4612387": [
+   "Felix Anudike-Uzomah",
+   "KC"
+  ],
+  "4612836": [
+   "Darrell Jackson Jr.",
+   "NYJ"
+  ],
+  "4682509": [
+   "Malik McClain",
+   "NYJ"
+  ],
+  "4682626": [
+   "Pete Nygra",
+   "KC"
+  ],
+  "4683062": [
+   "Xavier Worthy",
+   "KC"
+  ],
+  "4683815": [
+   "Trevin Wallace",
+   "NYJ"
+  ],
+  "4684432": [
+   "Ashton Gillotte",
+   "KC"
+  ],
+  "4685232": [
+   "Jaden Hicks",
+   "KC"
+  ],
+  "4685247": [
+   "Braelon Allen",
+   "NYJ"
+  ],
+  "4685248": [
+   "David Bailey",
+   "NYJ"
+  ],
+  "4685413": [
+   "Cade Klubnik",
+   "NYJ"
+  ],
+  "4685489": [
+   "Jaydn Ott",
+   "KC"
+  ],
+  "4685491": [
+   "Xavier Nwankpa",
+   "KC"
+  ],
+  "4685596": [
+   "Azareye'h Thomas",
+   "NYJ"
+  ],
+  "4692024": [
+   "Malachi Moore",
+   "NYJ"
+  ],
+  "4692555": [
+   "Tyler Baron",
+   "NYJ"
+  ],
+  "4695404": [
+   "Isaiah Davis",
+   "NYJ"
+  ],
+  "4700136": [
+   "Kiko Mauigoa",
+   "NYJ"
+  ],
+  "4700756": [
+   "Jaden Keller",
+   "NYJ"
+  ],
+  "4702908": [
+   "Omari Evans",
+   "KC"
+  ],
+  "4705926": [
+   "Michael Heldman",
+   "KC"
+  ],
+  "4708490": [
+   "John Michael Gyllenborg",
+   "KC"
+  ],
+  "4708859": [
+   "Amari McNeill",
+   "NYJ"
+  ],
+  "4710706": [
+   "Jadon Canady",
+   "KC"
+  ],
+  "4723820": [
+   "Omar Cooper Jr.",
+   "NYJ"
+  ],
+  "4789907": [
+   "Armand Membou",
+   "NYJ"
+  ],
+  "4808766": [
+   "Mason Taylor",
+   "NYJ"
+  ],
+  "4832955": [
+   "Emmett Johnson",
+   "KC"
+  ],
+  "4837252": [
+   "Jack Pyburn",
+   "KC"
+  ],
+  "4837388": [
+   "VJ Payne",
+   "NYJ"
+  ],
+  "4871063": [
+   "Peter Woods",
+   "KC"
+  ],
+  "4880093": [
+   "Nathan Voorhis",
+   "NYJ"
+  ],
+  "4880124": [
+   "Mansoor Delane",
+   "KC"
+  ],
+  "4880312": [
+   "D'Arco Perkins-McAllister",
+   "KC"
+  ],
+  "4885466": [
+   "Jeff Caldwell",
+   "KC"
+  ],
+  "4892576": [
+   "Jamaal Pritchett",
+   "NYJ"
+  ],
+  "4905597": [
+   "Anez Cooper",
+   "NYJ"
+  ],
+  "4912218": [
+   "Cyrus Allen",
+   "KC"
+  ],
+  "4912338": [
+   "Aiden Fisher",
+   "KC"
+  ],
+  "5081093": [
+   "DeShon Singleton",
+   "KC"
+  ],
+  "5081927": [
+   "R Mason Thomas",
+   "KC"
+  ],
+  "5082630": [
+   "Jalen Royals",
+   "KC"
+  ],
+  "5083315": [
+   "Kenyon Sadiq",
+   "NYJ"
+  ],
+  "5086529": [
+   "Cody Hardy",
+   "NYJ"
+  ],
+  "5092196": [
+   "Mory Bamba",
+   "NYJ"
+  ],
+  "5093923": [
+   "Andrew Armstrong",
+   "KC"
+  ],
+  "5118340": [
+   "D'Angelo Ponds",
+   "NYJ"
+  ],
+  "5208977": [
+   "Qwan'tez Stiggers",
+   "NYJ"
+  ],
+  "5278708": [
+   "Melvin Smith Jr.",
+   "KC"
+  ],
+  "5279356": [
+   "Paschal Ekeji",
+   "NYJ"
+  ]
+ }
 }

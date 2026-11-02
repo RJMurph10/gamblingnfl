@@ -477,5 +477,699 @@
    ]
   }
  },
- "props": {}
+ "props": {
+  "open": {
+   "at": "2026-11-02T07:43:05.491Z",
+   "provider": 100,
+   "count": 12,
+   "rows": [
+  {"a":null,"t":"1st Half Total","ti":"72","op":[26.5,null,null],"cur":[26.5,null,null]},
+  {"a":null,"t":"1st Half Total","ti":"72","op":[26.5,null,null],"cur":[26.5,null,null]},
+  {"a":null,"t":"1st Half Moneyline","ti":"73"},
+  {"a":null,"t":"1st Half Moneyline","ti":"73"},
+  {"a":null,"t":"1st Half Spread","ti":"74","op":[-3.5,null,null],"cur":[-3.5,null,null]},
+  {"a":null,"t":"1st Half Spread","ti":"74","op":[3.5,null,null],"cur":[3.5,null,null]},
+  {"a":null,"t":"1st Quarter Total","ti":"75","op":[9.5,null,null],"cur":[10.5,null,null]},
+  {"a":null,"t":"1st Quarter Total","ti":"75","op":[9.5,null,null],"cur":[10.5,null,null]},
+  {"a":null,"t":"1st Quarter Moneyline","ti":"76"},
+  {"a":null,"t":"1st Quarter Moneyline","ti":"76"},
+  {"a":null,"t":"1st Quarter Spread","ti":"77","op":[-0.5,null,null],"cur":[-0.5,null,null]},
+  {"a":null,"t":"1st Quarter Spread","ti":"77","op":[0.5,null,null],"cur":[0.5,null,null]}
+ ],
+   "sample": [
+    {
+     "competition": {
+      "id": "401873040"
+     },
+     "provider": {
+      "id": "100"
+     },
+     "type": {
+      "id": "72",
+      "name": "1st Half Total"
+     },
+     "lastUpdated": "2026-11-02T07:33Z",
+     "current": {
+      "target": {
+       "value": 26.5,
+       "displayValue": "26.5"
+      }
+     },
+     "open": {
+      "target": {
+       "value": 26.5,
+       "displayValue": "26.5"
+      }
+     }
+    },
+    {
+     "competition": {
+      "id": "401873040"
+     },
+     "provider": {
+      "id": "100"
+     },
+     "type": {
+      "id": "72",
+      "name": "1st Half Total"
+     },
+     "lastUpdated": "2026-11-02T07:33Z",
+     "current": {
+      "target": {
+       "value": 26.5,
+       "displayValue": "26.5"
+      }
+     },
+     "open": {
+      "target": {
+       "value": 26.5,
+       "displayValue": "26.5"
+      }
+     }
+    }
+   ]
+  }
+ },
+ "names": {
+  "13976": [
+   "Von Miller",
+   "DAL"
+  ],
+  "14950": [
+   "Bryan Anger",
+   "DAL"
+  ],
+  "15818": [
+   "Keenan Allen",
+   "IND"
+  ],
+  "2566045": [
+   "Luke Rhodes",
+   "IND"
+  ],
+  "2577417": [
+   "Dak Prescott",
+   "DAL"
+  ],
+  "2971281": [
+   "Pharaoh Brown",
+   "IND"
+  ],
+  "2980097": [
+   "Jonathan Bullard",
+   "DAL"
+  ],
+  "2998565": [
+   "Mo Alie-Cox",
+   "IND"
+  ],
+  "3051889": [
+   "Laquon Treadwell",
+   "IND"
+  ],
+  "3051911": [
+   "Carl Lawson",
+   "IND"
+  ],
+  "3052357": [
+   "Trent Sieg",
+   "DAL"
+  ],
+  "3121415": [
+   "Malik Hooker",
+   "DAL"
+  ],
+  "3122752": [
+   "Kenny Clark",
+   "DAL"
+  ],
+  "3676833": [
+   "KaVontae Turpin",
+   "DAL"
+  ],
+  "3843843": [
+   "Arden Key",
+   "IND"
+  ],
+  "3863182": [
+   "Jerry Tillery",
+   "IND"
+  ],
+  "3895840": [
+   "Charlie Heck",
+   "IND"
+  ],
+  "3914922": [
+   "Rigoberto Sanchez",
+   "IND"
+  ],
+  "3915834": [
+   "Terence Steele",
+   "DAL"
+  ],
+  "3917142": [
+   "Akeem Davis-Gaither",
+   "IND"
+  ],
+  "3917792": [
+   "Daniel Jones",
+   "IND"
+  ],
+  "3920591": [
+   "Nick Leverett",
+   "DAL"
+  ],
+  "3929641": [
+   "Kevin Givens",
+   "IND"
+  ],
+  "3929785": [
+   "Nick Westbrook-Ikhine",
+   "IND"
+  ],
+  "3929850": [
+   "P.J. Locke",
+   "DAL"
+  ],
+  "3953687": [
+   "Brandon Aubrey",
+   "DAL"
+  ],
+  "4034946": [
+   "Kyle Trask",
+   "DAL"
+  ],
+  "4035004": [
+   "Mecole Hardman Jr.",
+   "IND"
+  ],
+  "4035861": [
+   "Cam Bynum",
+   "IND"
+  ],
+  "4036275": [
+   "Sean McKeon",
+   "IND"
+  ],
+  "4037361": [
+   "Charvarius Ward",
+   "IND"
+  ],
+  "4039170": [
+   "Elijah Garcia",
+   "DAL"
+  ],
+  "4040982": [
+   "Quinnen Williams",
+   "DAL"
+  ],
+  "4043089": [
+   "Jalen Thompson",
+   "DAL"
+  ],
+  "4044138": [
+   "Matt Hennessy",
+   "DAL"
+  ],
+  "4044448": [
+   "Curtis Robinson",
+   "DAL"
+  ],
+  "4046523": [
+   "Rashan Gary",
+   "DAL"
+  ],
+  "4050373": [
+   "Quez Watkins",
+   "IND"
+  ],
+  "4058825": [
+   "Grover Stewart",
+   "IND"
+  ],
+  "4061956": [
+   "Ashton Dulin",
+   "IND"
+  ],
+  "4240603": [
+   "Malik Davis",
+   "DAL"
+  ],
+  "4240608": [
+   "James Houston",
+   "DAL"
+  ],
+  "4240896": [
+   "Micheal Clemons",
+   "IND"
+  ],
+  "4241389": [
+   "CeeDee Lamb",
+   "DAL"
+  ],
+  "4241921": [
+   "Markquese Bell",
+   "DAL"
+  ],
+  "4242335": [
+   "Jonathan Taylor",
+   "IND"
+  ],
+  "4242355": [
+   "Jake Ferguson",
+   "DAL"
+  ],
+  "4242415": [
+   "Daniel Scott",
+   "IND"
+  ],
+  "4242442": [
+   "Princeton Fant",
+   "DAL"
+  ],
+  "4248911": [
+   "DaRon Bland",
+   "DAL"
+  ],
+  "4249030": [
+   "D.J. Montgomery",
+   "IND"
+  ],
+  "4259546": [
+   "Ameer Speed",
+   "DAL"
+  ],
+  "4331768": [
+   "Jonathan Owens",
+   "IND"
+  ],
+  "4360078": [
+   "Alec Pierce",
+   "IND"
+  ],
+  "4360307": [
+   "Derion Kendrick",
+   "DAL"
+  ],
+  "4360590": [
+   "Juanyeh Thomas",
+   "DAL"
+  ],
+  "4360967": [
+   "Brevyn Spann-Ford",
+   "DAL"
+  ],
+  "4361196": [
+   "Cam Taylor-Britt",
+   "IND"
+  ],
+  "4361579": [
+   "Javonte Williams",
+   "DAL"
+  ],
+  "4361979": [
+   "Luke Tenuta",
+   "IND"
+  ],
+  "4361988": [
+   "James Mitchell",
+   "DAL"
+  ],
+  "4362088": [
+   "DeMarvion Overshown",
+   "DAL"
+  ],
+  "4362523": [
+   "Will Mallory",
+   "IND"
+  ],
+  "4362580": [
+   "Bernhard Raimann",
+   "IND"
+  ],
+  "4363547": [
+   "Marcellus Johnson",
+   "DAL"
+  ],
+  "4367210": [
+   "Otito Ogbonnia",
+   "DAL"
+  ],
+  "4367330": [
+   "Tyrek Funderburk",
+   "DAL"
+  ],
+  "4370363": [
+   "Dalton Tucker",
+   "IND"
+  ],
+  "4371336": [
+   "Shemar Bartholomew",
+   "IND"
+  ],
+  "4372096": [
+   "Luke Schoonmaker",
+   "DAL"
+  ],
+  "4374171": [
+   "Austin Ajiake",
+   "IND"
+  ],
+  "4383396": [
+   "Hunter Luepke",
+   "DAL"
+  ],
+  "4384549": [
+   "Cobie Durant",
+   "DAL"
+  ],
+  "4426354": [
+   "George Pickens",
+   "DAL"
+  ],
+  "4426473": [
+   "Laiatu Latu",
+   "IND"
+  ],
+  "4426485": [
+   "Jonathan Mingo",
+   "DAL"
+  ],
+  "4426506": [
+   "Joey Porter Jr.",
+   "DAL"
+  ],
+  "4426663": [
+   "Cooper Beebe",
+   "DAL"
+  ],
+  "4426875": [
+   "Sam Howell",
+   "DAL"
+  ],
+  "4427250": [
+   "Sauce Gardner",
+   "IND"
+  ],
+  "4427298": [
+   "Matt Goncalves",
+   "IND"
+  ],
+  "4427635": [
+   "Adetomiwa Adebawore",
+   "IND"
+  ],
+  "4427816": [
+   "Marist Liufau",
+   "DAL"
+  ],
+  "4428584": [
+   "Reddy Steward",
+   "DAL"
+  ],
+  "4428914": [
+   "Dee Winters",
+   "DAL"
+  ],
+  "4428990": [
+   "Broderick Jones",
+   "DAL"
+  ],
+  "4429084": [
+   "Anthony Richardson Sr.",
+   "IND"
+  ],
+  "4429202": [
+   "Israel Abanikanda",
+   "DAL"
+  ],
+  "4429249": [
+   "Justin Barron",
+   "DAL"
+  ],
+  "4429676": [
+   "Tyler Goodson",
+   "DAL"
+  ],
+  "4429684": [
+   "Anthony Gould",
+   "IND"
+  ],
+  "4429951": [
+   "Reid Holskey",
+   "IND"
+  ],
+  "4430815": [
+   "Sedrick Van Pran-Granger",
+   "IND"
+  ],
+  "4430957": [
+   "Tanor Bortolini",
+   "IND"
+  ],
+  "4431459": [
+   "Tyler Warren",
+   "IND"
+  ],
+  "4431547": [
+   "Kelvin Gilliam Jr.",
+   "DAL"
+  ],
+  "4431587": [
+   "Nolan Rucci",
+   "IND"
+  ],
+  "4432789": [
+   "Hunter Wohler",
+   "IND"
+  ],
+  "4566154": [
+   "Jaylahn Tuimoloau",
+   "IND"
+  ],
+  "4568652": [
+   "Tyler Smith",
+   "DAL"
+  ],
+  "4569607": [
+   "Cameron Mitchell",
+   "IND"
+  ],
+  "4570485": [
+   "Joshua Gray",
+   "IND"
+  ],
+  "4570577": [
+   "Wanya Morris",
+   "DAL"
+  ],
+  "4571557": [
+   "Spencer Shrader",
+   "IND"
+  ],
+  "4574551": [
+   "Isaiah Land",
+   "DAL"
+  ],
+  "4587724": [
+   "West Weeks",
+   "IND"
+  ],
+  "4594749": [
+   "Michael Trigg",
+   "DAL"
+  ],
+  "4595352": [
+   "Alijah Clark",
+   "DAL"
+  ],
+  "4599160": [
+   "Trey Washington",
+   "IND"
+  ],
+  "4601021": [
+   "Jaylon Carlies",
+   "IND"
+  ],
+  "4609048": [
+   "Tyler Guyton",
+   "DAL"
+  ],
+  "4682909": [
+   "Justin Walley",
+   "IND"
+  ],
+  "4683151": [
+   "Deion Burks",
+   "IND"
+  ],
+  "4683423": [
+   "Riley Leonard",
+   "IND"
+  ],
+  "4683848": [
+   "Donovan Ezeiruaku",
+   "DAL"
+  ],
+  "4685110": [
+   "Anthony Smith",
+   "DAL"
+  ],
+  "4685120": [
+   "T.J. Bass",
+   "DAL"
+  ],
+  "4685263": [
+   "Tyler Booker",
+   "DAL"
+  ],
+  "4685266": [
+   "Jaishawn Barham",
+   "DAL"
+  ],
+  "4685324": [
+   "Caden Curry",
+   "IND"
+  ],
+  "4685400": [
+   "Shemar James",
+   "DAL"
+  ],
+  "4685409": [
+   "Jordan Hudson",
+   "DAL"
+  ],
+  "4685554": [
+   "Drew Shelton",
+   "DAL"
+  ],
+  "4685970": [
+   "Kenneth Harris",
+   "IND"
+  ],
+  "4686468": [
+   "Seth McGowan",
+   "IND"
+  ],
+  "4688813": [
+   "Josh Downs",
+   "IND"
+  ],
+  "4689333": [
+   "Tyrus Wheat",
+   "DAL"
+  ],
+  "4689364": [
+   "Tommy Dunn Jr.",
+   "DAL"
+  ],
+  "4689989": [
+   "Natrone Brooks",
+   "IND"
+  ],
+  "4691878": [
+   "Cameron Ball",
+   "IND"
+  ],
+  "4692033": [
+   "Tim Smith",
+   "IND"
+  ],
+  "4692638": [
+   "Tahj Chambers",
+   "IND"
+  ],
+  "4693205": [
+   "Mitchell Melton",
+   "IND"
+  ],
+  "4695991": [
+   "Johnathan Edwards",
+   "IND"
+  ],
+  "4696203": [
+   "Ajani Cornelius",
+   "DAL"
+  ],
+  "4702120": [
+   "Carson Towt",
+   "IND"
+  ],
+  "4702577": [
+   "Devin Moore",
+   "DAL"
+  ],
+  "4708238": [
+   "George Gumbs Jr.",
+   "IND"
+  ],
+  "4710067": [
+   "Malachi Lawrence",
+   "DAL"
+  ],
+  "4722908": [
+   "Drew Ogletree",
+   "IND"
+  ],
+  "4808759": [
+   "Camden Brown",
+   "DAL"
+  ],
+  "4838270": [
+   "Jalen Farmer",
+   "IND"
+  ],
+  "4870598": [
+   "CJ Allen",
+   "IND"
+  ],
+  "4870706": [
+   "Caleb Downs",
+   "DAL"
+  ],
+  "4870960": [
+   "LT Overton",
+   "DAL"
+  ],
+  "4874509": [
+   "DJ Giddens",
+   "IND"
+  ],
+  "4892240": [
+   "Jalen Travis",
+   "IND"
+  ],
+  "4905664": [
+   "A.J. Haulcy",
+   "IND"
+  ],
+  "5024661": [
+   "Roy Mbaeteka",
+   "IND"
+  ],
+  "5066095": [
+   "Adedayo Odeleye",
+   "DAL"
+  ],
+  "5083754": [
+   "Ryan Flournoy",
+   "DAL"
+  ],
+  "5088571": [
+   "Bryce Boettcher",
+   "IND"
+  ],
+  "5095865": [
+   "Shavon Revel Jr.",
+   "DAL"
+  ],
+  "5153072": [
+   "Kapena Gushiken",
+   "IND"
+  ],
+  "5153650": [
+   "Davon Booth",
+   "IND"
+  ]
+ }
 }

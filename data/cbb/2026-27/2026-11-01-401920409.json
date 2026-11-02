@@ -7,18 +7,18 @@
   "id": "2335",
   "abbr": "LIB",
   "name": "Liberty Flames",
-  "score": 15
+  "score": 57
  },
  "home": {
   "id": "2272",
   "abbr": "HPU",
   "name": "High Point Panthers",
-  "score": 20
+  "score": 72
  },
  "neutral": true,
  "venue": "Rock Hill Sports & Event Center",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-01T07:57:03.660Z",
@@ -934,5 +934,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 57,
+  "home": 72
+ }
 }

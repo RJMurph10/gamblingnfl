@@ -477,5 +477,723 @@
    ]
   }
  },
- "props": {}
+ "props": {
+  "open": {
+   "at": "2026-11-02T07:43:05.491Z",
+   "provider": 100,
+   "count": 12,
+   "rows": [
+  {"a":null,"t":"1st Half Total","ti":"72","op":[21.5,null,null],"cur":[21.5,null,null]},
+  {"a":null,"t":"1st Half Total","ti":"72","op":[21.5,null,null],"cur":[21.5,null,null]},
+  {"a":null,"t":"1st Half Moneyline","ti":"73"},
+  {"a":null,"t":"1st Half Moneyline","ti":"73"},
+  {"a":null,"t":"1st Half Spread","ti":"74","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":null,"t":"1st Half Spread","ti":"74","op":[-0.5,null,null],"cur":[-0.5,null,null]},
+  {"a":null,"t":"1st Quarter Total","ti":"75","op":[7.5,null,null],"cur":[7.5,null,null]},
+  {"a":null,"t":"1st Quarter Total","ti":"75","op":[7.5,null,null],"cur":[7.5,null,null]},
+  {"a":null,"t":"1st Quarter Moneyline","ti":"76"},
+  {"a":null,"t":"1st Quarter Moneyline","ti":"76"},
+  {"a":null,"t":"1st Quarter Spread","ti":"77","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":null,"t":"1st Quarter Spread","ti":"77","op":[-0.5,null,null],"cur":[-0.5,null,null]}
+ ],
+   "sample": [
+    {
+     "competition": {
+      "id": "401873039"
+     },
+     "provider": {
+      "id": "100"
+     },
+     "type": {
+      "id": "72",
+      "name": "1st Half Total"
+     },
+     "lastUpdated": "2026-11-02T07:33Z",
+     "current": {
+      "target": {
+       "value": 21.5,
+       "displayValue": "21.5"
+      }
+     },
+     "open": {
+      "target": {
+       "value": 21.5,
+       "displayValue": "21.5"
+      }
+     }
+    },
+    {
+     "competition": {
+      "id": "401873039"
+     },
+     "provider": {
+      "id": "100"
+     },
+     "type": {
+      "id": "72",
+      "name": "1st Half Total"
+     },
+     "lastUpdated": "2026-11-02T07:33Z",
+     "current": {
+      "target": {
+       "value": 21.5,
+       "displayValue": "21.5"
+      }
+     },
+     "open": {
+      "target": {
+       "value": 21.5,
+       "displayValue": "21.5"
+      }
+     }
+    }
+   ]
+  }
+ },
+ "names": {
+  "13971": [
+   "Cameron Jordan",
+   "NO"
+  ],
+  "2515270": [
+   "Michael Burton",
+   "CLE"
+  ],
+  "2575788": [
+   "Zach Wood",
+   "NO"
+  ],
+  "3040471": [
+   "Maliek Collins",
+   "CLE"
+  ],
+  "3051909": [
+   "Daniel Carlson",
+   "NO"
+  ],
+  "3054850": [
+   "Alvin Kamara",
+   "NO"
+  ],
+  "3110565": [
+   "Quincy Williams",
+   "CLE"
+  ],
+  "3115336": [
+   "Derek Barnett",
+   "CLE"
+  ],
+  "3115383": [
+   "Davon Godchaux",
+   "NO"
+  ],
+  "3115485": [
+   "Elgton Jenkins",
+   "CLE"
+  ],
+  "3122840": [
+   "Deshaun Watson",
+   "CLE"
+  ],
+  "3124890": [
+   "Kaden Elliss",
+   "NO"
+  ],
+  "3131498": [
+   "Tytus Howard",
+   "CLE"
+  ],
+  "3913293": [
+   "Rex Sunahara",
+   "CLE"
+  ],
+  "3915535": [
+   "Denzel Ward",
+   "CLE"
+  ],
+  "3917331": [
+   "Erik McCoy",
+   "NO"
+  ],
+  "3917660": [
+   "David Edwards",
+   "NO"
+  ],
+  "3918310": [
+   "Carl Granderson",
+   "NO"
+  ],
+  "3925350": [
+   "Anfernee Jennings",
+   "NO"
+  ],
+  "3929645": [
+   "Juwan Johnson",
+   "NO"
+  ],
+  "3931399": [
+   "Justin Reid",
+   "NO"
+  ],
+  "4032481": [
+   "Jonah Williams",
+   "NO"
+  ],
+  "4033855": [
+   "Sam Kamara",
+   "CLE"
+  ],
+  "4034530": [
+   "Chris Williams",
+   "CLE"
+  ],
+  "4035505": [
+   "Daniel Thomas",
+   "CLE"
+  ],
+  "4035661": [
+   "Julian Blackmon",
+   "NO"
+  ],
+  "4035817": [
+   "Krys Barnes",
+   "CLE"
+  ],
+  "4036131": [
+   "Noah Fant",
+   "NO"
+  ],
+  "4038457": [
+   "Teven Jenkins",
+   "CLE"
+  ],
+  "4039396": [
+   "Corey Bojorquez",
+   "CLE"
+  ],
+  "4040945": [
+   "Dillon Radunz",
+   "NO"
+  ],
+  "4050971": [
+   "Eric Johnson II",
+   "CLE"
+  ],
+  "4076951": [
+   "Nathan Shepherd",
+   "NO"
+  ],
+  "4239996": [
+   "Travis Etienne Jr.",
+   "NO"
+  ],
+  "4240475": [
+   "Chris Rumph II",
+   "NO"
+  ],
+  "4240707": [
+   "Damarri Mathis",
+   "CLE"
+  ],
+  "4241424": [
+   "Tylan Wallace",
+   "CLE"
+  ],
+  "4241463": [
+   "Jerry Jeudy",
+   "CLE"
+  ],
+  "4241986": [
+   "Chase Young",
+   "NO"
+  ],
+  "4241993": [
+   "Pete Werner",
+   "NO"
+  ],
+  "4242208": [
+   "Grant Delpit",
+   "CLE"
+  ],
+  "4242431": [
+   "Ty Chandler",
+   "NO"
+  ],
+  "4242516": [
+   "Noah Igbinoghene",
+   "CLE"
+  ],
+  "4243186": [
+   "William Sherman",
+   "NO"
+  ],
+  "4243386": [
+   "Obinna Eze",
+   "CLE"
+  ],
+  "4243541": [
+   "Kalia Davis",
+   "CLE"
+  ],
+  "4247347": [
+   "Zion Johnson",
+   "CLE"
+  ],
+  "4248047": [
+   "John Ridgeway III",
+   "NO"
+  ],
+  "4250764": [
+   "Stone Smartt",
+   "NO"
+  ],
+  "4251125": [
+   "Winston Reid",
+   "CLE"
+  ],
+  "4258199": [
+   "Cesar Ruiz",
+   "NO"
+  ],
+  "4258599": [
+   "Jeremiah Owusu-Koramoah",
+   "CLE"
+  ],
+  "4258620": [
+   "Andre Szmyt",
+   "CLE"
+  ],
+  "4360677": [
+   "Mekhi Blackmon",
+   "CLE"
+  ],
+  "4360689": [
+   "Tyler Shough",
+   "NO"
+  ],
+  "4360949": [
+   "Jordan Howden",
+   "NO"
+  ],
+  "4361101": [
+   "Jackson Sirmon",
+   "NO"
+  ],
+  "4361194": [
+   "Isaiah Stalbird",
+   "NO"
+  ],
+  "4361259": [
+   "Zach Wilson",
+   "NO"
+  ],
+  "4361370": [
+   "Chris Olave",
+   "NO"
+  ],
+  "4361600": [
+   "Nick Saldiveri",
+   "NO"
+  ],
+  "4361777": [
+   "Zamir White",
+   "NO"
+  ],
+  "4361823": [
+   "Ryan Wright",
+   "NO"
+  ],
+  "4362018": [
+   "Blake Whiteheart",
+   "CLE"
+  ],
+  "4362895": [
+   "Nathaniel Watson",
+   "CLE"
+  ],
+  "4369863": [
+   "Cedric Tillman",
+   "NO"
+  ],
+  "4372533": [
+   "Tyree Wilson",
+   "NO"
+  ],
+  "4372758": [
+   "Kevin Austin Jr.",
+   "NO"
+  ],
+  "4373079": [
+   "KT Leveston",
+   "CLE"
+  ],
+  "4374280": [
+   "Edefuan Ulofoshio",
+   "CLE"
+  ],
+  "4379397": [
+   "Tyson Campbell",
+   "CLE"
+  ],
+  "4379401": [
+   "John FitzPatrick",
+   "CLE"
+  ],
+  "4383391": [
+   "Jayden Price",
+   "NO"
+  ],
+  "4384595": [
+   "Khristian Boyd",
+   "NO"
+  ],
+  "4426339": [
+   "Spencer Rattler",
+   "NO"
+  ],
+  "4426507": [
+   "David Ojabo",
+   "NO"
+  ],
+  "4426990": [
+   "Jalen Moreno-Cropper",
+   "NO"
+  ],
+  "4427238": [
+   "Dillon Gabriel",
+   "CLE"
+  ],
+  "4427637": [
+   "Dawand Jones",
+   "CLE"
+  ],
+  "4427963": [
+   "Isaiah McGuire",
+   "CLE"
+  ],
+  "4427985": [
+   "Bub Means",
+   "CLE"
+  ],
+  "4428350": [
+   "Quincy Riley",
+   "NO"
+  ],
+  "4428988": [
+   "Bryan Bresee",
+   "NO"
+  ],
+  "4429040": [
+   "Vernon Broughton",
+   "NO"
+  ],
+  "4429073": [
+   "Fadil Diggs",
+   "NO"
+  ],
+  "4429392": [
+   "Elijah Chatman",
+   "CLE"
+  ],
+  "4429430": [
+   "Andrew Coker",
+   "CLE"
+  ],
+  "4429568": [
+   "Martin Emerson Jr.",
+   "NO"
+  ],
+  "4430218": [
+   "Vershon Lee",
+   "CLE"
+  ],
+  "4430379": [
+   "Asim Richards",
+   "NO"
+  ],
+  "4430684": [
+   "Treyton Welch",
+   "NO"
+  ],
+  "4430806": [
+   "Luke Wypler",
+   "CLE"
+  ],
+  "4431325": [
+   "Taylen Green",
+   "CLE"
+  ],
+  "4432731": [
+   "Moliki Matavao",
+   "NO"
+  ],
+  "4432762": [
+   "Shedeur Sanders",
+   "CLE"
+  ],
+  "4432768": [
+   "Lorenzo Styles Jr.",
+   "NO"
+  ],
+  "4433930": [
+   "Alex Wollschlaeger",
+   "NO"
+  ],
+  "4433938": [
+   "Jeremiah Wright",
+   "NO"
+  ],
+  "4433963": [
+   "Zak Zinter",
+   "CLE"
+  ],
+  "4433975": [
+   "Kool-Aid McKinstry",
+   "NO"
+  ],
+  "4565859": [
+   "Joe Royer",
+   "CLE"
+  ],
+  "4566088": [
+   "Jaylan Ford",
+   "NO"
+  ],
+  "4567224": [
+   "Colby Wooden",
+   "NO"
+  ],
+  "4567242": [
+   "Sam Williams",
+   "CLE"
+  ],
+  "4569559": [
+   "Devaughn Vele",
+   "NO"
+  ],
+  "4569620": [
+   "Ronnie Hickman",
+   "CLE"
+  ],
+  "4569682": [
+   "Audric Estime",
+   "CLE"
+  ],
+  "4570119": [
+   "Alex Wright",
+   "CLE"
+  ],
+  "4573697": [
+   "Mason Tipton",
+   "NO"
+  ],
+  "4578085": [
+   "Jared Verse",
+   "CLE"
+  ],
+  "4597310": [
+   "Austin Barber",
+   "CLE"
+  ],
+  "4599739": [
+   "Kendre Miller",
+   "NO"
+  ],
+  "4600415": [
+   "Mike Hall Jr.",
+   "CLE"
+  ],
+  "4601080": [
+   "Raheim Sanders",
+   "CLE"
+  ],
+  "4605498": [
+   "Decamerion Richardson",
+   "NO"
+  ],
+  "4605792": [
+   "Adin Huntington",
+   "CLE"
+  ],
+  "4606711": [
+   "Taliese Fuaga",
+   "NO"
+  ],
+  "4613104": [
+   "Malachi Corley",
+   "CLE"
+  ],
+  "4682479": [
+   "Mason Murphy",
+   "NO"
+  ],
+  "4683129": [
+   "Khordae Sydnor",
+   "CLE"
+  ],
+  "4683215": [
+   "Danny Stutsman",
+   "NO"
+  ],
+  "4683813": [
+   "Jonas Sanker",
+   "NO"
+  ],
+  "4685260": [
+   "Kelvin Banks Jr.",
+   "NO"
+  ],
+  "4685479": [
+   "Christen Miller",
+   "NO"
+  ],
+  "4685540": [
+   "Carsen Ryan",
+   "CLE"
+  ],
+  "4685702": [
+   "Quinshon Judkins",
+   "CLE"
+  ],
+  "4686027": [
+   "Donovan McMillon",
+   "CLE"
+  ],
+  "4690083": [
+   "Wes Pahl",
+   "CLE"
+  ],
+  "4695783": [
+   "Myles Harden",
+   "CLE"
+  ],
+  "4696043": [
+   "Rejzohn Wright",
+   "NO"
+  ],
+  "4696488": [
+   "Easton Kilty",
+   "NO"
+  ],
+  "4698597": [
+   "Barion Brown",
+   "NO"
+  ],
+  "4698598": [
+   "Toriano Pride Jr.",
+   "CLE"
+  ],
+  "4702559": [
+   "Oscar Delp",
+   "NO"
+  ],
+  "4708486": [
+   "Jimmy Horn Jr.",
+   "CLE"
+  ],
+  "4709014": [
+   "Zion Washington",
+   "CLE"
+  ],
+  "4710341": [
+   "Jarquez Hunter",
+   "NO"
+  ],
+  "4722893": [
+   "Jaleel McLaughlin",
+   "CLE"
+  ],
+  "4775268": [
+   "Mike Reid",
+   "NO"
+  ],
+  "4808839": [
+   "Isaiah Bond",
+   "CLE"
+  ],
+  "4816090": [
+   "Parker Brailsford",
+   "CLE"
+  ],
+  "4832800": [
+   "Denzel Boston",
+   "CLE"
+  ],
+  "4837186": [
+   "Emmanuel McNeil-Warren",
+   "CLE"
+  ],
+  "4870653": [
+   "KC Concepcion",
+   "CLE"
+  ],
+  "4870723": [
+   "Spencer Fano",
+   "CLE"
+  ],
+  "4873075": [
+   "TJ Hall Jr.",
+   "NO"
+  ],
+  "4873232": [
+   "Mason Graham",
+   "CLE"
+  ],
+  "4876017": [
+   "Carson Schwesinger",
+   "CLE"
+  ],
+  "4879276": [
+   "Bryce Lance",
+   "NO"
+  ],
+  "4880281": [
+   "Jordyn Tyson",
+   "NO"
+  ],
+  "5080699": [
+   "Logan Fano",
+   "CLE"
+  ],
+  "5081397": [
+   "Dylan Sampson",
+   "CLE"
+  ],
+  "5081483": [
+   "Nadame Tucker",
+   "CLE"
+  ],
+  "5081999": [
+   "CJ Donaldson",
+   "NO"
+  ],
+  "5083076": [
+   "Harold Fannin Jr.",
+   "CLE"
+  ],
+  "5085888": [
+   "Easton Mascarenas-Arnold",
+   "CLE"
+  ],
+  "5150249": [
+   "Justin Jefferson",
+   "CLE"
+  ],
+  "5160391": [
+   "Michael Coats Jr.",
+   "CLE"
+  ],
+  "5164879": [
+   "Alan Herron",
+   "NO"
+  ],
+  "5208518": [
+   "Charlie Smyth",
+   "NO"
+  ],
+  "5213029": [
+   "Jay'viar Suggs",
+   "NO"
+  ]
+ }
 }

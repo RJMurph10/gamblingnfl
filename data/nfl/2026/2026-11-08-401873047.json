@@ -477,5 +477,731 @@
    ]
   }
  },
- "props": {}
+ "props": {
+  "open": {
+   "at": "2026-11-02T07:43:05.491Z",
+   "provider": 100,
+   "count": 12,
+   "rows": [
+  {"a":null,"t":"1st Half Total","ti":"72","op":[26.5,null,null],"cur":[26.5,null,null]},
+  {"a":null,"t":"1st Half Total","ti":"72","op":[26.5,null,null],"cur":[26.5,null,null]},
+  {"a":null,"t":"1st Half Moneyline","ti":"73"},
+  {"a":null,"t":"1st Half Moneyline","ti":"73"},
+  {"a":null,"t":"1st Half Spread","ti":"74","op":[6.5,null,null],"cur":[5.5,null,null]},
+  {"a":null,"t":"1st Half Spread","ti":"74","op":[-6.5,null,null],"cur":[-5.5,null,null]},
+  {"a":null,"t":"1st Quarter Total","ti":"75","op":[10.5,null,null],"cur":[10.5,null,null]},
+  {"a":null,"t":"1st Quarter Total","ti":"75","op":[10.5,null,null],"cur":[10.5,null,null]},
+  {"a":null,"t":"1st Quarter Moneyline","ti":"76"},
+  {"a":null,"t":"1st Quarter Moneyline","ti":"76"},
+  {"a":null,"t":"1st Quarter Spread","ti":"77","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":null,"t":"1st Quarter Spread","ti":"77","op":[-2.5,null,null],"cur":[-2.5,null,null]}
+ ],
+   "sample": [
+    {
+     "competition": {
+      "id": "401873047"
+     },
+     "provider": {
+      "id": "100"
+     },
+     "type": {
+      "id": "72",
+      "name": "1st Half Total"
+     },
+     "lastUpdated": "2026-11-02T07:33Z",
+     "current": {
+      "target": {
+       "value": 26.5,
+       "displayValue": "26.5"
+      }
+     },
+     "open": {
+      "target": {
+       "value": 26.5,
+       "displayValue": "26.5"
+      }
+     }
+    },
+    {
+     "competition": {
+      "id": "401873047"
+     },
+     "provider": {
+      "id": "100"
+     },
+     "type": {
+      "id": "72",
+      "name": "1st Half Total"
+     },
+     "lastUpdated": "2026-11-02T07:33Z",
+     "current": {
+      "target": {
+       "value": 26.5,
+       "displayValue": "26.5"
+      }
+     },
+     "open": {
+      "target": {
+       "value": 26.5,
+       "displayValue": "26.5"
+      }
+     }
+    }
+   ]
+  }
+ },
+ "names": {
+  "13241": [
+   "Trent Williams",
+   "SF"
+  ],
+  "13729": [
+   "Jon Weeks",
+   "SF"
+  ],
+  "14880": [
+   "Kirk Cousins",
+   "LV"
+  ],
+  "16002": [
+   "Kyle Juszczyk",
+   "SF"
+  ],
+  "16731": [
+   "Brandin Cooks",
+   "SF"
+  ],
+  "16737": [
+   "Mike Evans",
+   "SF"
+  ],
+  "2577185": [
+   "Jake Brendel",
+   "SF"
+  ],
+  "2579604": [
+   "Phillip Dorsett II",
+   "LV"
+  ],
+  "2971282": [
+   "DeForest Buckner",
+   "SF"
+  ],
+  "2972342": [
+   "Adam Butler",
+   "LV"
+  ],
+  "3040151": [
+   "George Kittle",
+   "SF"
+  ],
+  "3043116": [
+   "Demarcus Robinson",
+   "SF"
+  ],
+  "3045172": [
+   "Folorunso Fatukasi",
+   "LV"
+  ],
+  "3052667": [
+   "Ogbo Okoronkwo",
+   "SF"
+  ],
+  "3057524": [
+   "Siran Neal",
+   "SF"
+  ],
+  "3116097": [
+   "Luke Gifford",
+   "SF"
+  ],
+  "3117251": [
+   "Christian McCaffrey",
+   "SF"
+  ],
+  "3121003": [
+   "Taron Johnson",
+   "LV"
+  ],
+  "3125280": [
+   "Corliss Waitman",
+   "SF"
+  ],
+  "3126486": [
+   "Deebo Samuel Sr.",
+   "SF"
+  ],
+  "3129116": [
+   "Brett Toth",
+   "SF"
+  ],
+  "3134312": [
+   "Kolton Miller",
+   "LV"
+  ],
+  "3138744": [
+   "Chris Myarick",
+   "LV"
+  ],
+  "3138826": [
+   "Fred Warner",
+   "SF"
+  ],
+  "3686689": [
+   "AJ Cole",
+   "LV"
+  ],
+  "3858271": [
+   "Ashtyn Davis",
+   "SF"
+  ],
+  "3895856": [
+   "Christian Kirk",
+   "SF"
+  ],
+  "3916075": [
+   "Colton McKivitz",
+   "SF"
+  ],
+  "3916655": [
+   "Maxx Crosby",
+   "LV"
+  ],
+  "3916903": [
+   "Dre Greenlaw",
+   "SF"
+  ],
+  "3920814": [
+   "Austen Pleasants",
+   "SF"
+  ],
+  "4034862": [
+   "Jack Stoll",
+   "SF"
+  ],
+  "4034949": [
+   "Eddy Pineiro",
+   "SF"
+  ],
+  "4035840": [
+   "Osa Odighizuwa",
+   "SF"
+  ],
+  "4039029": [
+   "Khalid Kareem",
+   "SF"
+  ],
+  "4040605": [
+   "Nick Bosa",
+   "SF"
+  ],
+  "4040612": [
+   "Luke Farrell",
+   "SF"
+  ],
+  "4043169": [
+   "Jeremy Chinn",
+   "LV"
+  ],
+  "4045305": [
+   "Ian Thomas",
+   "LV"
+  ],
+  "4046716": [
+   "Naquan Jones",
+   "SF"
+  ],
+  "4239088": [
+   "Darrick Forrest",
+   "SF"
+  ],
+  "4239719": [
+   "Malcolm Koonce",
+   "LV"
+  ],
+  "4240542": [
+   "Nate Hobbs",
+   "SF"
+  ],
+  "4240554": [
+   "Vederian Lowe",
+   "SF"
+  ],
+  "4241464": [
+   "Mac Jones",
+   "SF"
+  ],
+  "4241807": [
+   "Garret Wallow",
+   "SF"
+  ],
+  "4241961": [
+   "Connor Heyward",
+   "LV"
+  ],
+  "4241983": [
+   "Cody White",
+   "LV"
+  ],
+  "4242488": [
+   "Deommodore Lenoir",
+   "SF"
+  ],
+  "4242555": [
+   "Foster Sarell",
+   "SF"
+  ],
+  "4243493": [
+   "Keion White",
+   "SF"
+  ],
+  "4243545": [
+   "Alex Ward",
+   "LV"
+  ],
+  "4243916": [
+   "Patrick Johnson",
+   "LV"
+  ],
+  "4247590": [
+   "Nick Zakelj",
+   "SF"
+  ],
+  "4249087": [
+   "Matt Gay",
+   "LV"
+  ],
+  "4249616": [
+   "Owen Wright",
+   "LV"
+  ],
+  "4250393": [
+   "Tristin McCollum",
+   "LV"
+  ],
+  "4258194": [
+   "Kwity Paye",
+   "LV"
+  ],
+  "4259147": [
+   "Jake Tonges",
+   "SF"
+  ],
+  "4259561": [
+   "Eric Stokes",
+   "LV"
+  ],
+  "4259632": [
+   "Isaiah Pola-Mao",
+   "LV"
+  ],
+  "4260394": [
+   "Aidan O'Connell",
+   "LV"
+  ],
+  "4260703": [
+   "Segun Olubi",
+   "LV"
+  ],
+  "4360290": [
+   "Brayden Willis",
+   "SF"
+  ],
+  "4360438": [
+   "Brandon Aiyuk",
+   "SF"
+  ],
+  "4360475": [
+   "Chigozie Anusiem",
+   "LV"
+  ],
+  "4360499": [
+   "Tyler Linderbaum",
+   "LV"
+  ],
+  "4360749": [
+   "Thomas Booker IV",
+   "LV"
+  ],
+  "4361741": [
+   "Brock Purdy",
+   "SF"
+  ],
+  "4362999": [
+   "Spencer Burford",
+   "LV"
+  ],
+  "4366963": [
+   "Dylan Laube",
+   "LV"
+  ],
+  "4372085": [
+   "Cameron McGrone",
+   "LV"
+  ],
+  "4372561": [
+   "Isaac Guerendo",
+   "SF"
+  ],
+  "4372774": [
+   "Jarrett Patterson",
+   "SF"
+  ],
+  "4373471": [
+   "Brennan Jackson",
+   "LV"
+  ],
+  "4374148": [
+   "Viliami Fehoko Jr.",
+   "SF"
+  ],
+  "4374187": [
+   "Deven Thompkins",
+   "LV"
+  ],
+  "4379409": [
+   "Azeez Ojulari",
+   "LV"
+  ],
+  "4379416": [
+   "Quay Walker",
+   "LV"
+  ],
+  "4382466": [
+   "Jalen Nailor",
+   "LV"
+  ],
+  "4386544": [
+   "Xavier Smith",
+   "SF"
+  ],
+  "4394894": [
+   "Andrew Farmer II",
+   "SF"
+  ],
+  "4401805": [
+   "Dareke Young",
+   "LV"
+  ],
+  "4426340": [
+   "Nakobe Dean",
+   "LV"
+  ],
+  "4426393": [
+   "Will Putnam",
+   "LV"
+  ],
+  "4426698": [
+   "Tatum Bethune",
+   "SF"
+  ],
+  "4427325": [
+   "Renardo Green",
+   "SF"
+  ],
+  "4428144": [
+   "Drake Nugent",
+   "SF"
+  ],
+  "4428209": [
+   "Ricky Pearsall",
+   "SF"
+  ],
+  "4428718": [
+   "Tre Tucker",
+   "LV"
+  ],
+  "4429086": [
+   "Michael Mayer",
+   "LV"
+  ],
+  "4429109": [
+   "Tonka Hemingway",
+   "LV"
+  ],
+  "4429560": [
+   "Tommy Eichenberg",
+   "LV"
+  ],
+  "4430104": [
+   "Sincere McCormick",
+   "SF"
+  ],
+  "4430330": [
+   "Darien Porter",
+   "LV"
+  ],
+  "4430431": [
+   "Kurtis Rourke",
+   "SF"
+  ],
+  "4430835": [
+   "Alfred Collins",
+   "SF"
+  ],
+  "4430896": [
+   "JJ Pegues",
+   "LV"
+  ],
+  "4431414": [
+   "Tim Keenan III",
+   "LV"
+  ],
+  "4431466": [
+   "Jordan Watkins",
+   "SF"
+  ],
+  "4431523": [
+   "Connor Colby",
+   "SF"
+  ],
+  "4431623": [
+   "Trey Zuhn III",
+   "LV"
+  ],
+  "4432244": [
+   "Romello Height",
+   "SF"
+  ],
+  "4432665": [
+   "Brock Bowers",
+   "LV"
+  ],
+  "4432775": [
+   "Dont'e Thornton Jr.",
+   "LV"
+  ],
+  "4433889": [
+   "Caleb Rogers",
+   "LV"
+  ],
+  "4565200": [
+   "Upton Stout",
+   "SF"
+  ],
+  "4565779": [
+   "Carver Willis",
+   "SF"
+  ],
+  "4565908": [
+   "Tyler Scott",
+   "LV"
+  ],
+  "4569497": [
+   "Sam Okuayinonu",
+   "SF"
+  ],
+  "4570410": [
+   "Jalen Graham",
+   "SF"
+  ],
+  "4573188": [
+   "Nick Martin",
+   "SF"
+  ],
+  "4575665": [
+   "Jacob Cowing",
+   "SF"
+  ],
+  "4576069": [
+   "Brandon Codrington",
+   "SF"
+  ],
+  "4603186": [
+   "Jack Bech",
+   "LV"
+  ],
+  "4606683": [
+   "DJ Glaze",
+   "LV"
+  ],
+  "4612077": [
+   "Bryce Cabeldue",
+   "LV"
+  ],
+  "4682488": [
+   "Dalton Johnson",
+   "LV"
+  ],
+  "4683114": [
+   "Will Pauling",
+   "SF"
+  ],
+  "4683155": [
+   "Jalen Stroman",
+   "SF"
+  ],
+  "4685126": [
+   "Cody Lindenberg",
+   "LV"
+  ],
+  "4685305": [
+   "Brandon Cleveland",
+   "LV"
+  ],
+  "4685369": [
+   "Gracen Halton",
+   "SF"
+  ],
+  "4685397": [
+   "Jordan James",
+   "SF"
+  ],
+  "4685523": [
+   "Ephesians Prysock",
+   "SF"
+  ],
+  "4685623": [
+   "Mykel Williams",
+   "SF"
+  ],
+  "4685978": [
+   "Darrell Luter Jr.",
+   "LV"
+  ],
+  "4686308": [
+   "C.J. West",
+   "SF"
+  ],
+  "4686337": [
+   "Greedy Vance",
+   "LV"
+  ],
+  "4686629": [
+   "Isaac Alarcon",
+   "SF"
+  ],
+  "4686658": [
+   "Mike Washington Jr.",
+   "LV"
+  ],
+  "4688538": [
+   "Justin Pickett",
+   "LV"
+  ],
+  "4688835": [
+   "Roman Hemby",
+   "LV"
+  ],
+  "4691556": [
+   "Enrique Cruz Jr.",
+   "SF"
+  ],
+  "4692680": [
+   "McKinnley Jackson",
+   "SF"
+  ],
+  "4693208": [
+   "Patrick Gurd",
+   "LV"
+  ],
+  "4693337": [
+   "Marques Sigle",
+   "SF"
+  ],
+  "4693371": [
+   "James Thompson Jr.",
+   "SF"
+  ],
+  "4693644": [
+   "Ji'Ayir Brown",
+   "SF"
+  ],
+  "4694505": [
+   "Charles Grant",
+   "LV"
+  ],
+  "4696044": [
+   "Kaelon Black",
+   "SF"
+  ],
+  "4696051": [
+   "Mikail Kamara",
+   "SF"
+  ],
+  "4696211": [
+   "Malik Mustapha",
+   "SF"
+  ],
+  "4697757": [
+   "Treydan Stukes",
+   "LV"
+  ],
+  "4698191": [
+   "Chris Collier",
+   "LV"
+  ],
+  "4699678": [
+   "Khalil Dinkins",
+   "SF"
+  ],
+  "4710714": [
+   "De'Zhaun Stribling",
+   "SF"
+  ],
+  "4775220": [
+   "Sebastian Valdez",
+   "SF"
+  ],
+  "4837248": [
+   "Fernando Mendoza",
+   "LV"
+  ],
+  "4875123": [
+   "Vincent Anthony Jr.",
+   "SF"
+  ],
+  "4875295": [
+   "Jackson Powers-Johnson",
+   "LV"
+  ],
+  "4888723": [
+   "Wesley Grimes",
+   "SF"
+  ],
+  "4890973": [
+   "Ashton Jeanty",
+   "LV"
+  ],
+  "4911904": [
+   "Keyron Crawford",
+   "LV"
+  ],
+  "4917354": [
+   "Hezekiah Masses",
+   "LV"
+  ],
+  "5086161": [
+   "Jaden Dugger",
+   "SF"
+  ],
+  "5092959": [
+   "Dominick Puni",
+   "SF"
+  ],
+  "5150247": [
+   "Malik Benson",
+   "LV"
+  ],
+  "5153665": [
+   "Cian Slone",
+   "LV"
+  ],
+  "5155825": [
+   "Carter Runyon",
+   "LV"
+  ],
+  "5157289": [
+   "Jermod McCoy",
+   "LV"
+  ],
+  "5158921": [
+   "Kansei Matsuzawa",
+   "LV"
+  ],
+  "5348412": [
+   "Niklas Henning",
+   "LV"
+  ]
+ }
 }
