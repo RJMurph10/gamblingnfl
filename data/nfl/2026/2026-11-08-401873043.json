@@ -477,5 +477,696 @@
    ]
   }
  },
- "props": {}
+ "props": {
+  "open": {
+   "at": "2026-11-02T12:08:42.225Z",
+   "provider": 100,
+   "count": 3,
+   "rows": [
+  {"a":"2976212","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4426348","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4697815","t":"Anytime Touchdown Scorer","ti":"31"}
+ ],
+   "sample": [
+    {
+     "competition": {
+      "id": "401873043"
+     },
+     "athlete": {
+      "id": "2976212"
+     },
+     "provider": {
+      "id": "100"
+     },
+     "type": {
+      "id": "31",
+      "name": "Anytime Touchdown Scorer"
+     },
+     "lastUpdated": "2026-11-02T14:42Z",
+     "current": {},
+     "open": {}
+    },
+    {
+     "competition": {
+      "id": "401873043"
+     },
+     "athlete": {
+      "id": "4426348"
+     },
+     "provider": {
+      "id": "100"
+     },
+     "type": {
+      "id": "31",
+      "name": "Anytime Touchdown Scorer"
+     },
+     "lastUpdated": "2026-11-02T14:42Z",
+     "current": {},
+     "open": {}
+    }
+   ]
+  }
+ },
+ "names": {
+  "12483": [
+   "Matthew Stafford",
+   "LAR"
+  ],
+  "14676": [
+   "Jake McQuaide",
+   "LAR"
+  ],
+  "15946": [
+   "David Quessenberry",
+   "LAR"
+  ],
+  "16166": [
+   "Tress Way",
+   "WSH"
+  ],
+  "16339": [
+   "Brandon McManus",
+   "LAR"
+  ],
+  "16716": [
+   "Aaron Donald",
+   "LAR"
+  ],
+  "16800": [
+   "Davante Adams",
+   "LAR"
+  ],
+  "17378": [
+   "Tyler Ott",
+   "WSH"
+  ],
+  "2510863": [
+   "Eric Kendricks",
+   "LAR"
+  ],
+  "2573401": [
+   "Tyler Higbee",
+   "LAR"
+  ],
+  "2575907": [
+   "Joe Cardona",
+   "LAR"
+  ],
+  "2576736": [
+   "Lucas Patrick",
+   "WSH"
+  ],
+  "2576980": [
+   "Marcus Mariota",
+   "WSH"
+  ],
+  "2971586": [
+   "Fabian Moreau",
+   "WSH"
+  ],
+  "2976212": [
+   "Stefon Diggs",
+   "WSH"
+  ],
+  "2980080": [
+   "Deatrich Wise Jr.",
+   "WSH"
+  ],
+  "3042702": [
+   "Andrew Wylie",
+   "WSH"
+  ],
+  "3051890": [
+   "Laremy Tunsil",
+   "WSH"
+  ],
+  "3052180": [
+   "Coleman Shelton",
+   "LAR"
+  ],
+  "3068267": [
+   "Austin Ekeler",
+   "WSH"
+  ],
+  "3115922": [
+   "Nick Allegretti",
+   "WSH"
+  ],
+  "3116135": [
+   "Blake Hance",
+   "LAR"
+  ],
+  "3121422": [
+   "Terry McLaurin",
+   "WSH"
+  ],
+  "3122132": [
+   "Myles Garrett",
+   "LAR"
+  ],
+  "3122797": [
+   "Isaac Yiadom",
+   "WSH"
+  ],
+  "3123303": [
+   "Trent Scott",
+   "WSH"
+  ],
+  "3125114": [
+   "Poona Ford",
+   "LAR"
+  ],
+  "3125248": [
+   "Jeremy Reaves",
+   "WSH"
+  ],
+  "3127273": [
+   "Frankie Luvu",
+   "WSH"
+  ],
+  "3127586": [
+   "Jeremy McNichols",
+   "WSH"
+  ],
+  "3886601": [
+   "Shy Tuttle",
+   "WSH"
+  ],
+  "3912189": [
+   "Bill Murray",
+   "LAR"
+  ],
+  "3916922": [
+   "Byron Cowart",
+   "WSH"
+  ],
+  "3917599": [
+   "Kevin Dotson",
+   "LAR"
+  ],
+  "3917949": [
+   "Julian Good-Jones",
+   "WSH"
+  ],
+  "3919510": [
+   "Alex Bachman",
+   "LAR"
+  ],
+  "3925354": [
+   "Daron Payne",
+   "WSH"
+  ],
+  "3928979": [
+   "Dorance Armstrong",
+   "WSH"
+  ],
+  "3929865": [
+   "Charles Omenihu",
+   "WSH"
+  ],
+  "3929956": [
+   "Tim Settle",
+   "WSH"
+  ],
+  "3930066": [
+   "Van Jefferson",
+   "WSH"
+  ],
+  "3943270": [
+   "Rasul Douglas",
+   "WSH"
+  ],
+  "4036135": [
+   "Alaric Jackson",
+   "LAR"
+  ],
+  "4038843": [
+   "Keir Thomas II",
+   "LAR"
+  ],
+  "4045161": [
+   "Zech McPhearson",
+   "LAR"
+  ],
+  "4048228": [
+   "John Bates",
+   "WSH"
+  ],
+  "4239694": [
+   "Amik Robertson",
+   "WSH"
+  ],
+  "4240123": [
+   "Larrell Murchison",
+   "LAR"
+  ],
+  "4240255": [
+   "Grant Stuard",
+   "LAR"
+  ],
+  "4242154": [
+   "Kam Curl",
+   "LAR"
+  ],
+  "4242205": [
+   "K'Lavon Chaisson",
+   "WSH"
+  ],
+  "4242557": [
+   "Colby Parkinson",
+   "LAR"
+  ],
+  "4243003": [
+   "Ronnie Rivers",
+   "LAR"
+  ],
+  "4243181": [
+   "Nate Landman",
+   "LAR"
+  ],
+  "4244615": [
+   "Chris Paul",
+   "WSH"
+  ],
+  "4249128": [
+   "Quentin Lake",
+   "LAR"
+  ],
+  "4250621": [
+   "Kobie Turner",
+   "LAR"
+  ],
+  "4258485": [
+   "Jon Rhattigan",
+   "LAR"
+  ],
+  "4259491": [
+   "Javon Kinlaw",
+   "WSH"
+  ],
+  "4259553": [
+   "Stetson Bennett IV",
+   "LAR"
+  ],
+  "4259619": [
+   "Blake Grupe",
+   "LAR"
+  ],
+  "4261606": [
+   "Darren Hall",
+   "WSH"
+  ],
+  "4262199": [
+   "Sam Cosmi",
+   "WSH"
+  ],
+  "4360378": [
+   "Quan Martin",
+   "WSH"
+  ],
+  "4360635": [
+   "Chig Okonkwo",
+   "WSH"
+  ],
+  "4360797": [
+   "Tutu Atwell",
+   "LAR"
+  ],
+  "4360859": [
+   "Justin Dedich",
+   "LAR"
+  ],
+  "4361088": [
+   "Colson Yankoff",
+   "WSH"
+  ],
+  "4361090": [
+   "Ale Kaho",
+   "WSH"
+  ],
+  "4361100": [
+   "Jack Westover",
+   "WSH"
+  ],
+  "4361357": [
+   "Javontae Jean-Baptiste",
+   "WSH"
+  ],
+  "4361422": [
+   "Odafe Oweh",
+   "WSH"
+  ],
+  "4361577": [
+   "Dyami Brown",
+   "WSH"
+  ],
+  "4361651": [
+   "Tanner Ingle",
+   "LAR"
+  ],
+  "4361994": [
+   "Sam Hartman",
+   "WSH"
+  ],
+  "4362245": [
+   "Braden Fiske",
+   "LAR"
+  ],
+  "4362294": [
+   "Desjuan Johnson",
+   "LAR"
+  ],
+  "4362474": [
+   "Steve Avila",
+   "LAR"
+  ],
+  "4363097": [
+   "Percy Butler",
+   "WSH"
+  ],
+  "4421446": [
+   "Craig Reynolds",
+   "WSH"
+  ],
+  "4426348": [
+   "Jayden Daniels",
+   "WSH"
+  ],
+  "4426401": [
+   "Bill Norton",
+   "LAR"
+  ],
+  "4426403": [
+   "Nick Cross",
+   "WSH"
+  ],
+  "4426405": [
+   "Trent McDuffie",
+   "LAR"
+  ],
+  "4426512": [
+   "Warren McClendon Jr.",
+   "LAR"
+  ],
+  "4426515": [
+   "Puka Nacua",
+   "LAR"
+  ],
+  "4426553": [
+   "Davis Allen",
+   "LAR"
+  ],
+  "4426752": [
+   "Jack Bouwmeester",
+   "LAR"
+  ],
+  "4426901": [
+   "Leo Chenal",
+   "WSH"
+  ],
+  "4426948": [
+   "Luke McCaffrey",
+   "WSH"
+  ],
+  "4427120": [
+   "Jaylen McCollough",
+   "LAR"
+  ],
+  "4427752": [
+   "Cam Lampkin",
+   "LAR"
+  ],
+  "4427984": [
+   "Kain Medrano",
+   "WSH"
+  ],
+  "4428343": [
+   "Ricky Barber",
+   "WSH"
+  ],
+  "4428414": [
+   "Mike Sainristil",
+   "WSH"
+  ],
+  "4428550": [
+   "Omar Speights",
+   "LAR"
+  ],
+  "4428803": [
+   "Jordan Waters",
+   "LAR"
+  ],
+  "4429096": [
+   "Blake Corum",
+   "LAR"
+  ],
+  "4429185": [
+   "Austin Keys",
+   "WSH"
+  ],
+  "4429767": [
+   "Emmanuel Forbes Jr.",
+   "LAR"
+  ],
+  "4430155": [
+   "Dylan McMahon",
+   "LAR"
+  ],
+  "4430250": [
+   "Garrett Nelson",
+   "LAR"
+  ],
+  "4430560": [
+   "Jer'Zhan Newton",
+   "WSH"
+  ],
+  "4430737": [
+   "Kyren Williams",
+   "LAR"
+  ],
+  "4430919": [
+   "Wesley Bailey",
+   "LAR"
+  ],
+  "4431118": [
+   "Ty Hamilton",
+   "LAR"
+  ],
+  "4431342": [
+   "Brennan Presley",
+   "LAR"
+  ],
+  "4432333": [
+   "Kyle Kennard",
+   "WSH"
+  ],
+  "4432722": [
+   "Athan Kaliakmanis",
+   "WSH"
+  ],
+  "4566192": [
+   "Joshua Karty",
+   "LAR"
+  ],
+  "4567156": [
+   "Treylon Burks",
+   "WSH"
+  ],
+  "4567175": [
+   "Beaux Limmer",
+   "LAR"
+  ],
+  "4567480": [
+   "Damarion Williams",
+   "LAR"
+  ],
+  "4568217": [
+   "Tyler Davis",
+   "LAR"
+  ],
+  "4568617": [
+   "Jordan Magee",
+   "WSH"
+  ],
+  "4569382": [
+   "Jordan Whittington",
+   "LAR"
+  ],
+  "4570037": [
+   "Terrance Ferguson",
+   "LAR"
+  ],
+  "4572371": [
+   "Josh Wallace",
+   "LAR"
+  ],
+  "4572460": [
+   "Tyler Owens",
+   "WSH"
+  ],
+  "4574689": [
+   "Trey Amos",
+   "WSH"
+  ],
+  "4575003": [
+   "Keagen Trost",
+   "LAR"
+  ],
+  "4575131": [
+   "Jacory Croskey-Merritt",
+   "WSH"
+  ],
+  "4577189": [
+   "Jalen Hunt",
+   "LAR"
+  ],
+  "4596363": [
+   "Kamren Kinchens",
+   "LAR"
+  ],
+  "4598574": [
+   "Darryl Peterson III",
+   "LAR"
+  ],
+  "4602667": [
+   "Jaylin Lane",
+   "WSH"
+  ],
+  "4605488": [
+   "Tanoa Togiai",
+   "WSH"
+  ],
+  "4605951": [
+   "CJ Daniels",
+   "LAR"
+  ],
+  "4608858": [
+   "Dan Villari",
+   "LAR"
+  ],
+  "4682652": [
+   "Devin Neal",
+   "WSH"
+  ],
+  "4682983": [
+   "Josaiah Stewart",
+   "LAR"
+  ],
+  "4683111": [
+   "Jaden Bradley",
+   "WSH"
+  ],
+  "4683463": [
+   "Matt Gulbin",
+   "WSH"
+  ],
+  "4685030": [
+   "Brandon Coleman",
+   "WSH"
+  ],
+  "4685326": [
+   "Josh Conerly Jr.",
+   "WSH"
+  ],
+  "4685522": [
+   "Ty Simpson",
+   "LAR"
+  ],
+  "4686092": [
+   "Fred Davis II",
+   "WSH"
+  ],
+  "4690182": [
+   "Nick Andersen",
+   "LAR"
+  ],
+  "4690923": [
+   "Ben Sinnott",
+   "WSH"
+  ],
+  "4692796": [
+   "Nick DeGennaro",
+   "WSH"
+  ],
+  "4693848": [
+   "Shaun Dolac",
+   "LAR"
+  ],
+  "4695022": [
+   "Daniel Rickert",
+   "LAR"
+  ],
+  "4697639": [
+   "Jaylen Watson",
+   "LAR"
+  ],
+  "4697815": [
+   "Rachaad White",
+   "WSH"
+  ],
+  "4710855": [
+   "Konata Mumpfield",
+   "LAR"
+  ],
+  "4791223": [
+   "Jaxson Moi",
+   "LAR"
+  ],
+  "4833029": [
+   "Max Klare",
+   "LAR"
+  ],
+  "4875196": [
+   "Byron Young",
+   "LAR"
+  ],
+  "4875350": [
+   "Quentin Moore",
+   "WSH"
+  ],
+  "4877357": [
+   "Eddie Walls III",
+   "LAR"
+  ],
+  "4877717": [
+   "Matthew Caldwell",
+   "LAR"
+  ],
+  "5081335": [
+   "Drew Stevens",
+   "WSH"
+  ],
+  "5081392": [
+   "Joshua Josephs",
+   "WSH"
+  ],
+  "5081432": [
+   "Antonio Williams",
+   "WSH"
+  ],
+  "5081807": [
+   "Sonny Styles",
+   "WSH"
+  ],
+  "5082269": [
+   "Dean Connors",
+   "LAR"
+  ],
+  "5082391": [
+   "Maximus Pulley",
+   "LAR"
+  ],
+  "5125875": [
+   "Ethan Evans",
+   "LAR"
+  ],
+  "5153070": [
+   "Esa Pole",
+   "WSH"
+  ],
+  "5278092": [
+   "T.J. Maguranyanga",
+   "WSH"
+  ]
+ }
 }

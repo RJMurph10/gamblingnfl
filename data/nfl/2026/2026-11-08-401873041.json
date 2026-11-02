@@ -477,5 +477,707 @@
    ]
   }
  },
- "props": {}
+ "props": {
+  "open": {
+   "at": "2026-11-02T12:08:42.225Z",
+   "provider": 100,
+   "count": 6,
+   "rows": [
+  {"a":"4241416","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4241985","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4372016","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4685472","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4695883","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4702555","t":"Anytime Touchdown Scorer","ti":"31"}
+ ],
+   "sample": [
+    {
+     "competition": {
+      "id": "401873041"
+     },
+     "athlete": {
+      "id": "4241416"
+     },
+     "provider": {
+      "id": "100"
+     },
+     "type": {
+      "id": "31",
+      "name": "Anytime Touchdown Scorer"
+     },
+     "lastUpdated": "2026-11-02T13:17Z",
+     "current": {},
+     "open": {}
+    },
+    {
+     "competition": {
+      "id": "401873041"
+     },
+     "athlete": {
+      "id": "4241985"
+     },
+     "provider": {
+      "id": "100"
+     },
+     "type": {
+      "id": "31",
+      "name": "Anytime Touchdown Scorer"
+     },
+     "lastUpdated": "2026-11-02T13:36Z",
+     "current": {},
+     "open": {}
+    }
+   ]
+  }
+ },
+ "names": {
+  "11759": [
+   "JJ Jansen",
+   "CAR"
+  ],
+  "15928": [
+   "Sam Martin",
+   "CAR"
+  ],
+  "2576925": [
+   "Darren Waller",
+   "CAR"
+  ],
+  "2612151": [
+   "Alex Singleton",
+   "DEN"
+  ],
+  "2973051": [
+   "Taylor Moton",
+   "CAR"
+  ],
+  "2985659": [
+   "Wil Lutz",
+   "DEN"
+  ],
+  "3051876": [
+   "Evan Engram",
+   "DEN"
+  ],
+  "3052885": [
+   "Mike McGlinchey",
+   "DEN"
+  ],
+  "3116179": [
+   "Nick Scott",
+   "CAR"
+  ],
+  "3117253": [
+   "Bobby Okereke",
+   "CAR"
+  ],
+  "3121541": [
+   "Michael Deiter",
+   "DEN"
+  ],
+  "3128429": [
+   "Courtland Sutton",
+   "DEN"
+  ],
+  "3139166": [
+   "Mitchell Fraboni",
+   "DEN"
+  ],
+  "3892775": [
+   "Jarrett Stidham",
+   "DEN"
+  ],
+  "3894915": [
+   "D.J. Jones",
+   "DEN"
+  ],
+  "3911853": [
+   "Adam Trautman",
+   "DEN"
+  ],
+  "3915147": [
+   "Calvin Throckmorton",
+   "DEN"
+  ],
+  "3915282": [
+   "Zach Allen",
+   "DEN"
+  ],
+  "3917016": [
+   "Trevis Gipson",
+   "CAR"
+  ],
+  "3917592": [
+   "Robert Hunt",
+   "CAR"
+  ],
+  "3917853": [
+   "Mike Jackson",
+   "CAR"
+  ],
+  "3919548": [
+   "Justin Strnad",
+   "DEN"
+  ],
+  "3921936": [
+   "Matt Peart",
+   "DEN"
+  ],
+  "3929914": [
+   "Adam Prentice",
+   "DEN"
+  ],
+  "4032200": [
+   "Robert Rochell",
+   "CAR"
+  ],
+  "4034704": [
+   "Michael Bandy",
+   "DEN"
+  ],
+  "4034948": [
+   "Feleipe Franks",
+   "CAR"
+  ],
+  "4034959": [
+   "Jeremiah Moon",
+   "CAR"
+  ],
+  "4034962": [
+   "Stone Forsythe",
+   "CAR"
+  ],
+  "4035048": [
+   "Luke Fortner",
+   "CAR"
+  ],
+  "4035232": [
+   "Tyrel Dodson",
+   "CAR"
+  ],
+  "4035462": [
+   "Isaiah Simmons",
+   "CAR"
+  ],
+  "4035495": [
+   "Derrick Brown",
+   "CAR"
+  ],
+  "4035662": [
+   "Garett Bolles",
+   "DEN"
+  ],
+  "4035870": [
+   "Jake Curhan",
+   "CAR"
+  ],
+  "4036063": [
+   "Patrick Jones II",
+   "CAR"
+  ],
+  "4037559": [
+   "Devon Key",
+   "DEN"
+  ],
+  "4037650": [
+   "Ben Powers",
+   "DEN"
+  ],
+  "4039007": [
+   "Taylor Rapp",
+   "DEN"
+  ],
+  "4039018": [
+   "Luke Wattenberg",
+   "DEN"
+  ],
+  "4039057": [
+   "Lil'Jordan Humphrey",
+   "DEN"
+  ],
+  "4039059": [
+   "Brandon Jones",
+   "DEN"
+  ],
+  "4039064": [
+   "Malcolm Roach",
+   "DEN"
+  ],
+  "4040608": [
+   "Jonathon Cooper",
+   "DEN"
+  ],
+  "4058925": [
+   "Tershawn Wharton",
+   "CAR"
+  ],
+  "4066109": [
+   "Eyioma Uwazurike",
+   "DEN"
+  ],
+  "4212909": [
+   "David Moore",
+   "CAR"
+  ],
+  "4239934": [
+   "AJ Dillon",
+   "CAR"
+  ],
+  "4240551": [
+   "Alex Palczewski",
+   "DEN"
+  ],
+  "4240573": [
+   "Ihmir Smith-Marsette",
+   "CAR"
+  ],
+  "4240595": [
+   "Marco Wilson",
+   "CAR"
+  ],
+  "4240703": [
+   "Kenny Pickett",
+   "CAR"
+  ],
+  "4241416": [
+   "Chuba Hubbard",
+   "CAR"
+  ],
+  "4241820": [
+   "Sam Ehlinger",
+   "DEN"
+  ],
+  "4241985": [
+   "J.K. Dobbins",
+   "DEN"
+  ],
+  "4242230": [
+   "Saahdiq Charles",
+   "CAR"
+  ],
+  "4242358": [
+   "Matt Henningsen",
+   "DEN"
+  ],
+  "4242503": [
+   "Alex Forsyth",
+   "DEN"
+  ],
+  "4242975": [
+   "Jaelan Phillips",
+   "CAR"
+  ],
+  "4243256": [
+   "Devin Lloyd",
+   "CAR"
+  ],
+  "4244607": [
+   "Akayleb Evans",
+   "CAR"
+  ],
+  "4256062": [
+   "Brady Christensen",
+   "CAR"
+  ],
+  "4257240": [
+   "Tycen Anderson",
+   "DEN"
+  ],
+  "4261090": [
+   "Jordan Jackson",
+   "DEN"
+  ],
+  "4360231": [
+   "Lucas Krull",
+   "DEN"
+  ],
+  "4360259": [
+   "Nik Bonitto",
+   "DEN"
+  ],
+  "4360763": [
+   "Brycen Tremayne",
+   "CAR"
+  ],
+  "4360773": [
+   "Nick Hampton",
+   "CAR"
+  ],
+  "4360853": [
+   "Talanoa Hufanga",
+   "DEN"
+  ],
+  "4361429": [
+   "Rasheed Walker",
+   "CAR"
+  ],
+  "4361691": [
+   "Frank Crum",
+   "DEN"
+  ],
+  "4362487": [
+   "Tre'von Moehrig",
+   "CAR"
+  ],
+  "4362647": [
+   "Damien Lewis",
+   "CAR"
+  ],
+  "4362748": [
+   "Tyler Badie",
+   "DEN"
+  ],
+  "4362847": [
+   "Jaycee Horn",
+   "CAR"
+  ],
+  "4368033": [
+   "Nick Gargiulo",
+   "DEN"
+  ],
+  "4372012": [
+   "Pat Surtain II",
+   "DEN"
+  ],
+  "4372016": [
+   "Jaylen Waddle",
+   "DEN"
+  ],
+  "4372518": [
+   "Bobby Brown III",
+   "CAR"
+  ],
+  "4372780": [
+   "Tommy Tremble",
+   "CAR"
+  ],
+  "4382401": [
+   "Riley Moss",
+   "DEN"
+  ],
+  "4383440": [
+   "Nate Adkins",
+   "DEN"
+  ],
+  "4391845": [
+   "Cody Schrader",
+   "DEN"
+  ],
+  "4426338": [
+   "Bo Nix",
+   "DEN"
+  ],
+  "4427132": [
+   "Ikem Ekwonu",
+   "CAR"
+  ],
+  "4427408": [
+   "Jahfari Harvey",
+   "DEN"
+  ],
+  "4428125": [
+   "Maema Njongmeta",
+   "CAR"
+  ],
+  "4428241": [
+   "Levelle Bailey",
+   "DEN"
+  ],
+  "4428503": [
+   "JL Skinner",
+   "DEN"
+  ],
+  "4428796": [
+   "Casey Washington",
+   "CAR"
+  ],
+  "4428993": [
+   "Haynes King",
+   "CAR"
+  ],
+  "4429110": [
+   "Lathan Ransom",
+   "CAR"
+  ],
+  "4429166": [
+   "Princely Umanmielen",
+   "CAR"
+  ],
+  "4429193": [
+   "Kris Abrams-Draine",
+   "DEN"
+  ],
+  "4430034": [
+   "Xavier Legette",
+   "CAR"
+  ],
+  "4430288": [
+   "Eli Pancol",
+   "DEN"
+  ],
+  "4430925": [
+   "Jahdae Barron",
+   "DEN"
+  ],
+  "4430973": [
+   "Johnny Walker",
+   "DEN"
+  ],
+  "4431006": [
+   "Caelen Carson",
+   "CAR"
+  ],
+  "4431077": [
+   "TeRah Edwards",
+   "CAR"
+  ],
+  "4431280": [
+   "Troy Franklin",
+   "DEN"
+  ],
+  "4431426": [
+   "Corey Thornton",
+   "CAR"
+  ],
+  "4431551": [
+   "Lee Hunter",
+   "CAR"
+  ],
+  "4431588": [
+   "Ja'Tavion Sanders",
+   "CAR"
+  ],
+  "4432208": [
+   "Caleb Lohner",
+   "DEN"
+  ],
+  "4432374": [
+   "Ahmani Marshall",
+   "CAR"
+  ],
+  "4565769": [
+   "Sean Fresch",
+   "DEN"
+  ],
+  "4566384": [
+   "Zakee Wheatley",
+   "CAR"
+  ],
+  "4567096": [
+   "John Metchie III",
+   "CAR"
+  ],
+  "4567416": [
+   "Ja'Markis Weston",
+   "CAR"
+  ],
+  "4567462": [
+   "Ja'Quan McMillian",
+   "DEN"
+  ],
+  "4568263": [
+   "Ryan Fitzgerald",
+   "CAR"
+  ],
+  "4568490": [
+   "RJ Harvey",
+   "DEN"
+  ],
+  "4576075": [
+   "Corey Bullock",
+   "CAR"
+  ],
+  "4589212": [
+   "Jeremy Crawshaw",
+   "DEN"
+  ],
+  "4594449": [
+   "DeVonta Smith",
+   "CAR"
+  ],
+  "4600981": [
+   "Pat Bryant",
+   "DEN"
+  ],
+  "4602967": [
+   "Aaron Hall",
+   "CAR"
+  ],
+  "4603189": [
+   "Sai'vion Jones",
+   "DEN"
+  ],
+  "4608138": [
+   "Quinn Meinerz",
+   "DEN"
+  ],
+  "4678008": [
+   "Jonathon Brooks",
+   "CAR"
+  ],
+  "4683243": [
+   "Mitchell Evans",
+   "CAR"
+  ],
+  "4683535": [
+   "Tyler Onyedim",
+   "DEN"
+  ],
+  "4685350": [
+   "Trevor Etienne",
+   "CAR"
+  ],
+  "4685424": [
+   "Dane Key",
+   "DEN"
+  ],
+  "4685472": [
+   "Tetairoa McMillan",
+   "CAR"
+  ],
+  "4685720": [
+   "Bryce Young",
+   "CAR"
+  ],
+  "4685841": [
+   "Zion Childress",
+   "CAR"
+  ],
+  "4686442": [
+   "Tyler Miller",
+   "DEN"
+  ],
+  "4686472": [
+   "Marvin Mims Jr.",
+   "DEN"
+  ],
+  "4687513": [
+   "Cam Jackson",
+   "CAR"
+  ],
+  "4687592": [
+   "Jonah Elliss",
+   "DEN"
+  ],
+  "4692048": [
+   "Que Robinson",
+   "DEN"
+  ],
+  "4693373": [
+   "Jordan Turner",
+   "DEN"
+  ],
+  "4695883": [
+   "Jalen Coker",
+   "CAR"
+  ],
+  "4696902": [
+   "Torricelli Simpkins III",
+   "CAR"
+  ],
+  "4697636": [
+   "Chau Smith-Wade",
+   "CAR"
+  ],
+  "4702555": [
+   "Jonah Coleman",
+   "DEN"
+  ],
+  "4709392": [
+   "Anthony Tyus III",
+   "CAR"
+  ],
+  "4712462": [
+   "Keith Cooper Jr.",
+   "CAR"
+  ],
+  "4714157": [
+   "Thomas Incoom",
+   "CAR"
+  ],
+  "4833355": [
+   "Nic Scourton",
+   "CAR"
+  ],
+  "4868598": [
+   "Kage Casey",
+   "DEN"
+  ],
+  "4870694": [
+   "Monroe Freeling",
+   "CAR"
+  ],
+  "4874515": [
+   "Sam Hecht",
+   "CAR"
+  ],
+  "4875336": [
+   "Karene Reid",
+   "DEN"
+  ],
+  "4875592": [
+   "Jackson Kuwatch",
+   "CAR"
+  ],
+  "4875848": [
+   "Parker Petersen",
+   "CAR"
+  ],
+  "4876995": [
+   "Ja'seem Reed",
+   "CAR"
+  ],
+  "4880014": [
+   "Miles Scott",
+   "DEN"
+  ],
+  "4880613": [
+   "Bam Martin-Scott",
+   "CAR"
+  ],
+  "4912190": [
+   "Red Murdock",
+   "DEN"
+  ],
+  "5082398": [
+   "Brent Austin",
+   "DEN"
+  ],
+  "5085625": [
+   "Gavin Ortega",
+   "DEN"
+  ],
+  "5091739": [
+   "Chris Brazzell II",
+   "CAR"
+  ],
+  "5144941": [
+   "David Ebuka Agoha",
+   "DEN"
+  ],
+  "5151083": [
+   "Will Lee III",
+   "CAR"
+  ],
+  "5159802": [
+   "Dallen Bentley",
+   "DEN"
+  ],
+  "5216101": [
+   "Dondrea Tillman",
+   "DEN"
+  ],
+  "5225251": [
+   "Malcolm DeWalt IV",
+   "CAR"
+  ],
+  "5225419": [
+   "Kolbe Katsis",
+   "DEN"
+  ],
+  "5279357": [
+   "Mapalo Mwansa",
+   "CAR"
+  ]
+ }
 }

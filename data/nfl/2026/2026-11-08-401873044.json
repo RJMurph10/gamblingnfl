@@ -477,5 +477,704 @@
    ]
   }
  },
- "props": {}
+ "props": {
+  "open": {
+   "at": "2026-11-02T12:08:42.225Z",
+   "provider": 100,
+   "count": 3,
+   "rows": [
+  {"a":"4361050","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4595348","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4696981","t":"Anytime Touchdown Scorer","ti":"31"}
+ ],
+   "sample": [
+    {
+     "competition": {
+      "id": "401873044"
+     },
+     "athlete": {
+      "id": "4361050"
+     },
+     "provider": {
+      "id": "100"
+     },
+     "type": {
+      "id": "31",
+      "name": "Anytime Touchdown Scorer"
+     },
+     "lastUpdated": "2026-11-02T14:20Z",
+     "current": {},
+     "open": {}
+    },
+    {
+     "competition": {
+      "id": "401873044"
+     },
+     "athlete": {
+      "id": "4595348"
+     },
+     "provider": {
+      "id": "100"
+     },
+     "type": {
+      "id": "31",
+      "name": "Anytime Touchdown Scorer"
+     },
+     "lastUpdated": "2026-11-02T14:20Z",
+     "current": {},
+     "open": {}
+    }
+   ]
+  }
+ },
+ "names": {
+  "15797": [
+   "Lane Johnson",
+   "PHI"
+  ],
+  "15835": [
+   "Zach Ertz",
+   "PHI"
+  ],
+  "16837": [
+   "Shelby Harris",
+   "NYG"
+  ],
+  "2531358": [
+   "Chris Manhertz",
+   "NYG"
+  ],
+  "2574891": [
+   "Roy Robertson-Harris",
+   "NYG"
+  ],
+  "2969939": [
+   "Jameis Winston",
+   "NYG"
+  ],
+  "2971027": [
+   "Jonathan Jones",
+   "PHI"
+  ],
+  "2975417": [
+   "Patrick Ricard",
+   "NYG"
+  ],
+  "2977670": [
+   "DJ Reader",
+   "NYG"
+  ],
+  "2979632": [
+   "Josh Tupou",
+   "NYG"
+  ],
+  "3042476": [
+   "Dawuane Smoot",
+   "NYG"
+  ],
+  "3049339": [
+   "Aaron Stinnie",
+   "NYG"
+  ],
+  "3050478": [
+   "Jake Elliott",
+   "PHI"
+  ],
+  "3052096": [
+   "Johnny Mundt",
+   "PHI"
+  ],
+  "3115303": [
+   "Jermaine Eluemunor",
+   "NYG"
+  ],
+  "3121023": [
+   "Dallas Goedert",
+   "PHI"
+  ],
+  "3123075": [
+   "Braxton Berrios",
+   "NYG"
+  ],
+  "3139368": [
+   "Marcus Epps",
+   "PHI"
+  ],
+  "3915106": [
+   "Fred Johnson",
+   "PHI"
+  ],
+  "3916409": [
+   "Jonathan Greenard",
+   "PHI"
+  ],
+  "3917657": [
+   "Zack Baun",
+   "PHI"
+  ],
+  "3926231": [
+   "Britain Covey",
+   "PHI"
+  ],
+  "3929630": [
+   "Saquon Barkley",
+   "PHI"
+  ],
+  "3929936": [
+   "Jon Runyan",
+   "NYG"
+  ],
+  "3929950": [
+   "Tremaine Edmunds",
+   "NYG"
+  ],
+  "3932901": [
+   "Elijah Campbell",
+   "NYG"
+  ],
+  "4035239": [
+   "Braden Mann",
+   "PHI"
+  ],
+  "4035624": [
+   "Landon Dickerson",
+   "PHI"
+  ],
+  "4035631": [
+   "Brian Burns",
+   "NYG"
+  ],
+  "4036132": [
+   "Chauncey Golston",
+   "NYG"
+  ],
+  "4039243": [
+   "Josh Sills",
+   "NYG"
+  ],
+  "4040615": [
+   "Malik Harrison",
+   "NYG"
+  ],
+  "4040655": [
+   "Darnell Mooney",
+   "NYG"
+  ],
+  "4040715": [
+   "Jalen Hurts",
+   "PHI"
+  ],
+  "4040761": [
+   "Devin Singletary",
+   "NYG"
+  ],
+  "4218312": [
+   "Kenny Moore II",
+   "PHI"
+  ],
+  "4240015": [
+   "John Ojukwu",
+   "PHI"
+  ],
+  "4240456": [
+   "Michael Carter II",
+   "PHI"
+  ],
+  "4240548": [
+   "Kendrick Green",
+   "NYG"
+  ],
+  "4240585": [
+   "AJ Epenesa",
+   "PHI"
+  ],
+  "4240706": [
+   "Jason Pinnock",
+   "NYG"
+  ],
+  "4240771": [
+   "John Michael Schmitz Jr.",
+   "NYG"
+  ],
+  "4241372": [
+   "Hollywood Brown",
+   "PHI"
+  ],
+  "4241374": [
+   "Grant Calcaterra",
+   "PHI"
+  ],
+  "4241478": [
+   "DeVonta Smith",
+   "PHI"
+  ],
+  "4241555": [
+   "Elijah Mitchell",
+   "PHI"
+  ],
+  "4242547": [
+   "Paulson Adebo",
+   "NYG"
+  ],
+  "4243322": [
+   "Jake Haener",
+   "NYG"
+  ],
+  "4243389": [
+   "Calvin Austin III",
+   "NYG"
+  ],
+  "4245185": [
+   "Riq Woolen",
+   "PHI"
+  ],
+  "4250510": [
+   "Andre' Sam",
+   "PHI"
+  ],
+  "4257188": [
+   "Charlie Jones",
+   "NYG"
+  ],
+  "4257591": [
+   "Arnold Ebiketie",
+   "PHI"
+  ],
+  "4258237": [
+   "Raheem Layne",
+   "NYG"
+  ],
+  "4259566": [
+   "Andrew Thomas",
+   "NYG"
+  ],
+  "4259590": [
+   "Tariq Castro-Fields",
+   "PHI"
+  ],
+  "4260224": [
+   "Jordan Stout",
+   "NYG"
+  ],
+  "4334215": [
+   "Jordan Mailata",
+   "PHI"
+  ],
+  "4360238": [
+   "Dameon Pierce",
+   "PHI"
+  ],
+  "4360516": [
+   "Tyrone Tracy Jr.",
+   "NYG"
+  ],
+  "4360698": [
+   "Joe Milton",
+   "PHI"
+  ],
+  "4361050": [
+   "Isaiah Likely",
+   "NYG"
+  ],
+  "4361266": [
+   "Greg Newsome II",
+   "NYG"
+  ],
+  "4361834": [
+   "Jarrick Bernard-Converse",
+   "NYG"
+  ],
+  "4362116": [
+   "Moro Ojomo",
+   "PHI"
+  ],
+  "4362186": [
+   "Erik Ezukanma",
+   "PHI"
+  ],
+  "4362234": [
+   "Zaire Barnes",
+   "NYG"
+  ],
+  "4362492": [
+   "Ar'Darius Washington",
+   "NYG"
+  ],
+  "4362805": [
+   "Tyler Steen",
+   "PHI"
+  ],
+  "4368350": [
+   "Rico Payton",
+   "NYG"
+  ],
+  "4371961": [
+   "Micah McFadden",
+   "NYG"
+  ],
+  "4372051": [
+   "Chance Campbell",
+   "PHI"
+  ],
+  "4372414": [
+   "Elijah Moore",
+   "PHI"
+  ],
+  "4373809": [
+   "Jevon Holland",
+   "NYG"
+  ],
+  "4374032": [
+   "Jaden Robinson",
+   "NYG"
+  ],
+  "4381558": [
+   "Jordan Davis",
+   "PHI"
+  ],
+  "4424106": [
+   "Gunner Olszewski",
+   "NYG"
+  ],
+  "4426326": [
+   "Kayvon Thibodeaux",
+   "NYG"
+  ],
+  "4426331": [
+   "Nolan Smith Jr.",
+   "PHI"
+  ],
+  "4426489": [
+   "Bryan Hudson",
+   "NYG"
+  ],
+  "4426542": [
+   "Darius Alexander",
+   "NYG"
+  ],
+  "4427207": [
+   "Trace Ford",
+   "NYG"
+  ],
+  "4427278": [
+   "Xavier Gipson",
+   "PHI"
+  ],
+  "4427636": [
+   "Nic Jones",
+   "NYG"
+  ],
+  "4428328": [
+   "Deonte Banks",
+   "NYG"
+  ],
+  "4428850": [
+   "Dontayvion Wicks",
+   "PHI"
+  ],
+  "4428992": [
+   "Kelee Ringo",
+   "PHI"
+  ],
+  "4429013": [
+   "Tank Bigsby",
+   "PHI"
+  ],
+  "4429148": [
+   "Theo Johnson",
+   "NYG"
+  ],
+  "4429281": [
+   "Korie Black",
+   "NYG"
+  ],
+  "4429731": [
+   "Gabe Hall",
+   "PHI"
+  ],
+  "4429891": [
+   "DJ James",
+   "NYG"
+  ],
+  "4430261": [
+   "Tyler Nubin",
+   "NYG"
+  ],
+  "4430814": [
+   "Jake Majors",
+   "PHI"
+  ],
+  "4431321": [
+   "Dru Phillips",
+   "NYG"
+  ],
+  "4431545": [
+   "Will Shipley",
+   "PHI"
+  ],
+  "4431562": [
+   "Phil Mafah",
+   "NYG"
+  ],
+  "4431573": [
+   "Smael Mondon Jr.",
+   "PHI"
+  ],
+  "4431574": [
+   "Eli Stowers",
+   "PHI"
+  ],
+  "4432738": [
+   "Micah Morris",
+   "PHI"
+  ],
+  "4432777": [
+   "Jeremiah Trotter Jr.",
+   "PHI"
+  ],
+  "4433970": [
+   "J.J. McCarthy",
+   "NYG"
+  ],
+  "4565297": [
+   "Dontae Fleming",
+   "NYG"
+  ],
+  "4567123": [
+   "Byron Young",
+   "PHI"
+  ],
+  "4567134": [
+   "Evan Neal",
+   "PHI"
+  ],
+  "4567535": [
+   "Anfernee Orji",
+   "PHI"
+  ],
+  "4567802": [
+   "Drew Kendall",
+   "PHI"
+  ],
+  "4569586": [
+   "Ty Robinson",
+   "PHI"
+  ],
+  "4570296": [
+   "Dalen Cambre",
+   "NYG"
+  ],
+  "4571162": [
+   "Jalyx Hunt",
+   "PHI"
+  ],
+  "4582836": [
+   "Willie Lampkin",
+   "PHI"
+  ],
+  "4590292": [
+   "Thomas Fidone II",
+   "NYG"
+  ],
+  "4595348": [
+   "Malik Nabers",
+   "NYG"
+  ],
+  "4602197": [
+   "Andrew Mukuba",
+   "PHI"
+  ],
+  "4682618": [
+   "Cooper DeJean",
+   "PHI"
+  ],
+  "4682648": [
+   "Malachi Fields",
+   "NYG"
+  ],
+  "4685201": [
+   "Tanner McKee",
+   "PHI"
+  ],
+  "4685279": [
+   "Jaydon Blue",
+   "PHI"
+  ],
+  "4685287": [
+   "Jihaad Campbell",
+   "PHI"
+  ],
+  "4685759": [
+   "Jalen Carter",
+   "PHI"
+  ],
+  "4686104": [
+   "Johnny Wilson",
+   "PHI"
+  ],
+  "4686273": [
+   "Quinyon Mitchell",
+   "PHI"
+  ],
+  "4686362": [
+   "Marcus Mbow",
+   "NYG"
+  ],
+  "4686566": [
+   "Rocco Underwood",
+   "PHI"
+  ],
+  "4686911": [
+   "Jakorian Bennett",
+   "PHI"
+  ],
+  "4687706": [
+   "Josh Gesky",
+   "NYG"
+  ],
+  "4689114": [
+   "Jaxson Dart",
+   "NYG"
+  ],
+  "4689651": [
+   "Mac McWilliams",
+   "PHI"
+  ],
+  "4689988": [
+   "Jason Brownlee",
+   "NYG"
+  ],
+  "4691043": [
+   "Nikko Reed",
+   "NYG"
+  ],
+  "4691889": [
+   "Greg Desrosiers Jr.",
+   "NYG"
+  ],
+  "4691903": [
+   "Mason Reiger",
+   "PHI"
+  ],
+  "4692590": [
+   "Jalin Hyatt",
+   "NYG"
+  ],
+  "4693345": [
+   "Cole Wisniewski",
+   "PHI"
+  ],
+  "4695086": [
+   "Chandler Martin",
+   "NYG"
+  ],
+  "4696981": [
+   "Cam Skattebo",
+   "NYG"
+  ],
+  "4700676": [
+   "C.J. Ravenell",
+   "NYG"
+  ],
+  "4715355": [
+   "Darius Cooper",
+   "PHI"
+  ],
+  "4725996": [
+   "Abdul Carter",
+   "NYG"
+  ],
+  "4870795": [
+   "Makai Lemon",
+   "PHI"
+  ],
+  "4870914": [
+   "Francis Mauigoa",
+   "NYG"
+  ],
+  "4872850": [
+   "Zion Wilson",
+   "PHI"
+  ],
+  "4875981": [
+   "Geno VanDeMark",
+   "NYG"
+  ],
+  "4876380": [
+   "Jack Kelly",
+   "NYG"
+  ],
+  "4878896": [
+   "Tucker Large",
+   "PHI"
+  ],
+  "4879250": [
+   "Cole Payton",
+   "PHI"
+  ],
+  "4883090": [
+   "Kiran Amegadjie",
+   "PHI"
+  ],
+  "4883114": [
+   "Ben Mann",
+   "NYG"
+  ],
+  "4921249": [
+   "Colton Hood",
+   "NYG"
+  ],
+  "4950400": [
+   "Arvell Reese",
+   "NYG"
+  ],
+  "5082353": [
+   "J.C. Davis",
+   "NYG"
+  ],
+  "5082424": [
+   "Dominic Zvada",
+   "NYG"
+  ],
+  "5144942": [
+   "CJ Okoye",
+   "NYG"
+  ],
+  "5151880": [
+   "Thaddeus Dixon",
+   "NYG"
+  ],
+  "5159928": [
+   "Bobby Jamison-Travis",
+   "NYG"
+  ],
+  "5165139": [
+   "Keyshawn James-Newby",
+   "PHI"
+  ],
+  "5219831": [
+   "Markel Bell",
+   "PHI"
+  ],
+  "5344428": [
+   "Ryan Schernecke",
+   "NYG"
+  ],
+  "5344965": [
+   "Joshua Weru",
+   "PHI"
+  ],
+  "5344966": [
+   "Uar Bernard",
+   "PHI"
+  ],
+  "5360470": [
+   "Jarrod Gray",
+   "NYG"
+  ],
+  "5393270": [
+   "Grant Finley",
+   "NYG"
+  ]
+ }
 }
