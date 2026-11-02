@@ -477,12 +477,12 @@
    ]
   },
   "close": {
-   "at": "2026-11-02T20:58:38.336Z",
+   "at": "2026-11-02T21:55:51.295Z",
    "scoreboard": [
     {
      "provider": {
       "id": "100",
-      "name": "Draft Kings",
+      "name": "DraftKings",
       "priority": 1
      },
      "details": "MICH -27.5",
@@ -526,7 +526,7 @@
           "home",
           "desktop",
           "bets",
-          "draft-kings"
+          "draftkings"
          ],
          "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34940944%3Foutcomes%3D0ML87037664_1",
          "text": "Home Bet",
@@ -558,7 +558,7 @@
           "away",
           "desktop",
           "bets",
-          "draft-kings"
+          "draftkings"
          ],
          "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34940944%3Foutcomes%3D0ML87037664_3",
          "text": "Away Bet",
@@ -767,7 +767,7 @@
     {
      "provider": {
       "id": "100",
-      "name": "Draft Kings",
+      "name": "DraftKings",
       "priority": 1
      },
      "details": "MICH -27.5",

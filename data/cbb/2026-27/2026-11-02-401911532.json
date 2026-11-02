@@ -7,18 +7,18 @@
   "id": "2638",
   "abbr": "UTEP",
   "name": "UTEP Miners",
-  "score": 49
+  "score": 76
  },
  "home": {
   "id": "94",
   "abbr": "NKU",
   "name": "Northern Kentucky Norse",
-  "score": 57
+  "score": 84
  },
  "neutral": true,
  "venue": "Sanford Pentagon",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-01T07:57:03.660Z",
@@ -934,5 +934,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 76,
+  "home": 84
+ }
 }

@@ -395,12 +395,12 @@
    ]
   },
   "close": {
-   "at": "2026-11-02T20:58:38.336Z",
+   "at": "2026-11-02T21:55:51.295Z",
    "scoreboard": [
     {
      "provider": {
       "id": "100",
-      "name": "Draft Kings",
+      "name": "DraftKings",
       "priority": 1
      },
      "details": "DUKE -44.5",
@@ -637,7 +637,7 @@
     {
      "provider": {
       "id": "100",
-      "name": "Draft Kings",
+      "name": "DraftKings",
       "priority": 1
      },
      "details": "DUKE -44.5",

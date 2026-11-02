@@ -7,18 +7,18 @@
   "id": "2378",
   "abbr": "UMBC",
   "name": "UMBC Retrievers",
-  "score": 0
+  "score": 27
  },
  "home": {
   "id": "2244",
   "abbr": "GMU",
   "name": "George Mason Patriots",
-  "score": 0
+  "score": 33
  },
  "neutral": false,
  "venue": "EagleBank Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T21:17:39.977Z",
