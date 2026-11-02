@@ -477,16 +477,16 @@
    ]
   },
   "close": {
-   "at": "2026-11-02T22:55:32.213Z",
+   "at": "2026-11-02T23:50:25.569Z",
    "scoreboard": [
     {
      "provider": {
       "id": "100",
-      "name": "DraftKings",
+      "name": "Draft Kings",
       "priority": 1
      },
      "details": "WVU -28.5",
-     "overUnder": 141.5,
+     "overUnder": 142.5,
      "spread": -28.5,
      "awayTeamOdds": {
       "favorite": false,
@@ -519,31 +519,7 @@
       "shortDisplayName": "ML",
       "home": {
        "close": {
-        "odds": "-100000",
-        "link": {
-         "language": "en-US",
-         "rel": [
-          "home",
-          "desktop",
-          "bets",
-          "draftkings"
-         ],
-         "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34940955%3Foutcomes%3D0ML87037682_1",
-         "text": "Home Bet",
-         "shortText": "Home Bet",
-         "isExternal": true,
-         "isPremium": false,
-         "tracking": {
-          "campaign": "betting-integrations",
-          "tags": {
-           "league": "mens-college-basketball",
-           "sport": "basketball",
-           "gameId": 401921766,
-           "betSide": "home",
-           "betType": "straight"
-          }
-         }
-        }
+        "odds": "OFF"
        },
        "open": {
         "odds": "-100000"
@@ -551,31 +527,7 @@
       },
       "away": {
        "close": {
-        "odds": "+5000",
-        "link": {
-         "language": "en-US",
-         "rel": [
-          "away",
-          "desktop",
-          "bets",
-          "draftkings"
-         ],
-         "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34940955%3Foutcomes%3D0ML87037682_3",
-         "text": "Away Bet",
-         "shortText": "Away Bet",
-         "isExternal": true,
-         "isPremium": false,
-         "tracking": {
-          "campaign": "betting-integrations",
-          "tags": {
-           "league": "mens-college-basketball",
-           "sport": "basketball",
-           "gameId": 401921766,
-           "betSide": "away",
-           "betType": "straight"
-          }
-         }
-        }
+        "odds": "OFF"
        },
        "open": {
         "odds": "+5000"
@@ -659,8 +611,8 @@
       "shortDisplayName": "Total",
       "over": {
        "close": {
-        "line": "o141.5",
-        "odds": "-115",
+        "line": "o142.5",
+        "odds": "-105",
         "link": {
          "language": "en-US",
          "rel": [
@@ -668,7 +620,7 @@
           "desktop",
           "bets"
          ],
-         "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34940955%3Foutcomes%3D0OU87037682O14150_1",
+         "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34940955%3Foutcomes%3D0OU87037682O14250_1",
          "text": "Over Odds",
          "shortText": "Over Odds",
          "isExternal": true,
@@ -681,7 +633,7 @@
            "gameId": 401921766,
            "betSide": "over",
            "betType": "straight",
-           "betDetails": "Over:141.5"
+           "betDetails": "Over:142.5"
           }
          }
         }
@@ -693,8 +645,8 @@
       },
       "under": {
        "close": {
-        "line": "u141.5",
-        "odds": "-105",
+        "line": "u142.5",
+        "odds": "-115",
         "link": {
          "language": "en-US",
          "rel": [
@@ -702,7 +654,7 @@
           "desktop",
           "bets"
          ],
-         "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34940955%3Foutcomes%3D0OU87037682U14150_3",
+         "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34940955%3Foutcomes%3D0OU87037682U14250_3",
          "text": "Under Odds",
          "shortText": "Under Odds",
          "isExternal": true,
@@ -715,7 +667,7 @@
            "gameId": 401921766,
            "betSide": "under",
            "betType": "straight",
-           "betDetails": "Under:141.5"
+           "betDetails": "Under:142.5"
           }
          }
         }
@@ -767,18 +719,17 @@
     {
      "provider": {
       "id": "100",
-      "name": "DraftKings",
+      "name": "Draft Kings",
       "priority": 1
      },
      "details": "WVU -28.5",
-     "overUnder": 141.5,
+     "overUnder": 142.5,
      "spread": -28.5,
-     "overOdds": -115,
-     "underOdds": -105,
+     "overOdds": -105,
+     "underOdds": -115,
      "awayTeamOdds": {
       "favorite": false,
       "underdog": true,
-      "moneyLine": 5000,
       "spreadOdds": -105,
       "open": {
        "favorite": false,
@@ -815,14 +766,6 @@
         "decimal": 1.95,
         "fraction": "20/21",
         "american": "-105"
-       },
-       "moneyLine": {
-        "value": 51,
-        "displayValue": "50/1",
-        "alternateDisplayValue": "+5000",
-        "decimal": 51,
-        "fraction": "50/1",
-        "american": "+5000"
        }
       },
       "team": {
@@ -832,7 +775,6 @@
      "homeTeamOdds": {
       "favorite": true,
       "underdog": false,
-      "moneyLine": -100000,
       "spreadOdds": -115,
       "open": {
        "favorite": true,
@@ -869,14 +811,6 @@
         "decimal": 1.86,
         "fraction": "20/23",
         "american": "-115"
-       },
-       "moneyLine": {
-        "value": 1.001,
-        "displayValue": "1/1000",
-        "alternateDisplayValue": "-100000",
-        "decimal": 1.001,
-        "fraction": "1/1000",
-        "american": "-100000"
        }
       },
       "team": {
@@ -909,14 +843,6 @@
      },
      "current": {
       "over": {
-       "value": 1.86,
-       "displayValue": "20/23",
-       "alternateDisplayValue": "-115",
-       "decimal": 1.86,
-       "fraction": "20/23",
-       "american": "-115"
-      },
-      "under": {
        "value": 1.95,
        "displayValue": "20/21",
        "alternateDisplayValue": "-105",
@@ -924,9 +850,17 @@
        "fraction": "20/21",
        "american": "-105"
       },
+      "under": {
+       "value": 1.86,
+       "displayValue": "20/23",
+       "alternateDisplayValue": "-115",
+       "decimal": 1.86,
+       "fraction": "20/23",
+       "american": "-115"
+      },
       "total": {
-       "alternateDisplayValue": "141.5",
-       "american": "141.5"
+       "alternateDisplayValue": "142.5",
+       "american": "142.5"
       }
      }
     }

@@ -7,18 +7,18 @@
   "id": "349",
   "abbr": "ARMY",
   "name": "Army Black Knights",
-  "score": 0
+  "score": 6
  },
  "home": {
   "id": "150",
   "abbr": "DUKE",
   "name": "Duke Blue Devils",
-  "score": 0
+  "score": 18
  },
  "neutral": false,
  "venue": "Cameron Indoor Stadium",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T21:17:39.977Z",

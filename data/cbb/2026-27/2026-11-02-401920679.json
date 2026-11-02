@@ -7,18 +7,18 @@
   "id": "2405",
   "abbr": "MONM",
   "name": "Monmouth Hawks",
-  "score": 0
+  "score": 6
  },
  "home": {
   "id": "2599",
   "abbr": "SJU",
   "name": "St. John's Red Storm",
-  "score": 0
+  "score": 20
  },
  "neutral": false,
  "venue": "Carnesecca Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T07:57:03.660Z",

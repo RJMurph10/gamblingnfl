@@ -7,18 +7,18 @@
   "id": "2352",
   "abbr": "L-MD",
   "name": "Loyola Maryland Greyhounds",
-  "score": 0
+  "score": 8
  },
  "home": {
   "id": "46",
   "abbr": "GTWN",
   "name": "Georgetown Hoyas",
-  "score": 0
+  "score": 20
  },
  "neutral": false,
  "venue": "Capital One Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T21:17:39.977Z",

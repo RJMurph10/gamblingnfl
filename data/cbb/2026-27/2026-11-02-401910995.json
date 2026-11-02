@@ -477,16 +477,16 @@
    ]
   },
   "close": {
-   "at": "2026-11-02T22:55:32.213Z",
+   "at": "2026-11-02T23:50:25.569Z",
    "scoreboard": [
     {
      "provider": {
       "id": "100",
-      "name": "DraftKings",
+      "name": "Draft Kings",
       "priority": 1
      },
      "details": "MRSH -2.5",
-     "overUnder": 157.5,
+     "overUnder": 155.5,
      "spread": -2.5,
      "awayTeamOdds": {
       "favorite": false,
@@ -519,14 +519,14 @@
       "shortDisplayName": "ML",
       "home": {
        "close": {
-        "odds": "-142",
+        "odds": "-155",
         "link": {
          "language": "en-US",
          "rel": [
           "home",
           "desktop",
           "bets",
-          "draftkings"
+          "draft-kings"
          ],
          "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34940976%3Foutcomes%3D0ML87037798_1",
          "text": "Home Bet",
@@ -551,14 +551,14 @@
       },
       "away": {
        "close": {
-        "odds": "+120",
+        "odds": "+130",
         "link": {
          "language": "en-US",
          "rel": [
           "away",
           "desktop",
           "bets",
-          "draftkings"
+          "draft-kings"
          ],
          "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34940976%3Foutcomes%3D0ML87037798_3",
          "text": "Away Bet",
@@ -659,8 +659,8 @@
       "shortDisplayName": "Total",
       "over": {
        "close": {
-        "line": "o157.5",
-        "odds": "-105",
+        "line": "o155.5",
+        "odds": "-110",
         "link": {
          "language": "en-US",
          "rel": [
@@ -668,7 +668,7 @@
           "desktop",
           "bets"
          ],
-         "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34940976%3Foutcomes%3D0OU87037798O15750_1",
+         "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34940976%3Foutcomes%3D0OU87037798O15550_1",
          "text": "Over Odds",
          "shortText": "Over Odds",
          "isExternal": true,
@@ -681,7 +681,7 @@
            "gameId": 401910995,
            "betSide": "over",
            "betType": "straight",
-           "betDetails": "Over:157.5"
+           "betDetails": "Over:155.5"
           }
          }
         }
@@ -693,8 +693,8 @@
       },
       "under": {
        "close": {
-        "line": "u157.5",
-        "odds": "-115",
+        "line": "u155.5",
+        "odds": "-110",
         "link": {
          "language": "en-US",
          "rel": [
@@ -702,7 +702,7 @@
           "desktop",
           "bets"
          ],
-         "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34940976%3Foutcomes%3D0OU87037798U15750_3",
+         "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34940976%3Foutcomes%3D0OU87037798U15550_3",
          "text": "Under Odds",
          "shortText": "Under Odds",
          "isExternal": true,
@@ -715,7 +715,7 @@
            "gameId": 401910995,
            "betSide": "under",
            "betType": "straight",
-           "betDetails": "Under:157.5"
+           "betDetails": "Under:155.5"
           }
          }
         }
@@ -767,18 +767,18 @@
     {
      "provider": {
       "id": "100",
-      "name": "DraftKings",
+      "name": "Draft Kings",
       "priority": 1
      },
      "details": "MRSH -2.5",
-     "overUnder": 157.5,
+     "overUnder": 155.5,
      "spread": -2.5,
-     "overOdds": -105,
-     "underOdds": -115,
+     "overOdds": -110,
+     "underOdds": -110,
      "awayTeamOdds": {
       "favorite": false,
       "underdog": true,
-      "moneyLine": 120,
+      "moneyLine": 130,
       "spreadOdds": -105,
       "open": {
        "favorite": false,
@@ -817,12 +817,12 @@
         "american": "-105"
        },
        "moneyLine": {
-        "value": 2.2,
-        "displayValue": "6/5",
-        "alternateDisplayValue": "+120",
-        "decimal": 2.2,
-        "fraction": "6/5",
-        "american": "+120"
+        "value": 2.3,
+        "displayValue": "13/10",
+        "alternateDisplayValue": "+130",
+        "decimal": 2.3,
+        "fraction": "13/10",
+        "american": "+130"
        }
       },
       "team": {
@@ -832,7 +832,7 @@
      "homeTeamOdds": {
       "favorite": true,
       "underdog": false,
-      "moneyLine": -142,
+      "moneyLine": -155,
       "spreadOdds": -115,
       "open": {
        "favorite": true,
@@ -871,12 +871,12 @@
         "american": "-115"
        },
        "moneyLine": {
-        "value": 1.7,
-        "displayValue": "50/71",
-        "alternateDisplayValue": "-142",
-        "decimal": 1.7,
-        "fraction": "50/71",
-        "american": "-142"
+        "value": 1.64,
+        "displayValue": "20/31",
+        "alternateDisplayValue": "-155",
+        "decimal": 1.64,
+        "fraction": "20/31",
+        "american": "-155"
        }
       },
       "team": {
@@ -909,24 +909,24 @@
      },
      "current": {
       "over": {
-       "value": 1.95,
-       "displayValue": "20/21",
-       "alternateDisplayValue": "-105",
-       "decimal": 1.95,
-       "fraction": "20/21",
-       "american": "-105"
+       "value": 1.9,
+       "displayValue": "10/11",
+       "alternateDisplayValue": "-110",
+       "decimal": 1.9,
+       "fraction": "10/11",
+       "american": "-110"
       },
       "under": {
-       "value": 1.86,
-       "displayValue": "20/23",
-       "alternateDisplayValue": "-115",
-       "decimal": 1.86,
-       "fraction": "20/23",
-       "american": "-115"
+       "value": 1.9,
+       "displayValue": "10/11",
+       "alternateDisplayValue": "-110",
+       "decimal": 1.9,
+       "fraction": "10/11",
+       "american": "-110"
       },
       "total": {
-       "alternateDisplayValue": "157.5",
-       "american": "157.5"
+       "alternateDisplayValue": "155.5",
+       "american": "155.5"
       }
      }
     }

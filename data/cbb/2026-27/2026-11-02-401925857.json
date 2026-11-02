@@ -7,18 +7,18 @@
   "id": "2115",
   "abbr": "CCSU",
   "name": "Central Connecticut Blue Devils",
-  "score": 0
+  "score": 9
  },
  "home": {
   "id": "218",
   "abbr": "TEM",
   "name": "Temple Owls",
-  "score": 0
+  "score": 17
  },
  "neutral": false,
  "venue": "Liacouras Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T21:17:39.977Z",
