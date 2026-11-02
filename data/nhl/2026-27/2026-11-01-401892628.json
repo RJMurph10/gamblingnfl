@@ -7,13 +7,13 @@
   "id": "14",
   "abbr": "OTT",
   "name": "Ottawa Senators",
-  "score": 2
+  "score": 3
  },
  "home": {
   "id": "25",
   "abbr": "ANA",
   "name": "Anaheim Ducks",
-  "score": 0
+  "score": 3
  },
  "neutral": false,
  "venue": "Honda Center",

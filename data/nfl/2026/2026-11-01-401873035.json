@@ -7,13 +7,13 @@
   "id": "21",
   "abbr": "PHI",
   "name": "Philadelphia Eagles",
-  "score": 0
+  "score": 10
  },
  "home": {
   "id": "28",
   "abbr": "WSH",
   "name": "Washington Commanders",
-  "score": 0
+  "score": 13
  },
  "neutral": false,
  "venue": "Northwest Stadium",
