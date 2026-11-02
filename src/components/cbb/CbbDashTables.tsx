@@ -19,9 +19,16 @@ function RankedLogo({ side }: { side: CbbSide }) {
   );
 }
 
+const Ball = () => (
+  <span aria-label="Possession" title="Possession" className="text-sm leading-none">
+    🏀
+  </span>
+);
+
 function Matchup({ game }: { game: CbbGame }) {
   const started = game.status !== "scheduled" && hasScore(game);
   const ot = game.period > 2 && game.status !== "scheduled";
+  const ball = game.status === "live" ? game.possessionTeamId : undefined;
   return (
     <Link
       to="/cbb/games/$gameId"
@@ -31,6 +38,7 @@ function Matchup({ game }: { game: CbbGame }) {
     >
       <span className="flex justify-end">
         <span className="inline-flex items-center gap-1.5">
+          {ball === game.away.team.id ? <Ball /> : null}
           <span className="w-7 text-right">{started ? game.away.score : ""}</span>
           <RankedLogo side={game.away} />
         </span>
@@ -40,6 +48,7 @@ function Matchup({ game }: { game: CbbGame }) {
         <span className="relative inline-flex items-center gap-1.5">
           <RankedLogo side={game.home} />
           <span className="w-7 text-left">{started ? game.home.score : ""}</span>
+          {ball === game.home.team.id ? <Ball /> : null}
           {ot ? (
             <span className="absolute left-full top-1/2 ml-1 -translate-y-1/2 font-mono text-[10px] font-normal text-mute">(OT)</span>
           ) : null}
