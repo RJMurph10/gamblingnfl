@@ -7,18 +7,18 @@
   "id": "93",
   "abbr": "MUR",
   "name": "Murray State Racers",
-  "score": 0
+  "score": 36
  },
  "home": {
   "id": "2634",
   "abbr": "TNST",
   "name": "Tennessee State Tigers",
-  "score": 0
+  "score": 27
  },
  "neutral": true,
  "venue": "Sanford Pentagon",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T07:57:03.660Z",
