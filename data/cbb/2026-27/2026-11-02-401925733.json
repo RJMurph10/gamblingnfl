@@ -477,7 +477,7 @@
    ]
   },
   "close": {
-   "at": "2026-11-02T21:55:51.295Z",
+   "at": "2026-11-02T22:55:32.213Z",
    "scoreboard": [
     {
      "provider": {
@@ -519,7 +519,7 @@
       "shortDisplayName": "ML",
       "home": {
        "close": {
-        "odds": "-9000",
+        "odds": "-20000",
         "link": {
          "language": "en-US",
          "rel": [
@@ -551,7 +551,7 @@
       },
       "away": {
        "close": {
-        "odds": "+2500",
+        "odds": "+3500",
         "link": {
          "language": "en-US",
          "rel": [
@@ -660,7 +660,7 @@
       "over": {
        "close": {
         "line": "o157.5",
-        "odds": "-105",
+        "odds": "-112",
         "link": {
          "language": "en-US",
          "rel": [
@@ -694,7 +694,7 @@
       "under": {
        "close": {
         "line": "u157.5",
-        "odds": "-115",
+        "odds": "-108",
         "link": {
          "language": "en-US",
          "rel": [
@@ -770,16 +770,16 @@
       "name": "DraftKings",
       "priority": 1
      },
-     "details": "MICH -27.5",
+     "details": "MICH -26.5",
      "overUnder": 157.5,
-     "spread": -27.5,
-     "overOdds": -105,
-     "underOdds": -115,
+     "spread": -26.5,
+     "overOdds": -112,
+     "underOdds": -108,
      "awayTeamOdds": {
       "favorite": false,
       "underdog": true,
-      "moneyLine": 2500,
-      "spreadOdds": -115,
+      "moneyLine": 3500,
+      "spreadOdds": -105,
       "open": {
        "favorite": false,
        "pointSpread": {
@@ -805,24 +805,24 @@
       },
       "current": {
        "pointSpread": {
-        "alternateDisplayValue": "+27.5",
-        "american": "+27.5"
+        "alternateDisplayValue": "+26.5",
+        "american": "+26.5"
        },
        "spread": {
-        "value": 1.86,
-        "displayValue": "20/23",
-        "alternateDisplayValue": "-115",
-        "decimal": 1.86,
-        "fraction": "20/23",
-        "american": "-115"
+        "value": 1.95,
+        "displayValue": "20/21",
+        "alternateDisplayValue": "-105",
+        "decimal": 1.95,
+        "fraction": "20/21",
+        "american": "-105"
        },
        "moneyLine": {
-        "value": 26,
-        "displayValue": "25/1",
-        "alternateDisplayValue": "+2500",
-        "decimal": 26,
-        "fraction": "25/1",
-        "american": "+2500"
+        "value": 36,
+        "displayValue": "35/1",
+        "alternateDisplayValue": "+3500",
+        "decimal": 36,
+        "fraction": "35/1",
+        "american": "+3500"
        }
       },
       "team": {
@@ -832,8 +832,8 @@
      "homeTeamOdds": {
       "favorite": true,
       "underdog": false,
-      "moneyLine": -9000,
-      "spreadOdds": -105,
+      "moneyLine": -20000,
+      "spreadOdds": -115,
       "open": {
        "favorite": true,
        "pointSpread": {
@@ -859,24 +859,24 @@
       },
       "current": {
        "pointSpread": {
-        "alternateDisplayValue": "-27.5",
-        "american": "-27.5"
+        "alternateDisplayValue": "-26.5",
+        "american": "-26.5"
        },
        "spread": {
-        "value": 1.95,
-        "displayValue": "20/21",
-        "alternateDisplayValue": "-105",
-        "decimal": 1.95,
-        "fraction": "20/21",
-        "american": "-105"
+        "value": 1.86,
+        "displayValue": "20/23",
+        "alternateDisplayValue": "-115",
+        "decimal": 1.86,
+        "fraction": "20/23",
+        "american": "-115"
        },
        "moneyLine": {
-        "value": 1.01,
-        "displayValue": "1/90",
-        "alternateDisplayValue": "-9000",
-        "decimal": 1.01,
-        "fraction": "1/90",
-        "american": "-9000"
+        "value": 1.005,
+        "displayValue": "1/200",
+        "alternateDisplayValue": "-20000",
+        "decimal": 1.005,
+        "fraction": "1/200",
+        "american": "-20000"
        }
       },
       "team": {
@@ -909,20 +909,20 @@
      },
      "current": {
       "over": {
-       "value": 1.95,
-       "displayValue": "20/21",
-       "alternateDisplayValue": "-105",
-       "decimal": 1.95,
-       "fraction": "20/21",
-       "american": "-105"
+       "value": 1.89,
+       "displayValue": "25/28",
+       "alternateDisplayValue": "-112",
+       "decimal": 1.89,
+       "fraction": "25/28",
+       "american": "-112"
       },
       "under": {
-       "value": 1.86,
-       "displayValue": "20/23",
-       "alternateDisplayValue": "-115",
-       "decimal": 1.86,
-       "fraction": "20/23",
-       "american": "-115"
+       "value": 1.92,
+       "displayValue": "25/27",
+       "alternateDisplayValue": "-108",
+       "decimal": 1.92,
+       "fraction": "25/27",
+       "american": "-108"
       },
       "total": {
        "alternateDisplayValue": "157.5",

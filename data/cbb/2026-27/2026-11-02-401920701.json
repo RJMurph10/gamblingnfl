@@ -477,7 +477,7 @@
    ]
   },
   "close": {
-   "at": "2026-11-02T21:55:51.295Z",
+   "at": "2026-11-02T22:55:32.213Z",
    "scoreboard": [
     {
      "provider": {
@@ -519,7 +519,7 @@
       "shortDisplayName": "ML",
       "home": {
        "close": {
-        "odds": "+114",
+        "odds": "+105",
         "link": {
          "language": "en-US",
          "rel": [
@@ -551,7 +551,7 @@
       },
       "away": {
        "close": {
-        "odds": "-135",
+        "odds": "-125",
         "link": {
          "language": "en-US",
          "rel": [
@@ -778,7 +778,7 @@
      "awayTeamOdds": {
       "favorite": true,
       "underdog": false,
-      "moneyLine": -135,
+      "moneyLine": -125,
       "spreadOdds": -115,
       "open": {
        "favorite": true,
@@ -817,12 +817,12 @@
         "american": "-115"
        },
        "moneyLine": {
-        "value": 1.74,
-        "displayValue": "20/27",
-        "alternateDisplayValue": "-135",
-        "decimal": 1.74,
-        "fraction": "20/27",
-        "american": "-135"
+        "value": 1.8,
+        "displayValue": "4/5",
+        "alternateDisplayValue": "-125",
+        "decimal": 1.8,
+        "fraction": "4/5",
+        "american": "-125"
        }
       },
       "team": {
@@ -832,7 +832,7 @@
      "homeTeamOdds": {
       "favorite": false,
       "underdog": true,
-      "moneyLine": 114,
+      "moneyLine": 105,
       "spreadOdds": -105,
       "open": {
        "favorite": false,
@@ -871,12 +871,12 @@
         "american": "-105"
        },
        "moneyLine": {
-        "value": 2.14,
-        "displayValue": "57/50",
-        "alternateDisplayValue": "+114",
-        "decimal": 2.14,
-        "fraction": "57/50",
-        "american": "+114"
+        "value": 2.05,
+        "displayValue": "21/20",
+        "alternateDisplayValue": "+105",
+        "decimal": 2.05,
+        "fraction": "21/20",
+        "american": "+105"
        }
       },
       "team": {

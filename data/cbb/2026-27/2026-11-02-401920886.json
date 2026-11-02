@@ -477,7 +477,7 @@
    ]
   },
   "close": {
-   "at": "2026-11-02T21:55:51.295Z",
+   "at": "2026-11-02T22:55:32.213Z",
    "scoreboard": [
     {
      "provider": {
@@ -519,7 +519,7 @@
       "shortDisplayName": "ML",
       "home": {
        "close": {
-        "odds": "-5000",
+        "odds": "-4000",
         "link": {
          "language": "en-US",
          "rel": [
@@ -551,7 +551,7 @@
       },
       "away": {
        "close": {
-        "odds": "+1800",
+        "odds": "+1600",
         "link": {
          "language": "en-US",
          "rel": [
@@ -778,7 +778,7 @@
      "awayTeamOdds": {
       "favorite": false,
       "underdog": true,
-      "moneyLine": 1800,
+      "moneyLine": 1600,
       "spreadOdds": -108,
       "open": {
        "favorite": false,
@@ -817,12 +817,12 @@
         "american": "-108"
        },
        "moneyLine": {
-        "value": 19,
-        "displayValue": "18/1",
-        "alternateDisplayValue": "+1800",
-        "decimal": 19,
-        "fraction": "18/1",
-        "american": "+1800"
+        "value": 17,
+        "displayValue": "16/1",
+        "alternateDisplayValue": "+1600",
+        "decimal": 17,
+        "fraction": "16/1",
+        "american": "+1600"
        }
       },
       "team": {
@@ -832,7 +832,7 @@
      "homeTeamOdds": {
       "favorite": true,
       "underdog": false,
-      "moneyLine": -5000,
+      "moneyLine": -4000,
       "spreadOdds": -112,
       "open": {
        "favorite": true,
@@ -872,11 +872,11 @@
        },
        "moneyLine": {
         "value": 1.02,
-        "displayValue": "1/50",
-        "alternateDisplayValue": "-5000",
+        "displayValue": "1/40",
+        "alternateDisplayValue": "-4000",
         "decimal": 1.02,
-        "fraction": "1/50",
-        "american": "-5000"
+        "fraction": "1/40",
+        "american": "-4000"
        }
       },
       "team": {
