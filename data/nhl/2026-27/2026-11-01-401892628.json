@@ -7,7 +7,7 @@
   "id": "14",
   "abbr": "OTT",
   "name": "Ottawa Senators",
-  "score": 0
+  "score": 2
  },
  "home": {
   "id": "25",
@@ -18,7 +18,7 @@
  "neutral": false,
  "venue": "Honda Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-10-31T15:50:13.117Z",

@@ -7,13 +7,13 @@
   "id": "6",
   "abbr": "EDM",
   "name": "Edmonton Oilers",
-  "score": 2
+  "score": 3
  },
  "home": {
   "id": "13",
   "abbr": "NYR",
   "name": "New York Rangers",
-  "score": 0
+  "score": 1
  },
  "neutral": false,
  "venue": "Madison Square Garden",
