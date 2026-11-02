@@ -7,18 +7,18 @@
   "id": "2737",
   "abbr": "WIN",
   "name": "Winthrop Eagles",
-  "score": 0
+  "score": 38
  },
  "home": {
   "id": "2511",
   "abbr": "QUC",
   "name": "Queens University Royals",
-  "score": 0
+  "score": 55
  },
  "neutral": true,
  "venue": "Rock Hill Sports & Event Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T07:57:03.660Z",
