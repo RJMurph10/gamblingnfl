@@ -477,7 +477,7 @@
    ]
   },
   "close": {
-   "at": "2026-11-02T03:05:18.462Z",
+   "at": "2026-11-02T04:14:42.789Z",
    "scoreboard": [
     {
      "provider": {
@@ -487,7 +487,7 @@
       "displayName": "Draft Kings"
      },
      "details": "HPU -9.5",
-     "overUnder": 155.5,
+     "overUnder": 156.5,
      "spread": -9.5,
      "awayTeamOdds": {
       "favorite": false,
@@ -520,7 +520,7 @@
       "shortDisplayName": "ML",
       "home": {
        "close": {
-        "odds": "-395",
+        "odds": "-410",
         "link": {
          "language": "en-US",
          "rel": [
@@ -552,7 +552,7 @@
       },
       "away": {
        "close": {
-        "odds": "+310",
+        "odds": "+320",
         "link": {
          "language": "en-US",
          "rel": [
@@ -660,8 +660,8 @@
       "shortDisplayName": "Total",
       "over": {
        "close": {
-        "line": "o155.5",
-        "odds": "-110",
+        "line": "o156.5",
+        "odds": "-105",
         "link": {
          "language": "en-US",
          "rel": [
@@ -669,7 +669,7 @@
           "desktop",
           "bets"
          ],
-         "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34903886%3Foutcomes%3D0OU86937239O15550_1",
+         "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34903886%3Foutcomes%3D0OU86937239O15650_1",
          "text": "Over Odds",
          "shortText": "Over Odds",
          "isExternal": true,
@@ -682,7 +682,7 @@
            "gameId": 401920409,
            "betSide": "over",
            "betType": "straight",
-           "betDetails": "Over:155.5"
+           "betDetails": "Over:156.5"
           }
          }
         }
@@ -694,8 +694,8 @@
       },
       "under": {
        "close": {
-        "line": "u155.5",
-        "odds": "-110",
+        "line": "u156.5",
+        "odds": "-115",
         "link": {
          "language": "en-US",
          "rel": [
@@ -703,7 +703,7 @@
           "desktop",
           "bets"
          ],
-         "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34903886%3Foutcomes%3D0OU86937239U15550_3",
+         "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34903886%3Foutcomes%3D0OU86937239U15650_3",
          "text": "Under Odds",
          "shortText": "Under Odds",
          "isExternal": true,
@@ -716,7 +716,7 @@
            "gameId": 401920409,
            "betSide": "under",
            "betType": "straight",
-           "betDetails": "Under:155.5"
+           "betDetails": "Under:156.5"
           }
          }
         }

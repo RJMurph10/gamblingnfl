@@ -477,5 +477,253 @@
    ]
   }
  },
- "props": {}
+ "props": {
+  "open": {
+   "at": "2026-11-02T04:14:42.789Z",
+   "provider": 100,
+   "count": 4,
+   "rows": [
+  {"a":"5214640","t":"Rebounds + Assists Milestones","ti":"327","cur":[5,null,null],"px":[-340,null]},
+  {"a":"5214640","t":"Rebounds + Assists Milestones","ti":"327","op":[7,null,null],"cur":[7,null,null],"px":[-110,-110]},
+  {"a":"5214640","t":"Rebounds + Assists Milestones","ti":"327","op":[7,null,null],"cur":[8,null,null],"px":[145,-110]},
+  {"a":"5214640","t":"Rebounds + Assists Milestones","ti":"327","op":[7,null,null],"cur":[12,null,null],"px":[800,-110]}
+ ],
+   "sample": [
+    {
+     "competition": {
+      "id": "401909915"
+     },
+     "athlete": {
+      "id": "5214640"
+     },
+     "provider": {
+      "id": "100"
+     },
+     "type": {
+      "id": "327",
+      "name": "Rebounds + Assists Milestones"
+     },
+     "odds": {
+      "american": {
+       "value": "-340"
+      },
+      "decimal": {
+       "value": "1.29"
+      },
+      "fraction": {
+       "value": "5/17"
+      },
+      "total": {
+       "value": "5+"
+      }
+     },
+     "lastUpdated": "2026-11-02T05:13Z",
+     "current": {
+      "target": {
+       "value": 5,
+       "displayValue": "5+"
+      }
+     }
+    },
+    {
+     "competition": {
+      "id": "401909915"
+     },
+     "athlete": {
+      "id": "5214640"
+     },
+     "provider": {
+      "id": "100"
+     },
+     "type": {
+      "id": "327",
+      "name": "Rebounds + Assists Milestones"
+     },
+     "odds": {
+      "american": {
+       "value": "-110",
+       "open": "-110"
+      },
+      "decimal": {
+       "value": "1.90",
+       "open": "1.90"
+      },
+      "fraction": {
+       "value": "10/11",
+       "open": "10/11"
+      },
+      "total": {
+       "value": "7+",
+       "open": "7+"
+      }
+     },
+     "lastUpdated": "2026-11-02T05:13Z",
+     "current": {
+      "target": {
+       "value": 7,
+       "displayValue": "7+"
+      }
+     },
+     "open": {
+      "target": {
+       "value": 7,
+       "displayValue": "7+"
+      }
+     }
+    }
+   ]
+  },
+  "latest": {
+   "at": "2026-11-02T04:14:42.789Z",
+   "count": 4,
+   "rows": [
+  {"a":"5214640","t":"Rebounds + Assists Milestones","ti":"327","cur":[5,null,null],"px":[-340,null]},
+  {"a":"5214640","t":"Rebounds + Assists Milestones","ti":"327","op":[7,null,null],"cur":[7,null,null],"px":[-110,-110]},
+  {"a":"5214640","t":"Rebounds + Assists Milestones","ti":"327","op":[7,null,null],"cur":[8,null,null],"px":[145,-110]},
+  {"a":"5214640","t":"Rebounds + Assists Milestones","ti":"327","op":[7,null,null],"cur":[12,null,null],"px":[800,-110]}
+ ]
+  }
+ },
+ "names": {
+  "2991043": [
+   "Caris LeVert",
+   "MIL"
+  ],
+  "3032976": [
+   "Rudy Gobert",
+   "MIN"
+  ],
+  "3133628": [
+   "Myles Turner",
+   "MIL"
+  ],
+  "3134907": [
+   "Kyle Kuzma",
+   "MIL"
+  ],
+  "3136196": [
+   "Trey Lyles",
+   "MIN"
+  ],
+  "3934673": [
+   "Donte DiVincenzo",
+   "MIN"
+  ],
+  "4277843": [
+   "Gary Trent Jr.",
+   "MIL"
+  ],
+  "4277922": [
+   "Jericho Sims",
+   "MIL"
+  ],
+  "4395725": [
+   "Tyler Herro",
+   "MIL"
+  ],
+  "4397002": [
+   "Ayo Dosunmu",
+   "MIN"
+  ],
+  "4397114": [
+   "Cormac Ryan",
+   "MIL"
+  ],
+  "4397233": [
+   "Pete Nance",
+   "MIL"
+  ],
+  "4397475": [
+   "AJ Green",
+   "MIL"
+  ],
+  "4431671": [
+   "Jaden McDaniels",
+   "MIN"
+  ],
+  "4432247": [
+   "Jaylen Clark",
+   "MIN"
+  ],
+  "4432816": [
+   "LaMelo Ball",
+   "MIN"
+  ],
+  "4432847": [
+   "Terrence Shannon Jr.",
+   "MIN"
+  ],
+  "4432848": [
+   "Jaime Jaquez Jr.",
+   "MIL"
+  ],
+  "4433247": [
+   "Jonathan Kuminga",
+   "MIN"
+  ],
+  "4591725": [
+   "Ryan Rollins",
+   "MIL"
+  ],
+  "4592492": [
+   "Bones Hyland",
+   "MIN"
+  ],
+  "4592699": [
+   "Enrique Freeman",
+   "MIN"
+  ],
+  "4592979": [
+   "Zyon Pullin",
+   "MIN"
+  ],
+  "4594268": [
+   "Anthony Edwards",
+   "MIN"
+  ],
+  "4697268": [
+   "Kam Jones",
+   "MIL"
+  ],
+  "4895758": [
+   "Cody Williams",
+   "MIN"
+  ],
+  "4997526": [
+   "Ousmane Dieng",
+   "MIL"
+  ],
+  "5061585": [
+   "Isaiah Evans",
+   "MIN"
+  ],
+  "5082206": [
+   "Brayden Burries",
+   "MIL"
+  ],
+  "5105623": [
+   "Kel'el Ware",
+   "MIL"
+  ],
+  "5157587": [
+   "Rocco Zikarsky",
+   "MIN"
+  ],
+  "5164559": [
+   "Nate Ament",
+   "MIL"
+  ],
+  "5214640": [
+   "Kasparas Jakucionis",
+   "MIL"
+  ],
+  "5214989": [
+   "Bogoljub Markovic",
+   "MIL"
+  ],
+  "5279133": [
+   "Joan Beringer",
+   "MIN"
+  ]
+ }
 }

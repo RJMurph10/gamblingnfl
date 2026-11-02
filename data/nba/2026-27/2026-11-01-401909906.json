@@ -7,13 +7,13 @@
   "id": "28",
   "abbr": "TOR",
   "name": "Toronto Raptors",
-  "score": 51
+  "score": 101
  },
  "home": {
   "id": "13",
   "abbr": "LAL",
   "name": "Los Angeles Lakers",
-  "score": 63
+  "score": 118
  },
  "neutral": false,
  "venue": "crypto.com Arena",
