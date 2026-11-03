@@ -478,7 +478,7 @@
    ]
   },
   "close": {
-   "at": "2026-11-03T21:01:28.210Z",
+   "at": "2026-11-03T22:00:24.768Z",
    "scoreboard": [
     {
      "provider": {
@@ -590,7 +590,7 @@
       "home": {
        "close": {
         "line": "-25.5",
-        "odds": "-110",
+        "odds": "-105",
         "link": {
          "language": "en-US",
          "rel": [
@@ -624,7 +624,7 @@
       "away": {
        "close": {
         "line": "+25.5",
-        "odds": "-110",
+        "odds": "-115",
         "link": {
          "language": "en-US",
          "rel": [
@@ -769,7 +769,7 @@
     {
      "provider": {
       "id": "100",
-      "name": "Draft Kings",
+      "name": "DraftKings",
       "priority": 1
      },
      "details": "TENN -25.5",
@@ -781,7 +781,7 @@
       "favorite": false,
       "underdog": true,
       "moneyLine": 2500,
-      "spreadOdds": -110,
+      "spreadOdds": -115,
       "open": {
        "favorite": false,
        "pointSpread": {
@@ -811,12 +811,12 @@
         "american": "+25.5"
        },
        "spread": {
-        "value": 1.9,
-        "displayValue": "10/11",
-        "alternateDisplayValue": "-110",
-        "decimal": 1.9,
-        "fraction": "10/11",
-        "american": "-110"
+        "value": 1.86,
+        "displayValue": "20/23",
+        "alternateDisplayValue": "-115",
+        "decimal": 1.86,
+        "fraction": "20/23",
+        "american": "-115"
        },
        "moneyLine": {
         "value": 26,
@@ -835,7 +835,7 @@
       "favorite": true,
       "underdog": false,
       "moneyLine": -9000,
-      "spreadOdds": -110,
+      "spreadOdds": -105,
       "open": {
        "favorite": true,
        "pointSpread": {
@@ -865,12 +865,12 @@
         "american": "-25.5"
        },
        "spread": {
-        "value": 1.9,
-        "displayValue": "10/11",
-        "alternateDisplayValue": "-110",
-        "decimal": 1.9,
-        "fraction": "10/11",
-        "american": "-110"
+        "value": 1.95,
+        "displayValue": "20/21",
+        "alternateDisplayValue": "-105",
+        "decimal": 1.95,
+        "fraction": "20/21",
+        "american": "-105"
        },
        "moneyLine": {
         "value": 1.01,

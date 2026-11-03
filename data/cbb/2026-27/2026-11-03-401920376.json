@@ -395,7 +395,7 @@
    ]
   },
   "close": {
-   "at": "2026-11-03T21:01:28.210Z",
+   "at": "2026-11-03T22:00:24.768Z",
    "scoreboard": [
     {
      "provider": {
@@ -637,7 +637,7 @@
     {
      "provider": {
       "id": "100",
-      "name": "Draft Kings",
+      "name": "DraftKings",
       "priority": 1
      },
      "details": "VT -31.5",
