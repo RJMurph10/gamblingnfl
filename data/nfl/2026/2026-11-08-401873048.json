@@ -477,5 +477,743 @@
    ]
   }
  },
- "props": {}
+ "props": {
+  "open": {
+   "at": "2026-11-03T06:08:48.780Z",
+   "provider": 100,
+   "count": 12,
+   "rows": [
+  {"a":null,"t":"1st Half Total","ti":"72","op":[22.5,null,null],"cur":[22.5,null,null]},
+  {"a":null,"t":"1st Half Total","ti":"72","op":[22.5,null,null],"cur":[22.5,null,null]},
+  {"a":null,"t":"1st Half Moneyline","ti":"73"},
+  {"a":null,"t":"1st Half Moneyline","ti":"73"},
+  {"a":null,"t":"1st Half Spread","ti":"74","op":[6.5,null,null],"cur":[7.5,null,null]},
+  {"a":null,"t":"1st Half Spread","ti":"74","op":[-6.5,null,null],"cur":[-7.5,null,null]},
+  {"a":null,"t":"1st Quarter Total","ti":"75","op":[8.5,null,null],"cur":[7.5,null,null]},
+  {"a":null,"t":"1st Quarter Total","ti":"75","op":[8.5,null,null],"cur":[7.5,null,null]},
+  {"a":null,"t":"1st Quarter Moneyline","ti":"76"},
+  {"a":null,"t":"1st Quarter Moneyline","ti":"76"},
+  {"a":null,"t":"1st Quarter Spread","ti":"77","op":[3.5,null,null],"cur":[3.5,null,null]},
+  {"a":null,"t":"1st Quarter Spread","ti":"77","op":[-3.5,null,null],"cur":[-3.5,null,null]}
+ ],
+   "sample": [
+    {
+     "competition": {
+      "id": "401873048"
+     },
+     "provider": {
+      "id": "100"
+     },
+     "type": {
+      "id": "72",
+      "name": "1st Half Total"
+     },
+     "lastUpdated": "2026-11-03T07:40Z",
+     "current": {
+      "target": {
+       "value": 22.5,
+       "displayValue": "22.5"
+      }
+     },
+     "open": {
+      "target": {
+       "value": 22.5,
+       "displayValue": "22.5"
+      }
+     }
+    },
+    {
+     "competition": {
+      "id": "401873048"
+     },
+     "provider": {
+      "id": "100"
+     },
+     "type": {
+      "id": "72",
+      "name": "1st Half Total"
+     },
+     "lastUpdated": "2026-11-03T07:40Z",
+     "current": {
+      "target": {
+       "value": 22.5,
+       "displayValue": "22.5"
+      }
+     },
+     "open": {
+      "target": {
+       "value": 22.5,
+       "displayValue": "22.5"
+      }
+     }
+    }
+   ]
+  }
+ },
+ "names": {
+  "16802": [
+   "DeMarcus Lawrence",
+   "SEA"
+  ],
+  "17304": [
+   "Casey Kreiter",
+   "ARI"
+  ],
+  "2094390": [
+   "Michael Dansby",
+   "SEA"
+  ],
+  "2473037": [
+   "Jason Myers",
+   "SEA"
+  ],
+  "2576789": [
+   "Bobby Hart",
+   "SEA"
+  ],
+  "2578570": [
+   "Jacoby Brissett",
+   "ARI"
+  ],
+  "2971622": [
+   "Leonard Williams",
+   "SEA"
+  ],
+  "2975863": [
+   "Eric Saubert",
+   "SEA"
+  ],
+  "2977187": [
+   "Cooper Kupp",
+   "SEA"
+  ],
+  "2978247": [
+   "Isaac Seumalo",
+   "ARI"
+  ],
+  "2980100": [
+   "Dante Fowler Jr.",
+   "SEA"
+  ],
+  "3045147": [
+   "James Conner",
+   "ARI"
+  ],
+  "3045523": [
+   "Kendrick Bourne",
+   "ARI"
+  ],
+  "3051775": [
+   "Andrew Billings",
+   "ARI"
+  ],
+  "3059722": [
+   "Zay Jones",
+   "ARI"
+  ],
+  "3059839": [
+   "Elijah Wilkinson",
+   "ARI"
+  ],
+  "3115312": [
+   "Jarran Reed",
+   "SEA"
+  ],
+  "3116449": [
+   "L.J. Collier",
+   "ARI"
+  ],
+  "3120358": [
+   "Uchenna Nwosu",
+   "SEA"
+  ],
+  "3127287": [
+   "Budda Baker",
+   "ARI"
+  ],
+  "3129308": [
+   "Quenton Nelson",
+   "SEA"
+  ],
+  "3693166": [
+   "Josh Sweat",
+   "ARI"
+  ],
+  "3886633": [
+   "Hjalte Froholdt",
+   "ARI"
+  ],
+  "3912547": [
+   "Sam Darnold",
+   "SEA"
+  ],
+  "3914630": [
+   "Josh Jones",
+   "SEA"
+  ],
+  "3918331": [
+   "Andrew Wingard",
+   "ARI"
+  ],
+  "3924327": [
+   "Drew Lock",
+   "SEA"
+  ],
+  "3929636": [
+   "Irv Charles",
+   "SEA"
+  ],
+  "3929851": [
+   "Michael Dickson",
+   "SEA"
+  ],
+  "4032473": [
+   "Rashid Shaheed",
+   "SEA"
+  ],
+  "4035693": [
+   "Velus Jones Jr.",
+   "SEA"
+  ],
+  "4037521": [
+   "Chazz Surratt",
+   "SEA"
+  ],
+  "4038524": [
+   "Gardner Minshew II",
+   "ARI"
+  ],
+  "4039050": [
+   "Devin Duvernay",
+   "ARI"
+  ],
+  "4040805": [
+   "Roy Lopez",
+   "ARI"
+  ],
+  "4040966": [
+   "Trevon Diggs",
+   "SEA"
+  ],
+  "4040983": [
+   "Mack Wilson Sr.",
+   "ARI"
+  ],
+  "4044144": [
+   "Kenny Yeboah",
+   "ARI"
+  ],
+  "4045180": [
+   "Blake Gillikin",
+   "ARI"
+  ],
+  "4046675": [
+   "Julian Love",
+   "SEA"
+  ],
+  "4239944": [
+   "Hunter Long",
+   "ARI"
+  ],
+  "4240619": [
+   "Zachary Carter",
+   "ARI"
+  ],
+  "4240824": [
+   "Joey Blount",
+   "ARI"
+  ],
+  "4241482": [
+   "Jedrick Wills Jr.",
+   "ARI"
+  ],
+  "4241987": [
+   "Baron Browning",
+   "ARI"
+  ],
+  "4242229": [
+   "Austin Deculus",
+   "ARI"
+  ],
+  "4243176": [
+   "Brady Russell",
+   "SEA"
+  ],
+  "4244606": [
+   "Zaven Collins",
+   "ARI"
+  ],
+  "4244768": [
+   "Julian Hicks",
+   "SEA"
+  ],
+  "4245171": [
+   "Abraham Lucas",
+   "SEA"
+  ],
+  "4247808": [
+   "Ty Okada",
+   "SEA"
+  ],
+  "4248455": [
+   "Rodney Thomas II",
+   "SEA"
+  ],
+  "4249739": [
+   "Jack Gibbens",
+   "ARI"
+  ],
+  "4250935": [
+   "Demontrey Jacobs",
+   "ARI"
+  ],
+  "4259606": [
+   "Chris Stoll",
+   "SEA"
+  ],
+  "4259651": [
+   "Brandon Pili",
+   "SEA"
+  ],
+  "4360405": [
+   "Jake Bobo",
+   "SEA"
+  ],
+  "4360739": [
+   "Simi Fehoko",
+   "ARI"
+  ],
+  "4360761": [
+   "Michael Wilson",
+   "ARI"
+  ],
+  "4361272": [
+   "Eku Leota",
+   "ARI"
+  ],
+  "4361307": [
+   "Trey McBride",
+   "ARI"
+  ],
+  "4361332": [
+   "Shedrick Jackson",
+   "ARI"
+  ],
+  "4362225": [
+   "Dante Stills",
+   "ARI"
+  ],
+  "4362851": [
+   "Ernest Jones IV",
+   "SEA"
+  ],
+  "4363408": [
+   "Starling Thomas V",
+   "ARI"
+  ],
+  "4363538": [
+   "Chad Ryland",
+   "ARI"
+  ],
+  "4364623": [
+   "Patrick O'Connell",
+   "SEA"
+  ],
+  "4366910": [
+   "Shawn Bowman",
+   "ARI"
+  ],
+  "4367199": [
+   "Jon Gaines II",
+   "ARI"
+  ],
+  "4370807": [
+   "Olu Oluwatimi",
+   "SEA"
+  ],
+  "4372019": [
+   "Jerome Ford",
+   "ARI"
+  ],
+  "4372020": [
+   "Josh Jobe",
+   "SEA"
+  ],
+  "4373030": [
+   "Ben Sims",
+   "SEA"
+  ],
+  "4373626": [
+   "Tyler Allgeier",
+   "ARI"
+  ],
+  "4374045": [
+   "Teagan Quitoriano",
+   "ARI"
+  ],
+  "4383409": [
+   "Jalen Sundell",
+   "SEA"
+  ],
+  "4426376": [
+   "Charles Cross",
+   "SEA"
+  ],
+  "4426385": [
+   "Zach Charbonnet",
+   "SEA"
+  ],
+  "4426844": [
+   "Elijah Higgins",
+   "ARI"
+  ],
+  "4426923": [
+   "Kei'Trel Clark",
+   "ARI"
+  ],
+  "4427190": [
+   "AJ Finley",
+   "SEA"
+  ],
+  "4427401": [
+   "Jared Harrison-Hunte",
+   "ARI"
+  ],
+  "4427728": [
+   "Bam Knight",
+   "ARI"
+  ],
+  "4428458": [
+   "Valentin Senn",
+   "ARI"
+  ],
+  "4428633": [
+   "Dadrion Taylor-Demerson",
+   "ARI"
+  ],
+  "4428659": [
+   "Drake Thomas",
+   "SEA"
+  ],
+  "4428811": [
+   "Xavier Weaver",
+   "ARI"
+  ],
+  "4428943": [
+   "Jacardia Wright",
+   "SEA"
+  ],
+  "4428991": [
+   "Paris Johnson Jr.",
+   "ARI"
+  ],
+  "4428996": [
+   "Jordan Burch",
+   "ARI"
+  ],
+  "4429071": [
+   "Cody Simon",
+   "ARI"
+  ],
+  "4429211": [
+   "Anthony Bradford",
+   "SEA"
+  ],
+  "4429275": [
+   "Trey Benson",
+   "ARI"
+  ],
+  "4429782": [
+   "Josh Fryar",
+   "ARI"
+  ],
+  "4429835": [
+   "George Holani",
+   "SEA"
+  ],
+  "4430070": [
+   "Federico Maranges",
+   "SEA"
+  ],
+  "4430262": [
+   "Bud Clark",
+   "SEA"
+  ],
+  "4430821": [
+   "Kitan Crawford",
+   "ARI"
+  ],
+  "4430838": [
+   "Rylie Mills",
+   "SEA"
+  ],
+  "4430841": [
+   "Carson Beck",
+   "ARI"
+  ],
+  "4430878": [
+   "Jaxon Smith-Njigba",
+   "SEA"
+  ],
+  "4431145": [
+   "Maxen Hook",
+   "SEA"
+  ],
+  "4431147": [
+   "Cam Horsley",
+   "ARI"
+  ],
+  "4431214": [
+   "Hayden Conner",
+   "ARI"
+  ],
+  "4431390": [
+   "Gary Smith III",
+   "SEA"
+  ],
+  "4431424": [
+   "Bradyn Swinson",
+   "ARI"
+  ],
+  "4431433": [
+   "Kalen King",
+   "ARI"
+  ],
+  "4431479": [
+   "Ricky White III",
+   "SEA"
+  ],
+  "4432525": [
+   "Mason Richman",
+   "SEA"
+  ],
+  "4432668": [
+   "Denzel Burke",
+   "ARI"
+  ],
+  "4432734": [
+   "Jalen Milroe",
+   "SEA"
+  ],
+  "4567222": [
+   "Nehemiah Pritchett",
+   "SEA"
+  ],
+  "4567226": [
+   "Derick Hall",
+   "SEA"
+  ],
+  "4567410": [
+   "Kingsley Eguakun",
+   "ARI"
+  ],
+  "4568506": [
+   "Garrett Williams",
+   "ARI"
+  ],
+  "4569480": [
+   "Darius Robinson",
+   "ARI"
+  ],
+  "4569547": [
+   "Nick Kallerup",
+   "SEA"
+  ],
+  "4569609": [
+   "Evan Hull",
+   "ARI"
+  ],
+  "4570040": [
+   "Byron Murphy II",
+   "SEA"
+  ],
+  "4570075": [
+   "Logan Brown",
+   "SEA"
+  ],
+  "4570636": [
+   "Malick Meiga",
+   "SEA"
+  ],
+  "4572055": [
+   "Mike Morris",
+   "SEA"
+  ],
+  "4575431": [
+   "Devon Witherspoon",
+   "SEA"
+  ],
+  "4576297": [
+   "AJ Barner",
+   "SEA"
+  ],
+  "4592823": [
+   "Beau Stephens",
+   "SEA"
+  ],
+  "4592837": [
+   "Terrion Arnold",
+   "SEA"
+  ],
+  "4597703": [
+   "Tory Horton",
+   "SEA"
+  ],
+  "4600597": [
+   "Montorie Foster Jr.",
+   "SEA"
+  ],
+  "4603089": [
+   "Aidan Hubbard",
+   "SEA"
+  ],
+  "4605491": [
+   "Connor O'Toole",
+   "SEA"
+  ],
+  "4608386": [
+   "D'Anthony Bell",
+   "SEA"
+  ],
+  "4609203": [
+   "Deven Eastern",
+   "SEA"
+  ],
+  "4613029": [
+   "Riley Wilson",
+   "ARI"
+  ],
+  "4678006": [
+   "Elijah Arroyo",
+   "SEA"
+  ],
+  "4683506": [
+   "Albert Reese IV",
+   "ARI"
+  ],
+  "4684543": [
+   "Julian Neal",
+   "SEA"
+  ],
+  "4685381": [
+   "Emmanuel Henderson Jr.",
+   "SEA"
+  ],
+  "4685408": [
+   "Will Johnson",
+   "ARI"
+  ],
+  "4685503": [
+   "Walter Nolen III",
+   "ARI"
+  ],
+  "4685512": [
+   "Jadarian Price",
+   "SEA"
+  ],
+  "4685582": [
+   "Damonic Williams",
+   "ARI"
+  ],
+  "4686338": [
+   "Josh Minkins",
+   "ARI"
+  ],
+  "4686540": [
+   "Tyrice Knight",
+   "SEA"
+  ],
+  "4689674": [
+   "Art Green",
+   "ARI"
+  ],
+  "4689804": [
+   "Jimmy Ciarlo",
+   "SEA"
+  ],
+  "4691688": [
+   "Robbie Ouzts",
+   "SEA"
+  ],
+  "4692835": [
+   "Jalen Brooks",
+   "ARI"
+  ],
+  "4693346": [
+   "Grey Zabel",
+   "SEA"
+  ],
+  "4693934": [
+   "Andre Fuller",
+   "SEA"
+  ],
+  "4696700": [
+   "Tip Reiman",
+   "ARI"
+  ],
+  "4698113": [
+   "Max Melton",
+   "ARI"
+  ],
+  "4699354": [
+   "Harrison Wallace III",
+   "ARI"
+  ],
+  "4709695": [
+   "Karson Sharar",
+   "ARI"
+  ],
+  "4709718": [
+   "Jayden Williams",
+   "ARI"
+  ],
+  "4869132": [
+   "Reggie Virgil",
+   "ARI"
+  ],
+  "4869523": [
+   "Nick Emmanwori",
+   "SEA"
+  ],
+  "4870596": [
+   "Chase Bisontis",
+   "ARI"
+  ],
+  "4870808": [
+   "Jeremiyah Love",
+   "ARI"
+  ],
+  "4887558": [
+   "Emanuel Wilson",
+   "SEA"
+  ],
+  "4900789": [
+   "Cameron Robertson",
+   "ARI"
+  ],
+  "5081916": [
+   "Uso Seumalo",
+   "SEA"
+  ],
+  "5082331": [
+   "Avery Smith",
+   "SEA"
+  ],
+  "5084514": [
+   "Kaleb Proctor",
+   "ARI"
+  ],
+  "5084939": [
+   "Isaiah Adams",
+   "ARI"
+  ],
+  "5099542": [
+   "Wydett Williams Jr.",
+   "ARI"
+  ],
+  "5151317": [
+   "Robert Henry Jr.",
+   "SEA"
+  ]
+ }
 }

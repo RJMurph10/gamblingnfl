@@ -477,5 +477,699 @@
    ]
   }
  },
- "props": {}
+ "props": {
+  "open": {
+   "at": "2026-11-03T06:08:48.780Z",
+   "provider": 100,
+   "count": 12,
+   "rows": [
+  {"a":null,"t":"1st Half Total","ti":"72","op":[22.5,null,null],"cur":[23.5,null,null]},
+  {"a":null,"t":"1st Half Total","ti":"72","op":[22.5,null,null],"cur":[23.5,null,null]},
+  {"a":null,"t":"1st Half Moneyline","ti":"73"},
+  {"a":null,"t":"1st Half Moneyline","ti":"73"},
+  {"a":null,"t":"1st Half Spread","ti":"74","op":[-3.5,null,null],"cur":[-3.5,null,null]},
+  {"a":null,"t":"1st Half Spread","ti":"74","op":[3.5,null,null],"cur":[3.5,null,null]},
+  {"a":null,"t":"1st Quarter Total","ti":"75","op":[9.5,null,null],"cur":[9.5,null,null]},
+  {"a":null,"t":"1st Quarter Total","ti":"75","op":[9.5,null,null],"cur":[9.5,null,null]},
+  {"a":null,"t":"1st Quarter Moneyline","ti":"76"},
+  {"a":null,"t":"1st Quarter Moneyline","ti":"76"},
+  {"a":null,"t":"1st Quarter Spread","ti":"77","op":[-2.5,null,null],"cur":[-2.5,null,null]},
+  {"a":null,"t":"1st Quarter Spread","ti":"77","op":[2.5,null,null],"cur":[2.5,null,null]}
+ ],
+   "sample": [
+    {
+     "competition": {
+      "id": "401873050"
+     },
+     "provider": {
+      "id": "100"
+     },
+     "type": {
+      "id": "72",
+      "name": "1st Half Total"
+     },
+     "lastUpdated": "2026-11-03T07:45Z",
+     "current": {
+      "target": {
+       "value": 23.5,
+       "displayValue": "23.5"
+      }
+     },
+     "open": {
+      "target": {
+       "value": 22.5,
+       "displayValue": "22.5"
+      }
+     }
+    },
+    {
+     "competition": {
+      "id": "401873050"
+     },
+     "provider": {
+      "id": "100"
+     },
+     "type": {
+      "id": "72",
+      "name": "1st Half Total"
+     },
+     "lastUpdated": "2026-11-03T07:45Z",
+     "current": {
+      "target": {
+       "value": 23.5,
+       "displayValue": "23.5"
+      }
+     },
+     "open": {
+      "target": {
+       "value": 22.5,
+       "displayValue": "22.5"
+      }
+     }
+    }
+   ]
+  }
+ },
+ "names": {
+  "15168": [
+   "Case Keenum",
+   "CHI"
+  ],
+  "17427": [
+   "Cairo Santos",
+   "CHI"
+  ],
+  "2575164": [
+   "Miles Killebrew",
+   "TB"
+  ],
+  "2575453": [
+   "Rakeem Nunez-Roches",
+   "TB"
+  ],
+  "2576492": [
+   "Grady Jarrett",
+   "CHI"
+  ],
+  "2577619": [
+   "Riley Dixon",
+   "TB"
+  ],
+  "2577773": [
+   "Joe Thuney",
+   "CHI"
+  ],
+  "2973405": [
+   "Kalif Raymond",
+   "CHI"
+  ],
+  "2979482": [
+   "Dan Feeney",
+   "TB"
+  ],
+  "2980138": [
+   "Scott Daly",
+   "CHI"
+  ],
+  "3043107": [
+   "Alex Anzalone",
+   "TB"
+  ],
+  "3051942": [
+   "Al-Quadin Muhammad",
+   "TB"
+  ],
+  "3052587": [
+   "Baker Mayfield",
+   "TB"
+  ],
+  "3054857": [
+   "A'Shawn Robinson",
+   "TB"
+  ],
+  "3116165": [
+   "Chris Godwin Jr.",
+   "TB"
+  ],
+  "3116726": [
+   "Kentavius Street",
+   "CHI"
+  ],
+  "3116729": [
+   "Garrett Bradbury",
+   "CHI"
+  ],
+  "3120590": [
+   "Easton Stick",
+   "TB"
+  ],
+  "3121544": [
+   "T.J. Edwards",
+   "CHI"
+  ],
+  "3124058": [
+   "Marcus Davenport",
+   "CHI"
+  ],
+  "3134362": [
+   "Vita Vea",
+   "TB"
+  ],
+  "3134690": [
+   "Montez Sweat",
+   "CHI"
+  ],
+  "3150744": [
+   "Chase McLaughlin",
+   "TB"
+  ],
+  "3871102": [
+   "David Sills V",
+   "TB"
+  ],
+  "3892883": [
+   "Neville Gallimore",
+   "CHI"
+  ],
+  "3894856": [
+   "Anthony Nelson",
+   "TB"
+  ],
+  "3909013": [
+   "Christian Rozeboom",
+   "TB"
+  ],
+  "3914397": [
+   "Scotty Miller",
+   "CHI"
+  ],
+  "3915777": [
+   "Justin Skule",
+   "TB"
+  ],
+  "3916577": [
+   "Cam Lewis",
+   "CHI"
+  ],
+  "3929814": [
+   "Josh Butler",
+   "CHI"
+  ],
+  "3930040": [
+   "Jonah Jackson",
+   "CHI"
+  ],
+  "3948283": [
+   "Stephen Carlson",
+   "CHI"
+  ],
+  "4034779": [
+   "Ko Kieft",
+   "TB"
+  ],
+  "4034790": [
+   "Antoine Winfield Jr.",
+   "TB"
+  ],
+  "4035369": [
+   "Jeffery Simmons",
+   "CHI"
+  ],
+  "4036032": [
+   "Brittain Brown",
+   "CHI"
+  ],
+  "4036261": [
+   "Devin Bush",
+   "CHI"
+  ],
+  "4046551": [
+   "Ben Bredeson",
+   "TB"
+  ],
+  "4239094": [
+   "Coby Bryant",
+   "CHI"
+  ],
+  "4240401": [
+   "Ifeatu Melifonwu",
+   "TB"
+  ],
+  "4240459": [
+   "Josh Blackwell",
+   "CHI"
+  ],
+  "4240589": [
+   "Tristan Wirfs",
+   "TB"
+  ],
+  "4240900": [
+   "Buddy Johnson",
+   "CHI"
+  ],
+  "4241007": [
+   "D'Marco Jackson",
+   "CHI"
+  ],
+  "4241611": [
+   "Nephi Sewell",
+   "CHI"
+  ],
+  "4242402": [
+   "Elijah Hicks",
+   "CHI"
+  ],
+  "4242659": [
+   "Dayo Odeyingbo",
+   "CHI"
+  ],
+  "4243253": [
+   "Jaylon Johnson",
+   "CHI"
+  ],
+  "4243315": [
+   "Salvon Ahmed",
+   "CHI"
+  ],
+  "4243331": [
+   "Cade Otton",
+   "TB"
+  ],
+  "4245655": [
+   "Tony Fields II",
+   "CHI"
+  ],
+  "4248533": [
+   "Josh Hayes",
+   "TB"
+  ],
+  "4248545": [
+   "Cody Mauch",
+   "TB"
+  ],
+  "4250392": [
+   "Zyon McCollum",
+   "TB"
+  ],
+  "4251007": [
+   "Braxton Jones",
+   "CHI"
+  ],
+  "4257364": [
+   "Zavier Scott",
+   "CHI"
+  ],
+  "4258595": [
+   "Cole Kmet",
+   "CHI"
+  ],
+  "4259181": [
+   "James Lynch",
+   "CHI"
+  ],
+  "4259545": [
+   "D'Andre Swift",
+   "CHI"
+  ],
+  "4360319": [
+   "Jordan McFadden",
+   "CHI"
+  ],
+  "4360335": [
+   "Elijah Jones",
+   "CHI"
+  ],
+  "4361093": [
+   "Kyler Gordon",
+   "CHI"
+  ],
+  "4361727": [
+   "Evan Deckers",
+   "TB"
+  ],
+  "4362103": [
+   "Christian Jones",
+   "CHI"
+  ],
+  "4365629": [
+   "Daniel Hardy",
+   "CHI"
+  ],
+  "4371733": [
+   "Kenny Gainwell",
+   "TB"
+  ],
+  "4372418": [
+   "Keidron Smith",
+   "CHI"
+  ],
+  "4372505": [
+   "Payne Durham",
+   "TB"
+  ],
+  "4372576": [
+   "Jack Sanborn",
+   "CHI"
+  ],
+  "4379769": [
+   "Qadir Ismail",
+   "CHI"
+  ],
+  "4380507": [
+   "Luke Goedeke",
+   "TB"
+  ],
+  "4426358": [
+   "Darnell Wright",
+   "CHI"
+  ],
+  "4426374": [
+   "Tyrique Stevenson Sr.",
+   "CHI"
+  ],
+  "4426386": [
+   "Roschon Johnson",
+   "CHI"
+  ],
+  "4427673": [
+   "Calijah Kancey",
+   "TB"
+  ],
+  "4427677": [
+   "Mohamed Kamara",
+   "TB"
+  ],
+  "4428522": [
+   "Tykee Smith",
+   "TB"
+  ],
+  "4428941": [
+   "Javin Wright",
+   "TB"
+  ],
+  "4429007": [
+   "DeMonte Capehart",
+   "TB"
+  ],
+  "4429067": [
+   "Clark Phillips III",
+   "CHI"
+  ],
+  "4429251": [
+   "Graham Barton",
+   "TB"
+  ],
+  "4429511": [
+   "SirVocea Dennis",
+   "TB"
+  ],
+  "4429847": [
+   "Garrett Greene",
+   "TB"
+  ],
+  "4429970": [
+   "Ruben Hyppolite II",
+   "CHI"
+  ],
+  "4430478": [
+   "Elijah Simmons",
+   "TB"
+  ],
+  "4430822": [
+   "Noah Sewell",
+   "CHI"
+  ],
+  "4430834": [
+   "Jalen McMillan",
+   "TB"
+  ],
+  "4430871": [
+   "Sean Tucker",
+   "TB"
+  ],
+  "4431184": [
+   "Jayson Jones",
+   "TB"
+  ],
+  "4431299": [
+   "Rome Odunze",
+   "CHI"
+  ],
+  "4431580": [
+   "Miller Moss",
+   "CHI"
+  ],
+  "4431611": [
+   "Caleb Williams",
+   "CHI"
+  ],
+  "4432595": [
+   "Ozzy Trapilo",
+   "CHI"
+  ],
+  "4432804": [
+   "Shemar Turner",
+   "CHI"
+  ],
+  "4434153": [
+   "Tyson Bagent",
+   "CHI"
+  ],
+  "4566165": [
+   "JJ Roberts",
+   "TB"
+  ],
+  "4567750": [
+   "Emeka Egbuka",
+   "TB"
+  ],
+  "4567896": [
+   "Paul Rubelt",
+   "TB"
+  ],
+  "4568024": [
+   "Josh Williams",
+   "TB"
+  ],
+  "4569202": [
+   "Ben Scott",
+   "TB"
+  ],
+  "4594329": [
+   "Henry Lutovsky",
+   "TB"
+  ],
+  "4594338": [
+   "Brandon Johnson",
+   "TB"
+  ],
+  "4596448": [
+   "Bucky Irving",
+   "TB"
+  ],
+  "4596472": [
+   "Jalon Daniels",
+   "TB"
+  ],
+  "4596545": [
+   "CJ Dippre",
+   "TB"
+  ],
+  "4602648": [
+   "Kevin Knowles",
+   "TB"
+  ],
+  "4608686": [
+   "Kyle Monangai",
+   "CHI"
+  ],
+  "4608810": [
+   "Tez Johnson",
+   "TB"
+  ],
+  "4682641": [
+   "Marlen Sewell",
+   "CHI"
+  ],
+  "4683096": [
+   "Caden Fordham",
+   "TB"
+  ],
+  "4683553": [
+   "Austin Booker",
+   "CHI"
+  ],
+  "4684963": [
+   "Wayne Matthews III",
+   "CHI"
+  ],
+  "4685183": [
+   "JP Richardson",
+   "CHI"
+  ],
+  "4685278": [
+   "Luther Burden III",
+   "CHI"
+  ],
+  "4685504": [
+   "Sam Roush",
+   "CHI"
+  ],
+  "4685549": [
+   "Billy Schrauth",
+   "TB"
+  ],
+  "4686334": [
+   "Yaya Diaby",
+   "TB"
+  ],
+  "4686884": [
+   "Luke Haggard",
+   "TB"
+  ],
+  "4686889": [
+   "Tory Taylor",
+   "CHI"
+  ],
+  "4686907": [
+   "Logan Jones",
+   "CHI"
+  ],
+  "4690787": [
+   "Benjamin Chukwuma",
+   "TB"
+  ],
+  "4690795": [
+   "Elijah Roberts",
+   "TB"
+  ],
+  "4695895": [
+   "Luke Newman",
+   "CHI"
+  ],
+  "4696723": [
+   "Beau Gardner",
+   "CHI"
+  ],
+  "4709983": [
+   "Caden Barnett",
+   "CHI"
+  ],
+  "4713277": [
+   "Eric Rivers Jr.",
+   "TB"
+  ],
+  "4723086": [
+   "Colston Loveland",
+   "CHI"
+  ],
+  "4816107": [
+   "Benjamin Morrison",
+   "TB"
+  ],
+  "4869748": [
+   "Zavion Thomas",
+   "CHI"
+  ],
+  "4870617": [
+   "Rueben Bain Jr.",
+   "TB"
+  ],
+  "4870953": [
+   "Malik Muhammad II",
+   "CHI"
+  ],
+  "4870998": [
+   "Josiah Trotter",
+   "TB"
+  ],
+  "4875381": [
+   "Jordan van den Berg",
+   "CHI"
+  ],
+  "4875613": [
+   "Dean Patterson",
+   "TB"
+  ],
+  "4877376": [
+   "Jayden Loving",
+   "CHI"
+  ],
+  "4879256": [
+   "Barika Kpeenu",
+   "TB"
+  ],
+  "4879561": [
+   "Skyler Thomas",
+   "CHI"
+  ],
+  "4880219": [
+   "Silas Walters",
+   "TB"
+  ],
+  "4890373": [
+   "Bauer Sharp",
+   "TB"
+  ],
+  "4890885": [
+   "Ayden Garnes",
+   "TB"
+  ],
+  "4911952": [
+   "Keyshaun Elliott",
+   "CHI"
+  ],
+  "4912847": [
+   "Jacob Parrish",
+   "TB"
+  ],
+  "4916349": [
+   "Nikola Kalinic",
+   "CHI"
+  ],
+  "4917592": [
+   "Dallis Flowers",
+   "CHI"
+  ],
+  "4954445": [
+   "Dillon Thieneman",
+   "CHI"
+  ],
+  "5065495": [
+   "Kaden Davis",
+   "CHI"
+  ],
+  "5085355": [
+   "David Walker",
+   "TB"
+  ],
+  "5093694": [
+   "Keionte Scott",
+   "TB"
+  ],
+  "5097554": [
+   "Kameron Johnson",
+   "TB"
+  ],
+  "5125873": [
+   "Theo Benedet",
+   "CHI"
+  ],
+  "5150662": [
+   "Hayden Large",
+   "CHI"
+  ],
+  "5160110": [
+   "Jahdae Walker",
+   "CHI"
+  ],
+  "5220680": [
+   "Ted Hurst III",
+   "TB"
+  ],
+  "5225091": [
+   "Yasir Holmes",
+   "TB"
+  ]
+ }
 }
