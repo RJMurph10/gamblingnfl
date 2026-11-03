@@ -7,18 +7,18 @@
   "id": "14",
   "abbr": "MIA",
   "name": "Miami Heat",
-  "score": 0
+  "score": 59
  },
  "home": {
   "id": "13",
   "abbr": "LAL",
   "name": "Los Angeles Lakers",
-  "score": 0
+  "score": 67
  },
  "neutral": false,
  "venue": "crypto.com Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-02T05:21:07.182Z",

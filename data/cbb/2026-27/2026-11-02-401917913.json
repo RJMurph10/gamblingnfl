@@ -7,18 +7,18 @@
   "id": "198",
   "abbr": "ORU",
   "name": "Oral Roberts Golden Eagles",
-  "score": 50
+  "score": 55
  },
  "home": {
   "id": "2110",
   "abbr": "CARK",
   "name": "Central Arkansas Bears",
-  "score": 66
+  "score": 85
  },
  "neutral": false,
  "venue": "Farris Center",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-01T07:57:03.660Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 55,
+  "home": 85
+ }
 }

@@ -7,18 +7,18 @@
   "id": "270",
   "abbr": "MILW",
   "name": "Milwaukee Panthers",
-  "score": 0
+  "score": 14
  },
  "home": {
   "id": "30",
   "abbr": "USC",
   "name": "USC Trojans",
-  "score": 0
+  "score": 34
  },
  "neutral": false,
  "venue": "Galen Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T07:57:03.660Z",

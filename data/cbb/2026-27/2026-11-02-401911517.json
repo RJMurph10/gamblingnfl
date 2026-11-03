@@ -7,18 +7,18 @@
   "id": "2453",
   "abbr": "UNA",
   "name": "North Alabama Lions",
-  "score": 0
+  "score": 36
  },
  "home": {
   "id": "302",
   "abbr": "UCD",
   "name": "UC Davis Aggies",
-  "score": 0
+  "score": 45
  },
  "neutral": false,
  "venue": "University Credit Union Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T07:57:03.660Z",

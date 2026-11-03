@@ -7,18 +7,18 @@
   "id": "2241",
   "abbr": "GWEB",
   "name": "Gardner-Webb Runnin' Bulldogs",
-  "score": 24
+  "score": 46
  },
  "home": {
   "id": "41",
   "abbr": "CONN",
   "name": "UConn Huskies",
-  "score": 43
+  "score": 86
  },
  "neutral": false,
  "venue": "PeoplesBank Arena",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-01T07:57:03.660Z",
@@ -769,5 +769,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 46,
+  "home": 86
+ }
 }

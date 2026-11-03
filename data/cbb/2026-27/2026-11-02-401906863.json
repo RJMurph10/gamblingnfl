@@ -7,18 +7,18 @@
   "id": "2130",
   "abbr": "CHST",
   "name": "Chicago State Cougars",
-  "score": 30
+  "score": 59
  },
  "home": {
   "id": "251",
   "abbr": "TEX",
   "name": "Texas Longhorns",
-  "score": 56
+  "score": 109
  },
  "neutral": false,
  "venue": "Moody Center",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-01T21:17:39.977Z",
@@ -769,5 +769,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 59,
+  "home": 109
+ }
 }

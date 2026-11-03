@@ -7,18 +7,18 @@
   "id": "2",
   "abbr": "BOS",
   "name": "Boston Celtics",
-  "score": 62
+  "score": 93
  },
  "home": {
   "id": "10",
   "abbr": "HOU",
   "name": "Houston Rockets",
-  "score": 68
+  "score": 109
  },
  "neutral": false,
  "venue": "Toyota Center (Houston)",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-02T01:25:58.632Z",
@@ -4512,5 +4512,9 @@
    "Hugo Gonzalez",
    "BOS"
   ]
+ },
+ "final": {
+  "away": 93,
+  "home": 109
  }
 }

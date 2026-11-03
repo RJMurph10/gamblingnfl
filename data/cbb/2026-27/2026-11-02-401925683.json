@@ -7,18 +7,18 @@
   "id": "2016",
   "abbr": "ALCN",
   "name": "Alcorn State Braves",
-  "score": 38
+  "score": 58
  },
  "home": {
   "id": "145",
   "abbr": "MISS",
   "name": "Ole Miss Rebels",
-  "score": 66
+  "score": 99
  },
  "neutral": false,
  "venue": "The Sandy and John Black Pavilion at Ole Miss",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-01T21:17:39.977Z",
@@ -934,5 +934,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 58,
+  "home": 99
+ }
 }

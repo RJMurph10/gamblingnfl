@@ -7,18 +7,18 @@
   "id": "2166",
   "abbr": "DAV",
   "name": "Davidson Wildcats",
-  "score": 37
+  "score": 76
  },
  "home": {
   "id": "265",
   "abbr": "WSU",
   "name": "Washington State Cougars",
-  "score": 24
+  "score": 61
  },
  "neutral": false,
  "venue": "Beasley Coliseum",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-01T07:57:03.660Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 76,
+  "home": 61
+ }
 }

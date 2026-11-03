@@ -7,18 +7,18 @@
   "id": "299",
   "abbr": "LBSU",
   "name": "Long Beach State Beach",
-  "score": 40
+  "score": 63
  },
  "home": {
   "id": "254",
   "abbr": "UTAH",
   "name": "Utah Utes",
-  "score": 28
+  "score": 66
  },
  "neutral": false,
  "venue": "Jon M. Huntsman Center",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-01T07:57:03.660Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 63,
+  "home": 66
+ }
 }

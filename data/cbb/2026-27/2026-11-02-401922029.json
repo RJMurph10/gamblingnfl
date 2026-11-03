@@ -7,18 +7,18 @@
   "id": "149",
   "abbr": "MONT",
   "name": "Montana Grizzlies",
-  "score": 0
+  "score": 31
  },
  "home": {
   "id": "2483",
   "abbr": "ORE",
   "name": "Oregon Ducks",
-  "score": 0
+  "score": 40
  },
  "neutral": false,
  "venue": "Matthew Knight Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T07:57:03.660Z",
