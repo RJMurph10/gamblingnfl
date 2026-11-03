@@ -20,6 +20,7 @@ import {
   type CbbTeamRef,
 } from "./cbb";
 import { readFinal, writeFinal } from "../shared/final-cache.server";
+import { possessionFromSummary } from "../shared/basketball-possession";
 
 const SITE = "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball";
 const CORE = "https://sports.core.api.espn.com/v2/sports/basketball/leagues/mens-college-basketball";
@@ -181,6 +182,13 @@ function statusOf(type: any): CbbStatus {
   return "scheduled";
 }
 
+/** The team with the ball during a live game, when ESPN says (a competitor flag or the game situation). */
+function possession(comp: any, competitors: any[]): string | undefined {
+  const flagged = competitors.find((c) => c?.possession === true || c?.possession === "true");
+  const id = flagged?.team?.id ?? flagged?.id ?? comp?.situation?.possession;
+  return id ? String(id) : undefined;
+}
+
 export function parseEvent(e: any): CbbGame | null {
   const comp = e?.competitions?.[0];
   const competitors: any[] = comp?.competitors ?? [];
@@ -215,6 +223,7 @@ export function parseEvent(e: any): CbbGame | null {
     statusDetail: String(type?.shortDetail ?? type?.detail ?? type?.description ?? ""),
     period: Number(st.period ?? 0) || 0,
     clock: String(st.displayClock ?? ""),
+    ...(status === "live" && possession(comp, competitors) ? { possessionTeamId: possession(comp, competitors) } : {}),
     part: Number(e?.season?.type ?? comp?.type?.id) === 3 ? "post" : "reg",
     neutral: Boolean(comp.neutralSite),
     conference: Boolean(comp.conferenceCompetition),
@@ -242,9 +251,18 @@ function fetchDay(day: Date): Promise<CbbGame[]> {
           return null;
         }
       })
-      .filter((g: CbbGame | null): g is CbbGame => g !== null);
+      .filter((g: CbbGame | null): g is CbbGame => g !== null)
+      .map((g: CbbGame) => {
+        // ESPN drops the line at tip-off: remember the last pregame line and keep showing it
+        if (g.status === "scheduled" && g.odds) pregame.set(g.id, g.odds);
+        else if (!g.odds?.spread && pregame.has(g.id)) return { ...g, odds: mergeOdds(g.odds, pregame.get(g.id)) };
+        return g;
+      });
   });
 }
+
+/** Each game's last pregame line seen on the scoreboard (this server's memory). */
+const pregame = new Map<string, CbbOdds>();
 
 /* ---------- the schedule ---------- */
 
@@ -346,6 +364,20 @@ async function loadSchedule(): Promise<CbbSchedule> {
   // only the recent days: older games without a line in the season file never had one
   const recent = [...byId.values()].filter((g) => Date.parse(g.date) > now.getTime() - 3 * DAY);
   await withClosingOdds(recent);
+  // Who has the ball: live games read it from the game summary (cached and shared with the game page).
+  await Promise.all(
+    [...byId.values()]
+      .filter((g) => g.status === "live" && !g.possessionTeamId)
+      .slice(0, 30)
+      .map(async (g) => {
+        try {
+          const detail = await fetchCbbGameDetail(g.id);
+          if (detail.game.possessionTeamId) byId.set(g.id, { ...byId.get(g.id)!, possessionTeamId: detail.game.possessionTeamId });
+        } catch {
+          // no ball icon for this game
+        }
+      }),
+  );
   return {
     season,
     games: [...byId.values()].sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id)),
@@ -401,7 +433,7 @@ async function closingOdds(g: CbbGame): Promise<CbbOdds | null> {
 async function withClosingOdds(games: CbbGame[]): Promise<void> {
   const missing = games
     .filter((g) => (g.status === "live" || g.status === "final") && (g.odds?.spread == null || g.odds?.total == null))
-    .sort((a, b) => b.date.localeCompare(a.date));
+    .sort((a, b) => (a.status === "live" ? 0 : 1) - (b.status === "live" ? 0 : 1) || b.date.localeCompare(a.date));
   const known = missing.filter((g) => oddsLookups.has(g.id));
   const todo = [...known, ...missing.filter((g) => !oddsLookups.has(g.id)).slice(0, LOOKUPS_PER_LOAD)];
   let next = 0;
@@ -502,7 +534,12 @@ async function loadGameDetail(gameId: string): Promise<CbbGameDetail> {
     };
   });
 
-  const plays: CbbPlay[] = (Array.isArray(json?.plays) ? json.plays : []).map((p: any, i: number) => ({
+  const rawPlays: any[] = Array.isArray(json?.plays) ? json.plays : [];
+  if (game.status === "live") {
+    const ball = possessionFromSummary(json, game, rawPlays);
+    if (ball) game.possessionTeamId = ball;
+  }
+  const plays: CbbPlay[] = rawPlays.map((p: any, i: number) => ({
     id: String(p?.id ?? i),
     period: Number(p?.period?.number ?? 0) || 0,
     clock: String(p?.clock?.displayValue ?? ""),

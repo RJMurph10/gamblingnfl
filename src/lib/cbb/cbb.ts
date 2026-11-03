@@ -59,6 +59,8 @@ export interface CbbGame {
   statusDetail: string;
   period: number;
   clock: string;
+  /** Team with the ball during a live game, when ESPN reports it. */
+  possessionTeamId?: string;
   part: CbbSeasonPart;
   neutral: boolean;
   /** A conference game. */
