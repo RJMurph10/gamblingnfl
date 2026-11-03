@@ -478,7 +478,7 @@
    ]
   },
   "close": {
-   "at": "2026-11-03T22:00:24.768Z",
+   "at": "2026-11-03T22:59:18.857Z",
    "scoreboard": [
     {
      "provider": {
@@ -662,7 +662,7 @@
       "over": {
        "close": {
         "line": "o155.5",
-        "odds": "-112",
+        "odds": "-105",
         "link": {
          "language": "en-US",
          "rel": [
@@ -696,7 +696,7 @@
       "under": {
        "close": {
         "line": "u155.5",
-        "odds": "-108",
+        "odds": "-115",
         "link": {
          "language": "en-US",
          "rel": [
@@ -775,8 +775,8 @@
      "details": "TENN -25.5",
      "overUnder": 155.5,
      "spread": -25.5,
-     "overOdds": -112,
-     "underOdds": -108,
+     "overOdds": -105,
+     "underOdds": -115,
      "awayTeamOdds": {
       "favorite": false,
       "underdog": true,
@@ -911,20 +911,20 @@
      },
      "current": {
       "over": {
-       "value": 1.89,
-       "displayValue": "25/28",
-       "alternateDisplayValue": "-112",
-       "decimal": 1.89,
-       "fraction": "25/28",
-       "american": "-112"
+       "value": 1.95,
+       "displayValue": "20/21",
+       "alternateDisplayValue": "-105",
+       "decimal": 1.95,
+       "fraction": "20/21",
+       "american": "-105"
       },
       "under": {
-       "value": 1.92,
-       "displayValue": "25/27",
-       "alternateDisplayValue": "-108",
-       "decimal": 1.92,
-       "fraction": "25/27",
-       "american": "-108"
+       "value": 1.86,
+       "displayValue": "20/23",
+       "alternateDisplayValue": "-115",
+       "decimal": 1.86,
+       "fraction": "20/23",
+       "american": "-115"
       },
       "total": {
        "alternateDisplayValue": "155.5",

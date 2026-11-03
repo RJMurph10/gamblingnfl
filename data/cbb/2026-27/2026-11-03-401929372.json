@@ -395,7 +395,7 @@
    ]
   },
   "close": {
-   "at": "2026-11-03T22:00:24.768Z",
+   "at": "2026-11-03T22:59:18.857Z",
    "scoreboard": [
     {
      "provider": {
@@ -404,7 +404,7 @@
       "priority": 1
      },
      "details": "ARK -41.5",
-     "overUnder": 167.5,
+     "overUnder": 166.5,
      "spread": -41.5,
      "awayTeamOdds": {
       "favorite": false,
@@ -529,8 +529,8 @@
       "shortDisplayName": "Total",
       "over": {
        "close": {
-        "line": "o167.5",
-        "odds": "-110",
+        "line": "o166.5",
+        "odds": "-112",
         "link": {
          "language": "en-US",
          "rel": [
@@ -538,7 +538,7 @@
           "desktop",
           "bets"
          ],
-         "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34952512%3Foutcomes%3D0OU87066541O16750_1",
+         "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34952512%3Foutcomes%3D0OU87066541O16650_1",
          "text": "Over Odds",
          "shortText": "Over Odds",
          "isExternal": true,
@@ -551,7 +551,7 @@
            "gameId": 401929372,
            "betSide": "over",
            "betType": "straight",
-           "betDetails": "Over:167.5"
+           "betDetails": "Over:166.5"
           }
          }
         }
@@ -563,8 +563,8 @@
       },
       "under": {
        "close": {
-        "line": "u167.5",
-        "odds": "-110",
+        "line": "u166.5",
+        "odds": "-108",
         "link": {
          "language": "en-US",
          "rel": [
@@ -572,7 +572,7 @@
           "desktop",
           "bets"
          ],
-         "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34952512%3Foutcomes%3D0OU87066541U16750_3",
+         "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34952512%3Foutcomes%3D0OU87066541U16650_3",
          "text": "Under Odds",
          "shortText": "Under Odds",
          "isExternal": true,
@@ -585,7 +585,7 @@
            "gameId": 401929372,
            "betSide": "under",
            "betType": "straight",
-           "betDetails": "Under:167.5"
+           "betDetails": "Under:166.5"
           }
          }
         }
@@ -641,10 +641,10 @@
       "priority": 1
      },
      "details": "ARK -41.5",
-     "overUnder": 167.5,
+     "overUnder": 166.5,
      "spread": -41.5,
-     "overOdds": -110,
-     "underOdds": -110,
+     "overOdds": -112,
+     "underOdds": -108,
      "awayTeamOdds": {
       "favorite": false,
       "underdog": true,
@@ -761,24 +761,24 @@
      },
      "current": {
       "over": {
-       "value": 1.9,
-       "displayValue": "10/11",
-       "alternateDisplayValue": "-110",
-       "decimal": 1.9,
-       "fraction": "10/11",
-       "american": "-110"
+       "value": 1.89,
+       "displayValue": "25/28",
+       "alternateDisplayValue": "-112",
+       "decimal": 1.89,
+       "fraction": "25/28",
+       "american": "-112"
       },
       "under": {
-       "value": 1.9,
-       "displayValue": "10/11",
-       "alternateDisplayValue": "-110",
-       "decimal": 1.9,
-       "fraction": "10/11",
-       "american": "-110"
+       "value": 1.92,
+       "displayValue": "25/27",
+       "alternateDisplayValue": "-108",
+       "decimal": 1.92,
+       "fraction": "25/27",
+       "american": "-108"
       },
       "total": {
-       "alternateDisplayValue": "167.5",
-       "american": "167.5"
+       "alternateDisplayValue": "166.5",
+       "american": "166.5"
       }
      }
     }
