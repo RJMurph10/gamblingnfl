@@ -7,18 +7,18 @@
   "id": "304",
   "abbr": "IDST",
   "name": "Idaho State Bengals",
-  "score": 0
+  "score": 20
  },
  "home": {
   "id": "328",
   "abbr": "USU",
   "name": "Utah State Aggies",
-  "score": 0
+  "score": 26
  },
  "neutral": false,
  "venue": "Dee Glen Smith Spectrum",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T07:57:03.660Z",

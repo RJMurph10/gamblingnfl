@@ -7,18 +7,18 @@
   "id": "2097",
   "abbr": "CAM",
   "name": "Campbell Fighting Camels",
-  "score": 41
+  "score": 64
  },
  "home": {
   "id": "152",
   "abbr": "NCSU",
   "name": "NC State Wolfpack",
-  "score": 73
+  "score": 83
  },
  "neutral": false,
  "venue": "Lenovo Center",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-01T07:57:03.660Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 64,
+  "home": 83
+ }
 }

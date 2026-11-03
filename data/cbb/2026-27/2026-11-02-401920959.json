@@ -7,18 +7,18 @@
   "id": "2413",
   "abbr": "MORE",
   "name": "Morehead State Eagles",
-  "score": 51
+  "score": 58
  },
  "home": {
   "id": "98",
   "abbr": "WKU",
   "name": "Western Kentucky Hilltoppers",
-  "score": 76
+  "score": 83
  },
  "neutral": false,
  "venue": "E.A. Diddle Arena",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-01T07:57:03.660Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 58,
+  "home": 83
+ }
 }

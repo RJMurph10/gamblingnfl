@@ -7,18 +7,18 @@
   "id": "195",
   "abbr": "OHIO",
   "name": "Ohio Bobcats",
-  "score": 48
+  "score": 86
  },
  "home": {
   "id": "6",
   "abbr": "USA",
   "name": "South Alabama Jaguars",
-  "score": 49
+  "score": 77
  },
  "neutral": false,
  "venue": "Mitchell Center",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-01T07:57:03.660Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 86,
+  "home": 77
+ }
 }

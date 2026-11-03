@@ -7,18 +7,18 @@
   "id": "1",
   "abbr": "ATL",
   "name": "Atlanta Hawks",
-  "score": 87
+  "score": 108
  },
  "home": {
   "id": "11",
   "abbr": "IND",
   "name": "Indiana Pacers",
-  "score": 79
+  "score": 104
  },
  "neutral": false,
  "venue": "Gainbridge Fieldhouse",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-02T04:14:42.789Z",
@@ -3290,5 +3290,9 @@
    "Johnny Furphy",
    "IND"
   ]
+ },
+ "final": {
+  "away": 108,
+  "home": 104
  }
 }

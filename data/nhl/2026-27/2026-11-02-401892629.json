@@ -13,12 +13,12 @@
   "id": "1",
   "abbr": "BOS",
   "name": "Boston Bruins",
-  "score": 2
+  "score": 3
  },
  "neutral": false,
  "venue": "TD Garden",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-01T17:47:36.545Z",
@@ -888,6 +888,243 @@
      "moneylineWinner": false,
      "spreadWinner": false,
      "open": {
+      "over": {
+       "value": 2.05,
+       "displayValue": "21/20",
+       "alternateDisplayValue": "+105",
+       "decimal": 2.05,
+       "fraction": "21/20",
+       "american": "+105"
+      },
+      "under": {
+       "value": 1.8,
+       "displayValue": "4/5",
+       "alternateDisplayValue": "-125",
+       "decimal": 1.8,
+       "fraction": "4/5",
+       "american": "-125"
+      },
+      "total": {
+       "alternateDisplayValue": "6.5",
+       "american": "6.5"
+      }
+     },
+     "current": {
+      "over": {
+       "value": 2.05,
+       "displayValue": "21/20",
+       "alternateDisplayValue": "+105",
+       "decimal": 2.05,
+       "fraction": "21/20",
+       "american": "+105"
+      },
+      "under": {
+       "value": 1.8,
+       "displayValue": "4/5",
+       "alternateDisplayValue": "-125",
+       "decimal": 1.8,
+       "fraction": "4/5",
+       "american": "-125"
+      },
+      "total": {
+       "alternateDisplayValue": "6.5",
+       "american": "6.5"
+      }
+     }
+    }
+   ]
+  },
+  "final": {
+   "at": "2026-11-03T03:05:27.303Z",
+   "books": [
+    {
+     "provider": {
+      "id": "100",
+      "name": "DraftKings",
+      "priority": 1
+     },
+     "details": "VGK -118",
+     "overUnder": 6.5,
+     "spread": 1.5,
+     "overOdds": 105,
+     "underOdds": -125,
+     "awayTeamOdds": {
+      "favorite": true,
+      "underdog": false,
+      "moneyLine": -118,
+      "spreadOdds": 215,
+      "open": {
+       "favorite": true,
+       "pointSpread": {
+        "alternateDisplayValue": "-1.5",
+        "american": "-1.5"
+       },
+       "spread": {
+        "value": 2.85,
+        "displayValue": "37/20",
+        "alternateDisplayValue": "+185",
+        "decimal": 2.85,
+        "fraction": "37/20",
+        "american": "+185"
+       },
+       "moneyLine": {
+        "value": 1.89,
+        "displayValue": "25/28",
+        "alternateDisplayValue": "-112",
+        "decimal": 1.89,
+        "fraction": "25/28",
+        "american": "-112"
+       }
+      },
+      "close": {
+       "pointSpread": {
+        "alternateDisplayValue": "-1.5",
+        "american": "-1.5"
+       },
+       "spread": {
+        "value": 3.15,
+        "displayValue": "43/20",
+        "alternateDisplayValue": "+215",
+        "decimal": 3.15,
+        "fraction": "43/20",
+        "american": "+215"
+       },
+       "moneyLine": {
+        "value": 1.84,
+        "displayValue": "50/59",
+        "alternateDisplayValue": "-118",
+        "decimal": 1.84,
+        "fraction": "50/59",
+        "american": "-118"
+       }
+      },
+      "current": {
+       "pointSpread": {
+        "alternateDisplayValue": "-1.5",
+        "american": "-1.5"
+       },
+       "spread": {
+        "value": 3.15,
+        "displayValue": "43/20",
+        "alternateDisplayValue": "+215",
+        "decimal": 3.15,
+        "fraction": "43/20",
+        "american": "+215"
+       },
+       "moneyLine": {
+        "value": 1.84,
+        "displayValue": "50/59",
+        "alternateDisplayValue": "-118",
+        "decimal": 1.84,
+        "fraction": "50/59",
+        "american": "-118"
+       }
+      },
+      "team": {
+       "id": "37"
+      }
+     },
+     "homeTeamOdds": {
+      "favorite": false,
+      "underdog": true,
+      "moneyLine": -102,
+      "spreadOdds": -265,
+      "open": {
+       "favorite": false,
+       "pointSpread": {
+        "alternateDisplayValue": "+1.5",
+        "american": "+1.5"
+       },
+       "spread": {
+        "value": 1.44,
+        "displayValue": "4/9",
+        "alternateDisplayValue": "-225",
+        "decimal": 1.44,
+        "fraction": "4/9",
+        "american": "-225"
+       },
+       "moneyLine": {
+        "value": 1.92,
+        "displayValue": "25/27",
+        "alternateDisplayValue": "-108",
+        "decimal": 1.92,
+        "fraction": "25/27",
+        "american": "-108"
+       }
+      },
+      "close": {
+       "pointSpread": {
+        "alternateDisplayValue": "+1.5",
+        "american": "+1.5"
+       },
+       "spread": {
+        "value": 1.37,
+        "displayValue": "20/53",
+        "alternateDisplayValue": "-265",
+        "decimal": 1.37,
+        "fraction": "20/53",
+        "american": "-265"
+       },
+       "moneyLine": {
+        "value": 1.98,
+        "displayValue": "50/51",
+        "alternateDisplayValue": "-102",
+        "decimal": 1.98,
+        "fraction": "50/51",
+        "american": "-102"
+       }
+      },
+      "current": {
+       "pointSpread": {
+        "alternateDisplayValue": "+1.5",
+        "american": "+1.5"
+       },
+       "spread": {
+        "value": 1.37,
+        "displayValue": "20/53",
+        "alternateDisplayValue": "-265",
+        "decimal": 1.37,
+        "fraction": "20/53",
+        "american": "-265"
+       },
+       "moneyLine": {
+        "value": 1.98,
+        "displayValue": "50/51",
+        "alternateDisplayValue": "-102",
+        "decimal": 1.98,
+        "fraction": "50/51",
+        "american": "-102"
+       }
+      },
+      "team": {
+       "id": "1"
+      }
+     },
+     "moneylineWinner": false,
+     "spreadWinner": false,
+     "open": {
+      "over": {
+       "value": 2.05,
+       "displayValue": "21/20",
+       "alternateDisplayValue": "+105",
+       "decimal": 2.05,
+       "fraction": "21/20",
+       "american": "+105"
+      },
+      "under": {
+       "value": 1.8,
+       "displayValue": "4/5",
+       "alternateDisplayValue": "-125",
+       "decimal": 1.8,
+       "fraction": "4/5",
+       "american": "-125"
+      },
+      "total": {
+       "alternateDisplayValue": "6.5",
+       "american": "6.5"
+      }
+     },
+     "close": {
       "over": {
        "value": 2.05,
        "displayValue": "21/20",
@@ -2543,5 +2780,9 @@
    "Juho Piiparinen",
    "VGK"
   ]
+ },
+ "final": {
+  "away": 2,
+  "home": 3
  }
 }

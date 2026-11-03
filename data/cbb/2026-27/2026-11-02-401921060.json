@@ -7,18 +7,18 @@
   "id": "2515",
   "abbr": "RAD",
   "name": "Radford Highlanders",
-  "score": 0
+  "score": 2
  },
  "home": {
   "id": "2539",
   "abbr": "SF",
   "name": "San Francisco Dons",
-  "score": 0
+  "score": 5
  },
  "neutral": false,
  "venue": "The Sobrato Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T21:17:39.977Z",

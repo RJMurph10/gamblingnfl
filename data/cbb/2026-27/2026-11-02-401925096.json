@@ -7,18 +7,18 @@
   "id": "357",
   "abbr": "AMCC",
   "name": "Texas A&M-Corpus Christi Islanders",
-  "score": 31
+  "score": 55
  },
  "home": {
   "id": "326",
   "abbr": "TXST",
   "name": "Texas State Bobcats",
-  "score": 40
+  "score": 67
  },
  "neutral": false,
  "venue": "Strahan Arena at the University Events Center",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-01T21:17:39.977Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 55,
+  "home": 67
+ }
 }

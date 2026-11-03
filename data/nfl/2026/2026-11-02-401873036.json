@@ -7,13 +7,13 @@
   "id": "3",
   "abbr": "CHI",
   "name": "Chicago Bears",
-  "score": 7
+  "score": 13
  },
  "home": {
   "id": "26",
   "abbr": "SEA",
   "name": "Seattle Seahawks",
-  "score": 3
+  "score": 9
  },
  "neutral": false,
  "venue": "Lumen Field",

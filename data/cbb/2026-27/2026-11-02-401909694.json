@@ -2,23 +2,23 @@
  "id": "401909694",
  "league": "cbb",
  "date": "2026-11-03T02:15Z",
- "name": "FAMU VS FSU",
+ "name": "FSU VS FAMU",
  "away": {
-  "id": "50",
-  "abbr": "FAMU",
-  "name": "Florida A&M Rattlers",
-  "score": 0
- },
- "home": {
   "id": "52",
   "abbr": "FSU",
   "name": "Florida State Seminoles",
-  "score": 0
+  "score": 46
+ },
+ "home": {
+  "id": "50",
+  "abbr": "FAMU",
+  "name": "Florida A&M Rattlers",
+  "score": 24
  },
  "neutral": true,
  "venue": "Benchmark International Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T21:17:39.977Z",

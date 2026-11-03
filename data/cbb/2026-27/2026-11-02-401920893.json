@@ -7,18 +7,18 @@
   "id": "2172",
   "abbr": "DEN",
   "name": "Denver Pioneers",
-  "score": 58
+  "score": 68
  },
  "home": {
   "id": "275",
   "abbr": "WIS",
   "name": "Wisconsin Badgers",
-  "score": 71
+  "score": 75
  },
  "neutral": false,
  "venue": "Kohl Center",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-01T07:57:03.660Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 68,
+  "home": 75
+ }
 }

@@ -7,18 +7,18 @@
   "id": "2287",
   "abbr": "ILST",
   "name": "Illinois State Redbirds",
-  "score": 0
+  "score": 2
  },
  "home": {
   "id": "2608",
   "abbr": "SMC",
   "name": "Saint Mary's Gaels",
-  "score": 0
+  "score": 4
  },
  "neutral": false,
  "venue": "University Credit Union Pavilion",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T07:57:03.660Z",

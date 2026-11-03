@@ -7,13 +7,13 @@
   "id": "2",
   "abbr": "BOS",
   "name": "Boston Celtics",
-  "score": 29
+  "score": 62
  },
  "home": {
   "id": "10",
   "abbr": "HOU",
   "name": "Houston Rockets",
-  "score": 31
+  "score": 68
  },
  "neutral": false,
  "venue": "Toyota Center (Houston)",

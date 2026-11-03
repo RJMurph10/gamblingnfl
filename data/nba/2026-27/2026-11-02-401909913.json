@@ -7,13 +7,13 @@
   "id": "23",
   "abbr": "SAC",
   "name": "Sacramento Kings",
-  "score": 54
+  "score": 91
  },
  "home": {
   "id": "6",
   "abbr": "DAL",
   "name": "Dallas Mavericks",
-  "score": 53
+  "score": 79
  },
  "neutral": false,
  "venue": "American Airlines Center",

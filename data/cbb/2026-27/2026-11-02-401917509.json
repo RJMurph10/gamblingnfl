@@ -7,18 +7,18 @@
   "id": "119",
   "abbr": "TOW",
   "name": "Towson Tigers",
-  "score": 0
+  "score": 4
  },
  "home": {
   "id": "2541",
   "abbr": "SCU",
   "name": "Santa Clara Broncos",
-  "score": 0
+  "score": 5
  },
  "neutral": false,
  "venue": "Leavey Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T07:57:03.660Z",

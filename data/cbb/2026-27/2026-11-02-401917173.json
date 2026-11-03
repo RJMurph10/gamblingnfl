@@ -7,18 +7,18 @@
   "id": "2099",
   "abbr": "CAN",
   "name": "Canisius Golden Griffins",
-  "score": 42
+  "score": 57
  },
  "home": {
   "id": "213",
   "abbr": "PSU",
   "name": "Penn State Nittany Lions",
-  "score": 75
+  "score": 96
  },
  "neutral": false,
  "venue": "Bryce Jordan Center",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-01T07:57:03.660Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 57,
+  "home": 96
+ }
 }

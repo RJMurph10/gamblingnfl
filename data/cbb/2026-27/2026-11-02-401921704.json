@@ -7,18 +7,18 @@
   "id": "2509",
   "abbr": "PUR",
   "name": "Purdue Boilermakers",
-  "score": 56
+  "score": 72
  },
  "home": {
   "id": "2250",
   "abbr": "GONZ",
   "name": "Gonzaga Bulldogs",
-  "score": 63
+  "score": 78
  },
  "neutral": true,
  "venue": "T-Mobile Arena",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-01T07:57:03.660Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 72,
+  "home": 78
+ }
 }

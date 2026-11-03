@@ -7,18 +7,18 @@
   "id": "2193",
   "abbr": "ETSU",
   "name": "East Tennessee State Buccaneers",
-  "score": 0
+  "score": 2
  },
  "home": {
   "id": "9",
   "abbr": "ASU",
   "name": "Arizona State Sun Devils",
-  "score": 0
+  "score": 1
  },
  "neutral": false,
  "venue": "Desert Financial Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T07:57:03.660Z",

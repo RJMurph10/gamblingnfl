@@ -7,18 +7,18 @@
   "id": "2117",
   "abbr": "CMU",
   "name": "Central Michigan Chippewas",
-  "score": 62
+  "score": 83
  },
  "home": {
   "id": "2433",
   "abbr": "ULM",
   "name": "UL Monroe Warhawks",
-  "score": 63
+  "score": 78
  },
  "neutral": false,
  "venue": "b1Bank Fant Coliseum",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-01T07:57:03.660Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 83,
+  "home": 78
+ }
 }

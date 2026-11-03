@@ -7,18 +7,18 @@
   "id": "2309",
   "abbr": "KENT",
   "name": "Kent State Golden Flashes",
-  "score": 52
+  "score": 75
  },
  "home": {
   "id": "2348",
   "abbr": "LT",
   "name": "Louisiana Tech Bulldogs",
-  "score": 69
+  "score": 85
  },
  "neutral": false,
  "venue": "Thomas Assembly Center",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-01T07:57:03.660Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 75,
+  "home": 85
+ }
 }

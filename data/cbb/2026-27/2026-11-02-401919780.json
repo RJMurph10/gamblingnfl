@@ -7,18 +7,18 @@
   "id": "2330",
   "abbr": "LEM",
   "name": "Le Moyne Dolphins",
-  "score": 62
+  "score": 64
  },
  "home": {
   "id": "158",
   "abbr": "NEB",
   "name": "Nebraska Cornhuskers",
-  "score": 94
+  "score": 106
  },
  "neutral": false,
  "venue": "Pinnacle Bank Arena",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-01T21:17:39.977Z",
@@ -769,5 +769,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 64,
+  "home": 106
+ }
 }

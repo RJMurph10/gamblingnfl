@@ -7,7 +7,7 @@
   "id": "331",
   "abbr": "EWU",
   "name": "Eastern Washington Eagles",
-  "score": 0
+  "score": 2
  },
  "home": {
   "id": "24",
@@ -18,7 +18,7 @@
  "neutral": false,
  "venue": "Maples Pavilion",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T07:57:03.660Z",

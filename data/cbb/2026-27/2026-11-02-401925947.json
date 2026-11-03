@@ -7,18 +7,18 @@
   "id": "2692",
   "abbr": "WEB",
   "name": "Weber State Wildcats",
-  "score": 0
+  "score": 16
  },
  "home": {
   "id": "204",
   "abbr": "ORST",
   "name": "Oregon State Beavers",
-  "score": 0
+  "score": 26
  },
  "neutral": false,
  "venue": "Gill Coliseum",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T07:57:03.660Z",

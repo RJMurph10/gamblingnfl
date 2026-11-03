@@ -7,13 +7,13 @@
   "id": "3",
   "abbr": "NO",
   "name": "New Orleans Pelicans",
-  "score": 59
+  "score": 113
  },
  "home": {
   "id": "29",
   "abbr": "MEM",
   "name": "Memphis Grizzlies",
-  "score": 62
+  "score": 106
  },
  "neutral": false,
  "venue": "FedExForum",
