@@ -411,7 +411,7 @@
    ]
   },
   "close": {
-   "at": "2026-11-03T22:59:18.857Z",
+   "at": "2026-11-03T23:52:32.188Z",
    "scoreboard": [
     {
      "provider": {
@@ -546,7 +546,7 @@
       "over": {
        "close": {
         "line": "o142.5",
-        "odds": "-115",
+        "odds": "-118",
         "link": {
          "language": "en-US",
          "rel": [
@@ -580,7 +580,7 @@
       "under": {
        "close": {
         "line": "u142.5",
-        "odds": "-105",
+        "odds": "-102",
         "link": {
          "language": "en-US",
          "rel": [
@@ -659,8 +659,8 @@
      "details": "UVA -31.5",
      "overUnder": 142.5,
      "spread": -31.5,
-     "overOdds": -115,
-     "underOdds": -105,
+     "overOdds": -118,
+     "underOdds": -102,
      "awayTeamOdds": {
       "favorite": false,
       "underdog": true,
@@ -777,20 +777,20 @@
      },
      "current": {
       "over": {
-       "value": 1.86,
-       "displayValue": "20/23",
-       "alternateDisplayValue": "-115",
-       "decimal": 1.86,
-       "fraction": "20/23",
-       "american": "-115"
+       "value": 1.84,
+       "displayValue": "50/59",
+       "alternateDisplayValue": "-118",
+       "decimal": 1.84,
+       "fraction": "50/59",
+       "american": "-118"
       },
       "under": {
-       "value": 1.95,
-       "displayValue": "20/21",
-       "alternateDisplayValue": "-105",
-       "decimal": 1.95,
-       "fraction": "20/21",
-       "american": "-105"
+       "value": 1.98,
+       "displayValue": "50/51",
+       "alternateDisplayValue": "-102",
+       "decimal": 1.98,
+       "fraction": "50/51",
+       "american": "-102"
       },
       "total": {
        "alternateDisplayValue": "142.5",

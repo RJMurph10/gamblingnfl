@@ -7,18 +7,18 @@
   "id": "2747",
   "abbr": "WOF",
   "name": "Wofford Terriers",
-  "score": 0
+  "score": 31
  },
  "home": {
   "id": "2633",
   "abbr": "TENN",
   "name": "Tennessee Volunteers",
-  "score": 0
+  "score": 34
  },
  "neutral": false,
  "venue": "Food City Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-02T23:50:25.569Z",

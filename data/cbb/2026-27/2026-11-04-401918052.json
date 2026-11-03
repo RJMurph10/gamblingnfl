@@ -1,0 +1,197 @@
+{
+ "id": "401918052",
+ "league": "cbb",
+ "date": "2026-11-05T02:00Z",
+ "name": "RAD @ CAL",
+ "away": {
+  "id": "2515",
+  "abbr": "RAD",
+  "name": "Radford Highlanders",
+  "score": 0
+ },
+ "home": {
+  "id": "25",
+  "abbr": "CAL",
+  "name": "California Golden Bears",
+  "score": 0
+ },
+ "neutral": false,
+ "venue": "Haas Pavilion",
+ "seasonType": 2,
+ "state": "pre",
+ "lines": {
+  "open": {
+   "at": "2026-11-03T23:52:32.188Z",
+   "scoreboard": [],
+   "books": [
+    {
+     "provider": {
+      "id": "100",
+      "name": "DraftKings",
+      "priority": 1
+     },
+     "details": "CAL -17.5",
+     "overUnder": 155.5,
+     "spread": -17.5,
+     "overOdds": -115,
+     "underOdds": -105,
+     "awayTeamOdds": {
+      "favorite": false,
+      "underdog": true,
+      "moneyLine": 900,
+      "spreadOdds": -112,
+      "open": {
+       "favorite": false,
+       "pointSpread": {
+        "alternateDisplayValue": "+17.5",
+        "american": "+17.5"
+       },
+       "spread": {
+        "value": 1.89,
+        "displayValue": "25/28",
+        "alternateDisplayValue": "-112",
+        "decimal": 1.89,
+        "fraction": "25/28",
+        "american": "-112"
+       },
+       "moneyLine": {
+        "value": 10,
+        "displayValue": "9/1",
+        "alternateDisplayValue": "+900",
+        "decimal": 10,
+        "fraction": "9/1",
+        "american": "+900"
+       }
+      },
+      "current": {
+       "pointSpread": {
+        "alternateDisplayValue": "+17.5",
+        "american": "+17.5"
+       },
+       "spread": {
+        "value": 1.89,
+        "displayValue": "25/28",
+        "alternateDisplayValue": "-112",
+        "decimal": 1.89,
+        "fraction": "25/28",
+        "american": "-112"
+       },
+       "moneyLine": {
+        "value": 10,
+        "displayValue": "9/1",
+        "alternateDisplayValue": "+900",
+        "decimal": 10,
+        "fraction": "9/1",
+        "american": "+900"
+       }
+      },
+      "team": {
+       "id": "2515"
+      }
+     },
+     "homeTeamOdds": {
+      "favorite": true,
+      "underdog": false,
+      "moneyLine": -1600,
+      "spreadOdds": -108,
+      "open": {
+       "favorite": true,
+       "pointSpread": {
+        "alternateDisplayValue": "-17.5",
+        "american": "-17.5"
+       },
+       "spread": {
+        "value": 1.92,
+        "displayValue": "25/27",
+        "alternateDisplayValue": "-108",
+        "decimal": 1.92,
+        "fraction": "25/27",
+        "american": "-108"
+       },
+       "moneyLine": {
+        "value": 1.06,
+        "displayValue": "1/16",
+        "alternateDisplayValue": "-1600",
+        "decimal": 1.06,
+        "fraction": "1/16",
+        "american": "-1600"
+       }
+      },
+      "current": {
+       "pointSpread": {
+        "alternateDisplayValue": "-17.5",
+        "american": "-17.5"
+       },
+       "spread": {
+        "value": 1.92,
+        "displayValue": "25/27",
+        "alternateDisplayValue": "-108",
+        "decimal": 1.92,
+        "fraction": "25/27",
+        "american": "-108"
+       },
+       "moneyLine": {
+        "value": 1.06,
+        "displayValue": "1/16",
+        "alternateDisplayValue": "-1600",
+        "decimal": 1.06,
+        "fraction": "1/16",
+        "american": "-1600"
+       }
+      },
+      "team": {
+       "id": "25"
+      }
+     },
+     "moneylineWinner": false,
+     "spreadWinner": false,
+     "open": {
+      "over": {
+       "value": 1.86,
+       "displayValue": "20/23",
+       "alternateDisplayValue": "-115",
+       "decimal": 1.86,
+       "fraction": "20/23",
+       "american": "-115"
+      },
+      "under": {
+       "value": 1.95,
+       "displayValue": "20/21",
+       "alternateDisplayValue": "-105",
+       "decimal": 1.95,
+       "fraction": "20/21",
+       "american": "-105"
+      },
+      "total": {
+       "alternateDisplayValue": "155.5",
+       "american": "155.5"
+      }
+     },
+     "current": {
+      "over": {
+       "value": 1.86,
+       "displayValue": "20/23",
+       "alternateDisplayValue": "-115",
+       "decimal": 1.86,
+       "fraction": "20/23",
+       "american": "-115"
+      },
+      "under": {
+       "value": 1.95,
+       "displayValue": "20/21",
+       "alternateDisplayValue": "-105",
+       "decimal": 1.95,
+       "fraction": "20/21",
+       "american": "-105"
+      },
+      "total": {
+       "alternateDisplayValue": "155.5",
+       "american": "155.5"
+      }
+     }
+    }
+   ]
+  }
+ },
+ "props": {}
+}

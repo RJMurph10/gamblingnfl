@@ -395,13 +395,14 @@
    ]
   },
   "close": {
-   "at": "2026-11-03T22:59:18.857Z",
+   "at": "2026-11-03T23:52:32.188Z",
    "scoreboard": [
     {
      "provider": {
       "id": "100",
       "name": "DraftKings",
-      "priority": 1
+      "priority": 1,
+      "displayName": "DraftKings"
      },
      "details": "UK -33.5",
      "overUnder": 158.5,
@@ -530,7 +531,7 @@
       "over": {
        "close": {
         "line": "o158.5",
-        "odds": "-110",
+        "odds": "-105",
         "link": {
          "language": "en-US",
          "rel": [
@@ -564,7 +565,7 @@
       "under": {
        "close": {
         "line": "u158.5",
-        "odds": "-110",
+        "odds": "-115",
         "link": {
          "language": "en-US",
          "rel": [
@@ -643,8 +644,8 @@
      "details": "UK -33.5",
      "overUnder": 158.5,
      "spread": -33.5,
-     "overOdds": -110,
-     "underOdds": -110,
+     "overOdds": -105,
+     "underOdds": -115,
      "awayTeamOdds": {
       "favorite": false,
       "underdog": true,
@@ -745,20 +746,20 @@
      },
      "current": {
       "over": {
-       "value": 1.9,
-       "displayValue": "10/11",
-       "alternateDisplayValue": "-110",
-       "decimal": 1.9,
-       "fraction": "10/11",
-       "american": "-110"
+       "value": 1.95,
+       "displayValue": "20/21",
+       "alternateDisplayValue": "-105",
+       "decimal": 1.95,
+       "fraction": "20/21",
+       "american": "-105"
       },
       "under": {
-       "value": 1.9,
-       "displayValue": "10/11",
-       "alternateDisplayValue": "-110",
-       "decimal": 1.9,
-       "fraction": "10/11",
-       "american": "-110"
+       "value": 1.86,
+       "displayValue": "20/23",
+       "alternateDisplayValue": "-115",
+       "decimal": 1.86,
+       "fraction": "20/23",
+       "american": "-115"
       },
       "total": {
        "alternateDisplayValue": "158.5",
