@@ -1,24 +1,24 @@
 {
  "id": "401911374",
  "league": "cbb",
- "date": "2026-11-03T00:00Z",
+ "date": "2026-11-03T00:45Z",
  "name": "CHSO @ USF",
  "away": {
   "id": "2127",
   "abbr": "CHSO",
   "name": "Charleston Southern Buccaneers",
-  "score": 0
+  "score": 23
  },
  "home": {
   "id": "58",
   "abbr": "USF",
   "name": "South Florida Bulls",
-  "score": 0
+  "score": 27
  },
  "neutral": false,
  "venue": "Yuengling Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T21:17:39.977Z",

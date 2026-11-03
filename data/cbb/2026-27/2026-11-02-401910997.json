@@ -7,18 +7,18 @@
   "id": "2711",
   "abbr": "WMU",
   "name": "Western Michigan Broncos",
-  "score": 0
+  "score": 37
  },
  "home": {
   "id": "295",
   "abbr": "ODU",
   "name": "Old Dominion Monarchs",
-  "score": 0
+  "score": 35
  },
  "neutral": false,
  "venue": "Chartway Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T07:57:03.660Z",

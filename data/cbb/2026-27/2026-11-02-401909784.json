@@ -7,18 +7,18 @@
   "id": "2230",
   "abbr": "FOR",
   "name": "Fordham Rams",
-  "score": 0
+  "score": 15
  },
  "home": {
   "id": "2305",
   "abbr": "KU",
   "name": "Kansas Jayhawks",
-  "score": 0
+  "score": 20
  },
  "neutral": false,
  "venue": "Allen Fieldhouse",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T07:57:03.660Z",

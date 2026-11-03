@@ -7,18 +7,18 @@
   "id": "2006",
   "abbr": "AKR",
   "name": "Akron Zips",
-  "score": 0
+  "score": 17
  },
  "home": {
   "id": "309",
   "abbr": "UL",
   "name": "Louisiana Ragin' Cajuns",
-  "score": 0
+  "score": 11
  },
  "neutral": false,
  "venue": "Cajundome",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T07:57:03.660Z",

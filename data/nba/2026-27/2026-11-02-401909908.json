@@ -7,18 +7,18 @@
   "id": "8",
   "abbr": "DET",
   "name": "Detroit Pistons",
-  "score": 0
+  "score": 33
  },
  "home": {
   "id": "30",
   "abbr": "CHA",
   "name": "Charlotte Hornets",
-  "score": 0
+  "score": 34
  },
  "neutral": false,
  "venue": "Spectrum Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T23:47:33.650Z",

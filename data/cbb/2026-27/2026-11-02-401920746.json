@@ -7,18 +7,18 @@
   "id": "111",
   "abbr": "NE",
   "name": "Northeastern Huskies",
-  "score": 0
+  "score": 49
  },
  "home": {
   "id": "104",
   "abbr": "BU",
   "name": "Boston University Terriers",
-  "score": 0
+  "score": 56
  },
  "neutral": false,
  "venue": "Case Gym",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T21:17:39.977Z",

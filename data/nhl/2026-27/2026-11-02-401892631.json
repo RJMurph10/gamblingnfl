@@ -13,12 +13,12 @@
   "id": "4",
   "abbr": "CHI",
   "name": "Chicago Blackhawks",
-  "score": 0
+  "score": 2
  },
  "neutral": false,
  "venue": "United Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T17:47:36.545Z",

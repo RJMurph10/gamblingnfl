@@ -7,18 +7,18 @@
   "id": "15",
   "abbr": "MIL",
   "name": "Milwaukee Bucks",
-  "score": 0
+  "score": 15
  },
  "home": {
   "id": "16",
   "abbr": "MIN",
   "name": "Minnesota Timberwolves",
-  "score": 0
+  "score": 25
  },
  "neutral": false,
  "venue": "Target Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T23:47:33.650Z",

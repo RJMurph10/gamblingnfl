@@ -1,0 +1,1199 @@
+{
+ "id": "401873051",
+ "league": "nfl",
+ "date": "2026-11-10T01:15Z",
+ "name": "BUF @ MIN",
+ "away": {
+  "id": "2",
+  "abbr": "BUF",
+  "name": "Buffalo Bills",
+  "score": 0
+ },
+ "home": {
+  "id": "16",
+  "abbr": "MIN",
+  "name": "Minnesota Vikings",
+  "score": 0
+ },
+ "neutral": false,
+ "venue": "U.S. Bank Stadium",
+ "seasonType": 2,
+ "state": "pre",
+ "lines": {
+  "open": {
+   "at": "2026-11-03T01:24:17.697Z",
+   "scoreboard": [
+    {
+     "provider": {
+      "id": "100",
+      "name": "Draft Kings",
+      "priority": 1,
+      "displayName": "Draft Kings"
+     },
+     "details": "BUF -3.5",
+     "overUnder": 46.5,
+     "spread": 3.5,
+     "awayTeamOdds": {
+      "favorite": true,
+      "underdog": false,
+      "team": {
+       "id": "2",
+       "uid": "s:20~l:28~t:2",
+       "abbreviation": "BUF",
+       "name": "Bills",
+       "displayName": "Buffalo Bills",
+       "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/buf.png"
+      },
+      "favoriteAtOpen": true
+     },
+     "homeTeamOdds": {
+      "favorite": false,
+      "underdog": true,
+      "team": {
+       "id": "16",
+       "uid": "s:20~l:28~t:16",
+       "abbreviation": "MIN",
+       "name": "Vikings",
+       "displayName": "Minnesota Vikings",
+       "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/min.png"
+      },
+      "favoriteAtOpen": false
+     },
+     "moneyline": {
+      "displayName": "Moneyline",
+      "shortDisplayName": "ML",
+      "home": {
+       "close": {
+        "odds": "+150",
+        "link": {
+         "language": "en-US",
+         "rel": [
+          "home",
+          "desktop",
+          "bets",
+          "draft-kings"
+         ],
+         "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34118167%3Foutcomes%3D0ML84695600_1",
+         "text": "Home Bet",
+         "shortText": "Home Bet",
+         "isExternal": true,
+         "isPremium": false,
+         "tracking": {
+          "campaign": "betting-integrations",
+          "tags": {
+           "league": "nfl",
+           "sport": "football",
+           "gameId": 401873051,
+           "betSide": "home",
+           "betType": "straight"
+          }
+         }
+        }
+       },
+       "open": {
+        "odds": "+130"
+       }
+      },
+      "away": {
+       "close": {
+        "odds": "-180",
+        "link": {
+         "language": "en-US",
+         "rel": [
+          "away",
+          "desktop",
+          "bets",
+          "draft-kings"
+         ],
+         "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34118167%3Foutcomes%3D0ML84695600_3",
+         "text": "Away Bet",
+         "shortText": "Away Bet",
+         "isExternal": true,
+         "isPremium": false,
+         "tracking": {
+          "campaign": "betting-integrations",
+          "tags": {
+           "league": "nfl",
+           "sport": "football",
+           "gameId": 401873051,
+           "betSide": "away",
+           "betType": "straight"
+          }
+         }
+        }
+       },
+       "open": {
+        "odds": "-155"
+       }
+      }
+     },
+     "pointSpread": {
+      "displayName": "Spread",
+      "shortDisplayName": "Spread",
+      "home": {
+       "close": {
+        "line": "+3.5",
+        "odds": "-118",
+        "link": {
+         "language": "en-US",
+         "rel": [
+          "homeSpread",
+          "desktop",
+          "bets"
+         ],
+         "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34118167%3Foutcomes%3D0HC84695600P350_1",
+         "text": "Home Point Spread",
+         "shortText": "Home Point Spread",
+         "isExternal": true,
+         "isPremium": false,
+         "tracking": {
+          "campaign": "betting-integrations",
+          "tags": {
+           "league": "nfl",
+           "sport": "football",
+           "gameId": 401873051,
+           "betSide": "none",
+           "betType": "straight",
+           "betDetails": "Spread:MIN+3.5"
+          }
+         }
+        }
+       },
+       "open": {
+        "line": "+3",
+        "odds": "-115"
+       }
+      },
+      "away": {
+       "close": {
+        "line": "-3.5",
+        "odds": "-102",
+        "link": {
+         "language": "en-US",
+         "rel": [
+          "awaySpread",
+          "desktop",
+          "bets"
+         ],
+         "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34118167%3Foutcomes%3D0HC84695600N350_3",
+         "text": "Away Point Spread",
+         "shortText": "Away Point Spread",
+         "isExternal": true,
+         "isPremium": false,
+         "tracking": {
+          "campaign": "betting-integrations",
+          "tags": {
+           "league": "nfl",
+           "sport": "football",
+           "gameId": 401873051,
+           "betSide": "none",
+           "betType": "straight",
+           "betDetails": "Spread:BUF-3.5"
+          }
+         }
+        }
+       },
+       "open": {
+        "line": "-3",
+        "odds": "-105"
+       }
+      }
+     },
+     "total": {
+      "displayName": "Total",
+      "shortDisplayName": "Total",
+      "over": {
+       "close": {
+        "line": "o46.5",
+        "odds": "-105",
+        "link": {
+         "language": "en-US",
+         "rel": [
+          "over",
+          "desktop",
+          "bets"
+         ],
+         "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34118167%3Foutcomes%3D0OU84695600O4650_1",
+         "text": "Over Odds",
+         "shortText": "Over Odds",
+         "isExternal": true,
+         "isPremium": false,
+         "tracking": {
+          "campaign": "betting-integrations",
+          "tags": {
+           "league": "nfl",
+           "sport": "football",
+           "gameId": 401873051,
+           "betSide": "over",
+           "betType": "straight",
+           "betDetails": "Over:46.5"
+          }
+         }
+        }
+       },
+       "open": {
+        "line": "o48.5",
+        "odds": "-110"
+       }
+      },
+      "under": {
+       "close": {
+        "line": "u46.5",
+        "odds": "-115",
+        "link": {
+         "language": "en-US",
+         "rel": [
+          "under",
+          "desktop",
+          "bets"
+         ],
+         "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34118167%3Foutcomes%3D0OU84695600U4650_3",
+         "text": "Under Odds",
+         "shortText": "Under Odds",
+         "isExternal": true,
+         "isPremium": false,
+         "tracking": {
+          "campaign": "betting-integrations",
+          "tags": {
+           "league": "nfl",
+           "sport": "football",
+           "gameId": 401873051,
+           "betSide": "under",
+           "betType": "straight",
+           "betDetails": "Under:46.5"
+          }
+         }
+        }
+       },
+       "open": {
+        "line": "u48.5",
+        "odds": "-110"
+       }
+      }
+     },
+     "link": {
+      "language": "en-US",
+      "rel": [
+       "game",
+       "desktop",
+       "bets"
+      ],
+      "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34118167",
+      "text": "See More Odds",
+      "shortText": "Game",
+      "isExternal": true,
+      "isPremium": false,
+      "tracking": {
+       "campaign": "betting-integrations",
+       "tags": {
+        "league": "nfl",
+        "sport": "football",
+        "gameId": 401873051,
+        "betSide": "none",
+        "betType": "straight"
+       }
+      }
+     },
+     "header": {
+      "logo": {
+       "dark": "https://a.espncdn.com/i/espnbet/dark/espn-bet-square-off.svg",
+       "light": "https://a.espncdn.com/i/espnbet/espn-bet-square-off.svg",
+       "exclusivesLogoDark": "https://a.espncdn.com/i/espnbet/espn-bet-square-mint.svg",
+       "exclusivesLogoLight": "https://a.espncdn.com/i/espnbet/espn-bet-square-mint.svg"
+      },
+      "text": "Game Odds"
+     },
+     "footer": {
+      "disclaimer": "GAMBLING PROBLEM? CALL 1-800-GAMBLER or 1-800-MY-RESET, (800) 327-5050 or visit gamblinghelplinema.org (MA). Call 877-8-HOPENY/text HOPENY (467369) (NY). Call 888-789-7777/visit ccpg.org (CT), or visit www.mdgamblinghelp.org (MD), 1-800-981-0023 (PR). 21+ and present in most states. (18+ DC/KY/NH/PR/WY). Void in ONT. Eligibility restrictions apply. Terms: draftkings.com/sportsbook. On behalf of Boot Hill Casino (KS). Pass-thru of per wager tax may apply in IL."
+     }
+    }
+   ],
+   "books": [
+    {
+     "provider": {
+      "id": "100",
+      "name": "Draft Kings",
+      "priority": 1
+     },
+     "details": "BUF -3.5",
+     "overUnder": 46.5,
+     "spread": 3.5,
+     "overOdds": -105,
+     "underOdds": -115,
+     "awayTeamOdds": {
+      "favorite": true,
+      "underdog": false,
+      "moneyLine": -180,
+      "spreadOdds": -102,
+      "open": {
+       "favorite": true,
+       "pointSpread": {
+        "alternateDisplayValue": "-3",
+        "american": "-3"
+       },
+       "spread": {
+        "value": 1.95,
+        "displayValue": "20/21",
+        "alternateDisplayValue": "-105",
+        "decimal": 1.95,
+        "fraction": "20/21",
+        "american": "-105"
+       },
+       "moneyLine": {
+        "value": 1.64,
+        "displayValue": "20/31",
+        "alternateDisplayValue": "-155",
+        "decimal": 1.64,
+        "fraction": "20/31",
+        "american": "-155"
+       }
+      },
+      "current": {
+       "pointSpread": {
+        "alternateDisplayValue": "-3.5",
+        "american": "-3.5"
+       },
+       "spread": {
+        "value": 1.98,
+        "displayValue": "50/51",
+        "alternateDisplayValue": "-102",
+        "decimal": 1.98,
+        "fraction": "50/51",
+        "american": "-102"
+       },
+       "moneyLine": {
+        "value": 1.55,
+        "displayValue": "5/9",
+        "alternateDisplayValue": "-180",
+        "decimal": 1.55,
+        "fraction": "5/9",
+        "american": "-180"
+       }
+      },
+      "team": {
+       "id": "2"
+      }
+     },
+     "homeTeamOdds": {
+      "favorite": false,
+      "underdog": true,
+      "moneyLine": 150,
+      "spreadOdds": -118,
+      "open": {
+       "favorite": false,
+       "pointSpread": {
+        "alternateDisplayValue": "+3",
+        "american": "+3"
+       },
+       "spread": {
+        "value": 1.86,
+        "displayValue": "20/23",
+        "alternateDisplayValue": "-115",
+        "decimal": 1.86,
+        "fraction": "20/23",
+        "american": "-115"
+       },
+       "moneyLine": {
+        "value": 2.3,
+        "displayValue": "13/10",
+        "alternateDisplayValue": "+130",
+        "decimal": 2.3,
+        "fraction": "13/10",
+        "american": "+130"
+       }
+      },
+      "current": {
+       "pointSpread": {
+        "alternateDisplayValue": "+3.5",
+        "american": "+3.5"
+       },
+       "spread": {
+        "value": 1.84,
+        "displayValue": "50/59",
+        "alternateDisplayValue": "-118",
+        "decimal": 1.84,
+        "fraction": "50/59",
+        "american": "-118"
+       },
+       "moneyLine": {
+        "value": 2.5,
+        "displayValue": "6/4",
+        "alternateDisplayValue": "+150",
+        "decimal": 2.5,
+        "fraction": "6/4",
+        "american": "+150"
+       }
+      },
+      "team": {
+       "id": "16"
+      }
+     },
+     "moneylineWinner": false,
+     "spreadWinner": false,
+     "open": {
+      "over": {
+       "value": 1.9,
+       "displayValue": "10/11",
+       "alternateDisplayValue": "-110",
+       "decimal": 1.9,
+       "fraction": "10/11",
+       "american": "-110"
+      },
+      "under": {
+       "value": 1.9,
+       "displayValue": "10/11",
+       "alternateDisplayValue": "-110",
+       "decimal": 1.9,
+       "fraction": "10/11",
+       "american": "-110"
+      },
+      "total": {
+       "alternateDisplayValue": "48.5",
+       "american": "48.5"
+      }
+     },
+     "current": {
+      "over": {
+       "value": 1.95,
+       "displayValue": "20/21",
+       "alternateDisplayValue": "-105",
+       "decimal": 1.95,
+       "fraction": "20/21",
+       "american": "-105"
+      },
+      "under": {
+       "value": 1.86,
+       "displayValue": "20/23",
+       "alternateDisplayValue": "-115",
+       "decimal": 1.86,
+       "fraction": "20/23",
+       "american": "-115"
+      },
+      "total": {
+       "alternateDisplayValue": "46.5",
+       "american": "46.5"
+      }
+     }
+    }
+   ]
+  }
+ },
+ "props": {
+  "open": {
+   "at": "2026-11-03T01:24:17.697Z",
+   "provider": 100,
+   "count": 65,
+   "rows": [
+  {"a":"3915416","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"3918298","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4036133","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4262921","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4373678","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4379399","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4385690","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4429205","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":null,"t":"1st Half Total","ti":"72","op":[23.5,null,null],"cur":[22.5,null,null]},
+  {"a":null,"t":"1st Half Total","ti":"72","op":[23.5,null,null],"cur":[22.5,null,null]},
+  {"a":null,"t":"1st Half Moneyline","ti":"73"},
+  {"a":null,"t":"1st Half Moneyline","ti":"73"},
+  {"a":null,"t":"1st Half Spread","ti":"74","op":[-1.5,null,null],"cur":[-2.5,null,null]},
+  {"a":null,"t":"1st Half Spread","ti":"74","op":[1.5,null,null],"cur":[2.5,null,null]},
+  {"a":null,"t":"1st Quarter Total","ti":"75","op":[9.5,null,null],"cur":[8.5,null,null]},
+  {"a":null,"t":"1st Quarter Total","ti":"75","op":[9.5,null,null],"cur":[8.5,null,null]},
+  {"a":null,"t":"1st Quarter Moneyline","ti":"76"},
+  {"a":null,"t":"1st Quarter Moneyline","ti":"76"},
+  {"a":null,"t":"1st Quarter Spread","ti":"77","op":[-0.5,null,null],"cur":[-0.5,null,null]},
+  {"a":null,"t":"1st Quarter Spread","ti":"77","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":null,"t":"Team Total Points","ti":"98","op":[24.5,null,null],"cur":[17.5,null,null]},
+  {"a":null,"t":"Team Total Points","ti":"98","op":[24.5,null,null],"cur":[21.5,null,null]},
+  {"a":null,"t":"Team Total Points","ti":"98","op":[24.5,null,null],"cur":[22.5,null,null]},
+  {"a":null,"t":"Team Total Points","ti":"98","op":[24.5,null,null],"cur":[23.5,null,null]},
+  {"a":null,"t":"Team Total Points","ti":"98","op":[24.5,null,null],"cur":[24.5,null,null]},
+  {"a":null,"t":"Team Total Points","ti":"98","op":[24.5,null,null],"cur":[28.5,null,null]},
+  {"a":null,"t":"Team Total Points","ti":"98","op":[24.5,null,null],"cur":[30.5,null,null]},
+  {"a":null,"t":"Team Total Points","ti":"98","op":[24.5,null,null],"cur":[17.5,null,null]},
+  {"a":null,"t":"Team Total Points","ti":"98","op":[24.5,null,null],"cur":[18.5,null,null]},
+  {"a":null,"t":"Team Total Points","ti":"98","op":[24.5,null,null],"cur":[20.5,null,null]},
+  {"a":null,"t":"Team Total Points","ti":"98","op":[24.5,null,null],"cur":[21.5,null,null]},
+  {"a":null,"t":"Team Total Points","ti":"98","op":[24.5,null,null],"cur":[24.5,null,null]},
+  {"a":null,"t":"Team Total Points","ti":"98","op":[24.5,null,null],"cur":[25.5,null,null]},
+  {"a":null,"t":"Team Total Points","ti":"98","op":[24.5,null,null],"cur":[31.5,null,null]},
+  {"a":null,"t":"Team Total Points","ti":"98","op":[20.5,null,null],"cur":[11.5,null,null]},
+  {"a":null,"t":"Team Total Points","ti":"98","op":[20.5,null,null],"cur":[12.5,null,null]},
+  {"a":null,"t":"Team Total Points","ti":"98","op":[20.5,null,null],"cur":[13.5,null,null]},
+  {"a":null,"t":"Team Total Points","ti":"98","op":[20.5,null,null],"cur":[14.5,null,null]},
+  {"a":null,"t":"Team Total Points","ti":"98","op":[20.5,null,null],"cur":[15.5,null,null]},
+  {"a":null,"t":"Team Total Points","ti":"98","op":[20.5,null,null],"cur":[16.5,null,null]},
+  {"a":null,"t":"Team Total Points","ti":"98","op":[20.5,null,null],"cur":[17.5,null,null]},
+  {"a":null,"t":"Team Total Points","ti":"98","op":[20.5,null,null],"cur":[18.5,null,null]},
+  {"a":null,"t":"Team Total Points","ti":"98","op":[20.5,null,null],"cur":[19.5,null,null]},
+  {"a":null,"t":"Team Total Points","ti":"98","op":[20.5,null,null],"cur":[20.5,null,null]},
+  {"a":null,"t":"Team Total Points","ti":"98","op":[20.5,null,null],"cur":[21.5,null,null]},
+  {"a":null,"t":"Team Total Points","ti":"98","op":[20.5,null,null],"cur":[22.5,null,null]},
+  {"a":null,"t":"Team Total Points","ti":"98","op":[20.5,null,null],"cur":[24.5,null,null]},
+  {"a":null,"t":"Team Total Points","ti":"98","op":[20.5,null,null],"cur":[25.5,null,null]},
+  {"a":null,"t":"Team Total Points","ti":"98","op":[20.5,null,null],"cur":[26.5,null,null]},
+  {"a":null,"t":"Team Total Points","ti":"98","op":[20.5,null,null],"cur":[27.5,null,null]},
+  {"a":null,"t":"Team Total Points","ti":"98","op":[20.5,null,null],"cur":[28.5,null,null]},
+  {"a":null,"t":"Team Total Points","ti":"98","op":[20.5,null,null],"cur":[29.5,null,null]},
+  {"a":null,"t":"Team Total Points","ti":"98","op":[20.5,null,null],"cur":[30.5,null,null]},
+  {"a":null,"t":"Team Total Points","ti":"98","op":[20.5,null,null],"cur":[31.5,null,null]},
+  {"a":null,"t":"Team Total Points","ti":"98","op":[20.5,null,null],"cur":[13.5,null,null]},
+  {"a":null,"t":"Team Total Points","ti":"98","op":[20.5,null,null],"cur":[20.5,null,null]},
+  {"a":null,"t":"Team Total Points","ti":"98","op":[20.5,null,null],"cur":[25.5,null,null]},
+  {"a":null,"t":"Team Total Points","ti":"98","op":[20.5,null,null],"cur":[26.5,null,null]},
+  {"a":null,"t":"Team Total Points","ti":"98","op":[20.5,null,null],"cur":[31.5,null,null]},
+  {"a":null,"t":"Team Total Touchdowns","ti":"104","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":null,"t":"Team Total Touchdowns","ti":"104","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":null,"t":"Team Total Touchdowns","ti":"104","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":null,"t":"Team Total Touchdowns","ti":"104","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":null,"t":"Will There Be Overtime?","ti":"153"},
+  {"a":null,"t":"Will There Be Overtime?","ti":"153"}
+ ],
+   "sample": [
+    {
+     "competition": {
+      "id": "401873051"
+     },
+     "athlete": {
+      "id": "3915416"
+     },
+     "provider": {
+      "id": "100"
+     },
+     "type": {
+      "id": "31",
+      "name": "Anytime Touchdown Scorer"
+     },
+     "lastUpdated": "2026-11-02T17:42Z",
+     "current": {},
+     "open": {}
+    },
+    {
+     "competition": {
+      "id": "401873051"
+     },
+     "athlete": {
+      "id": "3918298"
+     },
+     "provider": {
+      "id": "100"
+     },
+     "type": {
+      "id": "31",
+      "name": "Anytime Touchdown Scorer"
+     },
+     "lastUpdated": "2026-11-02T17:42Z",
+     "current": {},
+     "open": {}
+    }
+   ]
+  }
+ },
+ "names": {
+  "14945": [
+   "Harrison Smith",
+   "MIN"
+  ],
+  "15726": [
+   "Andrew DePaola",
+   "MIN"
+  ],
+  "16733": [
+   "Odell Beckham Jr.",
+   "MIN"
+  ],
+  "16772": [
+   "Kyle Van Noy",
+   "MIN"
+  ],
+  "2573079": [
+   "Carson Wentz",
+   "MIN"
+  ],
+  "2976549": [
+   "Reid Ferguson",
+   "BUF"
+  ],
+  "2978313": [
+   "Shaq Thompson",
+   "BUF"
+  ],
+  "3042519": [
+   "Aaron Jones Sr.",
+   "MIN"
+  ],
+  "3042717": [
+   "Tre'Davious White",
+   "BUF"
+  ],
+  "3051324": [
+   "Dion Dawkins",
+   "BUF"
+  ],
+  "3056608": [
+   "Austin Corbett",
+   "BUF"
+  ],
+  "3056916": [
+   "Eric Wilson",
+   "MIN"
+  ],
+  "3115293": [
+   "Kyle Allen",
+   "BUF"
+  ],
+  "3115373": [
+   "Jamal Adams",
+   "MIN"
+  ],
+  "3115914": [
+   "Jihad Ward",
+   "MIN"
+  ],
+  "3116733": [
+   "Bradley Chubb",
+   "BUF"
+  ],
+  "3122168": [
+   "Trent Sherfield",
+   "BUF"
+  ],
+  "3123954": [
+   "Brian O'Neill",
+   "MIN"
+  ],
+  "3127294": [
+   "Greg Gaines",
+   "BUF"
+  ],
+  "3133487": [
+   "Andrew Van Ginkel",
+   "MIN"
+  ],
+  "3728281": [
+   "Blake Cashman",
+   "MIN"
+  ],
+  "3886598": [
+   "Jauan Jennings",
+   "MIN"
+  ],
+  "3915411": [
+   "Ty Johnson",
+   "BUF"
+  ],
+  "3915416": [
+   "DJ Moore",
+   "BUF"
+  ],
+  "3915487": [
+   "Mike Danna",
+   "BUF"
+  ],
+  "3917232": [
+   "Tyler Bass",
+   "BUF"
+  ],
+  "3917315": [
+   "Kyler Murray",
+   "MIN"
+  ],
+  "3918298": [
+   "Josh Allen",
+   "BUF"
+  ],
+  "3921690": [
+   "Josh Oliver",
+   "MIN"
+  ],
+  "3930086": [
+   "Dawson Knox",
+   "BUF"
+  ],
+  "3930270": [
+   "Blake Brandel",
+   "MIN"
+  ],
+  "4030899": [
+   "Spencer Brown",
+   "BUF"
+  ],
+  "4033234": [
+   "Michael Hoecht",
+   "BUF"
+  ],
+  "4033748": [
+   "Connor McGovern",
+   "BUF"
+  ],
+  "4034953": [
+   "C.J. Gardner-Johnson",
+   "BUF"
+  ],
+  "4035448": [
+   "Lloyd Cushenberry III",
+   "BUF"
+  ],
+  "4036060": [
+   "Damar Hamlin",
+   "BUF"
+  ],
+  "4036133": [
+   "T.J. Hockenson",
+   "MIN"
+  ],
+  "4037235": [
+   "Greg Dortch",
+   "BUF"
+  ],
+  "4038999": [
+   "Byron Murphy Jr.",
+   "MIN"
+  ],
+  "4039034": [
+   "Shane Buechele",
+   "BUF"
+  ],
+  "4039303": [
+   "Ed Oliver",
+   "BUF"
+  ],
+  "4044133": [
+   "Sam Franklin Jr.",
+   "BUF"
+  ],
+  "4044540": [
+   "Isaiah Rodgers",
+   "MIN"
+  ],
+  "4045176": [
+   "Will Fries",
+   "MIN"
+  ],
+  "4046537": [
+   "Joshua Metellus",
+   "MIN"
+  ],
+  "4239140": [
+   "Ryan Van Demark",
+   "MIN"
+  ],
+  "4240575": [
+   "Geno Stone",
+   "BUF"
+  ],
+  "4240631": [
+   "DeeJay Dallas",
+   "MIN"
+  ],
+  "4241468": [
+   "Phidarian Mathis",
+   "BUF"
+  ],
+  "4241476": [
+   "Tyrell Shavers",
+   "BUF"
+  ],
+  "4242433": [
+   "Joshua Palmer",
+   "BUF"
+  ],
+  "4242436": [
+   "Theo Jackson",
+   "MIN"
+  ],
+  "4259166": [
+   "Terrel Bernard",
+   "BUF"
+  ],
+  "4259252": [
+   "James Pierre",
+   "MIN"
+  ],
+  "4262921": [
+   "Justin Jefferson",
+   "MIN"
+  ],
+  "4334405": [
+   "Tavierre Thomas",
+   "MIN"
+  ],
+  "4360277": [
+   "Jalen Redmond",
+   "MIN"
+  ],
+  "4360569": [
+   "Jordan Mason",
+   "MIN"
+  ],
+  "4360637": [
+   "Jeshaun Jones",
+   "MIN"
+  ],
+  "4361112": [
+   "Devin Culp",
+   "MIN"
+  ],
+  "4361114": [
+   "Taki Taimani",
+   "MIN"
+  ],
+  "4361508": [
+   "Keshawn Banks",
+   "MIN"
+  ],
+  "4361985": [
+   "Christian Darrisaw",
+   "MIN"
+  ],
+  "4362010": [
+   "Michael Jurgens",
+   "MIN"
+  ],
+  "4362506": [
+   "Greg Rousseau",
+   "BUF"
+  ],
+  "4366349": [
+   "Joe Andreessen",
+   "BUF"
+  ],
+  "4367203": [
+   "Alec Anderson",
+   "BUF"
+  ],
+  "4367995": [
+   "Henry Byrd",
+   "MIN"
+  ],
+  "4368828": [
+   "Tylan Grable",
+   "BUF"
+  ],
+  "4373678": [
+   "Khalil Shakir",
+   "BUF"
+  ],
+  "4379399": [
+   "James Cook III",
+   "BUF"
+  ],
+  "4379778": [
+   "Christian Benford",
+   "BUF"
+  ],
+  "4385690": [
+   "Dalton Kincaid",
+   "BUF"
+  ],
+  "4401823": [
+   "Dee Alford",
+   "BUF"
+  ],
+  "4426883": [
+   "DeWayne Carter",
+   "BUF"
+  ],
+  "4427140": [
+   "Trevor Keegan",
+   "MIN"
+  ],
+  "4427348": [
+   "Te'Cory Couch",
+   "BUF"
+  ],
+  "4427843": [
+   "Chase Lundt",
+   "BUF"
+  ],
+  "4428421": [
+   "Nick Samac",
+   "MIN"
+  ],
+  "4428548": [
+   "Javon Solomon",
+   "BUF"
+  ],
+  "4428696": [
+   "O'Cyrus Torrence",
+   "BUF"
+  ],
+  "4428932": [
+   "A.J. Woods",
+   "BUF"
+  ],
+  "4429128": [
+   "Dwight McGlothern Jr.",
+   "MIN"
+  ],
+  "4429205": [
+   "Jordan Addison",
+   "MIN"
+  ],
+  "4429501": [
+   "Ray Davis",
+   "BUF"
+  ],
+  "4429805": [
+   "Frank Gore Jr.",
+   "BUF"
+  ],
+  "4430270": [
+   "Ja'Mori Maclin",
+   "BUF"
+  ],
+  "4430280": [
+   "Ivan Pace Jr.",
+   "MIN"
+  ],
+  "4430656": [
+   "Myles Price",
+   "MIN"
+  ],
+  "4431520": [
+   "Chaz Chambliss",
+   "MIN"
+  ],
+  "4431553": [
+   "Donovan Jackson",
+   "MIN"
+  ],
+  "4431584": [
+   "Jahvaree Ritzie",
+   "MIN"
+  ],
+  "4432215": [
+   "Stephen Gosnell",
+   "BUF"
+  ],
+  "4432325": [
+   "Bangally Kamara",
+   "MIN"
+  ],
+  "4432503": [
+   "Josh Priebe",
+   "MIN"
+  ],
+  "4432715": [
+   "Landon Jackson",
+   "BUF"
+  ],
+  "4433959": [
+   "Ben Yurosek",
+   "MIN"
+  ],
+  "4565185": [
+   "Tai Felton",
+   "MIN"
+  ],
+  "4565190": [
+   "Dallas Turner",
+   "MIN"
+  ],
+  "4567104": [
+   "Will Reichard",
+   "MIN"
+  ],
+  "4568007": [
+   "Jay Ward",
+   "MIN"
+  ],
+  "4568624": [
+   "Dorian Williams",
+   "BUF"
+  ],
+  "4568703": [
+   "Dorian Strong",
+   "BUF"
+  ],
+  "4573398": [
+   "Max Brosmer",
+   "MIN"
+  ],
+  "4573699": [
+   "Jackson Hawes",
+   "BUF"
+  ],
+  "4574008": [
+   "Kenny Dyson Jr.",
+   "MIN"
+  ],
+  "4577066": [
+   "Keonta Jenkins",
+   "BUF"
+  ],
+  "4592836": [
+   "Caleb Tiernan",
+   "MIN"
+  ],
+  "4594321": [
+   "Kaleb Elarms-Orr",
+   "BUF"
+  ],
+  "4596480": [
+   "Jordan Hancock",
+   "BUF"
+  ],
+  "4602019": [
+   "Caleb Banks",
+   "MIN"
+  ],
+  "4602969": [
+   "Bryson Nesbit",
+   "MIN"
+  ],
+  "4606712": [
+   "Ar'maj Reed-Adams",
+   "BUF"
+  ],
+  "4608794": [
+   "Tyler Batty",
+   "MIN"
+  ],
+  "4629149": [
+   "Tyrion Ingram-Dawkins",
+   "MIN"
+  ],
+  "4635008": [
+   "Keon Coleman",
+   "BUF"
+  ],
+  "4676004": [
+   "Cole Bishop",
+   "BUF"
+  ],
+  "4682749": [
+   "Kani Walker",
+   "BUF"
+  ],
+  "4682758": [
+   "Tommy Doman Jr.",
+   "BUF"
+  ],
+  "4683153": [
+   "Skyler Bell",
+   "BUF"
+  ],
+  "4684527": [
+   "T.J. Sanders",
+   "BUF"
+  ],
+  "4685347": [
+   "Zane Durant",
+   "BUF"
+  ],
+  "4688418": [
+   "Michael Briscoe",
+   "MIN"
+  ],
+  "4688552": [
+   "Keleki Latu",
+   "BUF"
+  ],
+  "4688931": [
+   "Maxwell Hairston",
+   "BUF"
+  ],
+  "4690210": [
+   "Joe Huber",
+   "MIN"
+  ],
+  "4693369": [
+   "Jack Nelson",
+   "MIN"
+  ],
+  "4695609": [
+   "Zemaiah Vaughn",
+   "MIN"
+  ],
+  "4696782": [
+   "Elijah Williams",
+   "MIN"
+  ],
+  "4698728": [
+   "Domonique Orange",
+   "MIN"
+  ],
+  "4705513": [
+   "Da'Veawn Armstead",
+   "MIN"
+  ],
+  "4708049": [
+   "Gavin Bartholomew",
+   "MIN"
+  ],
+  "4710865": [
+   "Jakobe Thomas",
+   "MIN"
+  ],
+  "4712579": [
+   "Dillon Bell",
+   "MIN"
+  ],
+  "4799994": [
+   "Brett Thorson",
+   "MIN"
+  ],
+  "4831989": [
+   "Deone Walker",
+   "BUF"
+  ],
+  "4832035": [
+   "Davison Igbinosun",
+   "BUF"
+  ],
+  "4832846": [
+   "Demond Claiborne",
+   "MIN"
+  ],
+  "4869533": [
+   "Jude Bowry",
+   "BUF"
+  ],
+  "4870886": [
+   "TJ Parker",
+   "BUF"
+  ],
+  "4875564": [
+   "Bo Richter",
+   "MIN"
+  ],
+  "4875767": [
+   "Brock Lampe",
+   "BUF"
+  ],
+  "4877652": [
+   "Jake Golday",
+   "MIN"
+  ],
+  "4878695": [
+   "Max Bredeson",
+   "MIN"
+  ],
+  "5076951": [
+   "Jalon Kilgore",
+   "BUF"
+  ],
+  "5082397": [
+   "Jacob Thomas",
+   "MIN"
+  ],
+  "5091793": [
+   "Charles Demmings",
+   "MIN"
+  ],
+  "5093973": [
+   "Levi Drake Rodriguez",
+   "MIN"
+  ],
+  "5209587": [
+   "Travis Clayton",
+   "BUF"
+  ],
+  "5452151": [
+   "Maceo Beard-Aigret",
+   "MIN"
+  ]
+ }
+}

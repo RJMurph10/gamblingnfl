@@ -7,18 +7,18 @@
   "id": "322",
   "abbr": "LAF",
   "name": "Lafayette Leopards",
-  "score": 0
+  "score": 43
  },
  "home": {
   "id": "2086",
   "abbr": "BTLR",
   "name": "Butler Bulldogs",
-  "score": 0
+  "score": 68
  },
  "neutral": false,
  "venue": "Hinkle Fieldhouse",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T21:17:39.977Z",

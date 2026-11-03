@@ -7,18 +7,18 @@
   "id": "2815",
   "abbr": "LIN",
   "name": "Lindenwood Lions",
-  "score": 0
+  "score": 15
  },
  "home": {
   "id": "2628",
   "abbr": "TCU",
   "name": "TCU Horned Frogs",
-  "score": 0
+  "score": 24
  },
  "neutral": false,
  "venue": "Schollmaier Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T07:57:03.660Z",

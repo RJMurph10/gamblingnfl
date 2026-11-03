@@ -7,18 +7,18 @@
   "id": "2379",
   "abbr": "UMES",
   "name": "Maryland Eastern Shore Hawks",
-  "score": 0
+  "score": 12
  },
  "home": {
   "id": "154",
   "abbr": "WAKE",
   "name": "Wake Forest Demon Deacons",
-  "score": 0
+  "score": 23
  },
  "neutral": false,
  "venue": "LJVM Coliseum",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T21:17:39.977Z",

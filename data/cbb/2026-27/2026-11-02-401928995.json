@@ -7,18 +7,18 @@
   "id": "2710",
   "abbr": "WIU",
   "name": "Western Illinois Leathernecks",
-  "score": 0
+  "score": 11
  },
  "home": {
   "id": "2674",
   "abbr": "VAL",
   "name": "Valparaiso Beacons",
-  "score": 0
+  "score": 16
  },
  "neutral": false,
  "venue": "Athletics-Recreation Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T07:57:03.660Z",

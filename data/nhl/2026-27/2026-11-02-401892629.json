@@ -13,12 +13,12 @@
   "id": "1",
   "abbr": "BOS",
   "name": "Boston Bruins",
-  "score": 0
+  "score": 2
  },
  "neutral": false,
  "venue": "TD Garden",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T17:47:36.545Z",

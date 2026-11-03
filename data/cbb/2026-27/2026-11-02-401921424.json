@@ -7,18 +7,18 @@
   "id": "231",
   "abbr": "FUR",
   "name": "Furman Paladins",
-  "score": 0
+  "score": 3
  },
  "home": {
   "id": "2065",
   "abbr": "BCU",
   "name": "Bethune-Cookman Wildcats",
-  "score": 0
+  "score": 6
  },
  "neutral": true,
  "venue": "Sanford Pentagon",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T21:17:39.977Z",

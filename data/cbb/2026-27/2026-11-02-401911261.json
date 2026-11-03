@@ -7,18 +7,18 @@
   "id": "2754",
   "abbr": "YSU",
   "name": "Youngstown State Penguins",
-  "score": 0
+  "score": 50
  },
  "home": {
   "id": "179",
   "abbr": "SBU",
   "name": "St. Bonaventure Bonnies",
-  "score": 0
+  "score": 47
  },
  "neutral": false,
  "venue": "Reilly Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T07:57:03.660Z",

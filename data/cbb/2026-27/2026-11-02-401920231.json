@@ -7,18 +7,18 @@
   "id": "159",
   "abbr": "DART",
   "name": "Dartmouth Big Green",
-  "score": 0
+  "score": 32
  },
  "home": {
   "id": "2368",
   "abbr": "MRST",
   "name": "Marist Red Foxes",
-  "score": 0
+  "score": 36
  },
  "neutral": false,
  "venue": "McCann Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T07:57:03.660Z",

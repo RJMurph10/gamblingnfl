@@ -7,18 +7,18 @@
   "id": "189",
   "abbr": "BGSU",
   "name": "Bowling Green Falcons",
-  "score": 32
+  "score": 76
  },
  "home": {
   "id": "2247",
   "abbr": "GAST",
   "name": "Georgia State Panthers",
-  "score": 34
+  "score": 73
  },
  "neutral": false,
  "venue": "GSU Convocation Center",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-01T07:57:03.660Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 76,
+  "home": 73
+ }
 }

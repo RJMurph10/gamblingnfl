@@ -7,18 +7,18 @@
   "id": "2630",
   "abbr": "UTM",
   "name": "UT Martin Skyhawks",
-  "score": 0
+  "score": 10
  },
  "home": {
   "id": "2655",
   "abbr": "TULN",
   "name": "Tulane Green Wave",
-  "score": 0
+  "score": 9
  },
  "neutral": false,
  "venue": "Avron B. Fogelman Arena in the Devlin Fieldhouse",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T07:57:03.660Z",

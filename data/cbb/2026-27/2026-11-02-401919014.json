@@ -7,18 +7,18 @@
   "id": "5",
   "abbr": "UAB",
   "name": "UAB Blazers",
-  "score": 41
+  "score": 78
  },
  "home": {
   "id": "2377",
   "abbr": "MCN",
   "name": "McNeese Cowboys",
-  "score": 50
+  "score": 99
  },
  "neutral": true,
  "venue": "Rock Hill Sports & Event Center",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-01T07:57:03.660Z",
@@ -934,5 +934,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 78,
+  "home": 99
+ }
 }

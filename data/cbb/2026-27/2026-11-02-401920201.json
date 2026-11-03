@@ -7,18 +7,18 @@
   "id": "2031",
   "abbr": "LR",
   "name": "Little Rock Trojans",
-  "score": 0
+  "score": 33
  },
  "home": {
   "id": "2670",
   "abbr": "VCU",
   "name": "VCU Rams",
-  "score": 0
+  "score": 39
  },
  "neutral": false,
  "venue": "Siegel Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T07:57:03.660Z",

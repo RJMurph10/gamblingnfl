@@ -7,18 +7,18 @@
   "id": "56",
   "abbr": "STET",
   "name": "Stetson Hatters",
-  "score": 0
+  "score": 42
  },
  "home": {
   "id": "228",
   "abbr": "CLEM",
   "name": "Clemson Tigers",
-  "score": 0
+  "score": 62
  },
  "neutral": false,
  "venue": "Littlejohn Coliseum",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T21:17:39.977Z",

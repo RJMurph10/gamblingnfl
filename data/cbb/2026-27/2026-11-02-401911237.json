@@ -7,18 +7,18 @@
   "id": "2427",
   "abbr": "UNCA",
   "name": "UNC Asheville Bulldogs",
-  "score": 0
+  "score": 45
  },
  "home": {
   "id": "257",
   "abbr": "RICH",
   "name": "Richmond Spiders",
-  "score": 0
+  "score": 76
  },
  "neutral": false,
  "venue": "Robins Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T21:17:39.977Z",

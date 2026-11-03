@@ -7,18 +7,18 @@
   "id": "235",
   "abbr": "MEM",
   "name": "Memphis Tigers",
-  "score": 0
+  "score": 40
  },
  "home": {
   "id": "66",
   "abbr": "ISU",
   "name": "Iowa State Cyclones",
-  "score": 0
+  "score": 39
  },
  "neutral": true,
  "venue": "Sanford Pentagon",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T07:57:03.660Z",

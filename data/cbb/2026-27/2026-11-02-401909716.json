@@ -7,18 +7,18 @@
   "id": "2441",
   "abbr": "NHVN",
   "name": "New Haven Chargers",
-  "score": 0
+  "score": 33
  },
  "home": {
   "id": "183",
   "abbr": "SYR",
   "name": "Syracuse Orange",
-  "score": 0
+  "score": 55
  },
  "neutral": false,
  "venue": "JMA Wireless Dome",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T21:17:39.977Z",

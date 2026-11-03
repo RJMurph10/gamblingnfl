@@ -7,18 +7,18 @@
   "id": "2520",
   "abbr": "RID",
   "name": "Rider Broncs",
-  "score": 0
+  "score": 34
  },
  "home": {
   "id": "221",
   "abbr": "PITT",
   "name": "Pittsburgh Panthers",
-  "score": 0
+  "score": 62
  },
  "neutral": false,
  "venue": "Petersen Events Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T07:57:03.660Z",

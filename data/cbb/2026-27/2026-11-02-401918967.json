@@ -7,18 +7,18 @@
   "id": "2582",
   "abbr": "SOU",
   "name": "Southern Jaguars",
-  "score": 0
+  "score": 7
  },
  "home": {
   "id": "2567",
   "abbr": "SMU",
   "name": "SMU Mustangs",
-  "score": 0
+  "score": 21
  },
  "neutral": false,
  "venue": "Moody Coliseum (Dallas)",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T21:17:39.977Z",

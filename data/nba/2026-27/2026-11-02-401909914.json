@@ -7,18 +7,18 @@
   "id": "3",
   "abbr": "NO",
   "name": "New Orleans Pelicans",
-  "score": 0
+  "score": 16
  },
  "home": {
   "id": "29",
   "abbr": "MEM",
   "name": "Memphis Grizzlies",
-  "score": 0
+  "score": 10
  },
  "neutral": false,
  "venue": "FedExForum",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T23:47:33.650Z",

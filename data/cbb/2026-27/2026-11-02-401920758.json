@@ -7,18 +7,18 @@
   "id": "88",
   "abbr": "USI",
   "name": "Southern Indiana Screaming Eagles",
-  "score": 0
+  "score": 14
  },
  "home": {
   "id": "2057",
   "abbr": "BEL",
   "name": "Belmont Bruins",
-  "score": 0
+  "score": 27
  },
  "neutral": false,
  "venue": "Curb Event Center Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T07:57:03.660Z",

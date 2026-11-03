@@ -7,18 +7,18 @@
   "id": "161",
   "abbr": "FDU",
   "name": "Fairleigh Dickinson Knights",
-  "score": 0
+  "score": 8
  },
  "home": {
   "id": "356",
   "abbr": "ILL",
   "name": "Illinois Fighting Illini",
-  "score": 0
+  "score": 29
  },
  "neutral": false,
  "venue": "State Farm Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T21:17:39.977Z",

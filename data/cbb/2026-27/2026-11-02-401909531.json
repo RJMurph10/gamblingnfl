@@ -7,18 +7,18 @@
   "id": "311",
   "abbr": "ME",
   "name": "Maine Black Bears",
-  "score": 0
+  "score": 31
  },
  "home": {
   "id": "2507",
   "abbr": "PROV",
   "name": "Providence Friars",
-  "score": 0
+  "score": 51
  },
  "neutral": false,
  "venue": "Amica Mutual Pavilion",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T21:17:39.977Z",

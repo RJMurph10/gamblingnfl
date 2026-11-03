@@ -7,18 +7,18 @@
   "id": "2473",
   "abbr": "OAK",
   "name": "Oakland Golden Grizzlies",
-  "score": 36
+  "score": 68
  },
  "home": {
   "id": "130",
   "abbr": "MICH",
   "name": "Michigan Wolverines",
-  "score": 47
+  "score": 84
  },
  "neutral": false,
  "venue": "Crisler Center",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-01T07:57:03.660Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 68,
+  "home": 84
+ }
 }

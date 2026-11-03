@@ -7,18 +7,18 @@
   "id": "2492",
   "abbr": "PEPP",
   "name": "Pepperdine Waves",
-  "score": 40
+  "score": 85
  },
  "home": {
   "id": "172",
   "abbr": "COR",
   "name": "Cornell Big Red",
-  "score": 46
+  "score": 86
  },
  "neutral": false,
  "venue": "Newman Arena",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-01T07:57:03.660Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 85,
+  "home": 86
+ }
 }

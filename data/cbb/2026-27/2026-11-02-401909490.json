@@ -7,18 +7,18 @@
   "id": "140",
   "abbr": "KC",
   "name": "Kansas City Roos",
-  "score": 0
+  "score": 11
  },
  "home": {
   "id": "156",
   "abbr": "CREI",
   "name": "Creighton Bluejays",
-  "score": 0
+  "score": 16
  },
  "neutral": false,
  "venue": "CHI Health Center Omaha",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T07:57:03.660Z",

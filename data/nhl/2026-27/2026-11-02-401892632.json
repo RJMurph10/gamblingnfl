@@ -477,13 +477,14 @@
    ]
   },
   "close": {
-   "at": "2026-11-02T23:50:25.569Z",
+   "at": "2026-11-03T01:24:17.697Z",
    "scoreboard": [
     {
      "provider": {
       "id": "100",
       "name": "Draft Kings",
-      "priority": 1
+      "priority": 1,
+      "displayName": "Draft Kings"
      },
      "details": "SJ -125",
      "overUnder": 6.5,
@@ -975,7 +976,7 @@
    ]
   },
   "latest": {
-   "at": "2026-11-02T23:50:25.569Z",
+   "at": "2026-11-03T01:24:17.697Z",
    "count": 630,
    "rows": [
   {"a":"3797","t":"Total Points","ti":"1","op":[0.5,null,null],"cur":[0.5,null,null],"px":[145,145]},
@@ -1611,7 +1612,7 @@
  ]
   },
   "close": {
-   "at": "2026-11-02T23:50:25.569Z",
+   "at": "2026-11-03T01:24:17.697Z",
    "provider": 100,
    "count": 630,
    "rows": [

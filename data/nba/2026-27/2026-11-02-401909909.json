@@ -7,18 +7,18 @@
   "id": "1",
   "abbr": "ATL",
   "name": "Atlanta Hawks",
-  "score": 0
+  "score": 59
  },
  "home": {
   "id": "11",
   "abbr": "IND",
   "name": "Indiana Pacers",
-  "score": 0
+  "score": 49
  },
  "neutral": false,
  "venue": "Gainbridge Fieldhouse",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-02T04:14:42.789Z",

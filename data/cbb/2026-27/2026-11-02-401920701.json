@@ -7,18 +7,18 @@
   "id": "288",
   "abbr": "LIP",
   "name": "Lipscomb Bisons",
-  "score": 0
+  "score": 42
  },
  "home": {
   "id": "2546",
   "abbr": "SEMO",
   "name": "Southeast Missouri State Redhawks",
-  "score": 0
+  "score": 40
  },
  "neutral": false,
  "venue": "Show Me Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T21:17:39.977Z",

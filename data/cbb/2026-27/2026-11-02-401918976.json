@@ -7,18 +7,18 @@
   "id": "2908",
   "abbr": "UPST",
   "name": "South Carolina Upstate Spartans",
-  "score": 0
+  "score": 43
  },
  "home": {
   "id": "151",
   "abbr": "ECU",
   "name": "East Carolina Pirates",
-  "score": 0
+  "score": 63
  },
  "neutral": false,
  "venue": "Williams Arena at Minges Coliseum",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T21:17:39.977Z",

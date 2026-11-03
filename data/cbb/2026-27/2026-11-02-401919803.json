@@ -7,18 +7,18 @@
   "id": "112358",
   "abbr": "LIU",
   "name": "Long Island University Sharks",
-  "score": 0
+  "score": 34
  },
  "home": {
   "id": "2226",
   "abbr": "FAU",
   "name": "Florida Atlantic Owls",
-  "score": 0
+  "score": 39
  },
  "neutral": false,
  "venue": "Abessinio Court at Eleanor R. Baldwin Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T21:17:39.977Z",

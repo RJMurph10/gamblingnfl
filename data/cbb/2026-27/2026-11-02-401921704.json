@@ -2,23 +2,23 @@
  "id": "401921704",
  "league": "cbb",
  "date": "2026-11-03T00:30Z",
- "name": "GONZ VS PUR",
+ "name": "PUR VS GONZ",
  "away": {
-  "id": "2250",
-  "abbr": "GONZ",
-  "name": "Gonzaga Bulldogs",
-  "score": 0
- },
- "home": {
   "id": "2509",
   "abbr": "PUR",
   "name": "Purdue Boilermakers",
-  "score": 0
+  "score": 33
+ },
+ "home": {
+  "id": "2250",
+  "abbr": "GONZ",
+  "name": "Gonzaga Bulldogs",
+  "score": 36
  },
  "neutral": true,
  "venue": "T-Mobile Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T07:57:03.660Z",

@@ -7,18 +7,18 @@
   "id": "2561",
   "abbr": "SIE",
   "name": "Siena Saints",
-  "score": 0
+  "score": 23
  },
  "home": {
   "id": "2803",
   "abbr": "BRY",
   "name": "Bryant Bulldogs",
-  "score": 0
+  "score": 17
  },
  "neutral": false,
  "venue": "Chace Athletic Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T21:17:39.977Z",

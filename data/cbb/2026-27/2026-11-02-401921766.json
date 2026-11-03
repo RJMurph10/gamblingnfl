@@ -7,18 +7,18 @@
   "id": "315",
   "abbr": "NIA",
   "name": "Niagara Purple Eagles",
-  "score": 0
+  "score": 39
  },
  "home": {
   "id": "277",
   "abbr": "WVU",
   "name": "West Virginia Mountaineers",
-  "score": 0
+  "score": 62
  },
  "neutral": false,
  "venue": "Hope Coliseum",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T07:57:03.660Z",

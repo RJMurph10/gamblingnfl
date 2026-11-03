@@ -7,18 +7,18 @@
   "id": "2385",
   "abbr": "MERC",
   "name": "Mercyhurst Lakers",
-  "score": 0
+  "score": 14
  },
  "home": {
   "id": "269",
   "abbr": "MARQ",
   "name": "Marquette Golden Eagles",
-  "score": 0
+  "score": 36
  },
  "neutral": false,
  "venue": "Fiserv Forum",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T21:17:39.977Z",

@@ -7,18 +7,18 @@
   "id": "2514",
   "abbr": "QUIN",
   "name": "Quinnipiac Bobcats",
-  "score": 0
+  "score": 38
  },
  "home": {
   "id": "127",
   "abbr": "MSU",
   "name": "Michigan State Spartans",
-  "score": 0
+  "score": 60
  },
  "neutral": false,
  "venue": "Breslin Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T07:57:03.660Z",

@@ -7,18 +7,18 @@
   "id": "2837",
   "abbr": "ETAM",
   "name": "East Texas A&M Lions",
-  "score": 0
+  "score": 19
  },
  "home": {
   "id": "201",
   "abbr": "OU",
   "name": "Oklahoma Sooners",
-  "score": 0
+  "score": 16
  },
  "neutral": false,
  "venue": "Lloyd Noble Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T21:17:39.977Z",
