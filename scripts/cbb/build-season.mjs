@@ -5,6 +5,7 @@
  *   { updated, season, conferences: { id: [name, short] },
  *     teams: { id: [abbr, name, short, nickname, color, logo, confId] },
  *     games: [[id, date, homeId, homeScore, awayId, awayScore, neutral, conf, type, line|null, note, location]] }
+ *   lines: { gameId: line }  (pregame lines of live and upcoming games, yesterday through next week)
  * line = [homeSpread, total, mlHome, mlAway, spreadOddsHome, spreadOddsAway, overOdds, underOdds]
  *
  * Finished games only (the site reads live and upcoming games straight from ESPN). Closing lines come
@@ -181,6 +182,26 @@ async function main() {
     );
   }
 
+  // pregame lines for live and upcoming games (yesterday through next week): ESPN drops a game's line
+  // from its scoreboard at tip-off, so the site reads the line saver's last pregame line from here
+  file.lines = {};
+  const dir = join(DATA, "cbb", SEASON);
+  const lo = etDay(new Date(now.getTime() - 86_400_000).toISOString());
+  const hi = etDay(new Date(now.getTime() + 8 * 86_400_000).toISOString());
+  for (const f of await readdir(dir).catch(() => [])) {
+    const day = f.slice(0, 10);
+    if (!f.endsWith(".json") || day < lo || day > hi) continue;
+    try {
+      const rec = JSON.parse(await readFile(join(dir, f), "utf8"));
+      const L = rec.lines ?? {};
+      const line =
+        bestLine(L.close?.books) ?? bestLine(L.close?.scoreboard) ?? bestLine(L.open?.books) ?? bestLine(L.open?.scoreboard);
+      if (line && rec.id) file.lines[rec.id] = line;
+    } catch {
+      // skip unreadable files
+    }
+  }
+
   file.games = [...games.values()].sort((x, y) => x[1].localeCompare(y[1]) || x[0].localeCompare(y[0]));
   file.tried = [...tried];
   file.updated = now.toISOString();
@@ -188,7 +209,7 @@ async function main() {
   await writeFile(path, JSON.stringify(file));
   const withLine = file.games.filter((g) => g[9]?.[0] != null).length;
   console.log(
-    `cbb ${SEASON}: ${file.games.length} finished games (${withLine} with a spread; ${fromLogger} from the line saver, ${looked} ESPN lookups), ${Object.keys(file.teams).length} teams, ${Object.keys(file.conferences).length} conferences`,
+    `cbb ${SEASON}: ${Object.keys(file.lines).length} live/upcoming lines, ${file.games.length} finished games (${withLine} with a spread; ${fromLogger} from the line saver, ${looked} ESPN lookups), ${Object.keys(file.teams).length} teams, ${Object.keys(file.conferences).length} conferences`,
   );
 }
 
