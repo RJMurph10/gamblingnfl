@@ -30,10 +30,13 @@ function CbbGamesPage() {
   const [conf, setConf] = useState("");
   const [q, setQ] = useState("");
   const [ranked, setRanked] = useState(false);
+  // games against non-Division I schools are listed only when asked for
+  const [nonD1, setNonD1] = useState(false);
   const [shown, setShown] = useState(PAGE);
 
   const match = (g: CbbGame) => {
     if (ranked && !g.home.rank && !g.away.rank) return false;
+    if (g.nonDivisionI && !nonD1) return false;
     if (conf && teams.get(g.home.team.id)?.confId !== conf && teams.get(g.away.team.id)?.confId !== conf) return false;
     if (q) {
       const s = q.toLowerCase();
@@ -48,7 +51,7 @@ function CbbGamesPage() {
         .filter((g) => (g.status === "scheduled" || g.status === "live") && match(g))
         .sort((a, b) => (a.status === "live" ? -1 : 0) - (b.status === "live" ? -1 : 0) || a.date.localeCompare(b.date)),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [games, conf, q, ranked, teams],
+    [games, conf, q, ranked, nonD1, teams],
   );
   const results = useMemo(
     () =>
@@ -56,7 +59,7 @@ function CbbGamesPage() {
         .filter((g) => g.status === "final" && hasScore(g) && match(g))
         .sort((a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id)),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [games, conf, q, ranked, teams],
+    [games, conf, q, ranked, nonD1, teams],
   );
   const active = tab === "upcoming" && !upcoming.length && results.length && !q && !conf && !ranked ? "results" : tab;
   const list = active === "upcoming" ? upcoming : results;
@@ -104,6 +107,15 @@ function CbbGamesPage() {
           className={`shrink-0 rounded-full px-3 py-1 font-mono text-[11px] uppercase tracking-wider ring-1 ${ranked ? "bg-acc/10 text-acc ring-acc/25" : "bg-panel2 text-mute ring-line/10 hover:text-acc"}`}
         >
           Top 25
+        </button>
+        <button
+          type="button"
+          aria-pressed={nonD1}
+          onClick={() => setNonD1((v) => !v)}
+          title="Games against D-II, D-III and NAIA schools: no betting lines, not graded"
+          className={`shrink-0 rounded-full px-3 py-1 font-mono text-[11px] uppercase tracking-wider ring-1 ${nonD1 ? "bg-acc/10 text-acc ring-acc/25" : "bg-panel2 text-mute ring-line/10 hover:text-acc"}`}
+        >
+          + vs non-D-I
         </button>
         <select
           value={conf}

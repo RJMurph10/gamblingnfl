@@ -65,6 +65,8 @@ export interface CbbGame {
   neutral: boolean;
   /** A conference game. */
   conference: boolean;
+  /** One team isn't Division I (a D-II, D-III or NAIA school): close to an exhibition, rarely has a line. */
+  nonDivisionI?: boolean;
   /** e.g. "Maui Invitational", "NCAA Tournament - East Region - 1st Round". */
   note?: string;
   venue?: string;

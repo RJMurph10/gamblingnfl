@@ -439,6 +439,14 @@ async function loadSchedule(): Promise<CbbSchedule> {
         }
       }),
   );
+  // Games against schools outside Division I (D-II, D-III, NAIA): kept and labeled, but the dashboard
+  // leaves them out and the model gives them little weight. A team is D-I when it's in a D-I conference.
+  const d1 = new Set([...teams.values()].filter((t) => t.confId && conferences.some((c) => c.id === t.confId)).map((t) => t.id));
+  if (d1.size) {
+    for (const [id, g] of byId) {
+      if (!d1.has(g.home.team.id) || !d1.has(g.away.team.id)) byId.set(id, { ...g, nonDivisionI: true });
+    }
+  }
   return {
     season,
     games: [...byId.values()].sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id)),

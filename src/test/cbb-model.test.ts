@@ -120,3 +120,15 @@ describe("cbb odds listed from the other side", () => {
     expect(parseOdds(pick, { id: "", abbr: "GONZ" })?.spread).toBe(-5.5);
   });
 });
+
+describe("games against non-Division I schools", () => {
+  it("count a quarter as much in the ratings and stay out of the record", () => {
+    const blowout = game("1", "d3", "a", 40, 100, "2026-11-04T00:00Z", { nonDivisionI: true, odds: { spread: -30, total: 140, mlHome: -5000, mlAway: 2000 } });
+    const real = game("2", "d3", "a", 40, 100, "2026-11-04T00:00Z", { odds: { spread: -30, total: 140, mlHome: -5000, mlAway: 2000 } });
+    const light = buildRatings([blowout]);
+    const full = buildRatings([real]);
+    expect((light.off.get("a") as number) < (full.off.get("a") as number)).toBe(true);
+    expect(gradeCbbSeason(runCbbModel([blowout])).games).toBe(0);
+    expect(gradeCbbSeason(runCbbModel([real])).games).toBe(1);
+  });
+});

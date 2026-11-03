@@ -109,6 +109,14 @@ function Row({ game, row, showDate }: { game: CbbGame; row?: CbbModelRow; showDa
             <CbbTeamName side={game.home} />
           </span>
           {started ? <span className="font-mono tabular-nums">{game.home.score}</span> : null}
+          {game.nonDivisionI ? (
+            <span
+              className="rounded px-1 font-mono text-[9px] uppercase tracking-wider text-faint ring-1 ring-line/10"
+              title="Against a school outside Division I: no betting lines, not graded"
+            >
+              non-D-I
+            </span>
+          ) : null}
         </Link>
       </td>
       <td className="whitespace-nowrap px-2 py-2.5 font-mono text-xs">

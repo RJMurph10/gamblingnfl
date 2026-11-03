@@ -36,13 +36,16 @@ function CbbDashboard() {
   const prev = useMemo(() => gradeCbbSeason(rows, weekAgo), [rows, weekAgo]);
   const hasPrev = prev.games > 0 && prev.games !== grade.games;
 
-  const live = useMemo(() => games.filter((g) => g.status === "live"), [games]);
+  // games against non-Division I schools stay off the dashboard (they're on the Games page)
+  const d1Games = useMemo(() => games.filter((g) => !g.nonDivisionI), [games]);
+  const nonD1 = games.filter((g) => g.nonDivisionI && g.status === "final").length;
+  const live = useMemo(() => d1Games.filter((g) => g.status === "live"), [d1Games]);
   const finals = useMemo(
     () =>
-      games
+      d1Games
         .filter((g) => g.status === "final" && hasScore(g))
         .sort((a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id)),
-    [games],
+    [d1Games],
   );
   const standings = useMemo(() => buildCbbStandings(games, [...teams.values()]), [games, teams]);
   const top25 = useMemo(
@@ -110,6 +113,14 @@ function CbbDashboard() {
         </div>
         <p className="mt-2 font-mono text-[10px] uppercase tracking-wider text-faint">
           {through ? `Through ${through} · ` : ""}flat 1u per pick at closing ESPN odds ·{" "}
+          {nonD1 ? (
+            <>
+              <Link to="/cbb/games" className="text-acc">
+                {nonD1} games vs non-D-I schools
+              </Link>{" "}
+              not shown or graded ·{" "}
+            </>
+          ) : null}
           <Link to="/cbb/model" className="text-acc">
             Model picks →
           </Link>
@@ -119,7 +130,7 @@ function CbbDashboard() {
       <div className="grid gap-6 lg:grid-cols-12">
         <section className="min-w-0 space-y-6 lg:col-span-8">
           <CbbLiveGames games={live} />
-          <CbbUpcomingGames games={games} />
+          <CbbUpcomingGames games={d1Games} />
           <CbbRecentGames
             games={finals.slice(0, 5)}
             emptyText={
