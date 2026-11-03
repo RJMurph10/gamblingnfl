@@ -183,6 +183,12 @@ export function normCdf(z: number): number {
   return z > 0 ? 1 - p : p;
 }
 
+export const cbbHeadshot = (playerId: string) =>
+  playerId ? `https://a.espncdn.com/i/headshots/mens-college-basketball/players/full/${playerId}.png` : "";
+
+export const pct = (n: number | null | undefined, digits = 1) =>
+  n === null || n === undefined || !Number.isFinite(n) ? "—" : `${(n * 100).toFixed(digits)}%`;
+
 export const cbbLogoFor = (teamId: string) =>
   teamId ? `https://a.espncdn.com/i/teamlogos/ncaa/500/${teamId}.png` : "";
 
@@ -311,6 +317,10 @@ export interface CbbPlay {
   awayScore: number | null;
   homeScore: number | null;
   scoring: boolean;
+  /** Points the play scored (0, 1, 2 or 3). */
+  scoreValue: number;
+  /** Where a shot was taken: ESPN's court spot (feet across 0–50, from the baseline). */
+  shot?: { x: number; y: number };
 }
 
 export interface CbbGameDetail {
@@ -320,7 +330,9 @@ export interface CbbGameDetail {
   plays: CbbPlay[];
   /** Home win probability after each play (0–1), when ESPN reports it. */
   winProb: number[];
-  leaders: { teamId: string; category: string; name: string; value: string }[];
+  /** Per-play moneyline / cover / over-under chances for the Markets tab. */
+  probabilities?: import("@/data/shared/games").GameProbabilityPoint[];
+  leaders: { teamId: string; category: string; name: string; value: string; playerId?: string }[];
 }
 
 export interface CbbRosterPlayer {

@@ -26,6 +26,8 @@ export const FOOTBALL_CLOCK: GraphClock = {
   otUnderLockPoints: 24,
 };
 export const BASKETBALL_CLOCK: GraphClock = { periodSeconds: 720, periods: 4, otSeconds: 300 };
+/** Men's college basketball: two 20-minute halves. */
+export const COLLEGE_BASKETBALL_CLOCK: GraphClock = { periodSeconds: 1200, periods: 2, otSeconds: 300 };
 
 /** Quarter label: 1st…4th, then OT, 2OT… */
 const periodLabel = (q: number | undefined, gc: GraphClock) => {

@@ -12,16 +12,29 @@
 import type { GameProbabilityPoint } from "@/data/shared/games";
 import { normCdf, type NbaGame, type NbaPlay } from "./nba";
 
-const QUARTER_SECONDS = 720;
-const REGULATION_SECONDS = 4 * QUARTER_SECONDS;
-const OT_SECONDS = 300;
-/** How much the rest-of-game margin and points vary, per full game still to play. */
-const MARGIN_SD = 15;
-const TOTAL_SD = 18;
-/** Extra variance (points²) for end-of-game fouling and overtime, faded out over the final minute. */
-const LATE_TOTAL_VAR = 30;
-/** The same for the margin (end-of-game fouling): sharper cover odds in the last few minutes. */
-const LATE_MARGIN_VAR = 8;
+/** Game length and how much the rest of a game varies, per league. */
+export interface BasketballRules {
+  periods: number;
+  periodSeconds: number;
+  otSeconds: number;
+  /** How much the rest-of-game margin and points vary, per full game still to play. */
+  marginSd: number;
+  totalSd: number;
+  /** Extra variance (points²) for end-of-game fouling and overtime, faded out over the final minute. */
+  lateTotalVar: number;
+  /** The same for the margin (end-of-game fouling): sharper cover odds in the last few minutes. */
+  lateMarginVar: number;
+}
+
+export const NBA_RULES: BasketballRules = {
+  periods: 4,
+  periodSeconds: 720,
+  otSeconds: 300,
+  marginSd: 15,
+  totalSd: 18,
+  lateTotalVar: 30,
+  lateMarginVar: 8,
+};
 
 /** ESPN's win-probability sample: home win chance and the play it follows. */
 export interface NbaWinProbSample {
@@ -47,13 +60,21 @@ function normalInverse(p: number): number {
   return (lo + hi) / 2;
 }
 
+type ProbPlay = Pick<NbaPlay, "id" | "period" | "clock" | "text" | "awayScore" | "homeScore">;
+type ProbGame = {
+  status: string;
+  odds?: { spread: number | null; total: number | null } | null;
+  away: { score: number | null };
+  home: { score: number | null };
+};
+
 /** Seconds left in regulation (0 in overtime) at a play. */
-function secondsLeftAt(play: NbaPlay | undefined): number | undefined {
+function secondsLeftAt(play: ProbPlay | undefined, r: BasketballRules): number | undefined {
   if (!play || !play.period) return undefined;
   const c = clockSeconds(play.clock);
   if (c === undefined) return undefined;
-  if (play.period > 4) return 0;
-  return (4 - play.period) * QUARTER_SECONDS + Math.min(c, QUARTER_SECONDS);
+  if (play.period > r.periods) return 0;
+  return (r.periods - play.period) * r.periodSeconds + Math.min(c, r.periodSeconds);
 }
 
 export function buildNbaProbabilities(
@@ -61,6 +82,22 @@ export function buildNbaProbabilities(
   plays: NbaPlay[],
   game: NbaGame,
 ): GameProbabilityPoint[] {
+  return buildBasketballProbabilities(samples, plays, game, NBA_RULES);
+}
+
+/** The same chart for any basketball league, given its game length and spreads of outcomes. */
+export function buildBasketballProbabilities(
+  samples: NbaWinProbSample[],
+  plays: ProbPlay[],
+  game: ProbGame,
+  rules: BasketballRules,
+): GameProbabilityPoint[] {
+  const REGULATION_SECONDS = rules.periods * rules.periodSeconds;
+  const OT_SECONDS = rules.otSeconds;
+  const MARGIN_SD = rules.marginSd;
+  const TOTAL_SD = rules.totalSd;
+  const LATE_TOTAL_VAR = rules.lateTotalVar;
+  const LATE_MARGIN_VAR = rules.lateMarginVar;
   if (samples.length < 2) return [];
   const playById = new Map(plays.map((p) => [p.id, p]));
   const spread = game.odds?.spread ?? undefined; // home line, negative = home favored
@@ -77,7 +114,7 @@ export function buildNbaProbabilities(
     if (play?.homeScore !== null && play?.homeScore !== undefined)
       lastHome = Math.max(lastHome ?? 0, play.homeScore);
     const p = Math.max(0, Math.min(1, s.homeWinPercentage));
-    const secondsLeft = secondsLeftAt(play);
+    const secondsLeft = secondsLeftAt(play, rules);
     const point: GameProbabilityPoint = {
       homeWinProbability: p,
       ...(play
@@ -89,7 +126,7 @@ export function buildNbaProbabilities(
     };
 
     // Share of the game still to play (overtime counts as its own short stretch).
-    const inOvertime = (play?.period ?? 0) > 4;
+    const inOvertime = (play?.period ?? 0) > rules.periods;
     const otLeft = inOvertime ? (clockSeconds(play!.clock) ?? OT_SECONDS) / REGULATION_SECONDS : 0;
     const rawFraction =
       secondsLeft !== undefined
