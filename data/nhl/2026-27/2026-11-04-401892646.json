@@ -193,5 +193,275 @@
    ]
   }
  },
- "props": {}
+ "props": {
+  "open": {
+   "at": "2026-11-03T17:13:51.295Z",
+   "provider": 100,
+   "count": 1,
+   "rows": [
+  {"a":null,"t":"Will There Be Overtime?","ti":"153","cur":[null,290,null]}
+ ],
+   "sample": [
+    {
+     "competition": {
+      "id": "401892646"
+     },
+     "provider": {
+      "id": "100"
+     },
+     "type": {
+      "id": "153",
+      "name": "Will There Be Overtime?"
+     },
+     "odds": {
+      "american": {
+       "value": "+290",
+       "open": "+290"
+      },
+      "decimal": {
+       "value": "3.90",
+       "open": "3.90"
+      },
+      "fraction": {
+       "value": "29/10",
+       "open": "29/10"
+      },
+      "total": {}
+     },
+     "lastUpdated": "2026-11-03T19:06Z",
+     "current": {},
+     "open": {}
+    }
+   ]
+  },
+  "latest": {
+   "at": "2026-11-03T17:13:51.295Z",
+   "count": 1,
+   "rows": [
+  {"a":null,"t":"Will There Be Overtime?","ti":"153","cur":[null,290,null]}
+ ]
+  }
+ },
+ "names": {
+  "2273": [
+   "Corey Perry",
+   "LA"
+  ],
+  "3995": [
+   "Drew Doughty",
+   "LA"
+  ],
+  "5550": [
+   "Tyler Toffoli",
+   "SJ"
+  ],
+  "5560": [
+   "Mats Zuccarello",
+   "LA"
+  ],
+  "5646": [
+   "Dmitry Orlov",
+   "SJ"
+  ],
+  "5738": [
+   "Brian Dumoulin",
+   "LA"
+  ],
+  "2562596": [
+   "Joel Armia",
+   "LA"
+  ],
+  "2563034": [
+   "Joel Edmundson",
+   "LA"
+  ],
+  "2593311": [
+   "Erik Haula",
+   "LA"
+  ],
+  "2610321": [
+   "Darcy Kuemper",
+   "LA"
+  ],
+  "2976839": [
+   "Jacob Trouba",
+   "SJ"
+  ],
+  "2976843": [
+   "Cody Ceci",
+   "LA"
+  ],
+  "2976848": [
+   "Scott Laughton",
+   "LA"
+  ],
+  "3036851": [
+   "Anton Forsberg",
+   "LA"
+  ],
+  "3041997": [
+   "Darnell Nurse",
+   "SJ"
+  ],
+  "3042017": [
+   "Alexander Wennberg",
+   "SJ"
+  ],
+  "3069411": [
+   "Barclay Goodrow",
+   "SJ"
+  ],
+  "3096186": [
+   "Trevor Moore",
+   "LA"
+  ],
+  "3114743": [
+   "Kevin Fiala",
+   "LA"
+  ],
+  "3114802": [
+   "Adrian Kempe",
+   "LA"
+  ],
+  "3114994": [
+   "Alex Nedeljkovic",
+   "SJ"
+  ],
+  "3891922": [
+   "Erik Gustafsson",
+   "LA"
+  ],
+  "3891952": [
+   "Artemi Panarin",
+   "LA"
+  ],
+  "3942868": [
+   "Adam Gaudette",
+   "SJ"
+  ],
+  "4063429": [
+   "Libor Hajek",
+   "SJ"
+  ],
+  "4272192": [
+   "Mason Marchment",
+   "SJ"
+  ],
+  "4329962": [
+   "Kyle Keyser",
+   "SJ"
+  ],
+  "4331604": [
+   "Michael Kesselring",
+   "SJ"
+  ],
+  "4352747": [
+   "Ty Dellandrea",
+   "SJ"
+  ],
+  "4391255": [
+   "Kiefer Sherwood",
+   "SJ"
+  ],
+  "4565226": [
+   "Alex Turcotte",
+   "LA"
+  ],
+  "4565278": [
+   "Brett Leason",
+   "SJ"
+  ],
+  "4588178": [
+   "Mikey Anderson",
+   "LA"
+  ],
+  "4697383": [
+   "Quinton Byfield",
+   "LA"
+  ],
+  "4697394": [
+   "Yaroslav Askarov",
+   "SJ"
+  ],
+  "4697667": [
+   "Martin Chromiak",
+   "LA"
+  ],
+  "4697725": [
+   "Alex Laferriere",
+   "LA"
+  ],
+  "4755703": [
+   "Patrick Giles",
+   "SJ"
+  ],
+  "4781650": [
+   "Taylor Ward",
+   "LA"
+  ],
+  "4874722": [
+   "Brandt Clarke",
+   "LA"
+  ],
+  "4874749": [
+   "Nolan Allan",
+   "SJ"
+  ],
+  "4874881": [
+   "Zack Ostapchuk",
+   "SJ"
+  ],
+  "4874923": [
+   "Samuel Helenius",
+   "LA"
+  ],
+  "4997131": [
+   "Andre Lee",
+   "LA"
+  ],
+  "5080175": [
+   "Filip Bystedt",
+   "SJ"
+  ],
+  "5080215": [
+   "Mattias Havelid",
+   "SJ"
+  ],
+  "5104210": [
+   "Michael Fisher",
+   "SJ"
+  ],
+  "5136607": [
+   "Collin Graf",
+   "SJ"
+  ],
+  "5149155": [
+   "Will Smith",
+   "SJ"
+  ],
+  "5149209": [
+   "Quentin Musty",
+   "SJ"
+  ],
+  "5206628": [
+   "Macklin Celebrini",
+   "SJ"
+  ],
+  "5216880": [
+   "Sam Dickinson",
+   "SJ"
+  ],
+  "5216907": [
+   "Igor Chernyshov",
+   "SJ"
+  ],
+  "5291934": [
+   "Michael Misa",
+   "SJ"
+  ],
+  "5361709": [
+   "Ivar Stenberg",
+   "SJ"
+  ]
+ }
 }

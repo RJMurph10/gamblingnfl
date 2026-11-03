@@ -193,5 +193,267 @@
    ]
   }
  },
- "props": {}
+ "props": {
+  "open": {
+   "at": "2026-11-03T17:13:51.295Z",
+   "provider": 100,
+   "count": 1,
+   "rows": [
+  {"a":null,"t":"Will There Be Overtime?","ti":"153","cur":[null,300,null]}
+ ],
+   "sample": [
+    {
+     "competition": {
+      "id": "401892644"
+     },
+     "provider": {
+      "id": "100"
+     },
+     "type": {
+      "id": "153",
+      "name": "Will There Be Overtime?"
+     },
+     "odds": {
+      "american": {
+       "value": "+300",
+       "open": "+300"
+      },
+      "decimal": {
+       "value": "4.00",
+       "open": "4.00"
+      },
+      "fraction": {
+       "value": "3/1",
+       "open": "3/1"
+      },
+      "total": {}
+     },
+     "lastUpdated": "2026-11-03T19:06Z",
+     "current": {},
+     "open": {}
+    }
+   ]
+  },
+  "latest": {
+   "at": "2026-11-03T17:13:51.295Z",
+   "count": 1,
+   "rows": [
+  {"a":null,"t":"Will There Be Overtime?","ti":"153","cur":[null,300,null]}
+ ]
+  }
+ },
+ "names": {
+  "3775": [
+   "Claude Giroux",
+   "OTT"
+  ],
+  "5474": [
+   "Sam Carrick",
+   "BUF"
+  ],
+  "2563027": [
+   "Nick Cousins",
+   "OTT"
+  ],
+  "2593315": [
+   "Jason Zucker",
+   "BUF"
+  ],
+  "3042044": [
+   "Andre Burakovsky",
+   "OTT"
+  ],
+  "3069285": [
+   "Linus Ullmark",
+   "OTT"
+  ],
+  "3069448": [
+   "Matt Grzelcyk",
+   "BUF"
+  ],
+  "3115546": [
+   "Jonas Johansson",
+   "OTT"
+  ],
+  "3149829": [
+   "Michael Amadio",
+   "OTT"
+  ],
+  "3150479": [
+   "Hayden Hodgson",
+   "OTT"
+  ],
+  "3151036": [
+   "Warren Foegele",
+   "OTT"
+  ],
+  "3654006": [
+   "Alex Lyon",
+   "BUF"
+  ],
+  "3900219": [
+   "Thomas Chabot",
+   "OTT"
+  ],
+  "3941970": [
+   "Caleb Jones",
+   "BUF"
+  ],
+  "4024988": [
+   "Tage Thompson",
+   "BUF"
+  ],
+  "4063240": [
+   "Beck Malenstyn",
+   "BUF"
+  ],
+  "4233627": [
+   "Josh Norris",
+   "BUF"
+  ],
+  "4233868": [
+   "Conor Timmins",
+   "BUF"
+  ],
+  "4233889": [
+   "Ukko-Pekka Luukkonen",
+   "BUF"
+  ],
+  "4271734": [
+   "Drake Batherson",
+   "OTT"
+  ],
+  "4294163": [
+   "Rasmus Dahlin",
+   "BUF"
+  ],
+  "4378656": [
+   "Mattias Samuelsson",
+   "BUF"
+  ],
+  "4378669": [
+   "Ryan McLeod",
+   "BUF"
+  ],
+  "4419696": [
+   "Zach Metsa",
+   "BUF"
+  ],
+  "4565228": [
+   "Dylan Cozens",
+   "OTT"
+  ],
+  "4565238": [
+   "Peyton Krebs",
+   "BUF"
+  ],
+  "4565245": [
+   "Philip Tomasino",
+   "OTT"
+  ],
+  "4565255": [
+   "Shane Pinto",
+   "OTT"
+  ],
+  "4587815": [
+   "Samuel Ersson",
+   "OTT"
+  ],
+  "4587837": [
+   "Fabian Zetterlund",
+   "OTT"
+  ],
+  "4588190": [
+   "Jordan Spence",
+   "OTT"
+  ],
+  "4697384": [
+   "Tim Stutzle",
+   "OTT"
+  ],
+  "4697386": [
+   "Jake Sanderson",
+   "OTT"
+  ],
+  "4697389": [
+   "Jack Quinn",
+   "BUF"
+  ],
+  "4697411": [
+   "Ridly Greig",
+   "OTT"
+  ],
+  "4697448": [
+   "Tyler Kleven",
+   "OTT"
+  ],
+  "4697681": [
+   "Louis Crevier",
+   "BUF"
+  ],
+  "4712021": [
+   "Artem Zub",
+   "OTT"
+  ],
+  "4736758": [
+   "Colten Ellis",
+   "BUF"
+  ],
+  "4781556": [
+   "Owen Power",
+   "BUF"
+  ],
+  "4874721": [
+   "William Eklund",
+   "OTT"
+  ],
+  "4874739": [
+   "Xavier Bourgault",
+   "OTT"
+  ],
+  "4874863": [
+   "Olen Zellweger",
+   "BUF"
+  ],
+  "4874870": [
+   "Josh Doan",
+   "BUF"
+  ],
+  "4894355": [
+   "Justin Danforth",
+   "BUF"
+  ],
+  "4895527": [
+   "Tyson Kozak",
+   "BUF"
+  ],
+  "5080160": [
+   "Noah Ostlund",
+   "BUF"
+  ],
+  "5080176": [
+   "Jiri Kulich",
+   "BUF"
+  ],
+  "5136706": [
+   "Stephen Halliday",
+   "OTT"
+  ],
+  "5149186": [
+   "Zach Benson",
+   "BUF"
+  ],
+  "5174232": [
+   "Nikolas Matinpalo",
+   "OTT"
+  ],
+  "5216868": [
+   "Carter Yakemchuk",
+   "OTT"
+  ],
+  "5216882": [
+   "Konsta Helenius",
+   "BUF"
+  ]
+ }
 }

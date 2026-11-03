@@ -193,5 +193,263 @@
    ]
   }
  },
- "props": {}
+ "props": {
+  "open": {
+   "at": "2026-11-03T17:13:51.295Z",
+   "provider": 100,
+   "count": 1,
+   "rows": [
+  {"a":null,"t":"Will There Be Overtime?","ti":"153","cur":[null,285,null]}
+ ],
+   "sample": [
+    {
+     "competition": {
+      "id": "401892647"
+     },
+     "provider": {
+      "id": "100"
+     },
+     "type": {
+      "id": "153",
+      "name": "Will There Be Overtime?"
+     },
+     "odds": {
+      "american": {
+       "value": "+285",
+       "open": "+285"
+      },
+      "decimal": {
+       "value": "3.85",
+       "open": "3.85"
+      },
+      "fraction": {
+       "value": "57/20",
+       "open": "57/20"
+      },
+      "total": {}
+     },
+     "lastUpdated": "2026-11-03T19:06Z",
+     "current": {},
+     "open": {}
+    }
+   ]
+  },
+  "latest": {
+   "at": "2026-11-03T17:13:51.295Z",
+   "count": 1,
+   "rows": [
+  {"a":null,"t":"Will There Be Overtime?","ti":"153","cur":[null,285,null]}
+ ]
+  }
+ },
+ "names": {
+  "3797": [
+   "Mikael Backlund",
+   "CGY"
+  ],
+  "5032": [
+   "Jordan Eberle",
+   "SEA"
+  ],
+  "5657": [
+   "Philipp Grubauer",
+   "SEA"
+  ],
+  "2562606": [
+   "Jonathan Huberdeau",
+   "CGY"
+  ],
+  "2562610": [
+   "Adam Larsson",
+   "SEA"
+  ],
+  "2562636": [
+   "Ryan Strome",
+   "CGY"
+  ],
+  "3067858": [
+   "Chandler Stephenson",
+   "SEA"
+  ],
+  "3114777": [
+   "Jared McCann",
+   "SEA"
+  ],
+  "3115032": [
+   "Brandon Montour",
+   "SEA"
+  ],
+  "3149612": [
+   "Joel Hanley",
+   "CGY"
+  ],
+  "3149649": [
+   "Frederick Gaudreau",
+   "SEA"
+  ],
+  "3149839": [
+   "Jake Middleton",
+   "CGY"
+  ],
+  "3904189": [
+   "Vince Dunn",
+   "SEA"
+  ],
+  "3942073": [
+   "Joey Daccord",
+   "SEA"
+  ],
+  "4063504": [
+   "Joshua Mahura",
+   "SEA"
+  ],
+  "4233685": [
+   "Morgan Frost",
+   "CGY"
+  ],
+  "4271998": [
+   "Ryan Lindgren",
+   "SEA"
+  ],
+  "4312877": [
+   "Zach Whitecloud",
+   "CGY"
+  ],
+  "4319911": [
+   "Devin Cooley",
+   "CGY"
+  ],
+  "4331586": [
+   "Curtis Douglas",
+   "SEA"
+  ],
+  "4352750": [
+   "Joel Farabee",
+   "CGY"
+  ],
+  "4378686": [
+   "Kevin Bahl",
+   "CGY"
+  ],
+  "4392883": [
+   "Martin Pospisil",
+   "CGY"
+  ],
+  "4393055": [
+   "Cale Fleury",
+   "SEA"
+  ],
+  "4565223": [
+   "Kaapo Kakko",
+   "SEA"
+  ],
+  "4587843": [
+   "Yegor Sharangovich",
+   "CGY"
+  ],
+  "4587952": [
+   "Dustin Wolf",
+   "CGY"
+  ],
+  "4697453": [
+   "Yan Kuznetsov",
+   "CGY"
+  ],
+  "4755729": [
+   "Ben Meyers",
+   "SEA"
+  ],
+  "4781552": [
+   "Matty Beniers",
+   "SEA"
+  ],
+  "4874730": [
+   "Matt Coronato",
+   "CGY"
+  ],
+  "4874733": [
+   "Brennan Othmann",
+   "CGY"
+  ],
+  "4874741": [
+   "Mackie Samoskevich",
+   "SEA"
+  ],
+  "4874864": [
+   "Ryker Evans",
+   "SEA"
+  ],
+  "4874893": [
+   "William Stromgren",
+   "CGY"
+  ],
+  "4894747": [
+   "Jacob Melanson",
+   "SEA"
+  ],
+  "4894928": [
+   "Ryan Winterton",
+   "SEA"
+  ],
+  "4915344": [
+   "Simon Nemec",
+   "CGY"
+  ],
+  "5048894": [
+   "Bobby McMann",
+   "SEA"
+  ],
+  "5073306": [
+   "Adam Klapka",
+   "CGY"
+  ],
+  "5080217": [
+   "Jani Nyman",
+   "SEA"
+  ],
+  "5103811": [
+   "Ville Ottavainen",
+   "SEA"
+  ],
+  "5104219": [
+   "Arsenii Sergeev",
+   "CGY"
+  ],
+  "5149189": [
+   "Matthew Wood",
+   "SEA"
+  ],
+  "5149191": [
+   "Samuel Honzek",
+   "CGY"
+  ],
+  "5188608": [
+   "Jonathan Castagna",
+   "CGY"
+  ],
+  "5188613": [
+   "Aydar Suniev",
+   "CGY"
+  ],
+  "5212753": [
+   "Maxim Tsyplakov",
+   "CGY"
+  ],
+  "5216877": [
+   "Berkly Catton",
+   "SEA"
+  ],
+  "5216878": [
+   "Zayne Parekh",
+   "CGY"
+  ],
+  "5216897": [
+   "Matvei Gridin",
+   "CGY"
+  ],
+  "5302595": [
+   "Jake O'Brien",
+   "SEA"
+  ]
+ }
 }
