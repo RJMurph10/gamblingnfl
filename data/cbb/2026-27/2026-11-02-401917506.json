@@ -7,18 +7,18 @@
   "id": "2547",
   "abbr": "SEA",
   "name": "Seattle U Redhawks",
-  "score": 39
+  "score": 73
  },
  "home": {
   "id": "62",
   "abbr": "HAW",
   "name": "Hawai'i Rainbow Warriors",
-  "score": 47
+  "score": 74
  },
  "neutral": false,
  "venue": "Stan Sheriff Center",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-01T07:57:03.660Z",
@@ -934,5 +934,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 73,
+  "home": 74
+ }
 }
