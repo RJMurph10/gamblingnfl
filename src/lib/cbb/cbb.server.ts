@@ -21,6 +21,7 @@ import {
 } from "./cbb";
 import { readFinal, writeFinal } from "../shared/final-cache.server";
 import { possessionFromSummary } from "../shared/basketball-possession";
+import { buildBasketballProbabilities, type BasketballRules } from "../nba/nba-probabilities";
 
 const SITE = "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball";
 const CORE = "https://sports.core.api.espn.com/v2/sports/basketball/leagues/mens-college-basketball";
@@ -539,7 +540,7 @@ export function fetchCbbRankings(): Promise<Record<string, number>> {
 /* ---------- one game ---------- */
 
 export async function fetchCbbGameDetail(gameId: string): Promise<CbbGameDetail> {
-  const key = `cbb-game-v1-${gameId}`;
+  const key = `cbb-game-v2-${gameId}`;
   const stored = await readFinal<CbbGameDetail>(key);
   if (stored) return stored;
   const detail = await cached(`game-${gameId}`, 15_000, () => loadGameDetail(gameId));
@@ -617,20 +618,64 @@ async function loadGameDetail(gameId: string): Promise<CbbGameDetail> {
     awayScore: num(p?.awayScore),
     homeScore: num(p?.homeScore),
     scoring: Boolean(p?.scoringPlay),
+    scoreValue: Number(p?.scoreValue ?? 0) || 0,
+    ...shotSpot(p),
   }));
-  const winProb: number[] = (json?.winprobability ?? [])
-    .map((w: any) => num(w?.homeWinPercentage))
-    .filter((v: number | null): v is number => v !== null);
+  const samples = (json?.winprobability ?? [])
+    .map((w: any) => ({ homeWinPercentage: num(w?.homeWinPercentage), playId: w?.playId ? String(w.playId) : undefined }))
+    .filter((w: { homeWinPercentage: number | null }) => w.homeWinPercentage !== null) as { homeWinPercentage: number; playId?: string }[];
+  const winProb: number[] = samples.map((w) => w.homeWinPercentage);
+  // the pregame line (the season file's, when ESPN's summary no longer has one) for the cover / total chart
+  if (game.odds?.spread == null || game.odds?.total == null) {
+    const file = await loadSeasonFile(cbbSeasonLabel(new Date(game.date))).catch(() => null);
+    const line = file?.lines?.[game.id] ?? file?.games?.find((r) => r[0] === game.id)?.[9];
+    if (line)
+      game.odds = mergeOdds(game.odds, {
+        spread: line[0] ?? null,
+        total: line[1] ?? null,
+        mlHome: line[2] ?? null,
+        mlAway: line[3] ?? null,
+        spreadOddsHome: line[4] ?? null,
+        spreadOddsAway: line[5] ?? null,
+        overOdds: line[6] ?? null,
+        underOdds: line[7] ?? null,
+      });
+  }
+  const probabilities = buildBasketballProbabilities(samples, plays, game, CBB_RULES);
   const leaders = (json?.leaders ?? []).flatMap((t: any) =>
     (t?.leaders ?? []).map((c: any) => ({
       teamId: String(t?.team?.id ?? ""),
       category: String(c?.displayName ?? c?.name ?? ""),
       name: String(c?.leaders?.[0]?.athlete?.displayName ?? ""),
       value: String(c?.leaders?.[0]?.displayValue ?? ""),
+      ...(c?.leaders?.[0]?.athlete?.id ? { playerId: String(c.leaders[0].athlete.id) } : {}),
     })),
   );
-  return { game, teamStats, box, plays, winProb, leaders };
+  return { game, teamStats, box, plays, winProb, probabilities, leaders };
 }
+
+/** Where a shot was taken: ESPN's court spot (feet across 0–50, from the baseline). */
+function shotSpot(p: any): { shot?: { x: number; y: number } } {
+  const x = Number(p?.coordinate?.x);
+  const y = Number(p?.coordinate?.y);
+  if (!p?.shootingPlay || !Number.isFinite(x) || !Number.isFinite(y)) return {};
+  if (x < 0 || x > 50 || y < -6 || y > 94) return {};
+  return { shot: { x, y } };
+}
+
+/**
+ * Two 20-minute halves, 5-minute overtimes. The rest-of-game spreads are a little smaller than the
+ * NBA's: closing college lines miss the final margin by about 11 points and the total by about 16.
+ */
+const CBB_RULES: BasketballRules = {
+  periods: 2,
+  periodSeconds: 1200,
+  otSeconds: 300,
+  marginSd: 12.5,
+  totalSd: 16,
+  lateTotalVar: 30,
+  lateMarginVar: 8,
+};
 
 /* ---------- a team's roster ---------- */
 
