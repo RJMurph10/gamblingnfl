@@ -96,6 +96,11 @@ function CbbModelPage() {
               tournaments, March).
             </li>
             <li>
+              <b>Games against schools outside Division I</b> (D-II, D-III, NAIA) count a quarter as much as a
+              real game: they're mostly 30-point mismatches with no betting line. They stay on the Games and
+              team pages, labeled, but aren't graded or shown on the dashboard.
+            </li>
+            <li>
               Projected score = average + one team&apos;s offense + the other&apos;s defense ± home court. A spread
               pick needs 2+ points of disagreement with the line, a total pick 3+.
             </li>

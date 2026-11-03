@@ -25,6 +25,9 @@ const NEW_TEAM = 6;
 export const MARGIN_SD = 11.5;
 const DEFAULT_AVG = 72;
 
+/** Games against non-Division I schools count this much in the ratings (they're mostly mismatches). */
+const NON_D1_WEIGHT = 0.25;
+
 export const SPREAD_PICK_MIN = 2;
 export const TOTAL_PICK_MIN = 3;
 const WIN_UNITS = 100 / 110;
@@ -73,14 +76,19 @@ export function buildRatings(finals: CbbGame[]): RatingTable {
   const hs = new Float64Array(G);
   const as = new Float64Array(G);
   const hh = new Float64Array(G);
+  const w = new Float64Array(G);
+  const played = new Float64Array(T);
   finals.forEach((g, k) => {
     hi[k] = slot.get(g.home.team.id) as number;
     ai[k] = slot.get(g.away.team.id) as number;
     hs[k] = g.home.score as number;
     as[k] = g.away.score as number;
     hh[k] = g.neutral ? 0 : HOME_COURT / 2;
-    n[hi[k]] += 1;
-    n[ai[k]] += 1;
+    w[k] = g.nonDivisionI ? NON_D1_WEIGHT : 1;
+    n[hi[k]] += w[k];
+    n[ai[k]] += w[k];
+    played[hi[k]] += 1;
+    played[ai[k]] += 1;
   });
   if (G) {
     const offSum = new Float64Array(T);
@@ -91,10 +99,10 @@ export function buildRatings(finals: CbbGame[]): RatingTable {
       for (let k = 0; k < G; k++) {
         const H = hi[k];
         const A = ai[k];
-        offSum[H] += hs[k] - avg - hh[k] - def[A];
-        offSum[A] += as[k] - avg + hh[k] - def[H];
-        defSum[A] += hs[k] - avg - hh[k] - off[H];
-        defSum[H] += as[k] - avg + hh[k] - off[A];
+        offSum[H] += w[k] * (hs[k] - avg - hh[k] - def[A]);
+        offSum[A] += w[k] * (as[k] - avg + hh[k] - def[H]);
+        defSum[A] += w[k] * (hs[k] - avg - hh[k] - off[H]);
+        defSum[H] += w[k] * (as[k] - avg + hh[k] - off[A]);
       }
       for (let i = 0; i < T; i++) {
         off[i] = (offSum[i] + PRIOR_WEIGHT * pOff[i]) / (n[i] + PRIOR_WEIGHT);
@@ -106,7 +114,7 @@ export function buildRatings(finals: CbbGame[]): RatingTable {
   idList.forEach((id, i) => {
     out.off.set(id, off[i]);
     out.def.set(id, def[i]);
-    out.games.set(id, n[i]);
+    out.games.set(id, played[i]);
   });
   return out;
 }
@@ -262,6 +270,8 @@ export function gradeCbbSeason(rows: CbbModelRow[], before?: Date): CbbSeasonGra
   for (const r of rows) {
     const g = r.game;
     if (g.status !== "final" || !hasScore(g)) continue;
+    // games against non-Division I schools are left out of the record (no lines, near-exhibitions)
+    if (g.nonDivisionI) continue;
     if (before && Date.parse(g.date) > before.getTime()) continue;
     out.games++;
     pts += (g.home.score as number) + (g.away.score as number);
