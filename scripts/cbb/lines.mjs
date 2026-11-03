@@ -57,12 +57,45 @@ const usable = (b) => {
   return !/live|accuscore|numberfire|teamrankings/i.test(name);
 };
 
-/** The best book's line from a list of odds objects: DraftKings, then ESPN BET, then anything. */
-export function bestLine(books) {
+const teamIdOf = (t) => {
+  if (!t) return null;
+  if (t.id != null) return String(t.id);
+  const m = /\/teams\/(\d+)/.exec(String(t.$ref ?? ""));
+  return m ? m[1] : null;
+};
+
+/**
+ * True when the odds object's "home" team is the game's away team. ESPN does this for some
+ * neutral-site games (about 3% of college games): its odds list the other school as home, so the
+ * line would land on the wrong team. Checked by team id, else by the favorite named in "details".
+ */
+export function oddsSwapped(o, home) {
+  if (!home?.id && !home?.abbr) return false;
+  const hid = teamIdOf(o?.homeTeamOdds?.team);
+  const aid = teamIdOf(o?.awayTeamOdds?.team);
+  if (home.id && hid) return hid !== String(home.id) && (!aid || aid === String(home.id));
+  const m = /^\s*([A-Za-z&.'-]+)\s+-\d/.exec(String(o?.details ?? ""));
+  if (m && home.abbr && o?.homeTeamOdds?.favorite != null) {
+    const favIsHome = m[1].toUpperCase() === String(home.abbr).toUpperCase();
+    return favIsHome !== Boolean(o.homeTeamOdds.favorite);
+  }
+  return false;
+}
+
+/** The same line from the other team's side. */
+export const swapLine = (l) => [l[0] === null ? null : -l[0], l[1], l[3], l[2], l[5], l[4], l[6], l[7]];
+
+/**
+ * The best book's line from a list of odds objects: DraftKings, then ESPN BET, then anything.
+ * `home` ({ id, abbr }) is the game's home team, so a book that lists the teams the other way
+ * round is turned around.
+ */
+export function bestLine(books, home) {
   const list = (books ?? []).filter(Boolean).filter(usable).sort((x, y) => rank(x) - rank(y));
   let fallback = null;
   for (const b of list) {
-    const l = lineOf(b);
+    const raw = lineOf(b);
+    const l = oddsSwapped(b, home) ? swapLine(raw) : raw;
     if (l[0] !== null && l[1] !== null) return l;
     if (!fallback && (l[0] !== null || l[1] !== null || l[2] !== null)) fallback = l;
   }

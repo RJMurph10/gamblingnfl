@@ -99,3 +99,24 @@ describe("cbb ESPN parsing", () => {
     expect(g?.home.score).toBeNull();
   });
 });
+
+describe("cbb odds listed from the other side", () => {
+  // ESPN listed Florida State (the game's away team) as "home" in its odds for FSU @ Florida A&M
+  const fsuAtFamu = {
+    details: "FSU -28.5",
+    overUnder: 158.5,
+    spread: -28.5,
+    homeTeamOdds: { favorite: true, moneyLine: -20000, team: { id: "52" } },
+    awayTeamOdds: { favorite: false, moneyLine: 3500, team: { id: "50" } },
+  };
+  it("turns the line around to the game's home team", () => {
+    expect(parseOdds(fsuAtFamu, { id: "50", abbr: "FAMU" })).toMatchObject({ spread: 28.5, mlHome: 3500, mlAway: -20000, total: 158.5 });
+  });
+  it("leaves a normally listed line alone", () => {
+    expect(parseOdds(fsuAtFamu, { id: "52", abbr: "FSU" })).toMatchObject({ spread: -28.5, mlHome: -20000 });
+  });
+  it("uses the favorite in the details when there are no team ids", () => {
+    const pick = { details: "GONZ -5.5", spread: 5.5, homeTeamOdds: { favorite: false }, awayTeamOdds: { favorite: true } };
+    expect(parseOdds(pick, { id: "", abbr: "GONZ" })?.spread).toBe(-5.5);
+  });
+});

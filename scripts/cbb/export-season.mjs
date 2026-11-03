@@ -14,6 +14,7 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { gzipSync } from "node:zlib";
+import { oddsSwapped, swapLine } from "./lines.mjs";
 
 const YEAR = Number(process.argv[2]);
 const OUT = process.argv[3] ?? "out";
@@ -94,7 +95,7 @@ function lineOf(o) {
   return { close, open };
 }
 
-async function lines(id) {
+async function lines(id, home) {
   const list = await get(`${CORE}/events/${id}/competitions/${id}/odds?limit=50`);
   const items = [];
   for (const it of list?.items ?? [])
@@ -106,6 +107,11 @@ async function lines(id) {
   let best = null;
   for (const b of books) {
     const l = lineOf(b);
+    // ESPN sometimes lists the away team as "home" in its odds (some neutral-site games)
+    if (oddsSwapped(b, home)) {
+      l.close = [...swapLine(l.close), l.close[8]];
+      l.open = [l.open[0] === null ? null : -l.open[0], l.open[1], l.open[3], l.open[2]];
+    }
     if (l.close[0] !== null && l.close[1] !== null) return l;
     if (!best && (l.close[0] !== null || l.close[1] !== null || l.close[2] !== null)) best = l;
   }
@@ -142,7 +148,7 @@ for (let t = start; t <= end; t += 86_400_000) {
             logo: String(tm.logo ?? ""),
           };
         }
-        const l = await lines(e.id);
+        const l = await lines(e.id, { id: String(h.team.id), abbr: String(h.team.abbreviation ?? "") });
         if (l?.close?.[0] != null) withLines += 1;
         rows.push({
           id: String(e.id),

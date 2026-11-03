@@ -90,7 +90,46 @@ export function cbbSeasonLabel(now = new Date()): string {
 
 /* ---------- odds ---------- */
 
-export function parseOdds(o: any): CbbOdds | undefined {
+const teamIdOf = (t: any): string | null => {
+  if (!t) return null;
+  if (t.id != null) return String(t.id);
+  const m = /\/teams\/(\d+)/.exec(String(t.$ref ?? ""));
+  return m ? m[1] : null;
+};
+
+/**
+ * True when ESPN's odds list the game's away team as "home". It does this for some neutral-site
+ * college games (about 3%), which would put the line on the wrong team (Florida A&M −28.5 against
+ * Florida State). Checked by team id, else by the favorite named in "details".
+ */
+export function oddsSwapped(o: any, home?: { id?: string; abbr?: string }): boolean {
+  if (!home?.id && !home?.abbr) return false;
+  const hid = teamIdOf(o?.homeTeamOdds?.team);
+  const aid = teamIdOf(o?.awayTeamOdds?.team);
+  if (home.id && hid) return hid !== String(home.id) && (!aid || aid === String(home.id));
+  const m = /^\s*([A-Za-z&.'-]+)\s+-\d/.exec(String(o?.details ?? ""));
+  if (m && home.abbr && o?.homeTeamOdds?.favorite != null) {
+    const favIsHome = m[1].toUpperCase() === String(home.abbr).toUpperCase();
+    return favIsHome !== Boolean(o.homeTeamOdds.favorite);
+  }
+  return false;
+}
+
+/** One ESPN odds object as the game's line; `home` turns around books that list the teams the other way. */
+export function parseOdds(o: any, home?: { id?: string; abbr?: string }): CbbOdds | undefined {
+  const odds = parseOddsAsListed(o);
+  if (!odds || !oddsSwapped(o, home)) return odds;
+  return {
+    ...odds,
+    spread: odds.spread === null ? null : odds.spread === 0 ? 0 : -odds.spread,
+    mlHome: odds.mlAway,
+    mlAway: odds.mlHome,
+    spreadOddsHome: odds.spreadOddsAway,
+    spreadOddsAway: odds.spreadOddsHome,
+  };
+}
+
+function parseOddsAsListed(o: any): CbbOdds | undefined {
   if (!o || typeof o !== "object") return undefined;
   const h = o.homeTeamOdds ?? {};
   const a = o.awayTeamOdds ?? {};
@@ -215,7 +254,10 @@ export function parseEvent(e: any): CbbGame | null {
   const st = comp.status ?? e.status ?? {};
   const broadcast = comp.broadcasts?.[0]?.names?.[0] ?? comp.geoBroadcasts?.[0]?.media?.shortName;
   const note = comp.notes?.[0]?.headline ?? e.notes?.[0]?.headline;
-  const odds = parseOdds(Array.isArray(comp.odds) ? comp.odds[0] : undefined);
+  const odds = parseOdds(Array.isArray(comp.odds) ? comp.odds[0] : undefined, {
+    id: String(home.team.id ?? ""),
+    abbr: String(home.team.abbreviation ?? ""),
+  });
   const addr = comp.venue?.address;
   const location = [addr?.city, addr?.state].filter(Boolean).join(", ");
   return {
@@ -415,7 +457,7 @@ async function loadSchedule(): Promise<CbbSchedule> {
 const oddsLookups = new Map<string, { at: number; odds: CbbOdds | null }>();
 const LOOKUPS_PER_LOAD = 12;
 
-async function loadClosingOdds(id: string): Promise<CbbOdds | null> {
+async function loadClosingOdds(id: string, home: { id: string; abbr: string }): Promise<CbbOdds | null> {
   const list = await fetchJson(`${CORE}/events/${id}/competitions/${id}/odds?limit=50`);
   const items: any[] = await Promise.all(
     (Array.isArray(list?.items) ? list.items : []).map((it: any) =>
@@ -432,7 +474,7 @@ async function loadClosingOdds(id: string): Promise<CbbOdds | null> {
     .sort((a, b) => rank(a) - rank(b));
   let fallback: CbbOdds | null = null;
   for (const b of books) {
-    const o = parseOdds(b);
+    const o = parseOdds(b, home);
     if (!o) continue;
     if (o.spread !== null && o.total !== null) return o;
     fallback ??= o;
@@ -444,7 +486,7 @@ async function closingOdds(g: CbbGame): Promise<CbbOdds | null> {
   const hit = oddsLookups.get(g.id);
   const ttl = hit?.odds ? 12 * HOUR : g.status === "live" ? 2 * MINUTE : 10 * MINUTE;
   if (hit && Date.now() - hit.at < ttl) return hit.odds;
-  const odds = await loadClosingOdds(g.id).catch(() => null);
+  const odds = await loadClosingOdds(g.id, { id: g.home.team.id, abbr: g.home.team.abbr }).catch(() => null);
   oddsLookups.set(g.id, { at: Date.now(), odds });
   return odds;
 }
@@ -511,7 +553,7 @@ async function loadGameDetail(gameId: string): Promise<CbbGameDetail> {
   if (!game) throw new Error("ESPN returned no game for this id");
   if (!game.venue && json?.gameInfo?.venue?.fullName) game.venue = String(json.gameInfo.venue.fullName);
   for (const pick of Array.isArray(json?.pickcenter) ? json.pickcenter : []) {
-    const o = parseOdds(pick);
+    const o = parseOdds(pick, { id: game.home.team.id, abbr: game.home.team.abbr });
     if (o) {
       game.odds = mergeOdds(game.odds, o);
       if (game.odds?.spread != null && game.odds?.total != null) break;

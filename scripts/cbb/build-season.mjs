@@ -61,22 +61,25 @@ async function loggerLine(g) {
     return null;
   }
   const L = rec.lines ?? {};
+  const home = rec.home;
   return (
-    bestLine(L.final?.books) ??
-    bestLine(L.close?.books) ??
-    bestLine(L.close?.scoreboard) ??
-    bestLine(L.open?.books) ??
-    bestLine(L.open?.scoreboard)
+    bestLine(L.final?.books, home) ??
+    bestLine(L.close?.books, home) ??
+    bestLine(L.close?.scoreboard, home) ??
+    bestLine(L.open?.books, home) ??
+    bestLine(L.open?.scoreboard, home)
   );
 }
 
-async function espnLine(id) {
+async function espnLine(id, home) {
   const list = await get(`${CORE}/events/${id}/competitions/${id}/odds?limit=50`);
   const items = [];
   for (const it of list?.items ?? [])
     items.push(it?.$ref && Object.keys(it).length === 1 ? await get(it.$ref) : it);
-  return bestLine(items);
+  return bestLine(items, home);
 }
+
+let teamsAbbr = () => "";
 
 async function main() {
   let file = { season: SEASON, conferences: {}, teams: {}, games: [], tried: [] };
@@ -87,6 +90,7 @@ async function main() {
   }
   const games = new Map(file.games.map((g) => [g[0], g]));
   const tried = new Set(file.tried ?? []);
+  teamsAbbr = (id) => file.teams[id]?.[0] ?? "";
 
   // conferences and Division I teams
   const groups = await get(`${SITE}/groups`);
@@ -159,8 +163,8 @@ async function main() {
   // closing lines: the line saver's files first, then ESPN for games it missed (once each)
   let fromLogger = 0;
   let looked = 0;
+  // the line saver's copy always wins (it's re-read every run, so a correction reaches old games too)
   for (const row of games.values()) {
-    if (row[9]) continue;
     const l = await loggerLine({ id: row[0], date: row[1] });
     if (l) {
       row[9] = l;
@@ -174,7 +178,7 @@ async function main() {
     await Promise.all(
       batch.slice(i, i + 8).map(async (row) => {
         looked += 1;
-        const l = await espnLine(row[0]);
+        const l = await espnLine(row[0], { id: row[2], abbr: teamsAbbr(row[2]) });
         if (l) row[9] = l;
         // ESPN keeps lines a while after the game; give up after three days
         else if (Date.now() - Date.parse(row[1]) > 3 * 86_400_000) tried.add(row[0]);
@@ -194,8 +198,12 @@ async function main() {
     try {
       const rec = JSON.parse(await readFile(join(dir, f), "utf8"));
       const L = rec.lines ?? {};
+      const h = rec.home;
       const line =
-        bestLine(L.close?.books) ?? bestLine(L.close?.scoreboard) ?? bestLine(L.open?.books) ?? bestLine(L.open?.scoreboard);
+        bestLine(L.close?.books, h) ??
+        bestLine(L.close?.scoreboard, h) ??
+        bestLine(L.open?.books, h) ??
+        bestLine(L.open?.scoreboard, h);
       if (line && rec.id) file.lines[rec.id] = line;
     } catch {
       // skip unreadable files
