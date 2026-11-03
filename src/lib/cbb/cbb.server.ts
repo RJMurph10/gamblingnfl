@@ -128,6 +128,8 @@ interface SeasonFile {
   teams?: Record<string, [string, string, string, string, string, string, string]>;
   /** …, line, note ("" when none), location ("City, ST"). */
   games?: [string, string, string, number, string, number, number, number, number, (number | null)[] | null, string?, string?][];
+  /** Pregame lines of live and upcoming games, by game id (same layout as a game's line). */
+  lines?: Record<string, (number | null)[]>;
 }
 
 function teamFromFile(id: string, t: SeasonFile["teams"] extends Record<string, infer V> | undefined ? V : never): CbbTeamRef {
@@ -361,6 +363,23 @@ async function loadSchedule(): Promise<CbbSchedule> {
     const stored = byId.get(g.id);
     byId.set(g.id, { ...g, odds: mergeOdds(g.odds, stored?.odds) });
   }
+  // Live and just-finished games: ESPN's scoreboard drops the line at tip-off, so use the hourly line
+  // saver's last pregame line (one file, no per-game requests).
+  for (const [id, g] of byId) {
+    const line = file?.lines?.[id];
+    if (!line || (g.odds?.spread != null && g.odds?.total != null)) continue;
+    const saved: CbbOdds = {
+      spread: line[0] ?? null,
+      total: line[1] ?? null,
+      mlHome: line[2] ?? null,
+      mlAway: line[3] ?? null,
+      spreadOddsHome: line[4] ?? null,
+      spreadOddsAway: line[5] ?? null,
+      overOdds: line[6] ?? null,
+      underOdds: line[7] ?? null,
+    };
+    byId.set(id, { ...g, odds: mergeOdds(g.odds, saved) });
+  }
   // only the recent days: older games without a line in the season file never had one
   const recent = [...byId.values()].filter((g) => Date.parse(g.date) > now.getTime() - 3 * DAY);
   await withClosingOdds(recent);
@@ -394,7 +413,7 @@ async function loadSchedule(): Promise<CbbSchedule> {
 // feed (DraftKings first, then ESPN BET, then any book; never a live in-game line), a bounded
 // number per load, newest first.
 const oddsLookups = new Map<string, { at: number; odds: CbbOdds | null }>();
-const LOOKUPS_PER_LOAD = 40;
+const LOOKUPS_PER_LOAD = 12;
 
 async function loadClosingOdds(id: string): Promise<CbbOdds | null> {
   const list = await fetchJson(`${CORE}/events/${id}/competitions/${id}/odds?limit=50`);
