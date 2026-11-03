@@ -7,18 +7,18 @@
   "id": "193",
   "abbr": "M-OH",
   "name": "Miami (OH) RedHawks",
-  "score": 52
+  "score": 86
  },
  "home": {
   "id": "256",
   "abbr": "JMU",
   "name": "James Madison Dukes",
-  "score": 56
+  "score": 77
  },
  "neutral": false,
  "venue": "Atlantic Union Bank Center",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-01T07:57:03.660Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 86,
+  "home": 77
+ }
 }

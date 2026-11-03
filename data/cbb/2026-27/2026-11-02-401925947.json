@@ -477,7 +477,7 @@
    ]
   },
   "close": {
-   "at": "2026-11-03T01:24:17.697Z",
+   "at": "2026-11-03T02:13:14.301Z",
    "scoreboard": [
     {
      "provider": {
@@ -771,7 +771,7 @@
       "priority": 1
      },
      "details": "ORST -18.5",
-     "overUnder": 160.5,
+     "overUnder": 161.5,
      "spread": -18.5,
      "overOdds": -110,
      "underOdds": -110,
@@ -925,8 +925,8 @@
        "american": "-110"
       },
       "total": {
-       "alternateDisplayValue": "160.5",
-       "american": "160.5"
+       "alternateDisplayValue": "161.5",
+       "american": "161.5"
       }
      }
     }

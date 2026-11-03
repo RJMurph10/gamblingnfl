@@ -13,12 +13,12 @@
   "id": "218",
   "abbr": "TEM",
   "name": "Temple Owls",
-  "score": 66
+  "score": 68
  },
  "neutral": false,
  "venue": "Liacouras Center",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-01T21:17:39.977Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 56,
+  "home": 68
+ }
 }

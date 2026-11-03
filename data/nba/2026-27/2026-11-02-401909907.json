@@ -7,13 +7,13 @@
   "id": "25",
   "abbr": "OKC",
   "name": "Oklahoma City Thunder",
-  "score": 61
+  "score": 103
  },
  "home": {
   "id": "5",
   "abbr": "CLE",
   "name": "Cleveland Cavaliers",
-  "score": 51
+  "score": 104
  },
  "neutral": false,
  "venue": "Rocket Arena",

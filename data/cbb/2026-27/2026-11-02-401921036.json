@@ -7,18 +7,18 @@
   "id": "2296",
   "abbr": "JKST",
   "name": "Jackson State Tigers",
-  "score": 22
+  "score": 42
  },
  "home": {
   "id": "2641",
   "abbr": "TTU",
   "name": "Texas Tech Red Raiders",
-  "score": 51
+  "score": 76
  },
  "neutral": false,
  "venue": "United Supermarkets Arena",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-01T21:17:39.977Z",
@@ -769,5 +769,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 42,
+  "home": 76
+ }
 }

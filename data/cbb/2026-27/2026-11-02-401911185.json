@@ -7,18 +7,18 @@
   "id": "2885",
   "abbr": "NJIT",
   "name": "NJIT Highlanders",
-  "score": 30
+  "score": 58
  },
  "home": {
   "id": "2168",
   "abbr": "DAY",
   "name": "Dayton Flyers",
-  "score": 59
+  "score": 89
  },
  "neutral": false,
  "venue": "UD Arena",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-01T21:17:39.977Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 58,
+  "home": 89
+ }
 }

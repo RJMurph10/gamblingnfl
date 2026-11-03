@@ -7,18 +7,18 @@
   "id": "2005",
   "abbr": "AF",
   "name": "Air Force Falcons",
-  "score": 44
+  "score": 71
  },
  "home": {
   "id": "2750",
   "abbr": "WRST",
   "name": "Wright State Raiders",
-  "score": 71
+  "score": 102
  },
  "neutral": false,
  "venue": "Nutter Center",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-01T07:57:03.660Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 71,
+  "home": 102
+ }
 }

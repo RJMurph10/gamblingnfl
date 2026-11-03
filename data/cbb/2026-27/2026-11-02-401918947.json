@@ -7,18 +7,18 @@
   "id": "236",
   "abbr": "UTC",
   "name": "Chattanooga Mocs",
-  "score": 0
+  "score": 5
  },
  "home": {
   "id": "97",
   "abbr": "LOU",
   "name": "Louisville Cardinals",
-  "score": 0
+  "score": 15
  },
  "neutral": false,
  "venue": "KFC Yum! Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T07:57:03.660Z",

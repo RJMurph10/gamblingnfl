@@ -7,18 +7,18 @@
   "id": "47",
   "abbr": "HOW",
   "name": "Howard Bison",
-  "score": 41
+  "score": 62
  },
  "home": {
   "id": "43",
   "abbr": "YALE",
   "name": "Yale Bulldogs",
-  "score": 52
+  "score": 72
  },
  "neutral": false,
  "venue": "John J. Lee Amphitheater",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-01T21:17:39.977Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 62,
+  "home": 72
+ }
 }

@@ -7,18 +7,18 @@
   "id": "155",
   "abbr": "UND",
   "name": "North Dakota Fighting Hawks",
-  "score": 0
+  "score": 5
  },
  "home": {
   "id": "135",
   "abbr": "MINN",
   "name": "Minnesota Golden Gophers",
-  "score": 0
+  "score": 9
  },
  "neutral": false,
  "venue": "The Barn by Blue Cross and Blue Shield of Minnesota",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T07:57:03.660Z",

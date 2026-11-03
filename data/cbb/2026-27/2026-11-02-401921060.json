@@ -477,7 +477,7 @@
    ]
   },
   "close": {
-   "at": "2026-11-03T01:24:17.697Z",
+   "at": "2026-11-03T02:13:14.301Z",
    "scoreboard": [
     {
      "provider": {
@@ -485,9 +485,9 @@
       "name": "Draft Kings",
       "priority": 1
      },
-     "details": "SF -14.5",
+     "details": "SF -15.5",
      "overUnder": 154.5,
-     "spread": -14.5,
+     "spread": -15.5,
      "awayTeamOdds": {
       "favorite": false,
       "underdog": true,
@@ -519,7 +519,7 @@
       "shortDisplayName": "ML",
       "home": {
        "close": {
-        "odds": "-625",
+        "odds": "-650",
         "link": {
          "language": "en-US",
          "rel": [
@@ -551,7 +551,7 @@
       },
       "away": {
        "close": {
-        "odds": "+455",
+        "odds": "+470",
         "link": {
          "language": "en-US",
          "rel": [
@@ -587,8 +587,8 @@
       "shortDisplayName": "Spread",
       "home": {
        "close": {
-        "line": "-14.5",
-        "odds": "-115",
+        "line": "-15.5",
+        "odds": "-105",
         "link": {
          "language": "en-US",
          "rel": [
@@ -596,7 +596,7 @@
           "desktop",
           "bets"
          ],
-         "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34944897%3Foutcomes%3D0HC87047888N1450_1",
+         "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34944897%3Foutcomes%3D0HC87047888N1550_1",
          "text": "Home Point Spread",
          "shortText": "Home Point Spread",
          "isExternal": true,
@@ -609,7 +609,7 @@
            "gameId": 401921060,
            "betSide": "none",
            "betType": "straight",
-           "betDetails": "Spread:SF-14.5"
+           "betDetails": "Spread:SF-15.5"
           }
          }
         }
@@ -621,8 +621,8 @@
       },
       "away": {
        "close": {
-        "line": "+14.5",
-        "odds": "-105",
+        "line": "+15.5",
+        "odds": "-115",
         "link": {
          "language": "en-US",
          "rel": [
@@ -630,7 +630,7 @@
           "desktop",
           "bets"
          ],
-         "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34944897%3Foutcomes%3D0HC87047888P1450_3",
+         "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34944897%3Foutcomes%3D0HC87047888P1550_3",
          "text": "Away Point Spread",
          "shortText": "Away Point Spread",
          "isExternal": true,
@@ -643,7 +643,7 @@
            "gameId": 401921060,
            "betSide": "none",
            "betType": "straight",
-           "betDetails": "Spread:RAD+14.5"
+           "betDetails": "Spread:RAD+15.5"
           }
          }
         }
@@ -770,16 +770,16 @@
       "name": "Draft Kings",
       "priority": 1
      },
-     "details": "SF -14.5",
+     "details": "SF -15.5",
      "overUnder": 154.5,
-     "spread": -14.5,
+     "spread": -15.5,
      "overOdds": -112,
      "underOdds": -108,
      "awayTeamOdds": {
       "favorite": false,
       "underdog": true,
-      "moneyLine": 455,
-      "spreadOdds": -105,
+      "moneyLine": 470,
+      "spreadOdds": -115,
       "open": {
        "favorite": false,
        "pointSpread": {
@@ -805,24 +805,24 @@
       },
       "current": {
        "pointSpread": {
-        "alternateDisplayValue": "+14.5",
-        "american": "+14.5"
+        "alternateDisplayValue": "+15.5",
+        "american": "+15.5"
        },
        "spread": {
-        "value": 1.95,
-        "displayValue": "20/21",
-        "alternateDisplayValue": "-105",
-        "decimal": 1.95,
-        "fraction": "20/21",
-        "american": "-105"
+        "value": 1.86,
+        "displayValue": "20/23",
+        "alternateDisplayValue": "-115",
+        "decimal": 1.86,
+        "fraction": "20/23",
+        "american": "-115"
        },
        "moneyLine": {
-        "value": 5.55,
-        "displayValue": "91/20",
-        "alternateDisplayValue": "+455",
-        "decimal": 5.55,
-        "fraction": "91/20",
-        "american": "+455"
+        "value": 5.7,
+        "displayValue": "47/10",
+        "alternateDisplayValue": "+470",
+        "decimal": 5.7,
+        "fraction": "47/10",
+        "american": "+470"
        }
       },
       "team": {
@@ -832,8 +832,8 @@
      "homeTeamOdds": {
       "favorite": true,
       "underdog": false,
-      "moneyLine": -625,
-      "spreadOdds": -115,
+      "moneyLine": -650,
+      "spreadOdds": -105,
       "open": {
        "favorite": true,
        "pointSpread": {
@@ -859,24 +859,24 @@
       },
       "current": {
        "pointSpread": {
-        "alternateDisplayValue": "-14.5",
-        "american": "-14.5"
+        "alternateDisplayValue": "-15.5",
+        "american": "-15.5"
        },
        "spread": {
-        "value": 1.86,
-        "displayValue": "20/23",
-        "alternateDisplayValue": "-115",
-        "decimal": 1.86,
-        "fraction": "20/23",
-        "american": "-115"
+        "value": 1.95,
+        "displayValue": "20/21",
+        "alternateDisplayValue": "-105",
+        "decimal": 1.95,
+        "fraction": "20/21",
+        "american": "-105"
        },
        "moneyLine": {
-        "value": 1.16,
-        "displayValue": "4/25",
-        "alternateDisplayValue": "-625",
-        "decimal": 1.16,
-        "fraction": "4/25",
-        "american": "-625"
+        "value": 1.15,
+        "displayValue": "2/13",
+        "alternateDisplayValue": "-650",
+        "decimal": 1.15,
+        "fraction": "2/13",
+        "american": "-650"
        }
       },
       "team": {

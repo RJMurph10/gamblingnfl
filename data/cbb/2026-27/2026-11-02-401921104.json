@@ -7,18 +7,18 @@
   "id": "91",
   "abbr": "BELL",
   "name": "Bellarmine Knights",
-  "score": 21
+  "score": 47
  },
  "home": {
   "id": "238",
   "abbr": "VAN",
   "name": "Vanderbilt Commodores",
-  "score": 66
+  "score": 93
  },
  "neutral": false,
  "venue": "Memorial Gymnasium (TN)",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-01T21:17:39.977Z",
@@ -769,5 +769,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 47,
+  "home": 93
+ }
 }

@@ -7,18 +7,18 @@
   "id": "2640",
   "abbr": "TXSO",
   "name": "Texas Southern Tigers",
-  "score": 0
+  "score": 4
  },
  "home": {
   "id": "2253",
   "abbr": "GCU",
   "name": "Grand Canyon Lopes",
-  "score": 0
+  "score": 6
  },
  "neutral": false,
  "venue": "Global Credit Union Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T21:17:39.977Z",

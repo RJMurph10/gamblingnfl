@@ -7,18 +7,18 @@
   "id": "160",
   "abbr": "UNH",
   "name": "New Hampshire Wildcats",
-  "score": 33
+  "score": 59
  },
  "home": {
   "id": "225",
   "abbr": "BRWN",
   "name": "Brown Bears",
-  "score": 35
+  "score": 55
  },
  "neutral": false,
  "venue": "Pizzitola Sports Center",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-01T21:17:39.977Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 59,
+  "home": 55
+ }
 }

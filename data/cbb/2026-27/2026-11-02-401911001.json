@@ -7,18 +7,18 @@
   "id": "113",
   "abbr": "MASS",
   "name": "Massachusetts Minutemen",
-  "score": 60
+  "score": 71
  },
  "home": {
   "id": "2653",
   "abbr": "TROY",
   "name": "Troy Trojans",
-  "score": 42
+  "score": 60
  },
  "neutral": false,
  "venue": "Trojan Arena",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-01T07:57:03.660Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 71,
+  "home": 60
+ }
 }

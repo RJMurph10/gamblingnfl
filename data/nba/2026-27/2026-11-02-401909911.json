@@ -7,13 +7,13 @@
   "id": "27",
   "abbr": "WSH",
   "name": "Washington Wizards",
-  "score": 45
+  "score": 75
  },
  "home": {
   "id": "19",
   "abbr": "ORL",
   "name": "Orlando Magic",
-  "score": 46
+  "score": 68
  },
  "neutral": false,
  "venue": "Kia Center",

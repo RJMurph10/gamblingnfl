@@ -7,13 +7,13 @@
   "id": "5",
   "abbr": "DET",
   "name": "Detroit Red Wings",
-  "score": 2
+  "score": 4
  },
  "home": {
   "id": "26",
   "abbr": "FLA",
   "name": "Florida Panthers",
-  "score": 1
+  "score": 2
  },
  "neutral": false,
  "venue": "Amerant Bank Arena",

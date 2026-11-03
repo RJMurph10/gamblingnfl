@@ -7,13 +7,13 @@
   "id": "4",
   "abbr": "CHI",
   "name": "Chicago Bulls",
-  "score": 47
+  "score": 75
  },
  "home": {
   "id": "20",
   "abbr": "PHI",
   "name": "Philadelphia 76ers",
-  "score": 47
+  "score": 87
  },
  "neutral": false,
  "venue": "Xfinity Mobile Arena",

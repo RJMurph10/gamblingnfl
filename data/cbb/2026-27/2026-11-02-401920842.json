@@ -7,18 +7,18 @@
   "id": "2900",
   "abbr": "STMN",
   "name": "St. Thomas Tommies",
-  "score": 56
+  "score": 87
  },
  "home": {
   "id": "2506",
   "abbr": "PRES",
   "name": "Presbyterian Blue Hose",
-  "score": 48
+  "score": 78
  },
  "neutral": false,
  "venue": "Templeton Center",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-01T21:17:39.977Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 87,
+  "home": 78
+ }
 }

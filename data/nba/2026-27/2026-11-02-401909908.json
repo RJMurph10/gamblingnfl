@@ -7,13 +7,13 @@
   "id": "8",
   "abbr": "DET",
   "name": "Detroit Pistons",
-  "score": 33
+  "score": 79
  },
  "home": {
   "id": "30",
   "abbr": "CHA",
   "name": "Charlotte Hornets",
-  "score": 34
+  "score": 73
  },
  "neutral": false,
  "venue": "Spectrum Center",

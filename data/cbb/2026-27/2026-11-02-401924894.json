@@ -7,18 +7,18 @@
   "id": "3101",
   "abbr": "UTU",
   "name": "Utah Tech Trailblazers",
-  "score": 0
+  "score": 5
  },
  "home": {
   "id": "167",
   "abbr": "UNM",
   "name": "New Mexico Lobos",
-  "score": 0
+  "score": 9
  },
  "neutral": false,
  "venue": "The Pit",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T07:57:03.660Z",

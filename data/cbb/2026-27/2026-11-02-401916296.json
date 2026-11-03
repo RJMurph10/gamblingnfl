@@ -7,18 +7,18 @@
   "id": "2083",
   "abbr": "BUCK",
   "name": "Bucknell Bison",
-  "score": 37
+  "score": 67
  },
  "home": {
   "id": "120",
   "abbr": "MD",
   "name": "Maryland Terrapins",
-  "score": 56
+  "score": 96
  },
  "neutral": false,
  "venue": "XFINITY Center",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-01T21:17:39.977Z",
@@ -769,5 +769,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 67,
+  "home": 96
+ }
 }

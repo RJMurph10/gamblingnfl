@@ -7,18 +7,18 @@
   "id": "2000",
   "abbr": "ACU",
   "name": "Abilene Christian Wildcats",
-  "score": 0
+  "score": 9
  },
  "home": {
   "id": "38",
   "abbr": "COLO",
   "name": "Colorado Buffaloes",
-  "score": 0
+  "score": 10
  },
  "neutral": false,
  "venue": "CU Events Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T07:57:03.660Z",

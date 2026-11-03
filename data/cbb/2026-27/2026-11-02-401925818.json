@@ -7,18 +7,18 @@
   "id": "2429",
   "abbr": "CLT",
   "name": "Charlotte 49ers",
-  "score": 52
+  "score": 78
  },
  "home": {
   "id": "282",
   "abbr": "INST",
   "name": "Indiana State Sycamores",
-  "score": 46
+  "score": 70
  },
  "neutral": false,
  "venue": "Hulman Center",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-01T07:57:03.660Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 78,
+  "home": 70
+ }
 }

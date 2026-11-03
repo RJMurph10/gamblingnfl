@@ -7,13 +7,13 @@
   "id": "1",
   "abbr": "ATL",
   "name": "Atlanta Hawks",
-  "score": 59
+  "score": 87
  },
  "home": {
   "id": "11",
   "abbr": "IND",
   "name": "Indiana Pacers",
-  "score": 49
+  "score": 79
  },
  "neutral": false,
  "venue": "Gainbridge Fieldhouse",

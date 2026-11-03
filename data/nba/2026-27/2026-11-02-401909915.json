@@ -7,13 +7,13 @@
   "id": "15",
   "abbr": "MIL",
   "name": "Milwaukee Bucks",
-  "score": 15
+  "score": 47
  },
  "home": {
   "id": "16",
   "abbr": "MIN",
   "name": "Minnesota Timberwolves",
-  "score": 25
+  "score": 48
  },
  "neutral": false,
  "venue": "Target Center",

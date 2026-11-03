@@ -7,18 +7,18 @@
   "id": "22",
   "abbr": "POR",
   "name": "Portland Trail Blazers",
-  "score": 0
+  "score": 3
  },
  "home": {
   "id": "7",
   "abbr": "DEN",
   "name": "Denver Nuggets",
-  "score": 0
+  "score": 4
  },
  "neutral": false,
  "venue": "Ball Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T23:47:33.650Z",
