@@ -7,18 +7,18 @@
   "id": "147",
   "abbr": "MTST",
   "name": "Montana State Bobcats",
-  "score": 38
+  "score": 74
  },
  "home": {
   "id": "36",
   "abbr": "CSU",
   "name": "Colorado State Rams",
-  "score": 44
+  "score": 84
  },
  "neutral": false,
  "venue": "Moby Arena",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-01T07:57:03.660Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 74,
+  "home": 84
+ }
 }

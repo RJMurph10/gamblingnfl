@@ -7,13 +7,13 @@
   "id": "14",
   "abbr": "MIA",
   "name": "Miami Heat",
-  "score": 59
+  "score": 98
  },
  "home": {
   "id": "13",
   "abbr": "LAL",
   "name": "Los Angeles Lakers",
-  "score": 67
+  "score": 119
  },
  "neutral": false,
  "venue": "crypto.com Arena",

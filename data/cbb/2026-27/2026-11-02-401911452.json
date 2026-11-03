@@ -7,18 +7,18 @@
   "id": "2523",
   "abbr": "RMU",
   "name": "Robert Morris Colonials",
-  "score": 24
+  "score": 49
  },
  "home": {
   "id": "2440",
   "abbr": "NEV",
   "name": "Nevada Wolf Pack",
-  "score": 41
+  "score": 86
  },
  "neutral": false,
  "venue": "Lawlor Events Center",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-01T07:57:03.660Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 49,
+  "home": 86
+ }
 }

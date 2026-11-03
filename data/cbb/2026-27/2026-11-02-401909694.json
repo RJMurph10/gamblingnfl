@@ -7,18 +7,18 @@
   "id": "52",
   "abbr": "FSU",
   "name": "Florida State Seminoles",
-  "score": 104
+  "score": 112
  },
  "home": {
   "id": "50",
   "abbr": "FAMU",
   "name": "Florida A&M Rattlers",
-  "score": 56
+  "score": 69
  },
  "neutral": true,
  "venue": "Benchmark International Arena",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-01T21:17:39.977Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 112,
+  "home": 69
+ }
 }

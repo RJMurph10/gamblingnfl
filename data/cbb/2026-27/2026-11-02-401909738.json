@@ -7,13 +7,13 @@
   "id": "12",
   "abbr": "ARIZ",
   "name": "Arizona Wildcats",
-  "score": 29
+  "score": 65
  },
  "home": {
   "id": "26",
   "abbr": "UCLA",
   "name": "UCLA Bruins",
-  "score": 43
+  "score": 71
  },
  "neutral": true,
  "venue": "T-Mobile Arena",

@@ -7,13 +7,13 @@
   "id": "21",
   "abbr": "PHX",
   "name": "Phoenix Suns",
-  "score": 55
+  "score": 93
  },
  "home": {
   "id": "9",
   "abbr": "GS",
   "name": "Golden State Warriors",
-  "score": 49
+  "score": 91
  },
  "neutral": false,
  "venue": "Chase Center",

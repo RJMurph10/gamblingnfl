@@ -7,13 +7,13 @@
   "id": "28",
   "abbr": "TOR",
   "name": "Toronto Raptors",
-  "score": 47
+  "score": 89
  },
  "home": {
   "id": "12",
   "abbr": "LAC",
   "name": "LA Clippers",
-  "score": 59
+  "score": 97
  },
  "neutral": false,
  "venue": "Intuit Dome",

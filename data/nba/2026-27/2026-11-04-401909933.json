@@ -1,0 +1,197 @@
+{
+ "id": "401909933",
+ "league": "nba",
+ "date": "2026-11-05T02:30Z",
+ "name": "DAL @ SA",
+ "away": {
+  "id": "6",
+  "abbr": "DAL",
+  "name": "Dallas Mavericks",
+  "score": 0
+ },
+ "home": {
+  "id": "24",
+  "abbr": "SA",
+  "name": "San Antonio Spurs",
+  "score": 0
+ },
+ "neutral": false,
+ "venue": "Frost Bank Center",
+ "seasonType": 2,
+ "state": "pre",
+ "lines": {
+  "open": {
+   "at": "2026-11-03T05:10:24.860Z",
+   "scoreboard": [],
+   "books": [
+    {
+     "provider": {
+      "id": "100",
+      "name": "DraftKings",
+      "priority": 1
+     },
+     "details": "SA -12.5",
+     "overUnder": 229.5,
+     "spread": -12.5,
+     "overOdds": -110,
+     "underOdds": -110,
+     "awayTeamOdds": {
+      "favorite": false,
+      "underdog": true,
+      "moneyLine": 502,
+      "spreadOdds": -110,
+      "open": {
+       "favorite": true,
+       "pointSpread": {
+        "alternateDisplayValue": "-12.5",
+        "american": "-12.5"
+       },
+       "spread": {
+        "value": 1.9,
+        "displayValue": "10/11",
+        "alternateDisplayValue": "-110",
+        "decimal": 1.9,
+        "fraction": "10/11",
+        "american": "-110"
+       },
+       "moneyLine": {
+        "value": 1.14,
+        "displayValue": "1/7",
+        "alternateDisplayValue": "-700",
+        "decimal": 1.14,
+        "fraction": "1/7",
+        "american": "-700"
+       }
+      },
+      "current": {
+       "pointSpread": {
+        "alternateDisplayValue": "+12.5",
+        "american": "+12.5"
+       },
+       "spread": {
+        "value": 1.9,
+        "displayValue": "10/11",
+        "alternateDisplayValue": "-110",
+        "decimal": 1.9,
+        "fraction": "10/11",
+        "american": "-110"
+       },
+       "moneyLine": {
+        "value": 6.02,
+        "displayValue": "251/50",
+        "alternateDisplayValue": "+502",
+        "decimal": 6.02,
+        "fraction": "251/50",
+        "american": "+502"
+       }
+      },
+      "team": {
+       "id": "6"
+      }
+     },
+     "homeTeamOdds": {
+      "favorite": true,
+      "underdog": false,
+      "moneyLine": -700,
+      "spreadOdds": -110,
+      "open": {
+       "favorite": false,
+       "pointSpread": {
+        "alternateDisplayValue": "+12.5",
+        "american": "+12.5"
+       },
+       "spread": {
+        "value": 1.9,
+        "displayValue": "10/11",
+        "alternateDisplayValue": "-110",
+        "decimal": 1.9,
+        "fraction": "10/11",
+        "american": "-110"
+       },
+       "moneyLine": {
+        "value": 6.03,
+        "displayValue": "503/100",
+        "alternateDisplayValue": "+503",
+        "decimal": 6.03,
+        "fraction": "503/100",
+        "american": "+503"
+       }
+      },
+      "current": {
+       "pointSpread": {
+        "alternateDisplayValue": "-12.5",
+        "american": "-12.5"
+       },
+       "spread": {
+        "value": 1.9,
+        "displayValue": "10/11",
+        "alternateDisplayValue": "-110",
+        "decimal": 1.9,
+        "fraction": "10/11",
+        "american": "-110"
+       },
+       "moneyLine": {
+        "value": 1.14,
+        "displayValue": "1/7",
+        "alternateDisplayValue": "-700",
+        "decimal": 1.14,
+        "fraction": "1/7",
+        "american": "-700"
+       }
+      },
+      "team": {
+       "id": "24"
+      }
+     },
+     "moneylineWinner": false,
+     "spreadWinner": false,
+     "open": {
+      "over": {
+       "value": 1.9,
+       "displayValue": "10/11",
+       "alternateDisplayValue": "-110",
+       "decimal": 1.9,
+       "fraction": "10/11",
+       "american": "-110"
+      },
+      "under": {
+       "value": 1.9,
+       "displayValue": "10/11",
+       "alternateDisplayValue": "-110",
+       "decimal": 1.9,
+       "fraction": "10/11",
+       "american": "-110"
+      },
+      "total": {
+       "alternateDisplayValue": "229.5",
+       "american": "229.5"
+      }
+     },
+     "current": {
+      "over": {
+       "value": 1.9,
+       "displayValue": "10/11",
+       "alternateDisplayValue": "-110",
+       "decimal": 1.9,
+       "fraction": "10/11",
+       "american": "-110"
+      },
+      "under": {
+       "value": 1.9,
+       "displayValue": "10/11",
+       "alternateDisplayValue": "-110",
+       "decimal": 1.9,
+       "fraction": "10/11",
+       "american": "-110"
+      },
+      "total": {
+       "alternateDisplayValue": "229.5",
+       "american": "229.5"
+      }
+     }
+    }
+   ]
+  }
+ },
+ "props": {}
+}
