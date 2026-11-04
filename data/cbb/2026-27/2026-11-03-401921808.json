@@ -7,18 +7,18 @@
   "id": "2443",
   "abbr": "NOLA",
   "name": "LSU New Orleans Privateers",
-  "score": 0
+  "score": 4
  },
  "home": {
   "id": "99",
   "abbr": "LSU",
   "name": "LSU Tigers",
-  "score": 0
+  "score": 24
  },
  "neutral": false,
  "venue": "Pete Maravich Assembly Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-03T05:10:24.860Z",

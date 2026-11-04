@@ -7,18 +7,18 @@
   "id": "2154",
   "abbr": "COPP",
   "name": "Coppin State Eagles",
-  "score": 0
+  "score": 32
  },
  "home": {
   "id": "259",
   "abbr": "VT",
   "name": "Virginia Tech Hokies",
-  "score": 0
+  "score": 54
  },
  "neutral": false,
  "venue": "Cassell Coliseum",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-03T05:10:24.860Z",

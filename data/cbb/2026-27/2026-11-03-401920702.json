@@ -7,18 +7,18 @@
   "id": "288",
   "abbr": "LIP",
   "name": "Lipscomb Bisons",
-  "score": 0
+  "score": 9
  },
  "home": {
   "id": "2294",
   "abbr": "IOWA",
   "name": "Iowa Hawkeyes",
-  "score": 0
+  "score": 16
  },
  "neutral": false,
  "venue": "Carver-Hawkeye Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-03T05:10:24.860Z",

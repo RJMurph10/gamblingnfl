@@ -7,18 +7,18 @@
   "id": "195",
   "abbr": "OHIO",
   "name": "Ohio Bobcats",
-  "score": 0
+  "score": 7
  },
  "home": {
   "id": "2006",
   "abbr": "AKR",
   "name": "Akron Zips",
-  "score": 0
+  "score": 6
  },
  "neutral": false,
  "venue": "InfoCision Stadium",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-10-31T22:50:56.645Z",

@@ -7,18 +7,18 @@
   "id": "107",
   "abbr": "HC",
   "name": "Holy Cross Crusaders",
-  "score": 0
+  "score": 35
  },
  "home": {
   "id": "227",
   "abbr": "URI",
   "name": "Rhode Island Rams",
-  "score": 0
+  "score": 68
  },
  "neutral": false,
  "venue": "Thomas M. Ryan Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-03T05:10:24.860Z",

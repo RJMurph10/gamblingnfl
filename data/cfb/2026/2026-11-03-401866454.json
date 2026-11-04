@@ -7,7 +7,7 @@
   "id": "2084",
   "abbr": "BUFF",
   "name": "Buffalo Bulls",
-  "score": 0
+  "score": 3
  },
  "home": {
   "id": "193",
@@ -18,7 +18,7 @@
  "neutral": false,
  "venue": "Yager Stadium",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-10-31T22:50:56.645Z",

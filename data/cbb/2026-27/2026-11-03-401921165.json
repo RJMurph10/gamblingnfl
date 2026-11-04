@@ -7,18 +7,18 @@
   "id": "325",
   "abbr": "CLE",
   "name": "Cleveland State Vikings",
-  "score": 0
+  "score": 9
  },
  "home": {
   "id": "142",
   "abbr": "MIZ",
   "name": "Missouri Tigers",
-  "score": 0
+  "score": 32
  },
  "neutral": false,
  "venue": "Mizzou Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-02T23:50:25.569Z",

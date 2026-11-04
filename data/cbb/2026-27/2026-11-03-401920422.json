@@ -7,18 +7,18 @@
   "id": "2182",
   "abbr": "DREX",
   "name": "Drexel Dragons",
-  "score": 0
+  "score": 22
  },
  "home": {
   "id": "258",
   "abbr": "UVA",
   "name": "Virginia Cavaliers",
-  "score": 0
+  "score": 46
  },
  "neutral": false,
  "venue": "John Paul Jones Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-02T23:50:25.569Z",

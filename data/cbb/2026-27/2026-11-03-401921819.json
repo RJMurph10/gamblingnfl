@@ -7,18 +7,18 @@
   "id": "56",
   "abbr": "STET",
   "name": "Stetson Hatters",
-  "score": 0
+  "score": 39
  },
  "home": {
   "id": "2579",
   "abbr": "SC",
   "name": "South Carolina Gamecocks",
-  "score": 0
+  "score": 65
  },
  "neutral": false,
  "venue": "Colonial Life Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-03T05:10:24.860Z",

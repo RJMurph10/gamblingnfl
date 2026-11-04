@@ -7,18 +7,18 @@
   "id": "2681",
   "abbr": "WAG",
   "name": "Wagner Seahawks",
-  "score": 0
+  "score": 36
  },
  "home": {
   "id": "103",
   "abbr": "BC",
   "name": "Boston College Eagles",
-  "score": 0
+  "score": 48
  },
  "neutral": false,
  "venue": "Conte Forum",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-03T05:10:24.860Z",

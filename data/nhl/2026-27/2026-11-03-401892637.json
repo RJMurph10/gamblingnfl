@@ -13,12 +13,12 @@
   "id": "13",
   "abbr": "NYR",
   "name": "New York Rangers",
-  "score": 0
+  "score": 1
  },
  "neutral": false,
  "venue": "Madison Square Garden",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-02T17:20:26.300Z",
