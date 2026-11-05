@@ -81,6 +81,11 @@ function WnbaModelPage() {
               College basketball shows the same pattern, which is good evidence it&apos;s real.
             </p>
             <p>
+              <b>Every total pick is graded at the opener too.</b> The dashboard&apos;s Totals card counts every game
+              where the model is 2+ points off the opening total: 56.3% from 2024 to 2026 (83-60, 86-67, 98-80). Graded at
+              the closing total the same picks hit 46–51%, so the opening number is the one to bet.
+            </p>
+            <p>
               <b>Why not spreads?</b> Against the opening spread the model was mixed: below 50% in 2024, above it in
               2025 and 2026. Not consistent enough for a ★.
             </p>
