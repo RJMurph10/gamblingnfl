@@ -66,6 +66,13 @@ const wnbaNav = [
   { to: "/wnba/model", label: "Model" },
 ] as const;
 
+const wcbbNav = [
+  { to: "/wcbb", label: "Dashboard" },
+  { to: "/wcbb/teams", label: "Teams" },
+  { to: "/wcbb/games", label: "Games" },
+  { to: "/wcbb/model", label: "Model" },
+] as const;
+
 const cfbNav = [
   { to: "/cfb", label: "Dashboard" },
   { to: "/cfb/teams", label: "Teams" },
@@ -84,6 +91,7 @@ const LEAGUE_DOT: Record<string, string> = {
   mlb: "var(--acc-mlb)",
   cbb: "var(--acc-cbb)",
   wnba: "var(--acc-wnba)",
+  wcbb: "var(--acc-wcbb)",
 };
 
 function Logo({ league }: { league: League }) {
@@ -182,7 +190,7 @@ function SiteHeader() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const league = leagueFromPath(pathname);
   const nav =
-    league.id === "cfb" ? cfbNav : league.id === "nba" ? nbaNav : league.id === "nhl" ? nhlNav : league.id === "mlb" ? mlbNav : league.id === "cbb" ? cbbNav : league.id === "wnba" ? wnbaNav : nflNav;
+    league.id === "cfb" ? cfbNav : league.id === "nba" ? nbaNav : league.id === "nhl" ? nhlNav : league.id === "mlb" ? mlbNav : league.id === "cbb" ? cbbNav : league.id === "wnba" ? wnbaNav : league.id === "wcbb" ? wcbbNav : nflNav;
   return (
     <header className="glass sticky top-0 z-40 rounded-none border-x-0 border-t-0">
       <div className="mx-auto flex max-w-[1400px] items-center gap-4 px-4 py-3 sm:px-5">
@@ -192,7 +200,7 @@ function SiteHeader() {
             <Link
               key={item.to}
               to={item.to}
-              activeOptions={{ exact: ["/", "/cfb", "/nba", "/nhl", "/mlb", "/cbb", "/wnba"].includes(item.to) }}
+              activeOptions={{ exact: ["/", "/cfb", "/nba", "/nhl", "/mlb", "/cbb", "/wnba", "/wcbb"].includes(item.to) }}
               className="shrink-0 rounded-lg px-3 py-1.5 text-sm text-mute hover:text-ink"
               activeProps={{ className: "bg-acc/10 text-acc ring-1 ring-acc/25" }}
             >
@@ -212,7 +220,7 @@ function SiteFooter() {
     <footer className="mt-10 border-t border-line/10 px-4 py-5 sm:px-5">
       <p className="mx-auto max-w-[1400px] font-mono text-[10px] uppercase leading-relaxed tracking-wider text-faint">
         Gambling{league.short} · {league.name} analytics & betting research · live data from ESPN
-        {league.id === "nba" || league.id === "nhl" || league.id === "mlb" || league.id === "cbb" || league.id === "wnba" ? "" : " and nflverse"} · for research, not betting advice
+        {league.id === "nba" || league.id === "nhl" || league.id === "mlb" || league.id === "cbb" || league.id === "wnba" || league.id === "wcbb" ? "" : " and nflverse"} · for research, not betting advice
       </p>
     </footer>
   );

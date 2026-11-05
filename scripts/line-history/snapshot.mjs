@@ -40,6 +40,13 @@ export const LEAGUES = {
     query: "groups=50&limit=500",
     noProps: true,
   },
+  // women's college basketball, Division I; game lines only
+  wcbb: {
+    sport: "basketball",
+    league: "womens-college-basketball",
+    query: "groups=50&limit=500",
+    noProps: true,
+  },
 };
 const only = opt("leagues", "").split(",").filter(Boolean);
 const ACTIVE = Object.keys(LEAGUES).filter((k) => !only.length || only.includes(k));
