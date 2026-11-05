@@ -8,7 +8,7 @@ import { Link } from "@tanstack/react-router";
 import { Panel, PanelHeader } from "@/components/shared/booth";
 import { CbbLogo } from "@/components/cbb/CbbBits";
 import { atsResult, etDayKey, hasScore, ouResult, statusText, type CbbGame, type CbbSide } from "@/lib/cbb/cbb";
-import type { CbbModelRow } from "@/lib/cbb/cbb-model";
+import { UNDER_CONFERENCES, type CbbModelRow } from "@/lib/cbb/cbb-model";
 
 function RankedLogo({ side }: { side: CbbSide }) {
   if (!side.rank) return <CbbLogo team={side.team} className="size-5" />;
@@ -107,13 +107,17 @@ const shortDate = (iso: string) => new Date(iso).toLocaleDateString([], { month:
 const shortTime = (iso: string) => new Date(iso).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
 const where = (g: CbbGame) => g.location || (g.neutral ? "Neutral site" : g.venue) || g.home.team.short;
 
-/** A ★ best bet: the model's total pick against the opening total. */
+/** A ★ best bet: the model's total pick against the opening total, or a conference under. */
 function BestTag({ row }: { row?: CbbModelRow }) {
   const b = row?.best;
   if (!b) return null;
   const tone = b.result === "win" ? "text-win" : b.result === "loss" ? "text-loss" : "text-acc";
   return (
-    <span className={`mr-1.5 ${tone}`} title={`★ Best bet: ${b.pick} ${b.line} (opening total; model ${row!.pred.total.toFixed(1)})`}>
+    <span className={`mr-1.5 ${tone}`} title={
+        b.rule === "conf"
+          ? `★ Best bet: under ${b.line} (${UNDER_CONFERENCES[row!.game.home.team.confId]} conference game, closing total)`
+          : `★ Best bet: ${b.pick} ${b.line} (opening total; model ${row!.pred.total.toFixed(1)})`
+      }>
       ★ {b.pick === "over" ? "o" : "u"}
       {b.line}
     </span>

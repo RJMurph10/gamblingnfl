@@ -136,7 +136,7 @@ function CbbDashboard() {
           />
         </div>
         <p className="mt-2 font-mono text-[10px] uppercase tracking-wider text-faint">
-          {grade.games} games graded{through ? ` through ${through}` : ""} · flat 1u per pick at -110, ★ totals at the opener · picks made before tip-off from earlier games only ·{" "}
+          {grade.games} games graded{through ? ` through ${through}` : ""} · flat 1u per pick at -110, ★ model totals at the opener · picks made before tip-off from earlier games only ·{" "}
           {nonD1 ? (
             <>
               <Link to="/cbb/games" className="text-acc">
@@ -180,6 +180,11 @@ function CbbDashboard() {
               58.1%, 57.2% and 59.0% in the last three seasons (break-even 52.4%), once both teams have 3+ games.
               Bet them early: at the closing total the same picks only hit about 50%.
             </p>
+            <p className="mt-2 text-sm text-mute">
+              <span className="font-semibold text-foreground">MAAC conference unders.</span> 56.0% at the closing
+              total over five seasons, each picked from earlier seasons only. Bet near tip-off. Conference play
+              starts in December.
+            </p>
             <div className="mt-3 divide-y divide-line/5 rounded-lg border border-line/10">
               {bets.length ? (
                 bets.map((r) => (
@@ -199,7 +204,7 @@ function CbbDashboard() {
                     <span className="font-semibold text-foreground">
                       {r.best!.pick === "over" ? "Over" : "Under"} {r.best!.line}
                     </span>
-                    <span className="w-12 text-right text-mute">{r.pred.total.toFixed(1)}</span>
+                    <span className="w-12 text-right text-mute">{r.best!.rule === "conf" ? "MAAC" : r.pred.total.toFixed(1)}</span>
                   </Link>
                 ))
               ) : (
@@ -209,8 +214,8 @@ function CbbDashboard() {
               )}
             </div>
             <p className="mt-2 font-mono text-[10px] text-faint">
-              Line shown is the opening total; the right column is the model's total. If the line has already moved
-              toward the model, most of the edge is gone.
+              Model picks show the opening total and, on the right, the model's total: if the line has already moved
+              toward the model, most of the edge is gone. MAAC unders show the current total.
             </p>
             <Link to="/cbb/model" className="mt-3 block font-mono text-[10px] uppercase tracking-wider text-acc">
               Full research →

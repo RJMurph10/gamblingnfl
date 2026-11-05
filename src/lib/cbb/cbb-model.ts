@@ -19,6 +19,10 @@
  * (ratings fit to earlier games' closing lines). Once both teams have 3+ games, totals 6+ points off the
  * opener hit 58.1%, 57.2% and 59.0% (265 / 276 / 459 bets), at the close 50–51%. Those are the ★ best
  * bets, graded at the opener. Spreads with the blend: 51%, 55%, 57% at 6+ pts, not every season, so not ★.
+ *
+ * ★ MAAC unders (research/conferences/walk_forward.py): unders in MAAC conference games, picked each
+ * season from earlier seasons only, went 322-253 (56.0%) at the closing total from 2021-22 to 2025-26.
+ * Graded at the closing total (the opener is not confirmed: 2025-26 was even there).
  */
 import { CBB_PRIOR, CBB_PRIOR_EFF, CBB_PRIOR_TEMPO } from "@/data/cbb/prior-ratings";
 import { atsResult, etDayKey, hasScore, normCdf, ouResult, winnerOf, type CbbGame } from "./cbb";
@@ -41,6 +45,8 @@ export const SPREAD_PICK_MIN = 2;
 export const TOTAL_PICK_MIN = 3;
 /** ★ best bet: the model total this far from the opening total. */
 export const BEST_TOTAL_EDGE = 6;
+/** ★ conference unders: ESPN conference ids whose conference games go under (graded at the closing total). */
+export const UNDER_CONFERENCES: Record<string, string> = { "13": "MAAC" };
 /**
  * Share of the projection taken from the market's own view of each team (ratings fit to earlier
  * games' closing lines); the rest is the efficiency model. 50/50 made the totals edge sharper in every
@@ -321,10 +327,11 @@ export interface CbbModelRow {
   spread: { pick: "home" | "away"; line: number; edge: number; result: PickResult | null } | null;
   total: { pick: "over" | "under"; line: number; edge: number; result: PickResult | null } | null;
   /**
-   * ★ best bet: the total, when the model is BEST_TOTAL_EDGE+ points from the opening total (graded at
-   * the opener, which is when it has to be bet).
+   * ★ best bet. rule "edge": the total, when the model is BEST_TOTAL_EDGE+ points from the opening total
+   * (graded at the opener, which is when it has to be bet). rule "conf": the under in a conference game of
+   * an UNDER_CONFERENCES conference (graded at the closing total; edge is 0).
    */
-  best: { pick: "over" | "under"; line: number; edge: number; result: PickResult | null } | null;
+  best: { pick: "over" | "under"; line: number; edge: number; result: PickResult | null; rule: "edge" | "conf" } | null;
 }
 
 const toResult = (won: boolean, push = false): PickResult => (push ? "push" : won ? "win" : "loss");
@@ -371,8 +378,13 @@ export function rowFor(game: CbbGame, pred: Prediction): CbbModelRow {
     if (Math.abs(edge) >= BEST_TOTAL_EDGE) {
       const pick = edge > 0 ? "over" : "under";
       const res = ouResult(game, opener);
-      best = { pick, line: opener, edge: Math.abs(edge), result: res ? toResult(res === pick, res === "push") : null };
+      best = { pick, line: opener, edge: Math.abs(edge), result: res ? toResult(res === pick, res === "push") : null, rule: "edge" };
     }
+  }
+  const conf = game.home.team.confId;
+  if (!best && tl != null && !game.nonDivisionI && conf && conf === game.away.team.confId && UNDER_CONFERENCES[conf]) {
+    const res = ouResult(game, tl);
+    best = { pick: "under", line: tl, edge: 0, result: res ? toResult(res === "under", res === "push") : null, rule: "conf" };
   }
   return {
     game,
