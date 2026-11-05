@@ -228,15 +228,17 @@ for (const c of standings?.children ?? []) {
   conferences[id] = [name, name.replace(/\s+Conference$/i, "")];
   for (const e of c?.standings?.entries ?? []) if (e?.team?.id) confOf[String(e.team.id)] = id;
 }
+// the All-Star game's teams aren't in the standings: leave it out of the site file
+const real = (id) => !Object.keys(confOf).length || Boolean(confOf[id]);
 const poss = (b) => (b && ![b[1], b[5], b[6], b[8]].includes(null) ? b[1] - b[6] + b[8] + 0.44 * b[5] : null);
 const site = {
   updated: new Date().toISOString(),
   season: LABEL,
   conferences,
   teams: Object.fromEntries(
-    Object.values(teams).map((t) => [t.id, [t.abbr, t.name, t.short, t.nickname, t.color, t.logo, confOf[t.id] ?? ""]]),
+    Object.values(teams).filter((t) => real(t.id)).map((t) => [t.id, [t.abbr, t.name, t.short, t.nickname, t.color, t.logo, confOf[t.id] ?? ""]]),
   ),
-  games: rows.map((r) => {
+  games: rows.filter((r) => real(r.h[0]) && real(r.a[0])).map((r) => {
     const ph = poss(r.bs?.h);
     const pa = poss(r.bs?.a);
     const p = ph !== null && pa !== null ? Math.round(((ph + pa) / 2) * 10) / 10 : null;
