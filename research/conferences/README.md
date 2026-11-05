@@ -27,3 +27,11 @@
 - **A-10:** about even until 2025-26 (86-53); one season does most of the work.
 - **CFB SEC:** strong 2015-19, mixed since (2023 22-34, 2024 37-27, 2025 33-31).
 - **Verdict:** OVC and Summit unders look real. A-10 and SEC football don't hold up yet.
+
+## Walk-forward (`walk_forward.py`): the honest test
+- **Rule, fixed in advance:** each season, bet the side in any conference whose earlier seasons (2 or more) hit it at least 53% with p < 0.10.
+- **At the close, 2021-22 to 2025-26:** 2231-1966 (53.2%), +62.2u on 4,197 bets, ROI about +1.5%.
+  - By season: 55.1, 52.5, 54.0, 51.4, 53.0%, so 4 of 5 seasons are above break-even.
+- **OVC unders were picked every season from 2021-22 on.** Out of sample they went 322-253 (56.0%).
+- **At the opener (one test season, 2025-26):** 361-350 (50.8%). Not confirmed.
+- **Verdict:** OVC unders hold up. The broad conference rule is a thin edge at the close, about 1.5% ROI.
