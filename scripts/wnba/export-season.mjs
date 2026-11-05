@@ -5,7 +5,13 @@
  * model against real lines before the site section goes live. Runs in GitHub Actions
  * (.github/workflows/wnba-history.yml); output goes to the wnba-history branch.
  *
- *   node scripts/wnba/export-season.mjs 2025 out   → out/2025.jsonl.gz, out/2025-teams.json
+ *   node scripts/wnba/export-season.mjs 2025 out   → out/2025.jsonl.gz, out/2025-teams.json and the site's
+ *                                                    out/site/wnba/season-2025.json (props-site branch)
+ *
+ * Site file: { updated, season, conferences: { id: [name, short] },
+ *   teams: { id: [abbr, name, short, nickname, color, logo, confId] },
+ *   games: [[id, date, homeId, homeScore, awayId, awayScore, neutral, conf, type, line|null, note, location,
+ *            possessions|null, open|null]] }   (line: [spread, total, mlHome, mlAway, spreadOddsH, spreadOddsA, over, under])
  *
  * Game row: { id, date, type, neutral, h: [teamId, score], a: [teamId, score],
  *             close: [spread, total, mlHome, mlAway, spreadOddsH, spreadOddsA, overOdds, underOdds, book],
@@ -182,6 +188,8 @@ for (let t = start; t <= end; t += 86_400_000) {
             logo: String(tm.logo ?? ""),
           };
         }
+        const addr = comp.venue?.address;
+        const location = [addr?.city, addr?.state].filter(Boolean).join(", ");
         const [l, bs] = await Promise.all([
           lines(e.id, { id: String(h.team.id), abbr: String(h.team.abbreviation ?? "") }),
           boxOf(e.id, h.team.id),
@@ -193,6 +201,7 @@ for (let t = start; t <= end; t += 86_400_000) {
           type: Number(e?.season?.type ?? 2),
           neutral: Boolean(comp.neutralSite),
           note: comp.notes?.[0]?.headline ? String(comp.notes[0].headline) : undefined,
+          ...(location ? { location } : {}),
           h: [String(h.team.id), Number(h.score)],
           a: [String(a.team.id), Number(a.score)],
           ...(l ? { close: l.close, open: l.open } : {}),
@@ -207,4 +216,39 @@ rows.sort((x, y) => x.date.localeCompare(y.date));
 await mkdir(OUT, { recursive: true });
 await writeFile(join(OUT, `${LABEL}.jsonl.gz`), gzipSync(rows.map((r) => JSON.stringify(r)).join("\n")));
 await writeFile(join(OUT, `${LABEL}-teams.json`), JSON.stringify(Object.values(teams)));
+
+// ---------- the site's season file ----------
+// Conferences from ESPN's standings (East / West); a game is a conference game when both teams share one.
+const conferences = {};
+const confOf = {};
+const standings = await get(`https://site.api.espn.com/apis/v2/sports/basketball/wnba/standings?season=${YEAR}`);
+for (const c of standings?.children ?? []) {
+  const name = String(c?.name ?? "");
+  const id = /east/i.test(name) ? "east" : /west/i.test(name) ? "west" : String(c?.id ?? name);
+  conferences[id] = [name, name.replace(/\s+Conference$/i, "")];
+  for (const e of c?.standings?.entries ?? []) if (e?.team?.id) confOf[String(e.team.id)] = id;
+}
+const poss = (b) => (b && ![b[1], b[5], b[6], b[8]].includes(null) ? b[1] - b[6] + b[8] + 0.44 * b[5] : null);
+const site = {
+  updated: new Date().toISOString(),
+  season: LABEL,
+  conferences,
+  teams: Object.fromEntries(
+    Object.values(teams).map((t) => [t.id, [t.abbr, t.name, t.short, t.nickname, t.color, t.logo, confOf[t.id] ?? ""]]),
+  ),
+  games: rows.map((r) => {
+    const ph = poss(r.bs?.h);
+    const pa = poss(r.bs?.a);
+    const p = ph !== null && pa !== null ? Math.round(((ph + pa) / 2) * 10) / 10 : null;
+    const ch = confOf[r.h[0]];
+    return [
+      r.id, r.date, r.h[0], r.h[1], r.a[0], r.a[1], r.neutral ? 1 : 0, ch && ch === confOf[r.a[0]] ? 1 : 0, r.type,
+      r.close ? r.close.slice(0, 8) : null, r.note ?? "", r.location ?? "",
+      p !== null && p >= 55 && p <= 110 ? p : null,
+      r.open && (r.open[0] !== null || r.open[1] !== null) ? [r.open[0], r.open[1]] : null,
+    ];
+  }),
+};
+await mkdir(join(OUT, "site", "wnba"), { recursive: true });
+await writeFile(join(OUT, "site", "wnba", `season-${LABEL}.json`), JSON.stringify(site));
 console.log(`${LABEL}: ${rows.length} games, ${withLines} with a closing spread, ${Object.keys(teams).length} teams, ${requests} requests`);
