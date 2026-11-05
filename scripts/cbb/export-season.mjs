@@ -9,7 +9,9 @@
  *
  * Game row: { id, date, type, neutral, conf, h: [teamId, score], a: [teamId, score],
  *             close: [spread, total, mlHome, mlAway, spreadOddsH, spreadOddsA, overOdds, underOdds, book],
- *             open: [spread, total, mlHome, mlAway] }   (spread is the home team's, negative = home favored)
+ *             open: [spread, total, mlHome, mlAway],
+ *             bs: { h: [fgm, fga, 3pm, 3pa, ftm, fta, oreb, dreb, tov], a: [...] } }
+ * (spread is the home team's, negative = home favored)
  */
 import { mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
@@ -84,11 +86,13 @@ function lineOf(o) {
     american(o?.underOdds) ?? american(o?.total?.under?.close?.odds),
     String(o?.provider?.name ?? ""),
   ];
-  const oh = american(o?.moneyline?.home?.open?.odds);
-  const oa = american(o?.moneyline?.away?.open?.odds);
+  // opening lines: the core feed keeps them per side (homeTeamOdds.open.pointSpread) and as o.open.total
+  const oh = american(h.open?.moneyLine) ?? american(o?.moneyline?.home?.open?.odds);
+  const oa = american(a.open?.moneyLine) ?? american(o?.moneyline?.away?.open?.odds);
+  const openTotal = num(o?.open?.total?.american ?? o?.open?.total?.alternateDisplayValue) ?? num(o?.total?.over?.open?.line);
   const open = [
-    homeSpread(o?.pointSpread?.home?.open?.line, oh, oa, h.open, a.open),
-    num(o?.total?.over?.open?.line),
+    homeSpread(h.open?.pointSpread?.american ?? h.open?.pointSpread?.alternateDisplayValue ?? o?.pointSpread?.home?.open?.line, oh, oa, h.open, a.open),
+    openTotal !== null && openTotal > 0 ? openTotal : null,
     oh,
     oa,
   ];
@@ -116,6 +120,35 @@ async function lines(id, home) {
     if (!best && (l.close[0] !== null || l.close[1] !== null || l.close[2] !== null)) best = l;
   }
   return best;
+}
+
+/** Each team's box-score totals from the game summary: [fgm, fga, 3pm, 3pa, ftm, fta, oreb, dreb, tov]. */
+async function boxOf(id, homeId) {
+  const s = await get(`${SITE}/summary?event=${id}`);
+  const out = {};
+  for (const t of s?.boxscore?.teams ?? []) {
+    const st = {};
+    for (const x of t?.statistics ?? []) st[String(x?.name ?? "")] = String(x?.displayValue ?? "");
+    const pair = (k) => {
+      const v = st[k];
+      if (!v || !v.includes("-")) return [null, null];
+      const [m, a] = v.split("-").map(Number);
+      return [Number.isFinite(m) ? m : null, Number.isFinite(a) ? a : null];
+    };
+    const one = (...ks) => {
+      for (const k of ks) {
+        const n = Number(st[k]);
+        if (st[k] !== undefined && Number.isFinite(n)) return n;
+      }
+      return null;
+    };
+    const fg = pair("fieldGoalsMade-fieldGoalsAttempted");
+    const tp = pair("threePointFieldGoalsMade-threePointFieldGoalsAttempted");
+    const ft = pair("freeThrowsMade-freeThrowsAttempted");
+    const row = [...fg, ...tp, ...ft, one("offensiveRebounds"), one("defensiveRebounds"), one("totalTurnovers", "turnovers")];
+    if (row.some((v) => v !== null)) out[String(t?.team?.id) === String(homeId) ? "h" : "a"] = row;
+  }
+  return Object.keys(out).length ? out : null;
 }
 
 const teams = {};
@@ -148,7 +181,10 @@ for (let t = start; t <= end; t += 86_400_000) {
             logo: String(tm.logo ?? ""),
           };
         }
-        const l = await lines(e.id, { id: String(h.team.id), abbr: String(h.team.abbreviation ?? "") });
+        const [l, bs] = await Promise.all([
+          lines(e.id, { id: String(h.team.id), abbr: String(h.team.abbreviation ?? "") }),
+          boxOf(e.id, h.team.id),
+        ]);
         if (l?.close?.[0] != null) withLines += 1;
         rows.push({
           id: String(e.id),
@@ -160,6 +196,7 @@ for (let t = start; t <= end; t += 86_400_000) {
           h: [String(h.team.id), Number(h.score)],
           a: [String(a.team.id), Number(a.score)],
           ...(l ? { close: l.close, open: l.open } : {}),
+          ...(bs ? { bs } : {}),
         });
       }),
     );

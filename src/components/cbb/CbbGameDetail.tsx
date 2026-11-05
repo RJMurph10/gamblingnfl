@@ -460,7 +460,7 @@ function ModelCard({ row }: { row: NbaModelRow }) {
   return (
     <Panel>
       <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">Model</h2>
-      <p className="label-mono mb-3">Projected from earlier games only · tracking, not a best bet</p>
+      <p className="label-mono mb-3">Projected from earlier games only · ★ = total 6+ pts off the opener</p>
       <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 font-mono tabular-nums">
         <span className="text-2xl">{pred.away.toFixed(0)}</span>
         <span className="text-[10px] uppercase tracking-wider text-faint">proj. score</span>
@@ -484,6 +484,18 @@ function ModelCard({ row }: { row: NbaModelRow }) {
             {row.spread
               ? `${row.spread.pick === "home" ? game.home.team.abbr : game.away.team.abbr} ${spreadText(game, row.spread.line)} (${row.spread.edge.toFixed(1)} pt edge)${row.spread.result ? ` · ${row.spread.result}` : ""}`
               : game.odds?.spread != null ? "No edge" : "No line"}
+          </dd>
+        </div>
+        <div className="flex justify-between gap-3">
+          <dt className="text-mute">
+            <span className="text-acc">★</span> Best bet
+          </dt>
+          <dd className={`font-mono ${result(row.best?.result)}`}>
+            {row.best
+              ? `${row.best.pick === "over" ? "Over" : "Under"} ${row.best.line} (opener; ${row.best.edge.toFixed(1)} pt edge)${row.best.result ? ` · ${row.best.result}` : ""}`
+              : game.open?.total != null
+                ? `None (model ${(pred.total - game.open.total).toFixed(1)} vs the ${game.open.total} opener)`
+                : "None (no opening total)"}
           </dd>
         </div>
         <div className="flex justify-between gap-3">
@@ -511,6 +523,9 @@ function LinesCard({ game }: { game: NbaGame }) {
         <dl className="space-y-2 text-sm">
           <div className="flex justify-between"><dt className="text-mute">Spread</dt><dd className={`font-mono ${ats === "push" ? "text-mute" : ""}`}>{o.spread !== null ? spreadText(game, o.spread) : "—"}{ats && ats !== "push" ? ` · ${ats === "home" ? game.home.team.abbr : game.away.team.abbr} covered` : ats ? " · push" : ""}</dd></div>
           <div className="flex justify-between"><dt className="text-mute">Total</dt><dd className="font-mono">{o.total ?? "—"}{ou ? ` · ${ou}` : ""}</dd></div>
+          {game.open ? (
+            <div className="flex justify-between"><dt className="text-mute">Opened</dt><dd className="font-mono">{game.open.spread != null ? spreadText(game, game.open.spread) : "—"} · O/U {game.open.total ?? "—"}</dd></div>
+          ) : null}
           <div className="flex justify-between"><dt className="text-mute">{game.away.team.abbr} moneyline</dt><dd className="font-mono">{o.mlAway ?? "—"}</dd></div>
           <div className="flex justify-between"><dt className="text-mute">{game.home.team.abbr} moneyline</dt><dd className="font-mono">{o.mlHome ?? "—"}</dd></div>
         </dl>

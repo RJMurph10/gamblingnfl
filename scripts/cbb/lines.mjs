@@ -101,3 +101,29 @@ export function bestLine(books, home) {
   }
   return fallback;
 }
+
+/**
+ * The opening spread and total from the best book: [homeSpread, total]. ESPN's core odds keep them
+ * per side (homeTeamOdds.open.pointSpread) and as open.total; scoreboard odds as pointSpread.home.open.
+ */
+export function openLine(books, home) {
+  const list = (books ?? []).filter(Boolean).filter(usable).sort((x, y) => rank(x) - rank(y));
+  for (const o of list) {
+    const h = o?.homeTeamOdds ?? {};
+    const a = o?.awayTeamOdds ?? {};
+    const mlh = american(h.open?.moneyLine) ?? american(o?.moneyline?.home?.open?.odds);
+    const mla = american(a.open?.moneyLine) ?? american(o?.moneyline?.away?.open?.odds);
+    const raw = num(h.open?.pointSpread?.american ?? h.open?.pointSpread?.alternateDisplayValue ?? o?.pointSpread?.home?.open?.line);
+    let spread = raw;
+    if (spread !== null && spread !== 0) {
+      if (mlh !== null && mla !== null && mlh !== mla) spread = mlh < mla ? -Math.abs(spread) : Math.abs(spread);
+      else if (h.open?.favorite === true) spread = -Math.abs(spread);
+      else if (a.open?.favorite === true) spread = Math.abs(spread);
+    }
+    const t = num(o?.open?.total?.american ?? o?.open?.total?.alternateDisplayValue ?? o?.total?.over?.open?.line);
+    const total = t !== null && t > 0 ? t : null;
+    if (spread === null && total === null) continue;
+    return [oddsSwapped(o, home) && spread !== null ? -spread : spread, total];
+  }
+  return null;
+}

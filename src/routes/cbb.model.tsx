@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageTitle, Panel, PanelHeader } from "@/components/shared/booth";
 import { CbbLogo } from "@/components/cbb/CbbBits";
-import { buildRatings, ratingRows } from "@/lib/cbb/cbb-model";
+import { BEST_TOTAL_EDGE, buildRatings, ratingRows } from "@/lib/cbb/cbb-model";
 import { useCbbSchedule } from "@/lib/cbb/use-cbb";
 
 export const Route = createFileRoute("/cbb/model")({
@@ -12,18 +12,28 @@ export const Route = createFileRoute("/cbb/model")({
       {
         name: "description",
         content:
-          "How the men's college basketball model works, its power ratings, and what three seasons of closing lines say about it.",
+          "How the men's college basketball model works, its power ratings, and what seven seasons of lines say about it: no edge on spreads, an edge on totals against the opening line.",
       },
     ],
   }),
   component: CbbModelPage,
 });
 
-/** Season, ATS %, ATS picks, ATS units, O/U %, O/U picks, O/U units, ML units, model error, closing-line error. */
-const BACKTEST: [string, number, number, number, number, number, number, number, number, number][] = [
-  ["2023-24", 50.7, 2792, -90.6, 49.7, 2307, -119.2, -91.1, 9.43, 8.97],
-  ["2024-25", 50.0, 2826, -128.5, 48.9, 2433, -161.2, -122.0, 9.37, 8.79],
-  ["2025-26", 51.3, 2795, -59.3, 49.5, 2928, -159.8, -223.2, 9.53, 8.94],
+/** Season, ★ wins, ★ losses, ★ units (totals 6+ pts off the opener, graded at the opener). */
+const BEST: [string, number, number, number][] = [
+  ["2023-24", 259, 205, 30.5],
+  ["2024-25", 310, 247, 34.8],
+  ["2025-26", 363, 322, 8.0],
+];
+
+/** Season, ATS %, ATS picks, ATS units, O/U %, O/U picks, O/U units, model margin miss, line miss, model total miss, line total miss. */
+const BACKTEST: [string, number, number, number, number, number, number, number, number, number, number][] = [
+  ["2020-21", 50.3, 1792, -71.9, 49.8, 1474, -72.7, 9.45, 9.07, 13.45, 13.07],
+  ["2021-22", 51.8, 2475, -25.6, 51.0, 2071, -53.1, 8.94, 8.63, 13.32, 13.0],
+  ["2022-23", 50.3, 1804, -70.5, 50.9, 1618, -44.9, 9.29, 8.87, 13.33, 12.96],
+  ["2023-24", 50.7, 2678, -85.5, 50.5, 2260, -81.7, 9.19, 8.85, 13.25, 12.92],
+  ["2024-25", 49.2, 2762, -165.6, 50.8, 2272, -67.0, 9.16, 8.79, 13.0, 12.66],
+  ["2025-26", 51.0, 2760, -73.9, 49.4, 2679, -153.3, 9.29, 8.94, 13.84, 13.38],
 ];
 
 /** Angle, games, hit rate, units, hit rate by season 2022-23 → 2025-26. */
@@ -65,44 +75,78 @@ function CbbModelPage() {
           <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">The short version</h2>
           <div className="mt-3 space-y-2 text-sm leading-relaxed text-foreground/90">
             <p>
-              We tested the ratings model on every Division I game of the last three seasons (about 17,000 with
-              closing lines), predicting each game only from the games before it. Against the closing line it picked{" "}
-              <b>50–51% against the spread and under 50% on totals</b> in every season, short of the 52.4% needed to
-              beat the vig. Bigger edges didn&apos;t help: picks 4, 6, 8 and 10 points off the spread all landed
-              between 49% and 53%, with no size that won every year.
+              The model rates every Division I team <b>per possession</b>, the way KenPom does: offense, defense and
+              pace, adjusted for opponent and home court, with recent games counting more. It was tested on every
+              D-I game from 2019-20 to 2025-26, predicting each game only from the games before it.
             </p>
             <p>
-              So the college basketball pages show the model&apos;s numbers to track, not to bet. There are no ★ best
-              bets yet. Opening lines are being saved from this season&apos;s first game; once there are a few weeks
-              of them, the model gets tested against the opener, where college lines are softest.
+              <b>Spreads and moneylines: no edge.</b> Against the closing line the model went 49–52% against the
+              spread every season, and the closing spread missed the final margin by less than the model did.
+            </p>
+            <p>
+              <b>Totals against the opening line: an edge.</b> When the model&apos;s total is{" "}
+              {BEST_TOTAL_EDGE}+ points from the opening total, the pick hit 55.8%, 55.7% and 53.0% in the three
+              seasons ESPN has openers for (2023-24 to 2025-26), +73 units on 1,706 bets. Break-even is 52.4%. Against
+              the <i>closing</i> total the same picks hit only 50–52%: the model is spotting where the total is going
+              to move, so the bet has to be made early. Those are the ★ best bets.
             </p>
           </div>
+        </Panel>
+
+        <Panel padded={false}>
+          <PanelHeader title="★ Best bets by season" aside={<span className="label-mono">total {BEST_TOTAL_EDGE}+ pts off the opener · 1u at −110</span>} />
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[420px] text-sm">
+              <thead>
+                <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
+                  <th className="px-4 py-2 font-normal">Season</th>
+                  <th className="px-2 py-2 text-right font-normal">Record</th>
+                  <th className="px-2 py-2 text-right font-normal">Hit</th>
+                  <th className="px-4 py-2 text-right font-normal">Units</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-line/5 font-mono text-xs">
+                {BEST.map(([s, w, l, units]) => (
+                  <tr key={s}>
+                    <td className="px-4 py-2">{s}</td>
+                    <td className="px-2 py-2 text-right">{w}-{l}</td>
+                    <td className={`px-2 py-2 text-right ${(w / (w + l)) * 100 >= BREAK_EVEN ? "text-win" : "text-loss"}`}>{((w / (w + l)) * 100).toFixed(1)}%</td>
+                    <td className={`px-4 py-2 text-right ${units > 0 ? "text-win" : "text-loss"}`}>{u(units)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="px-4 py-3 text-sm text-mute">
+            Honest caveats: three seasons is a modest sample (a 54–55% hit rate is about two standard errors above
+            break-even), the edge was smallest last season, and openers can come with low limits or move fast. Most
+            of the other model settings tried were also profitable at this size, so it isn&apos;t one lucky setting.
+            The site grades every ★ pick this season at its opening total.
+          </p>
         </Panel>
 
         <Panel>
           <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">How it works</h2>
           <ul className="mt-3 list-disc space-y-1.5 pl-5 text-sm text-foreground/90">
             <li>
-              Every team gets an <b>offense and defense rating</b>: points per game above or below the Division I
-              average, adjusted for who they played and where.
+              <b>Possessions</b> come from each game&apos;s box score: field-goal attempts − offensive rebounds +
+              turnovers + 0.475 × free-throw attempts, the two teams averaged.
             </li>
             <li>
-              Ratings <b>start from last season</b>, kept at 60% because rosters turn over so much, and count as six
-              games&apos; worth of evidence. This season&apos;s results take over from there. Teams new to Division I
-              start 12 points per game below average.
+              Every team gets an <b>offense and defense rating</b> (points per 100 possessions above or below the D-I
+              average) and a <b>tempo rating</b> (possessions per game above or below average), adjusted for who they
+              played and where.
             </li>
             <li>
-              <b>Home court is worth 3 points</b>, and nothing at neutral sites (November tournaments, conference
-              tournaments, March).
+              Ratings <b>start from last season</b> (75% kept, 70% of tempo, worth five games of evidence) and then
+              follow this season, with a game&apos;s weight halving every 30 days so recent form counts more.
             </li>
             <li>
-              <b>Games against schools outside Division I</b> (D-II, D-III, NAIA) count a quarter as much as a
-              real game: they're mostly 30-point mismatches with no betting line. They stay on the Games and
-              team pages, labeled, but aren't graded or shown on the dashboard.
+              <b>Home court is worth 4 points per 100 possessions</b> (about 2.8 points a game), nothing at neutral
+              sites. Games against non-Division I schools count a quarter as much.
             </li>
             <li>
-              Projected score = average + one team&apos;s offense + the other&apos;s defense ± home court. A spread
-              pick needs 2+ points of disagreement with the line, a total pick 3+.
+              Projected score = (average + offense + the opponent&apos;s defense ± home court) × expected possessions.
             </li>
           </ul>
         </Panel>
@@ -114,25 +158,24 @@ function CbbModelPage() {
               <thead>
                 <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
                   <th className="px-4 py-2 font-normal">Season</th>
-                  <th className="px-2 py-2 text-right font-normal">Spread</th>
-                  <th className="px-2 py-2 text-right font-normal">Totals</th>
-                  <th className="px-2 py-2 text-right font-normal">Every winner (ML)</th>
+                  <th className="px-2 py-2 text-right font-normal">Spread (2+ pt edge)</th>
+                  <th className="px-2 py-2 text-right font-normal">Totals (3+ pt edge)</th>
                   <th className="px-4 py-2 text-right font-normal">Avg miss: model / line</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-line/5 font-mono text-xs">
-                {BACKTEST.map(([s, ats, an, au, ou, on, oup, ml, me, le]) => (
+                {BACKTEST.map(([s, ats, an, au, ou, on, oup, me, le, tme, tle]) => (
                   <tr key={s}>
                     <td className="px-4 py-2">{s}</td>
-                    <td className="px-2 py-2 text-right text-loss">
+                    <td className={`px-2 py-2 text-right ${au > 0 ? "text-win" : "text-loss"}`}>
                       {ats.toFixed(1)}% <span className="text-faint">({an})</span> {u(au)}
                     </td>
-                    <td className="px-2 py-2 text-right text-loss">
+                    <td className={`px-2 py-2 text-right ${oup > 0 ? "text-win" : "text-loss"}`}>
                       {ou.toFixed(1)}% <span className="text-faint">({on})</span> {u(oup)}
                     </td>
-                    <td className="px-2 py-2 text-right text-loss">{u(ml)}</td>
                     <td className="px-4 py-2 text-right">
-                      {me.toFixed(2)} / <span className="text-win">{le.toFixed(2)}</span> pts
+                      {me.toFixed(2)} / <span className="text-win">{le.toFixed(2)}</span> margin · {tme.toFixed(1)} /{" "}
+                      <span className="text-win">{tle.toFixed(1)}</span> total
                     </td>
                   </tr>
                 ))}
@@ -140,8 +183,8 @@ function CbbModelPage() {
             </table>
           </div>
           <p className="px-4 py-3 font-mono text-[10px] text-faint">
-            Closing lines from ESPN (DraftKings, else ESPN BET). The closing spread missed the final margin by less
-            than the model in every season.
+            Closing lines from ESPN (DraftKings, else ESPN BET). At the close the market is sharper than the model on
+            both spreads and totals; the totals edge only exists at the open.
           </p>
         </Panel>
 
@@ -206,6 +249,7 @@ function CbbModelPage() {
                   <th className="px-2 py-2 text-right font-normal">Net</th>
                   <th className="px-2 py-2 text-right font-normal">Offense</th>
                   <th className="px-2 py-2 text-right font-normal">Defense</th>
+                  <th className="px-2 py-2 text-right font-normal">Tempo</th>
                   <th className="px-4 py-2 text-right font-normal">Games</th>
                 </tr>
               </thead>
@@ -230,6 +274,7 @@ function CbbModelPage() {
                       </td>
                       <td className="px-2 py-1.5 text-right font-mono text-xs tabular-nums">{r.offense.toFixed(1)}</td>
                       <td className="px-2 py-1.5 text-right font-mono text-xs tabular-nums">{r.defense.toFixed(1)}</td>
+                      <td className="px-2 py-1.5 text-right font-mono text-xs tabular-nums text-mute">{r.tempo.toFixed(1)}</td>
                       <td className="px-4 py-1.5 text-right font-mono text-xs text-mute">{r.games}</td>
                     </tr>
                   );
@@ -245,7 +290,7 @@ function CbbModelPage() {
           <p className="px-4 py-3 font-mono text-[10px] text-faint">
             {isLoading
               ? "Loading…"
-              : "Net = expected margin against an average Division I team on a neutral court. Offense = points scored, defense = points allowed, per game."}
+              : "Per 100 possessions: offense = points scored, defense = points allowed, net = offense − defense (against an average Division I team on a neutral court). Tempo = possessions per game."}
           </p>
         </Panel>
       </div>

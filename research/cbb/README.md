@@ -19,3 +19,23 @@ Findings (November 2026):
 - Next: test against opening lines once the line saver has a few weeks of 2026-27 openers.
 
 `src/data/cbb/prior-ratings.ts` is 2025-26's fitted ratings (same fit), the 2026-27 starting point.
+
+## Model v2 (November 2026)
+
+Data re-exported with **opening lines** (ESPN's core odds keep them per side; 2023-24 on) and **team box
+scores** (possessions), for 2019-20 through 2025-26 (`scripts/cbb/export-season.mjs`).
+
+- `model_v2.py`: possession-based adjusted efficiency (offense/defense per 100 possessions, tempo), last
+  season as a 75% prior worth 5 games, 30-day half-life recency weights, 4 pts/100 home court, non-D-I
+  games at 1/4 weight. Walk-forward by day.
+- `v2_edges.py`: against openers and closers; regression weights; line-move correlation.
+- `v2_totals.py` / `v2_totals_check.py`: the totals result, settings grid, edge sizes, over/under, month.
+
+Findings:
+- Spreads: 49–52% ATS at the close every season, at every edge size. No edge.
+- Totals vs the **opening** total, model 6+ pts off: 55.8% (2023-24, 464), 55.7% (2024-25, 557),
+  53.0% (2025-26, 685) → +73u on 1,706. Most settings in the grid were also positive at 6+.
+- The same picks at the **closing** total: 50–52%. The model's total edge predicts the line move
+  (corr ≈ 0.2), so the bet has to be made near the open.
+- Site: `src/lib/cbb/cbb-model.ts` (ported; on 2025-26 with a 2024-25 prior it gives 368-324 ★, matching
+  the research's 363-322).

@@ -4,7 +4,7 @@ import { PageTitle, Panel, StatCard } from "@/components/shared/booth";
 import { CbbLogo } from "@/components/cbb/CbbBits";
 import { CbbLiveGames, CbbRecentGames, CbbUpcomingGames } from "@/components/cbb/CbbDashTables";
 import { buildCbbStandings, hasScore, recordText } from "@/lib/cbb/cbb";
-import { gradeCbbSeason, unitsText, winPct, type CbbRecord } from "@/lib/cbb/cbb-model";
+import { BEST_TOTAL_EDGE, gradeCbbSeason, unitsText, winPct, type CbbRecord } from "@/lib/cbb/cbb-model";
 import { changeTone, weekChangeText } from "@/lib/shared/season-pulse";
 import { useCbbModel, useCbbSchedule } from "@/lib/cbb/use-cbb";
 
@@ -31,6 +31,16 @@ const pctChange = (now: number | null, before: number | null) =>
 function CbbDashboard() {
   const { games, teams, rankings, season, isLoading, isError } = useCbbSchedule(60_000);
   const rows = useCbbModel(games);
+  const model = useMemo(() => new Map(rows.map((r) => [r.game.id, r])), [rows]);
+  // upcoming and live ★ best bets, soonest first
+  const bets = useMemo(
+    () =>
+      rows
+        .filter((r) => r.best && (r.game.status === "scheduled" || r.game.status === "live") && !r.game.nonDivisionI)
+        .sort((a, b) => a.game.date.localeCompare(b.game.date))
+        .slice(0, 12),
+    [rows],
+  );
   const weekAgo = useMemo(() => new Date(Date.now() - 7 * 24 * 3_600_000), []);
   const grade = useMemo(() => gradeCbbSeason(rows), [rows]);
   const prev = useMemo(() => gradeCbbSeason(rows, weekAgo), [rows, weekAgo]);
@@ -61,6 +71,9 @@ function CbbDashboard() {
   const totalChange = hasPrev ? pctChange(winPct(grade.total), winPct(prev.total)) : null;
   const coverChange = hasPrev ? pctChange(winPct(grade.spread), winPct(prev.spread)) : null;
   const every = grade.moneyline.units + grade.spread.units + grade.total.units;
+  const bestStakes = grade.best.wins + grade.best.losses + grade.best.pushes;
+  const bestRoi = bestStakes ? (grade.best.units / bestStakes) * 100 : null;
+  const bestChange = hasPrev ? Math.round((grade.best.units - prev.best.units) * 100) / 100 : null;
   const loading = isLoading ? "Loading…" : undefined;
   const through = finals[0]
     ? new Date(finals[0].date).toLocaleDateString([], { month: "short", day: "numeric" })
@@ -106,13 +119,24 @@ function CbbDashboard() {
           />
           <StatCard
             label="Model edge · ★ best bets"
-            value={unitsText(0)}
-            note={loading ?? note("No best bets yet", grade.games ? `every game ${unitsText(every)}` : undefined)}
-            tone="mute"
+            value={unitsText(grade.best.units)}
+            note={
+              loading ??
+              note(
+                hasPrev && bestChange !== null
+                  ? `${bestChange > 0 ? "▲" : bestChange < 0 ? "▼" : "—"} ${Math.abs(bestChange).toFixed(2)}u wk/wk`
+                  : undefined,
+                grade.best.wins + grade.best.losses
+                  ? `${rec(grade.best)} · ROI ${bestRoi! > 0 ? "+" : ""}${bestRoi!.toFixed(1)}% at the opener`
+                  : "No best bets graded yet",
+                grade.games ? `every game ${unitsText(every)}` : undefined,
+              )
+            }
+            tone={grade.best.units > 0 ? "win" : grade.best.units < 0 ? "loss" : "mute"}
           />
         </div>
         <p className="mt-2 font-mono text-[10px] uppercase tracking-wider text-faint">
-          {through ? `Through ${through} · ` : ""}flat 1u per pick at closing ESPN odds ·{" "}
+          {through ? `Through ${through} · ` : ""}flat 1u per pick at closing ESPN odds, ★ totals at the opener ·{" "}
           {nonD1 ? (
             <>
               <Link to="/cbb/games" className="text-acc">
@@ -129,9 +153,10 @@ function CbbDashboard() {
 
       <div className="grid gap-6 lg:grid-cols-12">
         <section className="min-w-0 space-y-6 lg:col-span-8">
-          <CbbLiveGames games={live} />
-          <CbbUpcomingGames games={d1Games} />
+          <CbbLiveGames games={live} model={model} />
+          <CbbUpcomingGames games={d1Games} model={model} />
           <CbbRecentGames
+            model={model}
             games={finals.slice(0, 5)}
             emptyText={
               isLoading
@@ -143,7 +168,54 @@ function CbbDashboard() {
           />
         </section>
 
-        <aside className="min-w-0 lg:col-span-4">
+        <aside className="min-w-0 space-y-6 lg:col-span-4">
+          <Panel>
+            <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">
+              <span className="text-acc">★</span> Best bets
+            </h2>
+            <p className="mt-2 text-sm text-mute">
+              <span className="font-semibold text-foreground">
+                Totals where the model is {BEST_TOTAL_EDGE}+ points off the opening total.
+              </span>{" "}
+              55.8%, 55.7% and 53.0% in the last three seasons (break-even 52.4%). Bet them early: at the closing
+              total the same picks only hit 50–52%.
+            </p>
+            <div className="mt-3 divide-y divide-line/5 rounded-lg border border-line/10">
+              {bets.length ? (
+                bets.map((r) => (
+                  <Link
+                    key={r.game.id}
+                    to="/cbb/games/$gameId"
+                    params={{ gameId: r.game.id }}
+                    className="flex items-center gap-2 px-3 py-2 font-mono text-[11px] hover:bg-line/5"
+                  >
+                    <span className="text-acc">★</span>
+                    <span className="min-w-0 flex-1 truncate" suppressHydrationWarning>
+                      {r.game.away.team.abbr} @ {r.game.home.team.abbr} ·{" "}
+                      {r.game.status === "live"
+                        ? "live"
+                        : new Date(r.game.date).toLocaleString([], { weekday: "short", hour: "numeric", minute: "2-digit" })}
+                    </span>
+                    <span className="font-semibold text-foreground">
+                      {r.best!.pick === "over" ? "Over" : "Under"} {r.best!.line}
+                    </span>
+                    <span className="w-12 text-right text-mute">{r.pred.total.toFixed(1)}</span>
+                  </Link>
+                ))
+              ) : (
+                <p className="px-3 py-3 font-mono text-[11px] text-mute">
+                  {isLoading ? "Loading…" : "No best bets on the board right now. They show up once a game's opening total is posted."}
+                </p>
+              )}
+            </div>
+            <p className="mt-2 font-mono text-[10px] text-faint">
+              Line shown is the opening total; the right column is the model's total. If the line has already moved
+              toward the model, most of the edge is gone.
+            </p>
+            <Link to="/cbb/model" className="mt-3 block font-mono text-[10px] uppercase tracking-wider text-acc">
+              Full research →
+            </Link>
+          </Panel>
           <Panel>
             <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">AP Poll</h2>
             <p className="label-mono mb-3">This week · tap to open</p>
