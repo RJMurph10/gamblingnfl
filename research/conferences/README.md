@@ -40,3 +40,18 @@
 
 ## On the site
 - ★ MAAC unders, graded at the closing total (PR "CBB: ★ MAAC conference unders").
+
+## Realignment (`realignment.py`, `maac_members.py`)
+A newcomer is a team in its first two seasons in a conference. Only conference games with exactly one newcomer are counted, at closing lines.
+- **CFB 2014-2025:**
+  - Newcomers cover 294-304 (49.2%). At home 45.2% (p 0.09), on the road 53.2%.
+  - Overs with a newcomer 50.4%.
+  - 2024-25 Big Ten newcomers (USC, UCLA, Oregon, Washington) 26-29. 2024 SEC newcomers (Texas, Oklahoma) 5-10.
+- **CBB 2020-21 to 2025-26:**
+  - Newcomers cover 1074-1017 (51.4%). Overs 50.5%, the same as other conference games.
+  - Big Ten newcomers 56-66.
+- **Verdict:** no realignment edge. The lines adjust right away.
+- **MAAC unders by membership:**
+  - Original members only: 234-188 (55.5%).
+  - Games with a newer member (Mount St. Mary's, Merrimack, Sacred Heart): 88-65 (57.5%).
+  - Realignment didn't create the lean or break it. Weakest year: originals 35-43 in 2024-25.
