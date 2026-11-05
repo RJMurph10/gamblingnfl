@@ -39,3 +39,8 @@ This folder holds `holidays.py`, which runs on `research/nba/data/games.csv` (NB
 - **Stars (line 24.5+):** 12-11 on Christmas vs 46.6% on other days.
 - **The day's best performance vs the line:** +13.8 on Christmas on average, against +15.0 on a normal slate the same size. There are about 2 40-point games each Christmas.
 - **Takeaway:** Christmas overs did a little better than usual, but at 164 props that's within noise (p ≈ 0.15 for the difference). Someone always has a huge game, but that's true of every slate; the hard part is knowing who beforehand. Not an edge yet. Re-check after Christmas 2026 now that lines are saved every day.
+
+### Each team's top scorer on Christmas (`christmas_stars.py`; the player with the team's highest points line)
+- **2022:** overs 7-3 (LeBron 38, Tatum 41, Jokic 41, Embiid 35, Morant 36).
+- **2023:** overs 4-6 (Luka 50 and Brunson 38, but Curry 18, LeBron 16, KD 16, Tatum 25).
+- **Total:** 11-9 (55%), against 47.4% for teams' top players on other days. Twenty props is far too few to tell. In 2024 only bench players' lines were saved, so it's excluded.
