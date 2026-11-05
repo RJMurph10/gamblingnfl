@@ -22,7 +22,7 @@ import {
   type CbbGameDetail,
   type CbbPlay,
 } from "@/lib/cbb/cbb";
-import type { CbbModelRow } from "@/lib/cbb/cbb-model";
+import { UNDER_CONFERENCES, type CbbModelRow } from "@/lib/cbb/cbb-model";
 import { useCbbGameDetail, useCbbModel, useCbbSchedule } from "@/lib/cbb/use-cbb";
 
 type GameTab = "gamecast" | "stats" | "markets" | "information";
@@ -492,7 +492,9 @@ function ModelCard({ row }: { row: NbaModelRow }) {
           </dt>
           <dd className={`font-mono ${result(row.best?.result)}`}>
             {row.best
-              ? `${row.best.pick === "over" ? "Over" : "Under"} ${row.best.line} (opener; ${row.best.edge.toFixed(1)} pt edge)${row.best.result ? ` · ${row.best.result}` : ""}`
+              ? row.best.rule === "conf"
+                ? `Under ${row.best.line} (${UNDER_CONFERENCES[game.home.team.confId]} conference game; closing total)${row.best.result ? ` · ${row.best.result}` : ""}`
+                : `${row.best.pick === "over" ? "Over" : "Under"} ${row.best.line} (opener; ${row.best.edge.toFixed(1)} pt edge)${row.best.result ? ` · ${row.best.result}` : ""}`
               : game.open?.total != null
                 ? `None (model ${(pred.total - game.open.total).toFixed(1)} vs the ${game.open.total} opener)`
                 : "None (no opening total)"}

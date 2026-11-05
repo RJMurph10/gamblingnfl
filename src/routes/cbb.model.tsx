@@ -93,6 +93,14 @@ function CbbModelPage() {
               best bets.
             </p>
             <p>
+              <b>★ MAAC unders.</b> Some conferences&apos; games lean one way against the total. To test that
+              honestly, each season only the conferences whose <i>earlier</i> seasons leaned under (53%+, p &lt; 0.10)
+              were picked, then graded on the new season. MAAC conference games were picked every season and went
+              322-253 under (56.0%) at the closing total from 2021-22 to 2025-26. At the opening total the one test
+              season was about even, so these are graded at the closing total. Pace by conference (the Big Ten is slow,
+              the SEC fast) is already in the lines: Big Ten overs hit 51.5%.
+            </p>
+            <p>
               <b>Why not spreads and moneylines?</b> The blend makes them sharper (projections land closer to the
               final score than either model alone), but against the closing spread they still hit 49–52%. At 6+ points
               off the opening spread the blend went 51%, 55% and 57%: promising the last two seasons, a loss the first,

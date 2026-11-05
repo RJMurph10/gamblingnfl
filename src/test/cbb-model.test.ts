@@ -172,3 +172,23 @@ describe("market blend", () => {
     expect(rowFor(g, none).best).toBeNull();
   });
 });
+
+describe("★ MAAC unders", () => {
+  it("star the under at the closing total in MAAC conference games only", () => {
+    const maac = (g: CbbGame): CbbGame => ({
+      ...g,
+      conference: true,
+      home: { ...g.home, team: { ...g.home.team, confId: "13" } },
+      away: { ...g.away, team: { ...g.away.team, confId: "13" } },
+    });
+    const g = maac(game("1", "iona", "siena", 60, 65, "2027-01-04T00:00Z", { odds: { spread: -3, total: 135, mlHome: -150, mlAway: 130 } }));
+    const pred = { home: 68, away: 66, margin: 2, total: 134, possessions: 66, homeWinProb: 0.55 };
+    expect(rowFor(g, pred).best).toMatchObject({ pick: "under", line: 135, result: "win", rule: "conf" });
+    // a MAAC team playing outside the conference: no ★
+    const out = { ...g, away: { ...g.away, team: { ...g.away.team, confId: "7" } } };
+    expect(rowFor(out, pred).best).toBeNull();
+    // the model's opener edge wins when both apply
+    const both = { ...g, open: { spread: -3, total: 120 } };
+    expect(rowFor(both, { ...pred, total: 130 }).best).toMatchObject({ pick: "over", rule: "edge" });
+  });
+});
