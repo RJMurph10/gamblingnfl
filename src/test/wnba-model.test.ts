@@ -173,3 +173,17 @@ describe("WNBA season", () => {
     expect(periodLabel(5)).toBe("2OT");
   });
 });
+
+describe("total picks at the opener", () => {
+  it("grade the model's total against the opening total when there is one", () => {
+    const g = game("1", "x1", "x2", 80, 81, "2026-07-04T00:00Z", {
+      open: { spread: -2, total: 158 },
+      odds: { spread: -2, total: 164, mlHome: -130, mlAway: 110 },
+    });
+    const pred = { home: 81, away: 80, margin: 1, total: 161, possessions: 80, homeWinProb: 0.53 };
+    // 3 over the opener (158): over, and 161 total points is a win at 158
+    expect(rowFor(g, pred).total).toMatchObject({ pick: "over", line: 158, result: "win" });
+    // no opener: the closing total (164) is used, 3 under it
+    expect(rowFor({ ...g, open: undefined }, pred).total).toMatchObject({ pick: "under", line: 164, result: "win" });
+  });
+});

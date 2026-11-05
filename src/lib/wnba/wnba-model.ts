@@ -37,7 +37,12 @@ const NON_D1_WEIGHT = 0.25;
 export const MARGIN_SD = 12;
 
 export const SPREAD_PICK_MIN = 2;
-export const TOTAL_PICK_MIN = 3;
+/**
+ * Total picks: the model total this far from the OPENING total (the closing total when there's no opener),
+ * graded at that line. Against the close the model's totals are a coin flip (46–51% at every edge size,
+ * 2024-2026); against the opener 2+ points off went 83-60, 86-67 and 98-80 (56.3%).
+ */
+export const TOTAL_PICK_MIN = 2;
 /** ★ best bet: the model total this far from the opening total. */
 export const BEST_TOTAL_EDGE = 3;
 /**
@@ -367,7 +372,8 @@ export function rowFor(game: WnbaGame, pred: Prediction): WnbaModelRow {
     }
   }
   let total: WnbaModelRow["total"] = null;
-  const tl = game.odds?.total;
+  // graded at the opener (when the edge exists), the closing total when there's no opener
+  const tl = game.open?.total ?? game.odds?.total;
   if (tl !== null && tl !== undefined) {
     const edge = pred.total - tl;
     if (Math.abs(edge) >= TOTAL_PICK_MIN) {
