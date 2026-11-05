@@ -460,7 +460,7 @@ function ModelCard({ row }: { row: NbaModelRow }) {
   return (
     <Panel>
       <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">Model</h2>
-      <p className="label-mono mb-3">Projected from earlier games only · ★ = total 6+ pts off the opener</p>
+      <p className="label-mono mb-3">Earlier games only · blended with the market's view · ★ = total 6+ pts off the opener</p>
       <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 font-mono tabular-nums">
         <span className="text-2xl">{pred.away.toFixed(0)}</span>
         <span className="text-[10px] uppercase tracking-wider text-faint">proj. score</span>

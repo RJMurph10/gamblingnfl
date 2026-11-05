@@ -129,14 +129,14 @@ function CbbDashboard() {
                 grade.best.wins + grade.best.losses
                   ? `${rec(grade.best)} · ROI ${bestRoi! > 0 ? "+" : ""}${bestRoi!.toFixed(1)}% at the opener`
                   : "No best bets graded yet",
-                grade.games ? `every game ${unitsText(every)}` : undefined,
+                grade.games ? `every pick ${unitsText(every)}` : undefined,
               )
             }
             tone={grade.best.units > 0 ? "win" : grade.best.units < 0 ? "loss" : "mute"}
           />
         </div>
         <p className="mt-2 font-mono text-[10px] uppercase tracking-wider text-faint">
-          {through ? `Through ${through} · ` : ""}flat 1u per pick at closing ESPN odds, ★ totals at the opener ·{" "}
+          {grade.games} games graded{through ? ` through ${through}` : ""} · flat 1u per pick at -110, ★ totals at the opener · picks made before tip-off from earlier games only ·{" "}
           {nonD1 ? (
             <>
               <Link to="/cbb/games" className="text-acc">
@@ -177,8 +177,8 @@ function CbbDashboard() {
               <span className="font-semibold text-foreground">
                 Totals where the model is {BEST_TOTAL_EDGE}+ points off the opening total.
               </span>{" "}
-              55.8%, 55.7% and 53.0% in the last three seasons (break-even 52.4%). Bet them early: at the closing
-              total the same picks only hit 50–52%.
+              58.1%, 57.2% and 59.0% in the last three seasons (break-even 52.4%), once both teams have 3+ games.
+              Bet them early: at the closing total the same picks only hit about 50%.
             </p>
             <div className="mt-3 divide-y divide-line/5 rounded-lg border border-line/10">
               {bets.length ? (
