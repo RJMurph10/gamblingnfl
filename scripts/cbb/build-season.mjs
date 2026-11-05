@@ -6,6 +6,8 @@
  *     teams: { id: [abbr, name, short, nickname, color, logo, confId] },
  *     games: [[id, date, homeId, homeScore, awayId, awayScore, neutral, conf, type, line|null, note, location]] }
  *   lines: { gameId: line }  (pregame lines of live and upcoming games, yesterday through next week)
+ *   opens: { gameId: [homeSpread, total] }  (their opening lines)
+ * game rows end with possessions (from the box score) and the opening [homeSpread, total]
  * line = [homeSpread, total, mlHome, mlAway, spreadOddsHome, spreadOddsAway, overOdds, underOdds]
  *
  * Finished games only (the site reads live and upcoming games straight from ESPN). Closing lines come
@@ -16,7 +18,7 @@
  */
 import { mkdir, readFile, readdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
-import { bestLine } from "./lines.mjs";
+import { bestLine, openLine } from "./lines.mjs";
 
 const args = process.argv.slice(2);
 const opt = (n, d) => {
@@ -26,6 +28,7 @@ const opt = (n, d) => {
 const DATA = opt("data", "data");
 const OUT = opt("out", "props-site");
 const LOOKUPS = Number(opt("lookups", "400"));
+const POSS_LOOKUPS = Number(opt("possessions", "400"));
 const SITE = "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball";
 const CORE = "https://sports.core.api.espn.com/v2/sports/basketball/leagues/mens-college-basketball";
 const H = { "User-Agent": "GamblingNFL/1.0", Accept: "application/json" };
@@ -52,16 +55,18 @@ const path = join(OUT, "cbb", `season-${SEASON}.json`);
 const ymd = (t) => new Date(t).toISOString().slice(0, 10).replace(/-/g, "");
 const etDay = (iso) => new Date(Date.parse(iso) - 5 * 3_600_000).toISOString().slice(0, 10);
 
-async function loggerLine(g) {
-  const file = join(DATA, "cbb", SEASON, `${etDay(g.date)}-${g.id}.json`);
-  let rec;
+async function loggerRecord(g) {
   try {
-    rec = JSON.parse(await readFile(file, "utf8"));
+    return JSON.parse(await readFile(join(DATA, "cbb", SEASON, `${etDay(g.date)}-${g.id}.json`), "utf8"));
   } catch {
     return null;
   }
-  const L = rec.lines ?? {};
-  const home = rec.home;
+}
+
+/** The line saver's closing line for a game. */
+function closeOf(rec) {
+  const L = rec?.lines ?? {};
+  const home = rec?.home;
   return (
     bestLine(L.final?.books, home) ??
     bestLine(L.close?.books, home) ??
@@ -69,6 +74,44 @@ async function loggerLine(g) {
     bestLine(L.open?.books, home) ??
     bestLine(L.open?.scoreboard, home)
   );
+}
+
+/** The opening spread and total: ESPN's own opener, else the first line the saver saw. */
+function openOf(rec) {
+  const L = rec?.lines ?? {};
+  const home = rec?.home;
+  const first = bestLine(L.open?.books, home) ?? bestLine(L.open?.scoreboard, home);
+  return (
+    openLine(L.final?.books, home) ??
+    openLine(L.close?.books, home) ??
+    openLine(L.open?.books, home) ??
+    openLine(L.open?.scoreboard, home) ??
+    (first ? [first[0], first[1]] : null)
+  );
+}
+
+async function loggerLine(g) {
+  return closeOf(await loggerRecord(g));
+}
+
+/** Possessions in a finished game, from its box score (FGA − OREB + TO + 0.475 × FTA, teams averaged). */
+async function possessionsOf(id) {
+  const s = await get(`${SITE}/summary?event=${id}`);
+  const each = [];
+  for (const t of s?.boxscore?.teams ?? []) {
+    const st = {};
+    for (const x of t?.statistics ?? []) st[String(x?.name ?? "")] = String(x?.displayValue ?? "");
+    const att = (k) => Number(String(st[k] ?? "").split("-")[1]);
+    const one = (...ks) => {
+      for (const k of ks) if (st[k] !== undefined && Number.isFinite(Number(st[k]))) return Number(st[k]);
+      return NaN;
+    };
+    const p = att("fieldGoalsMade-fieldGoalsAttempted") - one("offensiveRebounds") + one("totalTurnovers", "turnovers") + 0.475 * att("freeThrowsMade-freeThrowsAttempted");
+    if (Number.isFinite(p)) each.push(p);
+  }
+  if (each.length !== 2) return null;
+  const p = (each[0] + each[1]) / 2;
+  return p >= 45 && p <= 110 ? Math.round(p * 10) / 10 : null;
 }
 
 async function espnLine(id, home) {
@@ -154,6 +197,8 @@ async function main() {
         games.get(String(e.id))?.[9] ?? null,
         note ? String(note) : "",
         location,
+        games.get(String(e.id))?.[12] ?? null,
+        games.get(String(e.id))?.[13] ?? null,
       ];
       games.set(row[0], row);
       finals.push(row);
@@ -165,11 +210,31 @@ async function main() {
   let looked = 0;
   // the line saver's copy always wins (it's re-read every run, so a correction reaches old games too)
   for (const row of games.values()) {
-    const l = await loggerLine({ id: row[0], date: row[1] });
+    const rec = await loggerRecord({ id: row[0], date: row[1] });
+    const l = closeOf(rec);
     if (l) {
       row[9] = l;
       fromLogger += 1;
     }
+    const o = openOf(rec);
+    while (row.length < 14) row.push(null);
+    if (o) row[13] = o;
+  }
+
+  // possessions from each finished game's box score (once per game; the model rates per possession)
+  let possLooked = 0;
+  const needPoss = [...games.values()].filter((r) => r[12] == null && !tried.has(`p${r[0]}`));
+  needPoss.sort((x, y) => y[1].localeCompare(x[1]));
+  const possBatch = needPoss.slice(0, POSS_LOOKUPS);
+  for (let i = 0; i < possBatch.length; i += 10) {
+    await Promise.all(
+      possBatch.slice(i, i + 10).map(async (row) => {
+        possLooked += 1;
+        const p = await possessionsOf(row[0]);
+        if (p) row[12] = p;
+        else if (Date.now() - Date.parse(row[1]) > 3 * 86_400_000) tried.add(`p${row[0]}`);
+      }),
+    );
   }
   const missing = [...games.values()].filter((r) => !r[9] && !tried.has(r[0]));
   missing.sort((x, y) => y[1].localeCompare(x[1]));
@@ -189,6 +254,7 @@ async function main() {
   // pregame lines for live and upcoming games (yesterday through next week): ESPN drops a game's line
   // from its scoreboard at tip-off, so the site reads the line saver's last pregame line from here
   file.lines = {};
+  file.opens = {};
   const dir = join(DATA, "cbb", SEASON);
   const lo = etDay(new Date(now.getTime() - 86_400_000).toISOString());
   const hi = etDay(new Date(now.getTime() + 8 * 86_400_000).toISOString());
@@ -205,6 +271,8 @@ async function main() {
         bestLine(L.open?.books, h) ??
         bestLine(L.open?.scoreboard, h);
       if (line && rec.id) file.lines[rec.id] = line;
+      const o = openOf(rec);
+      if (o && rec.id) file.opens[rec.id] = o;
     } catch {
       // skip unreadable files
     }
@@ -217,7 +285,7 @@ async function main() {
   await writeFile(path, JSON.stringify(file));
   const withLine = file.games.filter((g) => g[9]?.[0] != null).length;
   console.log(
-    `cbb ${SEASON}: ${Object.keys(file.lines).length} live/upcoming lines, ${file.games.length} finished games (${withLine} with a spread; ${fromLogger} from the line saver, ${looked} ESPN lookups), ${Object.keys(file.teams).length} teams, ${Object.keys(file.conferences).length} conferences`,
+    `cbb ${SEASON}: ${Object.keys(file.lines).length} live/upcoming lines, ${file.games.length} finished games (${withLine} with a spread; ${fromLogger} from the line saver, ${looked} ESPN lookups, ${possLooked} box scores read), ${Object.keys(file.teams).length} teams, ${Object.keys(file.conferences).length} conferences`,
   );
 }
 

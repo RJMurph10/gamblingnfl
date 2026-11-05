@@ -167,7 +167,9 @@ interface SeasonFile {
   conferences?: Record<string, [string, string]>;
   teams?: Record<string, [string, string, string, string, string, string, string]>;
   /** …, line, note ("" when none), location ("City, ST"). */
-  games?: [string, string, string, number, string, number, number, number, number, (number | null)[] | null, string?, string?][];
+  games?: [string, string, string, number, string, number, number, number, number, (number | null)[] | null, string?, string?, (number | null)?, ((number | null)[] | null)?][];
+  /** Opening [homeSpread, total] of live and upcoming games. */
+  opens?: Record<string, (number | null)[]>;
   /** Pregame lines of live and upcoming games, by game id (same layout as a game's line). */
   lines?: Record<string, (number | null)[]>;
 }
@@ -312,7 +314,7 @@ const pregame = new Map<string, CbbOdds>();
 /* ---------- the schedule ---------- */
 
 function gameFromRow(row: NonNullable<SeasonFile["games"]>[number], teams: Map<string, CbbTeamRef>): CbbGame {
-  const [id, date, hId, hScore, aId, aScore, neutral, conf, type, line, note, location] = row;
+  const [id, date, hId, hScore, aId, aScore, neutral, conf, type, line, note, location, possessions, open] = row;
   const team = (tid: string) => teams.get(tid) ?? { id: tid, abbr: "---", name: "Unknown", short: "Unknown", nickname: "", color: "#8899aa", logo: cbbLogoFor(tid), confId: "" };
   const odds: CbbOdds | undefined = line
     ? {
@@ -338,6 +340,8 @@ function gameFromRow(row: NonNullable<SeasonFile["games"]>[number], teams: Map<s
     conference: Boolean(conf),
     ...(note ? { note } : {}),
     ...(location ? { location } : {}),
+    ...(possessions ? { possessions } : {}),
+    ...(open && (open[0] != null || open[1] != null) ? { open: { spread: open[0] ?? null, total: open[1] ?? null } } : {}),
     away: { team: team(aId), score: aScore, periods: [] },
     home: { team: team(hId), score: hScore, periods: [] },
     ...(odds ? { odds } : {}),
@@ -404,10 +408,19 @@ async function loadSchedule(): Promise<CbbSchedule> {
       else teams.set(side.team.id, side.team);
     }
     const stored = byId.get(g.id);
-    byId.set(g.id, { ...g, odds: mergeOdds(g.odds, stored?.odds) });
+    byId.set(g.id, {
+      ...g,
+      odds: mergeOdds(g.odds, stored?.odds),
+      ...(stored?.possessions ? { possessions: stored.possessions } : {}),
+      ...(stored?.open ? { open: stored.open } : {}),
+    });
   }
   // Live and just-finished games: ESPN's scoreboard drops the line at tip-off, so use the hourly line
   // saver's last pregame line (one file, no per-game requests).
+  for (const [id, g] of byId) {
+    const o = file?.opens?.[id];
+    if (o && !g.open) byId.set(id, { ...g, open: { spread: o[0] ?? null, total: o[1] ?? null } });
+  }
   for (const [id, g] of byId) {
     const line = file?.lines?.[id];
     if (!line || (g.odds?.spread != null && g.odds?.total != null)) continue;

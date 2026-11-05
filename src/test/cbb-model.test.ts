@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildRatings, gradeCbbSeason, HOME_COURT, predictGame, runCbbModel } from "@/lib/cbb/cbb-model";
+import { BEST_TOTAL_EDGE, buildRatings, gradeCbbSeason, HOME_COURT_EFF, predictGame, rowFor, runCbbModel } from "@/lib/cbb/cbb-model";
 import { parseEvent, parseOdds } from "@/lib/cbb/cbb.server";
 import { atsResult, buildCbbStandings, ouResult, type CbbGame } from "@/lib/cbb/cbb";
 
@@ -24,7 +24,7 @@ describe("cbb model", () => {
     const r = buildRatings([]);
     const home = predictGame(r, "x1", "x2", false);
     const neutral = predictGame(r, "x1", "x2", true);
-    expect(home.margin - neutral.margin).toBeCloseTo(HOME_COURT, 5);
+    expect(home.margin - neutral.margin).toBeCloseTo((HOME_COURT_EFF * home.possessions) / 100, 5);
     expect(neutral.margin).toBeCloseTo(0, 5);
   });
 
@@ -130,5 +130,19 @@ describe("games against non-Division I schools", () => {
     expect((light.off.get("a") as number) < (full.off.get("a") as number)).toBe(true);
     expect(gradeCbbSeason(runCbbModel([blowout])).games).toBe(0);
     expect(gradeCbbSeason(runCbbModel([real])).games).toBe(1);
+  });
+});
+
+describe("best bets: totals far from the opener", () => {
+  it("are picked against the opening total and graded there", () => {
+    const g = game("1", "x1", "x2", 80, 81, "2026-11-04T00:00Z", {
+      open: { spread: -2, total: 140 },
+      odds: { spread: -2, total: 150, mlHome: -130, mlAway: 110 },
+    });
+    const pred = { home: 81, away: 79, margin: 2, total: 140 + BEST_TOTAL_EDGE + 1, possessions: 70, homeWinProb: 0.55 };
+    const row = rowFor(g, pred);
+    expect(row.best).toMatchObject({ pick: "over", line: 140, result: "win" });
+    expect(rowFor(g, { ...pred, total: 143 }).best).toBeNull();
+    expect(rowFor({ ...g, open: undefined }, pred).best).toBeNull();
   });
 });

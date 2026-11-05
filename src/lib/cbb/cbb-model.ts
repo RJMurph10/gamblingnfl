@@ -1,119 +1,154 @@
 /**
- * The men's college basketball model: team power ratings, game predictions and graded picks.
+ * The men's college basketball model (v2): tempo-free team ratings, game predictions and graded picks.
  *
- * Ratings: every team has an offense and a defense number (points above / below the Division I
- * average, adjusted for opponent and home court; no home court at neutral sites). They start from last
- * season's ratings (src/data/cbb/prior-ratings.ts), shrunk toward average because rosters turn over,
- * and are pulled toward this season's results as games are played. A finished game is predicted only
- * from games played BEFORE its day, so the record is an honest walk-forward test.
+ * Ratings, per possession like KenPom: every team has an offense and a defense rating (points per 100
+ * possessions above / below the Division I average, adjusted for opponent, home court and neutral
+ * sites) and a tempo rating (possessions per game above / below average). A game's possessions come
+ * from its box score (FGA − OREB + TO + 0.475 × FTA, the two teams averaged). Ratings start from last
+ * season's (src/data/cbb/prior-ratings.ts, 75% kept since rosters turn over; 70% of tempo), count recent
+ * games more (a game's weight halves every 30 days), and count games against non-Division I schools a
+ * quarter as much. A finished game is predicted only from games before its day.
  *
- * Settings come from research/cbb/model.py (2023-24 through 2025-26 against closing lines). Tested
- * honestly, the model does NOT beat college basketball closing lines: about 50-51% against the spread
- * and under 50% on totals in each season, with no edge size or angle that held up every year. It is
- * shown so its record can be tracked; there are no ★ best bets.
+ * Research (research/cbb/model_v2.py, every D-I game 2019-20 to 2025-26): on spreads and moneylines the
+ * model doesn't beat the market. On totals it does, against the OPENING total: when the model is 6+
+ * points off the opener the pick hit 55.8% (2023-24), 55.7% (2024-25) and 53.0% (2025-26), break-even
+ * being 52.4%. Against the closing total the same picks hit only 50–52%: the model sees where the total
+ * will move, so the bet has to be made early. Those totals are the ★ best bets, graded at the opener.
  */
-import { CBB_PRIOR, CBB_PRIOR_AVG } from "@/data/cbb/prior-ratings";
+import { CBB_PRIOR, CBB_PRIOR_EFF, CBB_PRIOR_TEMPO } from "@/data/cbb/prior-ratings";
 import { atsResult, etDayKey, hasScore, normCdf, ouResult, winnerOf, type CbbGame } from "./cbb";
 
-export const HOME_COURT = 3.0;
-/** Games' worth of weight given to last season before this season's results take over. */
-const PRIOR_WEIGHT = 6;
-/** How much of last season's rating carries over. */
-const PRIOR_SHRINK = 0.6;
-/** Teams with no rating last season (new to Division I, or non-D-I opponents) start this far below average. */
-const NEW_TEAM = 6;
-export const MARGIN_SD = 11.5;
-const DEFAULT_AVG = 72;
-
-/** Games against non-Division I schools count this much in the ratings (they're mostly mismatches). */
+/** Home court, in points per 100 possessions (about 2.8 points a game at average tempo). */
+export const HOME_COURT_EFF = 4.0;
+/** Games' worth of weight last season's rating counts as. */
+const PRIOR_WEIGHT = 5;
+const PRIOR_SHRINK = 0.75;
+const TEMPO_SHRINK = 0.7;
+/** Teams with no rating last season start this far below average (per 100 possessions, net). */
+const NEW_TEAM = 15;
+/** A game's weight halves every this many days. */
+const HALF_LIFE_DAYS = 30;
+/** Games against non-Division I schools count this much. */
 const NON_D1_WEIGHT = 0.25;
+export const MARGIN_SD = 11;
 
 export const SPREAD_PICK_MIN = 2;
 export const TOTAL_PICK_MIN = 3;
+/** ★ best bet: the model total this far from the opening total. */
+export const BEST_TOTAL_EDGE = 6;
 const WIN_UNITS = 100 / 110;
+const DAY_MS = 86_400_000;
 
 export interface RatingTable {
+  /** Average points per 100 possessions and possessions per game. */
   avg: number;
+  tempo: number;
   off: Map<string, number>;
   def: Map<string, number>;
+  pace: Map<string, number>;
   games: Map<string, number>;
 }
 
-function priorFor(id: string): [number, number] {
+function priorFor(id: string): [number, number, number] {
   const p = CBB_PRIOR[id];
-  return p ? [PRIOR_SHRINK * p[0], PRIOR_SHRINK * p[1]] : [-NEW_TEAM, NEW_TEAM];
+  return p ? [PRIOR_SHRINK * p[0], PRIOR_SHRINK * p[1], TEMPO_SHRINK * p[2]] : [-NEW_TEAM / 2, NEW_TEAM / 2, 0];
 }
 
-export function buildRatings(finals: CbbGame[]): RatingTable {
-  const scores = finals.length * 2;
-  const seasonSum = finals.reduce((s, g) => s + (g.away.score ?? 0) + (g.home.score ?? 0), 0);
-  const base = CBB_PRIOR_AVG || DEFAULT_AVG;
-  // early on the average is mostly last season's
-  const avg = (base * 300 + seasonSum) / (300 + scores);
+/** Possessions in a game: from the box score when known, else estimated from the score. */
+function possessionsOf(g: CbbGame, avgEff: number): number {
+  const p = g.possessions;
+  if (p && p >= 45 && p <= 110) return p;
+  return ((g.home.score as number) + (g.away.score as number)) / 2 / (avgEff / 100);
+}
 
-  const ids = new Set<string>();
+/** Ratings from finished games, as of `asOf` (for the recency weights; default: the newest game). */
+export function buildRatings(finals: CbbGame[], asOf?: number): RatingTable {
+  const baseEff = CBB_PRIOR_EFF || 105;
+  const baseTempo = CBB_PRIOR_TEMPO || 68;
+  const ids = new Set<string>(Object.keys(CBB_PRIOR));
   for (const g of finals) {
     ids.add(g.home.team.id);
     ids.add(g.away.team.id);
   }
-  for (const id of Object.keys(CBB_PRIOR)) ids.add(id);
   const idList = [...ids];
   const slot = new Map(idList.map((id, i) => [id, i]));
   const T = idList.length;
   const pOff = new Float64Array(T);
   const pDef = new Float64Array(T);
+  const pPace = new Float64Array(T);
   idList.forEach((id, i) => {
-    const [o, d] = priorFor(id);
-    pOff[i] = o;
-    pDef[i] = d;
+    [pOff[i], pDef[i], pPace[i]] = priorFor(id);
   });
   const off = Float64Array.from(pOff);
   const def = Float64Array.from(pDef);
+  const pace = Float64Array.from(pPace);
   const n = new Float64Array(T);
-  const G = finals.length;
-  const hi = new Int32Array(G);
-  const ai = new Int32Array(G);
-  const hs = new Float64Array(G);
-  const as = new Float64Array(G);
-  const hh = new Float64Array(G);
-  const w = new Float64Array(G);
   const played = new Float64Array(T);
-  finals.forEach((g, k) => {
-    hi[k] = slot.get(g.home.team.id) as number;
-    ai[k] = slot.get(g.away.team.id) as number;
-    hs[k] = g.home.score as number;
-    as[k] = g.away.score as number;
-    hh[k] = g.neutral ? 0 : HOME_COURT / 2;
-    w[k] = g.nonDivisionI ? NON_D1_WEIGHT : 1;
-    n[hi[k]] += w[k];
-    n[ai[k]] += w[k];
-    played[hi[k]] += 1;
-    played[ai[k]] += 1;
-  });
+  const G = finals.length;
+  const out: RatingTable = { avg: baseEff, tempo: baseTempo, off: new Map(), def: new Map(), pace: new Map(), games: new Map() };
   if (G) {
-    const offSum = new Float64Array(T);
-    const defSum = new Float64Array(T);
+    const now = asOf ?? Math.max(...finals.map((g) => Date.parse(g.date)));
+    const hi = new Int32Array(G);
+    const ai = new Int32Array(G);
+    const eh = new Float64Array(G);
+    const ea = new Float64Array(G);
+    const ps = new Float64Array(G);
+    const hh = new Float64Array(G);
+    const w = new Float64Array(G);
+    let wSum = 0;
+    let effSum = 0;
+    let possSum = 0;
+    finals.forEach((g, k) => {
+      hi[k] = slot.get(g.home.team.id) as number;
+      ai[k] = slot.get(g.away.team.id) as number;
+      ps[k] = possessionsOf(g, baseEff);
+      eh[k] = ((g.home.score as number) / ps[k]) * 100;
+      ea[k] = ((g.away.score as number) / ps[k]) * 100;
+      hh[k] = g.neutral ? 0 : HOME_COURT_EFF / 2;
+      const age = Math.max(0, (now - Date.parse(g.date)) / DAY_MS);
+      w[k] = Math.pow(0.5, age / HALF_LIFE_DAYS) * (g.nonDivisionI ? NON_D1_WEIGHT : 1);
+      n[hi[k]] += w[k];
+      n[ai[k]] += w[k];
+      played[hi[k]] += 1;
+      played[ai[k]] += 1;
+      wSum += w[k];
+      effSum += w[k] * (eh[k] + ea[k]);
+      possSum += w[k] * ps[k];
+    });
+    // early on the averages are mostly last season's
+    const avg = (effSum / 2 + baseEff * 200) / (wSum + 200);
+    const tempo = (possSum + baseTempo * 100) / (wSum + 100);
+    out.avg = avg;
+    out.tempo = tempo;
+    const oS = new Float64Array(T);
+    const dS = new Float64Array(T);
+    const tS = new Float64Array(T);
     for (let iter = 0; iter < 30; iter++) {
-      offSum.fill(0);
-      defSum.fill(0);
+      oS.fill(0);
+      dS.fill(0);
+      tS.fill(0);
       for (let k = 0; k < G; k++) {
         const H = hi[k];
         const A = ai[k];
-        offSum[H] += w[k] * (hs[k] - avg - hh[k] - def[A]);
-        offSum[A] += w[k] * (as[k] - avg + hh[k] - def[H]);
-        defSum[A] += w[k] * (hs[k] - avg - hh[k] - off[H]);
-        defSum[H] += w[k] * (as[k] - avg + hh[k] - off[A]);
+        const wk = w[k];
+        oS[H] += wk * (eh[k] - avg - hh[k] - def[A]);
+        oS[A] += wk * (ea[k] - avg + hh[k] - def[H]);
+        dS[A] += wk * (eh[k] - avg - hh[k] - off[H]);
+        dS[H] += wk * (ea[k] - avg + hh[k] - off[A]);
+        tS[H] += wk * (ps[k] - tempo - pace[A]);
+        tS[A] += wk * (ps[k] - tempo - pace[H]);
       }
       for (let i = 0; i < T; i++) {
-        off[i] = (offSum[i] + PRIOR_WEIGHT * pOff[i]) / (n[i] + PRIOR_WEIGHT);
-        def[i] = (defSum[i] + PRIOR_WEIGHT * pDef[i]) / (n[i] + PRIOR_WEIGHT);
+        off[i] = (oS[i] + PRIOR_WEIGHT * pOff[i]) / (n[i] + PRIOR_WEIGHT);
+        def[i] = (dS[i] + PRIOR_WEIGHT * pDef[i]) / (n[i] + PRIOR_WEIGHT);
+        pace[i] = (tS[i] + PRIOR_WEIGHT * pPace[i]) / (n[i] + PRIOR_WEIGHT);
       }
     }
   }
-  const out: RatingTable = { avg, off: new Map(), def: new Map(), games: new Map() };
   idList.forEach((id, i) => {
     out.off.set(id, off[i]);
     out.def.set(id, def[i]);
+    out.pace.set(id, pace[i]);
     out.games.set(id, played[i]);
   });
   return out;
@@ -125,27 +160,42 @@ export interface Prediction {
   /** Home margin (positive = home wins). */
   margin: number;
   total: number;
+  /** Expected possessions. */
+  possessions: number;
   homeWinProb: number;
 }
 
 export function predictGame(r: RatingTable, homeId: string, awayId: string, neutral: boolean): Prediction {
-  const h = neutral ? 0 : HOME_COURT / 2;
-  const [ho, hd] = r.off.has(homeId) ? [r.off.get(homeId) as number, r.def.get(homeId) as number] : priorFor(homeId);
-  const [ao, ad] = r.off.has(awayId) ? [r.off.get(awayId) as number, r.def.get(awayId) as number] : priorFor(awayId);
-  const home = r.avg + ho + ad + h;
-  const away = r.avg + ao + hd - h;
+  const h = neutral ? 0 : HOME_COURT_EFF / 2;
+  const get = (id: string): [number, number, number] =>
+    r.off.has(id) ? [r.off.get(id) as number, r.def.get(id) as number, r.pace.get(id) as number] : priorFor(id);
+  const [ho, hd, ht] = get(homeId);
+  const [ao, ad, at] = get(awayId);
+  const possessions = r.tempo + ht + at;
+  const home = ((r.avg + ho + ad + h) * possessions) / 100;
+  const away = ((r.avg + ao + hd - h) * possessions) / 100;
   const margin = home - away;
-  return { home, away, margin, total: home + away, homeWinProb: normCdf(margin / MARGIN_SD) };
+  return { home, away, margin, total: home + away, possessions, homeWinProb: normCdf(margin / MARGIN_SD) };
 }
 
-/** Ratings as table rows: offense / defense in points per game, net = off − def (per game vs an average team). */
+/**
+ * Ratings as table rows: offense / defense in points per 100 possessions, net = off − def (per 100
+ * possessions against an average Division I team on a neutral court), tempo in possessions per game.
+ */
 export function ratingRows(r: RatingTable, only?: Set<string>) {
   return [...r.off.keys()]
     .filter((id) => !only || only.has(id))
     .map((id) => {
       const offense = r.avg + (r.off.get(id) ?? 0);
       const defense = r.avg + (r.def.get(id) ?? 0);
-      return { teamId: id, offense, defense, net: offense - defense, games: r.games.get(id) ?? 0 };
+      return {
+        teamId: id,
+        offense,
+        defense,
+        net: offense - defense,
+        tempo: r.tempo + (r.pace.get(id) ?? 0),
+        games: r.games.get(id) ?? 0,
+      };
     })
     .sort((a, b) => b.net - a.net)
     .map((row, i) => ({ ...row, rank: i + 1 }));
@@ -161,6 +211,11 @@ export interface CbbModelRow {
   moneyline: { pick: "home" | "away"; prob: number; result: PickResult | null; units: number | null };
   spread: { pick: "home" | "away"; line: number; edge: number; result: PickResult | null } | null;
   total: { pick: "over" | "under"; line: number; edge: number; result: PickResult | null } | null;
+  /**
+   * ★ best bet: the total, when the model is BEST_TOTAL_EDGE+ points from the opening total (graded at
+   * the opener, which is when it has to be bet).
+   */
+  best: { pick: "over" | "under"; line: number; edge: number; result: PickResult | null } | null;
 }
 
 const toResult = (won: boolean, push = false): PickResult => (push ? "push" : won ? "win" : "loss");
@@ -198,6 +253,16 @@ export function rowFor(game: CbbGame, pred: Prediction): CbbModelRow {
       total = { pick, line: tl, edge: Math.abs(edge), result: res ? toResult(res === pick, res === "push") : null };
     }
   }
+  let best: CbbModelRow["best"] = null;
+  const opener = game.open?.total ?? null;
+  if (opener !== null && !game.nonDivisionI) {
+    const edge = pred.total - opener;
+    if (Math.abs(edge) >= BEST_TOTAL_EDGE) {
+      const pick = edge > 0 ? "over" : "under";
+      const res = ouResult(game, opener);
+      best = { pick, line: opener, edge: Math.abs(edge), result: res ? toResult(res === pick, res === "push") : null };
+    }
+  }
   return {
     game,
     pred,
@@ -209,6 +274,7 @@ export function rowFor(game: CbbGame, pred: Prediction): CbbModelRow {
     },
     spread,
     total,
+    best,
   };
 }
 
@@ -232,10 +298,10 @@ export function runCbbModel(games: CbbGame[]): CbbModelRow[] {
   let cursor = 0;
   for (const [day, dayGames] of byDay) {
     while (cursor < finals.length && etDayKey(finals[cursor].date) < day) cursor++;
-    const table = buildRatings(finals.slice(0, cursor));
+    const table = buildRatings(finals.slice(0, cursor), Date.parse(dayGames[0].date));
     for (const g of dayGames) rows.push(rowFor(g, predictGame(table, g.home.team.id, g.away.team.id, g.neutral)));
   }
-  const now = buildRatings(finals);
+  const now = buildRatings(finals, Date.now());
   for (const g of usable.filter((x) => x.status !== "final" || !hasScore(x)))
     rows.push(rowFor(g, predictGame(now, g.home.team.id, g.away.team.id, g.neutral)));
   return rows.sort((a, b) => a.game.date.localeCompare(b.game.date));
@@ -252,6 +318,8 @@ export interface CbbSeasonGrade {
   moneyline: CbbRecord;
   spread: CbbRecord;
   total: CbbRecord;
+  /** ★ best bets (totals 6+ points off the opener), graded at the opening total. */
+  best: CbbRecord;
   /** Finished games graded. */
   games: number;
   avgPoints: number | null;
@@ -263,7 +331,7 @@ export const winPct = (r: CbbRecord) => (r.wins + r.losses ? (r.wins / (r.wins +
 
 /** The season's record: winners at the closing moneyline, spread and total picks at -110. */
 export function gradeCbbSeason(rows: CbbModelRow[], before?: Date): CbbSeasonGrade {
-  const out: CbbSeasonGrade = { moneyline: empty(), spread: empty(), total: empty(), games: 0, avgPoints: null, avgLine: null };
+  const out: CbbSeasonGrade = { moneyline: empty(), spread: empty(), total: empty(), best: empty(), games: 0, avgPoints: null, avgLine: null };
   let pts = 0;
   let line = 0;
   let nLine = 0;
@@ -287,6 +355,7 @@ export function gradeCbbSeason(rows: CbbModelRow[], before?: Date): CbbSeasonGra
     for (const [pick, rec] of [
       [r.spread, out.spread],
       [r.total, out.total],
+      [r.best, out.best],
     ] as const) {
       if (!pick?.result) continue;
       if (pick.result === "win") {
@@ -300,7 +369,7 @@ export function gradeCbbSeason(rows: CbbModelRow[], before?: Date): CbbSeasonGra
   }
   out.avgPoints = out.games ? pts / out.games : null;
   out.avgLine = nLine ? line / nLine : null;
-  for (const rec of [out.moneyline, out.spread, out.total]) rec.units = Math.round(rec.units * 100) / 100;
+  for (const rec of [out.moneyline, out.spread, out.total, out.best]) rec.units = Math.round(rec.units * 100) / 100;
   return out;
 }
 

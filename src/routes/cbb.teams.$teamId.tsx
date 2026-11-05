@@ -102,7 +102,7 @@ function CbbTeamPage() {
                 value={rating ? `#${rating.rank}` : "—"}
                 sub={
                   rating
-                    ? `${rating.net >= 0 ? "+" : ""}${rating.net.toFixed(1)} vs an average D-I team · off ${rating.offense.toFixed(1)} / def ${rating.defense.toFixed(1)}`
+                    ? `${rating.net >= 0 ? "+" : ""}${rating.net.toFixed(1)} per 100 poss. vs an average D-I team · off ${rating.offense.toFixed(1)} / def ${rating.defense.toFixed(1)} · tempo ${rating.tempo.toFixed(1)}`
                     : "Not rated"
                 }
               />

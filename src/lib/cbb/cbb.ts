@@ -65,6 +65,10 @@ export interface CbbGame {
   neutral: boolean;
   /** A conference game. */
   conference: boolean;
+  /** Possessions, from the box score (finished games). */
+  possessions?: number;
+  /** The opening line (from the hourly line saver / ESPN's opener). */
+  open?: { spread: number | null; total: number | null };
   /** One team isn't Division I (a D-II, D-III or NAIA school): close to an exhibition, rarely has a line. */
   nonDivisionI?: boolean;
   /** e.g. "Maui Invitational", "NCAA Tournament - East Region - 1st Round". */

@@ -8,6 +8,7 @@ import { Link } from "@tanstack/react-router";
 import { Panel, PanelHeader } from "@/components/shared/booth";
 import { CbbLogo } from "@/components/cbb/CbbBits";
 import { atsResult, etDayKey, hasScore, ouResult, statusText, type CbbGame, type CbbSide } from "@/lib/cbb/cbb";
+import type { CbbModelRow } from "@/lib/cbb/cbb-model";
 
 function RankedLogo({ side }: { side: CbbSide }) {
   if (!side.rank) return <CbbLogo team={side.team} className="size-5" />;
@@ -106,7 +107,20 @@ const shortDate = (iso: string) => new Date(iso).toLocaleDateString([], { month:
 const shortTime = (iso: string) => new Date(iso).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
 const where = (g: CbbGame) => g.location || (g.neutral ? "Neutral site" : g.venue) || g.home.team.short;
 
-function GameRow({ game }: { game: CbbGame }) {
+/** A ★ best bet: the model's total pick against the opening total. */
+function BestTag({ row }: { row?: CbbModelRow }) {
+  const b = row?.best;
+  if (!b) return null;
+  const tone = b.result === "win" ? "text-win" : b.result === "loss" ? "text-loss" : "text-acc";
+  return (
+    <span className={`mr-1.5 ${tone}`} title={`★ Best bet: ${b.pick} ${b.line} (opening total; model ${row!.pred.total.toFixed(1)})`}>
+      ★ {b.pick === "over" ? "o" : "u"}
+      {b.line}
+    </span>
+  );
+}
+
+function GameRow({ game, row }: { game: CbbGame; row?: CbbModelRow }) {
   const cls = resultClasses(game);
   return (
     <tr className="hover:bg-line/5">
@@ -127,7 +141,10 @@ function GameRow({ game }: { game: CbbGame }) {
           <Spread game={game} />
         </div>
       </td>
-      <td className={`whitespace-nowrap px-4 py-2.5 text-right font-mono tabular-nums ${cls.total}`}>{game.odds?.total ?? "—"}</td>
+      <td className={`whitespace-nowrap px-4 py-2.5 text-right font-mono tabular-nums ${cls.total}`}>
+        <BestTag row={row} />
+        {game.odds?.total ?? "—"}
+      </td>
     </tr>
   );
 }
@@ -148,7 +165,7 @@ function Head() {
 }
 
 /** Live games; renders nothing when no game is in progress. */
-export function CbbLiveGames({ games }: { games: CbbGame[] }) {
+export function CbbLiveGames({ games, model }: { games: CbbGame[]; model?: Map<string, CbbModelRow> }) {
   if (!games.length) return null;
   return (
     <Panel padded={false}>
@@ -185,7 +202,10 @@ export function CbbLiveGames({ games }: { games: CbbGame[] }) {
                       <Spread game={g} />
                     </div>
                   </td>
-                  <td className={`whitespace-nowrap px-4 py-2.5 text-right font-mono tabular-nums ${cls.total}`}>{g.odds?.total ?? "—"}</td>
+                  <td className={`whitespace-nowrap px-4 py-2.5 text-right font-mono tabular-nums ${cls.total}`}>
+                    <BestTag row={model?.get(g.id)} />
+                    {g.odds?.total ?? "—"}
+                  </td>
                 </tr>
               );
             })}
@@ -199,7 +219,7 @@ export function CbbLiveGames({ games }: { games: CbbGame[] }) {
 const DAY_FMT = new Intl.DateTimeFormat("en-US", { timeZone: "America/New_York", weekday: "short", month: "short", day: "numeric" });
 
 /** Upcoming games, one tab per day (Eastern), the next 7 days. Ranked teams first within a day. */
-export function CbbUpcomingGames({ games }: { games: CbbGame[] }) {
+export function CbbUpcomingGames({ games, model }: { games: CbbGame[]; model?: Map<string, CbbModelRow> }) {
   const days = useMemo(() => {
     const list = games.filter((g) => g.status === "scheduled").sort((a, b) => a.date.localeCompare(b.date));
     const out: { key: string; label: string; date: string; games: CbbGame[] }[] = [];
@@ -254,7 +274,7 @@ export function CbbUpcomingGames({ games }: { games: CbbGame[] }) {
               <Head />
               <tbody className="divide-y divide-line/5">
                 {active.games.map((g) => (
-                  <GameRow key={g.id} game={g} />
+                  <GameRow key={g.id} game={g} row={model?.get(g.id)} />
                 ))}
               </tbody>
             </table>
@@ -268,7 +288,7 @@ export function CbbUpcomingGames({ games }: { games: CbbGame[] }) {
 }
 
 /** Most recent finished games, with a link to every game. */
-export function CbbRecentGames({ games, emptyText }: { games: CbbGame[]; emptyText: string }) {
+export function CbbRecentGames({ games, emptyText, model }: { games: CbbGame[]; emptyText: string; model?: Map<string, CbbModelRow> }) {
   return (
     <Panel padded={false}>
       <PanelHeader
@@ -284,7 +304,7 @@ export function CbbRecentGames({ games, emptyText }: { games: CbbGame[]; emptyTe
           <Head />
           <tbody className="divide-y divide-line/5">
             {games.length ? (
-              games.map((g) => <GameRow key={g.id} game={g} />)
+              games.map((g) => <GameRow key={g.id} game={g} row={model?.get(g.id)} />)
             ) : (
               <tr>
                 <td colSpan={6} className="px-4 py-6 text-center font-mono text-xs text-mute">
