@@ -30,11 +30,11 @@ def table(df, line, title, min_n=150):
 
 
 # ---------- CBB ----------
-CONF = {"2": "ACC", "4": "Big East", "7": "Big Ten", "8": "Big 12", "23": "SEC", "21": "Pac-12", "44": "Mountain West",
-        "62": "American", "3": "A-10", "29": "WCC", "18": "MVC", "46": "ASUN", "10": "CAA", "11": "C-USA", "19": "MEAC",
-        "20": "MAC", "22": "Patriot", "24": "SoCon", "25": "SWAC", "26": "Summit", "27": "Sun Belt", "30": "WAC",
-        "40": "Big South", "43": "Big West", "45": "Horizon", "49": "NEC", "1": "America East", "5": "Big Sky",
-        "9": "Ivy", "12": "MAAC", "13": "OVC", "14": "Southland"}
+CONF = {"1": "America East", "2": "ACC", "3": "A-10", "4": "Big East", "5": "Big Sky", "6": "Big South", "7": "Big Ten",
+        "8": "Big 12", "9": "Big West", "10": "CAA", "11": "C-USA", "12": "Ivy", "13": "MAAC", "14": "MAC", "16": "MEAC",
+        "18": "MVC", "19": "NEC", "20": "OVC", "21": "Pac-12", "22": "Patriot", "23": "SEC", "24": "SoCon", "25": "Southland",
+        "26": "SWAC", "27": "Sun Belt", "29": "WCC", "30": "WAC", "44": "Mountain West", "45": "Horizon", "46": "ASUN",
+        "49": "Summit", "62": "American"}  # ESPN group ids, checked against 2025-26 team lists
 rows = []
 for f in sorted(glob.glob("research/cbb/data/20*.jsonl.gz")):
     s = f.split("/")[-1][:7]

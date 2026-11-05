@@ -1,7 +1,7 @@
 """Season-by-season unders for the conference leans."""
 import gzip, json, glob
 import pandas as pd
-want = {"13": "OVC", "26": "Summit", "3": "A-10"}
+want = {"13": "MAAC", "26": "SWAC", "3": "A-10"}
 rows = []
 for f in sorted(glob.glob("research/cbb/data/20*.jsonl.gz")):
     s = f.split("/")[-1][:7]
