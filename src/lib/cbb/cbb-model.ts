@@ -13,7 +13,12 @@
  * model doesn't beat the market. On totals it does, against the OPENING total: when the model is 6+
  * points off the opener the pick hit 55.8% (2023-24), 55.7% (2024-25) and 53.0% (2025-26), break-even
  * being 52.4%. Against the closing total the same picks hit only 50–52%: the model sees where the total
- * will move, so the bet has to be made early. Those totals are the ★ best bets, graded at the opener.
+ * will move, so the bet has to be made early.
+ *
+ * v3 (research/cbb/v3_market.py): projections are blended 50/50 with the market's own view of each team
+ * (ratings fit to earlier games' closing lines). Once both teams have 3+ games, totals 6+ points off the
+ * opener hit 58.1%, 57.2% and 59.0% (265 / 276 / 459 bets), at the close 50–51%. Those are the ★ best
+ * bets, graded at the opener. Spreads with the blend: 51%, 55%, 57% at 6+ pts, not every season, so not ★.
  */
 import { CBB_PRIOR, CBB_PRIOR_EFF, CBB_PRIOR_TEMPO } from "@/data/cbb/prior-ratings";
 import { atsResult, etDayKey, hasScore, normCdf, ouResult, winnerOf, type CbbGame } from "./cbb";
@@ -36,6 +41,15 @@ export const SPREAD_PICK_MIN = 2;
 export const TOTAL_PICK_MIN = 3;
 /** ★ best bet: the model total this far from the opening total. */
 export const BEST_TOTAL_EDGE = 6;
+/**
+ * Share of the projection taken from the market's own view of each team (ratings fit to earlier
+ * games' closing lines); the rest is the efficiency model. 50/50 made the totals edge sharper in every
+ * season tested and projections closer to the final score than either alone.
+ */
+export const MARKET_WEIGHT = 0.5;
+/** Market ratings need this many earlier games for both teams (until then: no ★). */
+const MARKET_MIN_GAMES = 3;
+const MARKET_HOME = 2.8;
 const WIN_UNITS = 100 / 110;
 const DAY_MS = 86_400_000;
 
@@ -201,6 +215,101 @@ export function ratingRows(r: RatingTable, only?: Set<string>) {
     .map((row, i) => ({ ...row, rank: i + 1 }));
 }
 
+/* ---------- the market's view: ratings fit to earlier closing lines ---------- */
+
+export interface MarketTable {
+  /** Average closing total. */
+  mu: number;
+  margin: Map<string, number>;
+  total: Map<string, number>;
+  /** Earlier games played (any, for the MARKET_MIN_GAMES check). */
+  games: Map<string, number>;
+  /** False until there are enough closing lines to fit. */
+  ready: boolean;
+}
+
+/**
+ * Each team's rating as the market sees it, from earlier games' closing lines (recent ones count more):
+ * closing home spread ≈ −(margin_home − margin_away + home court), closing total ≈ mu + total_home + total_away.
+ */
+export function buildMarketRatings(finals: CbbGame[], asOf: number): MarketTable {
+  const out: MarketTable = { mu: 145, margin: new Map(), total: new Map(), games: new Map(), ready: false };
+  for (const g of finals) {
+    out.games.set(g.home.team.id, (out.games.get(g.home.team.id) ?? 0) + 1);
+    out.games.set(g.away.team.id, (out.games.get(g.away.team.id) ?? 0) + 1);
+  }
+  const ids = [...out.games.keys()];
+  const slot = new Map(ids.map((id, i) => [id, i]));
+  const T = ids.length;
+  const fitOne = (kind: "margin" | "total") => {
+    const lined = finals.filter((g) => (kind === "margin" ? g.odds?.spread : g.odds?.total) != null);
+    if (lined.length <= 50) return null;
+    const G = lined.length;
+    const H = new Int32Array(G);
+    const A = new Int32Array(G);
+    const y = new Float64Array(G);
+    const hc = new Float64Array(G);
+    const w = new Float64Array(G);
+    const n = new Float64Array(T);
+    let mu = 0;
+    lined.forEach((g, k) => {
+      H[k] = slot.get(g.home.team.id) as number;
+      A[k] = slot.get(g.away.team.id) as number;
+      y[k] = kind === "margin" ? -(g.odds!.spread as number) : (g.odds!.total as number);
+      hc[k] = g.neutral ? 0 : MARKET_HOME;
+      w[k] = Math.pow(0.5, Math.max(0, (asOf - Date.parse(g.date)) / DAY_MS) / HALF_LIFE_DAYS);
+      n[H[k]] += w[k];
+      n[A[k]] += w[k];
+      mu += y[k];
+    });
+    mu /= G;
+    const r = new Float64Array(T);
+    const sum = new Float64Array(T);
+    for (let iter = 0; iter < 30; iter++) {
+      sum.fill(0);
+      for (let k = 0; k < G; k++) {
+        if (kind === "margin") {
+          sum[H[k]] += w[k] * (y[k] - hc[k] + r[A[k]]);
+          sum[A[k]] += w[k] * (-(y[k] - hc[k]) + r[H[k]]);
+        } else {
+          sum[H[k]] += w[k] * (y[k] - mu - r[A[k]]);
+          sum[A[k]] += w[k] * (y[k] - mu - r[H[k]]);
+        }
+      }
+      for (let i = 0; i < T; i++) r[i] = sum[i] / (n[i] + 2);
+    }
+    return { r, mu };
+  };
+  const m = fitOne("margin");
+  const t = fitOne("total");
+  if (m) ids.forEach((id, i) => out.margin.set(id, m.r[i]));
+  if (t) {
+    out.mu = t.mu;
+    ids.forEach((id, i) => out.total.set(id, t.r[i]));
+  }
+  out.ready = Boolean(m && t);
+  return out;
+}
+
+/** The efficiency projection blended with the market's view, when both teams have enough games. */
+export function blendWithMarket(pred: Prediction, mk: MarketTable, homeId: string, awayId: string, neutral: boolean): Prediction & { market: boolean } {
+  const enough = mk.ready && (mk.games.get(homeId) ?? 0) >= MARKET_MIN_GAMES && (mk.games.get(awayId) ?? 0) >= MARKET_MIN_GAMES;
+  if (!enough) return { ...pred, market: false };
+  const mMargin = (mk.margin.get(homeId) ?? 0) - (mk.margin.get(awayId) ?? 0) + (neutral ? 0 : MARKET_HOME);
+  const mTotal = mk.mu + (mk.total.get(homeId) ?? 0) + (mk.total.get(awayId) ?? 0);
+  const margin = MARKET_WEIGHT * mMargin + (1 - MARKET_WEIGHT) * pred.margin;
+  const total = MARKET_WEIGHT * mTotal + (1 - MARKET_WEIGHT) * pred.total;
+  return {
+    ...pred,
+    margin,
+    total,
+    home: (total + margin) / 2,
+    away: (total - margin) / 2,
+    homeWinProb: normCdf(margin / MARGIN_SD),
+    market: true,
+  };
+}
+
 /* ---------- graded picks ---------- */
 
 export type PickResult = "win" | "loss" | "push";
@@ -255,7 +364,9 @@ export function rowFor(game: CbbGame, pred: Prediction): CbbModelRow {
   }
   let best: CbbModelRow["best"] = null;
   const opener = game.open?.total ?? null;
-  if (opener !== null && !game.nonDivisionI) {
+  // ★ only once the market's view is in the projection (both teams have a few games)
+  const blended = (pred as Prediction & { market?: boolean }).market !== false;
+  if (opener !== null && !game.nonDivisionI && blended) {
     const edge = pred.total - opener;
     if (Math.abs(edge) >= BEST_TOTAL_EDGE) {
       const pick = edge > 0 ? "over" : "under";
@@ -278,6 +389,9 @@ export function rowFor(game: CbbGame, pred: Prediction): CbbModelRow {
   };
 }
 
+const project = (table: RatingTable, market: MarketTable, g: CbbGame) =>
+  blendWithMarket(predictGame(table, g.home.team.id, g.away.team.id, g.neutral), market, g.home.team.id, g.away.team.id, g.neutral);
+
 /**
  * Model rows for every game. Finished games are predicted from the games before their day only;
  * unfinished games use everything played so far.
@@ -298,12 +412,15 @@ export function runCbbModel(games: CbbGame[]): CbbModelRow[] {
   let cursor = 0;
   for (const [day, dayGames] of byDay) {
     while (cursor < finals.length && etDayKey(finals[cursor].date) < day) cursor++;
-    const table = buildRatings(finals.slice(0, cursor), Date.parse(dayGames[0].date));
-    for (const g of dayGames) rows.push(rowFor(g, predictGame(table, g.home.team.id, g.away.team.id, g.neutral)));
+    const at = Date.parse(dayGames[0].date);
+    const before = finals.slice(0, cursor);
+    const table = buildRatings(before, at);
+    const market = buildMarketRatings(before, at);
+    for (const g of dayGames) rows.push(rowFor(g, project(table, market, g)));
   }
   const now = buildRatings(finals, Date.now());
-  for (const g of usable.filter((x) => x.status !== "final" || !hasScore(x)))
-    rows.push(rowFor(g, predictGame(now, g.home.team.id, g.away.team.id, g.neutral)));
+  const marketNow = buildMarketRatings(finals, Date.now());
+  for (const g of usable.filter((x) => x.status !== "final" || !hasScore(x))) rows.push(rowFor(g, project(now, marketNow, g)));
   return rows.sort((a, b) => a.game.date.localeCompare(b.game.date));
 }
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { BEST_TOTAL_EDGE, buildRatings, gradeCbbSeason, HOME_COURT_EFF, predictGame, rowFor, runCbbModel } from "@/lib/cbb/cbb-model";
+import { BEST_TOTAL_EDGE, blendWithMarket, buildMarketRatings, buildRatings, gradeCbbSeason, HOME_COURT_EFF, predictGame, rowFor, runCbbModel } from "@/lib/cbb/cbb-model";
 import { parseEvent, parseOdds } from "@/lib/cbb/cbb.server";
 import { atsResult, buildCbbStandings, ouResult, type CbbGame } from "@/lib/cbb/cbb";
 
@@ -144,5 +144,31 @@ describe("best bets: totals far from the opener", () => {
     expect(row.best).toMatchObject({ pick: "over", line: 140, result: "win" });
     expect(rowFor(g, { ...pred, total: 143 }).best).toBeNull();
     expect(rowFor({ ...g, open: undefined }, pred).best).toBeNull();
+  });
+});
+
+describe("market blend", () => {
+  it("leans toward the closing lines once both teams have games, and no ★ before then", () => {
+    // y1 keeps closing as a big favorite with high totals (the market fit needs 50+ lined games)
+    const others = ["y2", "y3", "y4", "y5", "y6"];
+    const finals = Array.from({ length: 60 }, (_, k) => {
+      const opp = others[k % 5];
+      const opp2 = others[(k + 1) % 5];
+      const date = new Date(Date.parse("2026-10-01T00:00Z") + k * 8 * 3_600_000).toISOString();
+      return k % 2
+        ? game(`g${k}`, opp, "y1", 60, 80, date, { odds: { spread: -12, total: 160, mlHome: -900, mlAway: 600 } })
+        : game(`g${k}`, opp, opp2, 70, 70, date, { odds: { spread: 0, total: 140, mlHome: -110, mlAway: -110 } });
+    });
+    const mk = buildMarketRatings(finals, Date.parse("2026-10-25T00:00Z"));
+    const pred = { home: 70, away: 70, margin: 0, total: 140, possessions: 68, homeWinProb: 0.5 };
+    const blended = blendWithMarket(pred, mk, "y1", "y2", true);
+    expect(blended.market).toBe(true);
+    expect(blended.margin).toBeGreaterThan(0);
+    expect(blended.total).toBeGreaterThan(140);
+    const none = blendWithMarket(pred, mk, "y1", "z9", true);
+    expect(none.market).toBe(false);
+    expect(none.total).toBe(140);
+    const g = game("9", "z9", "y1", 80, 81, "2026-11-07T00:00Z", { open: { spread: -2, total: 120 } });
+    expect(rowFor(g, none).best).toBeNull();
   });
 });

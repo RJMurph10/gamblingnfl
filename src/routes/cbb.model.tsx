@@ -21,9 +21,9 @@ export const Route = createFileRoute("/cbb/model")({
 
 /** Season, ★ wins, ★ losses, ★ units (totals 6+ pts off the opener, graded at the opener). */
 const BEST: [string, number, number, number][] = [
-  ["2023-24", 259, 205, 30.5],
-  ["2024-25", 310, 247, 34.8],
-  ["2025-26", 363, 322, 8.0],
+  ["2023-24", 154, 111, 29.0],
+  ["2024-25", 158, 118, 25.6],
+  ["2025-26", 271, 188, 58.4],
 ];
 
 /** Season, ATS %, ATS picks, ATS units, O/U %, O/U picks, O/U units, model margin miss, line miss, model total miss, line total miss. */
@@ -84,11 +84,19 @@ function CbbModelPage() {
               spread every season, and the closing spread missed the final margin by less than the model did.
             </p>
             <p>
-              <b>Totals against the opening line: an edge.</b> When the model&apos;s total is{" "}
-              {BEST_TOTAL_EDGE}+ points from the opening total, the pick hit 55.8%, 55.7% and 53.0% in the three
-              seasons ESPN has openers for (2023-24 to 2025-26), +73 units on 1,706 bets. Break-even is 52.4%. Against
-              the <i>closing</i> total the same picks hit only 50–52%: the model is spotting where the total is going
-              to move, so the bet has to be made early. Those are the ★ best bets.
+              <b>Totals against the opening line: an edge.</b> The projection is a 50/50 blend of the efficiency
+              model and the market&apos;s own view of each team (ratings fit to earlier games&apos; closing lines).
+              Once both teams have 3+ games, when that total is {BEST_TOTAL_EDGE}+ points from the opening total the
+              pick hit <b>58.1%, 57.2% and 59.0%</b> in the three seasons ESPN has openers for (2023-24 to 2025-26),
+              +113 units on 1,000 bets. Break-even is 52.4%. Against the <i>closing</i> total the same picks hit about
+              50%: the model spots where the total is going to move, so the bet has to be made early. Those are the ★
+              best bets.
+            </p>
+            <p>
+              <b>Why not spreads and moneylines?</b> The blend makes them sharper (projections land closer to the
+              final score than either model alone), but against the closing spread they still hit 49–52%. At 6+ points
+              off the opening spread the blend went 51%, 55% and 57%: promising the last two seasons, a loss the first,
+              so it&apos;s on the watch list, not the ★ list.
             </p>
           </div>
         </Panel>
@@ -118,10 +126,11 @@ function CbbModelPage() {
             </table>
           </div>
           <p className="px-4 py-3 text-sm text-mute">
-            Honest caveats: three seasons is a modest sample (a 54–55% hit rate is about two standard errors above
-            break-even), the edge was smallest last season, and openers can come with low limits or move fast. Most
-            of the other model settings tried were also profitable at this size, so it isn&apos;t one lucky setting.
-            The site grades every ★ pick this season at its opening total.
+            Honest caveats: three seasons and 1,000 bets is a decent but not huge sample (58% is about three standard
+            errors above break-even), and openers can come with low limits or move fast. Market blends from 30% to 60%
+            and edges of 5–7 points were all profitable every season, so it isn&apos;t one lucky setting. No ★ picks
+            in the first week or so of the season (the market view needs games). The site grades every ★ pick this
+            season at its opening total.
           </p>
         </Panel>
 
@@ -146,7 +155,9 @@ function CbbModelPage() {
               sites. Games against non-Division I schools count a quarter as much.
             </li>
             <li>
-              Projected score = (average + offense + the opponent&apos;s defense ± home court) × expected possessions.
+              Projected score = (average + offense + the opponent&apos;s defense ± home court) × expected possessions,
+              then blended 50/50 with the <b>market&apos;s view</b>: each team&apos;s rating fit to its earlier games&apos;
+              closing spreads and totals (recent ones count more).
             </li>
           </ul>
         </Panel>
