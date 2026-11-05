@@ -20,3 +20,10 @@
 
 - Only OVC unders survive a strict check for testing 32 conferences (Bonferroni 0.0016).
 - **Next step:** check these against the CBB model's ★ totals, which may already capture them. Then decide whether to add a conference adjustment.
+
+## By season (`by_season.py`, unders at the close)
+- **OVC:** 68-47, 53-46, 66-54, 29-29, 64-55, 72-67, 91-48. Ahead in 6 of 7 seasons. Without 2025-26: 54.2%.
+- **Summit:** 55-39, 41-36, 53-60, 31-28, 66-49, 69-48, 67-52. Ahead in 6 of 7.
+- **A-10:** about even until 2025-26 (86-53); one season does most of the work.
+- **CFB SEC:** strong 2015-19, mixed since (2023 22-34, 2024 37-27, 2025 33-31).
+- **Verdict:** OVC and Summit unders look real. A-10 and SEC football don't hold up yet.
