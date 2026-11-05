@@ -3,7 +3,7 @@
  * list, so adding a sport starts with one new entry here (its pages come later).
  */
 
-export type LeagueId = "nfl" | "cfb" | "nba" | "nhl" | "mlb" | "cbb";
+export type LeagueId = "nfl" | "cfb" | "nba" | "nhl" | "mlb" | "cbb" | "wnba";
 
 export interface League {
   id: LeagueId;
@@ -25,6 +25,7 @@ export const LEAGUES: League[] = [
   { id: "nhl", short: "NHL", name: "NHL", prefix: "/nhl", live: true, sections: ["teams", "players", "games", "props", "model"] },
   { id: "mlb", short: "MLB", name: "MLB", prefix: "/mlb", live: true, sections: ["teams", "games", "props", "model"] },
   { id: "cbb", short: "CBB", name: "College basketball (men's D-I)", prefix: "/cbb", live: true, sections: ["teams", "games", "model"] },
+  { id: "wnba", short: "WNBA", name: "WNBA", prefix: "/wnba", live: true, sections: ["teams", "games", "model"] },
 ];
 
 export const leagueById = (id: LeagueId) => LEAGUES.find((l) => l.id === id)!;

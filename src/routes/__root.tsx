@@ -59,6 +59,13 @@ const cbbNav = [
   { to: "/cbb/model", label: "Model" },
 ] as const;
 
+const wnbaNav = [
+  { to: "/wnba", label: "Dashboard" },
+  { to: "/wnba/teams", label: "Teams" },
+  { to: "/wnba/games", label: "Games" },
+  { to: "/wnba/model", label: "Model" },
+] as const;
+
 const cfbNav = [
   { to: "/cfb", label: "Dashboard" },
   { to: "/cfb/teams", label: "Teams" },
@@ -76,6 +83,7 @@ const LEAGUE_DOT: Record<string, string> = {
   nhl: "var(--acc-nhl)",
   mlb: "var(--acc-mlb)",
   cbb: "var(--acc-cbb)",
+  wnba: "var(--acc-wnba)",
 };
 
 function Logo({ league }: { league: League }) {
@@ -174,7 +182,7 @@ function SiteHeader() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const league = leagueFromPath(pathname);
   const nav =
-    league.id === "cfb" ? cfbNav : league.id === "nba" ? nbaNav : league.id === "nhl" ? nhlNav : league.id === "mlb" ? mlbNav : league.id === "cbb" ? cbbNav : nflNav;
+    league.id === "cfb" ? cfbNav : league.id === "nba" ? nbaNav : league.id === "nhl" ? nhlNav : league.id === "mlb" ? mlbNav : league.id === "cbb" ? cbbNav : league.id === "wnba" ? wnbaNav : nflNav;
   return (
     <header className="glass sticky top-0 z-40 rounded-none border-x-0 border-t-0">
       <div className="mx-auto flex max-w-[1400px] items-center gap-4 px-4 py-3 sm:px-5">
@@ -184,7 +192,7 @@ function SiteHeader() {
             <Link
               key={item.to}
               to={item.to}
-              activeOptions={{ exact: ["/", "/cfb", "/nba", "/nhl", "/mlb", "/cbb"].includes(item.to) }}
+              activeOptions={{ exact: ["/", "/cfb", "/nba", "/nhl", "/mlb", "/cbb", "/wnba"].includes(item.to) }}
               className="shrink-0 rounded-lg px-3 py-1.5 text-sm text-mute hover:text-ink"
               activeProps={{ className: "bg-acc/10 text-acc ring-1 ring-acc/25" }}
             >
@@ -204,7 +212,7 @@ function SiteFooter() {
     <footer className="mt-10 border-t border-line/10 px-4 py-5 sm:px-5">
       <p className="mx-auto max-w-[1400px] font-mono text-[10px] uppercase leading-relaxed tracking-wider text-faint">
         Gambling{league.short} · {league.name} analytics & betting research · live data from ESPN
-        {league.id === "nba" || league.id === "nhl" || league.id === "mlb" || league.id === "cbb" ? "" : " and nflverse"} · for research, not betting advice
+        {league.id === "nba" || league.id === "nhl" || league.id === "mlb" || league.id === "cbb" || league.id === "wnba" ? "" : " and nflverse"} · for research, not betting advice
       </p>
     </footer>
   );

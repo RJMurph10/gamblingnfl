@@ -1,0 +1,661 @@
+/**
+ * Server-only WNBA data:
+ *  - finished games with closing and opening lines, possessions and conferences from the season file
+ *    (props-site branch, wnba/season-YYYY.json, built by scripts/wnba/export-season.mjs);
+ *  - live and upcoming games straight from ESPN's scoreboard (yesterday through the next week);
+ *  - one game's box score and play-by-play, a team's roster.
+ * Missing data stays missing: no sample games, scores or lines are ever substituted.
+ */
+import {
+  wnbaLogoFor,
+  type WnbaBoxTeam,
+  type WnbaConference,
+  type WnbaGame,
+  type WnbaGameDetail,
+  type WnbaOdds,
+  type WnbaPlay,
+  type WnbaRosterPlayer,
+  type WnbaSchedule,
+  type WnbaStatus,
+  type WnbaTeamRef,
+} from "./wnba";
+import { readFinal, writeFinal } from "../shared/final-cache.server";
+import { possessionFromSummary } from "../shared/basketball-possession";
+import { buildBasketballProbabilities, type BasketballRules } from "../nba/nba-probabilities";
+
+const SITE = "https://site.api.espn.com/apis/site/v2/sports/basketball/wnba";
+const CORE = "https://sports.core.api.espn.com/v2/sports/basketball/leagues/wnba";
+const FILES = "https://raw.githubusercontent.com/RJMurph10/gamblingnfl/props-site/wnba";
+
+const MINUTE = 60_000;
+const HOUR = 60 * MINUTE;
+const DAY = 24 * HOUR;
+
+const cache = new Map<string, { at: number; value: unknown }>();
+const inflight = new Map<string, Promise<unknown>>();
+
+async function cached<T>(key: string, ttl: number, load: () => Promise<T>): Promise<T> {
+  const hit = cache.get(key);
+  if (hit && Date.now() - hit.at < ttl) return hit.value as T;
+  const pending = inflight.get(key);
+  if (pending) return pending as Promise<T>;
+  const p = load()
+    .then((value) => {
+      cache.set(key, { at: Date.now(), value });
+      return value;
+    })
+    .finally(() => inflight.delete(key));
+  inflight.set(key, p);
+  return p;
+}
+
+async function fetchJson(url: string, timeoutMs = 15_000): Promise<any> {
+  const res = await fetch(url, {
+    headers: { "User-Agent": "GamblingNFL/1.0", Accept: "application/json" },
+    signal: AbortSignal.timeout(timeoutMs),
+  });
+  if (!res.ok) throw new Error(`ESPN WNBA feed failed [${res.status}] for ${url}`);
+  return res.json();
+}
+
+const pad = (n: number) => String(n).padStart(2, "0");
+const ymd = (d: Date) => `${d.getUTCFullYear()}${pad(d.getUTCMonth() + 1)}${pad(d.getUTCDate())}`;
+
+const num = (v: unknown): number | null => {
+  if (v === null || v === undefined || v === "") return null;
+  const n = Number(String(v).replace(/[,+]/g, ""));
+  return Number.isFinite(n) ? n : null;
+};
+const lineNum = (v: unknown): number | null => {
+  if (v === null || v === undefined || v === "") return null;
+  if (typeof v === "number") return Number.isFinite(v) ? v : null;
+  const m = /(-?\d+(?:\.\d+)?)/.exec(String(v).replace(/^\s*[ou]\s*/i, ""));
+  return m ? Number(m[1]) : null;
+};
+function american(v: unknown): number | null {
+  if (v === null || v === undefined || v === "") return null;
+  if (typeof v === "object") {
+    const o = v as Record<string, unknown>;
+    return american(o.american ?? o.alternateDisplayValue ?? o.value ?? o.odds);
+  }
+  if (typeof v === "string" && /^\s*even\s*$/i.test(v)) return 100;
+  const n = typeof v === "number" ? v : Number(String(v).trim().replace(/^\+/, ""));
+  return Number.isFinite(n) && Math.abs(n) >= 100 ? Math.round(n) : null;
+}
+
+/** The WNBA season shown: it runs May to October, so until April it's last year's. */
+export function wnbaSeasonLabel(now = new Date()): string {
+  return String(now.getUTCMonth() + 1 <= 4 ? now.getUTCFullYear() - 1 : now.getUTCFullYear());
+}
+
+/* ---------- odds ---------- */
+
+const teamIdOf = (t: any): string | null => {
+  if (!t) return null;
+  if (t.id != null) return String(t.id);
+  const m = /\/teams\/(\d+)/.exec(String(t.$ref ?? ""));
+  return m ? m[1] : null;
+};
+
+/**
+ * True when ESPN's odds list the game's away team as "home" (seen on neutral-site college games; checked
+ * here too so a line can never land on the wrong team). Checked by team id, else by the favorite named in "details".
+ */
+export function oddsSwapped(o: any, home?: { id?: string; abbr?: string }): boolean {
+  if (!home?.id && !home?.abbr) return false;
+  const hid = teamIdOf(o?.homeTeamOdds?.team);
+  const aid = teamIdOf(o?.awayTeamOdds?.team);
+  if (home.id && hid) return hid !== String(home.id) && (!aid || aid === String(home.id));
+  const m = /^\s*([A-Za-z&.'-]+)\s+-\d/.exec(String(o?.details ?? ""));
+  if (m && home.abbr && o?.homeTeamOdds?.favorite != null) {
+    const favIsHome = m[1].toUpperCase() === String(home.abbr).toUpperCase();
+    return favIsHome !== Boolean(o.homeTeamOdds.favorite);
+  }
+  return false;
+}
+
+/** One ESPN odds object as the game's line; `home` turns around books that list the teams the other way. */
+export function parseOdds(o: any, home?: { id?: string; abbr?: string }): WnbaOdds | undefined {
+  const odds = parseOddsAsListed(o);
+  if (!odds || !oddsSwapped(o, home)) return odds;
+  return {
+    ...odds,
+    spread: odds.spread === null ? null : odds.spread === 0 ? 0 : -odds.spread,
+    mlHome: odds.mlAway,
+    mlAway: odds.mlHome,
+    spreadOddsHome: odds.spreadOddsAway,
+    spreadOddsAway: odds.spreadOddsHome,
+  };
+}
+
+function parseOddsAsListed(o: any): WnbaOdds | undefined {
+  if (!o || typeof o !== "object") return undefined;
+  const h = o.homeTeamOdds ?? {};
+  const a = o.awayTeamOdds ?? {};
+  const mlHome = american(h.moneyLine) ?? american(o.moneyline?.home?.close?.odds ?? o.moneyline?.home?.current?.odds);
+  const mlAway = american(a.moneyLine) ?? american(o.moneyline?.away?.close?.odds ?? o.moneyline?.away?.current?.odds);
+  let spread = lineNum(o.pointSpread?.home?.close?.line ?? o.pointSpread?.home?.current?.line ?? o.spread);
+  if (spread !== null && spread !== 0) {
+    // ESPN's spread is the home team's; check the sign against the favorite
+    if (mlHome !== null && mlAway !== null && mlHome !== mlAway) spread = mlHome < mlAway ? -Math.abs(spread) : Math.abs(spread);
+    else if (h.favorite === true) spread = -Math.abs(spread);
+    else if (a.favorite === true) spread = Math.abs(spread);
+  }
+  if (spread === null && /^(even|pk|pick)/i.test(String(o.details ?? ""))) spread = 0;
+  const total = lineNum(o.overUnder) ?? lineNum(o.total?.over?.close?.line ?? o.total?.over?.current?.line);
+  const out: WnbaOdds = {
+    spread,
+    total: total !== null && total > 0 ? total : null,
+    mlHome,
+    mlAway,
+    spreadOddsHome: american(h.spreadOdds) ?? american(h.close?.spread) ?? american(o.pointSpread?.home?.close?.odds),
+    spreadOddsAway: american(a.spreadOdds) ?? american(a.close?.spread) ?? american(o.pointSpread?.away?.close?.odds),
+    overOdds: american(o.overOdds) ?? american(o.total?.over?.close?.odds),
+    underOdds: american(o.underOdds) ?? american(o.total?.under?.close?.odds),
+    ...(o.provider?.name ? { provider: String(o.provider.name) } : {}),
+  };
+  return out.spread === null && out.total === null && out.mlHome === null ? undefined : out;
+}
+
+/* ---------- teams and conferences (from the season file) ---------- */
+
+interface SeasonFile {
+  updated?: string;
+  season?: string;
+  conferences?: Record<string, [string, string]>;
+  teams?: Record<string, [string, string, string, string, string, string, string]>;
+  /** …, line, note ("" when none), location ("City, ST"). */
+  games?: [string, string, string, number, string, number, number, number, number, (number | null)[] | null, string?, string?, (number | null)?, ((number | null)[] | null)?][];
+  /** Opening [homeSpread, total] of live and upcoming games. */
+  opens?: Record<string, (number | null)[]>;
+  /** Pregame lines of live and upcoming games, by game id (same layout as a game's line). */
+  lines?: Record<string, (number | null)[]>;
+}
+
+function teamFromFile(id: string, t: SeasonFile["teams"] extends Record<string, infer V> | undefined ? V : never): WnbaTeamRef {
+  const color = String(t[4] ?? "").replace("#", "");
+  return {
+    id,
+    abbr: t[0] || "---",
+    name: t[1] || t[0],
+    short: t[2] || t[1] || t[0],
+    nickname: t[3] || "",
+    color: /^[0-9a-f]{6}$/i.test(color) ? `#${color}` : "#8899aa",
+    logo: t[5] || wnbaLogoFor(id),
+    confId: t[6] ?? "",
+  };
+}
+
+function teamRefFrom(t: any, confId = ""): WnbaTeamRef {
+  const id = String(t?.id ?? "");
+  const abbr = String(t?.abbreviation ?? "---");
+  const color = String(t?.color ?? "").replace("#", "");
+  return {
+    id,
+    abbr,
+    name: String(t?.displayName ?? t?.name ?? abbr),
+    short: String(t?.shortDisplayName ?? t?.location ?? abbr),
+    nickname: String(t?.name ?? ""),
+    color: /^[0-9a-f]{6}$/i.test(color) ? `#${color}` : "#8899aa",
+    logo: String(t?.logo ?? t?.logos?.[0]?.href ?? wnbaLogoFor(id)),
+    confId: t?.conferenceId != null ? String(t.conferenceId) : confId,
+  };
+}
+
+function loadSeasonFile(label: string): Promise<SeasonFile | null> {
+  return cached(`season-file-${label}`, 5 * MINUTE, async () => {
+    try {
+      const res = await fetch(`${FILES}/season-${label}.json`, { signal: AbortSignal.timeout(20_000) });
+      if (!res.ok) return null;
+      return (await res.json()) as SeasonFile;
+    } catch {
+      return null;
+    }
+  });
+}
+
+/* ---------- events from ESPN ---------- */
+
+function statusOf(type: any): WnbaStatus {
+  const text = `${type?.name ?? ""} ${type?.detail ?? ""} ${type?.description ?? ""}`;
+  if (/POSTPONED|CANCELED|CANCELLED|SUSPENDED/i.test(text)) return "postponed";
+  if (type?.state === "in") return "live";
+  if (type?.state === "post" || type?.completed === true) return "final";
+  return "scheduled";
+}
+
+/** The team with the ball during a live game, when ESPN says (a competitor flag or the game situation). */
+function possession(comp: any, competitors: any[]): string | undefined {
+  const flagged = competitors.find((c) => c?.possession === true || c?.possession === "true");
+  const id = flagged?.team?.id ?? flagged?.id ?? comp?.situation?.possession;
+  return id ? String(id) : undefined;
+}
+
+export function parseEvent(e: any): WnbaGame | null {
+  const comp = e?.competitions?.[0];
+  const competitors: any[] = comp?.competitors ?? [];
+  const home = competitors.find((c) => c?.homeAway === "home");
+  const away = competitors.find((c) => c?.homeAway === "away");
+  if (!comp || !home?.team || !away?.team || !e?.id) return null;
+  const type = comp.status?.type ?? e.status?.type ?? {};
+  const status = statusOf(type);
+  const started = status === "live" || status === "final";
+  const side = (c: any) => {
+    return {
+      team: teamRefFrom(c.team),
+      score: started ? num(c?.score?.value ?? c?.score?.displayValue ?? c?.score) : null,
+      record:
+        (c?.records ?? []).find((r: any) => r?.type === "total" || r?.name === "overall")?.summary ??
+        c?.records?.[0]?.summary,
+      periods: started && Array.isArray(c?.linescores) ? c.linescores.map((l: any) => num(l?.value ?? l?.displayValue) ?? 0) : [],
+    };
+  };
+  const st = comp.status ?? e.status ?? {};
+  const broadcast = comp.broadcasts?.[0]?.names?.[0] ?? comp.geoBroadcasts?.[0]?.media?.shortName;
+  const note = comp.notes?.[0]?.headline ?? e.notes?.[0]?.headline;
+  const odds = parseOdds(Array.isArray(comp.odds) ? comp.odds[0] : undefined, {
+    id: String(home.team.id ?? ""),
+    abbr: String(home.team.abbreviation ?? ""),
+  });
+  const addr = comp.venue?.address;
+  const location = [addr?.city, addr?.state].filter(Boolean).join(", ");
+  return {
+    id: String(e.id),
+    date: String(e.date ?? comp.date ?? ""),
+    status,
+    statusDetail: String(type?.shortDetail ?? type?.detail ?? type?.description ?? ""),
+    period: Number(st.period ?? 0) || 0,
+    clock: String(st.displayClock ?? ""),
+    ...(status === "live" && possession(comp, competitors) ? { possessionTeamId: possession(comp, competitors) } : {}),
+    part: Number(e?.season?.type ?? comp?.type?.id) === 3 ? "post" : "reg",
+    neutral: Boolean(comp.neutralSite),
+    conference: Boolean(comp.conferenceCompetition),
+    ...(note ? { note: String(note) } : {}),
+    ...(comp.venue?.fullName ? { venue: String(comp.venue.fullName) } : {}),
+    ...(location ? { location } : {}),
+    ...(broadcast ? { broadcast: String(broadcast) } : {}),
+    away: side(away),
+    home: side(home),
+    ...(odds ? { odds } : {}),
+  };
+}
+
+function fetchDay(day: Date): Promise<WnbaGame[]> {
+  const today = ymd(new Date());
+  const key = ymd(day);
+  const ttl = key === today ? 15_000 : key < today ? 2 * MINUTE : 10 * MINUTE;
+  return cached(`day-${key}`, ttl, async () => {
+    const json = await fetchJson(`${SITE}/scoreboard?dates=${key}&limit=100`);
+    return (Array.isArray(json?.events) ? json.events : [])
+      .map((ev: any) => {
+        try {
+          return parseEvent(ev);
+        } catch {
+          return null;
+        }
+      })
+      .filter((g: WnbaGame | null): g is WnbaGame => g !== null)
+      .map((g: WnbaGame) => {
+        // ESPN drops the line at tip-off: remember the last pregame line and keep showing it
+        if (g.status === "scheduled" && g.odds) pregame.set(g.id, g.odds);
+        else if (!g.odds?.spread && pregame.has(g.id)) return { ...g, odds: mergeOdds(g.odds, pregame.get(g.id)) };
+        return g;
+      });
+  });
+}
+
+/** Each game's last pregame line seen on the scoreboard (this server's memory). */
+const pregame = new Map<string, WnbaOdds>();
+
+/* ---------- the schedule ---------- */
+
+function gameFromRow(row: NonNullable<SeasonFile["games"]>[number], teams: Map<string, WnbaTeamRef>): WnbaGame {
+  const [id, date, hId, hScore, aId, aScore, neutral, conf, type, line, note, location, possessions, open] = row;
+  const team = (tid: string) => teams.get(tid) ?? { id: tid, abbr: "---", name: "Unknown", short: "Unknown", nickname: "", color: "#8899aa", logo: wnbaLogoFor(tid), confId: "" };
+  const odds: WnbaOdds | undefined = line
+    ? {
+        spread: line[0] ?? null,
+        total: line[1] ?? null,
+        mlHome: line[2] ?? null,
+        mlAway: line[3] ?? null,
+        spreadOddsHome: line[4] ?? null,
+        spreadOddsAway: line[5] ?? null,
+        overOdds: line[6] ?? null,
+        underOdds: line[7] ?? null,
+      }
+    : undefined;
+  return {
+    id,
+    date,
+    status: "final",
+    statusDetail: "Final",
+    period: 4,
+    clock: "0:00",
+    part: type === 3 ? "post" : "reg",
+    neutral: Boolean(neutral),
+    conference: Boolean(conf),
+    ...(note ? { note } : {}),
+    ...(location ? { location } : {}),
+    ...(possessions ? { possessions } : {}),
+    ...(open && (open[0] != null || open[1] != null) ? { open: { spread: open[0] ?? null, total: open[1] ?? null } } : {}),
+    away: { team: team(aId), score: aScore, periods: [] },
+    home: { team: team(hId), score: hScore, periods: [] },
+    ...(odds ? { odds } : {}),
+  };
+}
+
+/** Lines ESPN still shows win; the stored closing line fills what's missing. */
+function mergeOdds(live: WnbaOdds | undefined, stored: WnbaOdds | undefined): WnbaOdds | undefined {
+  if (!stored) return live;
+  if (!live) return stored;
+  const out: WnbaOdds = { ...stored };
+  for (const [k, v] of Object.entries(live)) if (v != null) (out as unknown as Record<string, unknown>)[k] = v;
+  return out;
+}
+
+async function loadSchedule(): Promise<WnbaSchedule> {
+  const season = wnbaSeasonLabel();
+  const now = new Date();
+  const days: Date[] = [];
+  for (let d = -1; d <= 7; d++) days.push(new Date(now.getTime() + d * DAY));
+  const [file, ...live] = await Promise.all([
+    loadSeasonFile(season),
+    ...days.map((d) => fetchDay(d).catch(() => [] as WnbaGame[])),
+  ]);
+  const teams = new Map<string, WnbaTeamRef>();
+  for (const [id, t] of Object.entries(file?.teams ?? {})) teams.set(id, teamFromFile(id, t));
+  const conferences: WnbaConference[] = Object.entries(file?.conferences ?? {}).map(([id, [name, short]]) => ({ id, name, short }));
+
+  const byId = new Map<string, WnbaGame>();
+  for (const row of file?.games ?? []) byId.set(row[0], gameFromRow(row, teams));
+  const liveGames = live.flat();
+  if (!file && !liveGames.length) throw new Error("ESPN WNBA schedule unavailable");
+  for (const g of liveGames) {
+    // the season file's team details (conference, colors) win; ESPN's live data fills the rest
+    for (const side of [g.home, g.away]) {
+      const known = teams.get(side.team.id);
+      if (known) side.team = { ...side.team, confId: known.confId || side.team.confId, color: known.color, logo: known.logo || side.team.logo };
+      else teams.set(side.team.id, side.team);
+    }
+    const stored = byId.get(g.id);
+    const conf = g.home.team.confId;
+    byId.set(g.id, {
+      ...g,
+      conference: Boolean(conf && conf === g.away.team.confId),
+      odds: mergeOdds(g.odds, stored?.odds),
+      ...(stored?.possessions ? { possessions: stored.possessions } : {}),
+      ...(stored?.open ? { open: stored.open } : {}),
+    });
+  }
+  // Live and just-finished games: ESPN's scoreboard drops the line at tip-off, so use the hourly line
+  // saver's last pregame line (one file, no per-game requests).
+  for (const [id, g] of byId) {
+    const o = file?.opens?.[id];
+    if (o && !g.open) byId.set(id, { ...g, open: { spread: o[0] ?? null, total: o[1] ?? null } });
+  }
+  for (const [id, g] of byId) {
+    const line = file?.lines?.[id];
+    if (!line || (g.odds?.spread != null && g.odds?.total != null)) continue;
+    const saved: WnbaOdds = {
+      spread: line[0] ?? null,
+      total: line[1] ?? null,
+      mlHome: line[2] ?? null,
+      mlAway: line[3] ?? null,
+      spreadOddsHome: line[4] ?? null,
+      spreadOddsAway: line[5] ?? null,
+      overOdds: line[6] ?? null,
+      underOdds: line[7] ?? null,
+    };
+    byId.set(id, { ...g, odds: mergeOdds(g.odds, saved) });
+  }
+  // only the recent days: older games without a line in the season file never had one
+  const recent = [...byId.values()].filter((g) => Date.parse(g.date) > now.getTime() - 3 * DAY);
+  await withClosingOdds(recent);
+  // Who has the ball: live games read it from the game summary (cached and shared with the game page).
+  await Promise.all(
+    [...byId.values()]
+      .filter((g) => g.status === "live" && !g.possessionTeamId)
+      .slice(0, 30)
+      .map(async (g) => {
+        try {
+          const detail = await fetchWnbaGameDetail(g.id);
+          if (detail.game.possessionTeamId) byId.set(g.id, { ...byId.get(g.id)!, possessionTeamId: detail.game.possessionTeamId });
+        } catch {
+          // no ball icon for this game
+        }
+      }),
+  );
+  return {
+    season,
+    games: [...byId.values()].sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id)),
+    teams: [...teams.values()],
+    conferences,
+    updated: file?.updated ?? null,
+  };
+}
+
+/* ---------- closing lines for started games ---------- */
+
+// ESPN's scoreboard drops the lines once a game tips off, and the season file only has games the
+// hourly line saver has finished with. Started games missing a line get it from ESPN's core odds
+// feed (DraftKings first, then ESPN BET, then any book; never a live in-game line), a bounded
+// number per load, newest first.
+const oddsLookups = new Map<string, { at: number; odds: WnbaOdds | null }>();
+const LOOKUPS_PER_LOAD = 12;
+
+async function loadClosingOdds(id: string, home: { id: string; abbr: string }): Promise<WnbaOdds | null> {
+  const list = await fetchJson(`${CORE}/events/${id}/competitions/${id}/odds?limit=50`);
+  const items: any[] = await Promise.all(
+    (Array.isArray(list?.items) ? list.items : []).map((it: any) =>
+      it?.$ref && Object.keys(it).length === 1 ? fetchJson(it.$ref).catch(() => null) : it,
+    ),
+  );
+  const rank = (b: any) => {
+    const pid = String(b?.provider?.id ?? "");
+    return ["100", "40"].includes(pid) ? 0 : pid === "58" ? 1 : 2;
+  };
+  const books = items
+    .filter(Boolean)
+    .filter((b) => !/live|accuscore|numberfire|teamrankings/i.test(String(b?.provider?.name ?? "")))
+    .sort((a, b) => rank(a) - rank(b));
+  let fallback: WnbaOdds | null = null;
+  for (const b of books) {
+    const o = parseOdds(b, home);
+    if (!o) continue;
+    if (o.spread !== null && o.total !== null) return o;
+    fallback ??= o;
+  }
+  return fallback;
+}
+
+async function closingOdds(g: WnbaGame): Promise<WnbaOdds | null> {
+  const hit = oddsLookups.get(g.id);
+  const ttl = hit?.odds ? 12 * HOUR : g.status === "live" ? 2 * MINUTE : 10 * MINUTE;
+  if (hit && Date.now() - hit.at < ttl) return hit.odds;
+  const odds = await loadClosingOdds(g.id, { id: g.home.team.id, abbr: g.home.team.abbr }).catch(() => null);
+  oddsLookups.set(g.id, { at: Date.now(), odds });
+  return odds;
+}
+
+async function withClosingOdds(games: WnbaGame[]): Promise<void> {
+  const missing = games
+    .filter((g) => (g.status === "live" || g.status === "final") && (g.odds?.spread == null || g.odds?.total == null))
+    .sort((a, b) => (a.status === "live" ? 0 : 1) - (b.status === "live" ? 0 : 1) || b.date.localeCompare(a.date));
+  const known = missing.filter((g) => oddsLookups.has(g.id));
+  const todo = [...known, ...missing.filter((g) => !oddsLookups.has(g.id)).slice(0, LOOKUPS_PER_LOAD)];
+  let next = 0;
+  await Promise.all(
+    Array.from({ length: 8 }, async () => {
+      while (next < todo.length) {
+        const g = todo[next++];
+        const o = await closingOdds(g);
+        if (o) g.odds = mergeOdds(g.odds, o);
+      }
+    }),
+  );
+}
+
+export function fetchWnbaSchedule(): Promise<WnbaSchedule> {
+  return cached("schedule", 15_000, loadSchedule);
+}
+
+/* ---------- one game ---------- */
+
+export async function fetchWnbaGameDetail(gameId: string): Promise<WnbaGameDetail> {
+  const key = `wnba-game-v2-${gameId}`;
+  const stored = await readFinal<WnbaGameDetail>(key);
+  if (stored) return stored;
+  const detail = await cached(`game-${gameId}`, 15_000, () => loadGameDetail(gameId));
+  if (detail.game.status === "final") await writeFinal(key, detail);
+  return detail;
+}
+
+async function loadGameDetail(gameId: string): Promise<WnbaGameDetail> {
+  const json = await fetchJson(`${SITE}/summary?event=${gameId}`);
+  const header = json?.header;
+  const comp = header?.competitions?.[0];
+  const game = parseEvent({
+    id: header?.id ?? gameId,
+    date: comp?.date,
+    status: comp?.status,
+    season: header?.season,
+    competitions: [{ ...comp, notes: header?.gameNote ? [{ headline: header.gameNote }] : comp?.notes }],
+  });
+  if (!game) throw new Error("ESPN returned no game for this id");
+  if (!game.venue && json?.gameInfo?.venue?.fullName) game.venue = String(json.gameInfo.venue.fullName);
+  for (const pick of Array.isArray(json?.pickcenter) ? json.pickcenter : []) {
+    const o = parseOdds(pick, { id: game.home.team.id, abbr: game.home.team.abbr });
+    if (o) {
+      game.odds = mergeOdds(game.odds, o);
+      if (game.odds?.spread != null && game.odds?.total != null) break;
+    }
+  }
+  // the season file's closing line, when ESPN no longer shows one
+  if (game.status === "final" && (game.odds?.spread == null || game.odds?.total == null)) {
+    const file = await loadSeasonFile(wnbaSeasonLabel(new Date(game.date)));
+    const row = file?.games?.find((r) => r[0] === game.id);
+    if (row?.[9]) game.odds = mergeOdds(game.odds, gameFromRow(row, new Map()).odds);
+  }
+
+  const teams: any[] = json?.boxscore?.teams ?? [];
+  const awayBox = teams.find((t) => String(t?.team?.id) === game.away.team.id) ?? teams[0];
+  const homeBox = teams.find((t) => String(t?.team?.id) === game.home.team.id) ?? teams[1];
+  const teamStats = (awayBox?.statistics ?? [])
+    .map((s: any) => {
+      const mate = (homeBox?.statistics ?? []).find((x: any) => x?.name === s?.name) ?? {};
+      return { label: String(s?.label ?? s?.name ?? ""), away: String(s?.displayValue ?? "—"), home: String(mate?.displayValue ?? "—") };
+    })
+    .filter((l: { label: string }) => l.label);
+
+  const box: WnbaBoxTeam[] = (json?.boxscore?.players ?? []).map((t: any) => {
+    const grp = t?.statistics?.[0] ?? {};
+    return {
+      teamId: String(t?.team?.id ?? ""),
+      abbr: String(t?.team?.abbreviation ?? ""),
+      labels: (grp?.labels ?? grp?.names ?? []).map(String),
+      players: (grp?.athletes ?? []).map((p: any) => ({
+        id: String(p?.athlete?.id ?? ""),
+        name: String(p?.athlete?.displayName ?? p?.athlete?.shortName ?? "Unknown"),
+        ...(p?.athlete?.jersey ? { jersey: String(p.athlete.jersey) } : {}),
+        ...(p?.athlete?.position?.abbreviation ? { position: String(p.athlete.position.abbreviation) } : {}),
+        starter: Boolean(p?.starter),
+        ...(p?.didNotPlay ? { dnp: String(p?.reason || "DNP") } : {}),
+        stats: (p?.stats ?? []).map(String),
+      })),
+      totals: (grp?.totals ?? []).map(String),
+    };
+  });
+
+  const rawPlays: any[] = Array.isArray(json?.plays) ? json.plays : [];
+  if (game.status === "live") {
+    const ball = possessionFromSummary(json, game, rawPlays);
+    if (ball) game.possessionTeamId = ball;
+  }
+  const plays: WnbaPlay[] = rawPlays.map((p: any, i: number) => ({
+    id: String(p?.id ?? i),
+    period: Number(p?.period?.number ?? 0) || 0,
+    clock: String(p?.clock?.displayValue ?? ""),
+    text: String(p?.text ?? p?.shortDescription ?? ""),
+    ...(p?.team?.id ? { teamId: String(p.team.id) } : {}),
+    awayScore: num(p?.awayScore),
+    homeScore: num(p?.homeScore),
+    scoring: Boolean(p?.scoringPlay),
+    scoreValue: Number(p?.scoreValue ?? 0) || 0,
+    ...shotSpot(p),
+  }));
+  const samples = (json?.winprobability ?? [])
+    .map((w: any) => ({ homeWinPercentage: num(w?.homeWinPercentage), playId: w?.playId ? String(w.playId) : undefined }))
+    .filter((w: { homeWinPercentage: number | null }) => w.homeWinPercentage !== null) as { homeWinPercentage: number; playId?: string }[];
+  const winProb: number[] = samples.map((w) => w.homeWinPercentage);
+  // the pregame line (the season file's, when ESPN's summary no longer has one) for the cover / total chart
+  if (game.odds?.spread == null || game.odds?.total == null) {
+    const file = await loadSeasonFile(wnbaSeasonLabel(new Date(game.date))).catch(() => null);
+    const line = file?.lines?.[game.id] ?? file?.games?.find((r) => r[0] === game.id)?.[9];
+    if (line)
+      game.odds = mergeOdds(game.odds, {
+        spread: line[0] ?? null,
+        total: line[1] ?? null,
+        mlHome: line[2] ?? null,
+        mlAway: line[3] ?? null,
+        spreadOddsHome: line[4] ?? null,
+        spreadOddsAway: line[5] ?? null,
+        overOdds: line[6] ?? null,
+        underOdds: line[7] ?? null,
+      });
+  }
+  const probabilities = buildBasketballProbabilities(samples, plays, game, WNBA_RULES);
+  const leaders = (json?.leaders ?? []).flatMap((t: any) =>
+    (t?.leaders ?? []).map((c: any) => ({
+      teamId: String(t?.team?.id ?? ""),
+      category: String(c?.displayName ?? c?.name ?? ""),
+      name: String(c?.leaders?.[0]?.athlete?.displayName ?? ""),
+      value: String(c?.leaders?.[0]?.displayValue ?? ""),
+      ...(c?.leaders?.[0]?.athlete?.id ? { playerId: String(c.leaders[0].athlete.id) } : {}),
+    })),
+  );
+  return { game, teamStats, box, plays, winProb, probabilities, leaders };
+}
+
+/** Where a shot was taken: ESPN's court spot (feet across 0–50, from the baseline). */
+function shotSpot(p: any): { shot?: { x: number; y: number } } {
+  const x = Number(p?.coordinate?.x);
+  const y = Number(p?.coordinate?.y);
+  if (!p?.shootingPlay || !Number.isFinite(x) || !Number.isFinite(y)) return {};
+  if (x < 0 || x > 50 || y < -6 || y > 94) return {};
+  return { shot: { x, y } };
+}
+
+/**
+ * Four 10-minute quarters, 5-minute overtimes. Closing WNBA lines miss the final margin by about
+ * 9.8 points and the total by about 13 (research/wnba), a little less than the NBA's.
+ */
+const WNBA_RULES: BasketballRules = {
+  periods: 4,
+  periodSeconds: 600,
+  otSeconds: 300,
+  marginSd: 12,
+  totalSd: 16,
+  lateTotalVar: 30,
+  lateMarginVar: 8,
+};
+
+/* ---------- a team's roster ---------- */
+
+export function fetchWnbaRoster(teamId: string): Promise<WnbaRosterPlayer[]> {
+  return cached(`roster-${teamId}`, 6 * HOUR, async () => {
+    const json = await fetchJson(`${SITE}/teams/${teamId}/roster`);
+    const groups: any[] = Array.isArray(json?.athletes) ? json.athletes : [];
+    const list = groups.flatMap((g) => (Array.isArray(g?.items) ? g.items : [g]));
+    return list
+      .filter((a: any) => a?.id)
+      .map((a: any) => ({
+        id: String(a.id),
+        name: String(a.displayName ?? a.fullName ?? ""),
+        ...(a.jersey ? { jersey: String(a.jersey) } : {}),
+        ...(a.position?.abbreviation ? { position: String(a.position.abbreviation) } : {}),
+        ...(a.displayHeight ? { height: String(a.displayHeight) } : {}),
+        ...(a.experience?.years != null ? { year: a.experience.years ? `${a.experience.years} yr` : "Rookie" } : {}),
+        ...(a.birthPlace?.city ? { hometown: [a.birthPlace.city, a.birthPlace.state].filter(Boolean).join(", ") } : {}),
+      }));
+  });
+}
