@@ -44,7 +44,7 @@ function CbbDashboard() {
   const weekAgo = useMemo(() => new Date(Date.now() - 7 * 24 * 3_600_000), []);
   const grade = useMemo(() => gradeCbbSeason(rows), [rows]);
   const prev = useMemo(() => gradeCbbSeason(rows, weekAgo), [rows, weekAgo]);
-  const hasPrev = prev.games > 0 && prev.games !== grade.games;
+  const hasPrev = prev.moneyline.wins + prev.moneyline.losses > 0;
 
   // games against non-Division I schools stay off the dashboard (they're on the Games page)
   const d1Games = useMemo(() => games.filter((g) => !g.nonDivisionI), [games]);
@@ -91,7 +91,7 @@ function CbbDashboard() {
             label="Win rate · model"
             value={fmt(winPct(grade.moneyline))}
             unit={winPct(grade.moneyline) === null ? undefined : "%"}
-            note={loading ?? note(weekChangeText(winChange), grade.games ? `${rec(grade.moneyline)} picking winners` : "No games graded yet")}
+            note={loading ?? note(weekChangeText(winChange, " pts"), grade.games ? `${rec(grade.moneyline)} picking winners` : "No games graded yet")}
             tone={changeTone(winChange)}
           />
           <StatCard
@@ -101,7 +101,7 @@ function CbbDashboard() {
             note={
               loading ??
               note(
-                weekChangeText(totalChange),
+                weekChangeText(totalChange, " pts"),
                 grade.games ? `${rec(grade.total)} O/U` : "No games graded yet",
                 grade.avgPoints !== null &&
                   grade.avgLine !== null &&
@@ -114,7 +114,7 @@ function CbbDashboard() {
             label="Cover % · model"
             value={fmt(winPct(grade.spread))}
             unit={winPct(grade.spread) === null ? undefined : "%"}
-            note={loading ?? note(weekChangeText(coverChange), grade.games ? `${rec(grade.spread)} ATS` : "No games graded yet")}
+            note={loading ?? note(weekChangeText(coverChange, " pts"), grade.games ? `${rec(grade.spread)} ATS` : "No games graded yet")}
             tone={changeTone(coverChange)}
           />
           <StatCard
@@ -127,7 +127,7 @@ function CbbDashboard() {
                   ? `${bestChange > 0 ? "▲" : bestChange < 0 ? "▼" : "—"} ${Math.abs(bestChange).toFixed(2)}u wk/wk`
                   : undefined,
                 grade.best.wins + grade.best.losses
-                  ? `${rec(grade.best)} · ROI ${bestRoi! > 0 ? "+" : ""}${bestRoi!.toFixed(1)}% at the opener`
+                  ? `${rec(grade.best)} · ROI ${bestRoi! > 0 ? "+" : ""}${bestRoi!.toFixed(1)}%`
                   : "No best bets graded yet",
                 grade.games ? `every pick ${unitsText(every)}` : undefined,
               )
