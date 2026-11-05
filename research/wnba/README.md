@@ -30,3 +30,21 @@
   - Several edge sizes were tried. 2026 was the weakest season.
   - WNBA limits are low.
   - The ★ candidate (blended totals 3–5+ off the opener) should be re-checked once the 2027 lines come in.
+
+## Ideas to sharpen totals (`totals_ideas.py`, November 2026)
+Baseline (site model): total MAE 13.37 against a closing-line MAE of 13.17; ★ 164-105 (61.0%).
+
+| Change | Total MAE | ★ (3+ off opener) |
+|---|---|---|
+| Back-to-back adjustment (+1.4 pts; those games beat the model by 1.8) | 13.36 | 165-108 (60.4%) |
+| Opponents' 3PT% pulled 50% toward the league average | 13.36 | 178-122 (59.3%) |
+| … 100% toward the league average | 13.37 | 187-134 (58.3%) |
+| Half-life 15 / 45 days | 13.37 / 13.38 | 56.0% / 60.0% |
+| Market blend 0.3 / 0.7 | 13.36 / 13.41 | 60.3% / 56.5% |
+| Prior kept 40% / 80% | 13.37 / 13.38 | 61.3% / 60.3% |
+
+- **Verdict:** none of these beats the baseline. The current settings sit at the best point. Every variant still hit 56–61%, so the edge doesn't hang on one setting.
+- **Where real gains would come from:** information box scores don't have, and timing.
+  - Injury and lineup news. The opener often lacks it, so the model would need it too.
+  - Betting at the opener before it moves.
+  - A bigger edge for fewer bets: 5+ points went 68-40 (63%).
