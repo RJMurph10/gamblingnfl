@@ -31,3 +31,11 @@ This folder holds `holidays.py`, which runs on `research/nba/data/games.csv` (NB
 ## Takeaway
 - No holiday rule clears the bar for ★.
 - The one worth tracking is underdogs on the NBA's marquee days (Christmas, MLK Day and opening night).
+
+## NBA Christmas points props (`christmas_props.py`, opening lines from props-history)
+- **Coverage:** Christmas 2022 and 2023 in full. Christmas 2024 has only 6 props. The 2025-26 file stops before December.
+- **Christmas, all players:** 164 props, overs 85-77 (52.5%), +0.9 points vs the line on average.
+- **Every other day:** 52,791 props, overs 47.1%. Overs usually lose.
+- **Stars (line 24.5+):** 12-11 on Christmas vs 46.6% on other days.
+- **The day's best performance vs the line:** +13.8 on Christmas on average, against +15.0 on a normal slate the same size. There are about 2 40-point games each Christmas.
+- **Takeaway:** Christmas overs did a little better than usual, but at 164 props that's within noise (p ≈ 0.15 for the difference). Someone always has a huge game, but that's true of every slate; the hard part is knowing who beforehand. Not an edge yet. Re-check after Christmas 2026 now that lines are saved every day.
