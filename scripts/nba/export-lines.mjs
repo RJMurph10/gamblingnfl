@@ -23,15 +23,17 @@ const H = {
   Accept: "application/json",
 };
 let requests = 0;
+let fails = 0;
 async function get(url, tries = 3) {
   for (let i = 0; i < tries; i++) {
     requests += 1;
     try {
       const r = await fetch(url, { headers: H, signal: AbortSignal.timeout(20_000) });
       if (r.ok) return await r.json();
+      if (fails++ < 5) console.log(`HTTP ${r.status} ${url.slice(0, 120)}`);
       if (r.status === 404) return null;
-    } catch {
-      // retry
+    } catch (err) {
+      if (fails++ < 5) console.log(`fetch error ${String(err).slice(0, 120)} ${url.slice(0, 100)}`);
     }
     await new Promise((res) => setTimeout(res, 700 * (i + 1)));
   }
@@ -98,8 +100,8 @@ async function main() {
     const day = d.toISOString().slice(0, 10).replace(/-/g, "");
     const sb = await get(`${SITE}/scoreboard?dates=${day}&limit=50`);
     const evs = (sb?.events ?? []).filter((e) => e?.competitions?.[0]?.status?.type?.completed && [2, 3, 6].includes(e?.season?.type));
-    const rows = await Promise.all(
-      evs.map(async (e) => {
+    const rows = [];
+    for (const e of evs) rows.push(await (async () => {
         const c = e.competitions[0];
         const side = (s) => c.competitors.find((x) => x.homeAway === s);
         const l = await lines(e.id);
@@ -111,8 +113,7 @@ async function main() {
           hs: Number(side("home")?.score), as: Number(side("away")?.score),
           book: l?.book ?? null, open: l?.open ?? null, close: l?.close ?? null,
         };
-      }),
-    );
+    })());
     games.push(...rows);
   }
   await mkdir(OUT, { recursive: true });
