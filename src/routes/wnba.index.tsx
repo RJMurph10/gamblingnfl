@@ -54,6 +54,12 @@ function WnbaDashboard() {
         .sort((a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id)),
     [games],
   );
+  // the dashboard's recent games: ones that had a line (so every row shows the result vs the spread and
+  // total in red / green); games without a line are on the Games page
+  const recent = useMemo(() => {
+    const lined = finals.filter((g) => g.odds?.spread != null || g.odds?.total != null);
+    return (lined.length ? lined : finals).slice(0, 5);
+  }, [finals]);
   const standings = useMemo(() => buildWnbaStandings(games.filter((g) => g.part === "reg"), [...teams.values()]), [games, teams]);
   // standings by conference: win %, then wins
   const confTables = useMemo(() => {
@@ -149,7 +155,7 @@ function WnbaDashboard() {
           <WnbaUpcomingGames games={games} model={model} />
           <WnbaRecentGames
             model={model}
-            games={finals.slice(0, 5)}
+            games={recent}
             emptyText={
               isLoading
                 ? "Loading games from ESPN…"
