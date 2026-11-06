@@ -101,6 +101,12 @@ function CbbModelPage() {
               the SEC fast) is already in the lines: Big Ten overs hit 51.5%.
             </p>
             <p>
+              <b>Every total pick is graded at the opener too.</b> The dashboard&apos;s Totals card counts every game
+              where the model is 4+ points off the opening total: 53.2% from 2023-24 to 2025-26 (593-524, 606-542,
+              822-714), the smallest edge that beat break-even every season. Graded at the closing total the same
+              picks hit 48–50%, so the opening number is the one to bet.
+            </p>
+            <p>
               <b>Why not spreads and moneylines?</b> The blend makes them sharper (projections land closer to the
               final score than either model alone), but against the closing spread they still hit 49–52%. At 6+ points
               off the opening spread the blend went 51%, 55% and 57%: promising the last two seasons, a loss the first,

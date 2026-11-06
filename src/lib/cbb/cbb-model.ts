@@ -42,7 +42,13 @@ const NON_D1_WEIGHT = 0.25;
 export const MARGIN_SD = 11;
 
 export const SPREAD_PICK_MIN = 2;
-export const TOTAL_PICK_MIN = 3;
+/**
+ * Total picks: the model total this far from the OPENING total (the closing total when there's no opener),
+ * graded at that line. Against the close the model's totals are a coin flip at every edge size (48–50%,
+ * 2023-24 to 2025-26); against the opener 4+ points off went 593-524, 606-542 and 822-714 (53.2%), the
+ * smallest edge above break-even every season (research/cbb/totals_open.py).
+ */
+export const TOTAL_PICK_MIN = 4;
 /** ★ best bet: the model total this far from the opening total. */
 export const BEST_TOTAL_EDGE = 6;
 /** ★ conference unders: ESPN conference ids whose conference games go under (graded at the closing total). */
@@ -360,7 +366,8 @@ export function rowFor(game: CbbGame, pred: Prediction): CbbModelRow {
     }
   }
   let total: CbbModelRow["total"] = null;
-  const tl = game.odds?.total;
+  // graded at the opener (where the edge is), the closing total when there's no opener
+  const tl = game.open?.total ?? game.odds?.total;
   if (tl !== null && tl !== undefined) {
     const edge = pred.total - tl;
     if (Math.abs(edge) >= TOTAL_PICK_MIN) {
