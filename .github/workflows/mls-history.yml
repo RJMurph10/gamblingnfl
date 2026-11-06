@@ -1,0 +1,63 @@
+name: MLS history
+
+# Research data for MLS: football-data.co.uk's free MLS file (results + closing odds from several books,
+# 2012 on) and ESPN's seasons (opening + closing moneylines, totals, spreads). Output: the mls-history
+# branch. Runs when scripts/mls/history.trigger is pushed.
+on:
+  push:
+    branches: [mls-research]
+    paths: [scripts/mls/history.trigger]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: mls-history
+  cancel-in-progress: false
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        year: [2021, 2022, 2023, 2024, 2025, 2026]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: app
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Export
+        run: |
+          set -e
+          node app/scripts/mls/export-season.mjs ${{ matrix.year }} out
+          if [ "${{ matrix.year }}" = "2026" ]; then
+            curl -sSL --retry 3 -o out/football-data-USA.csv https://www.football-data.co.uk/new/USA.csv || echo "football-data download failed"
+          fi
+      - name: Publish
+        run: |
+          set -e
+          url="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+          for attempt in 1 2 3 4 5 6; do
+            rm -rf dst
+            if git ls-remote --exit-code --heads "$url" mls-history >/dev/null; then
+              git clone -q --depth 1 --branch mls-history "$url" dst
+            else
+              mkdir dst && cd dst && git init -q -b mls-history && git remote add origin "$url" && cd ..
+            fi
+            cp out/* dst/
+            cd dst
+            git config user.name "line-history-bot"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add -A
+            git diff --cached --quiet && exit 0
+            git commit -q -m "MLS ${{ matrix.year }}"
+            if git push -q origin mls-history; then exit 0; fi
+            cd ..
+            sleep $((attempt * 20))
+          done
+          exit 1
