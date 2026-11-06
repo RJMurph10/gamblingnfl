@@ -1,0 +1,39 @@
+{
+ "at": "2026-11-06T08:16:18.253Z",
+ "game": null,
+ "statsSite": {
+  "status": 200,
+  "type": "text/html; charset=utf-8",
+  "apiMentions": [
+   "https://premierlacrosseleague.com/wp-content/uploads/2019/05/pll-logo-gray.png",
+   "https://stats.premierlacrosseleague.com",
+   "https://premierlacrosseleague.com/wp-content/uploads/2020/07/1000x1000_ChampionshipSeries_thumb_stats.jpg",
+   "https://premierlacrosseleague.com",
+   "https://premierlacrosseleague.com/wp-content/uploads/2026/01/2026_pll_site_header_logo.webp",
+   "https://premierlacrosseleague.com/schedule/",
+   "https://premierlacrosseleague.com/standings",
+   "https://premierlacrosseleague.com/academy",
+   "https://premierlacrosseleague.com/tickets",
+   "https://stats.premierlacrosseleague.com/login",
+   "https://shop.premierlacrosseleague.com?utm_source=Web_Main&amp;utm_medium=pll_stats&amp;utm_campaign=stats_navbar",
+   "https://premierlacrosseleague.com/player/michael-sowers/stats",
+   "https://premierlacrosseleague.com/player/marcus-holman/stats",
+   "https://premierlacrosseleague.com/player/cj-kirst/stats",
+   "https://premierlacrosseleague.com/player/bryan-costabile/stats",
+   "https://premierlacrosseleague.com/player/matt-collison/stats",
+   "https://premierlacrosseleague.com/player/rob-pannell/stats",
+   "https://premierlacrosseleague.com/player/brennan-o-neill/stats",
+   "https://premierlacrosseleague.com/player/dylan-molloy/stats",
+   "https://premierlacrosseleague.com/player/coulter-mackesy/stats"
+  ]
+ },
+ "https://api.stats.premierlacrosseleague.com/graphql": {
+  "status": 200,
+  "body": "{\"data\":{\"__typename\":\"Query\"}}"
+ },
+ "https://api.premierlacrosseleague.com/graphql": {
+  "status": 0,
+  "body": "TypeError: fetch failed"
+ },
+ "robots": "# As a condition of accessing this website, you agree to abide by the following\n# content signals:\n\n# (a)  If a Content-Signal = yes, you may collect content for the corresponding\n#      use.\n# (b)  If a Content-Signal = no, you may not collect content for the\n#      corresponding use.\n# (c)  If the website operator does not include a Content-Signal for a\n#      corresponding use, the website operator neither grants nor restricts\n#      permission via Content-Signal with respect to the corresponding use.\n\n# The content signals and their meanings are:\n\n# search:   building a search index and pr"
+}
