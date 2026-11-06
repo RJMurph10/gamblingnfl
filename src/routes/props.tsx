@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { PageTitle, Panel, PanelHeader } from "@/components/shared/booth";
 import { GamePropAnalysis, TeamLink } from "@/components/shared/GamePropAnalysis";
 import { QbStarsPanel } from "@/components/shared/QbStarsPanel";
+import { NextManUpPanel } from "@/components/shared/NextManUpPanel";
 import type { Game } from "@/data/shared/games";
 import { teamById } from "@/data/shared/teams";
 import { getLiveSchedule } from "@/lib/shared/espn.functions";
@@ -189,6 +190,8 @@ function PropsPage() {
           </Panel>
 
           <QbStarsPanel />
+
+          <NextManUpPanel />
 
           {/* Level 3: the selected game's offensive projections */}
           {selectedGame && away && home ? (
