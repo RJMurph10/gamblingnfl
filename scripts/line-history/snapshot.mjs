@@ -198,8 +198,11 @@ export function compactProp(x) {
     return line == null && o == null && u == null ? null : [line, o, u];
   };
   const athlete = /\/athletes\/(\d+)/.exec(x?.athlete?.$ref ?? "")?.[1] ?? x?.athlete?.id ?? null;
+  // team markets (team totals, half / quarter spreads): which team the row is for, when ESPN says
+  const team = /\/teams\/(\d+)/.exec(x?.team?.$ref ?? "")?.[1] ?? x?.team?.id ?? null;
   const row = {
     a: athlete ? String(athlete) : null,
+    ...(team && !athlete ? { tm: String(team) } : {}),
     t: String(x?.type?.name ?? x?.type?.displayName ?? x?.name ?? ""),
     ti: x?.type?.id != null ? String(x.type.id) : undefined,
   };
