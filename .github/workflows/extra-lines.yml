@@ -16,6 +16,10 @@ on:
     - cron: "40 22 * * 1-5" # weekdays 4:40 / 5:40 PM Central: women's (Odds API), close to the evening tip-offs
     - cron: "10 17 * * 0,6" # weekends 11:10 AM / 12:10 PM Central: women's
   workflow_dispatch:
+    inputs:
+      regions:
+        description: "Odds API book regions for women's (each costs 2 credits)"
+        default: "us"
   push:
     branches: [odds-api-games]
     paths: [scripts/line-history/extra-lines.trigger]
@@ -47,7 +51,7 @@ jobs:
           cron="${{ github.event.schedule }}"
           # women's: every run except the morning one (manual runs too)
           if [ "$cron" != "10 15 * * *" ]; then
-            node app/scripts/line-history/odds-api-games.mjs --sport basketball_wncaab --out pull/oddsapi/wcbb || echo "Odds API pull failed"
+            node app/scripts/line-history/odds-api-games.mjs --sport basketball_wncaab --regions "${{ github.event.inputs.regions || 'us' }}" --out pull/oddsapi/wcbb || echo "Odds API pull failed"
           fi
           # men's from SportsGameOdds once a day (to stay inside the free plan's monthly events): the morning run,
           # a manual run, or any later run when there's no snapshot from today yet (GitHub sometimes drops a run)

@@ -21,6 +21,9 @@ const opt = (n, d) => {
 const SPORT = opt("sport", "basketball_wncaab");
 const OUT = opt("out", "props-site/odds-api");
 const MARKETS = opt("markets", "spreads,totals");
+// book regions: each costs one credit per market (us = DraftKings, FanDuel, BetMGM...; us2 = ESPN BET, Hard Rock,
+// Fliff...; eu = Pinnacle and European books; uk; au)
+const REGIONS = opt("regions", "us");
 // credits the NFL prop prices still need this month (and from September to early February only): about 84 for
 // each Saturday pull (every Sunday + Monday game, 6 credits each) and 6 for each Thursday one, plus a margin
 function nflReserve(now = new Date()) {
@@ -49,11 +52,15 @@ async function main() {
   const sports = probe.ok ? await probe.json() : [];
   const listed = sports.find((s) => s.key === SPORT);
   console.log(`${SPORT}: ${listed ? (listed.active ? "active" : "listed, not active") : "not listed"}; ${before} credits left`);
-  if (Number.isFinite(before) && before - MARKETS.split(",").length < KEEP) {
+  const cost = MARKETS.split(",").length * REGIONS.split(",").length;
+  // the events list is free: how many games the API knows of (with or without lines)
+  const ev = await fetch(`https://api.the-odds-api.com/v4/sports/${SPORT}/events?apiKey=${KEY}`);
+  if (ev.ok) console.log(`${(await ev.json()).length} events listed (free)`);
+  if (Number.isFinite(before) && before - cost < KEEP) {
     console.log(`only ${before} credits left (keeping ${KEEP} for the NFL prop prices); skipping`);
     return;
   }
-  const q = new URLSearchParams({ apiKey: KEY, regions: "us", markets: MARKETS, oddsFormat: "american" });
+  const q = new URLSearchParams({ apiKey: KEY, regions: REGIONS, markets: MARKETS, oddsFormat: "american" });
   const res = await fetch(`https://api.the-odds-api.com/v4/sports/${SPORT}/odds?${q}`);
   const left = Number(res.headers.get("x-requests-remaining"));
   if (!res.ok) throw new Error(`${res.status}: ${(await res.text()).slice(0, 200)}`);
