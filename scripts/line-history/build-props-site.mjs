@@ -8,12 +8,16 @@
  * that send lines without prices, the line itself). Opening lines are used: ESPN's "current" line
  * kept moving during games for some books, so it isn't a reliable pregame close.
  *
+ * NBA also gets <out>/nba/reb-stars-<season>.json: the graded ★ rebound-under picks (nba-reb-stars.mjs) and
+ * every player's projection inputs, so the site can star today's lines.
+ *
  *   node scripts/line-history/build-props-site.mjs --data props-history --out props-site --league nba [--season 2026-27]
  */
 import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { gunzipSync } from "node:zlib";
 import { loadPrices } from "./odds-api-prices.mjs";
+import { replayRebStars, REB_STAR_EDGE, REB_STAR_MIN_GAMES, REB_STAR_WORST_PRICE } from "./nba-reb-stars.mjs";
 
 const args = process.argv.slice(2);
 const opt = (n, d) => {
@@ -186,11 +190,22 @@ async function main() {
     if (ONLY && season !== ONLY) continue;
     const text = gunzipSync(await readFile(join(dir, f))).toString("utf8");
     const byDay = new Map();
+    const replay = [];
     for (const line of text.split("\n")) {
       if (!line.trim()) continue;
       const g = JSON.parse(line);
       const props = [];
-      for (const p of mainLines(g.books ?? {})) {
+      const main = mainLines(g.books ?? {});
+      if (KEY === "nba" && Number(g.seasonType ?? 2) === 2) {
+        replay.push({
+          id: g.id,
+          date: g.date,
+          name: g.name,
+          box: g.box,
+          reb: main.filter((p) => p.t === "Total Rebounds").map((p) => ({ a: p.a, line: p.line, u: p.u })),
+        });
+      }
+      for (const p of main) {
         const bx = g.box?.[p.a];
         if (!bx || bx.dnp) continue;
         const [label, stat] = MARKETS[p.t];
@@ -228,6 +243,32 @@ async function main() {
       await writeFile(join(OUT, KEY, season, `${day}.json`), JSON.stringify(games));
     }
     index.seasons[season] = [...byDay.keys()].sort();
+    if (KEY === "nba" && replay.length) {
+      replay.sort((a, b) => a.date.localeCompare(b.date));
+      const { picks, inputs } = replayRebStars(replay);
+      const w = picks.filter((p) => p[9] === "win").length;
+      const l = picks.filter((p) => p[9] === "loss").length;
+      const units = picks.reduce((u, p) => {
+        if (p[9] === "push") return u;
+        const o = Number(p[6]);
+        const win = Number.isFinite(o) && o !== 0 ? (o < 0 ? 100 / -o : o / 100) : 100 / 110;
+        return u + (p[9] === "win" ? win : -1);
+      }, 0);
+      await writeFile(
+        join(OUT, KEY, `reb-stars-${season}.json`),
+        JSON.stringify({
+          season,
+          updated: new Date().toISOString(),
+          rule: { edge: REB_STAR_EDGE, minGames: REB_STAR_MIN_GAMES, worstPrice: REB_STAR_WORST_PRICE },
+          record: [w, l, picks.length - w - l, Math.round(units * 100) / 100],
+          // [date, gameId, game, player, team, opening line, under price, projection, rebounds, result]
+          picks,
+          // athleteId → [season reb/min, last-10 reb/min | null, weighted minutes, games]
+          inputs,
+        }),
+      );
+      console.log(`nba ${season} ★ rebound unders: ${w}-${l} (${units.toFixed(1)}u), ${Object.keys(inputs).length} players`);
+    }
     console.log(`${KEY} ${season}: ${byDay.size} days, ${[...byDay.values()].flat().length} games`);
   }
   await mkdir(join(OUT, KEY), { recursive: true });

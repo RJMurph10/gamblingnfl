@@ -7,6 +7,7 @@ import {
   fetchNbaPlayerIndex,
   fetchNbaPlayerProfile,
   fetchNbaPriorTeams,
+  fetchNbaRebStars,
   fetchNbaRoster,
   fetchNbaSchedule,
   fetchNbaStandings,
@@ -45,6 +46,9 @@ export const getNbaPlayerProfile = createServerFn({ method: "GET" })
 export const getNbaGameDetail = createServerFn({ method: "GET" })
   .inputValidator((data) => z.object({ gameId: z.string() }).parse(data))
   .handler(async ({ data }) => fetchNbaGameDetail(data.gameId));
+
+/** ★ rebound unders: this season's graded picks and players' projection inputs. */
+export const getNbaRebStars = createServerFn({ method: "GET" }).handler(async () => fetchNbaRebStars());
 
 /** DraftKings player props for a game, when ESPN has posted them. */
 export const getNbaGameProps = createServerFn({ method: "GET" })

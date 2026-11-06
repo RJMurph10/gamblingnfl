@@ -8,6 +8,7 @@ import {
   getNbaPlayerIndex,
   getNbaPlayerProfile,
   getNbaPriorTeams,
+  getNbaRebStars,
   getNbaRoster,
   getNbaSchedule,
   getNbaStandings,
@@ -91,6 +92,15 @@ export function useNbaGameDetail(gameId: string, live: boolean) {
     retry: 1,
   });
 }
+
+/** ★ rebound unders (graded picks + projection inputs), refreshed by the daily props job. */
+export const useNbaRebStars = () =>
+  useQuery({
+    queryKey: ["nba-reb-stars"],
+    queryFn: () => getNbaRebStars(),
+    staleTime: 15 * 60_000,
+    retry: 1,
+  });
 
 export const useNbaGameProps = (game: NbaGame | undefined) =>
   useQuery({
