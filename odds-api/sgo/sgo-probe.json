@@ -1,0 +1,347 @@
+{
+ "at": "2026-11-06T04:32:20.838Z",
+ "usage": {
+  "status": 200,
+  "body": {
+   "success": true,
+   "data": {
+    "keyID": "b9b990356ba8304e615ff9765154ed3c9c5a74c879d1ec6ffd22c3229f749187",
+    "customerID": "cus_VZoOOafcXE1Vnf",
+    "email": "rjmurphy031@gmail.com",
+    "isActive": true,
+    "tier": "amateur",
+    "rateLimits": {
+     "per-second": {
+      "max-requests": "unlimited",
+      "max-entities": "unlimited"
+     },
+     "per-minute": {
+      "max-requests": 10,
+      "current-requests": 0,
+      "max-entities": "unlimited"
+     },
+     "per-hour": {
+      "max-requests": 50000,
+      "current-requests": 0,
+      "max-entities": 250000,
+      "current-entities": 0
+     },
+     "per-day": {
+      "max-requests": 500000,
+      "current-requests": 0,
+      "max-entities": 3000000,
+      "current-entities": 0
+     },
+     "per-month": {
+      "max-requests": "unlimited",
+      "max-entities": 2500,
+      "current-entities": 0
+     }
+    }
+   }
+  }
+ },
+ "leaguesStatus": 200,
+ "leagues": [
+  {
+   "id": "NBA",
+   "sport": "BASKETBALL",
+   "name": "NBA",
+   "enabled": true
+  },
+  {
+   "id": "UEFA_CHAMPIONS_LEAGUE",
+   "sport": "SOCCER",
+   "name": "Champions League",
+   "enabled": true
+  },
+  {
+   "id": "MLB",
+   "sport": "BASEBALL",
+   "name": "MLB",
+   "enabled": true
+  },
+  {
+   "id": "MLS",
+   "sport": "SOCCER",
+   "name": "MLS",
+   "enabled": true
+  },
+  {
+   "id": "NCAAB",
+   "sport": "BASKETBALL",
+   "name": "College Basketball",
+   "enabled": true
+  },
+  {
+   "id": "NCAAF",
+   "sport": "FOOTBALL",
+   "name": "College Football",
+   "enabled": true
+  },
+  {
+   "id": "NFL",
+   "sport": "FOOTBALL",
+   "name": "NFL",
+   "enabled": true
+  },
+  {
+   "id": "NHL",
+   "sport": "HOCKEY",
+   "name": "NHL",
+   "enabled": true
+  }
+ ],
+ "samples": {
+  "NCAAB": {
+   "status": 200,
+   "count": 5,
+   "events": [
+    {
+     "id": "AzCnDFIIIL44osMbAl00",
+     "starts": "2026-11-06T03:30:00.000Z",
+     "home": "Arizona Wildcats",
+     "away": "Cal Poly",
+     "oddsKeys": [
+      "points-all-game-ou-over",
+      "points-all-game-ou-under",
+      "points-away-game-sp-away",
+      "points-home-game-sp-home",
+      "points-away-game-ou-over",
+      "points-away-game-ou-under"
+     ],
+     "sample": {
+      "points-all-game-ou-over": {
+       "line": "182.5",
+       "books": [
+        "pointsbet",
+        "fanduel",
+        "caesars",
+        "espnbet",
+        "draftkings",
+        "betmgm",
+        "bovada"
+       ]
+      },
+      "points-home-game-sp-home": {
+       "line": "-35.5",
+       "books": [
+        "pointsbet",
+        "fanduel",
+        "caesars",
+        "espnbet",
+        "draftkings",
+        "unibet",
+        "betmgm",
+        "bovada"
+       ]
+      }
+     }
+    },
+    {
+     "id": "s5WJqYbaviQJ11uXTHbd",
+     "starts": "2026-11-06T21:00:00.000Z",
+     "home": "Boston College",
+     "away": "Massachusetts Minutemen",
+     "oddsKeys": [
+      "points-all-game-ou-over",
+      "points-all-game-ou-under",
+      "points-away-game-sp-away",
+      "points-home-game-sp-home",
+      "points-away-game-ou-over",
+      "points-away-game-ou-under"
+     ],
+     "sample": {
+      "points-all-game-ou-over": {
+       "line": "145.5",
+       "books": [
+        "pointsbet",
+        "fanduel",
+        "espnbet",
+        "draftkings",
+        "caesars",
+        "betmgm",
+        "bovada"
+       ]
+      },
+      "points-home-game-sp-home": {
+       "line": "-5.5",
+       "books": [
+        "pointsbet",
+        "fanduel",
+        "caesars",
+        "espnbet",
+        "draftkings",
+        "betmgm",
+        "unibet",
+        "bovada"
+       ]
+      }
+     }
+    },
+    {
+     "id": "QYmnwXxWfBuWLo10t833",
+     "starts": "2026-11-06T22:00:00.000Z",
+     "home": "Baylor Bears",
+     "away": "Arkansas-Pine Bluff",
+     "oddsKeys": [
+      "points-all-game-ou-over",
+      "points-all-game-ou-under",
+      "points-away-game-sp-away",
+      "points-home-game-sp-home"
+     ],
+     "sample": {
+      "points-all-game-ou-over": {
+       "line": "157.5",
+       "books": [
+        "fanduel",
+        "pointsbet",
+        "espnbet",
+        "caesars"
+       ]
+      },
+      "points-home-game-sp-home": {
+       "line": "-35.5",
+       "books": [
+        "fanduel",
+        "pointsbet",
+        "espnbet",
+        "caesars"
+       ]
+      }
+     }
+    },
+    {
+     "id": "Usj1289IvMkZrdNvkXMf",
+     "starts": "2026-11-06T22:00:00.000Z",
+     "home": "Florida International Golden Panthers",
+     "away": "West Florida Argonauts",
+     "oddsKeys": [
+      "points-away-game-sp-away",
+      "points-home-game-sp-home",
+      "points-all-game-ou-over",
+      "points-all-game-ou-under"
+     ],
+     "sample": {
+      "points-home-game-sp-home": {
+       "line": "-12.5",
+       "books": []
+      },
+      "points-all-game-ou-over": {
+       "line": "154.5",
+       "books": []
+      }
+     }
+    },
+    {
+     "id": "vXlEcBMLGfAH3sTXbDz4",
+     "starts": "2026-11-06T22:00:00.000Z",
+     "home": "Virginia Cavaliers",
+     "away": "Northeastern",
+     "oddsKeys": [
+      "points-all-game-ou-over",
+      "points-all-game-ou-under",
+      "points-away-game-sp-away",
+      "points-home-game-sp-home",
+      "points-away-game-ou-over",
+      "points-away-game-ou-under"
+     ],
+     "sample": {
+      "points-all-game-ou-over": {
+       "line": "159.5",
+       "books": [
+        "pointsbet",
+        "fanduel",
+        "espnbet",
+        "caesars",
+        "draftkings",
+        "betmgm",
+        "bovada"
+       ]
+      },
+      "points-home-game-sp-home": {
+       "line": "-34.5",
+       "books": [
+        "pointsbet",
+        "fanduel",
+        "espnbet",
+        "caesars",
+        "draftkings",
+        "betmgm",
+        "bovada"
+       ]
+      }
+     }
+    }
+   ]
+  },
+  "NCAAW": {
+   "status": 400,
+   "error": {
+    "success": false,
+    "error": "leagueID contains invalid value: NCAAW"
+   },
+   "count": 0,
+   "events": []
+  },
+  "WNCAAB": {
+   "status": 400,
+   "error": {
+    "success": false,
+    "error": "leagueID contains invalid value: WNCAAB"
+   },
+   "count": 0,
+   "events": []
+  },
+  "NCAAWB": {
+   "status": 400,
+   "error": {
+    "success": false,
+    "error": "leagueID contains invalid value: NCAAWB"
+   },
+   "count": 0,
+   "events": []
+  }
+ },
+ "usageAfter": {
+  "status": 200,
+  "body": {
+   "success": true,
+   "data": {
+    "keyID": "b9b990356ba8304e615ff9765154ed3c9c5a74c879d1ec6ffd22c3229f749187",
+    "customerID": "cus_VZoOOafcXE1Vnf",
+    "email": "rjmurphy031@gmail.com",
+    "isActive": true,
+    "tier": "amateur",
+    "rateLimits": {
+     "per-second": {
+      "max-requests": "unlimited",
+      "max-entities": "unlimited"
+     },
+     "per-minute": {
+      "max-requests": 10,
+      "current-requests": 5,
+      "max-entities": "unlimited"
+     },
+     "per-hour": {
+      "max-requests": 50000,
+      "current-requests": 5,
+      "max-entities": 250000,
+      "current-entities": 16
+     },
+     "per-day": {
+      "max-requests": 500000,
+      "current-requests": 5,
+      "max-entities": 3000000,
+      "current-entities": 16
+     },
+     "per-month": {
+      "max-requests": "unlimited",
+      "max-entities": 2500,
+      "current-entities": 16
+     }
+    }
+   }
+  }
+ }
+}
