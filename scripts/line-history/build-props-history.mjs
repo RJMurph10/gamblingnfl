@@ -3,7 +3,8 @@
  * Turns the per-game prop backfill files into one compressed file per league-season, with each
  * player's box score attached so every prop can be graded:
  *   <out>/<league>/<season>.jsonl.gz — one JSON line per game:
- *   { id, date, name, seasonType, away, home, final, books: { <id>: { name, rows } }, box: { athleteId: {...} } }
+ *   { id, date, name, seasonType, away, home, final, books: { <id>: { name, rows } }, box: { athleteId: {...} },
+ *     ls: { away: [points per quarter / period / inning, then overtimes], home: [...] } }
  * Live-betting books ("Live Odds") are dropped: their last price is from during the game.
  *
  *   node scripts/line-history/build-props-history.mjs --data line-history/data --out props-history --league nba
@@ -70,6 +71,22 @@ function boxFrom(summary) {
   return out;
 }
 
+/** Scores by quarter / period / inning from the summary header (for grading half, quarter, period and
+ *  first-five-innings lines). */
+function linescoresFrom(summary) {
+  const out = {};
+  for (const c of summary?.header?.competitions?.[0]?.competitors ?? []) {
+    const side = c?.homeAway;
+    if (side !== "home" && side !== "away") continue;
+    const v = (c?.linescores ?? []).map((x) => {
+      const n = Number(x?.value ?? x?.displayValue);
+      return Number.isFinite(n) ? n : null;
+    });
+    if (v.length) out[side] = v;
+  }
+  return out.home && out.away ? out : undefined;
+}
+
 async function main() {
   const root = join(DATA, KEY);
   const seasons = (await readdir(root, { withFileTypes: true }).catch(() => []))
@@ -100,6 +117,7 @@ async function main() {
             final: rec.final,
             books,
             box: boxFrom(s),
+            ls: linescoresFrom(s),
           };
         }),
       );
@@ -109,7 +127,8 @@ async function main() {
     const text = games.map((g) => JSON.stringify(g)).join("\n") + "\n";
     await writeFile(join(OUT, KEY, `${season}.jsonl.gz`), gzipSync(text, { level: 9 }));
     const withBox = games.filter((g) => Object.keys(g.box).length).length;
-    console.log(`${KEY} ${season}: ${games.length} games (${withBox} with box scores)`);
+    const withLs = games.filter((g) => g.ls).length;
+    console.log(`${KEY} ${season}: ${games.length} games (${withBox} with box scores, ${withLs} with line scores)`);
   }
   console.log(`${requests} requests`);
 }
