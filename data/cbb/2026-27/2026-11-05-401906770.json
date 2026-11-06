@@ -7,18 +7,18 @@
   "id": "294",
   "abbr": "JAX",
   "name": "Jacksonville Dolphins",
-  "score": 0
+  "score": 28
  },
  "home": {
   "id": "57",
   "abbr": "FLA",
   "name": "Florida Gators",
-  "score": 0
+  "score": 50
  },
  "neutral": false,
  "venue": "Stephen C. O'Connell Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-05T15:33:12.330Z",

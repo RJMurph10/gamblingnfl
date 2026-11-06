@@ -7,18 +7,18 @@
   "id": "284",
   "abbr": "STO",
   "name": "Stonehill Skyhawks",
-  "score": 0
+  "score": 33
  },
  "home": {
   "id": "2230",
   "abbr": "FOR",
   "name": "Fordham Rams",
-  "score": 0
+  "score": 45
  },
  "neutral": false,
  "venue": "Rose Hill Gym",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-05T15:33:12.330Z",

@@ -7,18 +7,18 @@
   "id": "261",
   "abbr": "UVM",
   "name": "Vermont Catamounts",
-  "score": 0
+  "score": 71
  },
  "home": {
   "id": "2217",
   "abbr": "FAIR",
   "name": "Fairfield Stags",
-  "score": 0
+  "score": 59
  },
  "neutral": false,
  "venue": "Leo D. Mahoney Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-05T06:55:49.161Z",

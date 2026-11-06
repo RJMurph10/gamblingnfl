@@ -7,18 +7,18 @@
   "id": "160",
   "abbr": "UNH",
   "name": "New Hampshire Wildcats",
-  "score": 0
+  "score": 47
  },
  "home": {
   "id": "2520",
   "abbr": "RID",
   "name": "Rider Broncs",
-  "score": 0
+  "score": 45
  },
  "neutral": false,
  "venue": "Alumni Gymnasium (Rider)",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-05T06:55:49.161Z",

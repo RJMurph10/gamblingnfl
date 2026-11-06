@@ -7,18 +7,18 @@
   "id": "91",
   "abbr": "BELL",
   "name": "Bellarmine Knights",
-  "score": 0
+  "score": 69
  },
  "home": {
   "id": "84",
   "abbr": "IU",
   "name": "Indiana Hoosiers",
-  "score": 0
+  "score": 92
  },
  "neutral": false,
  "venue": "Simon Skjodt Assembly Hall",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-05T06:55:49.161Z",
@@ -867,5 +867,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 69,
+  "home": 92
+ }
 }

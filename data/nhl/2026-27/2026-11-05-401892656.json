@@ -1,24 +1,24 @@
 {
  "id": "401892656",
  "league": "nhl",
- "date": "2026-11-06T01:00Z",
+ "date": "2026-11-06T00:00Z",
  "name": "VAN @ WPG",
  "away": {
   "id": "22",
   "abbr": "VAN",
   "name": "Vancouver Canucks",
-  "score": 0
+  "score": 1
  },
  "home": {
   "id": "28",
   "abbr": "WPG",
   "name": "Winnipeg Jets",
-  "score": 0
+  "score": 5
  },
  "neutral": false,
  "venue": "Canada Life Centre",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-04T18:02:32.724Z",

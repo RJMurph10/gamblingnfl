@@ -7,18 +7,18 @@
   "id": "19",
   "abbr": "STL",
   "name": "St. Louis Blues",
-  "score": 0
+  "score": 1
  },
  "home": {
   "id": "11",
   "abbr": "NJ",
   "name": "New Jersey Devils",
-  "score": 0
+  "score": 4
  },
  "neutral": false,
  "venue": "Prudential Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-04T18:02:32.724Z",

@@ -7,7 +7,7 @@
   "id": "25",
   "abbr": "ANA",
   "name": "Anaheim Ducks",
-  "score": 0
+  "score": 1
  },
  "home": {
   "id": "6",
@@ -18,7 +18,7 @@
  "neutral": false,
  "venue": "Rogers Place",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-04T18:02:32.724Z",

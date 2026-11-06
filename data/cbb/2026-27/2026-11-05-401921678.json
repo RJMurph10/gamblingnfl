@@ -7,18 +7,18 @@
   "id": "399",
   "abbr": "UALB",
   "name": "UAlbany Great Danes",
-  "score": 0
+  "score": 45
  },
  "home": {
   "id": "2363",
   "abbr": "MAN",
   "name": "Manhattan Jaspers",
-  "score": 0
+  "score": 44
  },
  "neutral": false,
  "venue": "Draddy Gymnasium",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-05T06:55:49.161Z",

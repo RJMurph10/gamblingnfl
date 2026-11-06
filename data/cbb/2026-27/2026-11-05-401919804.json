@@ -7,18 +7,18 @@
   "id": "112358",
   "abbr": "LIU",
   "name": "Long Island University Sharks",
-  "score": 0
+  "score": 60
  },
  "home": {
   "id": "2550",
   "abbr": "HALL",
   "name": "Seton Hall Pirates",
-  "score": 0
+  "score": 67
  },
  "neutral": false,
- "venue": "Prudential Center",
+ "venue": "Walsh Gymnasium",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-05T06:55:49.161Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 60,
+  "home": 67
+ }
 }

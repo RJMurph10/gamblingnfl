@@ -7,18 +7,18 @@
   "id": "154",
   "abbr": "WAKE",
   "name": "Wake Forest Demon Deacons",
-  "score": 0
+  "score": 51
  },
  "home": {
   "id": "238",
   "abbr": "VAN",
   "name": "Vanderbilt Commodores",
-  "score": 0
+  "score": 74
  },
  "neutral": false,
  "venue": "Memorial Gymnasium (TN)",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-04T23:44:33.955Z",
@@ -935,5 +935,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 51,
+  "home": 74
+ }
 }

@@ -7,18 +7,18 @@
   "id": "2296",
   "abbr": "JKST",
   "name": "Jackson State Tigers",
-  "score": 0
+  "score": 45
  },
  "home": {
   "id": "2655",
   "abbr": "TULN",
   "name": "Tulane Green Wave",
-  "score": 0
+  "score": 54
  },
  "neutral": false,
  "venue": "Avron B. Fogelman Arena in the Devlin Fieldhouse",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-05T15:33:12.330Z",

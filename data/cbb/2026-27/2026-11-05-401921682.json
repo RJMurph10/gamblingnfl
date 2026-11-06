@@ -7,18 +7,18 @@
   "id": "311",
   "abbr": "ME",
   "name": "Maine Black Bears",
-  "score": 0
+  "score": 67
  },
  "home": {
   "id": "2529",
   "abbr": "SHU",
   "name": "Sacred Heart Pioneers",
-  "score": 0
+  "score": 66
  },
  "neutral": false,
  "venue": "William H. Pitt Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-05T06:55:49.161Z",

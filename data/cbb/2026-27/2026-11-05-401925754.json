@@ -7,18 +7,18 @@
   "id": "2649",
   "abbr": "TOL",
   "name": "Toledo Rockets",
-  "score": 0
+  "score": 15
  },
  "home": {
   "id": "127",
   "abbr": "MSU",
   "name": "Michigan State Spartans",
-  "score": 0
+  "score": 37
  },
  "neutral": false,
  "venue": "Breslin Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-04T23:44:33.955Z",

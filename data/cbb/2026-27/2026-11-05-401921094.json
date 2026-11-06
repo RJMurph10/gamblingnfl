@@ -7,18 +7,18 @@
   "id": "2837",
   "abbr": "ETAM",
   "name": "East Texas A&M Lions",
-  "score": 0
+  "score": 32
  },
  "home": {
   "id": "242",
   "abbr": "RICE",
   "name": "Rice Owls",
-  "score": 0
+  "score": 30
  },
  "neutral": false,
  "venue": "Tudor Fieldhouse",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-05T15:33:12.330Z",

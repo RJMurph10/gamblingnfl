@@ -7,18 +7,18 @@
   "id": "1",
   "abbr": "BOS",
   "name": "Boston Bruins",
-  "score": 0
+  "score": 5
  },
  "home": {
   "id": "16",
   "abbr": "PIT",
   "name": "Pittsburgh Penguins",
-  "score": 0
+  "score": 2
  },
  "neutral": false,
  "venue": "PPG Paints Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-04T18:02:32.724Z",

@@ -7,18 +7,18 @@
   "id": "2739",
   "abbr": "GB",
   "name": "Green Bay Phoenix",
-  "score": 0
+  "score": 48
  },
  "home": {
   "id": "2132",
   "abbr": "CIN",
   "name": "Cincinnati Bearcats",
-  "score": 0
+  "score": 67
  },
  "neutral": false,
  "venue": "Fifth Third Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-04T23:44:33.955Z",

@@ -7,18 +7,18 @@
   "id": "2349",
   "abbr": "UML",
   "name": "UMass Lowell River Hawks",
-  "score": 0
+  "score": 62
  },
  "home": {
   "id": "2771",
   "abbr": "MRMK",
   "name": "Merrimack Warriors",
-  "score": 0
+  "score": 53
  },
  "neutral": false,
  "venue": "Lawler Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-05T06:55:49.161Z",

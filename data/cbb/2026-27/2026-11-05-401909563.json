@@ -7,18 +7,18 @@
   "id": "324",
   "abbr": "CCU",
   "name": "Coastal Carolina Chanticleers",
-  "score": 0
+  "score": 10
  },
  "home": {
   "id": "150",
   "abbr": "DUKE",
   "name": "Duke Blue Devils",
-  "score": 0
+  "score": 41
  },
  "neutral": false,
  "venue": "Cameron Indoor Stadium",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-04T23:44:33.955Z",

@@ -7,18 +7,18 @@
   "id": "2241",
   "abbr": "GWEB",
   "name": "Gardner-Webb Runnin' Bulldogs",
-  "score": 0
+  "score": 20
  },
  "home": {
   "id": "251",
   "abbr": "TEX",
   "name": "Texas Longhorns",
-  "score": 0
+  "score": 54
  },
  "neutral": false,
  "venue": "Moody Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-05T15:33:12.330Z",

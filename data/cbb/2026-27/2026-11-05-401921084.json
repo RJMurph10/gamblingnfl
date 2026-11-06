@@ -7,18 +7,18 @@
   "id": "2378",
   "abbr": "UMBC",
   "name": "UMBC Retrievers",
-  "score": 0
+  "score": 60
  },
  "home": {
   "id": "2368",
   "abbr": "MRST",
   "name": "Marist Red Foxes",
-  "score": 0
+  "score": 67
  },
  "neutral": false,
  "venue": "McCann Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-05T06:55:49.161Z",
