@@ -7,13 +7,13 @@
   "id": "37",
   "abbr": "VGK",
   "name": "Vegas Golden Knights",
-  "score": 0
+  "score": 1
  },
  "home": {
   "id": "5",
   "abbr": "DET",
   "name": "Detroit Red Wings",
-  "score": 0
+  "score": 1
  },
  "neutral": false,
  "venue": "Little Caesars Arena",

@@ -7,13 +7,13 @@
   "id": "25",
   "abbr": "ANA",
   "name": "Anaheim Ducks",
-  "score": 1
+  "score": 3
  },
  "home": {
   "id": "6",
   "abbr": "EDM",
   "name": "Edmonton Oilers",
-  "score": 0
+  "score": 2
  },
  "neutral": false,
  "venue": "Rogers Place",

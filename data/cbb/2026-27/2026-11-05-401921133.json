@@ -7,18 +7,18 @@
   "id": "2065",
   "abbr": "BCU",
   "name": "Bethune-Cookman Wildcats",
-  "score": 0
+  "score": 8
  },
  "home": {
   "id": "2641",
   "abbr": "TTU",
   "name": "Texas Tech Red Raiders",
-  "score": 0
+  "score": 15
  },
  "neutral": false,
  "venue": "United Supermarkets Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-05T15:33:12.330Z",

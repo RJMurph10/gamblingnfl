@@ -7,18 +7,18 @@
   "id": "2382",
   "abbr": "MER",
   "name": "Mercer Bears",
-  "score": 54
+  "score": 67
  },
  "home": {
   "id": "259",
   "abbr": "VT",
   "name": "Virginia Tech Hokies",
-  "score": 79
+  "score": 96
  },
  "neutral": false,
  "venue": "Cassell Coliseum",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-04T23:44:33.955Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 67,
+  "home": 96
+ }
 }

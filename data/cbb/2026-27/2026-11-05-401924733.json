@@ -7,18 +7,18 @@
   "id": "2275",
   "abbr": "HOF",
   "name": "Hofstra Pride",
-  "score": 53
+  "score": 58
  },
  "home": {
   "id": "163",
   "abbr": "PRIN",
   "name": "Princeton Tigers",
-  "score": 45
+  "score": 60
  },
  "neutral": false,
  "venue": "Jadwin Gymnasium",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-04T23:44:33.955Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 58,
+  "home": 60
+ }
 }

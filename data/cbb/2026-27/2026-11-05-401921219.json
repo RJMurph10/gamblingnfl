@@ -7,18 +7,18 @@
   "id": "2169",
   "abbr": "DSU",
   "name": "Delaware State Hornets",
-  "score": 52
+  "score": 60
  },
  "home": {
   "id": "2426",
   "abbr": "NAVY",
   "name": "Navy Midshipmen",
-  "score": 58
+  "score": 66
  },
  "neutral": false,
  "venue": "Alumni Hall (Navy)",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-05T06:55:49.161Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 60,
+  "home": 66
+ }
 }

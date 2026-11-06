@@ -7,18 +7,18 @@
   "id": "2066",
   "abbr": "BING",
   "name": "Binghamton Bearcats",
-  "score": 40
+  "score": 58
  },
  "home": {
   "id": "2612",
   "abbr": "SPU",
   "name": "Saint Peter's Peacocks",
-  "score": 42
+  "score": 55
  },
  "neutral": false,
  "venue": "Yanitelli Center",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-05T06:55:49.161Z",
@@ -766,5 +766,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 58,
+  "home": 55
+ }
 }

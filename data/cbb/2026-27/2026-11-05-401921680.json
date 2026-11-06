@@ -7,18 +7,18 @@
   "id": "2803",
   "abbr": "BRY",
   "name": "Bryant Bulldogs",
-  "score": 51
+  "score": 56
  },
  "home": {
   "id": "2514",
   "abbr": "QUIN",
   "name": "Quinnipiac Bobcats",
-  "score": 60
+  "score": 66
  },
  "neutral": false,
  "venue": "M&T Bank Arena",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-05T06:55:49.161Z",
@@ -766,5 +766,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 56,
+  "home": 66
+ }
 }

@@ -7,18 +7,18 @@
   "id": "2115",
   "abbr": "CCSU",
   "name": "Central Connecticut Blue Devils",
-  "score": 45
+  "score": 49
  },
  "home": {
   "id": "183",
   "abbr": "SYR",
   "name": "Syracuse Orange",
-  "score": 91
+  "score": 102
  },
  "neutral": false,
  "venue": "JMA Wireless Dome",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-05T06:55:49.161Z",
@@ -766,5 +766,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 49,
+  "home": 102
+ }
 }

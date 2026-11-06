@@ -7,18 +7,18 @@
   "id": "47",
   "abbr": "HOW",
   "name": "Howard Bison",
-  "score": 63
+  "score": 94
  },
  "home": {
   "id": "2016",
   "abbr": "ALCN",
   "name": "Alcorn State Braves",
-  "score": 50
+  "score": 83
  },
  "neutral": false,
  "venue": "Davey L. Whitney Complex",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-05T06:55:49.161Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 94,
+  "home": 83
+ }
 }

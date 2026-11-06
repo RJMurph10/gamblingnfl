@@ -7,7 +7,7 @@
   "id": "1",
   "abbr": "BOS",
   "name": "Boston Bruins",
-  "score": 5
+  "score": 6
  },
  "home": {
   "id": "16",
@@ -18,7 +18,7 @@
  "neutral": false,
  "venue": "PPG Paints Arena",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-04T18:02:32.724Z",
@@ -2325,5 +2325,9 @@
    "Chase Pietila",
    "PIT"
   ]
+ },
+ "final": {
+  "away": 6,
+  "home": 2
  }
 }

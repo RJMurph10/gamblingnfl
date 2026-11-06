@@ -7,18 +7,18 @@
   "id": "2130",
   "abbr": "CHST",
   "name": "Chicago State Cougars",
-  "score": 50
+  "score": 66
  },
  "home": {
   "id": "2916",
   "abbr": "UIW",
   "name": "Incarnate Word Cardinals",
-  "score": 41
+  "score": 54
  },
  "neutral": false,
  "venue": "McDermott Center",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-05T15:33:12.330Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 66,
+  "home": 54
+ }
 }

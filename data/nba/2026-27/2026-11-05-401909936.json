@@ -7,18 +7,18 @@
   "id": "19",
   "abbr": "ORL",
   "name": "Orlando Magic",
-  "score": 0
+  "score": 21
  },
  "home": {
   "id": "21",
   "abbr": "PHX",
   "name": "Phoenix Suns",
-  "score": 0
+  "score": 29
  },
  "neutral": false,
  "venue": "Mortgage Matchup Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-05T06:55:49.161Z",

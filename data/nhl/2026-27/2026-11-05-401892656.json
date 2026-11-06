@@ -7,13 +7,13 @@
   "id": "22",
   "abbr": "VAN",
   "name": "Vancouver Canucks",
-  "score": 1
+  "score": 2
  },
  "home": {
   "id": "28",
   "abbr": "WPG",
   "name": "Winnipeg Jets",
-  "score": 5
+  "score": 6
  },
  "neutral": false,
  "venue": "Canada Life Centre",

@@ -7,13 +7,13 @@
   "id": "9",
   "abbr": "DAL",
   "name": "Dallas Stars",
-  "score": 0
+  "score": 1
  },
  "home": {
   "id": "29",
   "abbr": "CBJ",
   "name": "Columbus Blue Jackets",
-  "score": 0
+  "score": 1
  },
  "neutral": false,
  "venue": "Nationwide Arena",

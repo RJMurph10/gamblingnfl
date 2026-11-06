@@ -7,18 +7,18 @@
   "id": "172",
   "abbr": "COR",
   "name": "Cornell Big Red",
-  "score": 54
+  "score": 64
  },
  "home": {
   "id": "2329",
   "abbr": "LEH",
   "name": "Lehigh Mountain Hawks",
-  "score": 62
+  "score": 71
  },
  "neutral": false,
  "venue": "Stabler Arena",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-05T06:55:49.161Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 64,
+  "home": 71
+ }
 }

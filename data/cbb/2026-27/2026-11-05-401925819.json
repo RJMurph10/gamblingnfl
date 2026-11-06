@@ -7,18 +7,18 @@
   "id": "2247",
   "abbr": "GAST",
   "name": "Georgia State Panthers",
-  "score": 60
+  "score": 67
  },
  "home": {
   "id": "2429",
   "abbr": "CLT",
   "name": "Charlotte 49ers",
-  "score": 61
+  "score": 77
  },
  "neutral": false,
  "venue": "Halton Arena",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-04T23:44:33.955Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 67,
+  "home": 77
+ }
 }
