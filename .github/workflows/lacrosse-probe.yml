@@ -1,0 +1,42 @@
+name: Lacrosse data probe
+
+# One-off: what ESPN and The Odds API carry for lacrosse. Writes props-site/probes/lacrosse-probe.json.
+on:
+  push:
+    branches: [lacrosse-probe]
+    paths: [scripts/line-history/lacrosse-probe.mjs]
+
+permissions:
+  contents: write
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: app
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Probe and publish
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        run: |
+          set -e
+          node app/scripts/line-history/lacrosse-probe.mjs --out pull
+          url="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+          for attempt in 1 2 3 4 5; do
+            rm -rf site-repo && git clone -q --depth 1 --branch props-site "$url" site-repo
+            mkdir -p site-repo/probes && cp pull/lacrosse-probe.json site-repo/probes/
+            cd site-repo
+            git config user.name "line-history-bot"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add -A
+            git diff --cached --quiet && exit 0
+            git commit -q -m "Lacrosse probe"
+            if git push -q origin props-site; then exit 0; fi
+            cd ..
+            sleep $((attempt * 15))
+          done
+          exit 1
