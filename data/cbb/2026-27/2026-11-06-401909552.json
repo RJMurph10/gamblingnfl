@@ -7,18 +7,18 @@
   "id": "113",
   "abbr": "MASS",
   "name": "Massachusetts Minutemen",
-  "score": 0
+  "score": 55
  },
  "home": {
   "id": "103",
   "abbr": "BC",
   "name": "Boston College Eagles",
-  "score": 0
+  "score": 71
  },
  "neutral": true,
  "venue": "TD Garden",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-06T01:49:53.217Z",
@@ -935,5 +935,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 55,
+  "home": 71
+ }
 }

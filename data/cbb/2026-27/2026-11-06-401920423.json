@@ -7,18 +7,18 @@
   "id": "111",
   "abbr": "NE",
   "name": "Northeastern Huskies",
-  "score": 0
+  "score": 38
  },
  "home": {
   "id": "258",
   "abbr": "UVA",
   "name": "Virginia Cavaliers",
-  "score": 0
+  "score": 50
  },
  "neutral": false,
  "venue": "John Paul Jones Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-06T01:49:53.217Z",

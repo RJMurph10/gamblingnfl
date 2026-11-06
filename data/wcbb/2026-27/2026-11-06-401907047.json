@@ -7,18 +7,18 @@
   "id": "2415",
   "abbr": "MORG",
   "name": "Morgan State Lady Bears",
-  "score": 0
+  "score": 4
  },
  "home": {
   "id": "197",
   "abbr": "OKST",
   "name": "Oklahoma State Cowgirls",
-  "score": 0
+  "score": 15
  },
  "neutral": false,
  "venue": "Gallagher-Iba Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-06T18:02:23.755Z",

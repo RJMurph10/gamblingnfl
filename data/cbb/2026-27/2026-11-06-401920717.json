@@ -7,18 +7,18 @@
   "id": "331",
   "abbr": "EWU",
   "name": "Eastern Washington Eagles",
-  "score": 0
+  "score": 8
  },
  "home": {
   "id": "2483",
   "abbr": "ORE",
   "name": "Oregon Ducks",
-  "score": 0
+  "score": 10
  },
  "neutral": false,
  "venue": "Matthew Knight Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-06T01:49:53.217Z",

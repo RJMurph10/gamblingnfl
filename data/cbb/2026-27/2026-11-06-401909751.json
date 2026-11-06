@@ -7,18 +7,18 @@
   "id": "2029",
   "abbr": "UAPB",
   "name": "Arkansas-Pine Bluff Golden Lions",
-  "score": 0
+  "score": 13
  },
  "home": {
   "id": "239",
   "abbr": "BAY",
   "name": "Baylor Bears",
-  "score": 0
+  "score": 58
  },
  "neutral": false,
  "venue": "Foster Pavilion",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-06T06:05:11.007Z",
