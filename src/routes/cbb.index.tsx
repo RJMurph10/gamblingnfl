@@ -108,7 +108,7 @@ function CbbDashboard() {
               loading ??
               note(
                 weekChangeText(totalChange, " pts"),
-                grade.games ? `${rec(grade.total)} O/U` : "No games graded yet",
+                grade.games ? `${rec(grade.total)} O/U at the opener` : "No games graded yet",
                 grade.avgPoints !== null &&
                   grade.avgLine !== null &&
                   `games avg ${grade.avgPoints.toFixed(1)} vs line ${grade.avgLine.toFixed(1)}`,
@@ -142,7 +142,7 @@ function CbbDashboard() {
           />
         </div>
         <p className="mt-2 font-mono text-[10px] uppercase tracking-wider text-faint">
-          {grade.games} games graded{through ? ` through ${through}` : ""} · flat 1u per pick at -110, ★ model totals at the opener · picks made before tip-off from earlier games only ·{" "}
+          {grade.games} games graded{through ? ` through ${through}` : ""} · flat 1u per pick at -110, totals and ★ at the opening total · picks made before tip-off from earlier games only ·{" "}
           {nonD1 ? (
             <>
               <Link to="/cbb/games" className="text-acc">

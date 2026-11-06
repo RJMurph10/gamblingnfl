@@ -192,3 +192,19 @@ describe("★ MAAC unders", () => {
     expect(rowFor(both, { ...pred, total: 130 }).best).toMatchObject({ pick: "over", rule: "edge" });
   });
 });
+
+describe("total picks at the opener", () => {
+  it("pick totals 4+ points off the opening total and grade them there", () => {
+    const g = game("1", "x1", "x2", 72, 70, "2026-12-04T00:00Z", {
+      open: { spread: -2, total: 138 },
+      odds: { spread: -2, total: 146, mlHome: -130, mlAway: 110 },
+    });
+    const pred = { home: 72, away: 70, margin: 2, total: 142, possessions: 68, homeWinProb: 0.56 };
+    // 4 over the opener (138): over, and 142 total points beats 138
+    expect(rowFor(g, pred).total).toMatchObject({ pick: "over", line: 138, result: "win" });
+    // 3 off is not enough
+    expect(rowFor(g, { ...pred, total: 141 }).total).toBeNull();
+    // no opener: the closing total (146), 4 under it
+    expect(rowFor({ ...g, open: undefined }, pred).total).toMatchObject({ pick: "under", line: 146, result: "win" });
+  });
+});
