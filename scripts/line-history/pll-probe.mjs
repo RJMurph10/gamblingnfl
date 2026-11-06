@@ -14,7 +14,7 @@ const get = async (url, opts = {}) => {
 const short = (v, n = 1500) => (typeof v === "string" ? v.slice(0, n) : JSON.stringify(v).slice(0, n));
 const out = { at: new Date().toISOString() };
 // a finished game from Aug 2026
-const sb = await get("https://site.api.espn.com/apis/site/v2/sports/lacrosse/pll/scoreboard?dates=20260801-20260807");
+const sb = await get("https://site.api.espn.com/apis/site/v2/sports/lacrosse/pll/scoreboard?dates=20260822-20260828");
 const ev = (sb.body?.events ?? []).find((e) => e.competitions?.[0]?.status?.type?.completed);
 out.game = ev ? { id: ev.id, name: ev.name, date: ev.date } : null;
 if (ev) {
@@ -50,7 +50,12 @@ for (const u of ["https://api.stats.premierlacrosseleague.com/graphql", "https:/
   out[u] = { status: r.status, body: short(r.body, 400) };
 }
 const robots = await get("https://stats.premierlacrosseleague.com/robots.txt");
-out.robots = short(robots.body, 600);
+out.robots = short(robots.body, 6000);
+// what the stats API offers: the names of its queries (introspection), and its terms page
+const intro = await get("https://api.stats.premierlacrosseleague.com/graphql", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query: "{ __schema { queryType { fields { name args { name } } } } }" }) });
+out.apiQueries = { status: intro.status, fields: (intro.body?.data?.__schema?.queryType?.fields ?? []).map((f) => `${f.name}(${f.args.map((a) => a.name).join(",")})`), errors: short(intro.body?.errors, 400) };
+const terms = await get("https://premierlacrosseleague.com/terms-of-use/");
+out.terms = { status: terms.status, mentions: typeof terms.body === "string" ? (terms.body.replace(/<[^>]+>/g, " ").match(/[^.]{0,200}(scrap|automated|robot|data mining|API)[^.]{0,200}\./gi) ?? []).slice(0, 6) : [] };
 await mkdir(OUT, { recursive: true });
 await writeFile(join(OUT, "pll-probe.json"), JSON.stringify(out, null, 1));
 console.log("done", out.game);
