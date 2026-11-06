@@ -1,0 +1,14 @@
+name: NBA odds probe (temporary)
+on:
+  push:
+    branches: [nba-lines]
+    paths: [scripts/nba/probe.mjs]
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node scripts/nba/probe.mjs
