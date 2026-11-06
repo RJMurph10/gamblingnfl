@@ -1,0 +1,72 @@
+name: NHL period history
+
+# Goals and shots by period plus starting goalies for every NHL game (scripts/nhl/export-periods.mjs, from the
+# NHL's free stats site), saved to the nhl-history branch for the 1st-period totals model. The current season is
+# refreshed every morning during the season; a manual run (or the trigger file) rebuilds every season.
+
+on:
+  schedule:
+    - cron: "45 12 * 1-6,10-12 *" # every morning, after the night's games
+  workflow_dispatch:
+  push:
+    branches: [nhl-periods]
+    paths: [scripts/nhl/nhl-periods.trigger]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: nhl-history
+  cancel-in-progress: false
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        season: ["2024-25", "2025-26", "2026-27"]
+    steps:
+      - name: Skip finished seasons on the daily run
+        id: go
+        run: |
+          y=$(date -u +%Y); m=$(date -u +%m)
+          cur=$([ "$m" -ge 8 ] && echo "$y-$(( (y+1) % 100 ))" || echo "$((y-1))-$(( y % 100 ))")
+          if [ "${{ github.event_name }}" = "schedule" ] && [ "${{ matrix.season }}" != "$cur" ]; then echo "run=no" >> $GITHUB_OUTPUT; else echo "run=yes" >> $GITHUB_OUTPUT; fi
+      - uses: actions/checkout@v4
+        if: steps.go.outputs.run == 'yes'
+        with:
+          path: app
+      - uses: actions/setup-node@v4
+        if: steps.go.outputs.run == 'yes'
+        with:
+          node-version: 22
+      - name: Export and publish
+        if: steps.go.outputs.run == 'yes'
+        run: |
+          set -e
+          s="${{ matrix.season }}"; y=${s%-*}
+          [ "$s" = "2024-25" ] && node app/scripts/nhl/export-periods.mjs --probe 2024020001 | head -80 || true
+          node app/scripts/nhl/export-periods.mjs --from "$y-10-01" --to "$((y+1))-06-30" --season "$s" --out out
+          url="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+          for attempt in 1 2 3 4 5; do
+            rm -rf dst
+            if git ls-remote --exit-code --heads "$url" nhl-history >/dev/null; then
+              git clone -q --depth 1 --branch nhl-history "$url" dst
+            else
+              mkdir dst && git -C dst init -q -b nhl-history && git -C dst remote add origin "$url"
+            fi
+            mkdir -p dst/data && cp out/*.jsonl.gz dst/data/
+            cd dst
+            git config user.name "line-history-bot"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add -A
+            git diff --cached --quiet && { echo "nothing new"; exit 0; }
+            git commit -q -m "NHL periods $s $(date -u +%Y-%m-%d)"
+            git push -q origin nhl-history && exit 0
+            cd ..
+            sleep $((attempt * 15))
+          done
+          exit 1
