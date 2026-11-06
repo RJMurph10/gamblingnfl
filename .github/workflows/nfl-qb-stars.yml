@@ -1,0 +1,58 @@
+name: NFL QB stars
+
+# ★ QB passing-yards overs (scripts/nfl/qb_stars.py): projects every QB with a DraftKings passing-yards
+# line this week and grades this season's picks at the saved opening lines. Writes
+# props-site/nfl/qb-stars-<season>.json. Runs during the NFL season (September to February).
+
+on:
+  schedule:
+    - cron: "37 16 * 1,2,9-12 *" # daily, late morning Central (lines for the week are up by Wednesday)
+    - cron: "7 15 * 1,2,9-12 0" # Sunday morning, before the early games
+  workflow_dispatch:
+  push:
+    branches: [nfl-qb-overs]
+    paths: [scripts/nfl/qb-stars.trigger]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: props-site-qb-stars
+  cancel-in-progress: false
+
+jobs:
+  stars:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: app
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install
+        run: pip install --quiet pandas numpy statsmodels
+      - name: Past seasons' nflverse stats (cached; the current season is downloaded every run)
+        uses: actions/cache@v4
+        with:
+          path: nflverse-cache
+          key: nflverse-stats-${{ github.run_id }}
+          restore-keys: nflverse-stats-
+      - name: Build and publish
+        run: |
+          set -e
+          url="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+          for attempt in 1 2 3 4 5; do
+            rm -rf site-repo && git clone -q --depth 1 --branch props-site "$url" site-repo
+            python3 app/scripts/nfl/qb_stars.py --site site-repo --cache nflverse-cache
+            cd site-repo
+            git config user.name "line-history-bot"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add -A nfl
+            if git diff --cached --quiet; then echo "no changes"; exit 0; fi
+            git commit -q -m "NFL QB stars $(date -u +%Y-%m-%dT%H:%MZ)"
+            if git push -q origin props-site; then exit 0; fi
+            cd ..
+            sleep $((attempt * 15))
+          done
+          exit 1
