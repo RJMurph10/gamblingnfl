@@ -52,6 +52,10 @@ jobs:
         working-directory: data-repo
         run: node ../app/scripts/line-history/snapshot.mjs --out data
 
+      - name: Snapshot injury reports (only when they change)
+        working-directory: data-repo
+        run: node ../app/scripts/line-history/injuries.mjs --out data || echo "injury snapshot failed"
+
       - name: Commit
         working-directory: data-repo
         run: |
