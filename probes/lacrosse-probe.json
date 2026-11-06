@@ -1,65 +1,385 @@
 {
- "at": "2026-11-06T08:03:07.477Z",
+ "at": "2026-11-06T08:04:00.535Z",
  "espn": {
   "nll": {
    "leagueInfo": 200,
+   "leagueName": "National Lacrosse League",
+   "season": {
+    "year": 2027,
+    "startDate": "2026-09-20T07:00Z",
+    "endDate": "2027-09-20T06:59Z",
+    "displayName": "2026-27",
+    "type": {
+     "id": "2",
+     "type": 2,
+     "name": "Regular Season",
+     "abbreviation": "reg"
+    }
+   },
+   "calendar": [
+    "2026-11-27T08:00Z",
+    "2026-11-28T08:00Z",
+    "2026-12-04T08:00Z"
+   ],
+   "current": 1,
    "spans": {
     "20251201-20260430": {
-     "status": 400,
-     "events": 0,
-     "completed": 0,
+     "status": 200,
+     "events": 126,
+     "completed": 126,
      "withScoreboardOdds": 0,
-     "sample": []
+     "sample": [
+      {
+       "id": "401869911",
+       "date": "2026-04-25T23:30Z",
+       "name": "Buffalo Bandits at Georgia Swarm",
+       "odds": null,
+       "status": "STATUS_FINAL"
+      },
+      {
+       "id": "401869970",
+       "date": "2026-04-26T01:00Z",
+       "name": "Toronto Rock at Saskatchewan Rush",
+       "odds": null,
+       "status": "STATUS_FINAL"
+      },
+      {
+       "id": "401869972",
+       "date": "2026-04-26T01:00Z",
+       "name": "San Diego Seals at Colorado Mammoth",
+       "odds": null,
+       "status": "STATUS_FINAL"
+      }
+     ],
+     "summary": {
+      "status": 200,
+      "keys": [
+       "boxscore",
+       "format",
+       "gameInfo",
+       "videos",
+       "news",
+       "header",
+       "wallclockAvailable",
+       "meta"
+      ],
+      "teamStatNames": [],
+      "playerStatNames": [],
+      "pickcenter": null
+     },
+     "coreOdds": {
+      "status": 200,
+      "count": 0,
+      "first": null
+     },
+     "coreOddsSample": "0/25"
     },
     "20261101-20261231": {
-     "status": 400,
-     "events": 0,
+     "status": 200,
+     "events": 15,
      "completed": 0,
      "withScoreboardOdds": 0,
-     "sample": []
+     "sample": [
+      {
+       "id": "401931366",
+       "date": "2026-12-20T03:00Z",
+       "name": "Oshawa FireWolves at San Diego Seals",
+       "odds": null,
+       "status": "STATUS_SCHEDULED"
+      },
+      {
+       "id": "401931367",
+       "date": "2026-12-26T22:00Z",
+       "name": "Georgia Swarm at Oshawa FireWolves",
+       "odds": null,
+       "status": "STATUS_SCHEDULED"
+      },
+      {
+       "id": "401931368",
+       "date": "2026-12-27T23:00Z",
+       "name": "Toronto Rock at Buffalo Bandits",
+       "odds": null,
+       "status": "STATUS_SCHEDULED"
+      }
+     ]
     }
    }
   },
   "pll": {
    "leagueInfo": 200,
+   "leagueName": "Premier Lacrosse League",
+   "season": {
+    "year": 2026,
+    "startDate": "2026-01-01T08:00Z",
+    "endDate": "2027-01-01T07:59Z",
+    "displayName": "2026",
+    "type": {
+     "id": "2",
+     "type": 2,
+     "name": "Regular Season",
+     "abbreviation": "reg"
+    }
+   },
+   "calendar": [
+    "2026-02-27T08:00Z",
+    "2026-02-28T08:00Z",
+    "2026-03-01T08:00Z"
+   ],
+   "current": 1,
    "spans": {
     "20250601-20250930": {
-     "status": 400,
-     "events": 0,
-     "completed": 0,
+     "status": 200,
+     "events": 43,
+     "completed": 43,
      "withScoreboardOdds": 0,
-     "sample": []
+     "sample": [
+      {
+       "id": "401813929",
+       "date": "2025-09-01T16:00Z",
+       "name": "Philadelphia Waterdogs at New York Atlas",
+       "odds": null,
+       "status": "STATUS_FINAL"
+      },
+      {
+       "id": "401813930",
+       "date": "2025-09-01T19:00Z",
+       "name": "California Redwoods at Denver Outlaws",
+       "odds": null,
+       "status": "STATUS_FINAL"
+      },
+      {
+       "id": "401819953",
+       "date": "2025-09-14T16:30Z",
+       "name": "New York Atlas at Denver Outlaws",
+       "odds": null,
+       "status": "STATUS_FINAL"
+      }
+     ],
+     "summary": {
+      "status": 200,
+      "keys": [
+       "boxscore",
+       "format",
+       "gameInfo",
+       "news",
+       "videos",
+       "header",
+       "wallclockAvailable",
+       "meta",
+       "standings"
+      ],
+      "teamStatNames": [],
+      "playerStatNames": [],
+      "pickcenter": null
+     },
+     "coreOdds": {
+      "status": 200,
+      "count": 0,
+      "first": null
+     },
+     "coreOddsSample": "0/25"
     },
     "20260601-20260930": {
-     "status": 400,
-     "events": 0,
-     "completed": 0,
+     "status": 200,
+     "events": 43,
+     "completed": 43,
      "withScoreboardOdds": 0,
-     "sample": []
+     "sample": [
+      {
+       "id": "401916260",
+       "date": "2026-09-07T19:00Z",
+       "name": "Denver Outlaws at Utah Archers",
+       "odds": null,
+       "status": "STATUS_FINAL"
+      },
+      {
+       "id": "401916273",
+       "date": "2026-09-07T21:30Z",
+       "name": "Boston Cannons at Philadelphia Waterdogs",
+       "odds": null,
+       "status": "STATUS_FINAL"
+      },
+      {
+       "id": "401919201",
+       "date": "2026-09-20T16:30Z",
+       "name": "Denver Outlaws at Philadelphia Waterdogs",
+       "odds": null,
+       "status": "STATUS_FINAL"
+      }
+     ],
+     "summary": {
+      "status": 200,
+      "keys": [
+       "boxscore",
+       "format",
+       "gameInfo",
+       "news",
+       "videos",
+       "header",
+       "wallclockAvailable",
+       "meta",
+       "standings"
+      ],
+      "teamStatNames": [],
+      "playerStatNames": [],
+      "pickcenter": null
+     },
+     "coreOdds": {
+      "status": 200,
+      "count": 0,
+      "first": null
+     },
+     "coreOddsSample": "0/25"
     }
    }
   },
   "mens-college-lacrosse": {
    "leagueInfo": 200,
+   "leagueName": "NCAA Men's Lacrosse",
+   "season": {
+    "year": 2026,
+    "startDate": "2026-01-01T08:00Z",
+    "endDate": "2026-07-01T06:59Z",
+    "displayName": "2026",
+    "type": {
+     "id": "2",
+     "type": 2,
+     "name": "Regular Season",
+     "abbreviation": "reg"
+    }
+   },
+   "calendar": [
+    "2026-01-30T08:00Z",
+    "2026-01-31T08:00Z",
+    "2026-02-01T08:00Z"
+   ],
+   "current": 1,
    "spans": {
     "20260201-20260531": {
-     "status": 400,
-     "events": 0,
-     "completed": 0,
+     "status": 200,
+     "events": 569,
+     "completed": 563,
      "withScoreboardOdds": 0,
-     "sample": []
+     "sample": [
+      {
+       "id": "401870924",
+       "date": "2026-05-23T16:00Z",
+       "name": "Duke Blue Devils at Princeton Tigers",
+       "odds": null,
+       "status": "STATUS_FINAL"
+      },
+      {
+       "id": "401870923",
+       "date": "2026-05-23T18:55Z",
+       "name": "Syracuse Orange at Notre Dame Fighting Irish",
+       "odds": null,
+       "status": "STATUS_FINAL"
+      },
+      {
+       "id": "401870925",
+       "date": "2026-05-25T17:00Z",
+       "name": "Notre Dame Fighting Irish at Princeton Tigers",
+       "odds": null,
+       "status": "STATUS_FINAL"
+      }
+     ],
+     "summary": {
+      "status": 200,
+      "keys": [
+       "format",
+       "gameInfo",
+       "broadcasts",
+       "header",
+       "news",
+       "videos",
+       "wallclockAvailable",
+       "meta"
+      ],
+      "teamStatNames": [],
+      "playerStatNames": [],
+      "pickcenter": null
+     },
+     "coreOdds": {
+      "status": 200,
+      "count": 0,
+      "first": null
+     },
+     "coreOddsSample": "0/25"
     }
    }
   },
   "womens-college-lacrosse": {
    "leagueInfo": 200,
+   "leagueName": "NCAA Women's Lacrosse",
+   "season": {
+    "year": 2026,
+    "startDate": "2026-01-01T08:00Z",
+    "endDate": "2026-07-01T06:59Z",
+    "displayName": "2026",
+    "type": {
+     "id": "2",
+     "type": 2,
+     "name": "Regular Season",
+     "abbreviation": "reg"
+    }
+   },
+   "calendar": [
+    "2026-02-06T08:00Z",
+    "2026-02-07T08:00Z",
+    "2026-02-08T08:00Z"
+   ],
+   "current": 1,
    "spans": {
     "20260201-20260531": {
-     "status": 400,
-     "events": 0,
-     "completed": 0,
+     "status": 200,
+     "events": 1159,
+     "completed": 1153,
      "withScoreboardOdds": 0,
-     "sample": []
+     "sample": [
+      {
+       "id": "401870992",
+       "date": "2026-05-22T19:00Z",
+       "name": "Maryland Terrapins at North Carolina Tar Heels",
+       "odds": null,
+       "status": "STATUS_FINAL"
+      },
+      {
+       "id": "401870991",
+       "date": "2026-05-22T21:50Z",
+       "name": "Johns Hopkins Blue Jays at Northwestern Wildcats",
+       "odds": null,
+       "status": "STATUS_FINAL"
+      },
+      {
+       "id": "401870993",
+       "date": "2026-05-24T16:00Z",
+       "name": "North Carolina Tar Heels at Northwestern Wildcats",
+       "odds": null,
+       "status": "STATUS_FINAL"
+      }
+     ],
+     "summary": {
+      "status": 200,
+      "keys": [
+       "format",
+       "gameInfo",
+       "broadcasts",
+       "header",
+       "videos",
+       "wallclockAvailable",
+       "meta",
+       "news"
+      ],
+      "teamStatNames": [],
+      "playerStatNames": [],
+      "pickcenter": null
+     },
+     "coreOdds": {
+      "status": 200,
+      "count": 0,
+      "first": null
+     },
+     "coreOddsSample": "0/25"
     }
    }
   }
