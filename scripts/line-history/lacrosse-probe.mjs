@@ -28,10 +28,29 @@ const SPANS = {
   "womens-college-lacrosse": ["20260201-20260531"],
 };
 for (const [lg, spans] of Object.entries(SPANS)) {
-  const r = { leagueInfo: (await get(`https://site.api.espn.com/apis/site/v2/sports/lacrosse/${lg}/scoreboard`)).status, spans: {} };
+  const base = await get(`https://site.api.espn.com/apis/site/v2/sports/lacrosse/${lg}/scoreboard`);
+  const r = { leagueInfo: base.status, leagueName: base.body?.leagues?.[0]?.name ?? null, season: base.body?.leagues?.[0]?.season ?? null, calendar: (base.body?.leagues?.[0]?.calendar ?? []).slice(0, 3), current: (base.body?.events ?? []).length, spans: {} };
   for (const span of spans) {
-    const sb = await get(`https://site.api.espn.com/apis/site/v2/sports/lacrosse/${lg}/scoreboard?dates=${span}&limit=1000`);
-    const evs = sb.body?.events ?? [];
+    // a week at a time (ESPN rejects long ranges for these leagues); one day at a time if a week fails
+    const [from, to] = span.split("-");
+    const day = (x) => Date.UTC(+x.slice(0, 4), +x.slice(4, 6) - 1, +x.slice(6, 8));
+    const ymd = (t) => new Date(t).toISOString().slice(0, 10).replace(/-/g, "");
+    const evs = [];
+    const seen = new Set();
+    let sb = { status: 0 };
+    for (let t = day(from); t <= day(to); t += 7 * 86_400_000) {
+      sb = await get(`https://site.api.espn.com/apis/site/v2/sports/lacrosse/${lg}/scoreboard?dates=${ymd(t)}-${ymd(Math.min(t + 6 * 86_400_000, day(to)))}`);
+      let found = sb.body?.events ?? [];
+      if (sb.status !== 200) {
+        found = [];
+        for (let d = t; d < t + 7 * 86_400_000 && d <= day(to); d += 86_400_000) {
+          const one = await get(`https://site.api.espn.com/apis/site/v2/sports/lacrosse/${lg}/scoreboard?dates=${ymd(d)}`);
+          if (one.status === 200) sb = one;
+          found.push(...(one.body?.events ?? []));
+        }
+      }
+      for (const e of found) if (!seen.has(e.id)) { seen.add(e.id); evs.push(e); }
+    }
     const withOdds = evs.filter((e) => (e.competitions?.[0]?.odds ?? []).length);
     const done = evs.filter((e) => e.competitions?.[0]?.status?.type?.completed);
     const sample = evs.slice(-3).map((e) => ({ id: e.id, date: e.date, name: e.name, odds: e.competitions?.[0]?.odds?.[0] ?? null, status: e.competitions?.[0]?.status?.type?.name }));
