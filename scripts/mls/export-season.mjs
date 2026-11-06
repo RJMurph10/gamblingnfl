@@ -57,9 +57,9 @@ const rows = [];
 const start = Date.UTC(YEAR, 1, 10);
 const end = Math.min(Date.now(), Date.UTC(YEAR, 11, 20));
 const seen = new Set();
-for (let t = start; t <= end; t += 7 * 86_400_000) {
+for (let t = start; t <= end; t += 86_400_000) {
   const ymd = (x) => new Date(x).toISOString().slice(0, 10).replace(/-/g, "");
-  const sb = await get(`${SITE}/scoreboard?dates=${ymd(t)}-${ymd(Math.min(t + 6 * 86_400_000, end))}&limit=200`);
+  const sb = await get(`${SITE}/scoreboard?dates=${ymd(t)}`);
   for (const e of sb?.events ?? []) {
     const comp = e.competitions?.[0];
     if (!comp?.status?.type?.completed || seen.has(e.id)) continue;
