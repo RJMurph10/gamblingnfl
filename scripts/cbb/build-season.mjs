@@ -20,6 +20,7 @@
 import { mkdir, readFile, readdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { bestLine, openLine } from "./lines.mjs";
+import { extraLineFor, loadSnapshots, teamNames } from "./extra-lines.mjs";
 
 const args = process.argv.slice(2);
 const opt = (n, d) => {
@@ -282,6 +283,49 @@ async function main() {
     }
   }
 
+  // other sources (The Odds API, SportsGameOdds) for games ESPN shows no line for: saved as snapshots in
+  // props-site/extra-lines/<source>/<league>/ by .github/workflows/extra-lines.yml
+  const snaps = [];
+  for (const src of ["oddsapi", "sgo"]) snaps.push(...(await loadSnapshots(join(OUT, "extra-lines", src, LEAGUE), 12)));
+  let extraFinals = 0;
+  let extraUpcoming = 0;
+  if (snaps.length) {
+    const names = (id) => teamNames(file.teams[id]);
+    for (const row of games.values()) {
+      if (row[9] && row[13]) continue;
+      if (now.getTime() - Date.parse(row[1]) > 12 * 86_400_000) continue;
+      const x = extraLineFor(snaps, row[1], { home: names(row[2]), away: names(row[4]) });
+      if (!x) continue;
+      if (!row[9]) {
+        row[9] = x.close;
+        extraFinals += 1;
+      }
+      if (!row[13] && (x.open[0] != null || x.open[1] != null)) row[13] = x.open;
+    }
+    // live and upcoming games (today and tomorrow, Eastern) with no line from ESPN
+    for (const off of [0, 1]) {
+      const sb = await get(`${SITE}/scoreboard?dates=${ymd(now.getTime() - 5 * 3_600_000 + off * 86_400_000)}&groups=50&limit=1000`);
+      for (const e of sb?.events ?? []) {
+        const comp = e?.competitions?.[0];
+        if (!comp || comp.status?.type?.completed) continue;
+        const id = String(e.id);
+        const side = (x) => comp.competitors?.find((c) => c.homeAway === x)?.team;
+        const h = side("home");
+        const a = side("away");
+        if (!h || !a) continue;
+        const tn = (t) => ({ abbr: t.abbreviation ?? "", name: t.displayName ?? "", short: t.shortDisplayName ?? "", location: t.location ?? "" });
+        if (file.lines[id] && file.opens[id]) continue;
+        const x = extraLineFor(snaps, String(e.date), { home: tn(h), away: tn(a) });
+        if (!x) continue;
+        if (!file.lines[id]) {
+          file.lines[id] = x.close;
+          extraUpcoming += 1;
+        }
+        if (!file.opens[id] && (x.open[0] != null || x.open[1] != null)) file.opens[id] = x.open;
+      }
+    }
+  }
+
   file.games = [...games.values()].sort((x, y) => x[1].localeCompare(y[1]) || x[0].localeCompare(y[0]));
   file.tried = [...tried];
   file.updated = now.toISOString();
@@ -289,7 +333,7 @@ async function main() {
   await writeFile(path, JSON.stringify(file));
   const withLine = file.games.filter((g) => g[9]?.[0] != null).length;
   console.log(
-    `${LEAGUE} ${SEASON}: ${Object.keys(file.lines).length} live/upcoming lines, ${file.games.length} finished games (${withLine} with a spread; ${fromLogger} from the line saver, ${looked} ESPN lookups, ${possLooked} box scores read), ${Object.keys(file.teams).length} teams, ${Object.keys(file.conferences).length} conferences`,
+    `${LEAGUE} ${SEASON}: ${Object.keys(file.lines).length} live/upcoming lines (${extraUpcoming} from other sources), ${extraFinals} finished games' lines from other sources (${snaps.length} snapshots), ${file.games.length} finished games (${withLine} with a spread; ${fromLogger} from the line saver, ${looked} ESPN lookups, ${possLooked} box scores read), ${Object.keys(file.teams).length} teams, ${Object.keys(file.conferences).length} conferences`,
   );
 }
 
