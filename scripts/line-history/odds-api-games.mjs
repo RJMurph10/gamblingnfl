@@ -2,11 +2,13 @@
 /**
  * Game lines (spreads, totals, moneylines) for one sport from The Odds API, every listed book: one call
  * covers every upcoming and live game and costs 1 credit per market (spreads + totals = 2).
- *   <out>/<sport>/<YYYY-MM-DDTHH>.json  { at, sport, creditsLeft, games: [{ id, home, away, commence,
+ * The NFL player-prop prices (odds-api-nfl.mjs) share the same 500 credits a month, so this keeps back what
+ * they still need this month (about 90 a week) and runs only when there's room beyond that.
+ *   <out>/<YYYY-MM-DDTHH>.json  { at, sport, creditsLeft, games: [{ id, home, away, commence,
  *     books: [{ key, spread: [homePoint, homePrice, awayPrice] | null, total: [point, over, under] | null,
  *     ml: [home, away] | null }] }] }
  *
- *   ODDS_API_KEY=... node scripts/line-history/odds-api-games.mjs --sport basketball_wncaab --out props-site/odds-api
+ *   ODDS_API_KEY=... node scripts/line-history/odds-api-games.mjs --sport basketball_wncaab --out pull/oddsapi/wcbb
  */
 import { mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
@@ -19,7 +21,21 @@ const opt = (n, d) => {
 const SPORT = opt("sport", "basketball_wncaab");
 const OUT = opt("out", "props-site/odds-api");
 const MARKETS = opt("markets", "spreads,totals");
-const KEEP = Number(opt("keep", "40")); // don't run when fewer credits than this are left
+// credits the NFL prop prices still need this month (and from September to early February only): about 84 for
+// each Saturday pull (every Sunday + Monday game, 6 credits each) and 6 for each Thursday one, plus a margin
+function nflReserve(now = new Date()) {
+  const m = now.getUTCMonth();
+  if (m >= 2 && m <= 7) return 20; // March–August: no NFL
+  let credits = 20;
+  const end = Date.UTC(now.getUTCFullYear(), m + 1, 1);
+  for (let t = now.getTime(); t < end; t += 86_400_000) {
+    const day = new Date(t).getUTCDay();
+    if (day === 6) credits += 84;
+    if (day === 4) credits += 6;
+  }
+  return credits;
+}
+const KEEP = Number(opt("keep", String(nflReserve())));
 const KEY = process.env.ODDS_API_KEY;
 
 async function main() {
@@ -34,7 +50,7 @@ async function main() {
   const listed = sports.find((s) => s.key === SPORT);
   console.log(`${SPORT}: ${listed ? (listed.active ? "active" : "listed, not active") : "not listed"}; ${before} credits left`);
   if (Number.isFinite(before) && before - MARKETS.split(",").length < KEEP) {
-    console.log(`only ${before} credits left; skipping`);
+    console.log(`only ${before} credits left (keeping ${KEEP} for the NFL prop prices); skipping`);
     return;
   }
   const q = new URLSearchParams({ apiKey: KEY, regions: "us", markets: MARKETS, oddsFormat: "american" });
@@ -66,9 +82,9 @@ async function main() {
     }),
   }));
   const at = new Date().toISOString();
-  await mkdir(join(OUT, SPORT), { recursive: true });
+  await mkdir(OUT, { recursive: true });
   await writeFile(
-    join(OUT, SPORT, `${at.slice(0, 13)}.json`),
+    join(OUT, `${at.slice(0, 13)}.json`),
     JSON.stringify({ at, sport: SPORT, creditsBefore: before, creditsLeft: Number.isFinite(left) ? left : null, games }),
   );
   console.log(`${games.length} games, ${games.filter((g) => g.books.length).length} with lines; ${left} credits left`);

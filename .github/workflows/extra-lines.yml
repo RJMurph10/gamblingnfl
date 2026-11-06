@@ -1,0 +1,62 @@
+name: Extra game lines (Odds API + SportsGameOdds)
+
+# Lines for games ESPN shows none for, saved as snapshots to props-site/extra-lines/<source>/<league>/
+# and merged into the season files by the hourly line saver (scripts/cbb/build-season.mjs):
+#   - women's college basketball from The Odds API (2 credits a pull; keeps what the NFL prop prices
+#     still need this month, so the afternoon pull is skipped when credits are short)
+#   - men's college basketball from SportsGameOdds (free plan, 2,500 events a month: one pull a day)
+# Each source does nothing without its repository secret (ODDS_API_KEY, SPORTSGAMEODDS_API_KEY).
+
+on:
+  schedule:
+    - cron: "10 15 * * *" # 9:10 / 10:10 Central: both sources (today's lines are up by then)
+    - cron: "40 20 * * *" # afternoon: women's again, when the budget allows
+  workflow_dispatch:
+  push:
+    branches: [odds-api-games]
+    paths: [scripts/line-history/extra-lines.trigger]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: props-site-odds-api
+  cancel-in-progress: false
+
+jobs:
+  pull:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: app
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Pull lines and publish
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+          SPORTSGAMEODDS_API_KEY: ${{ secrets.SPORTSGAMEODDS_API_KEY }}
+        run: |
+          set -e
+          node app/scripts/line-history/odds-api-games.mjs --sport basketball_wncaab --out pull/oddsapi/wcbb || echo "Odds API pull failed"
+          # SportsGameOdds once a day (the morning run), to stay inside the free plan's monthly events
+          if [ "$(date -u +%H)" -lt 18 ] || [ "${{ github.event_name }}" != "schedule" ]; then
+            node app/scripts/line-history/sgo-games.mjs --league NCAAB --hours 30 --out pull/sgo/cbb || echo "SportsGameOdds pull failed"
+          fi
+          if [ -z "$(find pull -name '*.json' 2>/dev/null)" ]; then echo "nothing pulled"; exit 0; fi
+          url="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+          for attempt in 1 2 3 4 5; do
+            rm -rf site-repo && git clone -q --depth 1 --branch props-site "$url" site-repo
+            mkdir -p site-repo/extra-lines && cp -r pull/* site-repo/extra-lines/
+            cd site-repo
+            git config user.name "line-history-bot"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add -A
+            if git diff --cached --quiet; then echo "no changes"; exit 0; fi
+            git commit -q -m "Extra game lines $(date -u +%Y-%m-%dT%H:%MZ)"
+            if git push -q origin props-site; then exit 0; fi
+            cd ..
+            sleep $((attempt * 15))
+          done
+          exit 1
