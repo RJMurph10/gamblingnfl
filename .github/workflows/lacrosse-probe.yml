@@ -4,7 +4,7 @@ name: Lacrosse data probe
 on:
   push:
     branches: [lacrosse-probe]
-    paths: [scripts/line-history/lacrosse-probe.mjs]
+    paths: [scripts/line-history/lacrosse-probe.mjs, scripts/line-history/pll-probe.mjs]
 
 permissions:
   contents: write
@@ -24,11 +24,11 @@ jobs:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
         run: |
           set -e
-          node app/scripts/line-history/lacrosse-probe.mjs --out pull
+          node app/scripts/line-history/pll-probe.mjs --out pull
           url="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
           for attempt in 1 2 3 4 5; do
             rm -rf site-repo && git clone -q --depth 1 --branch props-site "$url" site-repo
-            mkdir -p site-repo/probes && cp pull/lacrosse-probe.json site-repo/probes/
+            mkdir -p site-repo/probes && cp pull/*.json site-repo/probes/
             cd site-repo
             git config user.name "line-history-bot"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
