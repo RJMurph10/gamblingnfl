@@ -1,0 +1,54 @@
+# Past women's college basketball seasons (scores, box scores, opening + closing lines) for testing a model.
+# Output goes to the wcbb-history branch. Runs when scripts/wcbb/history.trigger is pushed.
+name: WCBB history
+
+on:
+  push:
+    paths: [scripts/wcbb/history.trigger]
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: wcbb-history
+  cancel-in-progress: false
+
+jobs:
+  season:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        year: [2021, 2022, 2023, 2024, 2025]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: app
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node app/scripts/wcbb/export-season.mjs ${{ matrix.year }} out
+      - name: Publish
+        run: |
+          set -e
+          url="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+          for attempt in 1 2 3 4 5 6; do
+            rm -rf dst
+            if git clone -q --depth 1 --branch wcbb-history "$url" dst 2>/dev/null; then :; else
+              mkdir dst && cd dst && git init -q && git checkout -q -b wcbb-history && git remote add origin "$url" && cd ..
+            fi
+            cp out/* dst/
+            cd dst
+            git config user.name "line-history-bot"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add -A
+            git diff --cached --quiet && exit 0
+            git commit -q -m "WCBB season ${{ matrix.year }}"
+            if git push -q origin wcbb-history; then exit 0; fi
+            cd ..
+            sleep $((attempt * 20))
+          done
+          exit 1

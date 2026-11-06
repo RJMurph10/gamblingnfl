@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 /**
- * The men's college basketball season for the site, as one file on the props-site branch:
- *   <out>/cbb/season-<YYYY-YY>.json
+ * The men's (or, with --league wcbb, women's) college basketball season for the site, as one file on
+ * the props-site branch:
+ *   <out>/<league>/season-<YYYY-YY>.json
  *   { updated, season, conferences: { id: [name, short] },
  *     teams: { id: [abbr, name, short, nickname, color, logo, confId] },
  *     games: [[id, date, homeId, homeScore, awayId, awayScore, neutral, conf, type, line|null, note, location]] }
@@ -14,7 +15,7 @@
  * from the hourly line saver's files (line-history branch); a game it missed is looked up on ESPN once.
  * Runs hourly in .github/workflows/line-history.yml.
  *
- *   node scripts/cbb/build-season.mjs --data data-repo/data --out site-repo
+ *   node scripts/cbb/build-season.mjs --data data-repo/data --out site-repo [--league wcbb]
  */
 import { mkdir, readFile, readdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
@@ -29,8 +30,11 @@ const DATA = opt("data", "data");
 const OUT = opt("out", "props-site");
 const LOOKUPS = Number(opt("lookups", "400"));
 const POSS_LOOKUPS = Number(opt("possessions", "400"));
-const SITE = "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball";
-const CORE = "https://sports.core.api.espn.com/v2/sports/basketball/leagues/mens-college-basketball";
+const LEAGUE = opt("league", "cbb");
+const ESPN_LEAGUE = { cbb: "mens-college-basketball", wcbb: "womens-college-basketball" }[LEAGUE];
+if (!ESPN_LEAGUE) throw new Error(`unknown league ${LEAGUE}`);
+const SITE = `https://site.api.espn.com/apis/site/v2/sports/basketball/${ESPN_LEAGUE}`;
+const CORE = `https://sports.core.api.espn.com/v2/sports/basketball/leagues/${ESPN_LEAGUE}`;
 const H = { "User-Agent": "GamblingNFL/1.0", Accept: "application/json" };
 
 async function get(url, tries = 3) {
@@ -51,13 +55,13 @@ const now = new Date();
 // the season starts in November; until July it's the season that started the year before
 const YEAR = now.getUTCMonth() + 1 <= 7 ? now.getUTCFullYear() - 1 : now.getUTCFullYear();
 const SEASON = `${YEAR}-${String(YEAR + 1).slice(2)}`;
-const path = join(OUT, "cbb", `season-${SEASON}.json`);
+const path = join(OUT, LEAGUE, `season-${SEASON}.json`);
 const ymd = (t) => new Date(t).toISOString().slice(0, 10).replace(/-/g, "");
 const etDay = (iso) => new Date(Date.parse(iso) - 5 * 3_600_000).toISOString().slice(0, 10);
 
 async function loggerRecord(g) {
   try {
-    return JSON.parse(await readFile(join(DATA, "cbb", SEASON, `${etDay(g.date)}-${g.id}.json`), "utf8"));
+    return JSON.parse(await readFile(join(DATA, LEAGUE, SEASON, `${etDay(g.date)}-${g.id}.json`), "utf8"));
   } catch {
     return null;
   }
@@ -255,7 +259,7 @@ async function main() {
   // from its scoreboard at tip-off, so the site reads the line saver's last pregame line from here
   file.lines = {};
   file.opens = {};
-  const dir = join(DATA, "cbb", SEASON);
+  const dir = join(DATA, LEAGUE, SEASON);
   const lo = etDay(new Date(now.getTime() - 86_400_000).toISOString());
   const hi = etDay(new Date(now.getTime() + 8 * 86_400_000).toISOString());
   for (const f of await readdir(dir).catch(() => [])) {
@@ -281,11 +285,11 @@ async function main() {
   file.games = [...games.values()].sort((x, y) => x[1].localeCompare(y[1]) || x[0].localeCompare(y[0]));
   file.tried = [...tried];
   file.updated = now.toISOString();
-  await mkdir(join(OUT, "cbb"), { recursive: true });
+  await mkdir(join(OUT, LEAGUE), { recursive: true });
   await writeFile(path, JSON.stringify(file));
   const withLine = file.games.filter((g) => g[9]?.[0] != null).length;
   console.log(
-    `cbb ${SEASON}: ${Object.keys(file.lines).length} live/upcoming lines, ${file.games.length} finished games (${withLine} with a spread; ${fromLogger} from the line saver, ${looked} ESPN lookups, ${possLooked} box scores read), ${Object.keys(file.teams).length} teams, ${Object.keys(file.conferences).length} conferences`,
+    `${LEAGUE} ${SEASON}: ${Object.keys(file.lines).length} live/upcoming lines, ${file.games.length} finished games (${withLine} with a spread; ${fromLogger} from the line saver, ${looked} ESPN lookups, ${possLooked} box scores read), ${Object.keys(file.teams).length} teams, ${Object.keys(file.conferences).length} conferences`,
   );
 }
 
