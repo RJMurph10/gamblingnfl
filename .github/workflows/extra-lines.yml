@@ -3,14 +3,18 @@ name: Extra game lines (Odds API + SportsGameOdds)
 # Lines for games ESPN shows none for, saved as snapshots to props-site/extra-lines/<source>/<league>/
 # and merged into the season files by the hourly line saver (scripts/cbb/build-season.mjs):
 #   - women's college basketball from The Odds API (2 credits a pull; keeps what the NFL prop prices
-#     still need this month, so the afternoon pull is skipped when credits are short)
-#   - men's college basketball from SportsGameOdds (free plan, 2,500 events a month: one pull a day)
+#     still need this month, so a pull is skipped when credits are short). Books post most women's lines
+#     late in the day, so it pulls once a day close to tip-off: 4:40 PM Central on weekdays, 11:10 AM on
+#     weekends (earlier tip-offs)
+#   - men's college basketball from SportsGameOdds (free plan, 2,500 events a month: one pull a day, in the
+#     morning; if GitHub drops the morning run, the next run that day does it)
 # Each source does nothing without its repository secret (ODDS_API_KEY, SPORTSGAMEODDS_API_KEY).
 
 on:
   schedule:
-    - cron: "10 15 * * *" # 9:10 / 10:10 Central: both sources (today's lines are up by then)
-    - cron: "40 20 * * *" # afternoon: women's again, when the budget allows
+    - cron: "10 15 * * *" # 9:10 / 10:10 Central: men's (SportsGameOdds)
+    - cron: "40 22 * * 1-5" # weekdays 4:40 / 5:40 PM Central: women's (Odds API), close to the evening tip-offs
+    - cron: "10 17 * * 0,6" # weekends 11:10 AM / 12:10 PM Central: women's
   workflow_dispatch:
   push:
     branches: [odds-api-games]
@@ -35,13 +39,21 @@ jobs:
           node-version: 22
       - name: Pull lines and publish
         env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
           SPORTSGAMEODDS_API_KEY: ${{ secrets.SPORTSGAMEODDS_API_KEY }}
         run: |
           set -e
-          node app/scripts/line-history/odds-api-games.mjs --sport basketball_wncaab --out pull/oddsapi/wcbb || echo "Odds API pull failed"
-          # SportsGameOdds once a day (the morning run), to stay inside the free plan's monthly events
-          if [ "$(date -u +%H)" -lt 18 ] || [ "${{ github.event_name }}" != "schedule" ]; then
+          cron="${{ github.event.schedule }}"
+          # women's: every run except the morning one (manual runs too)
+          if [ "$cron" != "10 15 * * *" ]; then
+            node app/scripts/line-history/odds-api-games.mjs --sport basketball_wncaab --out pull/oddsapi/wcbb || echo "Odds API pull failed"
+          fi
+          # men's from SportsGameOdds once a day (to stay inside the free plan's monthly events): the morning run,
+          # a manual run, or any later run when there's no snapshot from today yet (GitHub sometimes drops a run)
+          today=$(date -u +%Y-%m-%d)
+          have=$(gh api "repos/${{ github.repository }}/contents/extra-lines/sgo/cbb?ref=props-site" --jq '.[].name' 2>/dev/null | grep -c "^$today" || true)
+          if [ "$cron" = "10 15 * * *" ] || [ "${{ github.event_name }}" != "schedule" ] || [ "$have" = "0" ]; then
             node app/scripts/line-history/sgo-games.mjs --league NCAAB --hours 30 --out pull/sgo/cbb || echo "SportsGameOdds pull failed"
           fi
           if [ -z "$(find pull -name '*.json' 2>/dev/null)" ]; then echo "nothing pulled"; exit 0; fi
