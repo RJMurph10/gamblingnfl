@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageTitle, Panel, PanelHeader } from "@/components/shared/booth";
 import { EmptyPanel, NbaLogo, statusText } from "@/components/nba/NbaBits";
-import { NbaPropsBoard } from "@/components/nba/NbaPropsBoard";
+import { NbaPropsBoard, NbaRebStarsRecord } from "@/components/nba/NbaPropsBoard";
 import { etDayKey, localTip, type NbaGame } from "@/lib/nba/nba";
 import { defaultNbaDay, useNbaSchedule } from "@/lib/nba/use-nba";
 
@@ -210,6 +210,8 @@ function NbaPropsPage() {
               </div>
             </div>
           </Panel>
+
+          <NbaRebStarsRecord />
 
           {selectedGame ? (
             <NbaPropsBoard key={selectedGame.id} game={selectedGame} />

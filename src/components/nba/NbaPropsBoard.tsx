@@ -5,7 +5,8 @@ import { Panel, PanelHeader } from "@/components/shared/booth";
 import { Chip, NbaLogo } from "@/components/nba/NbaBits";
 import { STAT_LABEL, STAT_SHORT, pct, type NbaGame, type NbaGameRosterStat, type NbaPropOffer, type NbaStatKey } from "@/lib/nba/nba";
 import { buildRatings, evaluateProp, predictGame, projectStat, ratingRows, type StatProjection } from "@/lib/nba/nba-model";
-import { useNbaGameProps, useNbaGameRosterStats, useNbaPrior, useNbaSchedule } from "@/lib/nba/use-nba";
+import { isRebStar, rebProjection } from "@/lib/nba/nba-reb-stars";
+import { useNbaGameProps, useNbaGameRosterStats, useNbaPrior, useNbaRebStars, useNbaSchedule } from "@/lib/nba/use-nba";
 
 const BOARD_STATS: NbaStatKey[] = ["pts", "reb", "ast", "fg3m", "pra"];
 const MORE_STATS: NbaStatKey[] = ["stl", "blk", "tov", "pr", "pa", "ra"];
@@ -49,6 +50,7 @@ const range = (p?: StatProjection) => (p ? `${p.p25.toFixed(0)}–${p.p75.toFixe
 export function NbaPropsBoard({ game }: { game: NbaGame }) {
   const stats = useNbaGameRosterStats(game);
   const props = useNbaGameProps(game);
+  const stars = useNbaRebStars();
   const projected = useProjections(game, stats.data);
   const [more, setMore] = useState(false);
   const [market, setMarket] = useState<NbaStatKey | "all">("all");
@@ -61,11 +63,19 @@ export function NbaPropsBoard({ game }: { game: NbaGame }) {
     return list
       .map((o: NbaPropOffer) => {
         const p = byPlayer.get(o.playerId)?.proj[o.stat];
-        return { o, p, e: p ? evaluateProp(o.line, p, o.overOdds, o.underOdds) : null };
+        const x = o.stat === "reb" ? stars.data?.inputs?.[o.playerId] : undefined;
+        const star = o.stat === "reb" && isRebStar(x, o.line, o.underOdds) ? rebProjection(x!) : null;
+        return { o, p, e: p ? evaluateProp(o.line, p, o.overOdds, o.underOdds) : null, star };
       })
       .filter((x) => market === "all" || x.o.stat === market)
-      .sort((a, b) => (b.e?.edge ?? -1) - (a.e?.edge ?? -1) || (b.e?.prob ?? 0) - (a.e?.prob ?? 0));
-  }, [props.data, byPlayer, market]);
+      .sort(
+        (a, b) =>
+          Number(b.star != null) - Number(a.star != null) ||
+          (b.e?.edge ?? -1) - (a.e?.edge ?? -1) ||
+          (b.e?.prob ?? 0) - (a.e?.prob ?? 0),
+      );
+  }, [props.data, byPlayer, market, stars.data]);
+  const starCount = offers.filter((x) => x.star != null).length;
 
   const loading = stats.isLoading;
   const teams = [game.away.team, game.home.team];
@@ -77,7 +87,11 @@ export function NbaPropsBoard({ game }: { game: NbaGame }) {
           title="DraftKings lines vs. model"
           aside={
             <span className="label-mono">
-              {props.isLoading ? "Loading lines…" : props.data?.available ? `${offers.length} props` : "None posted yet"}
+              {props.isLoading
+                ? "Loading lines…"
+                : props.data?.available
+                  ? `${offers.length} props${starCount ? ` · ${starCount} ★ rebound under${starCount === 1 ? "" : "s"}` : ""}`
+                  : "None posted yet"}
             </span>
           }
         />
@@ -104,13 +118,23 @@ export function NbaPropsBoard({ game }: { game: NbaGame }) {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-line/5">
-                  {offers.slice(0, 120).map(({ o, p, e }) => (
-                    <tr key={`${o.playerId}-${o.stat}-${o.line}`} className="hover:bg-line/5">
+                  {offers.slice(0, 120).map(({ o, p, e, star }) => (
+                    <tr key={`${o.playerId}-${o.stat}-${o.line}`} className={star != null ? "bg-acc/[0.06] hover:bg-acc/10" : "hover:bg-line/5"}>
                       <td className="px-4 py-2">
                         <Link to="/nba/players/$playerId" params={{ playerId: o.playerId }} className="font-medium hover:text-acc">{o.playerName}</Link>
                         <span className="ml-2 font-mono text-[10px] text-faint">{o.teamAbbr}</span>
                       </td>
-                      <td className="px-2 py-2 text-mute">{o.market}</td>
+                      <td className="px-2 py-2 text-mute">
+                        {star != null ? (
+                          <span
+                            className="mr-1 font-mono text-acc"
+                            title={`★ Rebound under: projection ${star.toFixed(1)} is 10%+ below the line (season + last-10 rebounds per minute × recent minutes)`}
+                          >
+                            ★ Under
+                          </span>
+                        ) : null}
+                        {o.market}
+                      </td>
                       <td className="px-2 py-2 text-right font-mono tabular-nums">{o.line}</td>
                       <td className="px-2 py-2 text-right font-mono text-[12px] tabular-nums text-mute">{o.overOdds ?? "—"}</td>
                       <td className="px-2 py-2 text-right font-mono text-[12px] tabular-nums text-mute">{o.underOdds ?? "—"}</td>
@@ -127,7 +151,8 @@ export function NbaPropsBoard({ game }: { game: NbaGame }) {
               </table>
             </div>
             <p className="px-4 py-3 font-mono text-[10px] uppercase tracking-wider text-faint">
-              Edge = model chance of the lean minus the price&apos;s implied chance (vig not removed). A research tool, not betting advice.
+              Edge = model chance of the lean minus the price&apos;s implied chance (vig not removed). ★ = rebound under: research
+              projection 10%+ below the line, 8+ games, under priced −160 or better. A research tool, not betting advice.
             </p>
           </>
         ) : (
@@ -207,5 +232,78 @@ export function NbaPropsBoard({ game }: { game: NbaGame }) {
         Projection = recent games weighted most, last season filling in early on, nudged for the game&apos;s expected scoring. Small grey range = middle 50% of outcomes.
       </p>
     </div>
+  );
+}
+
+/** This season's graded ★ rebound unders: the record and the latest picks. */
+export function NbaRebStarsRecord() {
+  const stars = useNbaRebStars();
+  const f = stars.data;
+  const [w, l, pu, units] = f?.record ?? [0, 0, 0, 0];
+  const roi = w + l ? (units / (w + l)) * 100 : null;
+  const recent = (f?.picks ?? []).slice(-8).reverse();
+  return (
+    <Panel padded={false}>
+      <PanelHeader
+        title="★ Rebound unders"
+        aside={
+          <span className="label-mono">
+            {stars.isLoading
+              ? "Loading…"
+              : w + l
+                ? `${w}-${l}${pu ? `-${pu}` : ""} · ${units > 0 ? "+" : ""}${units.toFixed(2)}u · ROI ${roi! > 0 ? "+" : ""}${roi!.toFixed(1)}%`
+                : "No graded picks yet"}
+          </span>
+        }
+      />
+      <div className="space-y-2 px-4 py-3 text-sm text-mute">
+        <p>
+          <span className="font-semibold text-foreground">The under when a player&apos;s rebound projection is 10%+ below the line.</span>{" "}
+          Projection = rebounds per minute (60% season, 40% last 10 games) × recent minutes, this season&apos;s games only,
+          8+ games played; only when the under is priced −160 or better. Graded at DraftKings&apos; opening line:
+          2066-1465 (+6.6%) in 2023-24, 838-689 (+1.2%) in 2024-25 and 215-150 (+7.3%) in 2025-26 through January.
+        </p>
+        <p className="font-mono text-[10px] text-faint">
+          The −160 cut was picked after seeing those seasons (heavily juiced unders won often but lost money every season).
+          Expect smaller returns than the backtest: about +1% to +5%.
+        </p>
+      </div>
+      {recent.length ? (
+        <div className="overflow-x-auto border-t border-line/10">
+          <table className="w-full min-w-[560px] text-sm">
+            <thead>
+              <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
+                <th className="px-4 py-2 font-normal">Date</th>
+                <th className="px-2 py-2 font-normal">Player</th>
+                <th className="px-2 py-2 font-normal">Game</th>
+                <th className="px-2 py-2 text-right font-normal">Line</th>
+                <th className="px-2 py-2 text-right font-normal">Under</th>
+                <th className="px-2 py-2 text-right font-normal">Proj</th>
+                <th className="px-4 py-2 text-right font-normal">Reb</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-line/5">
+              {recent.map((p) => (
+                <tr key={`${p[1]}-${p[3]}`}>
+                  <td className="px-4 py-2 font-mono text-[11px] text-mute" suppressHydrationWarning>
+                    {new Date(p[0]).toLocaleDateString([], { month: "numeric", day: "numeric" })}
+                  </td>
+                  <td className="px-2 py-2">
+                    {p[3]} <span className="font-mono text-[10px] text-faint">{p[4]}</span>
+                  </td>
+                  <td className="px-2 py-2 font-mono text-[11px] text-mute">{p[2]}</td>
+                  <td className="px-2 py-2 text-right font-mono tabular-nums">u{p[5]}</td>
+                  <td className="px-2 py-2 text-right font-mono text-[12px] tabular-nums text-mute">{p[6] ?? "—"}</td>
+                  <td className="px-2 py-2 text-right font-mono tabular-nums text-mute">{p[7].toFixed(1)}</td>
+                  <td className={`px-4 py-2 text-right font-mono tabular-nums ${p[9] === "win" ? "text-win" : p[9] === "loss" ? "text-loss" : "text-mute"}`}>
+                    {p[8]}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : null}
+    </Panel>
   );
 }

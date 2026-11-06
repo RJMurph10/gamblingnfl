@@ -4,6 +4,7 @@
  * DraftKings player props. Everything is cached in memory; empty or failed feeds stay empty —
  * no sample data is ever substituted.
  */
+import type { RebStarsFile } from "./nba-reb-stars";
 import {
   type NbaBoxTeam,
   type NbaGame,
@@ -82,6 +83,21 @@ const num = (v: unknown): number | null => {
 const numOr = (v: unknown, d = 0) => num(v) ?? d;
 
 /* ---------- season ---------- */
+
+/**
+ * This season's ★ rebound-under picks and players' projection inputs (props-site branch, built daily by
+ * scripts/line-history/build-props-site.mjs); null before the first build of the season.
+ */
+export async function fetchNbaRebStars(): Promise<RebStarsFile | null> {
+  const y = nbaSeasonYear();
+  const season = `${y - 1}-${String(y).slice(2)}`;
+  try {
+    const res = await fetch(`https://raw.githubusercontent.com/RJMurph10/gamblingnfl/props-site/nba/reb-stars-${season}.json`);
+    return res.ok ? ((await res.json()) as RebStarsFile) : null;
+  } catch {
+    return null;
+  }
+}
 
 /** ESPN names a season by the year it ends: the 2026-27 season is 2027. */
 export function nbaSeasonYear(now = new Date()): number {
