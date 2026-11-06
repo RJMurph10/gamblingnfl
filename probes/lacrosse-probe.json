@@ -1,0 +1,79 @@
+{
+ "at": "2026-11-06T08:03:07.477Z",
+ "espn": {
+  "nll": {
+   "leagueInfo": 200,
+   "spans": {
+    "20251201-20260430": {
+     "status": 400,
+     "events": 0,
+     "completed": 0,
+     "withScoreboardOdds": 0,
+     "sample": []
+    },
+    "20261101-20261231": {
+     "status": 400,
+     "events": 0,
+     "completed": 0,
+     "withScoreboardOdds": 0,
+     "sample": []
+    }
+   }
+  },
+  "pll": {
+   "leagueInfo": 200,
+   "spans": {
+    "20250601-20250930": {
+     "status": 400,
+     "events": 0,
+     "completed": 0,
+     "withScoreboardOdds": 0,
+     "sample": []
+    },
+    "20260601-20260930": {
+     "status": 400,
+     "events": 0,
+     "completed": 0,
+     "withScoreboardOdds": 0,
+     "sample": []
+    }
+   }
+  },
+  "mens-college-lacrosse": {
+   "leagueInfo": 200,
+   "spans": {
+    "20260201-20260531": {
+     "status": 400,
+     "events": 0,
+     "completed": 0,
+     "withScoreboardOdds": 0,
+     "sample": []
+    }
+   }
+  },
+  "womens-college-lacrosse": {
+   "leagueInfo": 200,
+   "spans": {
+    "20260201-20260531": {
+     "status": 400,
+     "events": 0,
+     "completed": 0,
+     "withScoreboardOdds": 0,
+     "sample": []
+    }
+   }
+  }
+ },
+ "oddsApi": [
+  {
+   "key": "lacrosse_ncaa",
+   "title": "NCAA Lacrosse",
+   "active": false
+  },
+  {
+   "key": "lacrosse_pll",
+   "title": "PLL",
+   "active": false
+  }
+ ]
+}
