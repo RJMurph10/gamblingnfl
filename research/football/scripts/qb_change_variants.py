@@ -52,7 +52,7 @@ def run(variant, priorStarts=12, lowCut=4, ppe=30, thresh=2.0, cap=7):
     ev_t = ev.t.values; ev_q = ev.qb.values; ev_v = ev.v.values; ev_w = ev.w.values
     st_sorted = ST.sort_values("t")
     out = []
-    for season in range(2003, 2027):
+    for season in range(int(__import__("os").environ.get("FROM", "2003")), 2027):
         weeks = sorted(G[G.season == season].t.unique())
         for t in weeks:
             m = ev_t < t
@@ -87,7 +87,8 @@ def run(variant, priorStarts=12, lowCut=4, ppe=30, thresh=2.0, cap=7):
                 marg = max(-cap, min(cap, pts["h"] - pts["a"]))
                 if not ch or abs(marg) < thresh: continue
                 cov = None if pd.isna(g.result) else (g.result - g.spread_line) * (1 if marg > 0 else -1)
-                out.append(dict(season=season, week=g.week, marg=abs(marg), cover=cov, game=g.game_id))
+                out.append(dict(season=season, week=g.week, marg=abs(marg), cover=cov, game=g.game_id, home=g.home_team, away=g.away_team,
+                                side_home=marg > 0, result=g.result, close=g.spread_line))
     return pd.DataFrame(out)
 
 def report(name, d):
