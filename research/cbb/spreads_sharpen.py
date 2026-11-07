@@ -7,15 +7,28 @@ import numpy as np, pandas as pd
 import model_v2 as m
 from v3_market import market_preds, out
 
+import os, gzip
+HCA_W = float(os.environ.get("HCA_W", "0"))   # weight on the team-specific home edge (research/cbb/home_court.py)
+SEAS = ["2019-20", "2020-21", "2021-22", "2022-23", "2023-24", "2024-25", "2025-26"]
+def team_hca(season, K=40):
+    tot, n = {}, {}
+    for s_ in SEAS[:SEAS.index(season)]:
+        for l in gzip.open(f"research/cbb/data/{s_}.jsonl.gz", "rt"):
+            r = json.loads(l)
+            c = (r.get("close") or [None])[0]
+            if r.get("neutral") or c is None or r["h"][1] is None: continue
+            h = r["h"][0]; tot[h] = tot.get(h, 0) + (r["h"][1] - r["a"][1] + c); n[h] = n.get(h, 0) + 1
+    return {h: tot[h] / (n[h] + K) for h in tot}
 rows = []
 for s in ["2023-24", "2024-25", "2025-26"]:
+    hca = team_hca(s) if HCA_W else {}
     teams = {t["id"]: t.get("conf") for t in json.load(open(f"research/cbb/data/{s}-teams.json"))}
     mk = market_preds(m.DATA[s])
     for x, y in zip(out[s], mk):
         r = x[0]
         if x[4] or not y[2] or not r.get("open") or r["open"][0] is None: continue
         op = -r["open"][0]; cl = -r["close"][0] if r.get("close") and r["close"][0] is not None else np.nan
-        b = 0.5 * y[0] + 0.5 * x[1]
+        b = 0.5 * y[0] + 0.5 * x[1] + (0 if r.get("neutral") else HCA_W * hca.get(r["h"][0], 0))
         ch, ca = teams.get(r["h"][0]), teams.get(r["a"][0])
         rows.append(dict(season=s, date=r.get("date", ""), margin=r["h"][1] - r["a"][1], op=op, cl=cl, b=b,
                          conf=ch is not None and ch == ca, neutral=bool(r.get("neutral"))))
