@@ -15,7 +15,7 @@
 
 import { gameScore, type Game } from "@/data/shared/games";
 import { teams as NFL_TEAMS } from "@/data/shared/teams";
-import { fitRatings, NFL_CONFIG, type PriorResult } from "@/lib/shared/game-model";
+import { NFL_MARKET_PRIOR } from "@/data/nfl/market-prior";
 import { homeLine } from "@/lib/shared/season-pulse";
 
 export interface SimTeam {
@@ -352,20 +352,96 @@ export function fairOdds(p: number): string {
   return p >= 0.5 ? `${Math.round((-100 * p) / (1 - p))}` : `+${Math.round((100 * (1 - p)) / p)}`;
 }
 
+/** Ridge fit of spread = hf*(not neutral) + r_home - r_away, pulled toward `prior` with weight lambda. */
+export function marketFit(
+  games: { h: string; a: string; spread: number; neutral: boolean; w: number }[],
+  ids: string[],
+  prior: Record<string, number>,
+  lambda: number,
+) {
+  const n = ids.length;
+  const ix = new Map(ids.map((t, i) => [t, i]));
+  const m = n + 1; // last column = home field
+  const A = Array.from({ length: m }, () => new Float64Array(m));
+  const b = new Float64Array(m);
+  for (const g of games) {
+    const x = new Map<number, number>([[ix.get(g.h)!, 1]]);
+    x.set(ix.get(g.a)!, -1);
+    if (!g.neutral) x.set(n, 1);
+    for (const [i, xi] of x) {
+      b[i] += g.w * xi * g.spread;
+      for (const [j, xj] of x) A[i][j] += g.w * xi * xj;
+    }
+  }
+  for (let i = 0; i < n; i++) {
+    A[i][i] += lambda;
+    b[i] += lambda * (prior[ids[i]] ?? 0);
+  }
+  A[n][n] += 1; // weak prior on home field toward 2
+  b[n] += 2;
+  // Gaussian elimination
+  for (let c = 0; c < m; c++) {
+    let p = c;
+    for (let r = c + 1; r < m; r++) if (Math.abs(A[r][c]) > Math.abs(A[p][c])) p = r;
+    [A[c], A[p]] = [A[p], A[c]];
+    [b[c], b[p]] = [b[p], b[c]];
+    for (let r = 0; r < m; r++) {
+      if (r === c) continue;
+      const f = A[r][c] / A[c][c];
+      if (!f) continue;
+      for (let k = c; k < m; k++) A[r][k] -= f * A[c][k];
+      b[r] -= f * b[c];
+    }
+  }
+  const out: Record<string, number> = {};
+  ids.forEach((t, i) => (out[t] = b[i] / A[i][i]));
+  const mean = ids.reduce((s, t) => s + out[t], 0) / n;
+  for (const t of ids) out[t] -= mean;
+  return { power: out, hf: b[n] / A[n][n] };
+}
+
 /* ---------------- the site's NFL futures ---------------- */
 
+/**
+ * Settings picked on 2002-2013 and confirmed on 2014-2025 (research/football/scripts/futures_tune.ts):
+ * team strength from the betting spreads posted so far beat strength from scores at every stop
+ * (preseason log loss 0.328 vs 0.342 on 2014-2025).
+ */
+export const FUTURES_SETTINGS = {
+  /** True strength may sit this far (points) from the market rating in a simulated season. */
+  strengthSd: 2,
+  /** Share of last season's final market rating kept as this season's starting point. */
+  carry: 0.6,
+  /** Ridge weight pulling ratings toward that starting point (in games). */
+  lambda: 1,
+  /** A spread's weight halves every this many weeks. */
+  halfLife: 6,
+};
 
-/** Strength uncertainty that fit 2002-2025 best (log loss on division and playoff odds). */
-export const FUTURES_STRENGTH_SD = 3;
-
-/** Runs the simulator on this season's live schedule: finished games count, the rest are played out. */
-export function nflFutures(schedule: Game[], prior: PriorResult[], sims = 10_000): TeamFutures[] {
+/**
+ * Runs the simulator on this season's live schedule: finished games count, the rest are played out.
+ * Team strengths are fit to every spread posted so far (finished games and next week's lines), starting
+ * from last season's final market ratings.
+ */
+export function nflFutures(schedule: Game[], sims = 10_000): TeamFutures[] {
   const nfl = NFL_TEAMS.filter((t) => t.conference === "AFC" || t.conference === "NFC");
   if (!schedule.length) return [];
-  const finals = schedule.filter((g) => g.status === "final");
-  const ratings = fitRatings(finals, prior, NFL_CONFIG);
-  const power: Record<string, number> = {};
-  for (const t of nfl) power[t.id] = (ratings.offense[t.id] ?? 0) - (ratings.defense[t.id] ?? 0);
+  const ids = nfl.map((t) => t.id);
+  const open = schedule.filter((g) => g.status !== "final").map((g) => g.week);
+  const week = open.length ? Math.min(...open) : Math.max(...schedule.map((g) => g.week)) + 1;
+  const S = FUTURES_SETTINGS;
+  const prior: Record<string, number> = {};
+  for (const id of ids) prior[id] = (NFL_MARKET_PRIOR[id] ?? 0) * S.carry;
+  const lined = schedule
+    .filter((g) => g.week <= week && homeLine(g) !== null && ids.includes(g.homeTeamId) && ids.includes(g.awayTeamId))
+    .map((g) => ({
+      h: g.homeTeamId,
+      a: g.awayTeamId,
+      spread: -(homeLine(g) as number),
+      neutral: Boolean(g.neutralSite),
+      w: Math.pow(0.5, Math.max(0, week - g.week) / S.halfLife),
+    }));
+  const fit = marketFit(lined, ids, prior, S.lambda);
   const games: SimGame[] = schedule.map((g) => {
     if (g.status === "final") {
       const s = gameScore(g);
@@ -376,6 +452,6 @@ export function nflFutures(schedule: Game[], prior: PriorResult[], sims = 10_000
   return simulateSeason(
     nfl.map((t) => ({ id: t.id, conf: t.conference, div: `${t.conference} ${t.division}` })),
     games,
-    { power, homeField: ratings.homeField, sims, strengthSd: FUTURES_STRENGTH_SD, seeds: 7 },
+    { power: fit.power, homeField: fit.hf, sims, strengthSd: S.strengthSd, seeds: 7 },
   );
 }
