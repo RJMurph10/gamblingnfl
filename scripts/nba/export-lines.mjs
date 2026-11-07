@@ -16,7 +16,7 @@ import { join } from "node:path";
 const YEAR = Number(process.argv[2]);
 const OUT = process.argv[3] ?? "out";
 const SITE = "https://site.api.espn.com/apis/site/v2/sports/basketball/nba";
-const CORE = "https://sports.core.api.espn.com/v2/sports/football/leagues/nba";
+const CORE = "https://sports.core.api.espn.com/v2/sports/basketball/leagues/nba";
 const H = {
   "User-Agent":
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
