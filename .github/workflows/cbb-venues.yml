@@ -1,0 +1,54 @@
+# Where past men's college basketball games were played (neutral-site travel research).
+# Output goes to cbb-history/venues. Runs when scripts/cbb/venues.trigger is pushed.
+name: CBB venues
+
+on:
+  push:
+    paths: [scripts/cbb/venues.trigger]
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cbb-venues
+  cancel-in-progress: false
+
+jobs:
+  season:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        year: [2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: app
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node app/scripts/cbb/export-venues.mjs ${{ matrix.year }} out
+      - name: Publish
+        run: |
+          set -e
+          url="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+          for attempt in 1 2 3 4 5 6; do
+            rm -rf dst
+            if git clone -q --depth 1 --branch cbb-history "$url" dst 2>/dev/null; then :; else
+              mkdir dst && cd dst && git init -q && git checkout -q -b cbb-history && git remote add origin "$url" && cd ..
+            fi
+            mkdir -p dst/venues && cp out/* dst/venues/
+            cd dst
+            git config user.name "line-history-bot"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add -A
+            git diff --cached --quiet && exit 0
+            git commit -q -m "CBB venues ${{ matrix.year }}"
+            if git push -q origin cbb-history; then exit 0; fi
+            cd ..
+            sleep $((attempt * 20))
+          done
+          exit 1
