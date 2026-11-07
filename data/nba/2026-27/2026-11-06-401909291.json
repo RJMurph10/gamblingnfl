@@ -7,18 +7,18 @@
   "id": "25",
   "abbr": "OKC",
   "name": "Oklahoma City Thunder",
-  "score": 98
+  "score": 128
  },
  "home": {
   "id": "29",
   "abbr": "MEM",
   "name": "Memphis Grizzlies",
-  "score": 74
+  "score": 97
  },
  "neutral": false,
  "venue": "FedExForum",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-06T01:49:53.217Z",
@@ -927,6 +927,243 @@
       "total": {
        "alternateDisplayValue": "223.5",
        "american": "223.5"
+      }
+     }
+    }
+   ]
+  },
+  "final": {
+   "at": "2026-11-07T10:21:33.819Z",
+   "books": [
+    {
+     "provider": {
+      "id": "100",
+      "name": "Draft Kings",
+      "priority": 1
+     },
+     "details": "OKC -4.5",
+     "overUnder": 224.5,
+     "spread": 4.5,
+     "overOdds": -113,
+     "underOdds": -107,
+     "awayTeamOdds": {
+      "favorite": true,
+      "underdog": false,
+      "moneyLine": -174,
+      "spreadOdds": -104,
+      "open": {
+       "favorite": true,
+       "pointSpread": {
+        "alternateDisplayValue": "-3.5",
+        "american": "-3.5"
+       },
+       "spread": {
+        "value": 1.9,
+        "displayValue": "10/11",
+        "alternateDisplayValue": "-110",
+        "decimal": 1.9,
+        "fraction": "10/11",
+        "american": "-110"
+       },
+       "moneyLine": {
+        "value": 1.6,
+        "displayValue": "20/33",
+        "alternateDisplayValue": "-165",
+        "decimal": 1.6,
+        "fraction": "20/33",
+        "american": "-165"
+       }
+      },
+      "close": {
+       "pointSpread": {
+        "alternateDisplayValue": "-4.5",
+        "american": "-4.5"
+       },
+       "spread": {
+        "value": 1.96,
+        "displayValue": "25/26",
+        "alternateDisplayValue": "-104",
+        "decimal": 1.96,
+        "fraction": "25/26",
+        "american": "-104"
+       },
+       "moneyLine": {
+        "value": 1.57,
+        "displayValue": "50/87",
+        "alternateDisplayValue": "-174",
+        "decimal": 1.57,
+        "fraction": "50/87",
+        "american": "-174"
+       }
+      },
+      "current": {
+       "pointSpread": {
+        "alternateDisplayValue": "-4.5",
+        "american": "-4.5"
+       },
+       "spread": {
+        "value": 1.96,
+        "displayValue": "25/26",
+        "alternateDisplayValue": "-104",
+        "decimal": 1.96,
+        "fraction": "25/26",
+        "american": "-104"
+       },
+       "moneyLine": {
+        "value": 1.57,
+        "displayValue": "50/87",
+        "alternateDisplayValue": "-174",
+        "decimal": 1.57,
+        "fraction": "50/87",
+        "american": "-174"
+       }
+      },
+      "team": {
+       "id": "25"
+      }
+     },
+     "homeTeamOdds": {
+      "favorite": false,
+      "underdog": true,
+      "moneyLine": 146,
+      "spreadOdds": -117,
+      "open": {
+       "favorite": false,
+       "pointSpread": {
+        "alternateDisplayValue": "+3.5",
+        "american": "+3.5"
+       },
+       "spread": {
+        "value": 1.9,
+        "displayValue": "10/11",
+        "alternateDisplayValue": "-110",
+        "decimal": 1.9,
+        "fraction": "10/11",
+        "american": "-110"
+       },
+       "moneyLine": {
+        "value": 2.39,
+        "displayValue": "139/100",
+        "alternateDisplayValue": "+139",
+        "decimal": 2.39,
+        "fraction": "139/100",
+        "american": "+139"
+       }
+      },
+      "close": {
+       "pointSpread": {
+        "alternateDisplayValue": "+4.5",
+        "american": "+4.5"
+       },
+       "spread": {
+        "value": 1.85,
+        "displayValue": "100/117",
+        "alternateDisplayValue": "-117",
+        "decimal": 1.85,
+        "fraction": "100/117",
+        "american": "-117"
+       },
+       "moneyLine": {
+        "value": 2.46,
+        "displayValue": "73/50",
+        "alternateDisplayValue": "+146",
+        "decimal": 2.46,
+        "fraction": "73/50",
+        "american": "+146"
+       }
+      },
+      "current": {
+       "pointSpread": {
+        "alternateDisplayValue": "+4.5",
+        "american": "+4.5"
+       },
+       "spread": {
+        "value": 1.85,
+        "displayValue": "100/117",
+        "alternateDisplayValue": "-117",
+        "decimal": 1.85,
+        "fraction": "100/117",
+        "american": "-117"
+       },
+       "moneyLine": {
+        "value": 2.46,
+        "displayValue": "73/50",
+        "alternateDisplayValue": "+146",
+        "decimal": 2.46,
+        "fraction": "73/50",
+        "american": "+146"
+       }
+      },
+      "team": {
+       "id": "29"
+      }
+     },
+     "moneylineWinner": false,
+     "spreadWinner": false,
+     "open": {
+      "over": {
+       "value": 1.9,
+       "displayValue": "10/11",
+       "alternateDisplayValue": "-110",
+       "decimal": 1.9,
+       "fraction": "10/11",
+       "american": "-110"
+      },
+      "under": {
+       "value": 1.9,
+       "displayValue": "10/11",
+       "alternateDisplayValue": "-110",
+       "decimal": 1.9,
+       "fraction": "10/11",
+       "american": "-110"
+      },
+      "total": {
+       "alternateDisplayValue": "225.5",
+       "american": "225.5"
+      }
+     },
+     "close": {
+      "over": {
+       "value": 1.88,
+       "displayValue": "100/113",
+       "alternateDisplayValue": "-113",
+       "decimal": 1.88,
+       "fraction": "100/113",
+       "american": "-113"
+      },
+      "under": {
+       "value": 1.93,
+       "displayValue": "100/107",
+       "alternateDisplayValue": "-107",
+       "decimal": 1.93,
+       "fraction": "100/107",
+       "american": "-107"
+      },
+      "total": {
+       "alternateDisplayValue": "224.5",
+       "american": "224.5"
+      }
+     },
+     "current": {
+      "over": {
+       "value": 1.88,
+       "displayValue": "100/113",
+       "alternateDisplayValue": "-113",
+       "decimal": 1.88,
+       "fraction": "100/113",
+       "american": "-113"
+      },
+      "under": {
+       "value": 1.93,
+       "displayValue": "100/107",
+       "alternateDisplayValue": "-107",
+       "decimal": 1.93,
+       "fraction": "100/107",
+       "american": "-107"
+      },
+      "total": {
+       "alternateDisplayValue": "224.5",
+       "american": "224.5"
       }
      }
     }
@@ -4607,5 +4844,9 @@
    "Bennett Stirtz",
    "OKC"
   ]
+ },
+ "final": {
+  "away": 128,
+  "home": 97
  }
 }

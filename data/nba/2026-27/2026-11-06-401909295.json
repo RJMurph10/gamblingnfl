@@ -7,18 +7,18 @@
   "id": "24",
   "abbr": "SA",
   "name": "San Antonio Spurs",
-  "score": 0
+  "score": 124
  },
  "home": {
   "id": "23",
   "abbr": "SAC",
   "name": "Sacramento Kings",
-  "score": 0
+  "score": 109
  },
  "neutral": false,
  "venue": "Golden 1 Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-05T22:04:57.740Z",
@@ -905,6 +905,243 @@
       "total": {
        "alternateDisplayValue": "228.5",
        "american": "228.5"
+      }
+     },
+     "current": {
+      "over": {
+       "value": 1.9,
+       "displayValue": "10/11",
+       "alternateDisplayValue": "-110",
+       "decimal": 1.9,
+       "fraction": "10/11",
+       "american": "-110"
+      },
+      "under": {
+       "value": 1.9,
+       "displayValue": "10/11",
+       "alternateDisplayValue": "-110",
+       "decimal": 1.9,
+       "fraction": "10/11",
+       "american": "-110"
+      },
+      "total": {
+       "alternateDisplayValue": "231.5",
+       "american": "231.5"
+      }
+     }
+    }
+   ]
+  },
+  "final": {
+   "at": "2026-11-07T10:21:33.819Z",
+   "books": [
+    {
+     "provider": {
+      "id": "100",
+      "name": "Draft Kings",
+      "priority": 1
+     },
+     "details": "SA -17.5",
+     "overUnder": 231.5,
+     "spread": 17.5,
+     "overOdds": -110,
+     "underOdds": -110,
+     "awayTeamOdds": {
+      "favorite": true,
+      "underdog": false,
+      "moneyLine": -1340,
+      "spreadOdds": -110,
+      "open": {
+       "favorite": true,
+       "pointSpread": {
+        "alternateDisplayValue": "-15.5",
+        "american": "-15.5"
+       },
+       "spread": {
+        "value": 1.9,
+        "displayValue": "10/11",
+        "alternateDisplayValue": "-110",
+        "decimal": 1.9,
+        "fraction": "10/11",
+        "american": "-110"
+       },
+       "moneyLine": {
+        "value": 1.1,
+        "displayValue": "10/97",
+        "alternateDisplayValue": "-970",
+        "decimal": 1.1,
+        "fraction": "10/97",
+        "american": "-970"
+       }
+      },
+      "close": {
+       "pointSpread": {
+        "alternateDisplayValue": "-17.5",
+        "american": "-17.5"
+       },
+       "spread": {
+        "value": 1.9,
+        "displayValue": "10/11",
+        "alternateDisplayValue": "-110",
+        "decimal": 1.9,
+        "fraction": "10/11",
+        "american": "-110"
+       },
+       "moneyLine": {
+        "value": 1.07,
+        "displayValue": "5/67",
+        "alternateDisplayValue": "-1340",
+        "decimal": 1.07,
+        "fraction": "5/67",
+        "american": "-1340"
+       }
+      },
+      "current": {
+       "pointSpread": {
+        "alternateDisplayValue": "-17.5",
+        "american": "-17.5"
+       },
+       "spread": {
+        "value": 1.9,
+        "displayValue": "10/11",
+        "alternateDisplayValue": "-110",
+        "decimal": 1.9,
+        "fraction": "10/11",
+        "american": "-110"
+       },
+       "moneyLine": {
+        "value": 1.07,
+        "displayValue": "5/67",
+        "alternateDisplayValue": "-1340",
+        "decimal": 1.07,
+        "fraction": "5/67",
+        "american": "-1340"
+       }
+      },
+      "team": {
+       "id": "24"
+      }
+     },
+     "homeTeamOdds": {
+      "favorite": false,
+      "underdog": true,
+      "moneyLine": 810,
+      "spreadOdds": -110,
+      "open": {
+       "favorite": false,
+       "pointSpread": {
+        "alternateDisplayValue": "+15.5",
+        "american": "+15.5"
+       },
+       "spread": {
+        "value": 1.9,
+        "displayValue": "10/11",
+        "alternateDisplayValue": "-110",
+        "decimal": 1.9,
+        "fraction": "10/11",
+        "american": "-110"
+       },
+       "moneyLine": {
+        "value": 7.4,
+        "displayValue": "32/5",
+        "alternateDisplayValue": "+640",
+        "decimal": 7.4,
+        "fraction": "32/5",
+        "american": "+640"
+       }
+      },
+      "close": {
+       "pointSpread": {
+        "alternateDisplayValue": "+17.5",
+        "american": "+17.5"
+       },
+       "spread": {
+        "value": 1.9,
+        "displayValue": "10/11",
+        "alternateDisplayValue": "-110",
+        "decimal": 1.9,
+        "fraction": "10/11",
+        "american": "-110"
+       },
+       "moneyLine": {
+        "value": 9.1,
+        "displayValue": "81/10",
+        "alternateDisplayValue": "+810",
+        "decimal": 9.1,
+        "fraction": "81/10",
+        "american": "+810"
+       }
+      },
+      "current": {
+       "pointSpread": {
+        "alternateDisplayValue": "+17.5",
+        "american": "+17.5"
+       },
+       "spread": {
+        "value": 1.9,
+        "displayValue": "10/11",
+        "alternateDisplayValue": "-110",
+        "decimal": 1.9,
+        "fraction": "10/11",
+        "american": "-110"
+       },
+       "moneyLine": {
+        "value": 9.1,
+        "displayValue": "81/10",
+        "alternateDisplayValue": "+810",
+        "decimal": 9.1,
+        "fraction": "81/10",
+        "american": "+810"
+       }
+      },
+      "team": {
+       "id": "23"
+      }
+     },
+     "moneylineWinner": false,
+     "spreadWinner": false,
+     "open": {
+      "over": {
+       "value": 1.9,
+       "displayValue": "10/11",
+       "alternateDisplayValue": "-110",
+       "decimal": 1.9,
+       "fraction": "10/11",
+       "american": "-110"
+      },
+      "under": {
+       "value": 1.9,
+       "displayValue": "10/11",
+       "alternateDisplayValue": "-110",
+       "decimal": 1.9,
+       "fraction": "10/11",
+       "american": "-110"
+      },
+      "total": {
+       "alternateDisplayValue": "228.5",
+       "american": "228.5"
+      }
+     },
+     "close": {
+      "over": {
+       "value": 1.9,
+       "displayValue": "10/11",
+       "alternateDisplayValue": "-110",
+       "decimal": 1.9,
+       "fraction": "10/11",
+       "american": "-110"
+      },
+      "under": {
+       "value": 1.9,
+       "displayValue": "10/11",
+       "alternateDisplayValue": "-110",
+       "decimal": 1.9,
+       "fraction": "10/11",
+       "american": "-110"
+      },
+      "total": {
+       "alternateDisplayValue": "231.5",
+       "american": "231.5"
       }
      },
      "current": {
@@ -4543,5 +4780,9 @@
    "Darius Acuff Jr.",
    "SAC"
   ]
+ },
+ "final": {
+  "away": 124,
+  "home": 109
  }
 }
