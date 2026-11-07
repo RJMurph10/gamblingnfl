@@ -4,7 +4,7 @@ import { PageTitle, Panel, StatCard } from "@/components/shared/booth";
 import { CbbLogo } from "@/components/cbb/CbbBits";
 import { CbbLiveGames, CbbRecentGames, CbbUpcomingGames } from "@/components/cbb/CbbDashTables";
 import { buildCbbStandings, hasScore, recordText } from "@/lib/cbb/cbb";
-import { BEST_TOTAL_EDGE, gradeCbbSeason, unitsText, winPct, type CbbRecord } from "@/lib/cbb/cbb-model";
+import { BEST_TOTAL_EDGE, SPREAD_PICK_MIN, gradeCbbSeason, unitsText, winPct, type CbbRecord } from "@/lib/cbb/cbb-model";
 import { changeTone, weekChangeText } from "@/lib/shared/season-pulse";
 import { useCbbModel, useCbbSchedule } from "@/lib/cbb/use-cbb";
 
@@ -120,7 +120,7 @@ function CbbDashboard() {
             label="Cover % · model"
             value={fmt(winPct(grade.spread))}
             unit={winPct(grade.spread) === null ? undefined : "%"}
-            note={loading ?? note(weekChangeText(coverChange, " pts"), grade.games ? `${rec(grade.spread)} ATS` : "No games graded yet")}
+            note={loading ?? note(weekChangeText(coverChange, " pts"), grade.games ? `${rec(grade.spread)} ATS at the opener · ${SPREAD_PICK_MIN}+ pts off, home-court games` : "No games graded yet")}
             tone={changeTone(coverChange)}
           />
           <StatCard
