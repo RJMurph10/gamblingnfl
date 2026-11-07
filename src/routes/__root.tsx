@@ -23,6 +23,7 @@ const nflNav = [
   { to: "/players", label: "Players" },
   { to: "/games", label: "Games" },
   { to: "/props", label: "Props" },
+  { to: "/futures", label: "Futures" },
   { to: "/model", label: "Model" },
 ] as const;
 
