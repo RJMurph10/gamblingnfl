@@ -5,6 +5,8 @@ import { PageTitle, Panel, TeamLogo } from "@/components/shared/booth";
 import type { Game } from "@/data/shared/games";
 import { divisions, teamById } from "@/data/shared/teams";
 import { getLiveSchedule } from "@/lib/shared/espn.functions";
+import { getNflHistory } from "@/lib/shared/history.functions";
+import { qbStartsFrom, readHistory } from "@/lib/nfl/model-history";
 import { fairOdds, nflFutures, type TeamFutures } from "@/lib/nfl/futures-sim";
 
 export const Route = createFileRoute("/futures")({
@@ -64,6 +66,18 @@ function FuturesPage() {
     retry: 1,
   });
   const games: Game[] = useMemo(() => scheduleQuery.data ?? [], [scheduleQuery.data]);
+  // Starting quarterbacks (finished games and next week's projected starters) for the QB ratings.
+  const historyQuery = useQuery({
+    queryKey: ["nfl-history-v2"],
+    queryFn: () => getNflHistory(),
+    staleTime: 60 * 60_000,
+    retry: 1,
+  });
+  const qb = useMemo(() => {
+    const h = readHistory(historyQuery.data);
+    if (!h.currentSeason || !h.games.length) return undefined;
+    return { season: h.currentSeason, starts: qbStartsFrom(h.games), upcoming: h.upcoming };
+  }, [historyQuery.data]);
   // Only re-simulate when a result or a line changes, not on every schedule refresh.
   const finalsKey = useMemo(
     () => games.map((g) => `${g.id}:${g.status === "final" ? "f" : ""}:${g.spread ?? ""}`).join(","),
@@ -71,12 +85,12 @@ function FuturesPage() {
   );
   const [results, setResults] = useState<TeamFutures[]>([]);
   useEffect(() => {
-    if (!games.length) return;
+    if (!games.length || historyQuery.isLoading) return;
     // let the page paint first: 10,000 seasons take most of a second
-    const t = setTimeout(() => setResults(nflFutures(games, SIMS)), 30);
+    const t = setTimeout(() => setResults(nflFutures(games, SIMS, qb)), 30);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [finalsKey]);
+  }, [finalsKey, qb, historyQuery.isLoading]);
 
   const [mode, setMode] = useState<"pct" | "odds">("pct");
   const byId = useMemo(() => new Map(results.map((r) => [r.id, r])), [results]);
@@ -223,6 +237,13 @@ function FuturesPage() {
                 the betting spreads: every spread posted so far this season (recent weeks count more),
                 starting from 60% of each team&apos;s final market rating last season. Spreads already
                 include injuries, quarterback changes and everything else the books know.
+              </li>
+              <li>
+                Quarterbacks: next week&apos;s line already prices whoever starts. When a fill-in is
+                starting (an injured starter), his gap to the regular starter, from the site&apos;s
+                quarterback ratings, also counts for the two weeks after. Tested on 24 seasons: longer
+                stretches, or correcting past spreads for fill-in starts, didn&apos;t sharpen the odds,
+                because the weekly spreads already move with every quarterback change.
               </li>
               <li>
                 Each simulated season also nudges every team&apos;s true strength up or down a little (about

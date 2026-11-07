@@ -17,6 +17,7 @@ import { gameScore, type Game } from "@/data/shared/games";
 import { teams as NFL_TEAMS } from "@/data/shared/teams";
 import { NFL_MARKET_PRIOR } from "@/data/nfl/market-prior";
 import { homeLine } from "@/lib/shared/season-pulse";
+import { buildQbRatings, type QbStart } from "@/lib/nfl/qb-ratings";
 
 export interface SimTeam {
   id: string;
@@ -35,6 +36,8 @@ export interface SimGame {
   /** Betting line for the home team (-3.5 = home favored by 3.5), when one is posted. */
   homeLine?: number | null;
   neutral?: boolean;
+  /** Points added to the home team's expected margin when there's no line (e.g. a quarterback out). */
+  homeAdj?: number;
 }
 
 export interface SimOptions {
@@ -116,7 +119,7 @@ export function simulateSeason(teams: SimTeam[], games: SimGame[], opts: SimOpti
   const baseGames = new Float64Array(n * n);
   const done = new Float64Array(n);
   const doneLoss = new Float64Array(n);
-  const left: { h: number; a: number; line: number | null; neutral: boolean }[] = [];
+  const left: { h: number; a: number; line: number | null; neutral: boolean; adj: number }[] = [];
   for (const g of games) {
     const h = idx.get(g.home);
     const a = idx.get(g.away);
@@ -132,7 +135,7 @@ export function simulateSeason(teams: SimTeam[], games: SimGame[], opts: SimOpti
       doneLoss[h] += 1 - r;
       doneLoss[a] += r;
     } else {
-      left.push({ h, a, line: g.homeLine ?? null, neutral: Boolean(g.neutral) });
+      left.push({ h, a, line: g.homeLine ?? null, neutral: Boolean(g.neutral), adj: g.homeAdj ?? 0 });
     }
   }
 
@@ -271,7 +274,7 @@ export function simulateSeason(teams: SimTeam[], games: SimGame[], opts: SimOpti
       const mean =
         g.line !== null
           ? -g.line + (strength[g.h] - power[g.h]) - (strength[g.a] - power[g.a])
-          : (g.neutral ? 0 : opts.homeField) + strength[g.h] - strength[g.a];
+          : (g.neutral ? 0 : opts.homeField) + g.adj + strength[g.h] - strength[g.a];
       const homeWins = mean + normal() * gameSd > 0;
       const w = homeWins ? g.h : g.a;
       const l = homeWins ? g.a : g.h;
@@ -400,6 +403,119 @@ export function marketFit(
   return { power: out, hf: b[n] / A[n][n] };
 }
 
+/**
+ * Like marketFit, plus one extra parameter per fill-in quarterback (team|qb): spread = hf + r_home -
+ * r_away + q_home - q_away, where q is the market's own discount for that fill-in (0 for the regular
+ * starter). Each q is pulled toward `extraPrior` (our QB value) with weight `extraLambda`. The team
+ * ratings that come out are with the regular starter.
+ */
+export function marketFitQb(
+  games: { h: string; a: string; spread: number; neutral: boolean; w: number; hq?: string; aq?: string }[],
+  ids: string[],
+  prior: Record<string, number>,
+  lambda: number,
+  extraPrior: Record<string, number>,
+  extraLambda: number,
+) {
+  const extras = [...new Set(games.flatMap((g) => [g.hq, g.aq]).filter((x): x is string => Boolean(x)))];
+  const n = ids.length;
+  const ix = new Map<string, number>(ids.map((t, i) => [t, i]));
+  extras.forEach((e, j) => ix.set(`q:${e}`, n + 1 + j));
+  const m = n + 1 + extras.length;
+  const A = Array.from({ length: m }, () => new Float64Array(m));
+  const b = new Float64Array(m);
+  for (const g of games) {
+    const x = new Map<number, number>([[ix.get(g.h)!, 1]]);
+    x.set(ix.get(g.a)!, -1);
+    if (!g.neutral) x.set(n, 1);
+    if (g.hq) x.set(ix.get(`q:${g.hq}`)!, 1);
+    if (g.aq) x.set(ix.get(`q:${g.aq}`)!, -1);
+    for (const [i, xi] of x) {
+      b[i] += g.w * xi * g.spread;
+      for (const [j, xj] of x) A[i][j] += g.w * xi * xj;
+    }
+  }
+  for (let i = 0; i < n; i++) {
+    A[i][i] += lambda;
+    b[i] += lambda * (prior[ids[i]] ?? 0);
+  }
+  A[n][n] += 1;
+  b[n] += 2;
+  extras.forEach((e, j) => {
+    A[n + 1 + j][n + 1 + j] += extraLambda;
+    b[n + 1 + j] += extraLambda * (extraPrior[e] ?? 0);
+  });
+  for (let c = 0; c < m; c++) {
+    let p = c;
+    for (let r = c + 1; r < m; r++) if (Math.abs(A[r][c]) > Math.abs(A[p][c])) p = r;
+    [A[c], A[p]] = [A[p], A[c]];
+    [b[c], b[p]] = [b[p], b[c]];
+    for (let r = 0; r < m; r++) {
+      if (r === c) continue;
+      const f = A[r][c] / A[c][c];
+      if (!f) continue;
+      for (let k = c; k < m; k++) A[r][k] -= f * A[c][k];
+      b[r] -= f * b[c];
+    }
+  }
+  const power: Record<string, number> = {};
+  ids.forEach((t, i) => (power[t] = b[i] / A[i][i]));
+  const mean = ids.reduce((s, t) => s + power[t], 0) / n;
+  for (const t of ids) power[t] -= mean;
+  const fillIn: Record<string, number> = {};
+  extras.forEach((e, j) => (fillIn[e] = b[n + 1 + j] / A[n + 1 + j][n + 1 + j]));
+  return { power, hf: b[n] / A[n][n], fillIn };
+}
+
+/* ---------------- quarterbacks ---------------- */
+
+/**
+ * Quarterback values for futures. A team's rating should be its strength with its regular starter, so
+ * spreads from games a fill-in started are adjusted back before fitting, and a fill-in who is starting
+ * now costs the team his gap for the next `outWeeks` games after the one already lined.
+ * Values use the site's QB ratings (EPA per dropback from earlier starts, 30 points per 1.0 EPA,
+ * capped at 7), so nothing here looks at a game before it's played.
+ */
+export function qbTools(starts: QbStart[]) {
+  const ratings = buildQbRatings(starts);
+  const k = (season: number, week: number) => season * 100 + week;
+  const byTeam = new Map<string, QbStart[]>();
+  for (const s of [...starts].sort((a, b) => k(a.season, a.week) - k(b.season, b.week))) {
+    if (!s.qb) continue;
+    const list = byTeam.get(s.teamId) ?? [];
+    list.push(s);
+    byTeam.set(s.teamId, list);
+  }
+  const regCache = new Map<string, string | undefined>();
+  /** The team's regular starter as of this week (who started counts, through this week). */
+  function regular(team: string, season: number, week: number): string | undefined {
+    const ck = `${team}|${season}|${week}`;
+    if (regCache.has(ck)) return regCache.get(ck);
+    const list = (byTeam.get(team) ?? []).filter(
+      (s) => s.season >= season - 1 && k(s.season, s.week) <= k(season, week),
+    );
+    const now = new Set(list.filter((s) => s.season === season).map((s) => s.qb));
+    const score = new Map<string, number>();
+    list.forEach((s, i) => {
+      if (now.size && !now.has(s.qb)) return;
+      const w = 0.93 ** (list.length - 1 - i) * (s.season === season ? 1 : 0.5);
+      score.set(s.qb, (score.get(s.qb) ?? 0) + w);
+    });
+    const best = [...score.entries()].sort((a, b) => b[1] - a[1])[0]?.[0];
+    regCache.set(ck, best);
+    return best;
+  }
+  /** Points this quarterback is worth vs the team's regular starter (negative = downgrade). */
+  function value(team: string, qb: string | undefined, season: number, week: number): number {
+    if (!qb) return 0;
+    const reg = regular(team, season, week);
+    if (!reg || reg === qb) return 0;
+    const r = ratings.ratingsBefore(season, week);
+    return Math.max(-7, Math.min(7, 30 * (r(qb) - r(reg))));
+  }
+  return { regular, value };
+}
+
 /* ---------------- the site's NFL futures ---------------- */
 
 /**
@@ -416,14 +532,28 @@ export const FUTURES_SETTINGS = {
   lambda: 1,
   /** A spread's weight halves every this many weeks. */
   halfLife: 6,
+  /**
+   * A fill-in quarterback starting the next game also costs his gap vs the regular starter for this
+   * many weeks after it (the next game's line already prices him). 2 tested best on 2002-2025
+   * (research/football/scripts/futures_qb.ts); correcting past spreads for fill-ins tested worse.
+   */
+  qbOutWeeks: 2,
 };
+
+/** Quarterback inputs for the futures: every known start, and next week's projected starters. */
+export interface FuturesQbInput {
+  season: number;
+  starts: QbStart[];
+  /** Projected starters by ESPN game id. */
+  upcoming: { espnId: number; homeQb: string | null; awayQb: string | null }[];
+}
 
 /**
  * Runs the simulator on this season's live schedule: finished games count, the rest are played out.
  * Team strengths are fit to every spread posted so far (finished games and next week's lines), starting
  * from last season's final market ratings.
  */
-export function nflFutures(schedule: Game[], sims = 10_000): TeamFutures[] {
+export function nflFutures(schedule: Game[], sims = 10_000, qb?: FuturesQbInput): TeamFutures[] {
   const nfl = NFL_TEAMS.filter((t) => t.conference === "AFC" || t.conference === "NFC");
   if (!schedule.length) return [];
   const ids = nfl.map((t) => t.id);
@@ -442,12 +572,28 @@ export function nflFutures(schedule: Game[], sims = 10_000): TeamFutures[] {
       w: Math.pow(0.5, Math.max(0, week - g.week) / S.halfLife),
     }));
   const fit = marketFit(lined, ids, prior, S.lambda);
+  // A fill-in starting next week: his gap vs the regular counts for the following weeks too.
+  const qbGap = new Map<string, number>();
+  if (qb?.starts.length && qb.upcoming.length) {
+    const tools = qbTools(qb.starts);
+    const byId = new Map(qb.upcoming.map((u) => [u.espnId, u]));
+    for (const g of schedule.filter((x) => x.status !== "final" && x.week === week)) {
+      const m = g.id.match(/(\d+)$/);
+      const u = m ? byId.get(Number(m[1])) : undefined;
+      if (!u) continue;
+      qbGap.set(g.homeTeamId, tools.value(g.homeTeamId, u.homeQb ?? undefined, qb.season, week));
+      qbGap.set(g.awayTeamId, tools.value(g.awayTeamId, u.awayQb ?? undefined, qb.season, week));
+    }
+  }
   const games: SimGame[] = schedule.map((g) => {
     if (g.status === "final") {
       const s = gameScore(g);
       return { home: g.homeTeamId, away: g.awayTeamId, homeScore: s.home, awayScore: s.away };
     }
-    return { home: g.homeTeamId, away: g.awayTeamId, homeLine: homeLine(g), neutral: Boolean(g.neutralSite) };
+    const line = homeLine(g);
+    const out = g.week > week && g.week <= week + S.qbOutWeeks && line === null;
+    const homeAdj = out ? (qbGap.get(g.homeTeamId) ?? 0) - (qbGap.get(g.awayTeamId) ?? 0) : 0;
+    return { home: g.homeTeamId, away: g.awayTeamId, homeLine: line, neutral: Boolean(g.neutralSite), homeAdj };
   });
   return simulateSeason(
     nfl.map((t) => ({ id: t.id, conf: t.conference, div: `${t.conference} ${t.division}` })),
