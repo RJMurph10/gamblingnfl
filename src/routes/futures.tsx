@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { PageTitle, Panel, TeamLogo } from "@/components/shared/booth";
 import type { Game } from "@/data/shared/games";
 import { divisions, teamById } from "@/data/shared/teams";
-import { getLiveSchedule, getPriorSeasonResults } from "@/lib/shared/espn.functions";
+import { getLiveSchedule } from "@/lib/shared/espn.functions";
 import { fairOdds, nflFutures, type TeamFutures } from "@/lib/nfl/futures-sim";
 
 export const Route = createFileRoute("/futures")({
@@ -63,31 +63,20 @@ function FuturesPage() {
     staleTime: 60_000,
     retry: 1,
   });
-  const priorQuery = useQuery({
-    queryKey: ["prior-season-results"],
-    queryFn: () => getPriorSeasonResults(),
-    staleTime: 12 * 60 * 60_000,
-    retry: 1,
-  });
   const games: Game[] = useMemo(() => scheduleQuery.data ?? [], [scheduleQuery.data]);
-  const prior = useMemo(() => priorQuery.data ?? [], [priorQuery.data]);
-  // Only re-simulate when a result comes in, not on every schedule refresh.
+  // Only re-simulate when a result or a line changes, not on every schedule refresh.
   const finalsKey = useMemo(
-    () =>
-      games
-        .filter((g) => g.status === "final")
-        .map((g) => g.id)
-        .join(","),
+    () => games.map((g) => `${g.id}:${g.status === "final" ? "f" : ""}:${g.spread ?? ""}`).join(","),
     [games],
   );
   const [results, setResults] = useState<TeamFutures[]>([]);
   useEffect(() => {
-    if (!games.length || priorQuery.isLoading) return;
+    if (!games.length) return;
     // let the page paint first: 10,000 seasons take most of a second
-    const t = setTimeout(() => setResults(nflFutures(games, prior, SIMS)), 30);
+    const t = setTimeout(() => setResults(nflFutures(games, SIMS)), 30);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [finalsKey, prior, priorQuery.isLoading]);
+  }, [finalsKey]);
 
   const [mode, setMode] = useState<"pct" | "odds">("pct");
   const byId = useMemo(() => new Map(results.map((r) => [r.id, r])), [results]);
@@ -230,13 +219,15 @@ function FuturesPage() {
             <h2 className="font-disp text-lg font-semibold uppercase tracking-tight">How it works</h2>
             <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-mute">
               <li>
-                Plays the rest of the regular season {SIMS.toLocaleString()} times. Each game&apos;s chance comes
-                from the betting line where one is posted (next week), otherwise from the model&apos;s team
-                ratings (this season&apos;s scores, adjusted for opponents and home field).
+                Plays the rest of the regular season {SIMS.toLocaleString()} times. Team strength comes from
+                the betting spreads: every spread posted so far this season (recent weeks count more),
+                starting from 60% of each team&apos;s final market rating last season. Spreads already
+                include injuries, quarterback changes and everything else the books know.
               </li>
               <li>
-                Each simulated season also nudges every team&apos;s true strength up or down a little, because a
-                rating is an estimate: a team that is really better wins more of all its remaining games.
+                Each simulated season also nudges every team&apos;s true strength up or down a little (about
+                2 points), because a rating is an estimate: a team that is really better wins more of all its
+                remaining games.
               </li>
               <li>
                 Seeds each conference with the NFL&apos;s rules: division winners are seeds 1–4, three wild
@@ -246,10 +237,11 @@ function FuturesPage() {
                 lowest.
               </li>
               <li>
-                Tested on every season from 2002 to 2025, stopping each one at midseason. The seeding code
-                picked the real playoff field in all 24 seasons. Teams it gave about 70% to win their
-                division won about 65–68% of the time, and about 87–90% of those at 88%. Ratings-based odds
-                beat odds from records alone at every point of the season.
+                Tuned on past seasons: every season from 2002 to 2025 was replayed from the preseason and
+                after weeks 4, 8 and 12. Settings were picked on 2002–2013 and checked on 2014–2025, which
+                the choice never saw. Spread-based strength beat strength from scores at every stop, most
+                of all in the preseason and early season. The seeding code picked the real playoff field
+                in all 24 seasons.
               </li>
               <li>
                 Not a ★ pick: there is no free history of futures prices to test against yet. Compare the fair
