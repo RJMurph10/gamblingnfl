@@ -13,12 +13,12 @@
   "id": "194",
   "abbr": "OSU",
   "name": "Ohio State Buckeyes",
-  "score": 0
+  "score": 7
  },
  "neutral": false,
  "venue": "Ohio Stadium",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T05:03:40.916Z",

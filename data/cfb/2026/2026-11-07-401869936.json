@@ -7,18 +7,18 @@
   "id": "2433",
   "abbr": "ULM",
   "name": "UL Monroe Warhawks",
-  "score": 0
+  "score": 6
  },
  "home": {
   "id": "2032",
   "abbr": "ARST",
   "name": "Arkansas State Red Wolves",
-  "score": 0
+  "score": 13
  },
  "neutral": false,
  "venue": "Centennial Bank Stadium",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T16:51:48.845Z",

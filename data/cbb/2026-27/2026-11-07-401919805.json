@@ -7,18 +7,18 @@
   "id": "112358",
   "abbr": "LIU",
   "name": "Long Island University Sharks",
-  "score": 0
+  "score": 20
  },
  "home": {
   "id": "2325",
   "abbr": "LAS",
   "name": "La Salle Explorers",
-  "score": 0
+  "score": 16
  },
  "neutral": false,
  "venue": "John Glaser Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-07T02:54:12.015Z",

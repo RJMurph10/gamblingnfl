@@ -7,18 +7,18 @@
   "id": "350",
   "abbr": "UNCW",
   "name": "UNC Wilmington Seahawks",
-  "score": 0
+  "score": 50
  },
  "home": {
   "id": "151",
   "abbr": "ECU",
   "name": "East Carolina Pirates",
-  "score": 0
+  "score": 50
  },
  "neutral": false,
  "venue": "Williams Arena at Minges Coliseum",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-07T02:54:12.015Z",

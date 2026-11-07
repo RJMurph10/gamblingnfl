@@ -13,12 +13,12 @@
   "id": "2426",
   "abbr": "NAVY",
   "name": "Navy Midshipmen",
-  "score": 0
+  "score": 14
  },
  "neutral": false,
  "venue": "Navy-Marine Corps Memorial Stadium",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T16:51:48.845Z",

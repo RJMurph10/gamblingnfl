@@ -7,18 +7,18 @@
   "id": "2670",
   "abbr": "VCU",
   "name": "VCU Rams",
-  "score": 0
+  "score": 48
  },
  "home": {
   "id": "235",
   "abbr": "MEM",
   "name": "Memphis Tigers",
-  "score": 0
+  "score": 44
  },
  "neutral": false,
  "venue": "FedExForum",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-06T23:14:11.238Z",

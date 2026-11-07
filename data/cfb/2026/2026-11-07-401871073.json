@@ -7,18 +7,18 @@
   "id": "48",
   "abbr": "DEL",
   "name": "Delaware Blue Hens",
-  "score": 0
+  "score": 15
  },
  "home": {
   "id": "338",
   "abbr": "KENN",
   "name": "Kennesaw State Owls",
-  "score": 0
+  "score": 20
  },
  "neutral": false,
  "venue": "Walens Family Field at Fifth Third Stadium",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T16:51:48.845Z",

@@ -7,18 +7,18 @@
   "id": "197",
   "abbr": "OKST",
   "name": "Oklahoma State Cowboys",
-  "score": 0
+  "score": 63
  },
  "home": {
   "id": "2306",
   "abbr": "KSU",
   "name": "Kansas State Wildcats",
-  "score": 0
+  "score": 21
  },
  "neutral": false,
  "venue": "Bill Snyder Family Stadium",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T15:49:47.499Z",

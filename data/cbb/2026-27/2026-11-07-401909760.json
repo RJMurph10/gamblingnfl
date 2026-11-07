@@ -7,18 +7,18 @@
   "id": "21",
   "abbr": "SDSU",
   "name": "San Diego State Aztecs",
-  "score": 0
+  "score": 12
  },
  "home": {
   "id": "38",
   "abbr": "COLO",
   "name": "Colorado Buffaloes",
-  "score": 0
+  "score": 5
  },
  "neutral": true,
  "venue": "Pechanga Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-06T23:14:11.238Z",

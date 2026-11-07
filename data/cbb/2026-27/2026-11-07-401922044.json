@@ -7,18 +7,18 @@
   "id": "2428",
   "abbr": "NCCU",
   "name": "North Carolina Central Eagles",
-  "score": 0
+  "score": 27
  },
  "home": {
   "id": "2344",
   "abbr": "LONG",
   "name": "Longwood Lancers",
-  "score": 0
+  "score": 35
  },
  "neutral": false,
  "venue": "Joan Perry Brock Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-07T02:54:12.015Z",

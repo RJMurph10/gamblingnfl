@@ -7,18 +7,18 @@
   "id": "2448",
   "abbr": "NCAT",
   "name": "North Carolina A&T Aggies",
-  "score": 0
+  "score": 70
  },
  "home": {
   "id": "195",
   "abbr": "OHIO",
   "name": "Ohio Bobcats",
-  "score": 0
+  "score": 80
  },
  "neutral": false,
  "venue": "Convocation Center (OH)",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-06T23:14:11.238Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 70,
+  "home": 80
+ }
 }

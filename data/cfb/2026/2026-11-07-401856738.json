@@ -7,18 +7,18 @@
   "id": "8",
   "abbr": "ARK",
   "name": "Arkansas Razorbacks",
-  "score": 0
+  "score": 16
  },
  "home": {
   "id": "2",
   "abbr": "AUB",
   "name": "Auburn Tigers",
-  "score": 0
+  "score": 16
  },
  "neutral": false,
  "venue": "Jordan-Hare Stadium",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T15:49:47.499Z",

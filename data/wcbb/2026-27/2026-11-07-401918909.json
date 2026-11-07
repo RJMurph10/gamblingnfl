@@ -7,18 +7,18 @@
   "id": "135",
   "abbr": "MINN",
   "name": "Minnesota Golden Gophers",
-  "score": 0
+  "score": 41
  },
  "home": {
   "id": "269",
   "abbr": "MARQ",
   "name": "Marquette Golden Eagles",
-  "score": 0
+  "score": 33
  },
  "neutral": false,
  "venue": "Al McGuire Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-07T16:52:38.954Z",
