@@ -112,7 +112,11 @@ function CbbModelPage() {
               (mostly early-season tournaments, where the lines and ESPN&apos;s odds data are messiest) it went{" "}
               <b>60-45 (57.1%), 131-105 (55.5%) and 133-104 (56.1%)</b>, every season above break-even. That&apos;s the
               dashboard&apos;s spread pick from November 2026, graded at the opener. It was found by splitting the data,
-              so its live record has to hold up before it&apos;s a ★. Every 6+ pick has been on the underdog.
+              so its live record has to hold up before it&apos;s a ★. Every 6+ pick has been on the underdog. The model also
+              adds each team&apos;s own home edge (how much it has beaten the closing spread at home in past seasons):
+              the market gives every team about the same home court, but some buildings are worth more and some less.
+              With it the rule went <b>60-36, 128-95 and 142-98 (59.0%)</b>. Returning minutes (roster turnover) was
+              tested too and didn&apos;t help: the openers already know who left.
             </p>
           </div>
         </Panel>
