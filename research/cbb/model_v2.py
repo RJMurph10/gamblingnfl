@@ -124,15 +124,52 @@ def empty_prior(S, eff=103.0, tpo=68.0):
     return {"eff": eff, "tpo": tpo, "off": z.copy(), "def": z.copy(), "tempo": z.copy()}
 
 
+import os as _os, json as _json
+# Returning minutes (research/cbb/returning_minutes.py): RET_MODE=off (default) keeps every team's rating at
+# P["shrink"]; "scale" keeps shrink x (team's returning share / the season's average share), clipped 0.2-1.0;
+# "scale_tr" also counts incoming D-I transfers' minutes at half weight.
+RET_MODE = _os.environ.get("RET_MODE", "off")
+_RET_DIR = _os.environ.get("RET_DIR", "")
+_ret_cache = {}
+def returning(season):
+    """{team id: (share of last season's minutes back, incoming transfer minutes as a share)} for a season label."""
+    if season in _ret_cache: return _ret_cache[season]
+    y = int(season[:4])
+    try:
+        cur = _json.load(open(f"{_RET_DIR}/cbb-minutes-{season}.json"))["teams"]
+        prev = _json.load(open(f"{_RET_DIR}/cbb-minutes-{y-1}-{str(y % 100).zfill(2)}.json"))["teams"]
+    except Exception:
+        _ret_cache[season] = {}; return {}
+    where = {}
+    for t, ps in prev.items():
+        for a, v in ps.items(): where.setdefault(a, []).append((t, v[1]))
+    out = {}
+    for t, ps in prev.items():
+        tot = sum(v[1] for v in ps.values())
+        if tot <= 0: continue
+        now = set(cur.get(t, {}))
+        back = sum(v[1] for a, v in ps.items() if a in now) / tot
+        incoming = sum(m for a in now for (t2, m) in where.get(a, []) if t2 != t) / tot
+        out[t] = (back, incoming)
+    _ret_cache[season] = out
+    return out
+
 def prior_from(prev_S, prev_fit, S, P):
     """Last season's final ratings, shrunk, for teams in this season; new teams start weak."""
     avg, tavg, off, de, tp = prev_fit
     pr = empty_prior(S, avg, tavg)
+    ret = returning(P.get("season", "")) if RET_MODE != "off" else {}
+    mean_back = (sum(v[0] for v in ret.values()) / len(ret)) if ret else 1.0
+    mean_tr = (sum(v[0] + 0.5 * v[1] for v in ret.values()) / len(ret)) if ret else 1.0
     for t, i in S.slot.items():
         j = prev_S.slot.get(t)
         if j is not None and prev_S.d1[j]:
-            pr["off"][i] = P["shrink"] * off[j]
-            pr["def"][i] = P["shrink"] * de[j]
+            keep = P["shrink"]
+            if t in ret:
+                if RET_MODE == "scale": keep = min(1.0, max(0.2, P["shrink"] * ret[t][0] / mean_back))
+                if RET_MODE == "scale_tr": keep = min(1.0, max(0.2, P["shrink"] * (ret[t][0] + 0.5 * ret[t][1]) / mean_tr))
+            pr["off"][i] = keep * off[j]
+            pr["def"][i] = keep * de[j]
             pr["tempo"][i] = P["tshrink"] * tp[j]
         else:
             pr["off"][i] = -P["new_team"] / 2
@@ -150,7 +187,7 @@ def run_all(P, seasons=SEASONS):
             prev = None
             continue
         S = Season(rows)
-        prior = prior_from(prev[0], prev[1], S, P) if prev else empty_prior(S)
+        prior = prior_from(prev[0], prev[1], S, dict(P, season=s)) if prev else empty_prior(S)
         preds = []
         i = 0
         n = len(rows)
