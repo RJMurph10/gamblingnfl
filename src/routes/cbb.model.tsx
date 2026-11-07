@@ -107,10 +107,12 @@ function CbbModelPage() {
               picks hit 48–50%, so the opening number is the one to bet.
             </p>
             <p>
-              <b>Why not spreads and moneylines?</b> The blend makes them sharper (projections land closer to the
-              final score than either model alone), but against the closing spread they still hit 49–52%. At 6+ points
-              off the opening spread the blend went 51%, 55% and 57%: promising the last two seasons, a loss the first,
-              so it&apos;s on the watch list, not the ★ list.
+              <b>Spreads against the opening line: a newer pick.</b> Against the closing spread the blend still hits
+              49–52%. At 6+ points off the <i>opening</i> spread it went 51%, 55% and 57%; leaving out neutral-site games
+              (mostly early-season tournaments, where the lines and ESPN&apos;s odds data are messiest) it went{" "}
+              <b>60-45 (57.1%), 131-105 (55.5%) and 133-104 (56.1%)</b>, every season above break-even. That&apos;s the
+              dashboard&apos;s spread pick from November 2026, graded at the opener. It was found by splitting the data,
+              so its live record has to hold up before it&apos;s a ★. Every 6+ pick has been on the underdog.
             </p>
           </div>
         </Panel>

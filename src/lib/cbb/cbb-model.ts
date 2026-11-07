@@ -18,7 +18,11 @@
  * v3 (research/cbb/v3_market.py): projections are blended 50/50 with the market's own view of each team
  * (ratings fit to earlier games' closing lines). Once both teams have 3+ games, totals 6+ points off the
  * opener hit 58.1%, 57.2% and 59.0% (265 / 276 / 459 bets), at the close 50–51%. Those are the ★ best
- * bets, graded at the opener. Spreads with the blend: 51%, 55%, 57% at 6+ pts, not every season, so not ★.
+ * bets, graded at the opener. Spreads with the blend: 51%, 55%, 57% at 6+ pts off the opening spread; leaving
+ * out neutral-site games (early-season tournaments, where ESPN's odds are messiest) gives 60-45 (57.1%),
+ * 131-105 (55.5%) and 133-104 (56.1%) (research/cbb/spreads_sharpen.py). That is the spread pick: 6+ points
+ * off the opener, not a neutral site, graded at the opener. Found by splitting the data, so it's tracked as
+ * its own record from November 2026 rather than a ★.
  *
  * ★ MAAC unders (research/conferences/walk_forward.py): unders in MAAC conference games, picked each
  * season from earlier seasons only, went 322-253 (56.0%) at the closing total from 2021-22 to 2025-26.
@@ -41,7 +45,12 @@ const HALF_LIFE_DAYS = 30;
 const NON_D1_WEIGHT = 0.25;
 export const MARGIN_SD = 11;
 
-export const SPREAD_PICK_MIN = 2;
+/**
+ * Spread picks: the blended margin this far from the OPENING spread (the closing spread when there's no
+ * opener), home-court games only, once the market's view is in the projection; graded at that line.
+ * Smaller edges lose (2–4 pts: 50–53%), and neutral-site games dragged every season down.
+ */
+export const SPREAD_PICK_MIN = 6;
 /**
  * Total picks: the model total this far from the OPENING total (the closing total when there's no opener),
  * graded at that line. Against the close the model's totals are a coin flip at every edge size (48–50%,
@@ -356,8 +365,9 @@ export function rowFor(game: CbbGame, pred: Prediction): CbbModelRow {
   const winner = winnerOf(game);
   const mlResult = winner ? toResult(winner === (pickHome ? "home" : "away")) : null;
   let spread: CbbModelRow["spread"] = null;
-  const line = game.odds?.spread;
-  if (line !== null && line !== undefined) {
+  const line = game.open?.spread ?? game.odds?.spread;
+  const marketIn = (pred as Prediction & { market?: boolean }).market !== false;
+  if (line !== null && line !== undefined && !game.neutral && !game.nonDivisionI && marketIn) {
     const edge = pred.margin + line; // > 0: the model likes home against the number
     if (Math.abs(edge) >= SPREAD_PICK_MIN) {
       const pick = edge > 0 ? "home" : "away";
