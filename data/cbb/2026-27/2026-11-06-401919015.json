@@ -7,18 +7,18 @@
   "id": "2447",
   "abbr": "NICH",
   "name": "Nicholls Colonels",
-  "score": 0
+  "score": 63
  },
  "home": {
   "id": "5",
   "abbr": "UAB",
   "name": "UAB Blazers",
-  "score": 0
+  "score": 70
  },
  "neutral": false,
  "venue": "Bartow Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-06T06:05:11.007Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 63,
+  "home": 70
+ }
 }

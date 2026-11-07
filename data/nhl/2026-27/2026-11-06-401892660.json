@@ -7,18 +7,18 @@
   "id": "18",
   "abbr": "SJ",
   "name": "San Jose Sharks",
-  "score": 0
+  "score": 1
  },
  "home": {
   "id": "30",
   "abbr": "MIN",
   "name": "Minnesota Wild",
-  "score": 0
+  "score": 2
  },
  "neutral": false,
  "venue": "Grand Casino Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-05T22:04:57.740Z",

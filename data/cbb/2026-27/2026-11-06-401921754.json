@@ -7,18 +7,18 @@
   "id": "43",
   "abbr": "YALE",
   "name": "Yale Bulldogs",
-  "score": 0
+  "score": 75
  },
  "home": {
   "id": "2116",
   "abbr": "UCF",
   "name": "UCF Knights",
-  "score": 0
+  "score": 87
  },
  "neutral": false,
  "venue": "Addition Financial Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-06T01:49:53.217Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 75,
+  "home": 87
+ }
 }

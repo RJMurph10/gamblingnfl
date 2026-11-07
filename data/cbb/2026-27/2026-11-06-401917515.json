@@ -7,18 +7,18 @@
   "id": "2627",
   "abbr": "TAR",
   "name": "Tarleton State Texans",
-  "score": 0
+  "score": 18
  },
  "home": {
   "id": "301",
   "abbr": "USD",
   "name": "San Diego Toreros",
-  "score": 0
+  "score": 11
  },
  "neutral": false,
  "venue": "Jenny Craig Pavilion",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-06T01:49:53.217Z",

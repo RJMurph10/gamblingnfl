@@ -7,18 +7,18 @@
   "id": "2393",
   "abbr": "MTSU",
   "name": "Middle Tennessee Blue Raiders",
-  "score": 0
+  "score": 12
  },
  "home": {
   "id": "2305",
   "abbr": "KU",
   "name": "Kansas Jayhawks",
-  "score": 0
+  "score": 31
  },
  "neutral": false,
  "venue": "Allen Fieldhouse",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-06T01:49:53.217Z",

@@ -7,18 +7,18 @@
   "id": "2506",
   "abbr": "PRES",
   "name": "Presbyterian Blue Hose",
-  "score": 0
+  "score": 77
  },
  "home": {
   "id": "61",
   "abbr": "UGA",
   "name": "Georgia Bulldogs",
-  "score": 0
+  "score": 91
  },
  "neutral": false,
  "venue": "Stegeman Coliseum",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-06T06:05:11.007Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 77,
+  "home": 91
+ }
 }

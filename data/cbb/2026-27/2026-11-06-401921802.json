@@ -7,18 +7,18 @@
   "id": "256",
   "abbr": "JMU",
   "name": "James Madison Dukes",
-  "score": 0
+  "score": 80
  },
  "home": {
   "id": "96",
   "abbr": "UK",
   "name": "Kentucky Wildcats",
-  "score": 0
+  "score": 89
  },
  "neutral": false,
  "venue": "Rupp Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-06T01:49:53.217Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 80,
+  "home": 89
+ }
 }

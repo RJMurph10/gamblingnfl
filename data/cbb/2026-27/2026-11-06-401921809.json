@@ -7,18 +7,18 @@
   "id": "2640",
   "abbr": "TXSO",
   "name": "Texas Southern Tigers",
-  "score": 0
+  "score": 45
  },
  "home": {
   "id": "99",
   "abbr": "LSU",
   "name": "LSU Tigers",
-  "score": 0
+  "score": 80
  },
  "neutral": false,
  "venue": "Pete Maravich Assembly Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-06T06:05:11.007Z",

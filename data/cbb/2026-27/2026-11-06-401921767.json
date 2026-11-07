@@ -7,18 +7,18 @@
   "id": "56",
   "abbr": "STET",
   "name": "Stetson Hatters",
-  "score": 0
+  "score": 53
  },
  "home": {
   "id": "277",
   "abbr": "WVU",
   "name": "West Virginia Mountaineers",
-  "score": 0
+  "score": 91
  },
  "neutral": false,
  "venue": "Hope Coliseum",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-06T06:05:11.007Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 53,
+  "home": 91
+ }
 }

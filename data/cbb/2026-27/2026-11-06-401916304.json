@@ -7,18 +7,18 @@
   "id": "2900",
   "abbr": "STMN",
   "name": "St. Thomas Tommies",
-  "score": 0
+  "score": 62
  },
  "home": {
   "id": "135",
   "abbr": "MINN",
   "name": "Minnesota Golden Gophers",
-  "score": 0
+  "score": 76
  },
  "neutral": false,
  "venue": "The Barn by Blue Cross and Blue Shield of Minnesota",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-06T01:49:53.217Z",

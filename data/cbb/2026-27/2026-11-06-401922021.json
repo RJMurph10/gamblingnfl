@@ -7,18 +7,18 @@
   "id": "304",
   "abbr": "IDST",
   "name": "Idaho State Bengals",
-  "score": 0
+  "score": 24
  },
  "home": {
   "id": "2751",
   "abbr": "WYO",
   "name": "Wyoming Cowboys",
-  "score": 0
+  "score": 55
  },
  "neutral": false,
  "venue": "Arena-Auditorium",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-06T01:49:53.217Z",

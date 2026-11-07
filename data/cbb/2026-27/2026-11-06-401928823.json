@@ -7,18 +7,18 @@
   "id": "2523",
   "abbr": "RMU",
   "name": "Robert Morris Colonials",
-  "score": 0
+  "score": 53
  },
  "home": {
   "id": "82",
   "abbr": "UIC",
   "name": "UIC Flames",
-  "score": 0
+  "score": 79
  },
  "neutral": false,
  "venue": "Credit Union 1 Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-06T01:49:53.217Z",

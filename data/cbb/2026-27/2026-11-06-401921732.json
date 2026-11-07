@@ -7,18 +7,18 @@
   "id": "2458",
   "abbr": "UNCO",
   "name": "Northern Colorado Bears",
-  "score": 0
+  "score": 26
  },
  "home": {
   "id": "9",
   "abbr": "ASU",
   "name": "Arizona State Sun Devils",
-  "score": 0
+  "score": 48
  },
  "neutral": false,
  "venue": "Desert Financial Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-06T01:49:53.217Z",

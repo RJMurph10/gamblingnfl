@@ -7,18 +7,18 @@
   "id": "250",
   "abbr": "UTA",
   "name": "UT Arlington Mavericks",
-  "score": 0
+  "score": 21
  },
  "home": {
   "id": "2501",
   "abbr": "PORT",
   "name": "Portland Pilots",
-  "score": 0
+  "score": 14
  },
  "neutral": true,
  "venue": "Stan Sheriff Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-06T06:05:11.007Z",

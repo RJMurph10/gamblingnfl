@@ -7,18 +7,18 @@
   "id": "2400",
   "abbr": "MVSU",
   "name": "Mississippi Valley State Delta Devils",
-  "score": 0
+  "score": 57
  },
  "home": {
   "id": "201",
   "abbr": "OU",
   "name": "Oklahoma Sooners",
-  "score": 0
+  "score": 84
  },
  "neutral": false,
  "venue": "Lloyd Noble Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-06T06:05:11.007Z",
@@ -769,5 +769,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 57,
+  "home": 84
+ }
 }

@@ -7,18 +7,18 @@
   "id": "2154",
   "abbr": "COPP",
   "name": "Coppin State Eagles",
-  "score": 0
+  "score": 51
  },
  "home": {
   "id": "2244",
   "abbr": "GMU",
   "name": "George Mason Patriots",
-  "score": 0
+  "score": 68
  },
  "neutral": false,
  "venue": "EagleBank Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-06T06:05:11.007Z",
@@ -766,5 +766,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 51,
+  "home": 68
+ }
 }

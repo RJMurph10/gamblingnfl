@@ -7,18 +7,18 @@
   "id": "2582",
   "abbr": "SOU",
   "name": "Southern Jaguars",
-  "score": 0
+  "score": 43
  },
  "home": {
   "id": "2628",
   "abbr": "TCU",
   "name": "TCU Horned Frogs",
-  "score": 0
+  "score": 88
  },
  "neutral": false,
  "venue": "Schollmaier Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-06T06:05:11.007Z",

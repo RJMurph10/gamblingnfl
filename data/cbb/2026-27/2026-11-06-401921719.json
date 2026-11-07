@@ -7,18 +7,18 @@
   "id": "2681",
   "abbr": "WAG",
   "name": "Wagner Seahawks",
-  "score": 0
+  "score": 18
  },
  "home": {
   "id": "2390",
   "abbr": "MIA",
   "name": "Miami Hurricanes",
-  "score": 0
+  "score": 30
  },
  "neutral": false,
  "venue": "Watsco Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-06T06:05:11.007Z",

@@ -7,7 +7,7 @@
   "id": "167",
   "abbr": "UNM",
   "name": "New Mexico Lobos",
-  "score": 0
+  "score": 14
  },
  "home": {
   "id": "2440",
@@ -18,7 +18,7 @@
  "neutral": false,
  "venue": "Mackay Stadium",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T05:03:40.916Z",

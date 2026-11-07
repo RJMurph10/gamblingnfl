@@ -7,18 +7,18 @@
   "id": "27",
   "abbr": "WSH",
   "name": "Washington Wizards",
-  "score": 0
+  "score": 132
  },
  "home": {
   "id": "1",
   "abbr": "ATL",
   "name": "Atlanta Hawks",
-  "score": 0
+  "score": 139
  },
  "neutral": false,
  "venue": "State Farm Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-06T06:05:11.007Z",
@@ -4519,5 +4519,9 @@
    "Tre Johnson",
    "WSH"
   ]
+ },
+ "final": {
+  "away": 132,
+  "home": 139
  }
 }

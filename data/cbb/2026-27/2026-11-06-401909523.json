@@ -7,18 +7,18 @@
   "id": "2174",
   "abbr": "DETM",
   "name": "Detroit Mercy Titans",
-  "score": 0
+  "score": 32
  },
  "home": {
   "id": "269",
   "abbr": "MARQ",
   "name": "Marquette Golden Eagles",
-  "score": 0
+  "score": 93
  },
  "neutral": false,
  "venue": "Fiserv Forum",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-06T01:49:53.217Z",
@@ -867,5 +867,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 32,
+  "home": 93
+ }
 }

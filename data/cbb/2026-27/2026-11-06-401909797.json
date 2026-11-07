@@ -7,18 +7,18 @@
   "id": "2463",
   "abbr": "CSUN",
   "name": "Cal State Northridge Matadors",
-  "score": 0
+  "score": 29
  },
  "home": {
   "id": "2306",
   "abbr": "KSU",
   "name": "Kansas State Wildcats",
-  "score": 0
+  "score": 54
  },
  "neutral": false,
  "venue": "Bramlage Coliseum",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-06T01:49:53.217Z",

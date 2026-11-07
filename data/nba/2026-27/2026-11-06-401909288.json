@@ -7,18 +7,18 @@
   "id": "2",
   "abbr": "BOS",
   "name": "Boston Celtics",
-  "score": 0
+  "score": 119
  },
  "home": {
   "id": "30",
   "abbr": "CHA",
   "name": "Charlotte Hornets",
-  "score": 0
+  "score": 80
  },
  "neutral": false,
  "venue": "Spectrum Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-06T06:05:11.007Z",
@@ -3956,5 +3956,9 @@
    "Hannes Steinbach",
    "CHA"
   ]
+ },
+ "final": {
+  "away": 119,
+  "home": 80
  }
 }

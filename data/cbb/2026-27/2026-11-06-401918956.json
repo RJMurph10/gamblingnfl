@@ -7,18 +7,18 @@
   "id": "2193",
   "abbr": "ETSU",
   "name": "East Tennessee State Buccaneers",
-  "score": 0
+  "score": 63
  },
  "home": {
   "id": "152",
   "abbr": "NCSU",
   "name": "NC State Wolfpack",
-  "score": 0
+  "score": 77
  },
  "neutral": false,
  "venue": "Lenovo Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-06T01:49:53.217Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 63,
+  "home": 77
+ }
 }

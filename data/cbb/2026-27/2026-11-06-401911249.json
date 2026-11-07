@@ -7,18 +7,18 @@
   "id": "139",
   "abbr": "SLU",
   "name": "Saint Louis Billikens",
-  "score": 0
+  "score": 90
  },
  "home": {
   "id": "142",
   "abbr": "MIZ",
   "name": "Missouri Tigers",
-  "score": 0
+  "score": 84
  },
  "neutral": true,
  "venue": "Enterprise Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-06T01:49:53.217Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 90,
+  "home": 84
+ }
 }

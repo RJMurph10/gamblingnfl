@@ -7,18 +7,18 @@
   "id": "58",
   "abbr": "USF",
   "name": "South Florida Bulls",
-  "score": 0
+  "score": 10
  },
  "home": {
   "id": "151",
   "abbr": "ECU",
   "name": "East Carolina Pirates",
-  "score": 0
+  "score": 17
  },
  "neutral": false,
  "venue": "Dowdy-Ficklen Stadium",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T05:03:40.916Z",

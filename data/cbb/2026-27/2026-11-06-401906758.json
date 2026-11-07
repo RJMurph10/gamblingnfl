@@ -7,18 +7,18 @@
   "id": "2032",
   "abbr": "ARST",
   "name": "Arkansas State Red Wolves",
-  "score": 0
+  "score": 86
  },
  "home": {
   "id": "333",
   "abbr": "ALA",
   "name": "Alabama Crimson Tide",
-  "score": 0
+  "score": 101
  },
  "neutral": false,
  "venue": "Coleman Coliseum",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-06T01:49:53.217Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 86,
+  "home": 101
+ }
 }

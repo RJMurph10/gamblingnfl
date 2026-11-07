@@ -7,18 +7,18 @@
   "id": "2653",
   "abbr": "TROY",
   "name": "Troy Trojans",
-  "score": 0
+  "score": 68
  },
  "home": {
   "id": "52",
   "abbr": "FSU",
   "name": "Florida State Seminoles",
-  "score": 0
+  "score": 91
  },
  "neutral": false,
  "venue": "Tucker Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-06T01:49:53.217Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 68,
+  "home": 91
+ }
 }

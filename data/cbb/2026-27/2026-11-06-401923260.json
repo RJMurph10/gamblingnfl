@@ -7,18 +7,18 @@
   "id": "2226",
   "abbr": "FAU",
   "name": "Florida Atlantic Owls",
-  "score": 0
+  "score": 71
  },
  "home": {
   "id": "2750",
   "abbr": "WRST",
   "name": "Wright State Raiders",
-  "score": 0
+  "score": 97
  },
  "neutral": false,
  "venue": "Nutter Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-06T01:49:53.217Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 71,
+  "home": 97
+ }
 }

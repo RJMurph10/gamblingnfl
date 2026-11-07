@@ -7,18 +7,18 @@
   "id": "2046",
   "abbr": "APSU",
   "name": "Austin Peay Governors",
-  "score": 0
+  "score": 69
  },
  "home": {
   "id": "338",
   "abbr": "KENN",
   "name": "Kennesaw State Owls",
-  "score": 0
+  "score": 71
  },
  "neutral": false,
  "venue": "VyStar Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-06T01:49:53.217Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 69,
+  "home": 71
+ }
 }

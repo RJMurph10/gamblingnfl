@@ -7,18 +7,18 @@
   "id": "290",
   "abbr": "GASO",
   "name": "Georgia Southern Eagles",
-  "score": 0
+  "score": 83
  },
  "home": {
   "id": "59",
   "abbr": "GT",
   "name": "Georgia Tech Yellow Jackets",
-  "score": 0
+  "score": 95
  },
  "neutral": false,
  "venue": "McCamish Pavilion",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-06T01:49:53.217Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 83,
+  "home": 95
+ }
 }

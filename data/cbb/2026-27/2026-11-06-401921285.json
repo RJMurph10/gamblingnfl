@@ -7,18 +7,18 @@
   "id": "107",
   "abbr": "HC",
   "name": "Holy Cross Crusaders",
-  "score": 0
+  "score": 66
  },
  "home": {
   "id": "222",
   "abbr": "VILL",
   "name": "Villanova Wildcats",
-  "score": 0
+  "score": 95
  },
  "neutral": false,
  "venue": "Finneran Pavilion",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-06T06:05:11.007Z",
@@ -636,5 +636,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 66,
+  "home": 95
+ }
 }

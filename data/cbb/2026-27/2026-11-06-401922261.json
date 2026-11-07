@@ -7,18 +7,18 @@
   "id": "70",
   "abbr": "IDHO",
   "name": "Idaho Vandals",
-  "score": 0
+  "score": 33
  },
  "home": {
   "id": "36",
   "abbr": "CSU",
   "name": "Colorado State Rams",
-  "score": 0
+  "score": 36
  },
  "neutral": false,
  "venue": "Moby Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-06T01:49:53.217Z",

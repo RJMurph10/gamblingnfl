@@ -7,18 +7,18 @@
   "id": "29",
   "abbr": "CBJ",
   "name": "Columbus Blue Jackets",
-  "score": 0
+  "score": 2
  },
  "home": {
   "id": "2",
   "abbr": "BUF",
   "name": "Buffalo Sabres",
-  "score": 0
+  "score": 5
  },
  "neutral": false,
  "venue": "KeyBank Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-05T22:04:57.740Z",
@@ -2554,5 +2554,9 @@
    "Jack Williams",
    "CBJ"
   ]
+ },
+ "final": {
+  "away": 2,
+  "home": 5
  }
 }

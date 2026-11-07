@@ -7,18 +7,18 @@
   "id": "2199",
   "abbr": "EMU",
   "name": "Eastern Michigan Eagles",
-  "score": 0
+  "score": 53
  },
  "home": {
   "id": "2752",
   "abbr": "XAV",
   "name": "Xavier Musketeers",
-  "score": 0
+  "score": 76
  },
  "neutral": false,
  "venue": "Cintas Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-06T01:49:53.217Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 53,
+  "home": 76
+ }
 }

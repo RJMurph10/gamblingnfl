@@ -7,18 +7,18 @@
   "id": "357",
   "abbr": "AMCC",
   "name": "Texas A&M-Corpus Christi Islanders",
-  "score": 0
+  "score": 52
  },
  "home": {
   "id": "309",
   "abbr": "UL",
   "name": "Louisiana Ragin' Cajuns",
-  "score": 0
+  "score": 39
  },
  "neutral": false,
  "venue": "Cajundome",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-06T06:05:11.007Z",

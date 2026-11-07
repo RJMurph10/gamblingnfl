@@ -7,18 +7,18 @@
   "id": "2352",
   "abbr": "L-MD",
   "name": "Loyola Maryland Greyhounds",
-  "score": 0
+  "score": 57
  },
  "home": {
   "id": "116",
   "abbr": "MSM",
   "name": "Mount St. Mary's Mountaineers",
-  "score": 0
+  "score": 68
  },
  "neutral": false,
  "venue": "Knott Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-06T06:05:11.007Z",
@@ -766,5 +766,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 57,
+  "home": 68
+ }
 }

@@ -7,18 +7,18 @@
   "id": "284",
   "abbr": "STO",
   "name": "Stonehill Skyhawks",
-  "score": 0
+  "score": 40
  },
  "home": {
   "id": "87",
   "abbr": "ND",
   "name": "Notre Dame Fighting Irish",
-  "score": 0
+  "score": 123
  },
  "neutral": false,
  "venue": "Purcell Pavilion",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-06T18:02:23.755Z",
@@ -770,5 +770,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 40,
+  "home": 123
+ }
 }

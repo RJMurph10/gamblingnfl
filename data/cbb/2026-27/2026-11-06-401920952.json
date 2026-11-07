@@ -1,24 +1,24 @@
 {
  "id": "401920952",
  "league": "cbb",
- "date": "2026-11-07T01:30Z",
+ "date": "2026-11-07T02:15Z",
  "name": "SIU @ KC",
  "away": {
   "id": "79",
   "abbr": "SIU",
   "name": "Southern Illinois Salukis",
-  "score": 0
+  "score": 23
  },
  "home": {
   "id": "140",
   "abbr": "KC",
   "name": "Kansas City Roos",
-  "score": 0
+  "score": 32
  },
  "neutral": false,
  "venue": "Swinney Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-06T01:49:53.217Z",

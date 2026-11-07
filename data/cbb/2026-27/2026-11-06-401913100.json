@@ -7,18 +7,18 @@
   "id": "2747",
   "abbr": "WOF",
   "name": "Wofford Terriers",
-  "score": 0
+  "score": 70
  },
  "home": {
   "id": "153",
   "abbr": "UNC",
   "name": "North Carolina Tar Heels",
-  "score": 0
+  "score": 109
  },
  "neutral": false,
  "venue": "Dean E. Smith Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-06T01:49:53.217Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 70,
+  "home": 109
+ }
 }
