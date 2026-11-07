@@ -22,12 +22,14 @@
  * out neutral-site games (early-season tournaments, where ESPN's odds are messiest) gives 60-45 (57.1%),
  * 131-105 (55.5%) and 133-104 (56.1%) (research/cbb/spreads_sharpen.py). That is the spread pick: 6+ points
  * off the opener, not a neutral site, graded at the opener. Found by splitting the data, so it's tracked as
- * its own record from November 2026 rather than a ★.
+ * its own record from November 2026 rather than a ★. With each team's own home edge added (withHomeEdge) the
+ * same rule went 60-36, 128-95 and 142-98 (59.0%).
  *
  * ★ MAAC unders (research/conferences/walk_forward.py): unders in MAAC conference games, picked each
  * season from earlier seasons only, went 322-253 (56.0%) at the closing total from 2021-22 to 2025-26.
  * Graded at the closing total (the opener is not confirmed: 2025-26 was even there).
  */
+import { CBB_HOME_EDGE } from "@/data/cbb/home-edge";
 import { CBB_PRIOR, CBB_PRIOR_EFF, CBB_PRIOR_TEMPO } from "@/data/cbb/prior-ratings";
 import { atsResult, etDayKey, hasScore, normCdf, ouResult, winnerOf, type CbbGame } from "./cbb";
 
@@ -418,8 +420,24 @@ export function rowFor(game: CbbGame, pred: Prediction): CbbModelRow {
   };
 }
 
+/**
+ * The home team's own home edge (src/data/cbb/home-edge.ts: how much it has beaten the closing spread at home
+ * in past seasons, shrunk), added to the margin of its home games. The market gives every team about the same
+ * home court; some buildings are worth more, some less.
+ */
+export function withHomeEdge<T extends Prediction>(pred: T, homeId: string, neutral: boolean): T {
+  const e = neutral ? 0 : (CBB_HOME_EDGE[homeId] ?? 0);
+  if (!e) return pred;
+  const margin = pred.margin + e;
+  return { ...pred, margin, home: (pred.total + margin) / 2, away: (pred.total - margin) / 2, homeWinProb: normCdf(margin / MARGIN_SD) };
+}
+
 const project = (table: RatingTable, market: MarketTable, g: CbbGame) =>
-  blendWithMarket(predictGame(table, g.home.team.id, g.away.team.id, g.neutral), market, g.home.team.id, g.away.team.id, g.neutral);
+  withHomeEdge(
+    blendWithMarket(predictGame(table, g.home.team.id, g.away.team.id, g.neutral), market, g.home.team.id, g.away.team.id, g.neutral),
+    g.home.team.id,
+    g.neutral,
+  );
 
 /**
  * Model rows for every game. Finished games are predicted from the games before their day only;
