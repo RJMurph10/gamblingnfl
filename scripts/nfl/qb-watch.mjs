@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 /**
  * QB news watch (NFL). Runs every 10 minutes during the season:
- *   1. finds each team's regular starting QB (most starts in its last 4 games, from nflverse),
+ *   1. finds each team's regular starting QB (most starts in its last 4 games, from nflverse), plus its
+ *      season starter if different (most starts this season: a star on IR whose return is news),
  *   2. reads ESPN's live injury report for that QB (Active / Questionable / Doubtful / Out / IR),
  *   3. logs every status change with the time and DraftKings' spread at that moment,
  *   4. keeps tracking the spread until kickoff, so you can see if (and when) the line caught up.
@@ -9,8 +10,8 @@
  *
  *   node scripts/nfl/qb-watch.mjs --season 2026 --out site-repo
  *   → <out>/nfl/qb-watch-2026.json
- *   { updatedAt, starters: {team: {qb, name}}, status: {team: {status, since}},
- *     events: [{ id, team, qb, name, from, to, at, game: {id, name, kickoff, home, away},
+ *   { updatedAt, starters: {"team|qb": {team, qb, name, role}}, status: {"team|qb": {status, since}},
+ *     events: [{ id, team, qb, name, role, from, to, at, game: {id, name, kickoff, home, away},
  *                open, atNews, now, track: [[at, spread]] }] }
  * Spreads are the TEAM's own (negative = favored), so a starter going out should push it up.
  */
@@ -49,7 +50,10 @@ const norm = (s) =>
 const LEVEL = { active: 0, questionable: 1, doubtful: 2, out: 3, "injured reserve": 3, suspension: 3, "physically unable to perform": 3 };
 const level = (s) => LEVEL[String(s ?? "").toLowerCase()] ?? (s ? 1 : 0);
 
-/** Regular starter per team: most starts in its last 4 games this season (latest breaks ties). */
+/**
+ * QBs to watch per team: the regular starter (most starts in its last 4 games, latest breaks ties) and,
+ * if different, the season starter (most starts this season, e.g. a star on IR whose return is news).
+ */
 async function regularStarters() {
   const csv = await get(GAMES_CSV, false);
   if (!csv) return null;
@@ -71,12 +75,17 @@ async function regularStarters() {
     }
   }
   const out = {};
-  for (const [team, list] of starts) {
-    const last = list.sort((a, b) => a.wk - b.wk).slice(-4);
+  const top = (list) => {
     const count = new Map();
-    last.forEach((s, i) => count.set(s.qb, (count.get(s.qb) ?? 0) + 1 + i / 100));
+    list.forEach((s, i) => count.set(s.qb, (count.get(s.qb) ?? 0) + 1 + i / 1000));
     const qb = [...count.entries()].sort((a, b) => b[1] - a[1])[0][0];
-    out[team] = { qb, name: last.findLast((s) => s.qb === qb).name };
+    return { qb, name: list.findLast((s) => s.qb === qb).name };
+  };
+  for (const [team, list] of starts) {
+    list.sort((a, b) => a.wk - b.wk);
+    const regular = { ...top(list.slice(-4)), role: "regular" };
+    const season = top(list);
+    out[team] = season.qb === regular.qb ? [regular] : [regular, { ...season, role: "season starter" }];
   }
   return out;
 }
@@ -132,38 +141,44 @@ async function main() {
     return;
   }
   let changed = 0;
-  for (const [team, s] of Object.entries(starters)) {
-    const status = inj[team]?.[norm(s.name)] ?? "Active";
-    const prev = state.status[team];
-    const sameQb = state.starters[team]?.qb === s.qb;
-    if (!prev || !sameQb) {
-      state.status[team] = { status, since: now };
-      state.starters[team] = s;
-      if (!prev) continue;
-      changed += 1;
-      continue; // a new regular starter isn't news by itself
+  for (const [team, list] of Object.entries(starters)) {
+    for (const s of list) {
+      const key = `${team}|${s.qb}`;
+      const status = inj[team]?.[norm(s.name)] ?? "Active";
+      const prev = state.status[key];
+      state.starters[key] = { team, ...s };
+      if (!prev) {
+        state.status[key] = { status, since: now };
+        changed += 1;
+        continue; // first time watching this QB: not news by itself
+      }
+      if (level(status) !== level(prev.status)) {
+        const g = games[team];
+        state.events.push({
+          id: `${key}|${now}`,
+          team,
+          qb: s.qb,
+          name: s.name,
+          role: s.role,
+          from: prev.status,
+          to: status,
+          at: now,
+          game: g?.pre ? g.game : null,
+          open: g?.pre ? g.open : null,
+          atNews: g?.pre ? g.spread : null,
+          now: g?.pre ? g.spread : null,
+          track: g?.pre && g.spread != null ? [[now, g.spread]] : [],
+        });
+        console.log(`NEWS ${team} ${s.name} (${s.role}): ${prev.status} → ${status}${g?.pre ? ` (${g.game.name}, spread ${g.spread})` : ""}`);
+        changed += 1;
+      }
+      if (status !== prev.status) state.status[key] = { status, since: now };
     }
-    if (level(status) !== level(prev.status)) {
-      const g = games[team];
-      state.events.push({
-        id: `${team}-${s.qb}-${now}`,
-        team,
-        qb: s.qb,
-        name: s.name,
-        from: prev.status,
-        to: status,
-        at: now,
-        game: g?.pre ? g.game : null,
-        open: g?.pre ? g.open : null,
-        atNews: g?.pre ? g.spread : null,
-        now: g?.pre ? g.spread : null,
-        track: g?.pre && g.spread != null ? [[now, g.spread]] : [],
-      });
-      console.log(`NEWS ${team} ${s.name}: ${prev.status} → ${status}${g?.pre ? ` (${g.game.name}, spread ${g.spread})` : ""}`);
-      changed += 1;
-    }
-    if (status !== prev.status) state.status[team] = { status, since: now };
   }
+  // QBs no longer watched drop out of the status list
+  const watched = new Set(Object.entries(starters).flatMap(([t, l]) => l.map((s) => `${t}|${s.qb}`)));
+  for (const k of Object.keys(state.status)) if (!watched.has(k)) delete state.status[k];
+  for (const k of Object.keys(state.starters)) if (!watched.has(k)) delete state.starters[k];
   // keep following the line for events whose game hasn't started
   for (const ev of state.events) {
     const g = games[ev.team];
