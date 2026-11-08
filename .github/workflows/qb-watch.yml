@@ -1,6 +1,8 @@
-# QB news watch: every 10 minutes during the NFL season, checks each team's starting QB on ESPN's
-# injury report and logs any status change with DraftKings' spread at that moment, then follows the
-# line to kickoff. Output: props-site/nfl/qb-watch-<season>.json (the site's "QB news" panel).
+# QB and injury news watch: every 10 minutes during the NFL season, checks each team's starting QB and
+# every player worth 0.4+ points on the spread against ESPN's injury report, logs status changes with
+# DraftKings' spread at that moment, then follows the line to kickoff.
+# Output: props-site/nfl/qb-watch-<season>.json (the site's "Injury news" panel). Player values
+# (props-site/nfl/player-values-<season>.json) are rebuilt once a day.
 # GitHub may run scheduled jobs a few minutes late.
 name: QB watch
 
@@ -40,6 +42,16 @@ jobs:
           season=$(date -u +%Y); [ "$(date -u +%m)" -lt 7 ] && season=$((season - 1))
           for attempt in 1 2 3 4; do
             rm -rf site-repo && git clone -q --depth 1 --branch props-site "$url" site-repo
+            # player values: rebuild when missing or more than 20 hours old
+            pv="site-repo/nfl/player-values-$season.json"
+            age=999999
+            if [ -f "$pv" ]; then age=$(( $(date +%s) - $(date -d "$(jq -r .builtAt "$pv")" +%s) )); fi
+            if [ "$age" -gt 72000 ]; then
+              pip install -q pandas pyarrow
+              curl -sSL -o hc.parquet https://github.com/nflverse/nflverse-data/releases/download/contracts/historical_contracts.parquet
+              python3 -c "import pandas as pd; c=pd.read_parquet('hc.parquet', columns=['otc_id','year_signed','apy_cap_pct']).dropna(); c['otc_id']=c.otc_id.astype(int); c.to_csv('contracts.csv', index=False)"
+              node app/scripts/nfl/player-values.mjs --season "$season" --contracts contracts.csv --out site-repo || echo "player values build failed"
+            fi
             node app/scripts/nfl/qb-watch.mjs --season "$season" --out site-repo
             cd site-repo
             git config user.name "qb-watch-bot"

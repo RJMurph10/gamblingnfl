@@ -1,17 +1,19 @@
 #!/usr/bin/env node
 /**
- * QB news watch (NFL). Runs every 10 minutes during the season:
+ * QB and injury news watch (NFL). Runs every 10 minutes during the season. QBs:
  *   1. finds each team's regular starting QB (most starts in its last 4 games, from nflverse), plus its
  *      season starter if different (most starts this season: a star on IR whose return is news),
  *   2. reads ESPN's live injury report for that QB (Active / Questionable / Doubtful / Out / IR),
  *   3. logs every status change with the time and DraftKings' spread at that moment,
  *   4. keeps tracking the spread until kickoff, so you can see if (and when) the line caught up.
- * The site shows it as the "QB news" panel (it adds the expected line move from its QB ratings).
+ * Every other position: players worth 0.4+ points on the spread (player-values-<season>.json, built
+ * daily) are logged when they go to Doubtful/Out/IR or come back, with their value as "pts".
+ * The site shows it as the "Injury news" panel (it adds the QBs' expected line move from its QB ratings).
  *
  *   node scripts/nfl/qb-watch.mjs --season 2026 --out site-repo
  *   → <out>/nfl/qb-watch-2026.json
  *   { updatedAt, starters: {"team|qb": {team, qb, name, role}}, status: {"team|qb": {status, since}},
- *     events: [{ id, team, qb, name, role, from, to, at, game: {id, name, kickoff, home, away},
+ *     events: [{ id, team, qb | player, name, role | pos+pts, from, to, at, game: {id, name, kickoff, home, away},
  *                open, atNews, now, track: [[at, spread]] }] }
  * Spreads are the TEAM's own (negative = favored), so a starter going out should push it up.
  */
@@ -115,16 +117,30 @@ async function slate() {
 async function injuries() {
   const json = await get(`${ESPN}/injuries`);
   if (!json) return null;
-  const out = {}; // team → normName → status
+  const out = {}; // team → normName → status (QBs)
+  const byId = {}; // ESPN athlete id → status (everyone)
   for (const t of json.injuries ?? []) {
     for (const inj of t.injuries ?? []) {
       const a = inj.athlete ?? {};
       const team = a.team?.abbreviation ?? t.abbreviation;
+      const status = String(inj.status ?? "Active");
+      if (a.id) byId[String(a.id)] = status;
       if (!team || a.position?.abbreviation !== "QB") continue;
-      (out[team] ??= {})[norm(a.displayName ?? a.fullName)] = String(inj.status ?? "Active");
+      (out[team] ??= {})[norm(a.displayName ?? a.fullName)] = status;
     }
   }
-  return out;
+  return { out, byId };
+}
+
+/** Players worth MIN_POINTS+ on the spread (scripts/nfl/player-values.mjs, built daily). */
+const MIN_POINTS = 0.4;
+async function playerValues() {
+  try {
+    const f = JSON.parse(await readFile(join(OUT, "nfl", `player-values-${SEASON}.json`), "utf8"));
+    return Object.entries(f.players).filter(([, p]) => p[2] !== "QB" && p[5] >= MIN_POINTS);
+  } catch {
+    return [];
+  }
 }
 
 async function main() {
@@ -135,7 +151,8 @@ async function main() {
   } catch {
     // first run
   }
-  const [starters, games, inj] = await Promise.all([regularStarters(), slate(), injuries()]);
+  const [starters, games, injAll, values] = await Promise.all([regularStarters(), slate(), injuries(), playerValues()]);
+  const inj = injAll?.out;
   if (!starters || !inj) {
     console.log("could not read starters or injuries; nothing changed");
     return;
@@ -175,8 +192,46 @@ async function main() {
       if (status !== prev.status) state.status[key] = { status, since: now };
     }
   }
-  // QBs no longer watched drop out of the status list
-  const watched = new Set(Object.entries(starters).flatMap(([t, l]) => l.map((s) => `${t}|${s.qb}`)));
+  // Every other position: valued players, logged when they go to Doubtful/Out/IR or come back from it
+  // (Questionable alone isn't logged). Event "pts" = what the market typically moves the team's spread.
+  const out = (st) => level(st) >= 2;
+  for (const [espnId, [name, team, pos, snap, capPct, pts]] of values) {
+    const key = `p|${espnId}`;
+    const status = injAll.byId[espnId] ?? "Active";
+    const prev = state.status[key];
+    if (!prev) {
+      state.status[key] = { status, since: now };
+      changed += 1;
+      continue;
+    }
+    if (out(status) !== out(prev.status)) {
+      const g = games[team];
+      state.events.push({
+        id: `${key}|${now}`,
+        team,
+        player: espnId,
+        name,
+        pos,
+        pts,
+        from: prev.status,
+        to: status,
+        at: now,
+        game: g?.pre ? g.game : null,
+        open: g?.pre ? g.open : null,
+        atNews: g?.pre ? g.spread : null,
+        now: g?.pre ? g.spread : null,
+        track: g?.pre && g.spread != null ? [[now, g.spread]] : [],
+      });
+      console.log(`NEWS ${team} ${name} (${pos}, ${pts} pts): ${prev.status} → ${status}`);
+      changed += 1;
+    }
+    if (status !== prev.status) state.status[key] = { status, since: now };
+  }
+  // QBs and players no longer watched drop out of the status list
+  const watched = new Set([
+    ...Object.entries(starters).flatMap(([t, l]) => l.map((s) => `${t}|${s.qb}`)),
+    ...values.map(([id]) => `p|${id}`),
+  ]);
   for (const k of Object.keys(state.status)) if (!watched.has(k)) delete state.status[k];
   for (const k of Object.keys(state.starters)) if (!watched.has(k)) delete state.starters[k];
   // keep following the line for events whose game hasn't started

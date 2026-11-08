@@ -4,9 +4,14 @@ import { createServerFn } from "@tanstack/react-start";
 export interface QbWatchEvent {
   id: string;
   team: string;
-  qb: string;
+  /** nflverse id (QBs) or ESPN athlete id (other positions). */
+  qb?: string;
+  player?: string;
   name: string;
   role?: string;
+  /** Other positions: position group and what he's worth on the spread (points). */
+  pos?: string;
+  pts?: number;
   from: string;
   to: string;
   /** When the watcher first saw the change. */

@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { LiveGamesPanel, RecentGamesPanel, UpcomingGames } from "@/components/shared/GameTables";
-import { QbNewsPanel } from "@/components/shared/QbNewsPanel";
+import { QbNewsPanel } from "@/components/nfl/QbNewsPanel";
 import {
   PageTitle,
   Panel,

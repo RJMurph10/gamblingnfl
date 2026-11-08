@@ -1,8 +1,10 @@
 /**
- * QB news: every change in a starting QB's injury status (checked every 10 minutes), with the spread
- * when the news broke, the spread now, and how far our QB ratings say it should move. A game is flagged
- * when the line hasn't moved half of that yet — the window where betting the opener after QB news won
- * 64-44 in 2024-2026 (research: claude/backup-qb.md).
+ * Injury news: every change in a starting QB's injury status, and every player worth 0.4+ points going
+ * Doubtful/Out or coming back (checked every 10 minutes), with the spread when the news broke, the spread
+ * now, and how far it should move: QBs from our QB ratings, everyone else from what the market moved
+ * spreads for his position and role in 2013-2025 (research/football/injuries/market_injury_weights.py).
+ * A game is flagged when the line hasn't moved 40% of that yet — the window where betting the opener after
+ * QB news won 64-44 in 2024-2026 (research: claude/backup-qb.md).
  */
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -60,8 +62,8 @@ export function QbNewsPanel() {
       .map((ev) => {
         const from = level(ev.from);
         const to = level(ev.to);
-        const big = (to >= 2 && from < 2) || (from >= 2 && to === 0);
-        const v = big && value ? value(ev.qb) : null;
+        const big = (to >= 2 && from < 2) || (from >= 2 && to === 0) || (ev.pos !== undefined && from >= 2 && to < 2);
+        const v = !big ? null : ev.pos !== undefined ? (ev.pts ?? null) : ev.qb && value ? value(ev.qb) : null;
         const expected = v === null ? null : to >= 2 ? v : -v;
         const moved = ev.atNews !== null && ev.now !== null ? ev.now - ev.atNews : null;
         const pre = ev.game ? Date.parse(ev.game.kickoff) > now : false;
@@ -78,14 +80,15 @@ export function QbNewsPanel() {
   return (
     <Panel padded={false}>
       <PanelHeader
-        title="QB news"
+        title="Injury news"
         aside={<span className="label-mono">{watch.isLoading ? "Loading…" : updated ? `checked ${updated}` : "Not running yet"}</span>}
       />
       <div className="px-4 py-3">
         <p className="text-sm text-mute">
-          Starting quarterbacks&apos; injury status, checked every 10 minutes, with the spread when the news broke and
-          now. <span className="font-semibold text-foreground">Line hasn&apos;t caught up</span> = it has moved less
-          than 40% of what the QB is worth, the window where bets at the opener after QB news went 64-44 in 2024–2026.
+          Starting quarterbacks, and every player worth 0.4+ points on the spread going out or coming back, checked
+          every 10 minutes, with the spread when the news broke and now.{" "}
+          <span className="font-semibold text-foreground">Line hasn&apos;t caught up</span> = it has moved less than
+          40% of what the player is worth, the window where bets at the opener after QB news went 64-44 in 2024–2026.
         </p>
         <div className="mt-3 divide-y divide-line/5 rounded-lg border border-line/10">
           {rows.length ? (
@@ -94,7 +97,8 @@ export function QbNewsPanel() {
                 <div className="flex items-center gap-2">
                   <span className="font-semibold text-foreground">{ev.team}</span>
                   <span className="min-w-0 flex-1 truncate">
-                    {ev.name}: {ev.from} → <span className={level(ev.to) >= 2 ? "text-loss" : level(ev.to) === 0 ? "text-win" : ""}>{ev.to}</span>
+                    {ev.name}
+                    {ev.pos ? <span className="text-faint"> {ev.pos}</span> : null}: {ev.from} → <span className={level(ev.to) >= 2 ? "text-loss" : level(ev.to) === 0 ? "text-win" : ""}>{ev.to}</span>
                   </span>
                   <span className="text-faint" suppressHydrationWarning>
                     {ago(ev.at)}
@@ -132,9 +136,10 @@ export function QbNewsPanel() {
           )}
         </div>
         <p className="mt-2 font-mono text-[10px] text-faint">
-          Not a ★: tracked live from Nov 8, 2026. &quot;Worth&quot; is the starter vs an unknown backup from our QB
-          ratings (capped at 7). Active = not on ESPN&apos;s injury report, so a benching won&apos;t show here.
-          Questionable changes are listed but not flagged.
+          Not a ★: tracked live from Nov 8, 2026. &quot;Worth&quot;: QBs vs an unknown backup from our QB ratings
+          (capped at 7); others = what the market moved spreads for a starter at that position out, 2013–2025 (e.g.
+          a full-time interior lineman 1.3 pts, wide receiver 1.0, safety ~0), scaled by his snap share and pay. Only
+          flagged at 1.5+ pts. Active = not on ESPN&apos;s injury report, so a benching won&apos;t show here.
         </p>
       </div>
     </Panel>
