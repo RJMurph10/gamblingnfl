@@ -477,5 +477,527 @@
    ]
   }
  },
- "props": {}
+ "props": {
+  "open": {
+   "at": "2026-11-08T07:27:09.725Z",
+   "provider": 100,
+   "count": 151,
+   "rows": [
+  {"a":"3032976","t":"First Basket","ti":"94","cur":[null,770,null]},
+  {"a":"4066336","t":"First Basket","ti":"94","cur":[null,690,null]},
+  {"a":"4397002","t":"First Basket","ti":"94","cur":[null,591,null]},
+  {"a":"4397077","t":"First Basket","ti":"94","cur":[null,970,null]},
+  {"a":"4431671","t":"First Basket","ti":"94","cur":[null,586,null]},
+  {"a":"4432816","t":"First Basket","ti":"94","cur":[null,519,null]},
+  {"a":"4433247","t":"First Basket","ti":"94","cur":[null,770,null]},
+  {"a":"4433627","t":"First Basket","ti":"94","cur":[null,820,null]},
+  {"a":"4873138","t":"First Basket","ti":"94","cur":[null,870,null]},
+  {"a":"5041955","t":"First Basket","ti":"94","cur":[null,1160,null]},
+  {"a":"3032976","t":"Points Milestones","ti":"218","op":[10,null,null],"cur":[6,null,null],"px":[-660,-122]},
+  {"a":"3032976","t":"Points Milestones","ti":"218","op":[10,null,null],"cur":[8,null,null],"px":[-262,-122]},
+  {"a":"3032976","t":"Points Milestones","ti":"218","op":[10,null,null],"cur":[10,null,null],"px":[-123,-122]},
+  {"a":"3032976","t":"Points Milestones","ti":"218","op":[10,null,null],"cur":[12,null,null],"px":[160,-122]},
+  {"a":"3032976","t":"Points Milestones","ti":"218","op":[10,null,null],"cur":[15,null,null],"px":[412,-122]},
+  {"a":"3032976","t":"Points Milestones","ti":"218","op":[10,null,null],"cur":[18,null,null],"px":[980,-122]},
+  {"a":"3032976","t":"Points Milestones","ti":"218","op":[10,null,null],"cur":[20,null,null],"px":[1660,-122]},
+  {"a":"4066336","t":"Points Milestones","ti":"218","op":[22,null,null],"cur":[12,null,null],"px":[-1540,-119]},
+  {"a":"4066336","t":"Points Milestones","ti":"218","op":[22,null,null],"cur":[15,null,null],"px":[-596,-119]},
+  {"a":"4066336","t":"Points Milestones","ti":"218","op":[22,null,null],"cur":[18,null,null],"px":[-288,-119]},
+  {"a":"4066336","t":"Points Milestones","ti":"218","op":[22,null,null],"cur":[20,null,null],"px":[-185,-119]},
+  {"a":"4066336","t":"Points Milestones","ti":"218","op":[22,null,null],"cur":[25,null,null],"px":[146,-119]},
+  {"a":"4066336","t":"Points Milestones","ti":"218","op":[22,null,null],"cur":[30,null,null],"px":[369,-119]},
+  {"a":"4066336","t":"Points Milestones","ti":"218","op":[22,null,null],"cur":[35,null,null],"px":[870,-119]},
+  {"a":"4066336","t":"Points Milestones","ti":"218","op":[22,null,null],"cur":[40,null,null],"px":[1860,-119]},
+  {"a":"4066336","t":"Points Milestones","ti":"218","op":[22,null,null],"cur":[22,null,null],"px":[-123,-119]},
+  {"a":"4397002","t":"Points Milestones","ti":"218","op":[18,null,null],"cur":[10,null,null],"px":[-1300,-108]},
+  {"a":"4397002","t":"Points Milestones","ti":"218","op":[18,null,null],"cur":[12,null,null],"px":[-596,-108]},
+  {"a":"4397002","t":"Points Milestones","ti":"218","op":[18,null,null],"cur":[15,null,null],"px":[-244,-108]},
+  {"a":"4397002","t":"Points Milestones","ti":"218","op":[18,null,null],"cur":[18,null,null],"px":[-115,-108]},
+  {"a":"4397002","t":"Points Milestones","ti":"218","op":[18,null,null],"cur":[20,null,null],"px":[138,-108]},
+  {"a":"4397002","t":"Points Milestones","ti":"218","op":[18,null,null],"cur":[25,null,null],"px":[406,-108]},
+  {"a":"4397002","t":"Points Milestones","ti":"218","op":[18,null,null],"cur":[30,null,null],"px":[1140,-108]},
+  {"a":"4397002","t":"Points Milestones","ti":"218","op":[18,null,null],"cur":[35,null,null],"px":[2600,-108]},
+  {"a":"4397077","t":"Points Milestones","ti":"218","op":[9,null,null],"cur":[6,null,null],"px":[-360,-105]},
+  {"a":"4397077","t":"Points Milestones","ti":"218","op":[9,null,null],"cur":[8,null,null],"px":[-161,-105]},
+  {"a":"4397077","t":"Points Milestones","ti":"218","op":[9,null,null],"cur":[9,null,null],"px":[-108,-105]},
+  {"a":"4397077","t":"Points Milestones","ti":"218","op":[9,null,null],"cur":[10,null,null],"px":[118,-105]},
+  {"a":"4397077","t":"Points Milestones","ti":"218","op":[9,null,null],"cur":[12,null,null],"px":[216,-105]},
+  {"a":"4397077","t":"Points Milestones","ti":"218","op":[9,null,null],"cur":[15,null,null],"px":[508,-105]},
+  {"a":"4397077","t":"Points Milestones","ti":"218","op":[9,null,null],"cur":[18,null,null],"px":[1060,-105]},
+  {"a":"4397077","t":"Points Milestones","ti":"218","op":[9,null,null],"cur":[20,null,null],"px":[1740,-105]},
+  {"a":"4431671","t":"Points Milestones","ti":"218","op":[18,null,null],"cur":[10,null,null],"px":[-820,101]},
+  {"a":"4431671","t":"Points Milestones","ti":"218","op":[18,null,null],"cur":[12,null,null],"px":[-425,101]},
+  {"a":"4431671","t":"Points Milestones","ti":"218","op":[18,null,null],"cur":[15,null,null],"px":[-191,101]},
+  {"a":"4431671","t":"Points Milestones","ti":"218","op":[18,null,null],"cur":[18,null,null],"px":[107,101]},
+  {"a":"4431671","t":"Points Milestones","ti":"218","op":[18,null,null],"cur":[20,null,null],"px":[168,101]},
+  {"a":"4431671","t":"Points Milestones","ti":"218","op":[18,null,null],"cur":[25,null,null],"px":[497,101]},
+  {"a":"4431671","t":"Points Milestones","ti":"218","op":[18,null,null],"cur":[30,null,null],"px":[1340,101]},
+  {"a":"4431671","t":"Points Milestones","ti":"218","op":[18,null,null],"cur":[17,null,null],"px":[-117,101]},
+  {"a":"4431671","t":"Points Milestones","ti":"218","op":[18,null,null],"cur":[35,null,null],"px":[2900,101]},
+  {"a":"4432816","t":"Points Milestones","ti":"218","op":[20,null,null],"cur":[10,null,null],"px":[-1560,-120]},
+  {"a":"4432816","t":"Points Milestones","ti":"218","op":[20,null,null],"cur":[12,null,null],"px":[-820,-120]},
+  {"a":"4432816","t":"Points Milestones","ti":"218","op":[20,null,null],"cur":[15,null,null],"px":[-372,-120]},
+  {"a":"4432816","t":"Points Milestones","ti":"218","op":[20,null,null],"cur":[18,null,null],"px":[-192,-120]},
+  {"a":"4432816","t":"Points Milestones","ti":"218","op":[20,null,null],"cur":[20,null,null],"px":[-129,-120]},
+  {"a":"4432816","t":"Points Milestones","ti":"218","op":[20,null,null],"cur":[25,null,null],"px":[199,-120]},
+  {"a":"4432816","t":"Points Milestones","ti":"218","op":[20,null,null],"cur":[30,null,null],"px":[490,-120]},
+  {"a":"4432816","t":"Points Milestones","ti":"218","op":[20,null,null],"cur":[35,null,null],"px":[1120,-120]},
+  {"a":"4432816","t":"Points Milestones","ti":"218","op":[20,null,null],"cur":[40,null,null],"px":[2300,-120]},
+  {"a":"4432816","t":"Points Milestones","ti":"218","op":[20,null,null],"cur":[21,null,null],"px":[-106,-120]},
+  {"a":"4433247","t":"Points Milestones","ti":"218","op":[16,null,null],"cur":[8,null,null],"px":[-1520,-121]},
+  {"a":"4433247","t":"Points Milestones","ti":"218","op":[16,null,null],"cur":[10,null,null],"px":[-660,-121]},
+  {"a":"4433247","t":"Points Milestones","ti":"218","op":[16,null,null],"cur":[12,null,null],"px":[-338,-121]},
+  {"a":"4433247","t":"Points Milestones","ti":"218","op":[16,null,null],"cur":[15,null,null],"px":[-150,-121]},
+  {"a":"4433247","t":"Points Milestones","ti":"218","op":[16,null,null],"cur":[18,null,null],"px":[138,-121]},
+  {"a":"4433247","t":"Points Milestones","ti":"218","op":[16,null,null],"cur":[20,null,null],"px":[217,-121]},
+  {"a":"4433247","t":"Points Milestones","ti":"218","op":[16,null,null],"cur":[25,null,null],"px":[670,-121]},
+  {"a":"4433247","t":"Points Milestones","ti":"218","op":[16,null,null],"cur":[30,null,null],"px":[1760,-121]},
+  {"a":"4433247","t":"Points Milestones","ti":"218","op":[16,null,null],"cur":[16,null,null],"px":[-117,-121]},
+  {"a":"4433627","t":"Points Milestones","ti":"218","op":[22,null,null],"cur":[12,null,null],"px":[-1340,-121]},
+  {"a":"4433627","t":"Points Milestones","ti":"218","op":[22,null,null],"cur":[15,null,null],"px":[-534,-121]},
+  {"a":"4433627","t":"Points Milestones","ti":"218","op":[22,null,null],"cur":[18,null,null],"px":[-262,-121]},
+  {"a":"4433627","t":"Points Milestones","ti":"218","op":[22,null,null],"cur":[20,null,null],"px":[-171,-121]},
+  {"a":"4433627","t":"Points Milestones","ti":"218","op":[22,null,null],"cur":[25,null,null],"px":[151,-121]},
+  {"a":"4433627","t":"Points Milestones","ti":"218","op":[22,null,null],"cur":[30,null,null],"px":[369,-121]},
+  {"a":"4433627","t":"Points Milestones","ti":"218","op":[22,null,null],"cur":[35,null,null],"px":[870,-121]},
+  {"a":"4433627","t":"Points Milestones","ti":"218","op":[22,null,null],"cur":[40,null,null],"px":[1880,-121]},
+  {"a":"4433627","t":"Points Milestones","ti":"218","op":[22,null,null],"cur":[22,null,null],"px":[-114,-121]},
+  {"a":"4873138","t":"Points Milestones","ti":"218","op":[15,null,null],"cur":[8,null,null],"px":[-770,100]},
+  {"a":"4873138","t":"Points Milestones","ti":"218","op":[15,null,null],"cur":[10,null,null],"px":[-389,100]},
+  {"a":"4873138","t":"Points Milestones","ti":"218","op":[15,null,null],"cur":[12,null,null],"px":[-221,100]},
+  {"a":"4873138","t":"Points Milestones","ti":"218","op":[15,null,null],"cur":[15,null,null],"px":[-103,100]},
+  {"a":"4873138","t":"Points Milestones","ti":"218","op":[15,null,null],"cur":[18,null,null],"px":[192,100]},
+  {"a":"4873138","t":"Points Milestones","ti":"218","op":[15,null,null],"cur":[20,null,null],"px":[297,100]},
+  {"a":"4873138","t":"Points Milestones","ti":"218","op":[15,null,null],"cur":[25,null,null],"px":[820,100]},
+  {"a":"4873138","t":"Points Milestones","ti":"218","op":[15,null,null],"cur":[30,null,null],"px":[2100,100]},
+  {"a":"5041955","t":"Points Milestones","ti":"218","op":[15,null,null],"cur":[6,null,null],"px":[-1720,-102]},
+  {"a":"5041955","t":"Points Milestones","ti":"218","op":[15,null,null],"cur":[8,null,null],"px":[-710,-102]},
+  {"a":"5041955","t":"Points Milestones","ti":"218","op":[15,null,null],"cur":[10,null,null],"px":[-362,-102]},
+  {"a":"5041955","t":"Points Milestones","ti":"218","op":[15,null,null],"cur":[12,null,null],"px":[-202,-102]},
+  {"a":"5041955","t":"Points Milestones","ti":"218","op":[15,null,null],"cur":[14,null,null],"px":[-119,-102]},
+  {"a":"5041955","t":"Points Milestones","ti":"218","op":[15,null,null],"cur":[15,null,null],"px":[108,-102]},
+  {"a":"5041955","t":"Points Milestones","ti":"218","op":[15,null,null],"cur":[18,null,null],"px":[213,-102]},
+  {"a":"5041955","t":"Points Milestones","ti":"218","op":[15,null,null],"cur":[20,null,null],"px":[323,-102]},
+  {"a":"5041955","t":"Points Milestones","ti":"218","op":[15,null,null],"cur":[25,null,null],"px":[910,-102]},
+  {"a":"5041955","t":"Points Milestones","ti":"218","op":[15,null,null],"cur":[30,null,null],"px":[2200,-102]},
+  {"a":"4066336","t":"3-Point Field Goals Milestones","ti":"221","op":[3,null,null],"cur":[1,null,null],"px":[-3000,-141]},
+  {"a":"4066336","t":"3-Point Field Goals Milestones","ti":"221","op":[3,null,null],"cur":[2,null,null],"px":[-450,-141]},
+  {"a":"4066336","t":"3-Point Field Goals Milestones","ti":"221","op":[3,null,null],"cur":[3,null,null],"px":[-148,-141]},
+  {"a":"4066336","t":"3-Point Field Goals Milestones","ti":"221","op":[3,null,null],"cur":[4,null,null],"px":[165,-141]},
+  {"a":"4066336","t":"3-Point Field Goals Milestones","ti":"221","op":[3,null,null],"cur":[5,null,null],"px":[358,-141]},
+  {"a":"4066336","t":"3-Point Field Goals Milestones","ti":"221","op":[3,null,null],"cur":[6,null,null],"px":[760,-141]},
+  {"a":"4066336","t":"3-Point Field Goals Milestones","ti":"221","op":[3,null,null],"cur":[7,null,null],"px":[1480,-141]},
+  {"a":"4066336","t":"3-Point Field Goals Milestones","ti":"221","op":[3,null,null],"cur":[8,null,null],"px":[2500,-141]},
+  {"a":"4397002","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[1,null,null],"px":[-700,-136]},
+  {"a":"4397002","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[2,null,null],"px":[-147,-136]},
+  {"a":"4397002","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[3,null,null],"px":[204,-136]},
+  {"a":"4397002","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[4,null,null],"px":[536,-136]},
+  {"a":"4397002","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[5,null,null],"px":[1240,-136]},
+  {"a":"4397002","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[6,null,null],"px":[2500,-136]},
+  {"a":"4431671","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[1,null,null],"px":[-524,-113]},
+  {"a":"4431671","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[2,null,null],"px":[-118,-113]},
+  {"a":"4431671","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[3,null,null],"px":[250,-113]},
+  {"a":"4431671","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[4,null,null],"px":[650,-113]},
+  {"a":"4431671","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[5,null,null],"px":[1520,-113]},
+  {"a":"4431671","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[6,null,null],"px":[2700,-113]},
+  {"a":"4432816","t":"3-Point Field Goals Milestones","ti":"221","op":[4,null,null],"cur":[2,null,null],"px":[-740,-110]},
+  {"a":"4432816","t":"3-Point Field Goals Milestones","ti":"221","op":[4,null,null],"cur":[3,null,null],"px":[-252,-110]},
+  {"a":"4432816","t":"3-Point Field Goals Milestones","ti":"221","op":[4,null,null],"cur":[4,null,null],"px":[-112,-110]},
+  {"a":"4432816","t":"3-Point Field Goals Milestones","ti":"221","op":[4,null,null],"cur":[5,null,null],"px":[183,-110]},
+  {"a":"4432816","t":"3-Point Field Goals Milestones","ti":"221","op":[4,null,null],"cur":[6,null,null],"px":[349,-110]},
+  {"a":"4432816","t":"3-Point Field Goals Milestones","ti":"221","op":[4,null,null],"cur":[7,null,null],"px":[660,-110]},
+  {"a":"4432816","t":"3-Point Field Goals Milestones","ti":"221","op":[4,null,null],"cur":[8,null,null],"px":[1160,-110]},
+  {"a":"4432816","t":"3-Point Field Goals Milestones","ti":"221","op":[4,null,null],"cur":[9,null,null],"px":[1960,-110]},
+  {"a":"4432816","t":"3-Point Field Goals Milestones","ti":"221","op":[4,null,null],"cur":[10,null,null],"px":[2900,-110]},
+  {"a":"4433247","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[1,null,null],"px":[-610,-125]},
+  {"a":"4433247","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[2,null,null],"px":[-131,-125]},
+  {"a":"4433247","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[3,null,null],"px":[232,-125]},
+  {"a":"4433247","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[4,null,null],"px":[600,-125]},
+  {"a":"4433247","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[5,null,null],"px":[1380,-125]},
+  {"a":"4433247","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[6,null,null],"px":[2700,-125]},
+  {"a":"4433627","t":"3-Point Field Goals Milestones","ti":"221","op":[3,null,null],"cur":[1,null,null],"px":[-940,150]},
+  {"a":"4433627","t":"3-Point Field Goals Milestones","ti":"221","op":[3,null,null],"cur":[2,null,null],"px":[-201,150]},
+  {"a":"4433627","t":"3-Point Field Goals Milestones","ti":"221","op":[3,null,null],"cur":[3,null,null],"px":[141,150]},
+  {"a":"4433627","t":"3-Point Field Goals Milestones","ti":"221","op":[3,null,null],"cur":[4,null,null],"px":[340,150]},
+  {"a":"4433627","t":"3-Point Field Goals Milestones","ti":"221","op":[3,null,null],"cur":[5,null,null],"px":[760,150]},
+  {"a":"4433627","t":"3-Point Field Goals Milestones","ti":"221","op":[3,null,null],"cur":[6,null,null],"px":[1580,150]},
+  {"a":"4433627","t":"3-Point Field Goals Milestones","ti":"221","op":[3,null,null],"cur":[7,null,null],"px":[2800,150]},
+  {"a":"4873138","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[1,null,null],"px":[-780,-162]},
+  {"a":"4873138","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[2,null,null],"px":[-169,-162]},
+  {"a":"4873138","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[3,null,null],"px":[169,-162]},
+  {"a":"4873138","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[4,null,null],"px":[430,-162]},
+  {"a":"4873138","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[5,null,null],"px":[970,-162]},
+  {"a":"4873138","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[6,null,null],"px":[1980,-162]},
+  {"a":"5041955","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[1,null,null],"px":[-517,-111]},
+  {"a":"5041955","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[2,null,null],"px":[-115,-111]},
+  {"a":"5041955","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[3,null,null],"px":[255,-111]},
+  {"a":"5041955","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[4,null,null],"px":[680,-111]},
+  {"a":"5041955","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[5,null,null],"px":[1580,-111]},
+  {"a":"5041955","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[6,null,null],"px":[2800,-111]}
+ ],
+   "sample": [
+    {
+     "competition": {
+      "id": "401909947"
+     },
+     "athlete": {
+      "id": "3032976"
+     },
+     "provider": {
+      "id": "100"
+     },
+     "type": {
+      "id": "94",
+      "name": "First Basket"
+     },
+     "odds": {
+      "american": {
+       "value": "+770",
+       "open": "+760"
+      },
+      "decimal": {
+       "value": "8.70",
+       "open": "8.60"
+      },
+      "fraction": {
+       "value": "77/10",
+       "open": "38/5"
+      },
+      "total": {}
+     },
+     "lastUpdated": "2026-11-08T09:56Z",
+     "current": {},
+     "open": {}
+    },
+    {
+     "competition": {
+      "id": "401909947"
+     },
+     "athlete": {
+      "id": "4066336"
+     },
+     "provider": {
+      "id": "100"
+     },
+     "type": {
+      "id": "94",
+      "name": "First Basket"
+     },
+     "odds": {
+      "american": {
+       "value": "+690",
+       "open": "+700"
+      },
+      "decimal": {
+       "value": "7.90",
+       "open": "8.00"
+      },
+      "fraction": {
+       "value": "69/10",
+       "open": "7/1"
+      },
+      "total": {}
+     },
+     "lastUpdated": "2026-11-08T09:56Z",
+     "current": {},
+     "open": {}
+    }
+   ]
+  },
+  "latest": {
+   "at": "2026-11-08T07:27:09.725Z",
+   "count": 151,
+   "rows": [
+  {"a":"3032976","t":"First Basket","ti":"94","cur":[null,770,null]},
+  {"a":"4066336","t":"First Basket","ti":"94","cur":[null,690,null]},
+  {"a":"4397002","t":"First Basket","ti":"94","cur":[null,591,null]},
+  {"a":"4397077","t":"First Basket","ti":"94","cur":[null,970,null]},
+  {"a":"4431671","t":"First Basket","ti":"94","cur":[null,586,null]},
+  {"a":"4432816","t":"First Basket","ti":"94","cur":[null,519,null]},
+  {"a":"4433247","t":"First Basket","ti":"94","cur":[null,770,null]},
+  {"a":"4433627","t":"First Basket","ti":"94","cur":[null,820,null]},
+  {"a":"4873138","t":"First Basket","ti":"94","cur":[null,870,null]},
+  {"a":"5041955","t":"First Basket","ti":"94","cur":[null,1160,null]},
+  {"a":"3032976","t":"Points Milestones","ti":"218","op":[10,null,null],"cur":[6,null,null],"px":[-660,-122]},
+  {"a":"3032976","t":"Points Milestones","ti":"218","op":[10,null,null],"cur":[8,null,null],"px":[-262,-122]},
+  {"a":"3032976","t":"Points Milestones","ti":"218","op":[10,null,null],"cur":[10,null,null],"px":[-123,-122]},
+  {"a":"3032976","t":"Points Milestones","ti":"218","op":[10,null,null],"cur":[12,null,null],"px":[160,-122]},
+  {"a":"3032976","t":"Points Milestones","ti":"218","op":[10,null,null],"cur":[15,null,null],"px":[412,-122]},
+  {"a":"3032976","t":"Points Milestones","ti":"218","op":[10,null,null],"cur":[18,null,null],"px":[980,-122]},
+  {"a":"3032976","t":"Points Milestones","ti":"218","op":[10,null,null],"cur":[20,null,null],"px":[1660,-122]},
+  {"a":"4066336","t":"Points Milestones","ti":"218","op":[22,null,null],"cur":[12,null,null],"px":[-1540,-119]},
+  {"a":"4066336","t":"Points Milestones","ti":"218","op":[22,null,null],"cur":[15,null,null],"px":[-596,-119]},
+  {"a":"4066336","t":"Points Milestones","ti":"218","op":[22,null,null],"cur":[18,null,null],"px":[-288,-119]},
+  {"a":"4066336","t":"Points Milestones","ti":"218","op":[22,null,null],"cur":[20,null,null],"px":[-185,-119]},
+  {"a":"4066336","t":"Points Milestones","ti":"218","op":[22,null,null],"cur":[25,null,null],"px":[146,-119]},
+  {"a":"4066336","t":"Points Milestones","ti":"218","op":[22,null,null],"cur":[30,null,null],"px":[369,-119]},
+  {"a":"4066336","t":"Points Milestones","ti":"218","op":[22,null,null],"cur":[35,null,null],"px":[870,-119]},
+  {"a":"4066336","t":"Points Milestones","ti":"218","op":[22,null,null],"cur":[40,null,null],"px":[1860,-119]},
+  {"a":"4066336","t":"Points Milestones","ti":"218","op":[22,null,null],"cur":[22,null,null],"px":[-123,-119]},
+  {"a":"4397002","t":"Points Milestones","ti":"218","op":[18,null,null],"cur":[10,null,null],"px":[-1300,-108]},
+  {"a":"4397002","t":"Points Milestones","ti":"218","op":[18,null,null],"cur":[12,null,null],"px":[-596,-108]},
+  {"a":"4397002","t":"Points Milestones","ti":"218","op":[18,null,null],"cur":[15,null,null],"px":[-244,-108]},
+  {"a":"4397002","t":"Points Milestones","ti":"218","op":[18,null,null],"cur":[18,null,null],"px":[-115,-108]},
+  {"a":"4397002","t":"Points Milestones","ti":"218","op":[18,null,null],"cur":[20,null,null],"px":[138,-108]},
+  {"a":"4397002","t":"Points Milestones","ti":"218","op":[18,null,null],"cur":[25,null,null],"px":[406,-108]},
+  {"a":"4397002","t":"Points Milestones","ti":"218","op":[18,null,null],"cur":[30,null,null],"px":[1140,-108]},
+  {"a":"4397002","t":"Points Milestones","ti":"218","op":[18,null,null],"cur":[35,null,null],"px":[2600,-108]},
+  {"a":"4397077","t":"Points Milestones","ti":"218","op":[9,null,null],"cur":[6,null,null],"px":[-360,-105]},
+  {"a":"4397077","t":"Points Milestones","ti":"218","op":[9,null,null],"cur":[8,null,null],"px":[-161,-105]},
+  {"a":"4397077","t":"Points Milestones","ti":"218","op":[9,null,null],"cur":[9,null,null],"px":[-108,-105]},
+  {"a":"4397077","t":"Points Milestones","ti":"218","op":[9,null,null],"cur":[10,null,null],"px":[118,-105]},
+  {"a":"4397077","t":"Points Milestones","ti":"218","op":[9,null,null],"cur":[12,null,null],"px":[216,-105]},
+  {"a":"4397077","t":"Points Milestones","ti":"218","op":[9,null,null],"cur":[15,null,null],"px":[508,-105]},
+  {"a":"4397077","t":"Points Milestones","ti":"218","op":[9,null,null],"cur":[18,null,null],"px":[1060,-105]},
+  {"a":"4397077","t":"Points Milestones","ti":"218","op":[9,null,null],"cur":[20,null,null],"px":[1740,-105]},
+  {"a":"4431671","t":"Points Milestones","ti":"218","op":[18,null,null],"cur":[10,null,null],"px":[-820,101]},
+  {"a":"4431671","t":"Points Milestones","ti":"218","op":[18,null,null],"cur":[12,null,null],"px":[-425,101]},
+  {"a":"4431671","t":"Points Milestones","ti":"218","op":[18,null,null],"cur":[15,null,null],"px":[-191,101]},
+  {"a":"4431671","t":"Points Milestones","ti":"218","op":[18,null,null],"cur":[18,null,null],"px":[107,101]},
+  {"a":"4431671","t":"Points Milestones","ti":"218","op":[18,null,null],"cur":[20,null,null],"px":[168,101]},
+  {"a":"4431671","t":"Points Milestones","ti":"218","op":[18,null,null],"cur":[25,null,null],"px":[497,101]},
+  {"a":"4431671","t":"Points Milestones","ti":"218","op":[18,null,null],"cur":[30,null,null],"px":[1340,101]},
+  {"a":"4431671","t":"Points Milestones","ti":"218","op":[18,null,null],"cur":[17,null,null],"px":[-117,101]},
+  {"a":"4431671","t":"Points Milestones","ti":"218","op":[18,null,null],"cur":[35,null,null],"px":[2900,101]},
+  {"a":"4432816","t":"Points Milestones","ti":"218","op":[20,null,null],"cur":[10,null,null],"px":[-1560,-120]},
+  {"a":"4432816","t":"Points Milestones","ti":"218","op":[20,null,null],"cur":[12,null,null],"px":[-820,-120]},
+  {"a":"4432816","t":"Points Milestones","ti":"218","op":[20,null,null],"cur":[15,null,null],"px":[-372,-120]},
+  {"a":"4432816","t":"Points Milestones","ti":"218","op":[20,null,null],"cur":[18,null,null],"px":[-192,-120]},
+  {"a":"4432816","t":"Points Milestones","ti":"218","op":[20,null,null],"cur":[20,null,null],"px":[-129,-120]},
+  {"a":"4432816","t":"Points Milestones","ti":"218","op":[20,null,null],"cur":[25,null,null],"px":[199,-120]},
+  {"a":"4432816","t":"Points Milestones","ti":"218","op":[20,null,null],"cur":[30,null,null],"px":[490,-120]},
+  {"a":"4432816","t":"Points Milestones","ti":"218","op":[20,null,null],"cur":[35,null,null],"px":[1120,-120]},
+  {"a":"4432816","t":"Points Milestones","ti":"218","op":[20,null,null],"cur":[40,null,null],"px":[2300,-120]},
+  {"a":"4432816","t":"Points Milestones","ti":"218","op":[20,null,null],"cur":[21,null,null],"px":[-106,-120]},
+  {"a":"4433247","t":"Points Milestones","ti":"218","op":[16,null,null],"cur":[8,null,null],"px":[-1520,-121]},
+  {"a":"4433247","t":"Points Milestones","ti":"218","op":[16,null,null],"cur":[10,null,null],"px":[-660,-121]},
+  {"a":"4433247","t":"Points Milestones","ti":"218","op":[16,null,null],"cur":[12,null,null],"px":[-338,-121]},
+  {"a":"4433247","t":"Points Milestones","ti":"218","op":[16,null,null],"cur":[15,null,null],"px":[-150,-121]},
+  {"a":"4433247","t":"Points Milestones","ti":"218","op":[16,null,null],"cur":[18,null,null],"px":[138,-121]},
+  {"a":"4433247","t":"Points Milestones","ti":"218","op":[16,null,null],"cur":[20,null,null],"px":[217,-121]},
+  {"a":"4433247","t":"Points Milestones","ti":"218","op":[16,null,null],"cur":[25,null,null],"px":[670,-121]},
+  {"a":"4433247","t":"Points Milestones","ti":"218","op":[16,null,null],"cur":[30,null,null],"px":[1760,-121]},
+  {"a":"4433247","t":"Points Milestones","ti":"218","op":[16,null,null],"cur":[16,null,null],"px":[-117,-121]},
+  {"a":"4433627","t":"Points Milestones","ti":"218","op":[22,null,null],"cur":[12,null,null],"px":[-1340,-121]},
+  {"a":"4433627","t":"Points Milestones","ti":"218","op":[22,null,null],"cur":[15,null,null],"px":[-534,-121]},
+  {"a":"4433627","t":"Points Milestones","ti":"218","op":[22,null,null],"cur":[18,null,null],"px":[-262,-121]},
+  {"a":"4433627","t":"Points Milestones","ti":"218","op":[22,null,null],"cur":[20,null,null],"px":[-171,-121]},
+  {"a":"4433627","t":"Points Milestones","ti":"218","op":[22,null,null],"cur":[25,null,null],"px":[151,-121]},
+  {"a":"4433627","t":"Points Milestones","ti":"218","op":[22,null,null],"cur":[30,null,null],"px":[369,-121]},
+  {"a":"4433627","t":"Points Milestones","ti":"218","op":[22,null,null],"cur":[35,null,null],"px":[870,-121]},
+  {"a":"4433627","t":"Points Milestones","ti":"218","op":[22,null,null],"cur":[40,null,null],"px":[1880,-121]},
+  {"a":"4433627","t":"Points Milestones","ti":"218","op":[22,null,null],"cur":[22,null,null],"px":[-114,-121]},
+  {"a":"4873138","t":"Points Milestones","ti":"218","op":[15,null,null],"cur":[8,null,null],"px":[-770,100]},
+  {"a":"4873138","t":"Points Milestones","ti":"218","op":[15,null,null],"cur":[10,null,null],"px":[-389,100]},
+  {"a":"4873138","t":"Points Milestones","ti":"218","op":[15,null,null],"cur":[12,null,null],"px":[-221,100]},
+  {"a":"4873138","t":"Points Milestones","ti":"218","op":[15,null,null],"cur":[15,null,null],"px":[-103,100]},
+  {"a":"4873138","t":"Points Milestones","ti":"218","op":[15,null,null],"cur":[18,null,null],"px":[192,100]},
+  {"a":"4873138","t":"Points Milestones","ti":"218","op":[15,null,null],"cur":[20,null,null],"px":[297,100]},
+  {"a":"4873138","t":"Points Milestones","ti":"218","op":[15,null,null],"cur":[25,null,null],"px":[820,100]},
+  {"a":"4873138","t":"Points Milestones","ti":"218","op":[15,null,null],"cur":[30,null,null],"px":[2100,100]},
+  {"a":"5041955","t":"Points Milestones","ti":"218","op":[15,null,null],"cur":[6,null,null],"px":[-1720,-102]},
+  {"a":"5041955","t":"Points Milestones","ti":"218","op":[15,null,null],"cur":[8,null,null],"px":[-710,-102]},
+  {"a":"5041955","t":"Points Milestones","ti":"218","op":[15,null,null],"cur":[10,null,null],"px":[-362,-102]},
+  {"a":"5041955","t":"Points Milestones","ti":"218","op":[15,null,null],"cur":[12,null,null],"px":[-202,-102]},
+  {"a":"5041955","t":"Points Milestones","ti":"218","op":[15,null,null],"cur":[14,null,null],"px":[-119,-102]},
+  {"a":"5041955","t":"Points Milestones","ti":"218","op":[15,null,null],"cur":[15,null,null],"px":[108,-102]},
+  {"a":"5041955","t":"Points Milestones","ti":"218","op":[15,null,null],"cur":[18,null,null],"px":[213,-102]},
+  {"a":"5041955","t":"Points Milestones","ti":"218","op":[15,null,null],"cur":[20,null,null],"px":[323,-102]},
+  {"a":"5041955","t":"Points Milestones","ti":"218","op":[15,null,null],"cur":[25,null,null],"px":[910,-102]},
+  {"a":"5041955","t":"Points Milestones","ti":"218","op":[15,null,null],"cur":[30,null,null],"px":[2200,-102]},
+  {"a":"4066336","t":"3-Point Field Goals Milestones","ti":"221","op":[3,null,null],"cur":[1,null,null],"px":[-3000,-141]},
+  {"a":"4066336","t":"3-Point Field Goals Milestones","ti":"221","op":[3,null,null],"cur":[2,null,null],"px":[-450,-141]},
+  {"a":"4066336","t":"3-Point Field Goals Milestones","ti":"221","op":[3,null,null],"cur":[3,null,null],"px":[-148,-141]},
+  {"a":"4066336","t":"3-Point Field Goals Milestones","ti":"221","op":[3,null,null],"cur":[4,null,null],"px":[165,-141]},
+  {"a":"4066336","t":"3-Point Field Goals Milestones","ti":"221","op":[3,null,null],"cur":[5,null,null],"px":[358,-141]},
+  {"a":"4066336","t":"3-Point Field Goals Milestones","ti":"221","op":[3,null,null],"cur":[6,null,null],"px":[760,-141]},
+  {"a":"4066336","t":"3-Point Field Goals Milestones","ti":"221","op":[3,null,null],"cur":[7,null,null],"px":[1480,-141]},
+  {"a":"4066336","t":"3-Point Field Goals Milestones","ti":"221","op":[3,null,null],"cur":[8,null,null],"px":[2500,-141]},
+  {"a":"4397002","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[1,null,null],"px":[-700,-136]},
+  {"a":"4397002","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[2,null,null],"px":[-147,-136]},
+  {"a":"4397002","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[3,null,null],"px":[204,-136]},
+  {"a":"4397002","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[4,null,null],"px":[536,-136]},
+  {"a":"4397002","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[5,null,null],"px":[1240,-136]},
+  {"a":"4397002","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[6,null,null],"px":[2500,-136]},
+  {"a":"4431671","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[1,null,null],"px":[-524,-113]},
+  {"a":"4431671","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[2,null,null],"px":[-118,-113]},
+  {"a":"4431671","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[3,null,null],"px":[250,-113]},
+  {"a":"4431671","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[4,null,null],"px":[650,-113]},
+  {"a":"4431671","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[5,null,null],"px":[1520,-113]},
+  {"a":"4431671","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[6,null,null],"px":[2700,-113]},
+  {"a":"4432816","t":"3-Point Field Goals Milestones","ti":"221","op":[4,null,null],"cur":[2,null,null],"px":[-740,-110]},
+  {"a":"4432816","t":"3-Point Field Goals Milestones","ti":"221","op":[4,null,null],"cur":[3,null,null],"px":[-252,-110]},
+  {"a":"4432816","t":"3-Point Field Goals Milestones","ti":"221","op":[4,null,null],"cur":[4,null,null],"px":[-112,-110]},
+  {"a":"4432816","t":"3-Point Field Goals Milestones","ti":"221","op":[4,null,null],"cur":[5,null,null],"px":[183,-110]},
+  {"a":"4432816","t":"3-Point Field Goals Milestones","ti":"221","op":[4,null,null],"cur":[6,null,null],"px":[349,-110]},
+  {"a":"4432816","t":"3-Point Field Goals Milestones","ti":"221","op":[4,null,null],"cur":[7,null,null],"px":[660,-110]},
+  {"a":"4432816","t":"3-Point Field Goals Milestones","ti":"221","op":[4,null,null],"cur":[8,null,null],"px":[1160,-110]},
+  {"a":"4432816","t":"3-Point Field Goals Milestones","ti":"221","op":[4,null,null],"cur":[9,null,null],"px":[1960,-110]},
+  {"a":"4432816","t":"3-Point Field Goals Milestones","ti":"221","op":[4,null,null],"cur":[10,null,null],"px":[2900,-110]},
+  {"a":"4433247","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[1,null,null],"px":[-610,-125]},
+  {"a":"4433247","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[2,null,null],"px":[-131,-125]},
+  {"a":"4433247","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[3,null,null],"px":[232,-125]},
+  {"a":"4433247","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[4,null,null],"px":[600,-125]},
+  {"a":"4433247","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[5,null,null],"px":[1380,-125]},
+  {"a":"4433247","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[6,null,null],"px":[2700,-125]},
+  {"a":"4433627","t":"3-Point Field Goals Milestones","ti":"221","op":[3,null,null],"cur":[1,null,null],"px":[-940,150]},
+  {"a":"4433627","t":"3-Point Field Goals Milestones","ti":"221","op":[3,null,null],"cur":[2,null,null],"px":[-201,150]},
+  {"a":"4433627","t":"3-Point Field Goals Milestones","ti":"221","op":[3,null,null],"cur":[3,null,null],"px":[141,150]},
+  {"a":"4433627","t":"3-Point Field Goals Milestones","ti":"221","op":[3,null,null],"cur":[4,null,null],"px":[340,150]},
+  {"a":"4433627","t":"3-Point Field Goals Milestones","ti":"221","op":[3,null,null],"cur":[5,null,null],"px":[760,150]},
+  {"a":"4433627","t":"3-Point Field Goals Milestones","ti":"221","op":[3,null,null],"cur":[6,null,null],"px":[1580,150]},
+  {"a":"4433627","t":"3-Point Field Goals Milestones","ti":"221","op":[3,null,null],"cur":[7,null,null],"px":[2800,150]},
+  {"a":"4873138","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[1,null,null],"px":[-780,-162]},
+  {"a":"4873138","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[2,null,null],"px":[-169,-162]},
+  {"a":"4873138","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[3,null,null],"px":[169,-162]},
+  {"a":"4873138","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[4,null,null],"px":[430,-162]},
+  {"a":"4873138","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[5,null,null],"px":[970,-162]},
+  {"a":"4873138","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[6,null,null],"px":[1980,-162]},
+  {"a":"5041955","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[1,null,null],"px":[-517,-111]},
+  {"a":"5041955","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[2,null,null],"px":[-115,-111]},
+  {"a":"5041955","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[3,null,null],"px":[255,-111]},
+  {"a":"5041955","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[4,null,null],"px":[680,-111]},
+  {"a":"5041955","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[5,null,null],"px":[1580,-111]},
+  {"a":"5041955","t":"3-Point Field Goals Milestones","ti":"221","op":[2,null,null],"cur":[6,null,null],"px":[2800,-111]}
+ ]
+  }
+ },
+ "names": {
+  "3032976": [
+   "Rudy Gobert",
+   "MIN"
+  ],
+  "3102530": [
+   "Jusuf Nurkic",
+   "UTAH"
+  ],
+  "3133602": [
+   "Svi Mykhailiuk",
+   "UTAH"
+  ],
+  "3136196": [
+   "Trey Lyles",
+   "MIN"
+  ],
+  "3934673": [
+   "Donte DiVincenzo",
+   "MIN"
+  ],
+  "4065663": [
+   "Josh Okogie",
+   "UTAH"
+  ],
+  "4065673": [
+   "Tony Bradley",
+   "UTAH"
+  ],
+  "4066336": [
+   "Lauri Markkanen",
+   "UTAH"
+  ],
+  "4277919": [
+   "Mo Bamba",
+   "UTAH"
+  ],
+  "4277961": [
+   "Jaren Jackson Jr.",
+   "UTAH"
+  ],
+  "4397002": [
+   "Ayo Dosunmu",
+   "MIN"
+  ],
+  "4397077": [
+   "Jaxson Hayes",
+   "UTAH"
+  ],
+  "4431671": [
+   "Jaden McDaniels",
+   "MIN"
+  ],
+  "4432247": [
+   "Jaylen Clark",
+   "MIN"
+  ],
+  "4432811": [
+   "Josh Green",
+   "UTAH"
+  ],
+  "4432816": [
+   "LaMelo Ball",
+   "MIN"
+  ],
+  "4432847": [
+   "Terrence Shannon Jr.",
+   "MIN"
+  ],
+  "4433247": [
+   "Jonathan Kuminga",
+   "MIN"
+  ],
+  "4433268": [
+   "Trey Alexander",
+   "UTAH"
+  ],
+  "4433618": [
+   "Harrison Ingram",
+   "UTAH"
+  ],
+  "4433627": [
+   "Keyonte George",
+   "UTAH"
+  ],
+  "4592492": [
+   "Bones Hyland",
+   "MIN"
+  ],
+  "4592979": [
+   "Zyon Pullin",
+   "MIN"
+  ],
+  "4594268": [
+   "Anthony Edwards",
+   "MIN"
+  ],
+  "4683736": [
+   "Kobe Bufkin",
+   "UTAH"
+  ],
+  "4683766": [
+   "Isaiah Collier",
+   "UTAH"
+  ],
+  "4684793": [
+   "Kyle Filipowski",
+   "UTAH"
+  ],
+  "4873138": [
+   "Ace Bailey",
+   "UTAH"
+  ],
+  "4895758": [
+   "Cody Williams",
+   "MIN"
+  ],
+  "5041955": [
+   "Darryn Peterson",
+   "UTAH"
+  ],
+  "5061585": [
+   "Isaiah Evans",
+   "MIN"
+  ],
+  "5105839": [
+   "Brice Sensabaugh",
+   "UTAH"
+  ],
+  "5157587": [
+   "Rocco Zikarsky",
+   "MIN"
+  ],
+  "5279133": [
+   "Joan Beringer",
+   "MIN"
+  ]
+ }
 }
