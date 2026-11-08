@@ -1,5 +1,5 @@
 /**
- * Looks up DraftKings prices saved by odds-api-nfl.mjs, to fill in prop rows ESPN lists without prices.
+ * Looks up DraftKings prices saved by odds-api-nfl.mjs and sgo-nfl-props.mjs, to fill in prop rows ESPN lists without prices.
  * Matches on home team, kickoff (within 12 hours), player name, market and the exact line.
  */
 import { readdir, readFile } from "node:fs/promises";
