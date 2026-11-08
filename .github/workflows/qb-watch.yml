@@ -1,0 +1,54 @@
+# QB news watch: every 10 minutes during the NFL season, checks each team's starting QB on ESPN's
+# injury report and logs any status change with DraftKings' spread at that moment, then follows the
+# line to kickoff. Output: props-site/nfl/qb-watch-<season>.json (the site's "QB news" panel).
+# GitHub may run scheduled jobs a few minutes late.
+name: QB watch
+
+on:
+  schedule:
+    - cron: "*/10 * * 1,2,9,10,11,12 *"
+  workflow_dispatch: {}
+  push:
+    paths: [scripts/nfl/qb-watch.trigger]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: qb-watch
+  cancel-in-progress: false
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: app
+          sparse-checkout: scripts/nfl
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Check, log and publish
+        run: |
+          set -e
+          url="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+          # NFL season label: Jan-Jun belongs to last year's season
+          season=$(date -u +%Y); [ "$(date -u +%m)" -lt 7 ] && season=$((season - 1))
+          for attempt in 1 2 3 4; do
+            rm -rf site-repo && git clone -q --depth 1 --branch props-site "$url" site-repo
+            node app/scripts/nfl/qb-watch.mjs --season "$season" --out site-repo
+            cd site-repo
+            git config user.name "qb-watch-bot"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add -A
+            if git diff --cached --quiet; then echo "no changes"; exit 0; fi
+            git commit -q -m "QB watch $(date -u +%Y-%m-%dT%H:%MZ)"
+            if git push -q origin props-site; then exit 0; fi
+            cd ..
+            sleep $((attempt * 10))
+          done
+          exit 1
