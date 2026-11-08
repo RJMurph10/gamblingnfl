@@ -150,12 +150,16 @@ async function main() {
       for (const l of mainLines(snap.rows)) {
         const who = names[l.a];
         if (!who) continue;
-        let { o, u } = l;
+        let { line, o, u } = l;
         if (o == null && u == null && price.size) {
-          const p = price(rec.home?.name, rec.date, who[0], LABELS[l.t], l.line);
+          // ESPN lists DraftKings' line without prices: the saved price at that line, else DraftKings'
+          // newest priced line (ESPN's copy lags when the line has moved)
+          const p = price(rec.home?.name, rec.date, who[0], LABELS[l.t], line);
+          const mn = p ? null : price.main(rec.home?.name, rec.date, who[0], LABELS[l.t]);
           if (p) [o, u, filled] = [p[0], p[1], filled + 1];
+          else if (mn) [line, o, u, filled] = [mn[0], mn[1], mn[2], filled + 1];
         }
-        props.push([who[0], who[1], LABELS[l.t], l.line, o, u, l.opened]);
+        props.push([who[0], who[1], LABELS[l.t], line, o, u, l.opened]);
       }
       if (!props.length) continue;
       props.sort(
@@ -175,7 +179,7 @@ async function main() {
   games.sort((a, b) => a.date.localeCompare(b.date));
   await mkdir(join(OUT, KEY), { recursive: true });
   await writeFile(join(OUT, KEY, "upcoming.json"), JSON.stringify(games));
-  console.log(`${KEY}: ${games.length} upcoming games with prop lines${price.size ? `, ${filled} priced from The Odds API` : ""}`);
+  console.log(`${KEY}: ${games.length} upcoming games with prop lines${price.size ? `, ${filled} priced from saved DraftKings pulls` : ""}`);
 }
 
 main().catch((e) => {
