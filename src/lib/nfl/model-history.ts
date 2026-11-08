@@ -209,6 +209,11 @@ export interface RunOptions {
   qb?: boolean;
   /** Quarterback games since 2020, for QB styles (the scrambler-vs-pocket best bet). */
   qbRows?: QbGameRow[];
+  /**
+   * Research only: extra points of home margin for a game (e.g. a head-coach rating), added to the
+   * quarterback adjustment before the model anchors to the market.
+   */
+  extraMargin?: (espnId: number) => number;
 }
 
 /**
@@ -271,11 +276,16 @@ type StartersById = Map<
 >;
 
 /** The model's QB lookup for a list of games: "h2024-401…" history ids and "espn-401…" ids. */
-function qbLookup(adjust: QbAdjuster, starters: StartersById, season: number) {
+function qbLookup(adjust: QbAdjuster, starters: StartersById, season: number, extra?: (espnId: number) => number) {
   return (game: Game) => {
     const m = game.id.match(/(\d+)$/);
+    const add = m && extra ? extra(Number(m[1])) : 0;
     const s = m ? starters.get(Number(m[1])) : undefined;
-    if (!s) return undefined;
+    const base = s ? qbBase(game, s) : undefined;
+    if (!add) return base;
+    return { ...(base ?? {}), margin: (base?.margin ?? 0) + add };
+  };
+  function qbBase(game: Game, s: NonNullable<ReturnType<StartersById["get"]>>) {
     return adjust({
       season,
       week: game.week,
@@ -283,7 +293,7 @@ function qbLookup(adjust: QbAdjuster, starters: StartersById, season: number) {
       awayTeamId: game.awayTeamId,
       ...s,
     });
-  };
+  }
 }
 
 const startersOf = (games: (HistoryGame | UpcomingStarters)[]): StartersById =>
@@ -306,7 +316,7 @@ export function pastSeasonRuns(input: HistoryGame[], options: RunOptions = {}): 
   const useQb = options.qb !== false;
   const byOptions = runs.get(history) ?? new Map<string, SeasonRun[]>();
   runs.set(history, byOptions);
-  const optionsKey = `${useQb}|${options.qbRows?.length ?? 0}`;
+  const optionsKey = `${useQb}|${options.qbRows?.length ?? 0}|${options.extraMargin ? "x" : ""}`;
   const hit = byOptions.get(optionsKey);
   if (hit) return hit;
   const adjust = useQb ? buildQbRatings(qbStartsFrom(history)) : undefined;
@@ -321,7 +331,7 @@ export function pastSeasonRuns(input: HistoryGame[], options: RunOptions = {}): 
         historySeasonGames(history, season),
         seasonResults(history, season - 1),
         past,
-        adjust ? qbLookup(adjust, startersOf(games), season) : undefined,
+        adjust ? qbLookup(adjust, startersOf(games), season, options.extraMargin) : undefined,
         weatherLookup(new Map(games.map((g) => [g.espnId, recordedConditions(g)]))),
         options.qbRows?.length
           ? styleLookup(options.qbRows, history, season)(startersOf(games))
