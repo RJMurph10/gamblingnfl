@@ -18,6 +18,7 @@ on:
 
 permissions:
   contents: write
+  actions: write # to rebuild the props board right after (GitHub often skips the hourly run)
 
 concurrency:
   group: props-site-odds-api
@@ -59,3 +60,7 @@ jobs:
             sleep $((attempt * 15))
           done
           exit 1
+      - name: Rebuild the props board with the new prices
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run line-history.yml -R ${{ github.repository }} --ref main
