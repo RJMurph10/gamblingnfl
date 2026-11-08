@@ -3,8 +3,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { PageTitle, Panel, PanelHeader } from "@/components/shared/booth";
 import { GamePropAnalysis, TeamLink } from "@/components/shared/GamePropAnalysis";
-import { QbStarsPanel } from "@/components/shared/QbStarsPanel";
-import { NextManUpPanel } from "@/components/shared/NextManUpPanel";
 import type { Game } from "@/data/shared/games";
 import { teamById } from "@/data/shared/teams";
 import { getLiveSchedule } from "@/lib/shared/espn.functions";
@@ -32,7 +30,15 @@ export const Route = createFileRoute("/props")({
 const kickoffTime = (iso?: string) =>
   iso ? new Date(iso).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }) : "TBD";
 
-function GameCard({ game, selected, onSelect }: { game: Game; selected: boolean; onSelect: () => void }) {
+function GameCard({
+  game,
+  selected,
+  onSelect,
+}: {
+  game: Game;
+  selected: boolean;
+  onSelect: () => void;
+}) {
   const away = teamById(game.awayTeamId);
   const home = teamById(game.homeTeamId);
   if (!away || !home) return null;
@@ -121,9 +127,14 @@ function PropsPage() {
 
   return (
     <>
-      <PageTitle eyebrow={week ? `Week ${week} · player projections` : "Player projections"} title="Player Props"
+      <PageTitle
+        eyebrow={week ? `Week ${week} · player projections` : "Player projections"}
+        title="Player Props"
         aside={
-          <Link to="/prop-history" className="font-mono text-[11px] uppercase tracking-wider text-acc">
+          <Link
+            to="/prop-history"
+            className="font-mono text-[11px] uppercase tracking-wider text-acc"
+          >
             Prop lines →
           </Link>
         }
@@ -150,12 +161,17 @@ function PropsPage() {
               aside={
                 activeDay ? (
                   <span className="font-mono text-[10px] uppercase tracking-wider text-mute">
-                    {activeDay.dateLabel} · {activeDay.games.length} {activeDay.games.length === 1 ? "game" : "games"}
+                    {activeDay.dateLabel} · {activeDay.games.length}{" "}
+                    {activeDay.games.length === 1 ? "game" : "games"}
                   </span>
                 ) : null
               }
             />
-            <div className="flex gap-2 overflow-x-auto px-4 py-3" role="tablist" aria-label="Slate day">
+            <div
+              className="flex gap-2 overflow-x-auto px-4 py-3"
+              role="tablist"
+              aria-label="Slate day"
+            >
               {days.map((day) => {
                 const active = day.key === activeDay?.key;
                 return (
@@ -169,7 +185,9 @@ function PropsPage() {
                       setGameId(null);
                     }}
                     className={`shrink-0 whitespace-nowrap rounded-full px-3 py-1 font-mono text-[11px] uppercase tracking-wider ring-1 ${
-                      active ? "bg-acc/10 text-acc ring-acc/25" : "bg-panel2 text-mute ring-line/10 hover:text-acc"
+                      active
+                        ? "bg-acc/10 text-acc ring-acc/25"
+                        : "bg-panel2 text-mute ring-line/10 hover:text-acc"
                     }`}
                   >
                     {day.label}
@@ -189,9 +207,15 @@ function PropsPage() {
             </div>
           </Panel>
 
-          <QbStarsPanel />
-
-          <NextManUpPanel />
+          <Panel>
+            <p className="font-mono text-[11px] text-mute">
+              ★ prop picks (QB passing-yards overs) and the tracked prop angles (rushing-yard
+              unders, next man up), with their full history, are on the{" "}
+              <Link to="/model" className="text-acc">
+                Model page →
+              </Link>
+            </p>
+          </Panel>
 
           {/* Level 3: the selected game's offensive projections */}
           {selectedGame && away && home ? (

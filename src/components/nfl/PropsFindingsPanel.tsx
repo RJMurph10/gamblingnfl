@@ -51,9 +51,9 @@ export function PropsFindingsPanel() {
       />
       <div className="space-y-4 px-4 py-3">
         <p className="text-sm text-mute">
-          Every NFL main-line prop the books post (passing, rushing, receiving and kicking: about
-          35,000 props) graded against the opening line, plus the books&apos; alternate-line
-          ladders. Each idea had to work on seasons it wasn&apos;t built on.
+          NFL main-line props graded at the opening line and the book&apos;s real price (ESPN BET
+          2024–25, DraftKings 2026), plus the books&apos; alternate-line ladders. Each idea had to
+          work on seasons it wasn&apos;t built on.
         </p>
         {GROUPS.map((g) => {
           const items = PROP_FINDINGS.filter((f) => f.status === g.status);
