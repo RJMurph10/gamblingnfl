@@ -160,7 +160,8 @@ function PastResults({ league, tabs }: { league: PropLeague; tabs: ReactNode }) 
       {tabs}
       <p className="-mt-2 mb-5 max-w-3xl text-sm text-mute">
         Every player prop line the sportsbook posted, at its opening line and price, next to what
-        the player actually did. {COVERAGE[league]} This season updates four times a day, so finished games show up the same night.
+        the player actually did. {COVERAGE[league]} This season updates four times a day, so
+        finished games show up the same night.
       </p>
 
       <Panel padded={false} className="mb-6">
@@ -437,12 +438,8 @@ function Upcoming({ league, tabs }: { league: PropLeague; tabs: ReactNode }) {
                       <td className="px-2 py-2 text-right font-mono text-xs tabular-nums text-mute">
                         {r[6] ?? "—"}
                       </td>
-                      <td
-                        className={`px-2 py-2 text-right font-mono text-xs tabular-nums ${
-                          move ? (move > 0 ? "text-win" : "text-loss") : "text-faint"
-                        }`}
-                      >
-                        {move ? `${move > 0 ? "▲" : "▼"} ${Math.abs(move)}` : "—"}
+                      <td className="px-2 py-2 text-right">
+                        <MovePill move={move} />
                       </td>
                       <td className="px-2 py-2 text-right font-mono text-xs tabular-nums text-mute">
                         {american(r[4])}
@@ -464,12 +461,38 @@ function Upcoming({ league, tabs }: { league: PropLeague; tabs: ReactNode }) {
             </table>
           </div>
           <p className="px-4 py-3 font-mono text-[10px] text-faint">
-            DraftKings via ESPN{game.at ? `, as of ${kickoff(game.at)}` : ""}. "—" for prices means
-            the line is posted without a price in the feed.
+            DraftKings via ESPN{game.at ? `, as of ${kickoff(game.at)}` : ""}. Move is the change
+            since the line opened ("held" = no move). "—" for prices means no price was saved for
+            that line.
           </p>
         </Panel>
       ) : null}
     </>
+  );
+}
+
+/** Line move since the open: a green ▲ / red ▼ pill sized by the move, a quiet "held" pill when flat. */
+function MovePill({ move }: { move: number | null }) {
+  if (move == null) return null;
+  const base =
+    "inline-flex min-w-[3.25rem] items-center justify-center gap-1 rounded-full px-2 py-0.5 font-mono text-[10px] font-semibold tabular-nums ring-1";
+  if (!move)
+    return (
+      <span
+        className={`${base} bg-line/5 font-normal uppercase tracking-wider text-faint ring-line/10`}
+      >
+        held
+      </span>
+    );
+  const up = move > 0;
+  return (
+    <span
+      className={`${base} ${up ? "bg-win/10 text-win ring-win/25" : "bg-loss/10 text-loss ring-loss/25"}`}
+      title={`${up ? "Up" : "Down"} ${Math.abs(move)} since it opened`}
+    >
+      <span aria-hidden>{up ? "▲" : "▼"}</span>
+      {Math.abs(move)}
+    </span>
   );
 }
 
