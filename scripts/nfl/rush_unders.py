@@ -1,19 +1,17 @@
-"""Tracked angle (not a ★ yet): the UNDER on every DraftKings rushing-yards main line.
+"""Tracked angle (not a ★): the UNDER on DraftKings rushing-yards main lines, with a tailored spot flagged.
 
-Research (research/props/nfl_line_props_*.py, opening main lines 2024-2026, 3,067 bets): unders +7.2% (2024),
-+1.9% (2025), +4.7% (2026 at -110); the first priced 2026 DraftKings unders (Nov 1-5) went 48-36 at a typical
--111. Rushing yards are lopsided: running backs finish below their recent average in 57% of games (every season
-since 2012), and books don't shade rushing lines for it. Strongest spots, flagged (found by slicing, so tracked):
-  QB            the player is a quarterback (he has a passing prop in the game): +8.5%
-  20.5-35 yds   a non-QB with a line of 20.5 to 35 yards: +11.1% (+11.9%, +11.5%, +8.8%)
-  low script    his team is expected to score 3+ points less than its average this season: rushing overs hit 42%
-The rule was fixed on 2026-11-08 and is graded live from then on; it earns a ★ only if it keeps winning.
+Research (research/props/nfl_rush_unders_tailor.py), priced main lines: rushing overs hit only 47-48%, but at
+ESPN BET's real prices (-115 both ways) every under lost 1.4% (2024) and 1.2% (2025); at DraftKings' -110/-111
+this season it's about break-even to slightly ahead. What held up in every season (one slice of ~30 tested):
+  35.5-49.5 yds   a running back or receiver with a line of 35.5 to 49.5 yards: +4.8%, +3.2%, +8.1% (2024-26)
+  price           ... and the under priced -112 or better (unpriced lines count): 104-93, +7.7% over 2024-26
+Graded live from 2026-11-08; it earns a ★ only if it keeps winning.
 
 Inputs: props-site/nfl/<season>/<day>.json (finished games: [name, team, market, opening line, over price,
 under price, actual]) and props-site/nfl/upcoming.json ([..., current line]); nflverse games.csv for the
 betting lines (team implied points = total/2 - own spread/2).
 Output: <site>/nfl/rush-unders-<season>.json
-  { season, updated, liveFrom, record: { all: {replay, live}, strong: {replay, live} } ([w, l, push, units]),
+  { season, updated, liveFrom, record: { all, line, strong: {replay, live} } ([w, l, push, units]),
     picks: [[date, game, player, team, line, under price, yards, result, reasons]],
     upcoming: [[date, game, player, team, opening line, under price, current line, reasons]] }
 
@@ -24,7 +22,7 @@ from datetime import datetime, timezone
 
 import pandas as pd
 
-LIVE_FROM = "2026-11-08"
+LIVE_FROM = "2026-11-08"  # the tailored rule was fixed the same day
 ap = argparse.ArgumentParser()
 ap.add_argument("--site", default="props-site")
 ap.add_argument("--cache", default="nflverse-cache")
@@ -62,14 +60,20 @@ def low_script(day, team):
     return bool(t.implied.iloc[0] <= t.avg_before.iloc[0] - 3)
 
 
+# Tailored spot (Nov 8, 2026; research/props/nfl_rush_unders_tailor.py): a running back or receiver with a line
+# of 35.5-49.5 yards, under priced -112 or better (unpriced lines count, graded at -110). At priced main lines:
+# line filter 87-77 (+4.8%), 61-49 (+3.2%), 38-29 (+8.1%) in 2024-26; with the price rule 104-93 (+7.7%) in all.
+# One slice of ~30 tested, so it's tracked live, not a ★. QB / 20.5-35 / low-script flags didn't hold up.
+LINE_LO, LINE_HI, MAX_JUICE = 35, 50, -112
+
+
 def reasons(p, qbs, day):
+    """'35.5-49.5 yds' when the line is in the tailored range; 'price' when the under is also -112 or better."""
     out = []
-    if p[0] in qbs:
-        out.append("QB")
-    elif p[3] is not None and 20 < p[3] <= 35:
-        out.append("20.5-35 yds")
-    if low_script(day, TEAM.get(p[1], p[1])):
-        out.append("low script")
+    if p[0] not in qbs and p[3] is not None and LINE_LO < p[3] <= LINE_HI:
+        out.append("35.5-49.5 yds")
+        if p[5] is None or p[5] >= MAX_JUICE:
+            out.append("price")
     return out
 
 
@@ -102,7 +106,9 @@ def record(rs):
 live = [p for p in picks if local_day(p[0]) >= LIVE_FROM]
 rec = {
     "all": {"replay": record(picks), "live": record(live)},
-    "strong": {"replay": record([p for p in picks if p[8]]), "live": record([p for p in live if p[8]])},
+    # line = the line filter alone; strong = the tailored rule (line filter + -112 or better)
+    "line": {"replay": record([p for p in picks if p[8]]), "live": record([p for p in live if p[8]])},
+    "strong": {"replay": record([p for p in picks if "price" in p[8]]), "live": record([p for p in live if "price" in p[8]])},
 }
 
 try:
@@ -122,5 +128,5 @@ upc.sort(key=lambda x: (x[0], -len(x[7]), x[2]))
 out = {"season": SEASON, "updated": now.isoformat(), "liveFrom": LIVE_FROM, "record": rec, "picks": picks, "upcoming": upc}
 os.makedirs(f"{args.site}/nfl", exist_ok=True)
 json.dump(out, open(f"{args.site}/nfl/rush-unders-{SEASON}.json", "w"))
-print(f"{SEASON} rushing unders: all {rec['all']}, strong {rec['strong']}; this week {len(upc)} lines "
-      f"({sum(bool(u[7]) for u in upc)} flagged)")
+print(f"{SEASON} rushing unders: all {rec['all']}, line {rec['line']}, tailored {rec['strong']}; this week {len(upc)} lines "
+      f"({sum('price' in u[7] for u in upc)} tailored)")

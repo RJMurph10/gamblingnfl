@@ -39,6 +39,9 @@ export interface RushUndersFile {
   liveFrom: string;
   record: {
     all: { replay: RushRecord; live: RushRecord };
+    /** The line filter alone (RB/WR lines 35.5–49.5); newer files only. */
+    line?: { replay: RushRecord; live: RushRecord };
+    /** The tailored rule: line filter + under −112 or better. */
     strong: { replay: RushRecord; live: RushRecord };
   };
   picks: RushPick[];
@@ -46,7 +49,13 @@ export interface RushUndersFile {
 }
 
 export const RUSH_REASON_TEXT: Record<string, string> = {
+  "35.5-49.5 yds": "35.5–49.5 yd line",
+  price: "under −112 or better",
+  // flags used before Nov 8, 2026 (older files)
   QB: "QB",
   "20.5-35 yds": "20.5–35 yd line",
   "low script": "team expected to score less than usual",
 };
+
+/** A pick or line in the tailored spot (newer files flag "price"; older ones had other flags). */
+export const isTailored = (reasons: string[]) => reasons.includes("price");

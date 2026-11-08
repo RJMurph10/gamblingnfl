@@ -36,6 +36,17 @@ export const PROP_FINDINGS: PropFinding[] = [
   },
   {
     status: "lead",
+    title: "Rushing-yard unders, tailored (tracked above)",
+    detail:
+      "A running back or receiver with a 35.5–49.5 yard line, under priced −112 or better. The line range was positive in every season; the price rule keeps a ~53% bet profitable. One slice of about 30 tested, so it's graded live from Nov 8 before it can earn a ★.",
+    seasons: [
+      { season: "2024", text: "51-50, +9.8u", roi: 9.7 },
+      { season: "2025", text: "17-15, +0.6u", roi: 1.8 },
+      { season: "2026", text: "36-28, +4.7u", roi: 7.4 },
+    ],
+  },
+  {
+    status: "lead",
     title: "Receiving and passing alternate overs around −200",
     detail:
       "Receiving-yard alternate overs priced −175 to −250 won 71% (66% needed, +8.1%, 161 bets); passing yards 74% (+11.8%, 70 bets). Almost all from one season, so it's a hint, not an edge.",
@@ -43,9 +54,9 @@ export const PROP_FINDINGS: PropFinding[] = [
   },
   {
     status: "none",
-    title: "Rushing-yard unders (still tracked above)",
+    title: "Rushing-yard unders on every line",
     detail:
-      "Overs hit only 47–48% at the main line, but at ESPN BET's real prices (−115 both ways) unders lost 1.4% in 2024 and 1.2% in 2025. An earlier +7% came from grading some props at unpriced alternate lines, since fixed. At DraftKings' cheaper −110 it's about break-even, so it's tracked at DraftKings prices.",
+      "Overs hit only 47–48% at the main line, but at ESPN BET's real prices (−115 both ways) unders lost 1.4% in 2024 and 1.2% in 2025. An earlier +7% came from grading some props at unpriced alternate lines, since fixed. The tailored version (running back or receiver lines of 35.5–49.5, under −112 or better: 104-93, +7.7% over 2024–26) is tracked above.",
     seasons: [
       { season: "2024", text: "405-377, −10.9u", roi: -1.4 },
       { season: "2025", text: "555-492, −12.5u", roi: -1.2 },
