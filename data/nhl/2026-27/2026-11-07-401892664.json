@@ -7,18 +7,18 @@
   "id": "13",
   "abbr": "NYR",
   "name": "New York Rangers",
-  "score": 0
+  "score": 4
  },
  "home": {
   "id": "124292",
   "abbr": "SEA",
   "name": "Seattle Kraken",
-  "score": 0
+  "score": 3
  },
  "neutral": false,
  "venue": "Climate Pledge Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-06T18:02:23.755Z",
@@ -2539,5 +2539,9 @@
    "Alberts Smits",
    "NYR"
   ]
+ },
+ "final": {
+  "away": 4,
+  "home": 3
  }
 }

@@ -7,18 +7,18 @@
   "id": "96",
   "abbr": "UK",
   "name": "Kentucky Wildcats",
-  "score": 0
+  "score": 3
  },
  "home": {
   "id": "2633",
   "abbr": "TENN",
   "name": "Tennessee Volunteers",
-  "score": 0
+  "score": 10
  },
  "neutral": false,
  "venue": "Neyland Stadium",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-10-31T23:48:47.159Z",

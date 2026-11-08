@@ -7,18 +7,18 @@
   "id": "2565",
   "abbr": "SIUE",
   "name": "SIU Edwardsville Cougars",
-  "score": 0
+  "score": 77
  },
  "home": {
   "id": "288",
   "abbr": "LIP",
   "name": "Lipscomb Bisons",
-  "score": 0
+  "score": 78
  },
  "neutral": false,
  "venue": "Allen Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-07T10:21:33.819Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 77,
+  "home": 78
+ }
 }

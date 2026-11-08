@@ -7,18 +7,18 @@
   "id": "265",
   "abbr": "WSU",
   "name": "Washington State Cougars",
-  "score": 0
+  "score": 71
  },
  "home": {
   "id": "2272",
   "abbr": "HPU",
   "name": "High Point Panthers",
-  "score": 0
+  "score": 83
  },
  "neutral": false,
  "venue": "Qubein Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-07T02:54:12.015Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 71,
+  "home": 83
+ }
 }

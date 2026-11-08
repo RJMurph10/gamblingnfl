@@ -7,18 +7,18 @@
   "id": "2630",
   "abbr": "UTM",
   "name": "UT Martin Skyhawks",
-  "score": 0
+  "score": 74
  },
  "home": {
   "id": "85",
   "abbr": "IUIN",
   "name": "IU Indianapolis Jaguars",
-  "score": 0
+  "score": 75
  },
  "neutral": false,
  "venue": "James T. Morris Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-07T10:21:33.819Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 74,
+  "home": 75
+ }
 }

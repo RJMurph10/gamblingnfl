@@ -7,18 +7,18 @@
   "id": "2415",
   "abbr": "MORG",
   "name": "Morgan State Bears",
-  "score": 0
+  "score": 42
  },
  "home": {
   "id": "315",
   "abbr": "NIA",
   "name": "Niagara Purple Eagles",
-  "score": 0
+  "score": 34
  },
  "neutral": false,
  "venue": "Gallagher Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-07T10:21:33.819Z",

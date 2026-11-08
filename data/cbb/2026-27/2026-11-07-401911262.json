@@ -7,18 +7,18 @@
   "id": "179",
   "abbr": "SBU",
   "name": "St. Bonaventure Bonnies",
-  "score": 0
+  "score": 37
  },
  "home": {
   "id": "2099",
   "abbr": "CAN",
   "name": "Canisius Golden Griffins",
-  "score": 0
+  "score": 12
  },
  "neutral": false,
  "venue": "Koessler Athletic Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-07T02:54:12.015Z",

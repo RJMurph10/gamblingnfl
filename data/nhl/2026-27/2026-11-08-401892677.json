@@ -519,8 +519,8 @@
    ]
   },
   "latest": {
-   "at": "2026-11-07T20:56:35.209Z",
-   "count": 44,
+   "at": "2026-11-08T00:43:09.397Z",
+   "count": 47,
    "rows": [
   {"a":null,"tm":"20","t":"1st Period Moneyline","ti":"139","cur":[null,160,null]},
   {"a":null,"tm":"28","t":"1st Period Moneyline","ti":"139","cur":[null,205,null]},
@@ -543,14 +543,17 @@
   {"a":null,"tm":"28","t":"3rd Period Spread","ti":"146","op":[0.5,null,null],"cur":[0.5,null,null],"px":[-160,-160]},
   {"a":null,"t":"3rd Period Total Goals","ti":"147","op":[2.5,null,null],"cur":[2.5,null,null],"px":[130,130]},
   {"a":null,"t":"3rd Period Total Goals","ti":"147","op":[2.5,null,null],"cur":[2.5,null,null],"px":[-166,-166]},
-  {"a":null,"tm":"20","t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[1.5,null,null],"px":[-725,-105]},
+  {"a":null,"tm":"20","t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[1.5,null,null],"px":[-700,-105]},
   {"a":null,"tm":"20","t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[2.5,null,null],"px":[-230,-105]},
   {"a":null,"tm":"20","t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[3.5,null,null],"px":[-105,-105]},
-  {"a":null,"tm":"20","t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[4.5,null,null],"px":[225,-105]},
-  {"a":null,"tm":"20","t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[0.5,null,null],"px":[-8000,-105]},
-  {"a":null,"tm":"20","t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[5.5,null,null],"px":[530,-105]},
+  {"a":null,"tm":"20","t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[4.5,null,null],"px":[220,-105]},
+  {"a":null,"tm":"20","t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[0.5,null,null],"px":[-6000,-105]},
+  {"a":null,"tm":"20","t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[5.5,null,null],"px":[520,-105]},
+  {"a":null,"tm":"20","t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[1.5,null,null],"px":[420,-135]},
   {"a":null,"tm":"20","t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[3.5,null,null],"px":[-135,-135]},
-  {"a":null,"tm":"20","t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[4.5,null,null],"px":[-320,-135]},
+  {"a":null,"tm":"20","t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[4.5,null,null],"px":[-310,-135]},
+  {"a":null,"tm":"20","t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[0.5,null,null],"px":[1300,-135]},
+  {"a":null,"tm":"20","t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[5.5,null,null],"px":[-935,-135]},
   {"a":null,"tm":"28","t":"Team Total Goals (Excl OT)","ti":"151","op":[2.5,null,null],"cur":[1.5,null,null],"px":[-475,-155]},
   {"a":null,"tm":"28","t":"Team Total Goals (Excl OT)","ti":"151","op":[2.5,null,null],"cur":[2.5,null,null],"px":[-155,-155]},
   {"a":null,"tm":"28","t":"Team Total Goals (Excl OT)","ti":"151","op":[2.5,null,null],"cur":[3.5,null,null],"px":[155,-155]},
@@ -563,8 +566,8 @@
   {"a":null,"tm":"28","t":"Team Total Goals (Excl OT)","ti":"151","op":[2.5,null,null],"cur":[4.5,null,null],"px":[-550,115]},
   {"a":null,"tm":"28","t":"Team Total Goals (Excl OT)","ti":"151","op":[2.5,null,null],"cur":[0.5,null,null],"px":[1100,115]},
   {"a":null,"tm":"28","t":"Team Total Goals (Excl OT)","ti":"151","op":[2.5,null,null],"cur":[5.5,null,null],"px":[-1800,115]},
-  {"a":null,"t":"Both Teams To Score","ti":"152","cur":[null,-1800,null]},
-  {"a":null,"t":"Both Teams To Score","ti":"152","cur":[null,700,null]},
+  {"a":null,"t":"Both Teams To Score","ti":"152","cur":[null,-1600,null]},
+  {"a":null,"t":"Both Teams To Score","ti":"152","cur":[null,650,null]},
   {"a":null,"t":"Will There Be Overtime?","ti":"153","cur":[null,290,null]}
  ]
   }

@@ -7,18 +7,18 @@
   "id": "2464",
   "abbr": "NAU",
   "name": "Northern Arizona Lumberjacks",
-  "score": 0
+  "score": 50
  },
  "home": {
   "id": "167",
   "abbr": "UNM",
   "name": "New Mexico Lobos",
-  "score": 0
+  "score": 74
  },
  "neutral": false,
  "venue": "The Pit",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-07T02:54:12.015Z",

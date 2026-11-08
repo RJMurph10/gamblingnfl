@@ -7,18 +7,18 @@
   "id": "2678",
   "abbr": "VMI",
   "name": "VMI Keydets",
-  "score": 0
+  "score": 68
  },
  "home": {
   "id": "2636",
   "abbr": "UTSA",
   "name": "UTSA Roadrunners",
-  "score": 0
+  "score": 70
  },
  "neutral": false,
  "venue": "UTSA Convocation Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-07T02:54:12.015Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 68,
+  "home": 70
+ }
 }

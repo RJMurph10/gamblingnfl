@@ -7,18 +7,18 @@
   "id": "2382",
   "abbr": "MER",
   "name": "Mercer Bears",
-  "score": 0
+  "score": 33
  },
  "home": {
   "id": "2166",
   "abbr": "DAV",
   "name": "Davidson Wildcats",
-  "score": 0
+  "score": 34
  },
  "neutral": false,
  "venue": "John M. Belk Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-07T02:54:12.015Z",

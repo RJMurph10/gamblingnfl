@@ -7,18 +7,18 @@
   "id": "295",
   "abbr": "ODU",
   "name": "Old Dominion Monarchs",
-  "score": 0
+  "score": 82
  },
  "home": {
   "id": "2083",
   "abbr": "BUCK",
   "name": "Bucknell Bison",
-  "score": 0
+  "score": 62
  },
  "neutral": false,
  "venue": "Sojka Pavilion",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-07T10:21:33.819Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 82,
+  "home": 62
+ }
 }

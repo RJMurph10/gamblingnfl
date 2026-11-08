@@ -7,18 +7,18 @@
   "id": "2623",
   "abbr": "MOST",
   "name": "Missouri State Bears",
-  "score": 0
+  "score": 17
  },
  "home": {
   "id": "2229",
   "abbr": "FIU",
   "name": "Florida International Panthers",
-  "score": 0
+  "score": 20
  },
  "neutral": false,
  "venue": "Pitbull Stadium",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T16:51:48.845Z",

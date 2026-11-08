@@ -7,18 +7,18 @@
   "id": "2507",
   "abbr": "PROV",
   "name": "Providence Friars",
-  "score": 0
+  "score": 16
  },
  "home": {
   "id": "158",
   "abbr": "NEB",
   "name": "Nebraska Cornhuskers",
-  "score": 0
+  "score": 17
  },
  "neutral": true,
  "venue": "Mohegan Sun Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-06T23:14:11.238Z",

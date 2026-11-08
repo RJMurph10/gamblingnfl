@@ -7,18 +7,18 @@
   "id": "6",
   "abbr": "USA",
   "name": "South Alabama Jaguars",
-  "score": 0
+  "score": 23
  },
  "home": {
   "id": "309",
   "abbr": "UL",
   "name": "Louisiana Ragin' Cajuns",
-  "score": 0
+  "score": 28
  },
  "neutral": false,
  "venue": "Our Lady of Lourdes Stadium",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T16:51:48.845Z",

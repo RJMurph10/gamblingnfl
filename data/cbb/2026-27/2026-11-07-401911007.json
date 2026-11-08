@@ -7,18 +7,18 @@
   "id": "91",
   "abbr": "BELL",
   "name": "Bellarmine Knights",
-  "score": 0
+  "score": 73
  },
  "home": {
   "id": "193",
   "abbr": "M-OH",
   "name": "Miami (OH) RedHawks",
-  "score": 0
+  "score": 80
  },
  "neutral": false,
  "venue": "Millett Hall",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-07T10:21:33.819Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 73,
+  "home": 80
+ }
 }

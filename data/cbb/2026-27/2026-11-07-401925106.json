@@ -7,18 +7,18 @@
   "id": "2504",
   "abbr": "PV",
   "name": "Prairie View A&M Panthers",
-  "score": 0
+  "score": 60
  },
  "home": {
   "id": "292",
   "abbr": "RGV",
   "name": "UT Rio Grande Valley Vaqueros",
-  "score": 0
+  "score": 68
  },
  "neutral": false,
  "venue": "UTRGV Fieldhouse",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-07T10:21:33.819Z",

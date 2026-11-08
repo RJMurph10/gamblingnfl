@@ -7,18 +7,18 @@
   "id": "11",
   "abbr": "NJ",
   "name": "New Jersey Devils",
-  "score": 0
+  "score": 1
  },
  "home": {
   "id": "12",
   "abbr": "NYI",
   "name": "New York Islanders",
-  "score": 0
+  "score": 1
  },
  "neutral": false,
  "venue": "UBS Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-06T18:02:23.755Z",

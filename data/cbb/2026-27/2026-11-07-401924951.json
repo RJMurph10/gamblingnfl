@@ -7,18 +7,18 @@
   "id": "2277",
   "abbr": "HCU",
   "name": "Houston Christian Huskies",
-  "score": 0
+  "score": 37
  },
  "home": {
   "id": "2710",
   "abbr": "WIU",
   "name": "Western Illinois Leathernecks",
-  "score": 0
+  "score": 31
  },
  "neutral": false,
  "venue": "Western Hall",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-07T02:54:12.015Z",
