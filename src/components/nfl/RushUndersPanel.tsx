@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Panel, PanelHeader } from "@/components/shared/booth";
 import { SeasonTabs } from "@/components/nfl/SeasonTabs";
 import { nflSeasonOf, seasonBook } from "@/lib/nfl/prop-seasons";
-import { RUSH_REASON_TEXT, type RushRecord } from "@/lib/nfl/rush-unders";
+import { isTailored, RUSH_REASON_TEXT, type RushRecord } from "@/lib/nfl/rush-unders";
 import { getRushUnders } from "@/lib/nfl/rush-unders.functions";
 
 const when = (iso: string) =>
@@ -39,7 +39,7 @@ export function RushUndersPanel() {
   const f = q.data;
   const now = Date.now();
   const upcoming = (f?.upcoming ?? []).filter((u) => Date.parse(u[0]) > now);
-  const flagged = upcoming.filter((u) => u[7].length);
+  const flagged = upcoming.filter((u) => isTailored(u[7]));
   const shown = showAll ? upcoming : flagged;
   const [showHistory, setShowHistory] = useState(false);
   const graded = [...(f?.picks ?? [])].reverse();
@@ -69,18 +69,18 @@ export function RushUndersPanel() {
       <div className="space-y-2 px-4 py-3 text-sm text-mute">
         <p>
           <span className="font-semibold text-foreground">
-            The under on every DraftKings rushing-yards line.
+            Tailored: the under on a running back or receiver with a 35.5–49.5 yard line, priced
+            −112 or better.
           </span>{" "}
-          Rushing yards are lopsided (a few long runs pull the average up), so overs hit only 47–48%
-          at the main line. But that&apos;s about what the books charge for: at ESPN BET&apos;s real
-          prices (−115 both ways) unders lost 1.4% in 2024 and 1.2% in 2025. At DraftKings&apos;
-          cheaper −110/−111 they&apos;ve been slightly ahead this season. Flagged: quarterbacks,
-          lines of 20.5–35 yards, and teams expected to score 3+ points less than usual.
+          Rushing yards are lopsided (a few long runs pull the average up), so overs hit only
+          47–48%, but the book&apos;s cut eats that on every line (−1.4% and −1.2% in 2024–25 at
+          real prices). Mid-size running back lines held up in every season (+4.8%, +3.2%, +8.1%),
+          and paying no more than −112 keeps a 53% bet profitable: 104-93 (+7.7%) over 2024–26.
         </p>
         <p className="font-mono text-[10px] text-faint">
-          Not a ★: close to break-even once the book&apos;s cut is counted. Tracked live from Nov 8
-          at DraftKings&apos; posted under price (−110 when none is saved). Past seasons are graded
-          at each prop&apos;s priced main line only.
+          Not a ★: one slice of about 30 tested, so it&apos;s graded live from Nov 8 at
+          DraftKings&apos; posted under price (−110 when none is saved). Past seasons are graded at
+          each prop&apos;s priced main line only.
         </p>
         {f ? (
           <div className="grid grid-cols-2 gap-2 font-mono text-[11px]">
@@ -94,13 +94,16 @@ export function RushUndersPanel() {
               </p>
             </div>
             <div className="rounded border border-line/10 px-3 py-2">
-              <p className="label-mono">Flagged spots</p>
+              <p className="label-mono">Tailored</p>
               {current ? (
                 <p className="text-foreground">Live {recText(f.record.strong.live)}</p>
               ) : null}
               <p className="text-faint">
                 {current ? `${f.season} replay` : "Full season"} {recText(f.record.strong.replay)}
               </p>
+              {f.record.line ? (
+                <p className="text-faint">Line filter only {recText(f.record.line.replay)}</p>
+              ) : null}
             </div>
           </div>
         ) : null}
@@ -116,7 +119,9 @@ export function RushUndersPanel() {
                 onClick={() => setShowAll((v) => !v)}
                 className="font-mono text-[10px] uppercase tracking-wider text-acc"
               >
-                {showAll ? `Flagged only (${flagged.length})` : `Show all ${upcoming.length} lines`}
+                {showAll
+                  ? `Tailored only (${flagged.length})`
+                  : `Show all ${upcoming.length} lines`}
               </button>
             ) : null}
           </div>
@@ -136,7 +141,9 @@ export function RushUndersPanel() {
                       <Reasons rs={u[7]} />
                     </span>
                   </span>
-                  <span className={u[7].length ? "font-semibold text-foreground" : "text-mute"}>
+                  <span
+                    className={isTailored(u[7]) ? "font-semibold text-foreground" : "text-mute"}
+                  >
                     Under {u[6] ?? u[4]}
                   </span>
                   <span className="w-12 text-right text-mute">{price(u[5])}</span>
@@ -150,7 +157,9 @@ export function RushUndersPanel() {
             <p className="px-4 py-3 font-mono text-[11px] text-mute">
               {q.isLoading
                 ? "Loading…"
-                : "No rushing lines posted yet for the next games. They appear once DraftKings posts them."}
+                : upcoming.length
+                  ? `No tailored spots in this week's ${upcoming.length} rushing lines yet. Lines can still move or post closer to kickoff.`
+                  : "No rushing lines posted yet for the next games. They appear once DraftKings posts them."}
             </p>
           )}
         </div>
