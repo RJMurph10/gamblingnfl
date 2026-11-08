@@ -45,6 +45,7 @@ export const PROP_FINDINGS: PropFinding[] = [
       { season: "2025", text: "+1.9%", roi: 1.9 },
       { season: "2026", text: "+4.7%", roi: 4.7 },
     ],
+    link: { to: "/props", label: "This week's picks and results" },
   },
   {
     status: "lead",

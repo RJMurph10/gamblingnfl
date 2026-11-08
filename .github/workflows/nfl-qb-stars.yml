@@ -48,12 +48,14 @@ jobs:
             python3 app/scripts/nfl/qb_stars.py --site site-repo --cache nflverse-cache
             # tracked angle: the under on the next man up when a team's top target is out
             python3 app/scripts/nfl/next_man_up.py --site site-repo --cache nflverse-cache || echo "next man up failed"
+            # tracked angle: the under on every DraftKings rushing-yards line
+            python3 app/scripts/nfl/rush_unders.py --site site-repo --cache nflverse-cache || echo "rush unders failed"
             cd site-repo
             git config user.name "line-history-bot"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git add -A nfl
             if git diff --cached --quiet; then echo "no changes"; exit 0; fi
-            git commit -q -m "NFL QB stars + next man up $(date -u +%Y-%m-%dT%H:%MZ)"
+            git commit -q -m "NFL QB stars + next man up + rush unders $(date -u +%Y-%m-%dT%H:%MZ)"
             if git push -q origin props-site; then exit 0; fi
             cd ..
             sleep $((attempt * 15))
