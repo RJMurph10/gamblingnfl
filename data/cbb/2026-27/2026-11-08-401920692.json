@@ -7,18 +7,18 @@
   "id": "2514",
   "abbr": "QUIN",
   "name": "Quinnipiac Bobcats",
-  "score": 0
+  "score": 57
  },
  "home": {
   "id": "261",
   "abbr": "UVM",
   "name": "Vermont Catamounts",
-  "score": 0
+  "score": 61
  },
  "neutral": false,
  "venue": "Patrick Gymnasium",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-08T15:19:15.044Z",

@@ -7,18 +7,18 @@
   "id": "2368",
   "abbr": "MRST",
   "name": "Marist Red Foxes",
-  "score": 0
+  "score": 61
  },
  "home": {
   "id": "2349",
   "abbr": "UML",
   "name": "UMass Lowell River Hawks",
-  "score": 0
+  "score": 63
  },
  "neutral": false,
  "venue": "Kennedy Family Athletic Complex",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-08T15:19:15.044Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 61,
+  "home": 63
+ }
 }

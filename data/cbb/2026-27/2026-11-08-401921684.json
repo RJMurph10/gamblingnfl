@@ -7,18 +7,18 @@
   "id": "2363",
   "abbr": "MAN",
   "name": "Manhattan Jaspers",
-  "score": 0
+  "score": 68
  },
  "home": {
   "id": "311",
   "abbr": "ME",
   "name": "Maine Black Bears",
-  "score": 0
+  "score": 62
  },
  "neutral": false,
  "venue": "Skip Chappelle Court in Memorial Gymnasium",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-08T15:19:15.044Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 68,
+  "home": 62
+ }
 }

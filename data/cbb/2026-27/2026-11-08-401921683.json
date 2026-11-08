@@ -7,18 +7,18 @@
   "id": "2217",
   "abbr": "FAIR",
   "name": "Fairfield Stags",
-  "score": 0
+  "score": 68
  },
  "home": {
   "id": "2803",
   "abbr": "BRY",
   "name": "Bryant Bulldogs",
-  "score": 0
+  "score": 59
  },
  "neutral": false,
  "venue": "Chace Athletic Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-08T15:19:15.044Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 68,
+  "home": 59
+ }
 }

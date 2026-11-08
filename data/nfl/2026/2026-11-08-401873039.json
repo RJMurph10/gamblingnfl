@@ -7,18 +7,18 @@
   "id": "5",
   "abbr": "CLE",
   "name": "Cleveland Browns",
-  "score": 0
+  "score": 6
  },
  "home": {
   "id": "18",
   "abbr": "NO",
   "name": "New Orleans Saints",
-  "score": 0
+  "score": 6
  },
  "neutral": false,
  "venue": "Caesars Superdome",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T23:47:33.650Z",

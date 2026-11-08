@@ -7,18 +7,18 @@
   "id": "96",
   "abbr": "UK",
   "name": "Kentucky Wildcats",
-  "score": 0
+  "score": 37
  },
  "home": {
   "id": "152",
   "abbr": "NCSU",
   "name": "NC State Wolfpack",
-  "score": 0
+  "score": 34
  },
  "neutral": true,
  "venue": "Spectrum Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-08T15:19:15.044Z",

@@ -7,18 +7,18 @@
   "id": "225",
   "abbr": "BRWN",
   "name": "Brown Bears",
-  "score": 0
+  "score": 51
  },
  "home": {
   "id": "2329",
   "abbr": "LEH",
   "name": "Lehigh Mountain Hawks",
-  "score": 0
+  "score": 46
  },
  "neutral": false,
  "venue": "Stabler Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-08T15:19:15.044Z",

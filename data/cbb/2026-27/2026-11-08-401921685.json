@@ -7,18 +7,18 @@
   "id": "2529",
   "abbr": "SHU",
   "name": "Sacred Heart Pioneers",
-  "score": 0
+  "score": 81
  },
  "home": {
   "id": "160",
   "abbr": "UNH",
   "name": "New Hampshire Wildcats",
-  "score": 0
+  "score": 76
  },
  "neutral": false,
  "venue": "Lundholm Gymnasium",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-08T15:19:15.044Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 81,
+  "home": 76
+ }
 }

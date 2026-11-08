@@ -7,18 +7,18 @@
   "id": "2771",
   "abbr": "MRMK",
   "name": "Merrimack Warriors",
-  "score": 0
+  "score": 50
  },
  "home": {
   "id": "399",
   "abbr": "UALB",
   "name": "UAlbany Great Danes",
-  "score": 0
+  "score": 48
  },
  "neutral": false,
  "venue": "Broadview Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-08T15:19:15.044Z",

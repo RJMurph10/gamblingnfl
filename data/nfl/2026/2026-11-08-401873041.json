@@ -7,18 +7,18 @@
   "id": "7",
   "abbr": "DEN",
   "name": "Denver Broncos",
-  "score": 0
+  "score": 19
  },
  "home": {
   "id": "29",
   "abbr": "CAR",
   "name": "Carolina Panthers",
-  "score": 0
+  "score": 14
  },
  "neutral": false,
  "venue": "Bank of America Stadium",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T23:47:33.650Z",

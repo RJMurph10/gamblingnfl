@@ -7,18 +7,18 @@
   "id": "14",
   "abbr": "LAR",
   "name": "Los Angeles Rams",
-  "score": 0
+  "score": 20
  },
  "home": {
   "id": "28",
   "abbr": "WSH",
   "name": "Washington Commanders",
-  "score": 0
+  "score": 13
  },
  "neutral": false,
  "venue": "Northwest Stadium",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T23:47:33.650Z",

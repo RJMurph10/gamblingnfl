@@ -7,18 +7,18 @@
   "id": "8",
   "abbr": "ARK",
   "name": "Arkansas Razorbacks",
-  "score": 0
+  "score": 72
  },
  "home": {
   "id": "258",
   "abbr": "UVA",
   "name": "Virginia Cavaliers",
-  "score": 0
+  "score": 91
  },
  "neutral": true,
  "venue": "Capital One Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-07T16:52:38.954Z",
@@ -934,5 +934,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 72,
+  "home": 91
+ }
 }

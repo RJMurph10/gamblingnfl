@@ -7,18 +7,18 @@
   "id": "20",
   "abbr": "NYJ",
   "name": "New York Jets",
-  "score": 0
+  "score": 12
  },
  "home": {
   "id": "12",
   "abbr": "KC",
   "name": "Kansas City Chiefs",
-  "score": 0
+  "score": 28
  },
  "neutral": false,
  "venue": "Arrowhead Stadium",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T23:47:33.650Z",

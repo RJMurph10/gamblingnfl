@@ -7,18 +7,18 @@
   "id": "6",
   "abbr": "DAL",
   "name": "Dallas Cowboys",
-  "score": 0
+  "score": 20
  },
  "home": {
   "id": "11",
   "abbr": "IND",
   "name": "Indianapolis Colts",
-  "score": 0
+  "score": 17
  },
  "neutral": false,
  "venue": "Lucas Oil Stadium",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T23:47:33.650Z",
