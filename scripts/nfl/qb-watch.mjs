@@ -124,7 +124,12 @@ async function injuries() {
       const a = inj.athlete ?? {};
       const team = a.team?.abbreviation ?? t.abbreviation;
       const status = String(inj.status ?? "Active");
-      if (a.id) byId[String(a.id)] = status;
+      // the athlete id: a.id when present, else from the uid ("s:20~l:28~a:4035369") or the player link
+      const aid =
+        a.id ??
+        String(a.uid ?? "").match(/a:(\d+)/)?.[1] ??
+        (a.links ?? []).map((l) => String(l.href ?? "").match(/\/id\/(\d+)/)?.[1]).find(Boolean);
+      if (aid) byId[String(aid)] = status;
       if (!team || a.position?.abbreviation !== "QB") continue;
       (out[team] ??= {})[norm(a.displayName ?? a.fullName)] = status;
     }
@@ -228,6 +233,8 @@ async function main() {
     if (status !== prev.status) state.status[key] = { status, since: now };
   }
   // QBs and players no longer watched drop out of the status list
+  const matched = values.filter(([id]) => injAll.byId[id] !== undefined).length;
+  console.log(`players on ESPN's injury report matched to valued players: ${matched}; ids read: ${Object.keys(injAll.byId).length}`);
   const watched = new Set([
     ...Object.entries(starters).flatMap(([t, l]) => l.map((s) => `${t}|${s.qb}`)),
     ...values.map(([id]) => `p|${id}`),
