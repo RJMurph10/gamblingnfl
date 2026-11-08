@@ -7,18 +7,18 @@
   "id": "4",
   "abbr": "CIN",
   "name": "Cincinnati Bengals",
-  "score": 0
+  "score": 14
  },
  "home": {
   "id": "1",
   "abbr": "ATL",
   "name": "Atlanta Falcons",
-  "score": 0
+  "score": 10
  },
  "neutral": true,
  "venue": "Santiago Bernabéu",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T14:52:50.920Z",
