@@ -1,0 +1,20 @@
+# One-off probe (delete after): what NFL player-prop prices does SportsGameOdds' free plan return?
+name: SGO props probe
+on:
+  push:
+    branches: [sgo-props]
+    paths: [scripts/line-history/sgo-props-probe.mjs]
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: node scripts/line-history/sgo-props-probe.mjs
+        env:
+          SPORTSGAMEODDS_API_KEY: ${{ secrets.SPORTSGAMEODDS_API_KEY }}
