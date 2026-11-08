@@ -33,7 +33,6 @@ export const PROP_FINDINGS: PropFinding[] = [
       { season: "2025", text: "45-37, +2.2%", roi: 2.2 },
       { season: "2026 (never seen)", text: "28-15, +24.3%", roi: 24.3 },
     ],
-    link: { to: "/props", label: "★ on the Props page" },
   },
   {
     status: "lead",
@@ -45,7 +44,6 @@ export const PROP_FINDINGS: PropFinding[] = [
       { season: "2025", text: "+1.9%", roi: 1.9 },
       { season: "2026", text: "+4.7%", roi: 4.7 },
     ],
-    link: { to: "/props", label: "This week's picks and results" },
   },
   {
     status: "lead",
@@ -82,7 +80,7 @@ export const PROP_FINDINGS: PropFinding[] = [
     status: "none",
     title: "Next man up when the top receiver is out",
     detail:
-      "His unders went 67-48 in 2024–2026, but replayed back to 2012 they hit only 44%. Kept as a live tracker on the Props page, not a bet.",
+      "His unders went 67-48 in 2024–2026, but replayed back to 2012 they hit only 44%. Kept as a live tracker above, not a bet.",
   },
   {
     status: "none",

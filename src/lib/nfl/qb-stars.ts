@@ -7,14 +7,35 @@
 export const QB_STAR_EDGE = 0.08;
 
 /** [date, game, player, team, opening line, over price, projection, passing yards, result] */
-export type QbStarPick = [string, string, string, string, number, number | null, number, number, "win" | "loss" | "push"];
-/** [date, game, player, team, line, over price, projection, edge] */
-export type QbStarUpcoming = [string, string, string, string, number, number | null, number, number];
+export type QbStarPick = [
+  string,
+  string,
+  string,
+  string,
+  number,
+  number | null,
+  number,
+  number,
+  "win" | "loss" | "push",
+];
+/** [date, game, player, team, line, over price, projection, edge, earlier NFL starts (newer builds)] */
+export type QbStarUpcoming = [
+  string,
+  string,
+  string,
+  string,
+  number,
+  number | null,
+  number,
+  number,
+  number?,
+];
 
 export interface QbStarsFile {
   season: number;
   updated: string;
-  rule: { edge: number; stat: string; side: string };
+  /** minStarts: no ★ on a QB with fewer earlier NFL starts (his first start). */
+  rule: { edge: number; minStarts?: number; stat: string; side: string };
   /** wins, losses, pushes, units (1u at the listed price, −110 when ESPN shows none) */
   record: [number, number, number, number];
   picks: QbStarPick[];

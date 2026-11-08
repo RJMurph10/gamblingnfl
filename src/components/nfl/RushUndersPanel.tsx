@@ -37,7 +37,9 @@ export function RushUndersPanel() {
   const upcoming = (f?.upcoming ?? []).filter((u) => Date.parse(u[0]) > now);
   const flagged = upcoming.filter((u) => u[7].length);
   const shown = showAll ? upcoming : flagged;
-  const recent = (f?.picks ?? []).slice(-12).reverse();
+  const [showHistory, setShowHistory] = useState(false);
+  const graded = [...(f?.picks ?? [])].reverse();
+  const recent = showHistory ? graded : graded.slice(0, 10);
   const liveLabel = f
     ? new Date(`${f.liveFrom}T12:00:00Z`).toLocaleDateString([], { month: "short", day: "numeric" })
     : "";
@@ -139,7 +141,7 @@ export function RushUndersPanel() {
 
       {recent.length ? (
         <div className="overflow-x-auto border-t border-line/10">
-          <p className="label-mono px-4 pt-3">Recent results</p>
+          <p className="label-mono px-4 pt-3">This season</p>
           <table className="w-full min-w-[520px] text-sm">
             <thead>
               <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
@@ -180,6 +182,15 @@ export function RushUndersPanel() {
               ))}
             </tbody>
           </table>
+          {graded.length > 10 ? (
+            <button
+              type="button"
+              onClick={() => setShowHistory((v) => !v)}
+              className="block w-full border-t border-line/10 px-4 py-2.5 text-center font-mono text-[11px] uppercase tracking-wider text-acc hover:bg-line/5"
+            >
+              {showHistory ? "Show latest 10" : `Show all ${graded.length} graded picks`}
+            </button>
+          ) : null}
         </div>
       ) : null}
     </Panel>

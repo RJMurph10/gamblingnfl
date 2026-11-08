@@ -24,6 +24,11 @@ import numpy as np
 import pandas as pd
 
 EDGE = 0.08
+# No ★ until a QB has 3 earlier games as his team's main passer: before that his form is mostly the
+# league-average prior, and the books know a near-debut isn't average. On 2024-26 the 3+ rule went 152-98
+# (+8.5%), about the same as no rule; the near-debuts it drops went 6-5. Added Nov 8, 2026 after Joe Fagnano
+# (undrafted, one relief outing: 60 yds vs o160.5). research: research/props/nfl_qb_bets_exp.py
+MIN_STARTS = 3
 ap = argparse.ArgumentParser()
 ap.add_argument("--site", default="props-site")
 ap.add_argument("--cache", default="nflverse-cache")
@@ -62,6 +67,10 @@ team_att = s.groupby(["game_id", "team"]).attempts.transform("sum")
 s["share"] = s.attempts / team_att
 s["primary"] = (s.attempts == s.groupby(["game_id", "team"]).attempts.transform("max")) & (s.attempts >= 10)
 s["upcoming"] = False
+# each QB's earlier primary starts (career since --first), for the MIN_STARTS rule
+_prim = s[s.primary].sort_values(["season", "week"])
+prior_starts = {(r.player_id, r.season, r.week): i for _, g in _prim.groupby("player_id") for i, r in enumerate(g.itertuples())}
+career_starts = _prim.groupby("player_id").size().to_dict()
 
 # ---------- this week's QBs with a DraftKings passing-yards line ----------
 norm = lambda x: re.sub(r"[^a-z]", "", re.sub(r"\b(jr|sr|ii|iii|iv|v)\b", "", str(x).lower()))
@@ -217,6 +226,8 @@ for f in sorted(glob.glob(f"{args.site}/nfl/{SEASON}/*.json")):
             line = float(p[3])
             if not line or (r.pred - line) / line < EDGE:
                 continue
+            if prior_starts.get((r.player_id, r.season, r.week), 0) < MIN_STARTS:
+                continue  # his first NFL start
             res = "win" if p[6] > line else "loss" if p[6] < line else "push"
             picks.append([g["date"], g["name"], p[0], p[1], line, p[4], round(float(r.pred), 1), p[6], res])
 picks.sort()
@@ -232,16 +243,17 @@ for gid, pid, date, name, player, team, line, over in up_lines:
     if pr is None or not line:
         continue
     edge = (pr - line) / line
-    upc.append([date, name, player, team, line, over, round(float(pr), 1), round(float(edge), 3)])
+    upc.append([date, name, player, team, line, over, round(float(pr), 1), round(float(edge), 3), int(career_starts.get(pid, 0))])
 upc.sort(key=lambda x: (x[0], -x[7]))
 out = {
-    "season": SEASON, "updated": now.isoformat(), "rule": {"edge": EDGE, "stat": "Pass yds", "side": "over"},
+    "season": SEASON, "updated": now.isoformat(), "rule": {"edge": EDGE, "minStarts": MIN_STARTS, "stat": "Pass yds", "side": "over"},
     "record": [w, l, len(picks) - w - l, round(units, 2)],
     # [date, game, player, team, opening line, over price, projection, passing yards, result]
     "picks": picks,
-    # [date, game, player, team, line, over price, projection, edge]; ★ when edge >= rule.edge
+    # [date, game, player, team, line, over price, projection, edge, earlier NFL starts];
+    # ★ when edge >= rule.edge and earlier starts >= rule.minStarts
     "upcoming": upc,
 }
 os.makedirs(f"{args.site}/nfl", exist_ok=True)
 json.dump(out, open(f"{args.site}/nfl/qb-stars-{SEASON}.json", "w"))
-print(f"{SEASON} ★ QB passing-yards overs: {w}-{l} ({units:+.2f}u); this week: {sum(1 for u in upc if u[7] >= EDGE)} ★ of {len(upc)} lines")
+print(f"{SEASON} ★ QB passing-yards overs: {w}-{l} ({units:+.2f}u); this week: {sum(1 for u in upc if u[7] >= EDGE and u[8] >= MIN_STARTS)} ★ of {len(upc)} lines")
