@@ -43,10 +43,24 @@ os.makedirs(args.cache, exist_ok=True)
 def download(url, path, fresh):
     if os.path.exists(path) and not fresh:
         return path
-    req = urllib.request.Request(url, headers={"User-Agent": "gamblingnfl-qb-stars"})
-    with urllib.request.urlopen(req, timeout=120) as r, open(path, "wb") as f:
-        f.write(r.read())
-    return path
+    # nflverse's release server times out now and then (504s): retry for a few minutes, and fall back to the
+    # cached copy if there is one
+    import time
+    for attempt in range(8):
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": "gamblingnfl-qb-stars"})
+            with urllib.request.urlopen(req, timeout=120) as r:
+                data = r.read()
+            with open(path, "wb") as f:
+                f.write(data)
+            return path
+        except Exception as e:
+            print(f"download failed ({e}); retry {attempt + 1}/8")
+            time.sleep(20)
+    if os.path.exists(path):
+        print(f"using the cached copy of {os.path.basename(path)}")
+        return path
+    raise RuntimeError(f"could not download {url}")
 
 
 # ---------- nflverse data ----------
