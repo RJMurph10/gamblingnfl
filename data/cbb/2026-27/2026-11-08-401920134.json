@@ -7,18 +7,18 @@
   "id": "2449",
   "abbr": "NDSU",
   "name": "North Dakota State Bison",
-  "score": 0
+  "score": 2
  },
  "home": {
   "id": "2934",
   "abbr": "CSUB",
   "name": "Cal State Bakersfield Roadrunners",
-  "score": 0
+  "score": 3
  },
  "neutral": false,
  "venue": "Icardo Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-08T00:43:09.397Z",

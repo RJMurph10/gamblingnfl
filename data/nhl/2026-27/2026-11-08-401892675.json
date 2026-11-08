@@ -7,18 +7,18 @@
   "id": "37",
   "abbr": "VGK",
   "name": "Vegas Golden Knights",
-  "score": 0
+  "score": 4
  },
  "home": {
   "id": "2",
   "abbr": "BUF",
   "name": "Buffalo Sabres",
-  "score": 0
+  "score": 1
  },
  "neutral": false,
  "venue": "KeyBank Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-07T16:52:38.954Z",
@@ -1281,5 +1281,9 @@
    "Juho Piiparinen",
    "VGK"
   ]
+ },
+ "final": {
+  "away": 4,
+  "home": 1
  }
 }

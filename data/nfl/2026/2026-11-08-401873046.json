@@ -7,18 +7,18 @@
   "id": "34",
   "abbr": "HOU",
   "name": "Houston Texans",
-  "score": 0
+  "score": 24
  },
  "home": {
   "id": "24",
   "abbr": "LAC",
   "name": "Los Angeles Chargers",
-  "score": 0
+  "score": 9
  },
  "neutral": false,
  "venue": "SoFi Stadium",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-01T23:47:33.650Z",
