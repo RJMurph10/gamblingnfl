@@ -71,6 +71,12 @@ export interface TeamFutures {
   superBowl: number;
   /** Chance of each seed 1..N (index 0 = 1 seed). */
   seedDist: number[];
+  /**
+   * Mathematically eliminated: even winning every remaining game can't get there, because enough teams
+   * already have more wins. A sure test only (it ignores tiebreakers), so a few teams that are really
+   * out still show a small chance until the rule catches them.
+   */
+  out: { division: boolean; playoffs: boolean; topSeed: boolean };
 }
 
 function mulberry32(seed: number) {
@@ -334,6 +340,27 @@ export function simulateSeason(teams: SimTeam[], games: SimGame[], opts: SimOpti
     }
   }
 
+  const leftCount = new Float64Array(n);
+  for (const g of left) {
+    leftCount[g.h] += 1;
+    leftCount[g.a] += 1;
+  }
+  const maxWins = (i: number) => done[i] + leftCount[i];
+  const ahead = (i: number, same: (j: number) => boolean) =>
+    teams.reduce((c, _, j) => c + (j !== i && same(j) && done[j] > maxWins(i) ? 1 : 0), 0);
+  const outOf = (i: number) => {
+    const division = ahead(i, (j) => divOf[j] === divOf[i]) > 0;
+    return {
+      division,
+      // a division title gets a team in at any record, so only teams out of their division race can be
+      // out of the playoffs: then `seeds` teams already ahead fill every spot
+      playoffs: division && ahead(i, (j) => confOf[j] === confOf[i]) >= seeds,
+      // the 1 seed goes to a division winner; whoever wins a division with a team already ahead of
+      // this one's best finish will finish ahead too
+      topSeed: division || ahead(i, (j) => confOf[j] === confOf[i]) > 0,
+    };
+  };
+
   return teams.map((t, i) => ({
     id: t.id,
     wins: done[i],
@@ -346,6 +373,7 @@ export function simulateSeason(teams: SimTeam[], games: SimGame[], opts: SimOpti
     conference: res[i].conf / sims,
     superBowl: res[i].sb / sims,
     seedDist: res[i].seed.map((x: number) => x / sims),
+    out: outOf(i),
   }));
 }
 

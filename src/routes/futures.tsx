@@ -45,14 +45,33 @@ function pctText(p: number) {
   return `${Math.round(p * 100)}%`;
 }
 
-function Cell({ p, mode }: { p: number; mode: "pct" | "odds" }) {
+/** Mathematically out of this market (division / playoffs / 1 seed; conference and SB follow playoffs). */
+function isOut(r: TeamFutures, key: Market) {
+  if (key === "division") return r.out.division;
+  if (key === "topSeed") return r.out.topSeed;
+  return r.out.playoffs;
+}
+
+function Cell({ p, mode, out }: { p: number; mode: "pct" | "odds"; out: boolean }) {
   const shade = Math.round(Math.min(1, p) * 28);
   return (
     <td
       className="px-2 py-1.5 text-right font-mono text-[11px] tabular-nums"
       style={{ backgroundColor: p > 0 ? `color-mix(in oklab, var(--acc) ${shade}%, transparent)` : undefined }}
     >
-      {p === 0 ? <span className="text-faint">—</span> : mode === "pct" ? pctText(p) : fairOdds(p)}
+      {out ? (
+        <span className="text-loss" title="Mathematically eliminated">
+          Out
+        </span>
+      ) : p === 0 ? (
+        <span className="text-faint" title="Never happened in the simulated seasons, but still possible">
+          &lt;0.1%
+        </span>
+      ) : mode === "pct" ? (
+        pctText(p)
+      ) : (
+        fairOdds(p)
+      )}
     </td>
   );
 }
@@ -131,7 +150,7 @@ function FuturesPage() {
         <p className="font-mono text-[10px] text-faint">
           {mode === "odds"
             ? "Fair odds = the price with no house cut. A bet is worth it only when a sportsbook pays more than this."
-            : `${remaining} games left to simulate · re-run after every final score`}
+            : `${remaining} games left to simulate · re-run after every final score · Out = mathematically eliminated · <0.1% = never happened in ${SIMS.toLocaleString()} seasons, but still possible`}
         </p>
       </div>
 
@@ -189,7 +208,7 @@ function FuturesPage() {
                                 </td>
                                 <td className="px-2 py-1.5 text-right font-mono text-[11px]">{r.projWins.toFixed(1)}</td>
                                 {MARKETS.map((m) => (
-                                  <Cell key={m.key} p={r[m.key]} mode={mode} />
+                                  <Cell key={m.key} p={r[m.key]} mode={mode} out={isOut(r, m.key)} />
                                 ))}
                               </tr>
                             );
