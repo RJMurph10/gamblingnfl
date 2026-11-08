@@ -8,6 +8,7 @@ import { getLiveSchedule, getPriorSeasonResults } from "@/lib/shared/espn.functi
 import { MODEL_SETTINGS } from "@/lib/shared/game-model";
 import { getNflHistory } from "@/lib/shared/history.functions";
 import { useKickoffForecasts, WatchList } from "@/components/nfl/WatchList";
+import { PropsFindingsPanel } from "@/components/nfl/PropsFindingsPanel";
 import { pastSeasonRuns, readHistory, runModelWithHistory } from "@/lib/nfl/model-history";
 
 export const Route = createFileRoute("/model")({
@@ -130,61 +131,66 @@ function ModelPage() {
         ) : null
       }
       howItWorks={
-        <Panel>
-          <h2 className="font-disp text-lg font-semibold uppercase tracking-tight">
-            How the model works
-          </h2>
-          <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-mute">
-            <li>
-              Rates every team&apos;s offense and defense from this season&apos;s final scores,
-              adjusted for opponents and home field, then predicts each game&apos;s score. That
-              gives a model spread, total and win probability. Yards-per-play and EPA ratings were
-              tested over three seasons and didn&apos;t beat final scores, so they aren&apos;t used.
-            </li>
-            <li>
-              Only games from earlier weeks are used to predict a week, so the record above is what
-              the model would have picked at the time. Teams need {MODEL_SETTINGS.minGamesPerTeam}{" "}
-              games played before it bets them.
-            </li>
-            <li>
-              Starts from the betting line. Each week it checks, on earlier games only (every past
-              season since 2023 plus this one), how much its disagreements with the closing line
-              actually predicted the result, and moves its line off the market only that far (the
-              &quot;trust&quot; above). It also learns how much its own ratings squeeze games toward
-              even, and whether games have been running over or under the totals. Win chances start
-              from the moneyline&apos;s no-vig price, so the winner call is the market&apos;s
-              favorite unless the model has earned the right to disagree.
-            </li>
-            <li>
-              Every game gets a call on all three markets: the winner, a spread side and over /
-              under. Those are leans, graded so the record is complete.
-            </li>
-            <li>
-              ★ Best bets, against the spread: every home underdog getting{" "}
-              {MODEL_SETTINGS.bigUnderdogPts}+ points (279-224 at closing lines since 1999); the
-              road team after it lost its previous game by {MODEL_SETTINGS.bounceLossMargin}+ (the
-              college bounce-back rule, 118-92 on 27 NFL seasons it had never seen); and a
-              scrambler&apos;s team against a pocket passer&apos;s team. On totals: the under in
-              every outdoor game with {MODEL_SETTINGS.windUnderMph}+ mph of wind at kickoff (469-361
-              since 2012; picked on 2012–2021 and confirmed on 2022–2026 games it had never seen).
-              Upcoming wind uses the National Weather Service forecast; finished games use the wind
-              recorded at kickoff. Past results don&apos;t guarantee future ones; the track record
-              above keeps score.
-            </li>
-            <li>
-              Changed in October 2026: road underdogs of {MODEL_SETTINGS.bigUnderdogPts}+ were
-              dropped from the ★ best bets (they broke even or lost in every era since 1999:
-              792-767, −47u) and the bounce-back rule was added. Over 1999–2025 at closing lines
-              that took the ★ record from 53.1% (+51.9u) to 55.0% (+122.2u) on a third fewer bets.
-              The seasons in the track record above are replayed with the current rules.
-            </li>
-            <li>
-              Every pick risks {MODEL_SETTINGS.stake} unit. Spreads and totals are graded at the
-              standard {MODEL_SETTINGS.defaultPrice}; moneylines at their closing ESPN price. Pushes
-              return the stake. Picks for upcoming games can change until kickoff as the lines move.
-            </li>
-          </ul>
-        </Panel>
+        <>
+          <Panel>
+            <h2 className="font-disp text-lg font-semibold uppercase tracking-tight">
+              How the model works
+            </h2>
+            <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-mute">
+              <li>
+                Rates every team&apos;s offense and defense from this season&apos;s final scores,
+                adjusted for opponents and home field, then predicts each game&apos;s score. That
+                gives a model spread, total and win probability. Yards-per-play and EPA ratings were
+                tested over three seasons and didn&apos;t beat final scores, so they aren&apos;t
+                used.
+              </li>
+              <li>
+                Only games from earlier weeks are used to predict a week, so the record above is
+                what the model would have picked at the time. Teams need{" "}
+                {MODEL_SETTINGS.minGamesPerTeam} games played before it bets them.
+              </li>
+              <li>
+                Starts from the betting line. Each week it checks, on earlier games only (every past
+                season since 2023 plus this one), how much its disagreements with the closing line
+                actually predicted the result, and moves its line off the market only that far (the
+                &quot;trust&quot; above). It also learns how much its own ratings squeeze games
+                toward even, and whether games have been running over or under the totals. Win
+                chances start from the moneyline&apos;s no-vig price, so the winner call is the
+                market&apos;s favorite unless the model has earned the right to disagree.
+              </li>
+              <li>
+                Every game gets a call on all three markets: the winner, a spread side and over /
+                under. Those are leans, graded so the record is complete.
+              </li>
+              <li>
+                ★ Best bets, against the spread: every home underdog getting{" "}
+                {MODEL_SETTINGS.bigUnderdogPts}+ points (279-224 at closing lines since 1999); the
+                road team after it lost its previous game by {MODEL_SETTINGS.bounceLossMargin}+ (the
+                college bounce-back rule, 118-92 on 27 NFL seasons it had never seen); and a
+                scrambler&apos;s team against a pocket passer&apos;s team. On totals: the under in
+                every outdoor game with {MODEL_SETTINGS.windUnderMph}+ mph of wind at kickoff
+                (469-361 since 2012; picked on 2012–2021 and confirmed on 2022–2026 games it had
+                never seen). Upcoming wind uses the National Weather Service forecast; finished
+                games use the wind recorded at kickoff. Past results don&apos;t guarantee future
+                ones; the track record above keeps score.
+              </li>
+              <li>
+                Changed in October 2026: road underdogs of {MODEL_SETTINGS.bigUnderdogPts}+ were
+                dropped from the ★ best bets (they broke even or lost in every era since 1999:
+                792-767, −47u) and the bounce-back rule was added. Over 1999–2025 at closing lines
+                that took the ★ record from 53.1% (+51.9u) to 55.0% (+122.2u) on a third fewer bets.
+                The seasons in the track record above are replayed with the current rules.
+              </li>
+              <li>
+                Every pick risks {MODEL_SETTINGS.stake} unit. Spreads and totals are graded at the
+                standard {MODEL_SETTINGS.defaultPrice}; moneylines at their closing ESPN price.
+                Pushes return the stake. Picks for upcoming games can change until kickoff as the
+                lines move.
+              </li>
+            </ul>
+          </Panel>
+          <PropsFindingsPanel />
+        </>
       }
     />
   );
