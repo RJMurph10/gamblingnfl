@@ -5,6 +5,8 @@ import { PageTitle, Panel, TeamLogo } from "@/components/shared/booth";
 import type { Game } from "@/data/shared/games";
 import { divisions, teamById } from "@/data/shared/teams";
 import { getLiveSchedule } from "@/lib/shared/espn.functions";
+import { getNflHistory } from "@/lib/shared/history.functions";
+import { qbStartsFrom, readHistory } from "@/lib/nfl/model-history";
 import { fairOdds, nflFutures, type TeamFutures } from "@/lib/nfl/futures-sim";
 
 export const Route = createFileRoute("/futures")({
@@ -43,14 +45,33 @@ function pctText(p: number) {
   return `${Math.round(p * 100)}%`;
 }
 
-function Cell({ p, mode }: { p: number; mode: "pct" | "odds" }) {
+/** Mathematically out of this market (division / playoffs / 1 seed; conference and SB follow playoffs). */
+function isOut(r: TeamFutures, key: Market) {
+  if (key === "division") return r.out.division;
+  if (key === "topSeed") return r.out.topSeed;
+  return r.out.playoffs;
+}
+
+function Cell({ p, mode, out }: { p: number; mode: "pct" | "odds"; out: boolean }) {
   const shade = Math.round(Math.min(1, p) * 28);
   return (
     <td
       className="px-2 py-1.5 text-right font-mono text-[11px] tabular-nums"
       style={{ backgroundColor: p > 0 ? `color-mix(in oklab, var(--acc) ${shade}%, transparent)` : undefined }}
     >
-      {p === 0 ? <span className="text-faint">—</span> : mode === "pct" ? pctText(p) : fairOdds(p)}
+      {out ? (
+        <span className="text-loss" title="Mathematically eliminated">
+          Out
+        </span>
+      ) : p === 0 ? (
+        <span className="text-faint" title="Never happened in the simulated seasons, but still possible">
+          &lt;0.1%
+        </span>
+      ) : mode === "pct" ? (
+        pctText(p)
+      ) : (
+        fairOdds(p)
+      )}
     </td>
   );
 }
@@ -64,6 +85,18 @@ function FuturesPage() {
     retry: 1,
   });
   const games: Game[] = useMemo(() => scheduleQuery.data ?? [], [scheduleQuery.data]);
+  // Starting quarterbacks (finished games and next week's projected starters) for the QB ratings.
+  const historyQuery = useQuery({
+    queryKey: ["nfl-history-v2"],
+    queryFn: () => getNflHistory(),
+    staleTime: 60 * 60_000,
+    retry: 1,
+  });
+  const qb = useMemo(() => {
+    const h = readHistory(historyQuery.data);
+    if (!h.currentSeason || !h.games.length) return undefined;
+    return { season: h.currentSeason, starts: qbStartsFrom(h.games), upcoming: h.upcoming };
+  }, [historyQuery.data]);
   // Only re-simulate when a result or a line changes, not on every schedule refresh.
   const finalsKey = useMemo(
     () => games.map((g) => `${g.id}:${g.status === "final" ? "f" : ""}:${g.spread ?? ""}`).join(","),
@@ -71,12 +104,12 @@ function FuturesPage() {
   );
   const [results, setResults] = useState<TeamFutures[]>([]);
   useEffect(() => {
-    if (!games.length) return;
+    if (!games.length || historyQuery.isLoading) return;
     // let the page paint first: 10,000 seasons take most of a second
-    const t = setTimeout(() => setResults(nflFutures(games, SIMS)), 30);
+    const t = setTimeout(() => setResults(nflFutures(games, SIMS, qb)), 30);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [finalsKey]);
+  }, [finalsKey, qb, historyQuery.isLoading]);
 
   const [mode, setMode] = useState<"pct" | "odds">("pct");
   const byId = useMemo(() => new Map(results.map((r) => [r.id, r])), [results]);
@@ -117,7 +150,7 @@ function FuturesPage() {
         <p className="font-mono text-[10px] text-faint">
           {mode === "odds"
             ? "Fair odds = the price with no house cut. A bet is worth it only when a sportsbook pays more than this."
-            : `${remaining} games left to simulate · re-run after every final score`}
+            : `${remaining} games left to simulate · re-run after every final score · Out = mathematically eliminated · <0.1% = never happened in ${SIMS.toLocaleString()} seasons, but still possible`}
         </p>
       </div>
 
@@ -175,7 +208,7 @@ function FuturesPage() {
                                 </td>
                                 <td className="px-2 py-1.5 text-right font-mono text-[11px]">{r.projWins.toFixed(1)}</td>
                                 {MARKETS.map((m) => (
-                                  <Cell key={m.key} p={r[m.key]} mode={mode} />
+                                  <Cell key={m.key} p={r[m.key]} mode={mode} out={isOut(r, m.key)} />
                                 ))}
                               </tr>
                             );
@@ -223,6 +256,13 @@ function FuturesPage() {
                 the betting spreads: every spread posted so far this season (recent weeks count more),
                 starting from 60% of each team&apos;s final market rating last season. Spreads already
                 include injuries, quarterback changes and everything else the books know.
+              </li>
+              <li>
+                Quarterbacks: next week&apos;s line already prices whoever starts. When a fill-in is
+                starting (an injured starter), his gap to the regular starter, from the site&apos;s
+                quarterback ratings, also counts for the two weeks after. Tested on 24 seasons: longer
+                stretches, or correcting past spreads for fill-in starts, didn&apos;t sharpen the odds,
+                because the weekly spreads already move with every quarterback change.
               </li>
               <li>
                 Each simulated season also nudges every team&apos;s true strength up or down a little (about
