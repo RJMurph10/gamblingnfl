@@ -29,20 +29,9 @@ export const PROP_FINDINGS: PropFinding[] = [
     detail:
       "The QB model (form, team implied points, opponent, weather) against DraftKings' opening line. It adds 5–10 points over just betting overs in every season.",
     seasons: [
-      { season: "2024", text: "85-50, +7.4%", roi: 7.4 },
-      { season: "2025", text: "45-37, +2.2%", roi: 2.2 },
+      { season: "2024", text: "82-50, +7.5u", roi: 5.6 },
+      { season: "2025", text: "44-34, +4.1u", roi: 5.2 },
       { season: "2026 (never seen)", text: "28-15, +24.3%", roi: 24.3 },
-    ],
-  },
-  {
-    status: "lead",
-    title: "Rushing-yard unders (main line)",
-    detail:
-      "Profitable all three seasons (3,067 bets, +4.8%). Rushing yards are lopsided: running backs finish below their recent average in 57% of games (every season since 2012), QBs 60%, and books don't shade rushing lines for it the way they do receiving lines. Strongest for QBs, running backs with lines of 20.5–35 yards, and teams expected to score 3+ points less than usual (rushing overs hit 42% there). Needs DraftKings' real under prices before it gets a ★.",
-    seasons: [
-      { season: "2024", text: "+7.2%", roi: 7.2 },
-      { season: "2025", text: "+1.9%", roi: 1.9 },
-      { season: "2026", text: "+4.7%", roi: 4.7 },
     ],
   },
   {
@@ -54,9 +43,19 @@ export const PROP_FINDINGS: PropFinding[] = [
   },
   {
     status: "none",
+    title: "Rushing-yard unders (still tracked above)",
+    detail:
+      "Overs hit only 47–48% at the main line, but at ESPN BET's real prices (−115 both ways) unders lost 1.4% in 2024 and 1.2% in 2025. An earlier +7% came from grading some props at unpriced alternate lines, since fixed. At DraftKings' cheaper −110 it's about break-even, so it's tracked at DraftKings prices.",
+    seasons: [
+      { season: "2024", text: "405-377, −10.9u", roi: -1.4 },
+      { season: "2025", text: "555-492, −12.5u", roi: -1.2 },
+    ],
+  },
+  {
+    status: "none",
     title: "Blind overs, any market",
     detail:
-      "Lose 2–17% in nearly every market and season. Field goals made and kicking points were about break-even.",
+      "At real prices almost every market lost in both 2024 and 2025, overs and unders alike: ESPN BET charged −115 on both sides. Nothing was positive in both seasons.",
   },
   {
     status: "none",
@@ -73,8 +72,7 @@ export const PROP_FINDINGS: PropFinding[] = [
   {
     status: "none",
     title: "Overs in high-scoring games",
-    detail:
-      "Books raise players' lines with the total. The best case, receiving overs when the team is expected to score 27+, went 51–52% every season: about break-even.",
+    detail: "Books raise players' lines with the total; no over angle by game total held up.",
   },
   {
     status: "none",

@@ -2,6 +2,8 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Panel, PanelHeader } from "@/components/shared/booth";
+import { SeasonTabs } from "@/components/nfl/SeasonTabs";
+import { nflSeasonOf, seasonBook } from "@/lib/nfl/prop-seasons";
 import { QB_STAR_EDGE } from "@/lib/nfl/qb-stars";
 import { getQbStars } from "@/lib/nfl/qb-stars.functions";
 
@@ -9,9 +11,11 @@ const when = (iso: string) =>
   new Date(iso).toLocaleString([], { weekday: "short", hour: "numeric", minute: "2-digit" });
 
 export function QbStarsPanel() {
+  const [season, setSeason] = useState(nflSeasonOf());
+  const current = season === nflSeasonOf();
   const q = useQuery({
-    queryKey: ["nfl-qb-stars"],
-    queryFn: () => getQbStars(),
+    queryKey: ["nfl-qb-stars", season],
+    queryFn: () => getQbStars({ data: { season } }),
     staleTime: 15 * 60_000,
     retry: 1,
   });
@@ -34,13 +38,16 @@ export function QbStarsPanel() {
       <PanelHeader
         title="★ QB passing-yards overs"
         aside={
-          <span className="label-mono">
-            {q.isLoading
-              ? "Loading…"
-              : w + l
-                ? `${f?.season} ${w}-${l}${pu ? `-${pu}` : ""} · ${units > 0 ? "+" : ""}${units.toFixed(2)}u · ROI ${roi! > 0 ? "+" : ""}${roi!.toFixed(1)}%`
-                : "No graded picks yet"}
-          </span>
+          <div className="flex flex-wrap items-center gap-2">
+            <SeasonTabs season={season} onChange={setSeason} />
+            <span className="label-mono">
+              {q.isLoading
+                ? "Loading…"
+                : w + l
+                  ? `${f?.season} ${w}-${l}${pu ? `-${pu}` : ""} · ${units > 0 ? "+" : ""}${units.toFixed(2)}u · ROI ${roi! > 0 ? "+" : ""}${roi!.toFixed(1)}%`
+                  : "No graded picks yet"}
+            </span>
+          </div>
         }
       />
       <div className="space-y-2 px-4 py-3 text-sm text-mute">
@@ -55,44 +62,50 @@ export function QbStarsPanel() {
         </p>
         <p className="font-mono text-[10px] text-faint">
           About 260 bets in all, a smaller sample than the NBA rebound unders. No ★ until a QB has 3
-          NFL starts: before that the model knows almost nothing about him and assumes an average QB,
-          and the books know better. Picks without a saved DraftKings price are graded at −110.
+          NFL starts: before that the model knows almost nothing about him and assumes an average
+          QB, and the books know better. Picks without a saved DraftKings price are graded at −110.
         </p>
       </div>
-      <div className="border-t border-line/10">
-        <p className="label-mono px-4 pt-3">This week</p>
-        {stars.length ? (
-          <div className="divide-y divide-line/5">
-            {stars.map((u) => (
-              <div
-                key={`${u[1]}-${u[2]}`}
-                className="flex items-center gap-3 px-4 py-2 font-mono text-[12px]"
-              >
-                <span className="text-acc">★</span>
-                <span className="min-w-0 flex-1 truncate font-sans text-sm">
-                  {u[2]}{" "}
-                  <span className="font-mono text-[10px] text-faint">
-                    {u[3]} · {u[1]} · <span suppressHydrationWarning>{when(u[0])}</span>
+      {current ? (
+        <div className="border-t border-line/10">
+          <p className="label-mono px-4 pt-3">This week</p>
+          {stars.length ? (
+            <div className="divide-y divide-line/5">
+              {stars.map((u) => (
+                <div
+                  key={`${u[1]}-${u[2]}`}
+                  className="flex items-center gap-3 px-4 py-2 font-mono text-[12px]"
+                >
+                  <span className="text-acc">★</span>
+                  <span className="min-w-0 flex-1 truncate font-sans text-sm">
+                    {u[2]}{" "}
+                    <span className="font-mono text-[10px] text-faint">
+                      {u[3]} · {u[1]} · <span suppressHydrationWarning>{when(u[0])}</span>
+                    </span>
                   </span>
-                </span>
-                <span className="font-semibold text-foreground">Over {u[4]}</span>
-                <span className="w-12 text-right text-mute">{u[5] ?? "—"}</span>
-                <span className="w-24 text-right text-mute">
-                  proj {u[6].toFixed(0)} (+{(u[7] * 100).toFixed(0)}%)
-                </span>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p className="px-4 py-3 font-mono text-[11px] text-mute">
-            {q.isLoading
-              ? "Loading…"
-              : "No ★ this week yet. They show up once DraftKings posts passing-yards lines (usually by Wednesday)."}
-          </p>
-        )}
-      </div>
+                  <span className="font-semibold text-foreground">Over {u[4]}</span>
+                  <span className="w-12 text-right text-mute">{u[5] ?? "—"}</span>
+                  <span className="w-24 text-right text-mute">
+                    proj {u[6].toFixed(0)} (+{(u[7] * 100).toFixed(0)}%)
+                  </span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="px-4 py-3 font-mono text-[11px] text-mute">
+              {q.isLoading
+                ? "Loading…"
+                : "No ★ this week yet. They show up once DraftKings posts passing-yards lines (usually by Wednesday)."}
+            </p>
+          )}
+        </div>
+      ) : null}
       {recent.length ? (
         <div className="overflow-x-auto border-t border-line/10">
+          <p className="label-mono px-4 pt-3">
+            {current ? "This season" : `${season} season`} · graded at {seasonBook(season)}&apos;s
+            main line
+          </p>
           <table className="w-full min-w-[520px] text-sm">
             <thead>
               <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
