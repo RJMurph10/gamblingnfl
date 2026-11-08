@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { LiveGamesPanel, RecentGamesPanel, UpcomingGames } from "@/components/shared/GameTables";
+import { QbNewsPanel } from "@/components/shared/QbNewsPanel";
 import {
   PageTitle,
   Panel,
@@ -221,7 +222,8 @@ function Dashboard() {
           />
         </section>
 
-        <aside className="min-w-0 lg:col-span-4">
+        <aside className="min-w-0 space-y-6 lg:col-span-4">
+          <QbNewsPanel />
           <Panel>
             <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">Team grid</h2>
             <p className="label-mono mb-3">32 clubs · tap to open</p>

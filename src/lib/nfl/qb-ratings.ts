@@ -145,7 +145,7 @@ export function buildQbRatings(
   }
 
   /** The adjustment for one game, or undefined when neither starter is known. */
-  return function adjust(input: {
+  function adjust(input: {
     season: number;
     week: number;
     homeTeamId: string;
@@ -173,7 +173,10 @@ export function buildQbRatings(
     const raw = (home?.points ?? 0) - (away?.points ?? 0);
     const cap = S.maxAdjustment;
     return { home, away, margin: Math.max(-cap, Math.min(cap, raw)) };
-  };
+  }
+  /** Walk-forward quarterback ratings (EPA per dropback) from starts before this week. */
+  adjust.ratingsBefore = (season: number, week: number) => ratingsBefore(season, week).rating;
+  return adjust;
 }
 
 export type QbAdjuster = ReturnType<typeof buildQbRatings>;
