@@ -159,7 +159,8 @@ async function main() {
           if (p) [o, u, filled] = [p[0], p[1], filled + 1];
           else if (mn) [line, o, u, filled] = [mn[0], mn[1], mn[2], filled + 1];
         }
-        props.push([who[0], who[1], LABELS[l.t], line, o, u, l.opened]);
+        const ladder = price.size ? price.ladder(rec.home?.name, rec.date, who[0], LABELS[l.t]) : null;
+        props.push([who[0], who[1], LABELS[l.t], line, o, u, l.opened, ...(ladder ? [ladder] : [])]);
       }
       if (!props.length) continue;
       props.sort(

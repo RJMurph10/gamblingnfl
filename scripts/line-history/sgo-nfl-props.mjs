@@ -4,7 +4,9 @@
  * (2,500 events a month; one game = one event, whatever the number of markets). ESPN shows DraftKings' prop
  * lines without prices; this fills them in. Same file format as odds-api-nfl.mjs, so the props board and the
  * graded history read both:
- *   <out>/<YYYY-MM-DDTHH>-sgo.json  [{ home, away, commence, at, props: [[player, market, line, over, under]] }]
+ *   <out>/<YYYY-MM-DDTHH>-sgo.json
+ *   [{ home, away, commence, at, props: [[player, market, line, over, under]],
+ *      alts: [[player, market, [[line, over price], ...]]] }]   (alts: BOOK's live alternate over lines)
  * Only games that haven't kicked off (live lines are skipped). Keeps --keep events in reserve for the
  * other SportsGameOdds pulls (NHL periods, college basketball).
  *
@@ -63,7 +65,8 @@ export function propsOf(e, book = BOOK) {
   const pairs = new Map();
   for (const m of Object.values(e.odds ?? {})) {
     const label = STATS[m.statID];
-    if (!label || !m.playerID || m.periodID !== "game" || m.betTypeID !== "ou" || m.started) continue;
+    if (!label || !m.playerID || m.periodID !== "game" || m.betTypeID !== "ou" || m.started)
+      continue;
     const b = m.byBookmaker?.[book];
     if (!b || b.available === false) continue;
     const line = num(b.overUnder);
@@ -79,6 +82,32 @@ export function propsOf(e, book = BOOK) {
     pairs.set(k, row);
   }
   return [...pairs.values()];
+}
+
+/** [[player, label, [[line, over price], ...]]]: BOOK's live alternate over lines (the "X+ yards" ladder). */
+export function altsOf(e, book = BOOK) {
+  const out = [];
+  for (const m of Object.values(e.odds ?? {})) {
+    const label = STATS[m.statID];
+    if (!label || !m.playerID || m.periodID !== "game" || m.betTypeID !== "ou" || m.started)
+      continue;
+    if (m.sideID !== "over") continue;
+    const b = m.byBookmaker?.[book];
+    const main = num(b?.overUnder);
+    const ladder = new Map();
+    for (const a of b?.altLines ?? []) {
+      if (a.available === false) continue;
+      const line = num(a.overUnder);
+      const price = num(a.odds);
+      if (line == null || price == null || line === main) continue;
+      ladder.set(line, price);
+    }
+    if (ladder.size < 2) continue;
+    const p = e.players?.[m.playerID];
+    const name = p?.name ?? [p?.firstName, p?.lastName].filter(Boolean).join(" ");
+    if (name) out.push([name, label, [...ladder].sort((x, y) => x[0] - y[0])]);
+  }
+  return out;
 }
 
 async function main() {
@@ -105,6 +134,7 @@ async function main() {
       startsAfter: new Date(now).toISOString(),
       startsBefore: new Date(now + HOURS * 3_600_000).toISOString(),
       limit: String(room),
+      includeAltLines: "true",
     });
     if (cursor) q.set("cursor", cursor);
     const r = await get(`/events/?${q}`);
@@ -113,9 +143,14 @@ async function main() {
     for (const e of data) {
       const name = (t) => t?.names?.long ?? t?.names?.medium ?? t?.teamID ?? "";
       const props = propsOf(e);
-      const g = { home: name(e.teams?.home), away: name(e.teams?.away), commence: e.status?.startsAt };
-      console.log(`${g.away} @ ${g.home}: ${props.length} priced lines`);
-      if (props.length) games.push({ ...g, at: new Date().toISOString(), props });
+      const alts = altsOf(e);
+      const g = {
+        home: name(e.teams?.home),
+        away: name(e.teams?.away),
+        commence: e.status?.startsAt,
+      };
+      console.log(`${g.away} @ ${g.home}: ${props.length} priced lines, ${alts.length} ladders`);
+      if (props.length) games.push({ ...g, at: new Date().toISOString(), props, alts });
     }
     cursor = r?.nextCursor ?? "";
     if (!cursor) break;

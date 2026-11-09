@@ -3,7 +3,7 @@
  * prices) next to what the player actually did. NBA from 2022-23, NFL from 2024 (2022-23 has mostly
  * touchdown props), refreshed daily during the season.
  */
-import { useMemo, useState, type ReactNode } from "react";
+import { Fragment, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { PageTitle, Panel, PanelHeader, TeamLogo } from "@/components/shared/booth";
 import { teamByAbbr } from "@/data/shared/teams";
@@ -323,6 +323,7 @@ const kickoff = (iso: string) =>
 
 function Upcoming({ league, tabs }: { league: PropLeague; tabs: ReactNode }) {
   const [gameId, setGameId] = useState<string | undefined>();
+  const [openKey, setOpenKey] = useState<string | null>(null);
   const [market, setMarket] = useState("All");
   const [search, setSearch] = useState("");
   const q = useQuery({
@@ -429,30 +430,52 @@ function Upcoming({ league, tabs }: { league: PropLeague; tabs: ReactNode }) {
               <tbody className="divide-y divide-line/5">
                 {rows.map((r, i) => {
                   const move = r[6] == null ? null : Math.round((r[3] - r[6]) * 10) / 10;
+                  const key = `${r[0]}-${r[2]}`;
+                  const ladder = r[7]?.length ? r[7] : null;
+                  const isOpen = ladder != null && openKey === key;
                   return (
-                    <tr key={`${r[0]}-${r[2]}-${i}`} className="hover:bg-line/5">
-                      <td className="px-4 py-2">
-                        <span className="inline-flex items-center gap-1.5">
-                          {r[0]} <PropTeam league={league} abbr={r[1]} />
-                        </span>
-                      </td>
-                      <td className="px-2 py-2 font-mono text-xs text-mute">{r[2]}</td>
-                      <td className="px-2 py-2 text-right font-mono text-xs font-semibold tabular-nums">
-                        {r[3]}
-                      </td>
-                      <td className="px-2 py-2 text-right font-mono text-xs tabular-nums text-mute">
-                        {r[6] ?? "—"}
-                      </td>
-                      <td className="px-2 py-2 text-right">
-                        <MovePill move={move} />
-                      </td>
-                      <td className="px-2 py-2 text-right font-mono text-xs tabular-nums text-mute">
-                        {american(r[4])}
-                      </td>
-                      <td className="px-4 py-2 text-right font-mono text-xs tabular-nums text-mute">
-                        {american(r[5])}
-                      </td>
-                    </tr>
+                    <Fragment key={`${key}-${i}`}>
+                      <tr className={`hover:bg-line/5 ${isOpen ? "bg-line/5" : ""}`}>
+                        <td className="px-4 py-2">
+                          <span className="inline-flex items-center gap-1.5">
+                            {r[0]} <PropTeam league={league} abbr={r[1]} />
+                            {ladder ? (
+                              <button
+                                type="button"
+                                onClick={() => setOpenKey(isOpen ? null : key)}
+                                aria-expanded={isOpen}
+                                className={`ml-1 rounded-full px-2 py-0.5 font-mono text-[9px] uppercase tracking-wider ring-1 ${isOpen ? "bg-acc/15 text-acc ring-acc/40" : "text-mute ring-line/15 hover:text-acc"}`}
+                              >
+                                Alt lines {isOpen ? "▴" : "▾"}
+                              </button>
+                            ) : null}
+                          </span>
+                        </td>
+                        <td className="px-2 py-2 font-mono text-xs text-mute">{r[2]}</td>
+                        <td className="px-2 py-2 text-right font-mono text-xs font-semibold tabular-nums">
+                          {r[3]}
+                        </td>
+                        <td className="px-2 py-2 text-right font-mono text-xs tabular-nums text-mute">
+                          {r[6] ?? "—"}
+                        </td>
+                        <td className="px-2 py-2 text-right">
+                          <MovePill move={move} />
+                        </td>
+                        <td className="px-2 py-2 text-right font-mono text-xs tabular-nums text-mute">
+                          {american(r[4])}
+                        </td>
+                        <td className="px-4 py-2 text-right font-mono text-xs tabular-nums text-mute">
+                          {american(r[5])}
+                        </td>
+                      </tr>
+                      {isOpen ? (
+                        <tr>
+                          <td colSpan={7} className="px-0 pb-2 pt-0">
+                            <PropLadder line={r[3]} over={r[4]} ladder={ladder} unit={r[2]} />
+                          </td>
+                        </tr>
+                      ) : null}
+                    </Fragment>
                   );
                 })}
                 {!rows.length ? (
@@ -473,6 +496,98 @@ function Upcoming({ league, tabs }: { league: PropLeague; tabs: ReactNode }) {
         </Panel>
       ) : null}
     </>
+  );
+}
+
+/**
+ * DraftKings' alternate over lines as a swipeable strip, like the sportsbook's: the main line in the
+ * middle, safer lines (minus prices) to the left, longer shots (plus prices) to the right.
+ */
+function PropLadder({
+  line,
+  over,
+  ladder,
+  unit,
+}: {
+  line: number;
+  over: number | null;
+  ladder: [number, number][];
+  unit: string;
+}) {
+  const rungs = useMemo(() => {
+    const all = ladder.map(([ln, o]) => ({ ln, o, main: false }));
+    if (!all.some((x) => x.ln === line)) all.push({ ln: line, o: over ?? NaN, main: true });
+    return all.sort((a, b) => a.ln - b.ln);
+  }, [ladder, line, over]);
+  const [sel, setSel] = useState(line);
+  const strip = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = strip.current;
+    const m = el?.querySelector<HTMLElement>("[data-main]");
+    if (el && m) el.scrollLeft = m.offsetLeft - el.clientWidth / 2 + m.offsetWidth / 2;
+  }, []);
+  const picked = rungs.find((x) => x.ln === sel) ?? rungs[0];
+  const imp = (o: number) => (o < 0 ? -o / (-o + 100) : 100 / (o + 100));
+  const pr = Number.isFinite(picked.o) ? imp(picked.o) : null;
+  const what = picked.main ? `Over ${picked.ln}` : `${Math.ceil(picked.ln)}+ ${unit.toLowerCase()}`;
+  return (
+    <div className="border-y border-line/10 bg-panel2/40 py-2.5">
+      <div className="flex justify-between px-4 pb-1.5 font-mono text-[9px] uppercase tracking-wider text-faint">
+        <span>◀ safer</span>
+        <span>longer shot ▶</span>
+      </div>
+      <div
+        ref={strip}
+        className="flex snap-x snap-mandatory gap-1.5 overflow-x-auto px-4 pb-1 pt-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      >
+        {rungs.map((x) => {
+          const on = x.ln === sel;
+          return (
+            <button
+              key={x.ln}
+              type="button"
+              data-main={x.main ? "" : undefined}
+              onClick={() => setSel(x.ln)}
+              aria-pressed={on}
+              aria-label={`${x.main ? `Over ${x.ln}` : `${Math.ceil(x.ln)} or more`}, ${american(Number.isFinite(x.o) ? x.o : null)}`}
+              className={`relative flex h-12 w-16 shrink-0 snap-center flex-col items-center justify-center gap-0.5 rounded-lg ring-1 transition-colors ${
+                on
+                  ? "bg-acc/15 ring-acc"
+                  : x.main
+                    ? "bg-panel ring-acc/60"
+                    : "bg-panel ring-line/10 hover:ring-line/30"
+              }`}
+            >
+              {x.main ? (
+                <span className="absolute -top-2 rounded-full bg-acc px-1.5 py-px font-mono text-[8px] font-bold tracking-wider text-background">
+                  LINE
+                </span>
+              ) : null}
+              <span className="text-sm font-bold tabular-nums">
+                {x.main ? x.ln : `${Math.ceil(x.ln)}+`}
+              </span>
+              <span
+                className={`font-mono text-[11px] font-semibold tabular-nums ${x.o > 0 ? "text-win" : "text-mute"}`}
+              >
+                {Number.isFinite(x.o) ? american(x.o) : "—"}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+      <div className="flex items-center gap-3 px-4 pt-1.5">
+        <div className="h-1 flex-1 overflow-hidden rounded-full bg-line/10">
+          <div
+            className="h-1 rounded-full bg-acc"
+            style={{ width: `${Math.round((pr ?? 0) * 100)}%` }}
+          />
+        </div>
+        <span className="font-mono text-[11px] tabular-nums text-foreground">
+          {what} · {american(Number.isFinite(picked.o) ? picked.o : null)}
+          {pr != null ? ` · ${Math.round(pr * 100)}% implied` : ""}
+        </span>
+      </div>
+    </div>
   );
 }
 
