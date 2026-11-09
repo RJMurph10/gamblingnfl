@@ -13,13 +13,14 @@
  */
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
-import { etDayKey, spreadText } from "../../src/lib/nba/nba";
+import { etDayKey } from "../../src/lib/nba/nba";
 import { runNbaModel } from "../../src/lib/nba/nba-model";
 import { fetchNbaPriorTeams, fetchNbaSchedule } from "../../src/lib/nba/nba.server";
 
 const OUT = process.argv[2] ?? "picks";
 const TOPIC = process.env.NTFY_TOPIC ?? "";
 const HOURS = 36;
+const signed = (n: number) => (n === 0 ? "PK" : n > 0 ? `+${n}` : String(n));
 
 interface Saved {
   id: string;
@@ -74,7 +75,7 @@ async function main() {
         game: name,
         tip: g.date,
         market: "spread",
-        pick: `${r.spread.pick === "home" ? g.home.team.abbr : g.away.team.abbr} ${spreadText(g, r.spread.line).split(" ").pop()}`,
+        pick: `${r.spread.pick === "home" ? g.home.team.abbr : g.away.team.abbr} ${signed(r.spread.pick === "home" ? r.spread.line : -r.spread.line)}`,
         line: r.spread.line,
         open: g.odds?.spreadOpen ?? null,
         model: Math.round(r.pred.margin * 10) / 10,
