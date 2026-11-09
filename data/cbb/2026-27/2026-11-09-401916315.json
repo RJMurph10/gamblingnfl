@@ -7,18 +7,18 @@
   "id": "276",
   "abbr": "MRSH",
   "name": "Marshall Thundering Herd",
-  "score": 0
+  "score": 27
  },
  "home": {
   "id": "194",
   "abbr": "OSU",
   "name": "Ohio State Buckeyes",
-  "score": 0
+  "score": 45
  },
  "neutral": false,
  "venue": "Schottenstein Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-08T23:06:31.297Z",
