@@ -27,6 +27,8 @@ export interface NbaOdds {
   total: number | null;
   /** The book's opening total, when ESPN has it (the model's totals are graded against it). */
   totalOpen?: number | null;
+  /** The book's opening home spread, when ESPN has it (for closing-line value). */
+  spreadOpen?: number | null;
   mlHome: number | null;
   mlAway: number | null;
   provider?: string;

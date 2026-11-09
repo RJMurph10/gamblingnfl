@@ -168,11 +168,16 @@ function parseOdds(o: any, awayAbbr: string, homeAbbr: string): NbaOdds | undefi
     num(side?.moneyLine) ??
     num(priceToAmerican(o?.moneyline?.[key]?.close?.odds ?? o?.moneyline?.[key]?.current?.odds));
   const total = num(o.overUnder ?? o.total?.over?.close?.line ?? o.total);
-  const open = num(o.open?.total?.american ?? o.open?.total?.alternateDisplayValue ?? o.total?.over?.open?.line);
+  // openers: core feed `open.total` / `homeTeamOdds.open.pointSpread`; scoreboard `total.over.open.line`
+  // ("o236.5") / `pointSpread.home.open.line` ("+2.5")
+  const lineNum = (v: unknown) => num(String(v ?? "").replace(/^[ou]/i, ""));
+  const open = lineNum(o.open?.total?.american ?? o.open?.total?.alternateDisplayValue ?? o.total?.over?.open?.line);
+  const spreadOpen = lineNum(o.homeTeamOdds?.open?.pointSpread?.american ?? o.pointSpread?.home?.open?.line);
   const out: NbaOdds = {
     spread,
     total: total !== null && total > 0 ? total : null,
     ...(open !== null && open > 0 ? { totalOpen: open } : {}),
+    ...(spreadOpen !== null ? { spreadOpen } : {}),
     mlHome: mlOf(o.homeTeamOdds, "home"),
     mlAway: mlOf(o.awayTeamOdds, "away"),
     ...(o.provider?.name ? { provider: String(o.provider.name) } : {}),
@@ -300,6 +305,7 @@ async function loadClosingOdds(game: NbaGame): Promise<NbaOdds | null> {
     if (acc.spread === null) acc.spread = o.spread;
     if (acc.total === null) acc.total = o.total;
     if (acc.totalOpen == null && o.totalOpen != null) acc.totalOpen = o.totalOpen;
+    if (acc.spreadOpen == null && o.spreadOpen != null) acc.spreadOpen = o.spreadOpen;
     if (acc.mlHome === null) acc.mlHome = o.mlHome;
     if (acc.mlAway === null) acc.mlAway = o.mlAway;
     if (!acc.provider && o.provider) acc.provider = o.provider;
@@ -368,6 +374,7 @@ async function withClosingOdds(games: NbaGame[]): Promise<NbaGame[]> {
       spread: g.odds?.spread ?? o.spread,
       total: g.odds?.total ?? o.total,
       ...((g.odds?.totalOpen ?? o.totalOpen) != null ? { totalOpen: (g.odds?.totalOpen ?? o.totalOpen) as number } : {}),
+      ...((g.odds?.spreadOpen ?? o.spreadOpen) != null ? { spreadOpen: (g.odds?.spreadOpen ?? o.spreadOpen) as number } : {}),
       mlHome: g.odds?.mlHome ?? o.mlHome,
       mlAway: g.odds?.mlAway ?? o.mlAway,
       ...((g.odds?.provider ?? o.provider) ? { provider: (g.odds?.provider ?? o.provider) as string } : {}),

@@ -29,6 +29,20 @@ export const Route = createFileRoute("/nba/model")({
 const rec = (r: Record3) => `${r.wins}-${r.losses}${r.pushes ? `-${r.pushes}` : ""}`;
 const resultClass = (r: string | null | undefined) => (r === "win" ? "text-win" : r === "loss" ? "text-loss" : "text-mute");
 
+/** Line move toward the pick since the opener: green when the market agreed, red when it moved away. */
+function Clv({ clv }: { clv: number | null }) {
+  if (clv == null || clv === 0) return null;
+  return (
+    <span
+      className={`ml-1 text-[10px] ${clv > 0 ? "text-win" : "text-loss"}`}
+      title={`The line moved ${Math.abs(clv)} pts ${clv > 0 ? "toward" : "away from"} this pick since it opened`}
+    >
+      {clv > 0 ? "▲" : "▼"}
+      {Math.abs(clv)}
+    </span>
+  );
+}
+
 function PickCells({ row }: { row: NbaModelRow }) {
   const { game } = row;
   const side = (p: "home" | "away") => (p === "home" ? game.home.team.abbr : game.away.team.abbr);
@@ -43,6 +57,7 @@ function PickCells({ row }: { row: NbaModelRow }) {
             {row.spread.best ? "★ " : ""}
             {side(row.spread.pick)} {spreadText(game, row.spread.line)}
             <span className="ml-1 text-faint">+{row.spread.edge.toFixed(1)}</span>
+            <Clv clv={row.spread.clv} />
           </>
         ) : (
           <span className="text-faint">{game.odds?.spread != null ? "pass" : "no line"}</span>
@@ -57,6 +72,7 @@ function PickCells({ row }: { row: NbaModelRow }) {
             {game.odds?.totalOpen != null && game.odds.total != null && game.odds.total !== row.total.line ? (
               <span className="ml-1 text-faint">· now {game.odds.total}</span>
             ) : null}
+            <Clv clv={row.total.clv} />
           </>
         ) : (
           <span className="text-faint">{game.odds?.total ? "pass" : "no line"}</span>
@@ -159,14 +175,25 @@ function NbaModelPage() {
           </div>
         }
       />
-      <div className="mb-3 grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <div className="mb-3 grid grid-cols-2 gap-3 lg:grid-cols-5">
         <StatCard label={`Units · ${label}`} value={unitsText(summary.overall.units)} note={summary.overall.roi === null ? "Nothing graded yet" : `${rec(summary.overall)} · ROI ${summary.overall.roi > 0 ? "+" : ""}${summary.overall.roi.toFixed(1)}%`} tone={summary.overall.units > 0 ? "win" : summary.overall.units < 0 ? "loss" : "mute"} />
         <StatCard label="Spread (ATS)" value={summary.spread.winPct === null ? "—" : summary.spread.winPct.toFixed(1)} unit={summary.spread.winPct === null ? undefined : "%"} note={`${rec(summary.spread)} · ${unitsText(summary.spread.units)}`} />
         <StatCard label="Totals (O/U)" value={summary.total.winPct === null ? "—" : summary.total.winPct.toFixed(1)} unit={summary.total.winPct === null ? undefined : "%"} note={`${rec(summary.total)} · ${unitsText(summary.total.units)}`} />
+        <StatCard
+          label="Line moved our way"
+          value={summary.clv.beat === null ? "—" : summary.clv.beat.toFixed(0)}
+          unit={summary.clv.beat === null ? undefined : "%"}
+          note={
+            summary.clv.picks
+              ? `of ${summary.clv.picks} graded picks · avg ${summary.clv.avg! > 0 ? "+" : ""}${summary.clv.avg!.toFixed(1)} pts · against us ${summary.clv.lost!.toFixed(0)}%`
+              : "Needs opening lines (saved from now on)"
+          }
+          tone={summary.clv.beat === null ? "mute" : summary.clv.beat > (summary.clv.lost ?? 0) ? "win" : "loss"}
+        />
         <StatCard label="Straight-up winners" value={scope === "predictions" ? (summary.moneyline.winPct === null ? "—" : summary.moneyline.winPct.toFixed(1)) : "—"} unit={scope === "predictions" && summary.moneyline.winPct !== null ? "%" : undefined} note={scope === "predictions" ? `${rec(summary.moneyline)} picking winners` : "switch to Every pick"} />
       </div>
       <p className="mb-6 font-mono text-[10px] uppercase tracking-wider text-faint">
-        Totals: a pick when the model is {`≥`}5 pts off the opening total (★ {`≥`}8), graded at the opener, since the edge is in betting early: in 2023-25 these hit 54-58% at the open but about 50% at the close, as the line moves toward the model · spreads: ★ = {`≥`}3 pts off · flat 1u at -110 · every finished game is predicted using only games before its day · preseason excluded
+        Line moved our way (closing-line value): how often the line moved toward the pick between the opener and tip-off. Beating the close is the quickest sign a model has a real edge, long before the win-loss record can tell · ▲/▼ on a pick = points moved toward / away from it · Totals: a pick when the model is {`≥`}5 pts off the opening total (★ {`≥`}8), graded at the opener, since the edge is in betting early: in 2023-25 these hit 54-58% at the open but about 50% at the close, as the line moves toward the model · spreads: ★ = {`≥`}3 pts off · flat 1u at -110 · every finished game is predicted using only games before its day · preseason excluded
       </p>
 
       <div className="grid gap-6 lg:grid-cols-12">
