@@ -7,18 +7,18 @@
   "id": "25",
   "abbr": "CAL",
   "name": "California Golden Bears",
-  "score": 0
+  "score": 68
  },
  "home": {
   "id": "248",
   "abbr": "HOU",
   "name": "Houston Cougars",
-  "score": 0
+  "score": 86
  },
  "neutral": true,
  "venue": "Tahoe Blue Event Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-08T00:43:09.397Z",
@@ -922,5 +922,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 68,
+  "home": 86
+ }
 }

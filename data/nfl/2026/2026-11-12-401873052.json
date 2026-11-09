@@ -478,5 +478,1181 @@
    ]
   }
  },
- "props": {}
+ "props": {
+  "open": {
+   "at": "2026-11-09T04:18:26.311Z",
+   "provider": 100,
+   "count": 452,
+   "rows": [
+  {"a":"4426348","t":"Total Passing Yards (incl. overtime)","ti":"8","op":[212.5,null,null],"cur":[212.5,null,null]},
+  {"a":"4426348","t":"Total Passing Yards (incl. overtime)","ti":"8","op":[212.5,null,null],"cur":[212.5,null,null]},
+  {"a":"4433970","t":"Total Passing Yards (incl. overtime)","ti":"8","op":[212.5,null,null],"cur":[212.5,null,null]},
+  {"a":"4433970","t":"Total Passing Yards (incl. overtime)","ti":"8","op":[212.5,null,null],"cur":[212.5,null,null]},
+  {"a":"4426348","t":"Total Pass Completions (incl. overtime)","ti":"9","op":[19.5,null,null],"cur":[19.5,null,null]},
+  {"a":"4426348","t":"Total Pass Completions (incl. overtime)","ti":"9","op":[19.5,null,null],"cur":[19.5,null,null]},
+  {"a":"4433970","t":"Total Pass Completions (incl. overtime)","ti":"9","op":[18.5,null,null],"cur":[18.5,null,null]},
+  {"a":"4433970","t":"Total Pass Completions (incl. overtime)","ti":"9","op":[18.5,null,null],"cur":[18.5,null,null]},
+  {"a":"4426348","t":"Total Passing Touchdowns (incl. overtime)","ti":"10","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":"4426348","t":"Total Passing Touchdowns (incl. overtime)","ti":"10","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":"4433970","t":"Total Passing Touchdowns (incl. overtime)","ti":"10","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":"4433970","t":"Total Passing Touchdowns (incl. overtime)","ti":"10","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":"4426348","t":"Total Rushing Yards (incl. overtime)","ti":"12","op":[35.5,null,null],"cur":[35.5,null,null]},
+  {"a":"4426348","t":"Total Rushing Yards (incl. overtime)","ti":"12","op":[35.5,null,null],"cur":[35.5,null,null]},
+  {"a":"4433970","t":"Total Rushing Yards (incl. overtime)","ti":"12","op":[19.5,null,null],"cur":[19.5,null,null]},
+  {"a":"4433970","t":"Total Rushing Yards (incl. overtime)","ti":"12","op":[19.5,null,null],"cur":[19.5,null,null]},
+  {"a":"4697815","t":"Total Rushing Yards (incl. overtime)","ti":"12","op":[36.5,null,null],"cur":[38.5,null,null]},
+  {"a":"4697815","t":"Total Rushing Yards (incl. overtime)","ti":"12","op":[36.5,null,null],"cur":[38.5,null,null]},
+  {"a":"2976212","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[46.5,null,null],"cur":[45.5,null,null]},
+  {"a":"2976212","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[46.5,null,null],"cur":[45.5,null,null]},
+  {"a":"4040655","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[17.5,null,null],"cur":[18.5,null,null]},
+  {"a":"4040655","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[17.5,null,null],"cur":[18.5,null,null]},
+  {"a":"4360635","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[40.5,null,null],"cur":[40.5,null,null]},
+  {"a":"4360635","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[40.5,null,null],"cur":[40.5,null,null]},
+  {"a":"4361050","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[48.5,null,null],"cur":[48.5,null,null]},
+  {"a":"4361050","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[48.5,null,null],"cur":[48.5,null,null]},
+  {"a":"4595348","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[69.5,null,null],"cur":[69.5,null,null]},
+  {"a":"4595348","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[69.5,null,null],"cur":[69.5,null,null]},
+  {"a":"4682648","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[23.5,null,null],"cur":[23.5,null,null]},
+  {"a":"4682648","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[23.5,null,null],"cur":[23.5,null,null]},
+  {"a":"4697815","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[14.5,null,null],"cur":[14.5,null,null]},
+  {"a":"4697815","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[14.5,null,null],"cur":[14.5,null,null]},
+  {"a":"5081432","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[44.5,null,null],"cur":[45.5,null,null]},
+  {"a":"5081432","t":"Total Receiving Yards (incl. overtime)","ti":"13","op":[44.5,null,null],"cur":[45.5,null,null]},
+  {"a":"2976212","t":"Total Receptions (incl. overtime)","ti":"14","op":[4.5,null,null],"cur":[4.5,null,null]},
+  {"a":"2976212","t":"Total Receptions (incl. overtime)","ti":"14","op":[4.5,null,null],"cur":[4.5,null,null]},
+  {"a":"4040655","t":"Total Receptions (incl. overtime)","ti":"14","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":"4040655","t":"Total Receptions (incl. overtime)","ti":"14","op":[1.5,null,null],"cur":[1.5,null,null]},
+  {"a":"4360635","t":"Total Receptions (incl. overtime)","ti":"14","op":[4.5,null,null],"cur":[4.5,null,null]},
+  {"a":"4360635","t":"Total Receptions (incl. overtime)","ti":"14","op":[4.5,null,null],"cur":[4.5,null,null]},
+  {"a":"4361050","t":"Total Receptions (incl. overtime)","ti":"14","op":[4.5,null,null],"cur":[4.5,null,null]},
+  {"a":"4361050","t":"Total Receptions (incl. overtime)","ti":"14","op":[4.5,null,null],"cur":[4.5,null,null]},
+  {"a":"4595348","t":"Total Receptions (incl. overtime)","ti":"14","op":[5.5,null,null],"cur":[5.5,null,null]},
+  {"a":"4595348","t":"Total Receptions (incl. overtime)","ti":"14","op":[5.5,null,null],"cur":[5.5,null,null]},
+  {"a":"4682648","t":"Total Receptions (incl. overtime)","ti":"14","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"4682648","t":"Total Receptions (incl. overtime)","ti":"14","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"4697815","t":"Total Receptions (incl. overtime)","ti":"14","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"4697815","t":"Total Receptions (incl. overtime)","ti":"14","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":"5081432","t":"Total Receptions (incl. overtime)","ti":"14","op":[3.5,null,null],"cur":[4.5,null,null]},
+  {"a":"5081432","t":"Total Receptions (incl. overtime)","ti":"14","op":[3.5,null,null],"cur":[4.5,null,null]},
+  {"a":"4426348","t":"Total Passing Interceptions (incl. overtime)","ti":"15","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"4426348","t":"Total Passing Interceptions (incl. overtime)","ti":"15","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"4433970","t":"Total Passing Interceptions (incl. overtime)","ti":"15","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"4433970","t":"Total Passing Interceptions (incl. overtime)","ti":"15","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":"4426348","t":"Total Passing Attempts (incl. overtime)","ti":"16","op":[30.5,null,null],"cur":[30.5,null,null]},
+  {"a":"4426348","t":"Total Passing Attempts (incl. overtime)","ti":"16","op":[30.5,null,null],"cur":[30.5,null,null]},
+  {"a":"4433970","t":"Total Passing Attempts (incl. overtime)","ti":"16","op":[30.5,null,null],"cur":[30.5,null,null]},
+  {"a":"4433970","t":"Total Passing Attempts (incl. overtime)","ti":"16","op":[30.5,null,null],"cur":[30.5,null,null]},
+  {"a":"4426348","t":"Total Passing Plus Rushing Yards (incl. overtime)","ti":"18","op":[252.5,null,null],"cur":[252.5,null,null]},
+  {"a":"4426348","t":"Total Passing Plus Rushing Yards (incl. overtime)","ti":"18","op":[252.5,null,null],"cur":[252.5,null,null]},
+  {"a":"4433970","t":"Total Passing Plus Rushing Yards (incl. overtime)","ti":"18","op":[236.5,null,null],"cur":[236.5,null,null]},
+  {"a":"4433970","t":"Total Passing Plus Rushing Yards (incl. overtime)","ti":"18","op":[236.5,null,null],"cur":[236.5,null,null]},
+  {"a":"4697815","t":"Total Rushing Plus Receiving Yards (incl. overtime)","ti":"20","op":[56.5,null,null],"cur":[56.5,null,null]},
+  {"a":"4697815","t":"Total Rushing Plus Receiving Yards (incl. overtime)","ti":"20","op":[56.5,null,null],"cur":[56.5,null,null]},
+  {"a":"2531358","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"2975417","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"2976212","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"3068267","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"3930066","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4040655","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4040761","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4048228","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4257188","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4360635","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4361050","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4361088","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4426348","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4426948","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4429148","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4433970","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4567156","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4590292","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4595348","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4682648","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4683111","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4690923","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4691889","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4692590","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4696981","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"4697815","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5081432","t":"First Touchdown Scorer","ti":"29"},
+  {"a":"5151317","t":"First Touchdown Scorer","ti":"29"},
+  {"a":null,"t":"First Touchdown Scorer","ti":"29"},
+  {"a":"2531358","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"2975417","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"2976212","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"3068267","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"3930066","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4040655","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4040761","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4048228","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4257188","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4360635","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4361050","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4361088","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4426348","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4426948","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4429148","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4433970","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4567156","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4590292","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4595348","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4682648","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4683111","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4690923","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4691889","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4692590","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4696981","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4697815","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"5081432","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"5151317","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"2531358","t":"Player to score 2 or more touchdowns","ti":"32"},
+  {"a":"2975417","t":"Player to score 2 or more touchdowns","ti":"32"},
+  {"a":"2976212","t":"Player to score 2 or more touchdowns","ti":"32"},
+  {"a":"3068267","t":"Player to score 2 or more touchdowns","ti":"32"},
+  {"a":"3930066","t":"Player to score 2 or more touchdowns","ti":"32"},
+  {"a":"4040655","t":"Player to score 2 or more touchdowns","ti":"32"},
+  {"a":"4040761","t":"Player to score 2 or more touchdowns","ti":"32"},
+  {"a":"4048228","t":"Player to score 2 or more touchdowns","ti":"32"},
+  {"a":"4257188","t":"Player to score 2 or more touchdowns","ti":"32"},
+  {"a":"4360635","t":"Player to score 2 or more touchdowns","ti":"32"},
+  {"a":"4361050","t":"Player to score 2 or more touchdowns","ti":"32"},
+  {"a":"4361088","t":"Player to score 2 or more touchdowns","ti":"32"},
+  {"a":"4426348","t":"Player to score 2 or more touchdowns","ti":"32"},
+  {"a":"4426948","t":"Player to score 2 or more touchdowns","ti":"32"},
+  {"a":"4429148","t":"Player to score 2 or more touchdowns","ti":"32"},
+  {"a":"4433970","t":"Player to score 2 or more touchdowns","ti":"32"},
+  {"a":"4567156","t":"Player to score 2 or more touchdowns","ti":"32"},
+  {"a":"4590292","t":"Player to score 2 or more touchdowns","ti":"32"},
+  {"a":"4595348","t":"Player to score 2 or more touchdowns","ti":"32"},
+  {"a":"4682648","t":"Player to score 2 or more touchdowns","ti":"32"},
+  {"a":"4683111","t":"Player to score 2 or more touchdowns","ti":"32"},
+  {"a":"4690923","t":"Player to score 2 or more touchdowns","ti":"32"},
+  {"a":"4691889","t":"Player to score 2 or more touchdowns","ti":"32"},
+  {"a":"4692590","t":"Player to score 2 or more touchdowns","ti":"32"},
+  {"a":"4696981","t":"Player to score 2 or more touchdowns","ti":"32"},
+  {"a":"4697815","t":"Player to score 2 or more touchdowns","ti":"32"},
+  {"a":"5081432","t":"Player to score 2 or more touchdowns","ti":"32"},
+  {"a":"5151317","t":"Player to score 2 or more touchdowns","ti":"32"},
+  {"a":"4426348","t":"Passing Yards Milestones","ti":"194","op":[220,null,null],"cur":[180,null,null]},
+  {"a":"4426348","t":"Passing Yards Milestones","ti":"194","cur":[190,null,null]},
+  {"a":"4426348","t":"Passing Yards Milestones","ti":"194","op":[220,null,null],"cur":[220,null,null]},
+  {"a":"4426348","t":"Passing Yards Milestones","ti":"194","op":[220,null,null],"cur":[230,null,null]},
+  {"a":"4426348","t":"Passing Yards Milestones","ti":"194","op":[220,null,null],"cur":[260,null,null]},
+  {"a":"4426348","t":"Passing Yards Milestones","ti":"194","op":[220,null,null],"cur":[290,null,null]},
+  {"a":"4426348","t":"Passing Yards Milestones","ti":"194","op":[220,null,null],"cur":[360,null,null]},
+  {"a":"4433970","t":"Passing Yards Milestones","ti":"194","op":[220,null,null],"cur":[150,null,null]},
+  {"a":"4433970","t":"Passing Yards Milestones","ti":"194","op":[220,null,null],"cur":[160,null,null]},
+  {"a":"4433970","t":"Passing Yards Milestones","ti":"194","op":[220,null,null],"cur":[170,null,null]},
+  {"a":"4433970","t":"Passing Yards Milestones","ti":"194","op":[220,null,null],"cur":[180,null,null]},
+  {"a":"4433970","t":"Passing Yards Milestones","ti":"194","op":[220,null,null],"cur":[190,null,null]},
+  {"a":"4433970","t":"Passing Yards Milestones","ti":"194","op":[220,null,null],"cur":[200,null,null]},
+  {"a":"4433970","t":"Passing Yards Milestones","ti":"194","op":[220,null,null],"cur":[210,null,null]},
+  {"a":"4433970","t":"Passing Yards Milestones","ti":"194","op":[220,null,null],"cur":[220,null,null]},
+  {"a":"4433970","t":"Passing Yards Milestones","ti":"194","op":[220,null,null],"cur":[230,null,null]},
+  {"a":"4433970","t":"Passing Yards Milestones","ti":"194","op":[220,null,null],"cur":[240,null,null]},
+  {"a":"4433970","t":"Passing Yards Milestones","ti":"194","op":[220,null,null],"cur":[250,null,null]},
+  {"a":"4433970","t":"Passing Yards Milestones","ti":"194","op":[220,null,null],"cur":[260,null,null]},
+  {"a":"4433970","t":"Passing Yards Milestones","ti":"194","op":[220,null,null],"cur":[270,null,null]},
+  {"a":"4433970","t":"Passing Yards Milestones","ti":"194","op":[220,null,null],"cur":[280,null,null]},
+  {"a":"4433970","t":"Passing Yards Milestones","ti":"194","op":[220,null,null],"cur":[290,null,null]},
+  {"a":"4433970","t":"Passing Yards Milestones","ti":"194","op":[220,null,null],"cur":[300,null,null]},
+  {"a":"4433970","t":"Passing Yards Milestones","ti":"194","op":[220,null,null],"cur":[310,null,null]},
+  {"a":"4433970","t":"Passing Yards Milestones","ti":"194","op":[220,null,null],"cur":[320,null,null]},
+  {"a":"4433970","t":"Passing Yards Milestones","ti":"194","op":[220,null,null],"cur":[330,null,null]},
+  {"a":"4433970","t":"Passing Yards Milestones","ti":"194","op":[220,null,null],"cur":[340,null,null]},
+  {"a":"4433970","t":"Passing Yards Milestones","ti":"194","op":[220,null,null],"cur":[350,null,null]},
+  {"a":"4433970","t":"Passing Yards Milestones","ti":"194","op":[220,null,null],"cur":[360,null,null]},
+  {"a":"4433970","t":"Passing Yards Milestones","ti":"194","op":[220,null,null],"cur":[370,null,null]},
+  {"a":"4433970","t":"Passing Yards Milestones","ti":"194","op":[220,null,null],"cur":[213,null,null]},
+  {"a":"2976212","t":"Receiving Yards Milestones","ti":"195","op":[50,null,null],"cur":[10,null,null]},
+  {"a":"2976212","t":"Receiving Yards Milestones","ti":"195","op":[50,null,null],"cur":[15,null,null]},
+  {"a":"2976212","t":"Receiving Yards Milestones","ti":"195","op":[50,null,null],"cur":[20,null,null]},
+  {"a":"2976212","t":"Receiving Yards Milestones","ti":"195","op":[50,null,null],"cur":[25,null,null]},
+  {"a":"2976212","t":"Receiving Yards Milestones","ti":"195","op":[50,null,null],"cur":[30,null,null]},
+  {"a":"2976212","t":"Receiving Yards Milestones","ti":"195","op":[50,null,null],"cur":[40,null,null]},
+  {"a":"2976212","t":"Receiving Yards Milestones","ti":"195","op":[50,null,null],"cur":[50,null,null]},
+  {"a":"2976212","t":"Receiving Yards Milestones","ti":"195","op":[50,null,null],"cur":[60,null,null]},
+  {"a":"2976212","t":"Receiving Yards Milestones","ti":"195","op":[50,null,null],"cur":[70,null,null]},
+  {"a":"2976212","t":"Receiving Yards Milestones","ti":"195","op":[50,null,null],"cur":[80,null,null]},
+  {"a":"2976212","t":"Receiving Yards Milestones","ti":"195","op":[50,null,null],"cur":[90,null,null]},
+  {"a":"2976212","t":"Receiving Yards Milestones","ti":"195","op":[50,null,null],"cur":[100,null,null]},
+  {"a":"2976212","t":"Receiving Yards Milestones","ti":"195","op":[50,null,null],"cur":[110,null,null]},
+  {"a":"2976212","t":"Receiving Yards Milestones","ti":"195","op":[50,null,null],"cur":[120,null,null]},
+  {"a":"2976212","t":"Receiving Yards Milestones","ti":"195","op":[50,null,null],"cur":[130,null,null]},
+  {"a":"2976212","t":"Receiving Yards Milestones","ti":"195","op":[50,null,null],"cur":[46,null,null]},
+  {"a":"2976212","t":"Receiving Yards Milestones","ti":"195","op":[50,null,null],"cur":[140,null,null]},
+  {"a":"4040655","t":"Receiving Yards Milestones","ti":"195","op":[20,null,null],"cur":[10,null,null]},
+  {"a":"4040655","t":"Receiving Yards Milestones","ti":"195","op":[20,null,null],"cur":[15,null,null]},
+  {"a":"4040655","t":"Receiving Yards Milestones","ti":"195","op":[20,null,null],"cur":[19,null,null]},
+  {"a":"4040655","t":"Receiving Yards Milestones","ti":"195","op":[20,null,null],"cur":[20,null,null]},
+  {"a":"4040655","t":"Receiving Yards Milestones","ti":"195","op":[20,null,null],"cur":[25,null,null]},
+  {"a":"4040655","t":"Receiving Yards Milestones","ti":"195","op":[20,null,null],"cur":[30,null,null]},
+  {"a":"4040655","t":"Receiving Yards Milestones","ti":"195","op":[20,null,null],"cur":[40,null,null]},
+  {"a":"4040655","t":"Receiving Yards Milestones","ti":"195","op":[20,null,null],"cur":[50,null,null]},
+  {"a":"4040655","t":"Receiving Yards Milestones","ti":"195","op":[20,null,null],"cur":[60,null,null]},
+  {"a":"4040655","t":"Receiving Yards Milestones","ti":"195","op":[20,null,null],"cur":[70,null,null]},
+  {"a":"4040655","t":"Receiving Yards Milestones","ti":"195","op":[20,null,null],"cur":[80,null,null]},
+  {"a":"4040655","t":"Receiving Yards Milestones","ti":"195","op":[20,null,null],"cur":[90,null,null]},
+  {"a":"4360635","t":"Receiving Yards Milestones","ti":"195","op":[41,null,null],"cur":[10,null,null]},
+  {"a":"4360635","t":"Receiving Yards Milestones","ti":"195","op":[41,null,null],"cur":[20,null,null]},
+  {"a":"4360635","t":"Receiving Yards Milestones","ti":"195","op":[41,null,null],"cur":[50,null,null]},
+  {"a":"4360635","t":"Receiving Yards Milestones","ti":"195","op":[41,null,null],"cur":[90,null,null]},
+  {"a":"4360635","t":"Receiving Yards Milestones","ti":"195","op":[41,null,null],"cur":[100,null,null]},
+  {"a":"4360635","t":"Receiving Yards Milestones","ti":"195","op":[41,null,null],"cur":[110,null,null]},
+  {"a":"4360635","t":"Receiving Yards Milestones","ti":"195","op":[41,null,null],"cur":[120,null,null]},
+  {"a":"4360635","t":"Receiving Yards Milestones","ti":"195","op":[41,null,null],"cur":[41,null,null]},
+  {"a":"4360635","t":"Receiving Yards Milestones","ti":"195","op":[41,null,null],"cur":[130,null,null]},
+  {"a":"4361050","t":"Receiving Yards Milestones","ti":"195","op":[50,null,null],"cur":[15,null,null]},
+  {"a":"4361050","t":"Receiving Yards Milestones","ti":"195","op":[50,null,null],"cur":[20,null,null]},
+  {"a":"4361050","t":"Receiving Yards Milestones","ti":"195","op":[50,null,null],"cur":[25,null,null]},
+  {"a":"4361050","t":"Receiving Yards Milestones","ti":"195","op":[50,null,null],"cur":[30,null,null]},
+  {"a":"4361050","t":"Receiving Yards Milestones","ti":"195","op":[50,null,null],"cur":[40,null,null]},
+  {"a":"4361050","t":"Receiving Yards Milestones","ti":"195","op":[50,null,null],"cur":[50,null,null]},
+  {"a":"4361050","t":"Receiving Yards Milestones","ti":"195","op":[50,null,null],"cur":[60,null,null]},
+  {"a":"4361050","t":"Receiving Yards Milestones","ti":"195","op":[50,null,null],"cur":[70,null,null]},
+  {"a":"4361050","t":"Receiving Yards Milestones","ti":"195","op":[50,null,null],"cur":[80,null,null]},
+  {"a":"4361050","t":"Receiving Yards Milestones","ti":"195","op":[50,null,null],"cur":[90,null,null]},
+  {"a":"4361050","t":"Receiving Yards Milestones","ti":"195","op":[50,null,null],"cur":[100,null,null]},
+  {"a":"4361050","t":"Receiving Yards Milestones","ti":"195","op":[50,null,null],"cur":[110,null,null]},
+  {"a":"4361050","t":"Receiving Yards Milestones","ti":"195","op":[50,null,null],"cur":[120,null,null]},
+  {"a":"4361050","t":"Receiving Yards Milestones","ti":"195","op":[50,null,null],"cur":[130,null,null]},
+  {"a":"4361050","t":"Receiving Yards Milestones","ti":"195","op":[50,null,null],"cur":[140,null,null]},
+  {"a":"4361050","t":"Receiving Yards Milestones","ti":"195","op":[50,null,null],"cur":[49,null,null]},
+  {"a":"4595348","t":"Receiving Yards Milestones","ti":"195","op":[70,null,null],"cur":[15,null,null]},
+  {"a":"4595348","t":"Receiving Yards Milestones","ti":"195","op":[70,null,null],"cur":[20,null,null]},
+  {"a":"4595348","t":"Receiving Yards Milestones","ti":"195","op":[70,null,null],"cur":[25,null,null]},
+  {"a":"4595348","t":"Receiving Yards Milestones","ti":"195","op":[70,null,null],"cur":[30,null,null]},
+  {"a":"4595348","t":"Receiving Yards Milestones","ti":"195","op":[70,null,null],"cur":[40,null,null]},
+  {"a":"4595348","t":"Receiving Yards Milestones","ti":"195","op":[70,null,null],"cur":[50,null,null]},
+  {"a":"4595348","t":"Receiving Yards Milestones","ti":"195","op":[70,null,null],"cur":[60,null,null]},
+  {"a":"4595348","t":"Receiving Yards Milestones","ti":"195","op":[70,null,null],"cur":[70,null,null]},
+  {"a":"4595348","t":"Receiving Yards Milestones","ti":"195","op":[70,null,null],"cur":[80,null,null]},
+  {"a":"4595348","t":"Receiving Yards Milestones","ti":"195","op":[70,null,null],"cur":[90,null,null]},
+  {"a":"4595348","t":"Receiving Yards Milestones","ti":"195","op":[70,null,null],"cur":[100,null,null]},
+  {"a":"4595348","t":"Receiving Yards Milestones","ti":"195","op":[70,null,null],"cur":[110,null,null]},
+  {"a":"4595348","t":"Receiving Yards Milestones","ti":"195","op":[70,null,null],"cur":[120,null,null]},
+  {"a":"4595348","t":"Receiving Yards Milestones","ti":"195","op":[70,null,null],"cur":[130,null,null]},
+  {"a":"4595348","t":"Receiving Yards Milestones","ti":"195","op":[70,null,null],"cur":[140,null,null]},
+  {"a":"4595348","t":"Receiving Yards Milestones","ti":"195","op":[70,null,null],"cur":[150,null,null]},
+  {"a":"4595348","t":"Receiving Yards Milestones","ti":"195","op":[70,null,null],"cur":[160,null,null]},
+  {"a":"4595348","t":"Receiving Yards Milestones","ti":"195","op":[70,null,null],"cur":[170,null,null]},
+  {"a":"4595348","t":"Receiving Yards Milestones","ti":"195","op":[70,null,null],"cur":[180,null,null]},
+  {"a":"4595348","t":"Receiving Yards Milestones","ti":"195","op":[70,null,null],"cur":[190,null,null]},
+  {"a":"4682648","t":"Receiving Yards Milestones","ti":"195","op":[25,null,null],"cur":[10,null,null]},
+  {"a":"4682648","t":"Receiving Yards Milestones","ti":"195","op":[25,null,null],"cur":[15,null,null]},
+  {"a":"4682648","t":"Receiving Yards Milestones","ti":"195","op":[25,null,null],"cur":[20,null,null]},
+  {"a":"4682648","t":"Receiving Yards Milestones","ti":"195","op":[25,null,null],"cur":[25,null,null]},
+  {"a":"4682648","t":"Receiving Yards Milestones","ti":"195","op":[25,null,null],"cur":[30,null,null]},
+  {"a":"4682648","t":"Receiving Yards Milestones","ti":"195","op":[25,null,null],"cur":[40,null,null]},
+  {"a":"4682648","t":"Receiving Yards Milestones","ti":"195","op":[25,null,null],"cur":[50,null,null]},
+  {"a":"4682648","t":"Receiving Yards Milestones","ti":"195","op":[25,null,null],"cur":[60,null,null]},
+  {"a":"4682648","t":"Receiving Yards Milestones","ti":"195","op":[25,null,null],"cur":[70,null,null]},
+  {"a":"4682648","t":"Receiving Yards Milestones","ti":"195","op":[25,null,null],"cur":[80,null,null]},
+  {"a":"4682648","t":"Receiving Yards Milestones","ti":"195","op":[25,null,null],"cur":[90,null,null]},
+  {"a":"4682648","t":"Receiving Yards Milestones","ti":"195","op":[25,null,null],"cur":[100,null,null]},
+  {"a":"4682648","t":"Receiving Yards Milestones","ti":"195","op":[25,null,null],"cur":[24,null,null]},
+  {"a":"4697815","t":"Receiving Yards Milestones","ti":"195","op":[15,null,null],"cur":[10,null,null]},
+  {"a":"4697815","t":"Receiving Yards Milestones","ti":"195","op":[15,null,null],"cur":[15,null,null]},
+  {"a":"4697815","t":"Receiving Yards Milestones","ti":"195","op":[15,null,null],"cur":[20,null,null]},
+  {"a":"4697815","t":"Receiving Yards Milestones","ti":"195","op":[15,null,null],"cur":[30,null,null]},
+  {"a":"5081432","t":"Receiving Yards Milestones","ti":"195","op":[45,null,null],"cur":[10,null,null]},
+  {"a":"5081432","t":"Receiving Yards Milestones","ti":"195","op":[45,null,null],"cur":[15,null,null]},
+  {"a":"5081432","t":"Receiving Yards Milestones","ti":"195","op":[45,null,null],"cur":[20,null,null]},
+  {"a":"5081432","t":"Receiving Yards Milestones","ti":"195","op":[45,null,null],"cur":[25,null,null]},
+  {"a":"5081432","t":"Receiving Yards Milestones","ti":"195","op":[45,null,null],"cur":[30,null,null]},
+  {"a":"5081432","t":"Receiving Yards Milestones","ti":"195","op":[45,null,null],"cur":[40,null,null]},
+  {"a":"5081432","t":"Receiving Yards Milestones","ti":"195","op":[45,null,null],"cur":[50,null,null]},
+  {"a":"5081432","t":"Receiving Yards Milestones","ti":"195","op":[45,null,null],"cur":[60,null,null]},
+  {"a":"5081432","t":"Receiving Yards Milestones","ti":"195","op":[45,null,null],"cur":[70,null,null]},
+  {"a":"5081432","t":"Receiving Yards Milestones","ti":"195","op":[45,null,null],"cur":[80,null,null]},
+  {"a":"5081432","t":"Receiving Yards Milestones","ti":"195","op":[45,null,null],"cur":[90,null,null]},
+  {"a":"5081432","t":"Receiving Yards Milestones","ti":"195","op":[45,null,null],"cur":[100,null,null]},
+  {"a":"5081432","t":"Receiving Yards Milestones","ti":"195","op":[45,null,null],"cur":[110,null,null]},
+  {"a":"5081432","t":"Receiving Yards Milestones","ti":"195","op":[45,null,null],"cur":[120,null,null]},
+  {"a":"5081432","t":"Receiving Yards Milestones","ti":"195","op":[45,null,null],"cur":[130,null,null]},
+  {"a":"5081432","t":"Receiving Yards Milestones","ti":"195","op":[45,null,null],"cur":[140,null,null]},
+  {"a":"5081432","t":"Receiving Yards Milestones","ti":"195","op":[45,null,null],"cur":[46,null,null]},
+  {"a":"4426348","t":"Rushing Yards Milestones","ti":"196","op":[40,null,null],"cur":[20,null,null]},
+  {"a":"4426348","t":"Rushing Yards Milestones","ti":"196","op":[40,null,null],"cur":[25,null,null]},
+  {"a":"4426348","t":"Rushing Yards Milestones","ti":"196","op":[40,null,null],"cur":[30,null,null]},
+  {"a":"4426348","t":"Rushing Yards Milestones","ti":"196","op":[40,null,null],"cur":[40,null,null]},
+  {"a":"4426348","t":"Rushing Yards Milestones","ti":"196","op":[40,null,null],"cur":[50,null,null]},
+  {"a":"4426348","t":"Rushing Yards Milestones","ti":"196","op":[40,null,null],"cur":[60,null,null]},
+  {"a":"4426348","t":"Rushing Yards Milestones","ti":"196","op":[40,null,null],"cur":[70,null,null]},
+  {"a":"4426348","t":"Rushing Yards Milestones","ti":"196","op":[40,null,null],"cur":[80,null,null]},
+  {"a":"4426348","t":"Rushing Yards Milestones","ti":"196","op":[40,null,null],"cur":[90,null,null]},
+  {"a":"4426348","t":"Rushing Yards Milestones","ti":"196","op":[40,null,null],"cur":[110,null,null]},
+  {"a":"4426348","t":"Rushing Yards Milestones","ti":"196","op":[40,null,null],"cur":[15,null,null]},
+  {"a":"4426348","t":"Rushing Yards Milestones","ti":"196","op":[40,null,null],"cur":[10,null,null]},
+  {"a":"4426348","t":"Rushing Yards Milestones","ti":"196","op":[40,null,null],"cur":[36,null,null]},
+  {"a":"4433970","t":"Rushing Yards Milestones","ti":"196","op":[20,null,null],"cur":[10,null,null]},
+  {"a":"4433970","t":"Rushing Yards Milestones","ti":"196","op":[20,null,null],"cur":[20,null,null]},
+  {"a":"4433970","t":"Rushing Yards Milestones","ti":"196","cur":[25,null,null]},
+  {"a":"4433970","t":"Rushing Yards Milestones","ti":"196","op":[20,null,null],"cur":[30,null,null]},
+  {"a":"4433970","t":"Rushing Yards Milestones","ti":"196","op":[20,null,null],"cur":[50,null,null]},
+  {"a":"4433970","t":"Rushing Yards Milestones","ti":"196","op":[20,null,null],"cur":[60,null,null]},
+  {"a":"4433970","t":"Rushing Yards Milestones","ti":"196","op":[20,null,null],"cur":[80,null,null]},
+  {"a":"4696981","t":"Rushing Yards Milestones","ti":"196","op":[53,null,null],"cur":[20,null,null]},
+  {"a":"4696981","t":"Rushing Yards Milestones","ti":"196","op":[53,null,null],"cur":[25,null,null]},
+  {"a":"4696981","t":"Rushing Yards Milestones","ti":"196","op":[53,null,null],"cur":[30,null,null]},
+  {"a":"4696981","t":"Rushing Yards Milestones","ti":"196","op":[53,null,null],"cur":[40,null,null]},
+  {"a":"4696981","t":"Rushing Yards Milestones","ti":"196","op":[53,null,null],"cur":[50,null,null]},
+  {"a":"4696981","t":"Rushing Yards Milestones","ti":"196","op":[53,null,null],"cur":[60,null,null]},
+  {"a":"4696981","t":"Rushing Yards Milestones","ti":"196","op":[53,null,null],"cur":[70,null,null]},
+  {"a":"4696981","t":"Rushing Yards Milestones","ti":"196","op":[53,null,null],"cur":[80,null,null]},
+  {"a":"4696981","t":"Rushing Yards Milestones","ti":"196","op":[53,null,null],"cur":[90,null,null]},
+  {"a":"4696981","t":"Rushing Yards Milestones","ti":"196","op":[53,null,null],"cur":[100,null,null]},
+  {"a":"4696981","t":"Rushing Yards Milestones","ti":"196","op":[53,null,null],"cur":[110,null,null]},
+  {"a":"4696981","t":"Rushing Yards Milestones","ti":"196","op":[53,null,null],"cur":[120,null,null]},
+  {"a":"4696981","t":"Rushing Yards Milestones","ti":"196","op":[53,null,null],"cur":[130,null,null]},
+  {"a":"4696981","t":"Rushing Yards Milestones","ti":"196","op":[53,null,null],"cur":[140,null,null]},
+  {"a":"4696981","t":"Rushing Yards Milestones","ti":"196","op":[53,null,null],"cur":[57,null,null]},
+  {"a":"4697815","t":"Rushing Yards Milestones","ti":"196","op":[40,null,null],"cur":[20,null,null]},
+  {"a":"4697815","t":"Rushing Yards Milestones","ti":"196","op":[40,null,null],"cur":[25,null,null]},
+  {"a":"4697815","t":"Rushing Yards Milestones","ti":"196","op":[40,null,null],"cur":[30,null,null]},
+  {"a":"4697815","t":"Rushing Yards Milestones","ti":"196","op":[40,null,null],"cur":[40,null,null]},
+  {"a":"4697815","t":"Rushing Yards Milestones","ti":"196","op":[40,null,null],"cur":[50,null,null]},
+  {"a":"4697815","t":"Rushing Yards Milestones","ti":"196","op":[40,null,null],"cur":[60,null,null]},
+  {"a":"4697815","t":"Rushing Yards Milestones","ti":"196","op":[40,null,null],"cur":[70,null,null]},
+  {"a":"4697815","t":"Rushing Yards Milestones","ti":"196","op":[40,null,null],"cur":[80,null,null]},
+  {"a":"4697815","t":"Rushing Yards Milestones","ti":"196","op":[40,null,null],"cur":[90,null,null]},
+  {"a":"4697815","t":"Rushing Yards Milestones","ti":"196","op":[40,null,null],"cur":[100,null,null]},
+  {"a":"4697815","t":"Rushing Yards Milestones","ti":"196","op":[40,null,null],"cur":[110,null,null]},
+  {"a":"4697815","t":"Rushing Yards Milestones","ti":"196","op":[40,null,null],"cur":[120,null,null]},
+  {"a":"4697815","t":"Rushing Yards Milestones","ti":"196","op":[40,null,null],"cur":[15,null,null]},
+  {"a":"4697815","t":"Rushing Yards Milestones","ti":"196","op":[40,null,null],"cur":[39,null,null]},
+  {"a":"4697815","t":"Rushing Yards Milestones","ti":"196","op":[40,null,null],"cur":[10,null,null]},
+  {"a":"4697815","t":"Rushing + Receiving Yards Milestones","ti":"197","op":[60,null,null],"cur":[40,null,null]},
+  {"a":"4697815","t":"Rushing + Receiving Yards Milestones","ti":"197","op":[60,null,null],"cur":[60,null,null]},
+  {"a":"4697815","t":"Rushing + Receiving Yards Milestones","ti":"197","op":[60,null,null],"cur":[70,null,null]},
+  {"a":"4697815","t":"Rushing + Receiving Yards Milestones","ti":"197","op":[60,null,null],"cur":[100,null,null]},
+  {"a":"4697815","t":"Rushing + Receiving Yards Milestones","ti":"197","op":[60,null,null],"cur":[110,null,null]},
+  {"a":"4697815","t":"Rushing + Receiving Yards Milestones","ti":"197","op":[60,null,null],"cur":[140,null,null]},
+  {"a":"4697815","t":"Rushing + Receiving Yards Milestones","ti":"197","op":[60,null,null],"cur":[57,null,null]},
+  {"a":"4426348","t":"Passing Touchdown Milestones","ti":"198","op":[2,null,null],"cur":[2,null,null]},
+  {"a":"4426348","t":"Passing Touchdown Milestones","ti":"198","op":[2,null,null],"cur":[3,null,null]},
+  {"a":"4426348","t":"Passing Touchdown Milestones","ti":"198","op":[2,null,null],"cur":[4,null,null]},
+  {"a":"4433970","t":"Passing Touchdown Milestones","ti":"198","op":[2,null,null],"cur":[1,null,null]},
+  {"a":"4433970","t":"Passing Touchdown Milestones","ti":"198","op":[2,null,null],"cur":[2,null,null]},
+  {"a":"4433970","t":"Passing Touchdown Milestones","ti":"198","op":[2,null,null],"cur":[3,null,null]},
+  {"a":"4433970","t":"Passing Touchdown Milestones","ti":"198","op":[2,null,null],"cur":[4,null,null]},
+  {"a":"4433970","t":"Interceptions Thrown Milestones","ti":"199","op":[1,null,null],"cur":[1,null,null]},
+  {"a":"4426348","t":"Passing Attempts Milestones","ti":"200","op":[32,null,null],"cur":[32,null,null]},
+  {"a":"4426348","t":"Passing Attempts Milestones","ti":"200","op":[32,null,null],"cur":[36,null,null]},
+  {"a":"4426348","t":"Passing Attempts Milestones","ti":"200","op":[32,null,null],"cur":[42,null,null]},
+  {"a":"4433970","t":"Passing Attempts Milestones","ti":"200","op":[31,null,null],"cur":[22,null,null]},
+  {"a":"4433970","t":"Passing Attempts Milestones","ti":"200","op":[31,null,null],"cur":[24,null,null]},
+  {"a":"4433970","t":"Passing Attempts Milestones","ti":"200","op":[31,null,null],"cur":[26,null,null]},
+  {"a":"4433970","t":"Passing Attempts Milestones","ti":"200","op":[31,null,null],"cur":[28,null,null]},
+  {"a":"4433970","t":"Passing Attempts Milestones","ti":"200","op":[31,null,null],"cur":[30,null,null]},
+  {"a":"4433970","t":"Passing Attempts Milestones","ti":"200","op":[31,null,null],"cur":[32,null,null]},
+  {"a":"4433970","t":"Passing Attempts Milestones","ti":"200","op":[31,null,null],"cur":[34,null,null]},
+  {"a":"4433970","t":"Passing Attempts Milestones","ti":"200","op":[31,null,null],"cur":[38,null,null]},
+  {"a":"4433970","t":"Passing Attempts Milestones","ti":"200","op":[31,null,null],"cur":[42,null,null]},
+  {"a":"4433970","t":"Passing Attempts Milestones","ti":"200","op":[31,null,null],"cur":[31,null,null]},
+  {"a":"4433970","t":"Passing Attempts Milestones","ti":"200","op":[31,null,null],"cur":[44,null,null]},
+  {"a":"2976212","t":"Receptions Milestones","ti":"202","op":[5,null,null],"cur":[5,null,null]},
+  {"a":"4040655","t":"Receptions Milestones","ti":"202","op":[2,null,null],"cur":[2,null,null]},
+  {"a":"4040655","t":"Receptions Milestones","ti":"202","op":[2,null,null],"cur":[3,null,null]},
+  {"a":"4040655","t":"Receptions Milestones","ti":"202","op":[2,null,null],"cur":[4,null,null]},
+  {"a":"4040655","t":"Receptions Milestones","ti":"202","op":[2,null,null],"cur":[5,null,null]},
+  {"a":"4360635","t":"Receptions Milestones","ti":"202","op":[5,null,null],"cur":[5,null,null]},
+  {"a":"4360635","t":"Receptions Milestones","ti":"202","op":[5,null,null],"cur":[10,null,null]},
+  {"a":"4361050","t":"Receptions Milestones","ti":"202","op":[5,null,null],"cur":[3,null,null]},
+  {"a":"4361050","t":"Receptions Milestones","ti":"202","op":[5,null,null],"cur":[4,null,null]},
+  {"a":"4361050","t":"Receptions Milestones","ti":"202","op":[5,null,null],"cur":[5,null,null]},
+  {"a":"4361050","t":"Receptions Milestones","ti":"202","op":[5,null,null],"cur":[6,null,null]},
+  {"a":"4361050","t":"Receptions Milestones","ti":"202","op":[5,null,null],"cur":[7,null,null]},
+  {"a":"4361050","t":"Receptions Milestones","ti":"202","op":[5,null,null],"cur":[8,null,null]},
+  {"a":"4361050","t":"Receptions Milestones","ti":"202","op":[5,null,null],"cur":[9,null,null]},
+  {"a":"4361050","t":"Receptions Milestones","ti":"202","op":[5,null,null],"cur":[10,null,null]},
+  {"a":"4361050","t":"Receptions Milestones","ti":"202","op":[5,null,null],"cur":[11,null,null]},
+  {"a":"4595348","t":"Receptions Milestones","ti":"202","op":[7,null,null],"cur":[3,null,null]},
+  {"a":"4595348","t":"Receptions Milestones","ti":"202","op":[7,null,null],"cur":[4,null,null]},
+  {"a":"4595348","t":"Receptions Milestones","ti":"202","op":[7,null,null],"cur":[5,null,null]},
+  {"a":"4595348","t":"Receptions Milestones","ti":"202","op":[7,null,null],"cur":[6,null,null]},
+  {"a":"4595348","t":"Receptions Milestones","ti":"202","op":[7,null,null],"cur":[7,null,null]},
+  {"a":"4595348","t":"Receptions Milestones","ti":"202","op":[7,null,null],"cur":[8,null,null]},
+  {"a":"4595348","t":"Receptions Milestones","ti":"202","op":[7,null,null],"cur":[9,null,null]},
+  {"a":"4595348","t":"Receptions Milestones","ti":"202","op":[7,null,null],"cur":[10,null,null]},
+  {"a":"4595348","t":"Receptions Milestones","ti":"202","op":[7,null,null],"cur":[11,null,null]},
+  {"a":"4595348","t":"Receptions Milestones","ti":"202","op":[7,null,null],"cur":[12,null,null]},
+  {"a":"4595348","t":"Receptions Milestones","ti":"202","op":[7,null,null],"cur":[13,null,null]},
+  {"a":"4682648","t":"Receptions Milestones","ti":"202","op":[3,null,null],"cur":[2,null,null]},
+  {"a":"4682648","t":"Receptions Milestones","ti":"202","op":[3,null,null],"cur":[3,null,null]},
+  {"a":"4682648","t":"Receptions Milestones","ti":"202","op":[3,null,null],"cur":[4,null,null]},
+  {"a":"4682648","t":"Receptions Milestones","ti":"202","op":[3,null,null],"cur":[5,null,null]},
+  {"a":"4682648","t":"Receptions Milestones","ti":"202","op":[3,null,null],"cur":[6,null,null]},
+  {"a":"4697815","t":"Receptions Milestones","ti":"202","op":[3,null,null],"cur":[2,null,null]},
+  {"a":"4697815","t":"Receptions Milestones","ti":"202","op":[3,null,null],"cur":[3,null,null]},
+  {"a":"4697815","t":"Receptions Milestones","ti":"202","op":[3,null,null],"cur":[4,null,null]},
+  {"a":"4697815","t":"Receptions Milestones","ti":"202","op":[3,null,null],"cur":[5,null,null]},
+  {"a":"4697815","t":"Receptions Milestones","ti":"202","op":[3,null,null],"cur":[6,null,null]},
+  {"a":"4697815","t":"Receptions Milestones","ti":"202","op":[3,null,null],"cur":[7,null,null]},
+  {"a":"5081432","t":"Receptions Milestones","ti":"202","op":[5,null,null],"cur":[4,null,null]},
+  {"a":"5081432","t":"Receptions Milestones","ti":"202","op":[5,null,null],"cur":[5,null,null]},
+  {"a":"4426348","t":"Passing Completions Milestones","ti":"207","op":[20,null,null],"cur":[16,null,null]},
+  {"a":"4426348","t":"Passing Completions Milestones","ti":"207","op":[20,null,null],"cur":[20,null,null]},
+  {"a":"4433970","t":"Passing Completions Milestones","ti":"207","op":[20,null,null],"cur":[14,null,null]},
+  {"a":"4433970","t":"Passing Completions Milestones","ti":"207","op":[20,null,null],"cur":[18,null,null]},
+  {"a":"4433970","t":"Passing Completions Milestones","ti":"207","op":[20,null,null],"cur":[20,null,null]},
+  {"a":"4433970","t":"Passing Completions Milestones","ti":"207","op":[20,null,null],"cur":[24,null,null]},
+  {"a":"4433970","t":"Passing Completions Milestones","ti":"207","op":[20,null,null],"cur":[19,null,null]},
+  {"a":"4426348","t":"Passing + Rushing Yards Milestones","ti":"209","op":[260,null,null],"cur":[160,null,null]},
+  {"a":"4426348","t":"Passing + Rushing Yards Milestones","ti":"209","op":[260,null,null],"cur":[180,null,null]},
+  {"a":"4426348","t":"Passing + Rushing Yards Milestones","ti":"209","op":[260,null,null],"cur":[190,null,null]},
+  {"a":"4426348","t":"Passing + Rushing Yards Milestones","ti":"209","op":[260,null,null],"cur":[200,null,null]},
+  {"a":"4426348","t":"Passing + Rushing Yards Milestones","ti":"209","op":[260,null,null],"cur":[210,null,null]},
+  {"a":"4426348","t":"Passing + Rushing Yards Milestones","ti":"209","op":[260,null,null],"cur":[220,null,null]},
+  {"a":"4426348","t":"Passing + Rushing Yards Milestones","ti":"209","op":[260,null,null],"cur":[230,null,null]},
+  {"a":"4426348","t":"Passing + Rushing Yards Milestones","ti":"209","op":[260,null,null],"cur":[240,null,null]},
+  {"a":"4426348","t":"Passing + Rushing Yards Milestones","ti":"209","op":[260,null,null],"cur":[250,null,null]},
+  {"a":"4426348","t":"Passing + Rushing Yards Milestones","ti":"209","op":[260,null,null],"cur":[260,null,null]},
+  {"a":"4426348","t":"Passing + Rushing Yards Milestones","ti":"209","op":[260,null,null],"cur":[270,null,null]},
+  {"a":"4426348","t":"Passing + Rushing Yards Milestones","ti":"209","op":[260,null,null],"cur":[280,null,null]},
+  {"a":"4426348","t":"Passing + Rushing Yards Milestones","ti":"209","op":[260,null,null],"cur":[290,null,null]},
+  {"a":"4426348","t":"Passing + Rushing Yards Milestones","ti":"209","op":[260,null,null],"cur":[300,null,null]},
+  {"a":"4426348","t":"Passing + Rushing Yards Milestones","ti":"209","op":[260,null,null],"cur":[310,null,null]},
+  {"a":"4426348","t":"Passing + Rushing Yards Milestones","ti":"209","op":[260,null,null],"cur":[320,null,null]},
+  {"a":"4426348","t":"Passing + Rushing Yards Milestones","ti":"209","op":[260,null,null],"cur":[330,null,null]},
+  {"a":"4426348","t":"Passing + Rushing Yards Milestones","ti":"209","op":[260,null,null],"cur":[340,null,null]},
+  {"a":"4426348","t":"Passing + Rushing Yards Milestones","ti":"209","op":[260,null,null],"cur":[350,null,null]},
+  {"a":"4426348","t":"Passing + Rushing Yards Milestones","ti":"209","op":[260,null,null],"cur":[360,null,null]},
+  {"a":"4426348","t":"Passing + Rushing Yards Milestones","ti":"209","op":[260,null,null],"cur":[370,null,null]},
+  {"a":"4426348","t":"Passing + Rushing Yards Milestones","ti":"209","op":[260,null,null],"cur":[380,null,null]},
+  {"a":"4426348","t":"Passing + Rushing Yards Milestones","ti":"209","op":[260,null,null],"cur":[390,null,null]},
+  {"a":"4426348","t":"Passing + Rushing Yards Milestones","ti":"209","cur":[400,null,null]},
+  {"a":"4426348","t":"Passing + Rushing Yards Milestones","ti":"209","op":[260,null,null],"cur":[420,null,null]},
+  {"a":"4426348","t":"Passing + Rushing Yards Milestones","ti":"209","op":[260,null,null],"cur":[253,null,null]},
+  {"a":"4433970","t":"Passing + Rushing Yards Milestones","ti":"209","op":[240,null,null],"cur":[160,null,null]},
+  {"a":"4433970","t":"Passing + Rushing Yards Milestones","ti":"209","op":[240,null,null],"cur":[200,null,null]},
+  {"a":"4433970","t":"Passing + Rushing Yards Milestones","ti":"209","op":[240,null,null],"cur":[220,null,null]},
+  {"a":"4433970","t":"Passing + Rushing Yards Milestones","ti":"209","op":[240,null,null],"cur":[230,null,null]},
+  {"a":"4433970","t":"Passing + Rushing Yards Milestones","ti":"209","op":[240,null,null],"cur":[240,null,null]},
+  {"a":"4433970","t":"Passing + Rushing Yards Milestones","ti":"209","op":[240,null,null],"cur":[290,null,null]},
+  {"a":"4433970","t":"Passing + Rushing Yards Milestones","ti":"209","op":[240,null,null],"cur":[300,null,null]},
+  {"a":"4433970","t":"Passing + Rushing Yards Milestones","ti":"209","op":[240,null,null],"cur":[310,null,null]},
+  {"a":"4433970","t":"Passing + Rushing Yards Milestones","ti":"209","op":[240,null,null],"cur":[340,null,null]},
+  {"a":"4433970","t":"Passing + Rushing Yards Milestones","ti":"209","op":[240,null,null],"cur":[360,null,null]},
+  {"a":"4433970","t":"Passing + Rushing Yards Milestones","ti":"209","op":[240,null,null],"cur":[390,null,null]},
+  {"a":"4433970","t":"Passing + Rushing Yards Milestones","ti":"209","op":[240,null,null],"cur":[400,null,null]}
+ ],
+   "sample": [
+    {
+     "competition": {
+      "id": "401873052"
+     },
+     "athlete": {
+      "id": "4426348"
+     },
+     "provider": {
+      "id": "100"
+     },
+     "type": {
+      "id": "8",
+      "name": "Total Passing Yards (incl. overtime)"
+     },
+     "lastUpdated": "2026-11-09T06:52Z",
+     "current": {
+      "target": {
+       "value": 212.5,
+       "displayValue": "212.5"
+      }
+     },
+     "open": {
+      "target": {
+       "value": 212.5,
+       "displayValue": "212.5"
+      }
+     }
+    },
+    {
+     "competition": {
+      "id": "401873052"
+     },
+     "athlete": {
+      "id": "4426348"
+     },
+     "provider": {
+      "id": "100"
+     },
+     "type": {
+      "id": "8",
+      "name": "Total Passing Yards (incl. overtime)"
+     },
+     "lastUpdated": "2026-11-09T06:52Z",
+     "current": {
+      "target": {
+       "value": 212.5,
+       "displayValue": "212.5"
+      }
+     },
+     "open": {
+      "target": {
+       "value": 212.5,
+       "displayValue": "212.5"
+      }
+     }
+    }
+   ]
+  }
+ },
+ "names": {
+  "16166": [
+   "Tress Way",
+   "WSH"
+  ],
+  "16837": [
+   "Shelby Harris",
+   "NYG"
+  ],
+  "17378": [
+   "Tyler Ott",
+   "WSH"
+  ],
+  "2531358": [
+   "Chris Manhertz",
+   "NYG"
+  ],
+  "2574891": [
+   "Roy Robertson-Harris",
+   "NYG"
+  ],
+  "2576736": [
+   "Lucas Patrick",
+   "WSH"
+  ],
+  "2576980": [
+   "Marcus Mariota",
+   "WSH"
+  ],
+  "2969939": [
+   "Jameis Winston",
+   "NYG"
+  ],
+  "2971586": [
+   "Fabian Moreau",
+   "WSH"
+  ],
+  "2975417": [
+   "Patrick Ricard",
+   "NYG"
+  ],
+  "2976212": [
+   "Stefon Diggs",
+   "WSH"
+  ],
+  "2977670": [
+   "DJ Reader",
+   "NYG"
+  ],
+  "2980080": [
+   "Deatrich Wise Jr.",
+   "WSH"
+  ],
+  "3042476": [
+   "Dawuane Smoot",
+   "NYG"
+  ],
+  "3042702": [
+   "Andrew Wylie",
+   "WSH"
+  ],
+  "3049339": [
+   "Aaron Stinnie",
+   "NYG"
+  ],
+  "3051890": [
+   "Laremy Tunsil",
+   "WSH"
+  ],
+  "3052059": [
+   "Daniel Ekuale",
+   "WSH"
+  ],
+  "3068267": [
+   "Austin Ekeler",
+   "WSH"
+  ],
+  "3115303": [
+   "Jermaine Eluemunor",
+   "NYG"
+  ],
+  "3115922": [
+   "Nick Allegretti",
+   "WSH"
+  ],
+  "3121422": [
+   "Terry McLaurin",
+   "WSH"
+  ],
+  "3122797": [
+   "Isaac Yiadom",
+   "WSH"
+  ],
+  "3123075": [
+   "Braxton Berrios",
+   "NYG"
+  ],
+  "3123303": [
+   "Trent Scott",
+   "WSH"
+  ],
+  "3125248": [
+   "Jeremy Reaves",
+   "WSH"
+  ],
+  "3127273": [
+   "Frankie Luvu",
+   "WSH"
+  ],
+  "3127586": [
+   "Jeremy McNichols",
+   "WSH"
+  ],
+  "3886601": [
+   "Shy Tuttle",
+   "WSH"
+  ],
+  "3916922": [
+   "Byron Cowart",
+   "WSH"
+  ],
+  "3917949": [
+   "Julian Good-Jones",
+   "WSH"
+  ],
+  "3925354": [
+   "Daron Payne",
+   "WSH"
+  ],
+  "3928979": [
+   "Dorance Armstrong",
+   "WSH"
+  ],
+  "3929865": [
+   "Charles Omenihu",
+   "WSH"
+  ],
+  "3929936": [
+   "Jon Runyan",
+   "NYG"
+  ],
+  "3929950": [
+   "Tremaine Edmunds",
+   "NYG"
+  ],
+  "3929956": [
+   "Tim Settle",
+   "WSH"
+  ],
+  "3930066": [
+   "Van Jefferson",
+   "WSH"
+  ],
+  "3932901": [
+   "Elijah Campbell",
+   "NYG"
+  ],
+  "3943270": [
+   "Rasul Douglas",
+   "WSH"
+  ],
+  "4035631": [
+   "Brian Burns",
+   "NYG"
+  ],
+  "4036132": [
+   "Chauncey Golston",
+   "NYG"
+  ],
+  "4039243": [
+   "Josh Sills",
+   "NYG"
+  ],
+  "4040615": [
+   "Malik Harrison",
+   "NYG"
+  ],
+  "4040655": [
+   "Darnell Mooney",
+   "NYG"
+  ],
+  "4040761": [
+   "Devin Singletary",
+   "NYG"
+  ],
+  "4048228": [
+   "John Bates",
+   "WSH"
+  ],
+  "4239694": [
+   "Amik Robertson",
+   "WSH"
+  ],
+  "4240548": [
+   "Kendrick Green",
+   "NYG"
+  ],
+  "4240706": [
+   "Jason Pinnock",
+   "NYG"
+  ],
+  "4240771": [
+   "John Michael Schmitz Jr.",
+   "NYG"
+  ],
+  "4242205": [
+   "K'Lavon Chaisson",
+   "WSH"
+  ],
+  "4242547": [
+   "Paulson Adebo",
+   "NYG"
+  ],
+  "4243322": [
+   "Jake Haener",
+   "NYG"
+  ],
+  "4243389": [
+   "Calvin Austin III",
+   "NYG"
+  ],
+  "4244615": [
+   "Chris Paul",
+   "WSH"
+  ],
+  "4257188": [
+   "Charlie Jones",
+   "NYG"
+  ],
+  "4258237": [
+   "Raheem Layne",
+   "NYG"
+  ],
+  "4259491": [
+   "Javon Kinlaw",
+   "WSH"
+  ],
+  "4259566": [
+   "Andrew Thomas",
+   "NYG"
+  ],
+  "4260224": [
+   "Jordan Stout",
+   "NYG"
+  ],
+  "4261606": [
+   "Darren Hall",
+   "WSH"
+  ],
+  "4262199": [
+   "Sam Cosmi",
+   "WSH"
+  ],
+  "4360378": [
+   "Quan Martin",
+   "WSH"
+  ],
+  "4360516": [
+   "Tyrone Tracy Jr.",
+   "NYG"
+  ],
+  "4360635": [
+   "Chig Okonkwo",
+   "WSH"
+  ],
+  "4361050": [
+   "Isaiah Likely",
+   "NYG"
+  ],
+  "4361088": [
+   "Colson Yankoff",
+   "WSH"
+  ],
+  "4361090": [
+   "Ale Kaho",
+   "WSH"
+  ],
+  "4361100": [
+   "Jack Westover",
+   "WSH"
+  ],
+  "4361266": [
+   "Greg Newsome II",
+   "NYG"
+  ],
+  "4361357": [
+   "Javontae Jean-Baptiste",
+   "WSH"
+  ],
+  "4361422": [
+   "Odafe Oweh",
+   "WSH"
+  ],
+  "4361577": [
+   "Dyami Brown",
+   "WSH"
+  ],
+  "4361834": [
+   "Jarrick Bernard-Converse",
+   "NYG"
+  ],
+  "4361994": [
+   "Sam Hartman",
+   "WSH"
+  ],
+  "4362234": [
+   "Zaire Barnes",
+   "NYG"
+  ],
+  "4362492": [
+   "Ar'Darius Washington",
+   "NYG"
+  ],
+  "4363097": [
+   "Percy Butler",
+   "WSH"
+  ],
+  "4368350": [
+   "Rico Payton",
+   "NYG"
+  ],
+  "4371961": [
+   "Micah McFadden",
+   "NYG"
+  ],
+  "4373809": [
+   "Jevon Holland",
+   "NYG"
+  ],
+  "4374032": [
+   "Jaden Robinson",
+   "NYG"
+  ],
+  "4421446": [
+   "Craig Reynolds",
+   "WSH"
+  ],
+  "4424106": [
+   "Gunner Olszewski",
+   "NYG"
+  ],
+  "4426326": [
+   "Kayvon Thibodeaux",
+   "NYG"
+  ],
+  "4426348": [
+   "Jayden Daniels",
+   "WSH"
+  ],
+  "4426403": [
+   "Nick Cross",
+   "WSH"
+  ],
+  "4426489": [
+   "Bryan Hudson",
+   "NYG"
+  ],
+  "4426542": [
+   "Darius Alexander",
+   "NYG"
+  ],
+  "4426901": [
+   "Leo Chenal",
+   "WSH"
+  ],
+  "4426948": [
+   "Luke McCaffrey",
+   "WSH"
+  ],
+  "4427207": [
+   "Trace Ford",
+   "NYG"
+  ],
+  "4427636": [
+   "Nic Jones",
+   "NYG"
+  ],
+  "4427984": [
+   "Kain Medrano",
+   "WSH"
+  ],
+  "4428328": [
+   "Deonte Banks",
+   "NYG"
+  ],
+  "4428343": [
+   "Ricky Barber",
+   "WSH"
+  ],
+  "4428414": [
+   "Mike Sainristil",
+   "WSH"
+  ],
+  "4429148": [
+   "Theo Johnson",
+   "NYG"
+  ],
+  "4429185": [
+   "Austin Keys",
+   "WSH"
+  ],
+  "4429281": [
+   "Korie Black",
+   "NYG"
+  ],
+  "4429891": [
+   "DJ James",
+   "NYG"
+  ],
+  "4430261": [
+   "Tyler Nubin",
+   "NYG"
+  ],
+  "4430560": [
+   "Jer'Zhan Newton",
+   "WSH"
+  ],
+  "4431321": [
+   "Dru Phillips",
+   "NYG"
+  ],
+  "4431562": [
+   "Phil Mafah",
+   "NYG"
+  ],
+  "4432333": [
+   "Kyle Kennard",
+   "WSH"
+  ],
+  "4432722": [
+   "Athan Kaliakmanis",
+   "WSH"
+  ],
+  "4433970": [
+   "J.J. McCarthy",
+   "NYG"
+  ],
+  "4565297": [
+   "Dontae Fleming",
+   "NYG"
+  ],
+  "4567156": [
+   "Treylon Burks",
+   "WSH"
+  ],
+  "4568617": [
+   "Jordan Magee",
+   "WSH"
+  ],
+  "4570296": [
+   "Dalen Cambre",
+   "NYG"
+  ],
+  "4570561": [
+   "Eric Gray",
+   "NYG"
+  ],
+  "4572460": [
+   "Tyler Owens",
+   "WSH"
+  ],
+  "4574689": [
+   "Trey Amos",
+   "WSH"
+  ],
+  "4575131": [
+   "Jacory Croskey-Merritt",
+   "WSH"
+  ],
+  "4590292": [
+   "Thomas Fidone II",
+   "NYG"
+  ],
+  "4595348": [
+   "Malik Nabers",
+   "NYG"
+  ],
+  "4602667": [
+   "Jaylin Lane",
+   "WSH"
+  ],
+  "4605488": [
+   "Tanoa Togiai",
+   "WSH"
+  ],
+  "4682648": [
+   "Malachi Fields",
+   "NYG"
+  ],
+  "4682652": [
+   "Devin Neal",
+   "WSH"
+  ],
+  "4683111": [
+   "Jaden Bradley",
+   "WSH"
+  ],
+  "4683463": [
+   "Matt Gulbin",
+   "WSH"
+  ],
+  "4685030": [
+   "Brandon Coleman",
+   "WSH"
+  ],
+  "4685326": [
+   "Josh Conerly Jr.",
+   "WSH"
+  ],
+  "4686092": [
+   "Fred Davis II",
+   "WSH"
+  ],
+  "4686362": [
+   "Marcus Mbow",
+   "NYG"
+  ],
+  "4687706": [
+   "Josh Gesky",
+   "NYG"
+  ],
+  "4689114": [
+   "Jaxson Dart",
+   "NYG"
+  ],
+  "4689988": [
+   "Jason Brownlee",
+   "NYG"
+  ],
+  "4690923": [
+   "Ben Sinnott",
+   "WSH"
+  ],
+  "4691043": [
+   "Nikko Reed",
+   "NYG"
+  ],
+  "4691889": [
+   "Greg Desrosiers Jr.",
+   "NYG"
+  ],
+  "4692590": [
+   "Jalin Hyatt",
+   "NYG"
+  ],
+  "4692796": [
+   "Nick DeGennaro",
+   "WSH"
+  ],
+  "4695086": [
+   "Chandler Martin",
+   "NYG"
+  ],
+  "4696981": [
+   "Cam Skattebo",
+   "NYG"
+  ],
+  "4697815": [
+   "Rachaad White",
+   "WSH"
+  ],
+  "4700676": [
+   "C.J. Ravenell",
+   "NYG"
+  ],
+  "4725996": [
+   "Abdul Carter",
+   "NYG"
+  ],
+  "4870914": [
+   "Francis Mauigoa",
+   "NYG"
+  ],
+  "4875350": [
+   "Quentin Moore",
+   "WSH"
+  ],
+  "4875981": [
+   "Geno VanDeMark",
+   "NYG"
+  ],
+  "4876380": [
+   "Jack Kelly",
+   "NYG"
+  ],
+  "4883114": [
+   "Ben Mann",
+   "NYG"
+  ],
+  "4921249": [
+   "Colton Hood",
+   "NYG"
+  ],
+  "4950400": [
+   "Arvell Reese",
+   "NYG"
+  ],
+  "5081335": [
+   "Drew Stevens",
+   "WSH"
+  ],
+  "5081392": [
+   "Joshua Josephs",
+   "WSH"
+  ],
+  "5081432": [
+   "Antonio Williams",
+   "WSH"
+  ],
+  "5081807": [
+   "Sonny Styles",
+   "WSH"
+  ],
+  "5082353": [
+   "J.C. Davis",
+   "NYG"
+  ],
+  "5082424": [
+   "Dominic Zvada",
+   "NYG"
+  ],
+  "5144942": [
+   "CJ Okoye",
+   "NYG"
+  ],
+  "5151317": [
+   "Robert Henry Jr.",
+   "WSH"
+  ],
+  "5151880": [
+   "Thaddeus Dixon",
+   "NYG"
+  ],
+  "5153070": [
+   "Esa Pole",
+   "WSH"
+  ],
+  "5159928": [
+   "Bobby Jamison-Travis",
+   "NYG"
+  ],
+  "5278092": [
+   "T.J. Maguranyanga",
+   "WSH"
+  ],
+  "5344428": [
+   "Ryan Schernecke",
+   "NYG"
+  ],
+  "5360470": [
+   "Jarrod Gray",
+   "NYG"
+  ],
+  "5393270": [
+   "Grant Finley",
+   "NYG"
+  ]
+ }
 }

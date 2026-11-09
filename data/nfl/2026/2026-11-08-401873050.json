@@ -7,18 +7,18 @@
   "id": "27",
   "abbr": "TB",
   "name": "Tampa Bay Buccaneers",
-  "score": 0
+  "score": 16
  },
  "home": {
   "id": "3",
   "abbr": "CHI",
   "name": "Chicago Bears",
-  "score": 0
+  "score": 24
  },
  "neutral": false,
  "venue": "Soldier Field",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-02T01:25:58.632Z",

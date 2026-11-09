@@ -7,18 +7,18 @@
   "id": "3",
   "abbr": "NO",
   "name": "New Orleans Pelicans",
-  "score": 0
+  "score": 105
  },
  "home": {
   "id": "12",
   "abbr": "LAC",
   "name": "LA Clippers",
-  "score": 0
+  "score": 119
  },
  "neutral": false,
  "venue": "Intuit Dome",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-08T00:43:09.397Z",

@@ -7,18 +7,18 @@
   "id": "2724",
   "abbr": "WICH",
   "name": "Wichita State Shockers",
-  "score": 0
+  "score": 6
  },
  "home": {
   "id": "30",
   "abbr": "USC",
   "name": "USC Trojans",
-  "score": 0
+  "score": 9
  },
  "neutral": true,
  "venue": "Tahoe Blue Event Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-08T00:43:09.397Z",
