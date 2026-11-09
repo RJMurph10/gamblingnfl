@@ -61,32 +61,34 @@ function ResultBadge({ r }: { r: PropHistoryRow }) {
 
 function GameChip({
   game,
+  league,
   selected,
   onSelect,
 }: {
   game: PropHistoryGame;
+  league: PropLeague;
   selected: boolean;
   onSelect: () => void;
 }) {
   const aw = (game.away.score ?? 0) > (game.home.score ?? 0);
+  const hw = (game.home.score ?? 0) > (game.away.score ?? 0);
   return (
     <button
       type="button"
       onClick={onSelect}
-      className={`shrink-0 rounded-lg px-3 py-2 text-left font-mono text-xs ring-1 transition ${
+      aria-label={`${game.away.name} ${game.away.score ?? ""} at ${game.home.name} ${game.home.score ?? ""}, ${game.props.length} props`}
+      className={`inline-flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-2 font-mono text-xs tabular-nums ring-1 transition ${
         selected
           ? "bg-acc/10 text-acc ring-acc/30"
           : "bg-panel2/40 text-mute ring-line/10 hover:text-acc"
       }`}
     >
-      <span className={aw ? "font-semibold text-foreground" : ""}>
-        {game.away.abbr} {game.away.score ?? ""}
-      </span>
-      <span className="mx-1 text-faint">@</span>
-      <span className={!aw ? "font-semibold text-foreground" : ""}>
-        {game.home.abbr} {game.home.score ?? ""}
-      </span>
-      <span className="ml-2 text-[10px] text-faint">{game.props.length} props</span>
+      <span className={aw ? "font-semibold text-foreground" : ""}>{game.away.score ?? ""}</span>
+      <PropTeam league={league} abbr={game.away.abbr} />
+      <span className="text-faint">@</span>
+      <PropTeam league={league} abbr={game.home.abbr} />
+      <span className={hw ? "font-semibold text-foreground" : ""}>{game.home.score ?? ""}</span>
+      <span className="ml-1 text-[10px] text-faint">{game.props.length} props</span>
     </button>
   );
 }
@@ -211,6 +213,7 @@ function PastResults({ league, tabs }: { league: PropLeague; tabs: ReactNode }) 
             <GameChip
               key={g.id}
               game={g}
+              league={league}
               selected={g.id === game?.id}
               onSelect={() => {
                 setGameId(g.id);
