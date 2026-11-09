@@ -7,8 +7,9 @@
  * games are played, like a ridge regression. Predictions for a finished game only use games
  * played BEFORE its day, so the record is an honest walk-forward test, not hindsight.
  *
- * Picks: spread / total picks when the model disagrees with the closing line (★ = a big gap),
- * and a moneyline winner for every game. Units are flat 1u per pick at -110 (moneyline picks
+ * Picks: spread picks when the model disagrees with the closing line (★ = a big gap), total picks
+ * when the recency-weighted totals model disagrees with the OPENING total by 5+ (★ 8+), and a
+ * moneyline winner for every game. Units are flat 1u per pick at -110 (moneyline picks
  * use the listed moneyline when ESPN has one).
  */
 import {
@@ -39,8 +40,17 @@ const DEFAULT_AVG = 114;
 
 export const SPREAD_PICK_MIN = 1.0;
 export const SPREAD_BEST_MIN = 3.0;
-export const TOTAL_PICK_MIN = 2.0;
-export const TOTAL_BEST_MIN = 5.0;
+/**
+ * Totals: research/nba/scripts/nba_totals_recency.py. Against the opening total the recency model
+ * hit 54-59% at 5+ points and 56-60% at 8+ in every season 2008-2025 (DraftKings / ESPN BET
+ * openers 2023-25); against the closing total it is ~49-50%, because the line moves its way.
+ */
+export const TOTAL_PICK_MIN = 5.0;
+export const TOTAL_BEST_MIN = 8.0;
+/** Totals ratings: a game's weight halves every ~10 days (e^(-age/15)). */
+const TOTAL_TAU_DAYS = 15;
+const TOTAL_PRIOR_WEIGHT = 8;
+const DAY_MS = 86_400_000;
 const WIN_UNITS = 100 / 110;
 
 export interface RatingTable {
@@ -129,6 +139,105 @@ export function buildRatings(finals: NbaGame[], prior: NbaPriorTeam[]): RatingTa
   return { avg, off, def, games };
 }
 
+/**
+ * Ratings for totals: the same offense/defense fit, but recent games count more (a game's weight
+ * decays with age) and the league average follows recent scoring. Measured on 2008-2026, this
+ * tracks the final total better than the season-long fit and is what beats the opening line.
+ */
+export function buildTotalRatings(
+  finals: NbaGame[],
+  prior: NbaPriorTeam[],
+  asOf: number = Date.now(),
+): RatingTable {
+  // only real teams: the All-Star games (made-up teams, odd scores) would skew the league average
+  if (prior.length >= 30) {
+    const known = new Set(prior.map((t) => t.teamId));
+    finals = finals.filter((g) => known.has(g.home.team.id) && known.has(g.away.team.id));
+  }
+  const priorAvg = prior.length ? prior.reduce((s, t) => s + t.ppg, 0) / prior.length : DEFAULT_AVG;
+  const off = new Map<string, number>();
+  const def = new Map<string, number>();
+  const games = new Map<string, number>();
+  const priorOff = new Map<string, number>();
+  const priorDef = new Map<string, number>();
+  for (const t of prior) {
+    priorOff.set(t.teamId, PRIOR_SHRINK * (t.ppg - priorAvg));
+    priorDef.set(t.teamId, PRIOR_SHRINK * (t.oppPpg - priorAvg));
+  }
+  const ids = new Set<string>(prior.map((t) => t.teamId));
+  for (const g of finals) {
+    ids.add(g.home.team.id);
+    ids.add(g.away.team.id);
+    games.set(g.home.team.id, (games.get(g.home.team.id) ?? 0) + 1);
+    games.set(g.away.team.id, (games.get(g.away.team.id) ?? 0) + 1);
+  }
+  const idList = [...ids];
+  for (const id of idList) {
+    off.set(id, priorOff.get(id) ?? 0);
+    def.set(id, priorDef.get(id) ?? 0);
+  }
+  if (!finals.length) return { avg: priorAvg, off, def, games };
+
+  // League average: recent scoring (20-day decay), leaning on last season until ~150 games are in.
+  let rs = 0;
+  let rw = 0;
+  for (const g of finals) {
+    const w = Math.exp(-Math.max(0, asOf - Date.parse(g.date)) / DAY_MS / 20);
+    rs += w * ((g.home.score as number) + (g.away.score as number));
+    rw += 2 * w;
+  }
+  const n = Math.min(finals.length * 2, 300);
+  const avg = (priorAvg * 60 + (rs / rw) * n) / (60 + n);
+
+  const h = HOME_COURT / 2;
+  const slot = new Map(idList.map((id, i) => [id, i]));
+  const T = idList.length;
+  const offA = idList.map((id) => off.get(id) ?? 0);
+  const defA = idList.map((id) => def.get(id) ?? 0);
+  const pOffA = [...offA];
+  const pDefA = [...defA];
+  const G = finals.length;
+  const hi = new Int32Array(G);
+  const ai = new Int32Array(G);
+  const hsA = new Float64Array(G);
+  const asA = new Float64Array(G);
+  const wA = new Float64Array(G);
+  const wSum = new Float64Array(T);
+  finals.forEach((g, k) => {
+    hi[k] = slot.get(g.home.team.id) as number;
+    ai[k] = slot.get(g.away.team.id) as number;
+    hsA[k] = g.home.score as number;
+    asA[k] = g.away.score as number;
+    wA[k] = Math.exp(-Math.max(0, asOf - Date.parse(g.date)) / DAY_MS / TOTAL_TAU_DAYS);
+    wSum[hi[k]] += wA[k];
+    wSum[ai[k]] += wA[k];
+  });
+  const offSum = new Float64Array(T);
+  const defSum = new Float64Array(T);
+  for (let iter = 0; iter < 20; iter++) {
+    offSum.fill(0);
+    defSum.fill(0);
+    for (let k = 0; k < G; k++) {
+      const H = hi[k];
+      const A = ai[k];
+      const w = wA[k];
+      offSum[H] += w * (hsA[k] - avg - h - defA[A]);
+      offSum[A] += w * (asA[k] - avg + h - defA[H]);
+      defSum[A] += w * (hsA[k] - avg - h - offA[H]);
+      defSum[H] += w * (asA[k] - avg + h - offA[A]);
+    }
+    for (let i = 0; i < T; i++) {
+      offA[i] = (offSum[i] + TOTAL_PRIOR_WEIGHT * pOffA[i]) / (wSum[i] + TOTAL_PRIOR_WEIGHT);
+      defA[i] = (defSum[i] + TOTAL_PRIOR_WEIGHT * pDefA[i]) / (wSum[i] + TOTAL_PRIOR_WEIGHT);
+    }
+  }
+  idList.forEach((id, i) => {
+    off.set(id, offA[i]);
+    def.set(id, defA[i]);
+  });
+  return { avg, off, def, games };
+}
+
 export interface Prediction {
   home: number;
   away: number;
@@ -138,11 +247,34 @@ export interface Prediction {
   homeWinProb: number;
 }
 
-export function predictGame(r: RatingTable, homeId: string, awayId: string): Prediction {
+export function predictGame(
+  r: RatingTable,
+  homeId: string,
+  awayId: string,
+  totals?: RatingTable,
+): Prediction {
   const home = r.avg + (r.off.get(homeId) ?? 0) + (r.def.get(awayId) ?? 0) + HOME_COURT / 2;
   const away = r.avg + (r.off.get(awayId) ?? 0) + (r.def.get(homeId) ?? 0) - HOME_COURT / 2;
   const margin = home - away;
-  return { home, away, margin, total: home + away, homeWinProb: normCdf(margin / MARGIN_SD) };
+  // the total comes from the recency-weighted table when given; the score split keeps the margin
+  let total = home + away;
+  if (totals) {
+    const t = totals;
+    total =
+      2 * t.avg +
+      (t.off.get(homeId) ?? 0) +
+      (t.def.get(awayId) ?? 0) +
+      (t.off.get(awayId) ?? 0) +
+      (t.def.get(homeId) ?? 0);
+  }
+  const shift = (total - (home + away)) / 2;
+  return {
+    home: home + shift,
+    away: away + shift,
+    margin,
+    total,
+    homeWinProb: normCdf(margin / MARGIN_SD),
+  };
 }
 
 /** Ratings as table rows: offense/defense in points per game, net = off − def. */
@@ -215,7 +347,8 @@ export function rowFor(game: NbaGame, pred: Prediction): NbaModelRow {
     }
   }
   let total: NbaModelRow["total"] = null;
-  const tl = game.odds?.total;
+  // graded at the opening total: the edge is in betting early, before the line moves
+  const tl = game.odds?.totalOpen ?? game.odds?.total;
   if (tl !== null && tl !== undefined) {
     const edge = pred.total - tl;
     if (Math.abs(edge) >= TOTAL_PICK_MIN) {
@@ -266,12 +399,16 @@ export function runNbaModel(games: NbaGame[], prior: NbaPriorTeam[]): NbaModelRo
   let cursor = 0;
   for (const [day, dayGames] of byDay) {
     while (cursor < finals.length && etDayKey(finals[cursor].date) < day) cursor++;
-    const table = buildRatings(finals.slice(0, cursor), prior);
-    for (const g of dayGames) rows.push(rowFor(g, predictGame(table, g.home.team.id, g.away.team.id)));
+    const before = finals.slice(0, cursor);
+    const table = buildRatings(before, prior);
+    const totals = buildTotalRatings(before, prior, Date.parse(dayGames[0].date));
+    for (const g of dayGames)
+      rows.push(rowFor(g, predictGame(table, g.home.team.id, g.away.team.id, totals)));
   }
   const now = buildRatings(finals, prior);
+  const nowTotals = buildTotalRatings(finals, prior);
   for (const g of rated.filter((x) => x.status !== "final" || !hasScore(x)))
-    rows.push(rowFor(g, predictGame(now, g.home.team.id, g.away.team.id)));
+    rows.push(rowFor(g, predictGame(now, g.home.team.id, g.away.team.id, nowTotals)));
   return rows.sort((a, b) => a.game.date.localeCompare(b.game.date));
 }
 
