@@ -5,7 +5,8 @@
  */
 import { useMemo, useState, type ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { PageTitle, Panel, PanelHeader } from "@/components/shared/booth";
+import { PageTitle, Panel, PanelHeader, TeamLogo } from "@/components/shared/booth";
+import { teamByAbbr } from "@/data/shared/teams";
 import { getPropHistory, getUpcomingProps } from "@/lib/shared/prop-history.functions";
 import type {
   PropHistoryGame,
@@ -269,7 +270,9 @@ function PastResults({ league, tabs }: { league: PropLeague; tabs: ReactNode }) 
                 {rows.map((r, i) => (
                   <tr key={`${r[0]}-${r[2]}-${i}`} className="hover:bg-line/5">
                     <td className="px-4 py-2">
-                      {r[0]} <span className="font-mono text-[10px] text-faint">{r[1]}</span>
+                      <span className="inline-flex items-center gap-1.5">
+                        {r[0]} <PropTeam league={league} abbr={r[1]} />
+                      </span>
                     </td>
                     <td className="px-2 py-2 font-mono text-xs text-mute">{r[2]}</td>
                     <td className="px-2 py-2 text-right font-mono text-xs font-semibold tabular-nums">
@@ -429,7 +432,9 @@ function Upcoming({ league, tabs }: { league: PropLeague; tabs: ReactNode }) {
                   return (
                     <tr key={`${r[0]}-${r[2]}-${i}`} className="hover:bg-line/5">
                       <td className="px-4 py-2">
-                        {r[0]} <span className="font-mono text-[10px] text-faint">{r[1]}</span>
+                        <span className="inline-flex items-center gap-1.5">
+                          {r[0]} <PropTeam league={league} abbr={r[1]} />
+                        </span>
                       </td>
                       <td className="px-2 py-2 font-mono text-xs text-mute">{r[2]}</td>
                       <td className="px-2 py-2 text-right font-mono text-xs font-semibold tabular-nums">
@@ -468,6 +473,24 @@ function Upcoming({ league, tabs }: { league: PropLeague; tabs: ReactNode }) {
         </Panel>
       ) : null}
     </>
+  );
+}
+
+/** The player's team as a small logo (ESPN's CDN), falling back to the abbreviation. */
+function PropTeam({ league, abbr }: { league: PropLeague; abbr: string }) {
+  const [failed, setFailed] = useState(false);
+  const nfl = league === "nfl" ? teamByAbbr(abbr) : undefined;
+  if (nfl) return <TeamLogo team={nfl} className="size-4" />;
+  if (failed || !abbr) return <span className="font-mono text-[10px] text-faint">{abbr}</span>;
+  return (
+    <img
+      src={`https://a.espncdn.com/i/teamlogos/${league}/500/${abbr.toLowerCase()}.png`}
+      alt={abbr}
+      title={abbr}
+      className="inline-block size-4 shrink-0 object-contain"
+      loading="lazy"
+      onError={() => setFailed(true)}
+    />
   );
 }
 
