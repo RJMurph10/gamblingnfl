@@ -39,18 +39,25 @@ export interface PropHistoryDay {
 }
 
 const memo = new Map<string, { at: number; value: unknown }>();
-async function getJson<T>(url: string, ttl: number): Promise<T | null> {
+/**
+ * Fetch JSON with a short memo. A failed fetch retries once, then falls back to the last good copy
+ * (however old) rather than nothing, so a slow or rate-limited GitHub response never empties the page.
+ */
+async function getJson<T>(url: string, ttl: number, mirror?: string): Promise<T | null> {
   const hit = memo.get(url);
   if (hit && Date.now() - hit.at < ttl) return hit.value as T;
-  try {
-    const res = await fetch(url);
-    if (!res.ok) return null;
-    const value = (await res.json()) as T;
-    memo.set(url, { at: Date.now(), value });
-    return value;
-  } catch {
-    return null;
+  for (const u of [url, url, ...(mirror ? [mirror] : [])]) {
+    try {
+      const res = await fetch(u, { signal: AbortSignal.timeout(8000) });
+      if (!res.ok) continue;
+      const value = (await res.json()) as T;
+      memo.set(url, { at: Date.now(), value });
+      return value;
+    } catch {
+      // try again / the mirror
+    }
   }
+  return (hit?.value as T | undefined) ?? null;
 }
 
 export async function fetchPropHistory(
@@ -120,7 +127,12 @@ export interface UpcomingPropGame {
  */
 export async function fetchUpcomingProps(league: PropLeague): Promise<UpcomingPropGame[]> {
   const games =
-    (await getJson<UpcomingPropGame[]>(`${BASE}/${league}/upcoming.json`, 5 * MINUTE)) ?? [];
+    (await getJson<UpcomingPropGame[]>(
+      `${BASE}/${league}/upcoming.json`,
+      5 * MINUTE,
+      // jsDelivr's copy of the same branch (can lag a few hours, but keeps the games up)
+      `https://cdn.jsdelivr.net/gh/RJMurph10/gamblingnfl@props-site/${league}/upcoming.json`,
+    )) ?? [];
   const now = Date.now();
   return games.filter((g) => Date.parse(g.date) > now);
 }
