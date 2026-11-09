@@ -1,0 +1,13 @@
+name: Probe ESPN opening lines (temporary)
+on:
+  push:
+    branches: [nba-odds-probe]
+    paths: [research/nba/scripts/probe_open.mjs]
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: node research/nba/scripts/probe_open.mjs
