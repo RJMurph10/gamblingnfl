@@ -324,6 +324,24 @@ const kickoff = (iso: string) =>
     minute: "2-digit",
   });
 
+const boardKey = (league: PropLeague) => `upcoming-props:${league}`;
+function readSavedBoard(league: PropLeague): UpcomingPropGame[] | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const v = JSON.parse(window.localStorage.getItem(boardKey(league)) ?? "null");
+    return Array.isArray(v) ? (v as UpcomingPropGame[]) : null;
+  } catch {
+    return null;
+  }
+}
+function saveBoard(league: PropLeague, games: UpcomingPropGame[]) {
+  try {
+    window.localStorage.setItem(boardKey(league), JSON.stringify(games));
+  } catch {
+    // storage full or blocked: the board still works, it just won't be remembered
+  }
+}
+
 function Upcoming({ league, tabs }: { league: PropLeague; tabs: ReactNode }) {
   const [gameId, setGameId] = useState<string | undefined>();
   const [openKey, setOpenKey] = useState<string | null>(null);
@@ -339,13 +357,27 @@ function Upcoming({ league, tabs }: { league: PropLeague; tabs: ReactNode }) {
   }, [openKey]);
   const [market, setMarket] = useState("All");
   const [search, setSearch] = useState("");
+  // The games don't change between refreshes, only prices: remember the last board in this browser
+  // and show it at once on reload (and if a refresh comes back empty) instead of a blank page.
+  const [saved, setSaved] = useState<UpcomingPropGame[] | null>(null);
+  useEffect(() => setSaved(readSavedBoard(league)), [league]);
   const q = useQuery({
     queryKey: ["upcoming-props", league],
-    queryFn: () => getUpcomingProps({ data: { league } }),
+    queryFn: async () => {
+      const fresh = await getUpcomingProps({ data: { league } });
+      if (fresh.length) saveBoard(league, fresh);
+      return fresh;
+    },
     staleTime: 5 * 60_000,
     refetchInterval: 15 * 60_000,
+    retry: 2,
+    placeholderData: (prev) => prev,
   });
-  const games: UpcomingPropGame[] = useMemo(() => q.data ?? [], [q.data]);
+  const games: UpcomingPropGame[] = useMemo(() => {
+    if (q.data?.length) return q.data;
+    const now = Date.now();
+    return (saved ?? []).filter((g) => Date.parse(g.date) > now);
+  }, [q.data, saved]);
   const game = games.find((g) => g.id === gameId) ?? games[0];
   const markets = useMemo(
     () => ["All", ...Array.from(new Set((game?.props ?? []).map((p) => p[2]))).sort()],
