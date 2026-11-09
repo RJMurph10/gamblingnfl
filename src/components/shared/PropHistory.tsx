@@ -324,6 +324,16 @@ const kickoff = (iso: string) =>
 function Upcoming({ league, tabs }: { league: PropLeague; tabs: ReactNode }) {
   const [gameId, setGameId] = useState<string | undefined>();
   const [openKey, setOpenKey] = useState<string | null>(null);
+  // the ladder spans the visible width of the (horizontally scrolling) table, not the whole table
+  const wrap = useRef<HTMLDivElement>(null);
+  const [wrapW, setWrapW] = useState<number | undefined>();
+  useEffect(() => {
+    const el = wrap.current;
+    if (!el || typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver(() => setWrapW(el.clientWidth));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [openKey]);
   const [market, setMarket] = useState("All");
   const [search, setSearch] = useState("");
   const q = useQuery({
@@ -414,7 +424,7 @@ function Upcoming({ league, tabs }: { league: PropLeague; tabs: ReactNode }) {
               </button>
             ))}
           </div>
-          <div className="overflow-x-auto">
+          <div ref={wrap} className="overflow-x-auto">
             <table className="w-full min-w-[620px] text-sm">
               <thead>
                 <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
@@ -444,9 +454,15 @@ function Upcoming({ league, tabs }: { league: PropLeague; tabs: ReactNode }) {
                                 type="button"
                                 onClick={() => setOpenKey(isOpen ? null : key)}
                                 aria-expanded={isOpen}
-                                className={`ml-1 rounded-full px-2 py-0.5 font-mono text-[9px] uppercase tracking-wider ring-1 ${isOpen ? "bg-acc/15 text-acc ring-acc/40" : "text-mute ring-line/15 hover:text-acc"}`}
+                                aria-label={`${isOpen ? "Hide" : "Show"} alternate lines`}
+                                title="Alternate lines"
+                                className={`inline-flex size-5 shrink-0 items-center justify-center rounded-full font-mono text-[10px] ring-1 ${
+                                  isOpen
+                                    ? "bg-acc/15 text-acc ring-acc/40"
+                                    : "text-mute ring-line/15 hover:text-acc"
+                                }`}
                               >
-                                Alt lines {isOpen ? "▴" : "▾"}
+                                {isOpen ? "▴" : "▾"}
                               </button>
                             ) : null}
                           </span>
@@ -471,7 +487,13 @@ function Upcoming({ league, tabs }: { league: PropLeague; tabs: ReactNode }) {
                       {isOpen ? (
                         <tr>
                           <td colSpan={7} className="px-0 pb-2 pt-0">
-                            <PropLadder line={r[3]} over={r[4]} ladder={ladder} unit={r[2]} />
+                            <PropLadder
+                              line={r[3]}
+                              over={r[4]}
+                              ladder={ladder}
+                              unit={r[2]}
+                              width={wrapW}
+                            />
                           </td>
                         </tr>
                       ) : null}
@@ -508,11 +530,13 @@ function PropLadder({
   over,
   ladder,
   unit,
+  width,
 }: {
   line: number;
   over: number | null;
   ladder: [number, number][];
   unit: string;
+  width?: number;
 }) {
   const rungs = useMemo(() => {
     const all = ladder.map(([ln, o]) => ({ ln, o, main: false }));
@@ -525,13 +549,16 @@ function PropLadder({
     const el = strip.current;
     const m = el?.querySelector<HTMLElement>("[data-main]");
     if (el && m) el.scrollLeft = m.offsetLeft - el.clientWidth / 2 + m.offsetWidth / 2;
-  }, []);
+  }, [width]);
   const picked = rungs.find((x) => x.ln === sel) ?? rungs[0];
   const imp = (o: number) => (o < 0 ? -o / (-o + 100) : 100 / (o + 100));
   const pr = Number.isFinite(picked.o) ? imp(picked.o) : null;
   const what = picked.main ? `Over ${picked.ln}` : `${Math.ceil(picked.ln)}+ ${unit.toLowerCase()}`;
   return (
-    <div className="border-y border-line/10 bg-panel2/40 py-2.5">
+    <div
+      className="sticky left-0 border-y border-line/10 bg-panel2/40 py-2.5"
+      style={width ? { width } : undefined}
+    >
       <div className="flex justify-between px-4 pb-1.5 font-mono text-[9px] uppercase tracking-wider text-faint">
         <span>◀ safer</span>
         <span>longer shot ▶</span>
