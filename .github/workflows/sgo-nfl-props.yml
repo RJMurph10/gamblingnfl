@@ -3,15 +3,22 @@ name: NFL prop prices (SportsGameOdds)
 # DraftKings over/under prices for every NFL player prop on the board (passing, rushing, receiving,
 # TDs, interceptions, combos), saved to props-site/nfl/odds-api next to The Odds API pulls.
 # Free plan: 2,500 events a month shared with the NHL period and college basketball pulls;
-# one game = one event. About 45 events a week:
-#   every morning: games in the next 30h (Thursday, Saturday, Sunday and Monday games on the day)
-#   Wednesday: the whole week, so prices show as soon as lines post
+# one game = one event. About 60 events a week:
+#   9:41am and 5:41pm Central: games in the next 30h (Thursday, Saturday, Sunday and Monday games on the day)
+#   plus any later game whose lines ESPN already shows without prices (priced once as soon as lines post)
+#   Wednesday morning: the whole week
 # Needs the repository secret SPORTSGAMEODDS_API_KEY; without it the job does nothing.
 
 on:
   schedule:
-    - cron: "41 15 * 1,2,9-12 *"
+    - cron: "41 15 * 1,2,9-12 *" # 9:41am Central
+    - cron: "41 23 * 1,2,9-12 *" # 5:41pm Central: prices for lines posted during the day
   workflow_dispatch:
+    inputs:
+      hours:
+        description: "Price every game starting in the next N hours"
+        required: false
+        default: ""
   push:
     branches: [sgo-props]
     paths: [scripts/line-history/sgo-nfl-props.trigger]
@@ -40,8 +47,16 @@ jobs:
           set -e
           if [ -z "$SPORTSGAMEODDS_API_KEY" ]; then echo "SPORTSGAMEODDS_API_KEY secret not set; skipping."; exit 0; fi
           HOURS=30
-          if [ "$(date -u +%u)" = "3" ]; then HOURS=132; fi
-          node app/scripts/line-history/sgo-nfl-props.mjs --out pull --hours $HOURS
+          if [ "$(date -u +%u)" = "3" ] && [ "$(date -u +%H)" = "15" ]; then HOURS=132; fi
+          if [ -n "${{ inputs.hours }}" ]; then HOURS="${{ inputs.hours }}"; fi
+          # later games ESPN already lists DraftKings lines for, with no saved prices yet: price them once now
+          ALSO=$(curl -sf https://raw.githubusercontent.com/${{ github.repository }}/props-site/nfl/upcoming.json \
+            | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const h=+process.argv[1];
+                const t=new Set();for(const g of JSON.parse(s||"[]")){const k=Date.parse(g.date);
+                if(k>Date.now()+h*36e5&&g.props.length&&!g.props.some(p=>p[4]!=null||p[5]!=null))t.add(new Date(k).toISOString())}
+                console.log([...t].join(","))})' $HOURS || true)
+          echo "unpriced later kickoffs: ${ALSO:-none}"
+          node app/scripts/line-history/sgo-nfl-props.mjs --out pull --hours $HOURS --also "$ALSO"
           if [ -z "$(ls pull 2>/dev/null)" ]; then echo "nothing pulled"; exit 0; fi
           url="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
           for attempt in 1 2 3 4 5; do

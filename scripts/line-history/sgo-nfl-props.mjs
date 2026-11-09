@@ -10,7 +10,8 @@
  * Only games that haven't kicked off (live lines are skipped). Keeps --keep events in reserve for the
  * other SportsGameOdds pulls (NHL periods, college basketball).
  *
- *   SPORTSGAMEODDS_API_KEY=... node scripts/line-history/sgo-nfl-props.mjs --out pull --hours 30
+ *   SPORTSGAMEODDS_API_KEY=... node scripts/line-history/sgo-nfl-props.mjs --out pull --hours 30 \
+ *     [--also 2026-11-13T01:15:00Z,...]   (later kickoffs whose posted lines have no prices yet)
  */
 import { mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
@@ -22,6 +23,9 @@ const opt = (n, d) => {
 };
 const OUT = opt("out", "pull");
 const HOURS = Number(opt("hours", "30"));
+// kickoff times (ISO, comma-separated) of later games whose lines are posted but not priced yet:
+// pulled once now so the board has prices as soon as lines go up, not just on game day
+const ALSO = (opt("also", "") || "").split(",").filter(Boolean);
 const KEEP = Number(opt("keep", "400"));
 const BOOK = opt("book", "draftkings");
 const KEY = process.env.SPORTSGAMEODDS_API_KEY;
@@ -120,40 +124,50 @@ async function main() {
   console.log(`month usage: ${usage ? `${usage.used}/${usage.max}` : "?"}`);
   const now = Date.now();
   const games = [];
-  let cursor = "";
-  for (let page = 0; page < 4; page += 1) {
-    // each event returned costs one; stop short of the reserve
-    const room = left == null ? 20 : Math.min(20, left - KEEP);
-    if (room <= 0) {
-      console.log(`stopping: ${left} events left this month (keeping ${KEEP})`);
-      break;
+  const seen = new Set();
+  const windows = [[now, now + HOURS * 3_600_000]];
+  for (const t of ALSO) {
+    const k = Date.parse(t);
+    if (Number.isFinite(k) && k > now + HOURS * 3_600_000) windows.push([k - 60_000, k + 60_000]);
+  }
+  for (const [after, before] of windows) {
+    let cursor = "";
+    for (let page = 0; page < 4; page += 1) {
+      // each event returned costs one; stop short of the reserve
+      const room = left == null ? 20 : Math.min(20, left - KEEP);
+      if (room <= 0) {
+        console.log(`stopping: ${left} events left this month (keeping ${KEEP})`);
+        break;
+      }
+      const q = new URLSearchParams({
+        leagueID: "NFL",
+        oddsAvailable: "true",
+        startsAfter: new Date(after).toISOString(),
+        startsBefore: new Date(before).toISOString(),
+        limit: String(room),
+        includeAltLines: "true",
+      });
+      if (cursor) q.set("cursor", cursor);
+      const r = await get(`/events/?${q}`);
+      const data = r?.data ?? [];
+      if (left != null) left -= data.length;
+      for (const e of data) {
+        if (seen.has(e.eventID)) continue;
+        seen.add(e.eventID);
+        const name = (t) => t?.names?.long ?? t?.names?.medium ?? t?.teamID ?? "";
+        const props = propsOf(e);
+        const alts = altsOf(e);
+        const g = {
+          home: name(e.teams?.home),
+          away: name(e.teams?.away),
+          commence: e.status?.startsAt,
+        };
+        console.log(`${g.away} @ ${g.home}: ${props.length} priced lines, ${alts.length} ladders`);
+        if (props.length) games.push({ ...g, at: new Date().toISOString(), props, alts });
+      }
+      cursor = r?.nextCursor ?? "";
+      if (!cursor) break;
     }
-    const q = new URLSearchParams({
-      leagueID: "NFL",
-      oddsAvailable: "true",
-      startsAfter: new Date(now).toISOString(),
-      startsBefore: new Date(now + HOURS * 3_600_000).toISOString(),
-      limit: String(room),
-      includeAltLines: "true",
-    });
-    if (cursor) q.set("cursor", cursor);
-    const r = await get(`/events/?${q}`);
-    const data = r?.data ?? [];
-    if (left != null) left -= data.length;
-    for (const e of data) {
-      const name = (t) => t?.names?.long ?? t?.names?.medium ?? t?.teamID ?? "";
-      const props = propsOf(e);
-      const alts = altsOf(e);
-      const g = {
-        home: name(e.teams?.home),
-        away: name(e.teams?.away),
-        commence: e.status?.startsAt,
-      };
-      console.log(`${g.away} @ ${g.home}: ${props.length} priced lines, ${alts.length} ladders`);
-      if (props.length) games.push({ ...g, at: new Date().toISOString(), props, alts });
-    }
-    cursor = r?.nextCursor ?? "";
-    if (!cursor) break;
   }
   if (!games.length) {
     console.log("nothing priced");
