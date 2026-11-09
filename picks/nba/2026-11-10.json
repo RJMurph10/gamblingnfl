@@ -1,0 +1,22 @@
+{
+ "day": "2026-11-10",
+ "updated": "2026-11-09T23:29:06.178Z",
+ "picks": [
+  {
+   "id": "401909961-spread",
+   "game": "BOS @ PHI",
+   "tip": "2026-11-11T01:00Z",
+   "market": "spread",
+   "pick": "BOS -1.5",
+   "line": -1.5,
+   "open": 1.5,
+   "model": -3,
+   "edge": 4.5,
+   "best": true,
+   "firstSeen": "2026-11-09T23:29:06.178Z",
+   "latest": -1.5,
+   "latestAt": "2026-11-09T23:29:06.178Z",
+   "alerted": false
+  }
+ ]
+}
