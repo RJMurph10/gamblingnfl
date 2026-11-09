@@ -377,16 +377,17 @@ function Upcoming({ league, tabs }: { league: PropLeague; tabs: ReactNode }) {
                 setGameId(g.id);
                 setMarket("All");
               }}
-              className={`shrink-0 rounded-lg px-3 py-2 text-left font-mono text-xs ring-1 transition ${
+              aria-label={`${g.away.name} at ${g.home.name}, ${g.props.length} props`}
+              className={`inline-flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-2 text-left font-mono text-xs ring-1 transition ${
                 g.id === game?.id
                   ? "bg-acc/10 text-acc ring-acc/30"
                   : "bg-panel2/40 text-mute ring-line/10 hover:text-acc"
               }`}
             >
-              <span className="font-semibold text-foreground">
-                {g.away.abbr} @ {g.home.abbr}
-              </span>
-              <span className="ml-2 text-[10px] text-faint" suppressHydrationWarning>
+              <PropTeam league={league} abbr={g.away.abbr} />
+              <span className="text-faint">@</span>
+              <PropTeam league={league} abbr={g.home.abbr} />
+              <span className="ml-1 text-[10px] text-faint" suppressHydrationWarning>
                 {kickoff(g.date)} · {g.props.length} props
               </span>
             </button>
