@@ -1,0 +1,863 @@
+{
+ "id": "401892684",
+ "league": "nhl",
+ "date": "2026-11-11T00:00Z",
+ "name": "MIN @ MTL",
+ "away": {
+  "id": "30",
+  "abbr": "MIN",
+  "name": "Minnesota Wild",
+  "score": 0
+ },
+ "home": {
+  "id": "10",
+  "abbr": "MTL",
+  "name": "Montreal Canadiens",
+  "score": 0
+ },
+ "neutral": false,
+ "venue": "Bell Centre",
+ "seasonType": 2,
+ "state": "pre",
+ "lines": {
+  "open": {
+   "at": "2026-11-09T18:52:46.049Z",
+   "scoreboard": [
+    {
+     "provider": {
+      "id": "100",
+      "name": "DraftKings",
+      "priority": 1
+     },
+     "details": "MIN -118",
+     "overUnder": 6.5,
+     "spread": 1.5,
+     "awayTeamOdds": {
+      "favorite": true,
+      "underdog": false,
+      "team": {
+       "id": "30",
+       "uid": "s:70~l:90~t:30",
+       "abbreviation": "MIN",
+       "name": "Wild",
+       "displayName": "Minnesota Wild",
+       "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/scoreboard/min.png"
+      },
+      "favoriteAtOpen": true
+     },
+     "homeTeamOdds": {
+      "favorite": false,
+      "underdog": true,
+      "team": {
+       "id": "10",
+       "uid": "s:70~l:90~t:10",
+       "abbreviation": "MTL",
+       "name": "Canadiens",
+       "displayName": "Montreal Canadiens",
+       "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/scoreboard/mtl.png"
+      },
+      "favoriteAtOpen": false
+     },
+     "moneyline": {
+      "displayName": "Moneyline",
+      "shortDisplayName": "ML",
+      "home": {
+       "close": {
+        "odds": "-102",
+        "link": {
+         "language": "en-US",
+         "rel": [
+          "home",
+          "desktop",
+          "bets",
+          "draftkings"
+         ],
+         "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34958207%3Foutcomes%3D0ML87095356_1",
+         "text": "Home Bet",
+         "shortText": "Home Bet",
+         "isExternal": true,
+         "isPremium": false,
+         "tracking": {
+          "campaign": "betting-integrations",
+          "tags": {
+           "league": "nhl",
+           "sport": "hockey",
+           "gameId": 401892684,
+           "betSide": "home",
+           "betType": "straight"
+          }
+         }
+        }
+       },
+       "open": {
+        "odds": "-102"
+       }
+      },
+      "away": {
+       "close": {
+        "odds": "-118",
+        "link": {
+         "language": "en-US",
+         "rel": [
+          "away",
+          "desktop",
+          "bets",
+          "draftkings"
+         ],
+         "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34958207%3Foutcomes%3D0ML87095356_3",
+         "text": "Away Bet",
+         "shortText": "Away Bet",
+         "isExternal": true,
+         "isPremium": false,
+         "tracking": {
+          "campaign": "betting-integrations",
+          "tags": {
+           "league": "nhl",
+           "sport": "hockey",
+           "gameId": 401892684,
+           "betSide": "away",
+           "betType": "straight"
+          }
+         }
+        }
+       },
+       "open": {
+        "odds": "-118"
+       }
+      }
+     },
+     "pointSpread": {
+      "displayName": "Spread",
+      "shortDisplayName": "Spread",
+      "home": {
+       "close": {
+        "line": "+1.5",
+        "odds": "-238",
+        "link": {
+         "language": "en-US",
+         "rel": [
+          "homeSpread",
+          "desktop",
+          "bets"
+         ],
+         "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34958207%3Foutcomes%3D0HC87095356P150_1",
+         "text": "Home Point Spread",
+         "shortText": "Home Point Spread",
+         "isExternal": true,
+         "isPremium": false,
+         "tracking": {
+          "campaign": "betting-integrations",
+          "tags": {
+           "league": "nhl",
+           "sport": "hockey",
+           "gameId": 401892684,
+           "betSide": "none",
+           "betType": "straight",
+           "betDetails": "Spread:MTL+1.5"
+          }
+         }
+        }
+       },
+       "open": {
+        "line": "+1.5",
+        "odds": "-238"
+       }
+      },
+      "away": {
+       "close": {
+        "line": "-1.5",
+        "odds": "+195",
+        "link": {
+         "language": "en-US",
+         "rel": [
+          "awaySpread",
+          "desktop",
+          "bets"
+         ],
+         "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34958207%3Foutcomes%3D0HC87095356N150_3",
+         "text": "Away Point Spread",
+         "shortText": "Away Point Spread",
+         "isExternal": true,
+         "isPremium": false,
+         "tracking": {
+          "campaign": "betting-integrations",
+          "tags": {
+           "league": "nhl",
+           "sport": "hockey",
+           "gameId": 401892684,
+           "betSide": "none",
+           "betType": "straight",
+           "betDetails": "Spread:MIN-1.5"
+          }
+         }
+        }
+       },
+       "open": {
+        "line": "-1.5",
+        "odds": "+195"
+       }
+      }
+     },
+     "total": {
+      "displayName": "Total",
+      "shortDisplayName": "Total",
+      "over": {
+       "close": {
+        "line": "o6.5",
+        "odds": "+105",
+        "link": {
+         "language": "en-US",
+         "rel": [
+          "over",
+          "desktop",
+          "bets"
+         ],
+         "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34958207%3Foutcomes%3D0OU87095356O650_1",
+         "text": "Over Odds",
+         "shortText": "Over Odds",
+         "isExternal": true,
+         "isPremium": false,
+         "tracking": {
+          "campaign": "betting-integrations",
+          "tags": {
+           "league": "nhl",
+           "sport": "hockey",
+           "gameId": 401892684,
+           "betSide": "over",
+           "betType": "straight",
+           "betDetails": "Over:6.5"
+          }
+         }
+        }
+       },
+       "open": {
+        "line": "o6.5",
+        "odds": "-102"
+       }
+      },
+      "under": {
+       "close": {
+        "line": "u6.5",
+        "odds": "-125",
+        "link": {
+         "language": "en-US",
+         "rel": [
+          "under",
+          "desktop",
+          "bets"
+         ],
+         "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34958207%3Foutcomes%3D0OU87095356U650_3",
+         "text": "Under Odds",
+         "shortText": "Under Odds",
+         "isExternal": true,
+         "isPremium": false,
+         "tracking": {
+          "campaign": "betting-integrations",
+          "tags": {
+           "league": "nhl",
+           "sport": "hockey",
+           "gameId": 401892684,
+           "betSide": "under",
+           "betType": "straight",
+           "betDetails": "Under:6.5"
+          }
+         }
+        }
+       },
+       "open": {
+        "line": "u6.5",
+        "odds": "-118"
+       }
+      }
+     },
+     "link": {
+      "language": "en-US",
+      "rel": [
+       "game",
+       "desktop",
+       "bets"
+      ],
+      "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F34958207",
+      "text": "See More Odds",
+      "shortText": "Game",
+      "isExternal": true,
+      "isPremium": false,
+      "tracking": {
+       "campaign": "betting-integrations",
+       "tags": {
+        "league": "nhl",
+        "sport": "hockey",
+        "gameId": 401892684,
+        "betSide": "none",
+        "betType": "straight"
+       }
+      }
+     },
+     "header": {
+      "logo": {
+       "dark": "https://a.espncdn.com/i/espnbet/dark/espn-bet-square-off.svg",
+       "light": "https://a.espncdn.com/i/espnbet/espn-bet-square-off.svg",
+       "exclusivesLogoDark": "https://a.espncdn.com/i/espnbet/espn-bet-square-mint.svg",
+       "exclusivesLogoLight": "https://a.espncdn.com/i/espnbet/espn-bet-square-mint.svg"
+      },
+      "text": "Game Odds"
+     },
+     "footer": {
+      "disclaimer": "GAMBLING PROBLEM? CALL 1-800-GAMBLER or 1-800-MY-RESET, (800) 327-5050 or visit gamblinghelplinema.org (MA). Call 877-8-HOPENY/text HOPENY (467369) (NY). Call 888-789-7777/visit ccpg.org (CT), or visit www.mdgamblinghelp.org (MD), 1-800-981-0023 (PR). 21+ and present in most states. (18+ DC/KY/NH/PR/WY). Void in ONT. Eligibility restrictions apply. Terms: draftkings.com/sportsbook. On behalf of Boot Hill Casino (KS). Pass-thru of per wager tax may apply in IL."
+     }
+    }
+   ],
+   "books": [
+    {
+     "provider": {
+      "id": "100",
+      "name": "Draft Kings",
+      "priority": 1
+     },
+     "details": "MIN -118",
+     "overUnder": 6.5,
+     "spread": 1.5,
+     "overOdds": 105,
+     "underOdds": -125,
+     "awayTeamOdds": {
+      "favorite": true,
+      "underdog": false,
+      "moneyLine": -118,
+      "spreadOdds": 195,
+      "open": {
+       "favorite": true,
+       "pointSpread": {
+        "alternateDisplayValue": "-1.5",
+        "american": "-1.5"
+       },
+       "spread": {
+        "value": 2.95,
+        "displayValue": "39/20",
+        "alternateDisplayValue": "+195",
+        "decimal": 2.95,
+        "fraction": "39/20",
+        "american": "+195"
+       },
+       "moneyLine": {
+        "value": 1.84,
+        "displayValue": "50/59",
+        "alternateDisplayValue": "-118",
+        "decimal": 1.84,
+        "fraction": "50/59",
+        "american": "-118"
+       }
+      },
+      "current": {
+       "pointSpread": {
+        "alternateDisplayValue": "-1.5",
+        "american": "-1.5"
+       },
+       "spread": {
+        "value": 2.95,
+        "displayValue": "39/20",
+        "alternateDisplayValue": "+195",
+        "decimal": 2.95,
+        "fraction": "39/20",
+        "american": "+195"
+       },
+       "moneyLine": {
+        "value": 1.84,
+        "displayValue": "50/59",
+        "alternateDisplayValue": "-118",
+        "decimal": 1.84,
+        "fraction": "50/59",
+        "american": "-118"
+       }
+      },
+      "team": {
+       "id": "30"
+      }
+     },
+     "homeTeamOdds": {
+      "favorite": false,
+      "underdog": true,
+      "moneyLine": -102,
+      "spreadOdds": -238,
+      "open": {
+       "favorite": false,
+       "pointSpread": {
+        "alternateDisplayValue": "+1.5",
+        "american": "+1.5"
+       },
+       "spread": {
+        "value": 1.42,
+        "displayValue": "50/119",
+        "alternateDisplayValue": "-238",
+        "decimal": 1.42,
+        "fraction": "50/119",
+        "american": "-238"
+       },
+       "moneyLine": {
+        "value": 1.98,
+        "displayValue": "50/51",
+        "alternateDisplayValue": "-102",
+        "decimal": 1.98,
+        "fraction": "50/51",
+        "american": "-102"
+       }
+      },
+      "current": {
+       "pointSpread": {
+        "alternateDisplayValue": "+1.5",
+        "american": "+1.5"
+       },
+       "spread": {
+        "value": 1.42,
+        "displayValue": "50/119",
+        "alternateDisplayValue": "-238",
+        "decimal": 1.42,
+        "fraction": "50/119",
+        "american": "-238"
+       },
+       "moneyLine": {
+        "value": 1.98,
+        "displayValue": "50/51",
+        "alternateDisplayValue": "-102",
+        "decimal": 1.98,
+        "fraction": "50/51",
+        "american": "-102"
+       }
+      },
+      "team": {
+       "id": "10"
+      }
+     },
+     "moneylineWinner": false,
+     "spreadWinner": false,
+     "open": {
+      "over": {
+       "value": 1.98,
+       "displayValue": "50/51",
+       "alternateDisplayValue": "-102",
+       "decimal": 1.98,
+       "fraction": "50/51",
+       "american": "-102"
+      },
+      "under": {
+       "value": 1.84,
+       "displayValue": "50/59",
+       "alternateDisplayValue": "-118",
+       "decimal": 1.84,
+       "fraction": "50/59",
+       "american": "-118"
+      },
+      "total": {
+       "alternateDisplayValue": "6.5",
+       "american": "6.5"
+      }
+     },
+     "current": {
+      "over": {
+       "value": 2.05,
+       "displayValue": "21/20",
+       "alternateDisplayValue": "+105",
+       "decimal": 2.05,
+       "fraction": "21/20",
+       "american": "+105"
+      },
+      "under": {
+       "value": 1.8,
+       "displayValue": "4/5",
+       "alternateDisplayValue": "-125",
+       "decimal": 1.8,
+       "fraction": "4/5",
+       "american": "-125"
+      },
+      "total": {
+       "alternateDisplayValue": "6.5",
+       "american": "6.5"
+      }
+     }
+    }
+   ]
+  }
+ },
+ "props": {
+  "open": {
+   "at": "2026-11-09T18:52:46.049Z",
+   "provider": 100,
+   "count": 45,
+   "rows": [
+  {"a":null,"tm":"10","t":"1st Period Moneyline","ti":"139","cur":[null,190,null]},
+  {"a":null,"tm":"30","t":"1st Period Moneyline","ti":"139","cur":[null,170,null]},
+  {"a":null,"t":"1st Period Moneyline","ti":"139","cur":[null,180,null]},
+  {"a":null,"tm":"10","t":"1st Period Spread","ti":"140","op":[0.5,null,null],"cur":[0.5,null,null],"px":[-215,-215]},
+  {"a":null,"tm":"30","t":"1st Period Spread","ti":"140","op":[-0.5,null,null],"cur":[-0.5,null,null],"px":[165,165]},
+  {"a":null,"t":"1st Period Total Goals","ti":"141","op":[1.5,null,null],"cur":[1.5,null,null],"px":[-130,-130]},
+  {"a":null,"t":"1st Period Total Goals","ti":"141","op":[1.5,null,null],"cur":[1.5,null,null],"px":[100,100]},
+  {"a":null,"tm":"10","t":"2nd Period Moneyline","ti":"142","cur":[null,185,null]},
+  {"a":null,"tm":"30","t":"2nd Period Moneyline","ti":"142","cur":[null,160,null]},
+  {"a":null,"t":"2nd Period Moneyline","ti":"142","cur":[null,195,null]},
+  {"a":null,"tm":"10","t":"2nd Period Spread","ti":"143","op":[0.5,null,null],"cur":[0.5,null,null],"px":[-200,-200]},
+  {"a":null,"tm":"30","t":"2nd Period Spread","ti":"143","op":[-0.5,null,null],"cur":[-0.5,null,null],"px":[154,154]},
+  {"a":null,"t":"2nd Period Total Goals","ti":"144","op":[1.5,null,null],"cur":[1.5,null,null],"px":[-188,-188]},
+  {"a":null,"t":"2nd Period Total Goals","ti":"144","op":[1.5,null,null],"cur":[1.5,null,null],"px":[145,145]},
+  {"a":null,"tm":"10","t":"3rd Period Moneyline","ti":"145","cur":[null,155,null]},
+  {"a":null,"tm":"30","t":"3rd Period Moneyline","ti":"145","cur":[null,145,null]},
+  {"a":null,"t":"3rd Period Moneyline","ti":"145","cur":[null,260,null]},
+  {"a":null,"tm":"10","t":"3rd Period Spread","ti":"146","op":[0.5,null,null],"cur":[0.5,null,null],"px":[-180,-180]},
+  {"a":null,"tm":"30","t":"3rd Period Spread","ti":"146","op":[-0.5,null,null],"cur":[-0.5,null,null],"px":[140,140]},
+  {"a":null,"t":"3rd Period Total Goals","ti":"147","op":[2.5,null,null],"cur":[2.5,null,null],"px":[135,135]},
+  {"a":null,"t":"3rd Period Total Goals","ti":"147","op":[2.5,null,null],"cur":[2.5,null,null],"px":[-175,-175]},
+  {"a":null,"tm":"10","t":"Team Total Goals (Excl OT)","ti":"151","op":[2.5,null,null],"cur":[1.5,null,null],"px":[-485,-175]},
+  {"a":null,"tm":"10","t":"Team Total Goals (Excl OT)","ti":"151","op":[2.5,null,null],"cur":[2.5,null,null],"px":[-170,-175]},
+  {"a":null,"tm":"10","t":"Team Total Goals (Excl OT)","ti":"151","op":[2.5,null,null],"cur":[3.5,null,null],"px":[140,-175]},
+  {"a":null,"tm":"10","t":"Team Total Goals (Excl OT)","ti":"151","op":[2.5,null,null],"cur":[4.5,null,null],"px":[310,-175]},
+  {"a":null,"tm":"10","t":"Team Total Goals (Excl OT)","ti":"151","op":[2.5,null,null],"cur":[0.5,null,null],"px":[-3500,-175]},
+  {"a":null,"tm":"10","t":"Team Total Goals (Excl OT)","ti":"151","op":[2.5,null,null],"cur":[5.5,null,null],"px":[700,-175]},
+  {"a":null,"tm":"10","t":"Team Total Goals (Excl OT)","ti":"151","op":[2.5,null,null],"cur":[1.5,null,null],"px":[320,135]},
+  {"a":null,"tm":"10","t":"Team Total Goals (Excl OT)","ti":"151","op":[2.5,null,null],"cur":[2.5,null,null],"px":[130,135]},
+  {"a":null,"tm":"10","t":"Team Total Goals (Excl OT)","ti":"151","op":[2.5,null,null],"cur":[3.5,null,null],"px":[-180,135]},
+  {"a":null,"tm":"10","t":"Team Total Goals (Excl OT)","ti":"151","op":[2.5,null,null],"cur":[4.5,null,null],"px":[-475,135]},
+  {"a":null,"tm":"10","t":"Team Total Goals (Excl OT)","ti":"151","op":[2.5,null,null],"cur":[5.5,null,null],"px":[-1400,135]},
+  {"a":null,"tm":"30","t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[1.5,null,null],"px":[-615,115]},
+  {"a":null,"tm":"30","t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[2.5,null,null],"px":[-200,115]},
+  {"a":null,"tm":"30","t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[3.5,null,null],"px":[120,115]},
+  {"a":null,"tm":"30","t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[4.5,null,null],"px":[270,115]},
+  {"a":null,"tm":"30","t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[0.5,null,null],"px":[-6000,115]},
+  {"a":null,"tm":"30","t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[5.5,null,null],"px":[650,115]},
+  {"a":null,"tm":"30","t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[2.5,null,null],"px":[150,-155]},
+  {"a":null,"tm":"30","t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[3.5,null,null],"px":[-160,-155]},
+  {"a":null,"tm":"30","t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[4.5,null,null],"px":[-400,-155]},
+  {"a":null,"tm":"30","t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[5.5,null,null],"px":[-1300,-155]},
+  {"a":null,"t":"Both Teams To Score","ti":"152","cur":[null,-1600,null]},
+  {"a":null,"t":"Both Teams To Score","ti":"152","cur":[null,650,null]},
+  {"a":null,"t":"Will There Be Overtime?","ti":"153","cur":[null,280,null]}
+ ],
+   "sample": [
+    {
+     "competition": {
+      "id": "401892684"
+     },
+     "team": {
+      "id": "10"
+     },
+     "provider": {
+      "id": "100"
+     },
+     "type": {
+      "id": "139",
+      "name": "1st Period Moneyline"
+     },
+     "odds": {
+      "american": {
+       "value": "+190",
+       "open": "+185"
+      },
+      "decimal": {
+       "value": "2.90",
+       "open": "2.85"
+      },
+      "fraction": {
+       "value": "19/10",
+       "open": "37/20"
+      },
+      "total": {}
+     },
+     "lastUpdated": "2026-11-09T20:25Z",
+     "current": {},
+     "open": {}
+    },
+    {
+     "competition": {
+      "id": "401892684"
+     },
+     "team": {
+      "id": "30"
+     },
+     "provider": {
+      "id": "100"
+     },
+     "type": {
+      "id": "139",
+      "name": "1st Period Moneyline"
+     },
+     "odds": {
+      "american": {
+       "value": "+170",
+       "open": "+170"
+      },
+      "decimal": {
+       "value": "2.70",
+       "open": "2.70"
+      },
+      "fraction": {
+       "value": "17/10",
+       "open": "17/10"
+      },
+      "total": {}
+     },
+     "lastUpdated": "2026-11-09T20:25Z",
+     "current": {},
+     "open": {}
+    }
+   ]
+  },
+  "latest": {
+   "at": "2026-11-09T18:52:46.049Z",
+   "count": 45,
+   "rows": [
+  {"a":null,"tm":"10","t":"1st Period Moneyline","ti":"139","cur":[null,190,null]},
+  {"a":null,"tm":"30","t":"1st Period Moneyline","ti":"139","cur":[null,170,null]},
+  {"a":null,"t":"1st Period Moneyline","ti":"139","cur":[null,180,null]},
+  {"a":null,"tm":"10","t":"1st Period Spread","ti":"140","op":[0.5,null,null],"cur":[0.5,null,null],"px":[-215,-215]},
+  {"a":null,"tm":"30","t":"1st Period Spread","ti":"140","op":[-0.5,null,null],"cur":[-0.5,null,null],"px":[165,165]},
+  {"a":null,"t":"1st Period Total Goals","ti":"141","op":[1.5,null,null],"cur":[1.5,null,null],"px":[-130,-130]},
+  {"a":null,"t":"1st Period Total Goals","ti":"141","op":[1.5,null,null],"cur":[1.5,null,null],"px":[100,100]},
+  {"a":null,"tm":"10","t":"2nd Period Moneyline","ti":"142","cur":[null,185,null]},
+  {"a":null,"tm":"30","t":"2nd Period Moneyline","ti":"142","cur":[null,160,null]},
+  {"a":null,"t":"2nd Period Moneyline","ti":"142","cur":[null,195,null]},
+  {"a":null,"tm":"10","t":"2nd Period Spread","ti":"143","op":[0.5,null,null],"cur":[0.5,null,null],"px":[-200,-200]},
+  {"a":null,"tm":"30","t":"2nd Period Spread","ti":"143","op":[-0.5,null,null],"cur":[-0.5,null,null],"px":[154,154]},
+  {"a":null,"t":"2nd Period Total Goals","ti":"144","op":[1.5,null,null],"cur":[1.5,null,null],"px":[-188,-188]},
+  {"a":null,"t":"2nd Period Total Goals","ti":"144","op":[1.5,null,null],"cur":[1.5,null,null],"px":[145,145]},
+  {"a":null,"tm":"10","t":"3rd Period Moneyline","ti":"145","cur":[null,155,null]},
+  {"a":null,"tm":"30","t":"3rd Period Moneyline","ti":"145","cur":[null,145,null]},
+  {"a":null,"t":"3rd Period Moneyline","ti":"145","cur":[null,260,null]},
+  {"a":null,"tm":"10","t":"3rd Period Spread","ti":"146","op":[0.5,null,null],"cur":[0.5,null,null],"px":[-180,-180]},
+  {"a":null,"tm":"30","t":"3rd Period Spread","ti":"146","op":[-0.5,null,null],"cur":[-0.5,null,null],"px":[140,140]},
+  {"a":null,"t":"3rd Period Total Goals","ti":"147","op":[2.5,null,null],"cur":[2.5,null,null],"px":[135,135]},
+  {"a":null,"t":"3rd Period Total Goals","ti":"147","op":[2.5,null,null],"cur":[2.5,null,null],"px":[-175,-175]},
+  {"a":null,"tm":"10","t":"Team Total Goals (Excl OT)","ti":"151","op":[2.5,null,null],"cur":[1.5,null,null],"px":[-485,-175]},
+  {"a":null,"tm":"10","t":"Team Total Goals (Excl OT)","ti":"151","op":[2.5,null,null],"cur":[2.5,null,null],"px":[-170,-175]},
+  {"a":null,"tm":"10","t":"Team Total Goals (Excl OT)","ti":"151","op":[2.5,null,null],"cur":[3.5,null,null],"px":[140,-175]},
+  {"a":null,"tm":"10","t":"Team Total Goals (Excl OT)","ti":"151","op":[2.5,null,null],"cur":[4.5,null,null],"px":[310,-175]},
+  {"a":null,"tm":"10","t":"Team Total Goals (Excl OT)","ti":"151","op":[2.5,null,null],"cur":[0.5,null,null],"px":[-3500,-175]},
+  {"a":null,"tm":"10","t":"Team Total Goals (Excl OT)","ti":"151","op":[2.5,null,null],"cur":[5.5,null,null],"px":[700,-175]},
+  {"a":null,"tm":"10","t":"Team Total Goals (Excl OT)","ti":"151","op":[2.5,null,null],"cur":[1.5,null,null],"px":[320,135]},
+  {"a":null,"tm":"10","t":"Team Total Goals (Excl OT)","ti":"151","op":[2.5,null,null],"cur":[2.5,null,null],"px":[130,135]},
+  {"a":null,"tm":"10","t":"Team Total Goals (Excl OT)","ti":"151","op":[2.5,null,null],"cur":[3.5,null,null],"px":[-180,135]},
+  {"a":null,"tm":"10","t":"Team Total Goals (Excl OT)","ti":"151","op":[2.5,null,null],"cur":[4.5,null,null],"px":[-475,135]},
+  {"a":null,"tm":"10","t":"Team Total Goals (Excl OT)","ti":"151","op":[2.5,null,null],"cur":[5.5,null,null],"px":[-1400,135]},
+  {"a":null,"tm":"30","t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[1.5,null,null],"px":[-615,115]},
+  {"a":null,"tm":"30","t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[2.5,null,null],"px":[-200,115]},
+  {"a":null,"tm":"30","t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[3.5,null,null],"px":[120,115]},
+  {"a":null,"tm":"30","t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[4.5,null,null],"px":[270,115]},
+  {"a":null,"tm":"30","t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[0.5,null,null],"px":[-6000,115]},
+  {"a":null,"tm":"30","t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[5.5,null,null],"px":[650,115]},
+  {"a":null,"tm":"30","t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[2.5,null,null],"px":[150,-155]},
+  {"a":null,"tm":"30","t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[3.5,null,null],"px":[-160,-155]},
+  {"a":null,"tm":"30","t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[4.5,null,null],"px":[-400,-155]},
+  {"a":null,"tm":"30","t":"Team Total Goals (Excl OT)","ti":"151","op":[3.5,null,null],"cur":[5.5,null,null],"px":[-1300,-155]},
+  {"a":null,"t":"Both Teams To Score","ti":"152","cur":[null,-1600,null]},
+  {"a":null,"t":"Both Teams To Score","ti":"152","cur":[null,650,null]},
+  {"a":null,"t":"Will There Be Overtime?","ti":"153","cur":[null,280,null]}
+ ]
+  }
+ },
+ "names": {
+  "3535": [
+   "Nick Foligno",
+   "MIN"
+  ],
+  "4002": [
+   "Zach Bogosian",
+   "MIN"
+  ],
+  "5079": [
+   "Jared Spurgeon",
+   "MIN"
+  ],
+  "5172": [
+   "Marcus Foligno",
+   "MIN"
+  ],
+  "5524": [
+   "Calvin Pickard",
+   "MIN"
+  ],
+  "5526": [
+   "Tyler Pitlick",
+   "MIN"
+  ],
+  "5833": [
+   "Chris Kreider",
+   "MTL"
+  ],
+  "2562600": [
+   "Jonas Brodin",
+   "MIN"
+  ],
+  "2562602": [
+   "Phillip Danault",
+   "MTL"
+  ],
+  "2563026": [
+   "Blake Coleman",
+   "MIN"
+  ],
+  "2976850": [
+   "Olli Maatta",
+   "MIN"
+  ],
+  "2976851": [
+   "Mike Matheson",
+   "MTL"
+  ],
+  "3042048": [
+   "Michael McCarron",
+   "MIN"
+  ],
+  "3042063": [
+   "Ryan Hartman",
+   "MIN"
+  ],
+  "3069687": [
+   "Josh Anderson",
+   "MTL"
+  ],
+  "3904091": [
+   "Joel Eriksson Ek",
+   "MIN"
+  ],
+  "3904188": [
+   "Yakov Trenin",
+   "MIN"
+  ],
+  "3942064": [
+   "Alexandre Carrier",
+   "MTL"
+  ],
+  "3942335": [
+   "Kirill Kaprizov",
+   "MIN"
+  ],
+  "3942714": [
+   "Sam Montembeault",
+   "MTL"
+  ],
+  "4233594": [
+   "Nick Suzuki",
+   "MTL"
+  ],
+  "4233880": [
+   "Alexandre Texier",
+   "MTL"
+  ],
+  "4320548": [
+   "Quinn Hughes",
+   "MIN"
+  ],
+  "4320625": [
+   "Nico Sturm",
+   "MIN"
+  ],
+  "4352732": [
+   "Noah Dobson",
+   "MTL"
+  ],
+  "4393049": [
+   "Jake Evans",
+   "MTL"
+  ],
+  "4565224": [
+   "Kirby Dach",
+   "MTL"
+  ],
+  "4565233": [
+   "Matt Boldy",
+   "MIN"
+  ],
+  "4565236": [
+   "Cole Caufield",
+   "MTL"
+  ],
+  "4565237": [
+   "Alex Newhook",
+   "MTL"
+  ],
+  "4565257": [
+   "Bobby Brink",
+   "MIN"
+  ],
+  "4587571": [
+   "Cameron Crotty",
+   "MIN"
+  ],
+  "4697399": [
+   "Kaiden Guhle",
+   "MTL"
+  ],
+  "4697449": [
+   "Brock Faber",
+   "MIN"
+  ],
+  "4697686": [
+   "Jakub Dobes",
+   "MTL"
+  ],
+  "4799741": [
+   "Matt Kiersted",
+   "MIN"
+  ],
+  "4874734": [
+   "Zack Bolduc",
+   "MTL"
+  ],
+  "4874737": [
+   "Jesper Wallstedt",
+   "MIN"
+  ],
+  "4874943": [
+   "Oliver Kapanen",
+   "MTL"
+  ],
+  "4893969": [
+   "Arber Xhekaj",
+   "MTL"
+  ],
+  "4915349": [
+   "Juraj Slafkovsky",
+   "MTL"
+  ],
+  "5080172": [
+   "Danila Yurov",
+   "MIN"
+  ],
+  "5080202": [
+   "Owen Beck",
+   "MTL"
+  ],
+  "5080230": [
+   "Lane Hutson",
+   "MTL"
+  ],
+  "5103533": [
+   "David Spacek",
+   "MIN"
+  ],
+  "5149196": [
+   "Charlie Stramel",
+   "MIN"
+  ],
+  "5188437": [
+   "Jacob Fowler",
+   "MTL"
+  ],
+  "5188450": [
+   "Adam Engstrom",
+   "MTL"
+  ],
+  "5188457": [
+   "Florian Xhekaj",
+   "MTL"
+  ],
+  "5216860": [
+   "Ivan Demidov",
+   "MTL"
+  ],
+  "5275403": [
+   "Viking Gustafsson Nyberg",
+   "MIN"
+  ],
+  "5302535": [
+   "Maxim Shabanov",
+   "MIN"
+  ]
+ }
+}

@@ -477,5 +477,703 @@
    ]
   }
  },
- "props": {}
+ "props": {
+  "open": {
+   "at": "2026-11-09T18:52:46.049Z",
+   "provider": 100,
+   "count": 12,
+   "rows": [
+  {"a":null,"t":"1st Half Total","ti":"72","op":[24.5,null,null],"cur":[23.5,null,null]},
+  {"a":null,"t":"1st Half Total","ti":"72","op":[24.5,null,null],"cur":[23.5,null,null]},
+  {"a":null,"tm":"4","t":"1st Half Moneyline","ti":"73"},
+  {"a":null,"tm":"23","t":"1st Half Moneyline","ti":"73"},
+  {"a":null,"tm":"4","t":"1st Half Spread","ti":"74","op":[-1.5,null,null],"cur":[-2.5,null,null]},
+  {"a":null,"tm":"23","t":"1st Half Spread","ti":"74","op":[1.5,null,null],"cur":[2.5,null,null]},
+  {"a":null,"t":"1st Quarter Total","ti":"75","op":[9.5,null,null],"cur":[9.5,null,null]},
+  {"a":null,"t":"1st Quarter Total","ti":"75","op":[9.5,null,null],"cur":[9.5,null,null]},
+  {"a":null,"tm":"4","t":"1st Quarter Moneyline","ti":"76"},
+  {"a":null,"tm":"23","t":"1st Quarter Moneyline","ti":"76"},
+  {"a":null,"tm":"4","t":"1st Quarter Spread","ti":"77","op":[-0.5,null,null],"cur":[-0.5,null,null]},
+  {"a":null,"tm":"23","t":"1st Quarter Spread","ti":"77","op":[0.5,null,null],"cur":[0.5,null,null]}
+ ],
+   "sample": [
+    {
+     "competition": {
+      "id": "401873064"
+     },
+     "provider": {
+      "id": "100"
+     },
+     "type": {
+      "id": "72",
+      "name": "1st Half Total"
+     },
+     "lastUpdated": "2026-11-09T17:36Z",
+     "current": {
+      "target": {
+       "value": 23.5,
+       "displayValue": "23.5"
+      }
+     },
+     "open": {
+      "target": {
+       "value": 24.5,
+       "displayValue": "24.5"
+      }
+     }
+    },
+    {
+     "competition": {
+      "id": "401873064"
+     },
+     "provider": {
+      "id": "100"
+     },
+     "type": {
+      "id": "72",
+      "name": "1st Half Total"
+     },
+     "lastUpdated": "2026-11-09T17:36Z",
+     "current": {
+      "target": {
+       "value": 23.5,
+       "displayValue": "23.5"
+      }
+     },
+     "open": {
+      "target": {
+       "value": 24.5,
+       "displayValue": "24.5"
+      }
+     }
+    }
+   ]
+  }
+ },
+ "names": {
+  "8439": [
+   "Aaron Rodgers",
+   "PIT"
+  ],
+  "11252": [
+   "Joe Flacco",
+   "CIN"
+  ],
+  "11394": [
+   "Josh Johnson",
+   "CIN"
+  ],
+  "13977": [
+   "Cameron Heyward",
+   "PIT"
+  ],
+  "17372": [
+   "Chris Boswell",
+   "PIT"
+  ],
+  "2576188": [
+   "Ted Karras",
+   "CIN"
+  ],
+  "2975674": [
+   "Robert Tonyan",
+   "PIT"
+  ],
+  "2978524": [
+   "Christian Kuntz",
+   "PIT"
+  ],
+  "2987743": [
+   "Elandon Roberts",
+   "PIT"
+  ],
+  "3045282": [
+   "T.J. Watt",
+   "PIT"
+  ],
+  "3045373": [
+   "Jalen Ramsey",
+   "PIT"
+  ],
+  "3047495": [
+   "Sebastian Joseph-Day",
+   "PIT"
+  ],
+  "3050481": [
+   "Tanner Hudson",
+   "CIN"
+  ],
+  "3051397": [
+   "Cameron Johnston",
+   "PIT"
+  ],
+  "3051738": [
+   "Marquez Valdes-Scantling",
+   "PIT"
+  ],
+  "3051746": [
+   "Oren Burks",
+   "CIN"
+  ],
+  "3054840": [
+   "Jonathan Allen",
+   "CIN"
+  ],
+  "3116164": [
+   "Mike Gesicki",
+   "CIN"
+  ],
+  "3116370": [
+   "Orlando Brown Jr.",
+   "CIN"
+  ],
+  "3116389": [
+   "Samaje Perine",
+   "CIN"
+  ],
+  "3116407": [
+   "Mason Rudolph",
+   "PIT"
+  ],
+  "3116689": [
+   "Cole Holcomb",
+   "PIT"
+  ],
+  "3116748": [
+   "B.J. Hill",
+   "CIN"
+  ],
+  "3125082": [
+   "Dalton Risner",
+   "CIN"
+  ],
+  "3125356": [
+   "Jalen Davis",
+   "CIN"
+  ],
+  "3127310": [
+   "Drew Sample",
+   "CIN"
+  ],
+  "3873935": [
+   "Jamel Dean",
+   "PIT"
+  ],
+  "3915511": [
+   "Joe Burrow",
+   "CIN"
+  ],
+  "3917797": [
+   "Joe Giles-Harris",
+   "CIN"
+  ],
+  "3929846": [
+   "DeShon Elliott",
+   "PIT"
+  ],
+  "3932668": [
+   "Jack Driscoll",
+   "PIT"
+  ],
+  "3932886": [
+   "Sean Murphy-Bunting",
+   "PIT"
+  ],
+  "4035198": [
+   "Brandon Johnson",
+   "PIT"
+  ],
+  "4035253": [
+   "Ryan McCollum",
+   "PIT"
+  ],
+  "4035483": [
+   "Dexter Lawrence II",
+   "CIN"
+  ],
+  "4035656": [
+   "Ben Skowronek",
+   "PIT"
+  ],
+  "4035687": [
+   "Michael Pittman Jr.",
+   "PIT"
+  ],
+  "4037333": [
+   "Alex Highsmith",
+   "PIT"
+  ],
+  "4037457": [
+   "Travis Homer",
+   "PIT"
+  ],
+  "4038815": [
+   "Rico Dowdle",
+   "PIT"
+  ],
+  "4047650": [
+   "DK Metcalf",
+   "PIT"
+  ],
+  "4239993": [
+   "Tee Higgins",
+   "CIN"
+  ],
+  "4240071": [
+   "Russ Yeast",
+   "CIN"
+  ],
+  "4240434": [
+   "Ja'Sir Taylor",
+   "CIN"
+  ],
+  "4240577": [
+   "Brandon Smith",
+   "PIT"
+  ],
+  "4240612": [
+   "T.J. Slaton Jr.",
+   "CIN"
+  ],
+  "4240754": [
+   "Boye Mafe",
+   "CIN"
+  ],
+  "4240759": [
+   "Esezi Otomewo",
+   "PIT"
+  ],
+  "4241087": [
+   "Brock Hoffman",
+   "PIT"
+  ],
+  "4242207": [
+   "Patrick Queen",
+   "PIT"
+  ],
+  "4242540": [
+   "Isaiah Hodgins",
+   "PIT"
+  ],
+  "4247726": [
+   "Bryan Cook",
+   "CIN"
+  ],
+  "4248899": [
+   "Marte Mapu",
+   "PIT"
+  ],
+  "4259592": [
+   "Sean Clifford",
+   "CIN"
+  ],
+  "4360234": [
+   "Evan McPherson",
+   "CIN"
+  ],
+  "4360308": [
+   "KJ Henry",
+   "PIT"
+  ],
+  "4360935": [
+   "Terell Smith",
+   "PIT"
+  ],
+  "4361411": [
+   "Pat Freiermuth",
+   "PIT"
+  ],
+  "4361437": [
+   "Emany Johnson",
+   "CIN"
+  ],
+  "4361652": [
+   "Payton Wilson",
+   "PIT"
+  ],
+  "4362238": [
+   "Chase Brown",
+   "CIN"
+  ],
+  "4362502": [
+   "DJ Ivey",
+   "CIN"
+  ],
+  "4362628": [
+   "Ja'Marr Chase",
+   "CIN"
+  ],
+  "4362769": [
+   "Javon Foster",
+   "CIN"
+  ],
+  "4362858": [
+   "Darius Rush",
+   "PIT"
+  ],
+  "4363034": [
+   "Asante Samuel Jr.",
+   "PIT"
+  ],
+  "4365319": [
+   "Josh Newton",
+   "CIN"
+  ],
+  "4368003": [
+   "Andrei Iosivas",
+   "CIN"
+  ],
+  "4368304": [
+   "Mason McCormick",
+   "PIT"
+  ],
+  "4372056": [
+   "Spencer Anderson",
+   "PIT"
+  ],
+  "4372098": [
+   "Julius Welschof",
+   "PIT"
+  ],
+  "4373830": [
+   "Steven Jones",
+   "PIT"
+  ],
+  "4384852": [
+   "Dohnte Meyers",
+   "CIN"
+  ],
+  "4401811": [
+   "Kyle Dugger",
+   "CIN"
+  ],
+  "4426368": [
+   "Doug Nester",
+   "PIT"
+  ],
+  "4426422": [
+   "Dax Hill",
+   "CIN"
+  ],
+  "4426457": [
+   "Isaiah Foskey",
+   "CIN"
+  ],
+  "4426513": [
+   "Trikweze Bridges",
+   "CIN"
+  ],
+  "4426694": [
+   "Keeanu Benton",
+   "PIT"
+  ],
+  "4426882": [
+   "Sebastian Castro",
+   "PIT"
+  ],
+  "4426992": [
+   "Howard Cross III",
+   "CIN"
+  ],
+  "4427170": [
+   "Troy Fautanu",
+   "PIT"
+  ],
+  "4427716": [
+   "Jack Kiser",
+   "CIN"
+  ],
+  "4427729": [
+   "Demetrius Knight Jr.",
+   "CIN"
+  ],
+  "4427834": [
+   "Erick All Jr.",
+   "CIN"
+  ],
+  "4428119": [
+   "Lew Nichols",
+   "PIT"
+  ],
+  "4428304": [
+   "Garmon Randolph",
+   "CIN"
+  ],
+  "4428909": [
+   "Jacoby Windmon",
+   "PIT"
+  ],
+  "4428985": [
+   "Myles Murphy",
+   "CIN"
+  ],
+  "4429000": [
+   "Myles Hinton",
+   "CIN"
+  ],
+  "4429010": [
+   "Jalen Rivers",
+   "CIN"
+  ],
+  "4429012": [
+   "Kendall Milton",
+   "CIN"
+  ],
+  "4429164": [
+   "Nick Herbig",
+   "PIT"
+  ],
+  "4429291": [
+   "Beau Brade",
+   "CIN"
+  ],
+  "4429299": [
+   "Tahj Brooks",
+   "CIN"
+  ],
+  "4429490": [
+   "Carson Bruener",
+   "PIT"
+  ],
+  "4429743": [
+   "Daequan Hardy",
+   "PIT"
+  ],
+  "4429775": [
+   "Zach Frazier",
+   "PIT"
+  ],
+  "4429946": [
+   "PJ Jules",
+   "CIN"
+  ],
+  "4429955": [
+   "Will Howard",
+   "PIT"
+  ],
+  "4430065": [
+   "Cedric Johnson",
+   "CIN"
+  ],
+  "4430802": [
+   "Darnell Washington",
+   "PIT"
+  ],
+  "4430947": [
+   "Yahya Black",
+   "PIT"
+  ],
+  "4430992": [
+   "Kentrel Bullock",
+   "CIN"
+  ],
+  "4431258": [
+   "Gennings Dunker",
+   "PIT"
+  ],
+  "4431492": [
+   "Roman Wilson",
+   "PIT"
+  ],
+  "4431519": [
+   "Barrett Carter",
+   "CIN"
+  ],
+  "4431533": [
+   "Gabriel Rubio",
+   "PIT"
+  ],
+  "4431571": [
+   "Amarius Mims",
+   "CIN"
+  ],
+  "4431590": [
+   "Jack Sawyer",
+   "PIT"
+  ],
+  "4432301": [
+   "Kris Jenkins Jr.",
+   "CIN"
+  ],
+  "4566198": [
+   "Lake McRee",
+   "PIT"
+  ],
+  "4567098": [
+   "Jordan Battle",
+   "CIN"
+  ],
+  "4567979": [
+   "Brandin Echols",
+   "PIT"
+  ],
+  "4569474": [
+   "Logan Lee",
+   "PIT"
+  ],
+  "4569987": [
+   "Jaylen Warren",
+   "PIT"
+  ],
+  "4570044": [
+   "Jaquan Brisker",
+   "PIT"
+  ],
+  "4570546": [
+   "Swayze Bozeman",
+   "CIN"
+  ],
+  "4570738": [
+   "Ke'Shawn Williams",
+   "CIN"
+  ],
+  "4570898": [
+   "Dylan Cook",
+   "PIT"
+  ],
+  "4572036": [
+   "DJ Turner II",
+   "CIN"
+  ],
+  "4572051": [
+   "William Wagner",
+   "CIN"
+  ],
+  "4573443": [
+   "Kyler Baugh",
+   "PIT"
+  ],
+  "4575559": [
+   "Bralyn Lux",
+   "CIN"
+  ],
+  "4594444": [
+   "Jordan Moore",
+   "CIN"
+  ],
+  "4608004": [
+   "Donte Kent",
+   "PIT"
+  ],
+  "4608820": [
+   "Ryan Rehkow",
+   "CIN"
+  ],
+  "4646773": [
+   "Dylan Fairchild",
+   "CIN"
+  ],
+  "4682980": [
+   "Derrick Harmon",
+   "PIT"
+  ],
+  "4685261": [
+   "Germie Bernard",
+   "PIT"
+  ],
+  "4685327": [
+   "Daylen Everette",
+   "PIT"
+  ],
+  "4685562": [
+   "Shemar Stewart",
+   "CIN"
+  ],
+  "4687509": [
+   "Caden Prieskorn",
+   "CIN"
+  ],
+  "4689117": [
+   "Brian Parker II",
+   "CIN"
+  ],
+  "4690070": [
+   "Mitchell Tinsley",
+   "CIN"
+  ],
+  "4692628": [
+   "Doneiko Slaughter",
+   "PIT"
+  ],
+  "4693370": [
+   "Riley Nowakowski",
+   "PIT"
+  ],
+  "4694237": [
+   "Max Hurleman",
+   "PIT"
+  ],
+  "4700712": [
+   "Cam Grandy",
+   "CIN"
+  ],
+  "4710752": [
+   "Cashius Howell",
+   "CIN"
+  ],
+  "4714771": [
+   "Drew Allar",
+   "PIT"
+  ],
+  "4718457": [
+   "Noah Thomas",
+   "CIN"
+  ],
+  "4726127": [
+   "Tacario Davis",
+   "CIN"
+  ],
+  "4819215": [
+   "Josh Kattus",
+   "CIN"
+  ],
+  "4820584": [
+   "Robert Spears-Jennings",
+   "PIT"
+  ],
+  "4870866": [
+   "Connor Lew",
+   "CIN"
+  ],
+  "4879478": [
+   "Jacob Bayer",
+   "CIN"
+  ],
+  "4917486": [
+   "Car'lin Vigers",
+   "PIT"
+  ],
+  "5081338": [
+   "Kaden Wetjen",
+   "PIT"
+  ],
+  "5081508": [
+   "Eli Heidenreich",
+   "PIT"
+  ],
+  "5081542": [
+   "Landon Robinson",
+   "CIN"
+  ],
+  "5084849": [
+   "Kevin Jobity Jr.",
+   "PIT"
+  ],
+  "5085189": [
+   "Jack Endries",
+   "CIN"
+  ],
+  "5092508": [
+   "Colbie Young",
+   "CIN"
+  ],
+  "5150136": [
+   "Max Iheanachor",
+   "PIT"
+  ],
+  "5192448": [
+   "Cole Burgess",
+   "PIT"
+  ]
+ }
 }

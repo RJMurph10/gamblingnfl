@@ -477,5 +477,724 @@
    ]
   }
  },
- "props": {}
+ "props": {
+  "open": {
+   "at": "2026-11-09T18:52:46.049Z",
+   "provider": 100,
+   "count": 19,
+   "rows": [
+  {"a":"3916148","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"3916433","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4430539","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4432620","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4569587","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4871023","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4882093","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":null,"t":"1st Half Total","ti":"72","op":[23.5,null,null],"cur":[23.5,null,null]},
+  {"a":null,"t":"1st Half Total","ti":"72","op":[23.5,null,null],"cur":[23.5,null,null]},
+  {"a":null,"tm":"10","t":"1st Half Moneyline","ti":"73"},
+  {"a":null,"tm":"30","t":"1st Half Moneyline","ti":"73"},
+  {"a":null,"tm":"10","t":"1st Half Spread","ti":"74","op":[5.5,null,null],"cur":[6.5,null,null]},
+  {"a":null,"tm":"30","t":"1st Half Spread","ti":"74","op":[-5.5,null,null],"cur":[-6.5,null,null]},
+  {"a":null,"t":"1st Quarter Total","ti":"75","op":[9.5,null,null],"cur":[9.5,null,null]},
+  {"a":null,"t":"1st Quarter Total","ti":"75","op":[9.5,null,null],"cur":[9.5,null,null]},
+  {"a":null,"tm":"10","t":"1st Quarter Moneyline","ti":"76"},
+  {"a":null,"tm":"30","t":"1st Quarter Moneyline","ti":"76"},
+  {"a":null,"tm":"10","t":"1st Quarter Spread","ti":"77","op":[2.5,null,null],"cur":[2.5,null,null]},
+  {"a":null,"tm":"30","t":"1st Quarter Spread","ti":"77","op":[-2.5,null,null],"cur":[-2.5,null,null]}
+ ],
+   "sample": [
+    {
+     "competition": {
+      "id": "401873057"
+     },
+     "athlete": {
+      "id": "3916148"
+     },
+     "provider": {
+      "id": "100"
+     },
+     "type": {
+      "id": "31",
+      "name": "Anytime Touchdown Scorer"
+     },
+     "lastUpdated": "2026-11-09T17:19Z",
+     "current": {},
+     "open": {}
+    },
+    {
+     "competition": {
+      "id": "401873057"
+     },
+     "athlete": {
+      "id": "3916433"
+     },
+     "provider": {
+      "id": "100"
+     },
+     "type": {
+      "id": "31",
+      "name": "Anytime Touchdown Scorer"
+     },
+     "lastUpdated": "2026-11-09T17:29Z",
+     "current": {},
+     "open": {}
+    }
+   ]
+  }
+ },
+ "names": {
+  "12701": [
+   "Thomas Morstead",
+   "TEN"
+  ],
+  "13848": [
+   "Morgan Cox",
+   "TEN"
+  ],
+  "2576336": [
+   "Ameer Abdullah",
+   "JAX"
+  ],
+  "2970716": [
+   "Eric Murray",
+   "JAX"
+  ],
+  "2971275": [
+   "Arik Armstead",
+   "JAX"
+  ],
+  "2979591": [
+   "Austin Johnson",
+   "JAX"
+  ],
+  "2982313": [
+   "Tanoh Kpassagnon",
+   "TEN"
+  ],
+  "3039707": [
+   "Mitchell Trubisky",
+   "TEN"
+  ],
+  "3045207": [
+   "Jourdan Lewis",
+   "JAX"
+  ],
+  "3050073": [
+   "Foyesade Oluokun",
+   "JAX"
+  ],
+  "3059989": [
+   "Nick Mullens",
+   "JAX"
+  ],
+  "3115480": [
+   "Logan Cooke",
+   "JAX"
+  ],
+  "3117258": [
+   "Solomon Thomas",
+   "TEN"
+  ],
+  "3120464": [
+   "John Franklin-Myers",
+   "TEN"
+  ],
+  "3121414": [
+   "Jalyn Holmes",
+   "TEN"
+  ],
+  "3124084": [
+   "Joey Slye",
+   "TEN"
+  ],
+  "3124587": [
+   "Jahlani Tavai",
+   "JAX"
+  ],
+  "3129307": [
+   "Sam Mustipher",
+   "JAX"
+  ],
+  "3134316": [
+   "Matt Dickerson",
+   "JAX"
+  ],
+  "3138764": [
+   "Jacob Martin",
+   "TEN"
+  ],
+  "3863820": [
+   "Patrick Mekari",
+   "JAX"
+  ],
+  "3915239": [
+   "Josh Hines-Allen",
+   "JAX"
+  ],
+  "3915398": [
+   "Tommy Townsend",
+   "TEN"
+  ],
+  "3915437": [
+   "Isaiah Oliver",
+   "TEN"
+  ],
+  "3915520": [
+   "DaVon Hamilton",
+   "JAX"
+  ],
+  "3916148": [
+   "Tony Pollard",
+   "TEN"
+  ],
+  "3916414": [
+   "Geron Christian",
+   "JAX"
+  ],
+  "3916433": [
+   "Jakobi Meyers",
+   "JAX"
+  ],
+  "3916566": [
+   "K.J. Osborn",
+   "TEN"
+  ],
+  "3919512": [
+   "Jessie Bates III",
+   "JAX"
+  ],
+  "3925357": [
+   "Calvin Ridley",
+   "TEN"
+  ],
+  "3926229": [
+   "Cody Barton",
+   "TEN"
+  ],
+  "3928931": [
+   "Ross Matiscik",
+   "JAX"
+  ],
+  "4035663": [
+   "Terrell Burgess",
+   "TEN"
+  ],
+  "4035791": [
+   "Cole Van Lanen",
+   "JAX"
+  ],
+  "4036134": [
+   "Amani Hooker",
+   "TEN"
+  ],
+  "4038544": [
+   "Austin Schlottmann",
+   "TEN"
+  ],
+  "4039160": [
+   "Kylen Granson",
+   "TEN"
+  ],
+  "4045701": [
+   "Timmy Horne",
+   "TEN"
+  ],
+  "4047655": [
+   "Jaylon Jones",
+   "JAX"
+  ],
+  "4048231": [
+   "Ezra Cleveland",
+   "JAX"
+  ],
+  "4240532": [
+   "Tony Adams",
+   "TEN"
+  ],
+  "4240610": [
+   "Ventrell Miller",
+   "JAX"
+  ],
+  "4240657": [
+   "Michael Carter",
+   "TEN"
+  ],
+  "4240858": [
+   "Hendon Hooker",
+   "TEN"
+  ],
+  "4240920": [
+   "Dan Moore Jr.",
+   "TEN"
+  ],
+  "4242149": [
+   "Montaric Brown",
+   "JAX"
+  ],
+  "4242391": [
+   "Robert Hainsey",
+   "JAX"
+  ],
+  "4242554": [
+   "Walker Little",
+   "JAX"
+  ],
+  "4244049": [
+   "Quintin Morris",
+   "JAX"
+  ],
+  "4244856": [
+   "Austin Trammell",
+   "JAX"
+  ],
+  "4245131": [
+   "Tim Jones",
+   "JAX"
+  ],
+  "4258181": [
+   "James Hudson III",
+   "TEN"
+  ],
+  "4334300": [
+   "Dennis Gardeck",
+   "JAX"
+  ],
+  "4360310": [
+   "Trevor Lawrence",
+   "JAX"
+  ],
+  "4360318": [
+   "Mario Goodrich III",
+   "TEN"
+  ],
+  "4360502": [
+   "Kaevon Merriweather",
+   "JAX"
+  ],
+  "4360964": [
+   "Daniel Faalele",
+   "JAX"
+  ],
+  "4360978": [
+   "David Martin-Robinson",
+   "TEN"
+  ],
+  "4361094": [
+   "Dominique Hampton",
+   "TEN"
+  ],
+  "4361516": [
+   "Daniel Bellinger",
+   "TEN"
+  ],
+  "4362570": [
+   "Joel Wilson",
+   "TEN"
+  ],
+  "4362603": [
+   "Brenden Bates",
+   "JAX"
+  ],
+  "4362619": [
+   "Chris Rodriguez Jr.",
+   "JAX"
+  ],
+  "4367202": [
+   "Atonio Mafi",
+   "TEN"
+  ],
+  "4367567": [
+   "Julius Chestnut",
+   "TEN"
+  ],
+  "4367828": [
+   "Truman Jones",
+   "TEN"
+  ],
+  "4369835": [
+   "Alontae Taylor",
+   "TEN"
+  ],
+  "4371940": [
+   "Milo Eifler",
+   "TEN"
+  ],
+  "4373320": [
+   "Erick Hallett II",
+   "TEN"
+  ],
+  "4373956": [
+   "Jonah Laulu",
+   "TEN"
+  ],
+  "4426349": [
+   "Travon Walker",
+   "JAX"
+  ],
+  "4426448": [
+   "Jarrian Jones",
+   "JAX"
+  ],
+  "4426498": [
+   "Nick Broeker",
+   "TEN"
+  ],
+  "4426646": [
+   "Jared Bartlett",
+   "JAX"
+  ],
+  "4426981": [
+   "Eli Cox",
+   "JAX"
+  ],
+  "4426987": [
+   "Brandon Crenshaw-Dickson",
+   "TEN"
+  ],
+  "4427479": [
+   "Jamal Hill",
+   "JAX"
+  ],
+  "4428557": [
+   "Tyjae Spears",
+   "TEN"
+  ],
+  "4429058": [
+   "Jaylen Harrell",
+   "TEN"
+  ],
+  "4429100": [
+   "Peter Skoronski",
+   "TEN"
+  ],
+  "4429111": [
+   "BJ Ojulari",
+   "JAX"
+  ],
+  "4429121": [
+   "Kalel Mullings",
+   "TEN"
+  ],
+  "4429142": [
+   "Nazir Stackhouse",
+   "TEN"
+  ],
+  "4429168": [
+   "Antonio Johnson",
+   "JAX"
+  ],
+  "4429366": [
+   "Derrick Canteen",
+   "TEN"
+  ],
+  "4429607": [
+   "Cor'Dale Flott",
+   "TEN"
+  ],
+  "4429834": [
+   "Cedric Gray",
+   "TEN"
+  ],
+  "4430271": [
+   "Ruke Orhorhoro",
+   "JAX"
+  ],
+  "4430481": [
+   "Jonah Monheim",
+   "JAX"
+  ],
+  "4430539": [
+   "Brenton Strange",
+   "JAX"
+  ],
+  "4431162": [
+   "T.J. Bollers",
+   "JAX"
+  ],
+  "4431252": [
+   "Garrett Dellinger",
+   "TEN"
+  ],
+  "4431268": [
+   "Chimere Dike",
+   "TEN"
+  ],
+  "4431353": [
+   "Xavier Restrepo",
+   "TEN"
+  ],
+  "4431437": [
+   "JC Latham",
+   "TEN"
+  ],
+  "4431463": [
+   "Wyatt Milum",
+   "JAX"
+  ],
+  "4431613": [
+   "James Williams Sr.",
+   "TEN"
+  ],
+  "4432440": [
+   "Jabbar Muhammad",
+   "JAX"
+  ],
+  "4432620": [
+   "Parker Washington",
+   "JAX"
+  ],
+  "4432773": [
+   "Brian Thomas Jr.",
+   "JAX"
+  ],
+  "4567962": [
+   "Jermaine Johnson II",
+   "TEN"
+  ],
+  "4568699": [
+   "Rasheed Miller",
+   "TEN"
+  ],
+  "4569587": [
+   "Wan'Dale Robinson",
+   "TEN"
+  ],
+  "4570469": [
+   "Marcus Harris",
+   "TEN"
+  ],
+  "4572704": [
+   "Branson Combs",
+   "JAX"
+  ],
+  "4573318": [
+   "Dorian Mausi",
+   "TEN"
+  ],
+  "4573319": [
+   "Danny Striggow",
+   "JAX"
+  ],
+  "4575862": [
+   "Trebor Pena",
+   "JAX"
+  ],
+  "4576129": [
+   "Jalen McLeod",
+   "JAX"
+  ],
+  "4577494": [
+   "Alijah Huzzie",
+   "JAX"
+  ],
+  "4585317": [
+   "Kendell Brooks",
+   "TEN"
+  ],
+  "4596542": [
+   "Pat Coogan",
+   "TEN"
+  ],
+  "4608929": [
+   "Emmanuel Pregnon",
+   "JAX"
+  ],
+  "4612272": [
+   "Jakob Robinson",
+   "TEN"
+  ],
+  "4612298": [
+   "Albert Regis",
+   "JAX"
+  ],
+  "4683347": [
+   "Caleb Ransaw",
+   "JAX"
+  ],
+  "4683455": [
+   "Jalen McMurray",
+   "TEN"
+  ],
+  "4684542": [
+   "Garrett DiGiorgio",
+   "JAX"
+  ],
+  "4684970": [
+   "Jimto Obidegwu",
+   "JAX"
+  ],
+  "4685145": [
+   "Jaylon Jones",
+   "TEN"
+  ],
+  "4685415": [
+   "Travis Hunter",
+   "JAX"
+  ],
+  "4685555": [
+   "Nicholas Singleton",
+   "TEN"
+  ],
+  "4685617": [
+   "Kevin Winston Jr.",
+   "TEN"
+  ],
+  "4686248": [
+   "Nate Boerkircher",
+   "JAX"
+  ],
+  "4686361": [
+   "Cam Little",
+   "JAX"
+  ],
+  "4686728": [
+   "Gunnar Helm",
+   "TEN"
+  ],
+  "4688380": [
+   "Cam Ward",
+   "TEN"
+  ],
+  "4689088": [
+   "Kilian Zierer",
+   "JAX"
+  ],
+  "4692525": [
+   "Anton Harrison",
+   "JAX"
+  ],
+  "4695280": [
+   "Micah Robinson",
+   "TEN"
+  ],
+  "4710000": [
+   "Fernando Carmona",
+   "TEN"
+  ],
+  "4710661": [
+   "Chandler Zavala",
+   "TEN"
+  ],
+  "4713118": [
+   "J'Mari Taylor",
+   "JAX"
+  ],
+  "4832922": [
+   "Wesley Williams",
+   "JAX"
+  ],
+  "4836472": [
+   "Bryan Thomas Jr.",
+   "JAX"
+  ],
+  "4870707": [
+   "Keldric Faulk",
+   "TEN"
+  ],
+  "4870805": [
+   "Anthony Hill Jr.",
+   "TEN"
+  ],
+  "4871023": [
+   "Carnell Tate",
+   "TEN"
+  ],
+  "4875266": [
+   "B.J. Green II",
+   "JAX"
+  ],
+  "4876057": [
+   "Oluwafemi Oladejo",
+   "TEN"
+  ],
+  "4876319": [
+   "Jackson Slater",
+   "TEN"
+  ],
+  "4877034": [
+   "Jaren Kanak",
+   "TEN"
+  ],
+  "4877475": [
+   "Cam'Ron Silmon-Craig",
+   "JAX"
+  ],
+  "4879194": [
+   "Josh Cameron",
+   "JAX"
+  ],
+  "4879480": [
+   "Drew Moss",
+   "TEN"
+  ],
+  "4880675": [
+   "Rayuan Lane III",
+   "JAX"
+  ],
+  "4880861": [
+   "Parker Hughes",
+   "JAX"
+  ],
+  "4882093": [
+   "Bhayshul Tuten",
+   "JAX"
+  ],
+  "4883647": [
+   "Elic Ayomanor",
+   "TEN"
+  ],
+  "4889929": [
+   "Quinn Ewers",
+   "JAX"
+  ],
+  "4911851": [
+   "LeQuint Allen Jr.",
+   "JAX"
+  ],
+  "4912185": [
+   "Jalen Huskey",
+   "JAX"
+  ],
+  "4917427": [
+   "Tanner Koziol",
+   "JAX"
+  ],
+  "4917635": [
+   "Joshua Williams",
+   "TEN"
+  ],
+  "5081785": [
+   "Jackie Marshall",
+   "TEN"
+  ],
+  "5083287": [
+   "Devon Marshall",
+   "JAX"
+  ],
+  "5085024": [
+   "CJ Williams",
+   "JAX"
+  ],
+  "5103197": [
+   "Tyren Montgomery",
+   "TEN"
+  ],
+  "5121433": [
+   "Zach Durfee",
+   "JAX"
+  ],
+  "5151948": [
+   "Joey Aguilar",
+   "JAX"
+  ],
+  "5152117": [
+   "Michael Wortham",
+   "JAX"
+  ],
+  "5278710": [
+   "Laki Tasi",
+   "TEN"
+  ]
+ }
 }

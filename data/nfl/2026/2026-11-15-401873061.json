@@ -477,5 +477,738 @@
    ]
   }
  },
- "props": {}
+ "props": {
+  "open": {
+   "at": "2026-11-09T18:52:46.049Z",
+   "provider": 100,
+   "count": 17,
+   "rows": [
+  {"a":"4361307","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4373626","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4427728","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4429096","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4430737","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":null,"t":"1st Half Total","ti":"72","op":[23.5,null,null],"cur":[22.5,null,null]},
+  {"a":null,"t":"1st Half Total","ti":"72","op":[23.5,null,null],"cur":[22.5,null,null]},
+  {"a":null,"tm":"14","t":"1st Half Moneyline","ti":"73"},
+  {"a":null,"tm":"22","t":"1st Half Moneyline","ti":"73"},
+  {"a":null,"tm":"14","t":"1st Half Spread","ti":"74","op":[-3.5,null,null],"cur":[-4.5,null,null]},
+  {"a":null,"tm":"22","t":"1st Half Spread","ti":"74","op":[3.5,null,null],"cur":[4.5,null,null]},
+  {"a":null,"t":"1st Quarter Total","ti":"75","op":[9.5,null,null],"cur":[8.5,null,null]},
+  {"a":null,"t":"1st Quarter Total","ti":"75","op":[9.5,null,null],"cur":[8.5,null,null]},
+  {"a":null,"tm":"14","t":"1st Quarter Moneyline","ti":"76"},
+  {"a":null,"tm":"22","t":"1st Quarter Moneyline","ti":"76"},
+  {"a":null,"tm":"14","t":"1st Quarter Spread","ti":"77","op":[-0.5,null,null],"cur":[-0.5,null,null]},
+  {"a":null,"tm":"22","t":"1st Quarter Spread","ti":"77","op":[0.5,null,null],"cur":[0.5,null,null]}
+ ],
+   "sample": [
+    {
+     "competition": {
+      "id": "401873061"
+     },
+     "athlete": {
+      "id": "4361307"
+     },
+     "provider": {
+      "id": "100"
+     },
+     "type": {
+      "id": "31",
+      "name": "Anytime Touchdown Scorer"
+     },
+     "lastUpdated": "2026-11-09T18:57Z",
+     "current": {},
+     "open": {}
+    },
+    {
+     "competition": {
+      "id": "401873061"
+     },
+     "athlete": {
+      "id": "4373626"
+     },
+     "provider": {
+      "id": "100"
+     },
+     "type": {
+      "id": "31",
+      "name": "Anytime Touchdown Scorer"
+     },
+     "lastUpdated": "2026-11-09T18:55Z",
+     "current": {},
+     "open": {}
+    }
+   ]
+  }
+ },
+ "names": {
+  "12483": [
+   "Matthew Stafford",
+   "LAR"
+  ],
+  "14676": [
+   "Jake McQuaide",
+   "LAR"
+  ],
+  "15946": [
+   "David Quessenberry",
+   "LAR"
+  ],
+  "16339": [
+   "Brandon McManus",
+   "LAR"
+  ],
+  "16716": [
+   "Aaron Donald",
+   "LAR"
+  ],
+  "16800": [
+   "Davante Adams",
+   "LAR"
+  ],
+  "17304": [
+   "Casey Kreiter",
+   "ARI"
+  ],
+  "2510863": [
+   "Eric Kendricks",
+   "LAR"
+  ],
+  "2573401": [
+   "Tyler Higbee",
+   "LAR"
+  ],
+  "2575907": [
+   "Joe Cardona",
+   "LAR"
+  ],
+  "2978247": [
+   "Isaac Seumalo",
+   "ARI"
+  ],
+  "3045147": [
+   "James Conner",
+   "ARI"
+  ],
+  "3045523": [
+   "Kendrick Bourne",
+   "ARI"
+  ],
+  "3051775": [
+   "Andrew Billings",
+   "ARI"
+  ],
+  "3052180": [
+   "Coleman Shelton",
+   "LAR"
+  ],
+  "3059722": [
+   "Zay Jones",
+   "ARI"
+  ],
+  "3059839": [
+   "Elijah Wilkinson",
+   "ARI"
+  ],
+  "3116135": [
+   "Blake Hance",
+   "LAR"
+  ],
+  "3116449": [
+   "L.J. Collier",
+   "ARI"
+  ],
+  "3122132": [
+   "Myles Garrett",
+   "LAR"
+  ],
+  "3125114": [
+   "Poona Ford",
+   "LAR"
+  ],
+  "3127287": [
+   "Budda Baker",
+   "ARI"
+  ],
+  "3693166": [
+   "Josh Sweat",
+   "ARI"
+  ],
+  "3886633": [
+   "Hjalte Froholdt",
+   "ARI"
+  ],
+  "3912189": [
+   "Bill Murray",
+   "LAR"
+  ],
+  "3916204": [
+   "James Proche II",
+   "ARI"
+  ],
+  "3917599": [
+   "Kevin Dotson",
+   "LAR"
+  ],
+  "3918331": [
+   "Andrew Wingard",
+   "ARI"
+  ],
+  "4036135": [
+   "Alaric Jackson",
+   "LAR"
+  ],
+  "4038524": [
+   "Gardner Minshew II",
+   "ARI"
+  ],
+  "4038843": [
+   "Keir Thomas II",
+   "LAR"
+  ],
+  "4039050": [
+   "Devin Duvernay",
+   "ARI"
+  ],
+  "4040805": [
+   "Roy Lopez",
+   "ARI"
+  ],
+  "4040983": [
+   "Mack Wilson Sr.",
+   "ARI"
+  ],
+  "4044144": [
+   "Kenny Yeboah",
+   "ARI"
+  ],
+  "4045161": [
+   "Zech McPhearson",
+   "LAR"
+  ],
+  "4045180": [
+   "Blake Gillikin",
+   "ARI"
+  ],
+  "4046536": [
+   "David Long Jr.",
+   "LAR"
+  ],
+  "4239944": [
+   "Hunter Long",
+   "ARI"
+  ],
+  "4240123": [
+   "Larrell Murchison",
+   "LAR"
+  ],
+  "4240255": [
+   "Grant Stuard",
+   "LAR"
+  ],
+  "4240619": [
+   "Zachary Carter",
+   "ARI"
+  ],
+  "4240824": [
+   "Joey Blount",
+   "ARI"
+  ],
+  "4241482": [
+   "Jedrick Wills Jr.",
+   "ARI"
+  ],
+  "4241987": [
+   "Baron Browning",
+   "ARI"
+  ],
+  "4242154": [
+   "Kam Curl",
+   "LAR"
+  ],
+  "4242229": [
+   "Austin Deculus",
+   "ARI"
+  ],
+  "4242557": [
+   "Colby Parkinson",
+   "LAR"
+  ],
+  "4243003": [
+   "Ronnie Rivers",
+   "LAR"
+  ],
+  "4243181": [
+   "Nate Landman",
+   "LAR"
+  ],
+  "4244606": [
+   "Zaven Collins",
+   "ARI"
+  ],
+  "4249128": [
+   "Quentin Lake",
+   "LAR"
+  ],
+  "4249739": [
+   "Jack Gibbens",
+   "ARI"
+  ],
+  "4250621": [
+   "Kobie Turner",
+   "LAR"
+  ],
+  "4250935": [
+   "Demontrey Jacobs",
+   "ARI"
+  ],
+  "4258485": [
+   "Jon Rhattigan",
+   "LAR"
+  ],
+  "4259553": [
+   "Stetson Bennett IV",
+   "LAR"
+  ],
+  "4259619": [
+   "Blake Grupe",
+   "LAR"
+  ],
+  "4360739": [
+   "Simi Fehoko",
+   "ARI"
+  ],
+  "4360761": [
+   "Michael Wilson",
+   "ARI"
+  ],
+  "4360797": [
+   "Tutu Atwell",
+   "LAR"
+  ],
+  "4360859": [
+   "Justin Dedich",
+   "LAR"
+  ],
+  "4361272": [
+   "Eku Leota",
+   "ARI"
+  ],
+  "4361307": [
+   "Trey McBride",
+   "ARI"
+  ],
+  "4361332": [
+   "Shedrick Jackson",
+   "ARI"
+  ],
+  "4361651": [
+   "Tanner Ingle",
+   "LAR"
+  ],
+  "4362225": [
+   "Dante Stills",
+   "ARI"
+  ],
+  "4362245": [
+   "Braden Fiske",
+   "LAR"
+  ],
+  "4362294": [
+   "Desjuan Johnson",
+   "LAR"
+  ],
+  "4362474": [
+   "Steve Avila",
+   "LAR"
+  ],
+  "4363408": [
+   "Starling Thomas V",
+   "ARI"
+  ],
+  "4363538": [
+   "Chad Ryland",
+   "ARI"
+  ],
+  "4366910": [
+   "Shawn Bowman",
+   "ARI"
+  ],
+  "4367199": [
+   "Jon Gaines II",
+   "ARI"
+  ],
+  "4372019": [
+   "Jerome Ford",
+   "ARI"
+  ],
+  "4373626": [
+   "Tyler Allgeier",
+   "ARI"
+  ],
+  "4374033": [
+   "Jermar Jefferson",
+   "ARI"
+  ],
+  "4374045": [
+   "Teagan Quitoriano",
+   "ARI"
+  ],
+  "4426401": [
+   "Bill Norton",
+   "LAR"
+  ],
+  "4426405": [
+   "Trent McDuffie",
+   "LAR"
+  ],
+  "4426512": [
+   "Warren McClendon Jr.",
+   "LAR"
+  ],
+  "4426515": [
+   "Puka Nacua",
+   "LAR"
+  ],
+  "4426553": [
+   "Davis Allen",
+   "LAR"
+  ],
+  "4426752": [
+   "Jack Bouwmeester",
+   "LAR"
+  ],
+  "4426844": [
+   "Elijah Higgins",
+   "ARI"
+  ],
+  "4426923": [
+   "Kei'Trel Clark",
+   "ARI"
+  ],
+  "4427120": [
+   "Jaylen McCollough",
+   "LAR"
+  ],
+  "4427401": [
+   "Jared Harrison-Hunte",
+   "ARI"
+  ],
+  "4427728": [
+   "Bam Knight",
+   "ARI"
+  ],
+  "4427752": [
+   "Cam Lampkin",
+   "LAR"
+  ],
+  "4428458": [
+   "Valentin Senn",
+   "ARI"
+  ],
+  "4428550": [
+   "Omar Speights",
+   "LAR"
+  ],
+  "4428633": [
+   "Dadrion Taylor-Demerson",
+   "ARI"
+  ],
+  "4428803": [
+   "Jordan Waters",
+   "LAR"
+  ],
+  "4428811": [
+   "Xavier Weaver",
+   "ARI"
+  ],
+  "4428991": [
+   "Paris Johnson Jr.",
+   "ARI"
+  ],
+  "4428996": [
+   "Jordan Burch",
+   "ARI"
+  ],
+  "4429071": [
+   "Cody Simon",
+   "ARI"
+  ],
+  "4429096": [
+   "Blake Corum",
+   "LAR"
+  ],
+  "4429275": [
+   "Trey Benson",
+   "ARI"
+  ],
+  "4429767": [
+   "Emmanuel Forbes Jr.",
+   "LAR"
+  ],
+  "4429782": [
+   "Josh Fryar",
+   "ARI"
+  ],
+  "4430155": [
+   "Dylan McMahon",
+   "LAR"
+  ],
+  "4430737": [
+   "Kyren Williams",
+   "LAR"
+  ],
+  "4430821": [
+   "Kitan Crawford",
+   "ARI"
+  ],
+  "4430841": [
+   "Carson Beck",
+   "ARI"
+  ],
+  "4430919": [
+   "Wesley Bailey",
+   "LAR"
+  ],
+  "4431118": [
+   "Ty Hamilton",
+   "LAR"
+  ],
+  "4431214": [
+   "Hayden Conner",
+   "ARI"
+  ],
+  "4431342": [
+   "Brennan Presley",
+   "LAR"
+  ],
+  "4431424": [
+   "Bradyn Swinson",
+   "ARI"
+  ],
+  "4431433": [
+   "Kalen King",
+   "ARI"
+  ],
+  "4432668": [
+   "Denzel Burke",
+   "ARI"
+  ],
+  "4566192": [
+   "Joshua Karty",
+   "LAR"
+  ],
+  "4567175": [
+   "Beaux Limmer",
+   "LAR"
+  ],
+  "4567410": [
+   "Kingsley Eguakun",
+   "ARI"
+  ],
+  "4567480": [
+   "Damarion Williams",
+   "LAR"
+  ],
+  "4568217": [
+   "Tyler Davis",
+   "LAR"
+  ],
+  "4568506": [
+   "Garrett Williams",
+   "ARI"
+  ],
+  "4569382": [
+   "Jordan Whittington",
+   "LAR"
+  ],
+  "4569480": [
+   "Darius Robinson",
+   "ARI"
+  ],
+  "4569609": [
+   "Evan Hull",
+   "ARI"
+  ],
+  "4570037": [
+   "Terrance Ferguson",
+   "LAR"
+  ],
+  "4572371": [
+   "Josh Wallace",
+   "LAR"
+  ],
+  "4575003": [
+   "Keagen Trost",
+   "LAR"
+  ],
+  "4577189": [
+   "Jalen Hunt",
+   "LAR"
+  ],
+  "4596363": [
+   "Kamren Kinchens",
+   "LAR"
+  ],
+  "4598574": [
+   "Darryl Peterson III",
+   "LAR"
+  ],
+  "4605858": [
+   "Rivaldo Fairweather",
+   "ARI"
+  ],
+  "4605951": [
+   "CJ Daniels",
+   "LAR"
+  ],
+  "4608858": [
+   "Dan Villari",
+   "LAR"
+  ],
+  "4613029": [
+   "Riley Wilson",
+   "ARI"
+  ],
+  "4682983": [
+   "Josaiah Stewart",
+   "LAR"
+  ],
+  "4683506": [
+   "Albert Reese IV",
+   "ARI"
+  ],
+  "4685408": [
+   "Will Johnson",
+   "ARI"
+  ],
+  "4685503": [
+   "Walter Nolen III",
+   "ARI"
+  ],
+  "4685522": [
+   "Ty Simpson",
+   "LAR"
+  ],
+  "4685582": [
+   "Damonic Williams",
+   "ARI"
+  ],
+  "4686338": [
+   "Josh Minkins",
+   "ARI"
+  ],
+  "4689674": [
+   "Art Green",
+   "ARI"
+  ],
+  "4690182": [
+   "Nick Andersen",
+   "LAR"
+  ],
+  "4692835": [
+   "Jalen Brooks",
+   "ARI"
+  ],
+  "4693848": [
+   "Shaun Dolac",
+   "LAR"
+  ],
+  "4695022": [
+   "Daniel Rickert",
+   "LAR"
+  ],
+  "4696700": [
+   "Tip Reiman",
+   "ARI"
+  ],
+  "4697639": [
+   "Jaylen Watson",
+   "LAR"
+  ],
+  "4698113": [
+   "Max Melton",
+   "ARI"
+  ],
+  "4699354": [
+   "Harrison Wallace III",
+   "ARI"
+  ],
+  "4709695": [
+   "Karson Sharar",
+   "ARI"
+  ],
+  "4709718": [
+   "Jayden Williams",
+   "ARI"
+  ],
+  "4710855": [
+   "Konata Mumpfield",
+   "LAR"
+  ],
+  "4791223": [
+   "Jaxson Moi",
+   "LAR"
+  ],
+  "4833029": [
+   "Max Klare",
+   "LAR"
+  ],
+  "4869132": [
+   "Reggie Virgil",
+   "ARI"
+  ],
+  "4870596": [
+   "Chase Bisontis",
+   "ARI"
+  ],
+  "4870808": [
+   "Jeremiyah Love",
+   "ARI"
+  ],
+  "4875196": [
+   "Byron Young",
+   "LAR"
+  ],
+  "4877357": [
+   "Eddie Walls III",
+   "LAR"
+  ],
+  "4877717": [
+   "Matthew Caldwell",
+   "LAR"
+  ],
+  "4900789": [
+   "Cameron Robertson",
+   "ARI"
+  ],
+  "5082269": [
+   "Dean Connors",
+   "LAR"
+  ],
+  "5082391": [
+   "Maximus Pulley",
+   "LAR"
+  ],
+  "5084514": [
+   "Kaleb Proctor",
+   "ARI"
+  ],
+  "5084939": [
+   "Isaiah Adams",
+   "ARI"
+  ],
+  "5099542": [
+   "Wydett Williams Jr.",
+   "ARI"
+  ],
+  "5125875": [
+   "Ethan Evans",
+   "LAR"
+  ],
+  "5160648": [
+   "Nyzier Fourqurean",
+   "LAR"
+  ]
+ }
 }

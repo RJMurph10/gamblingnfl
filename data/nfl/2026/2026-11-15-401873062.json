@@ -477,5 +477,685 @@
    ]
   }
  },
- "props": {}
+ "props": {
+  "open": {
+   "at": "2026-11-09T18:52:46.049Z",
+   "provider": 100,
+   "count": 4,
+   "rows": [
+  {"a":"4426385","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4430878","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4432665","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4890973","t":"Anytime Touchdown Scorer","ti":"31"}
+ ],
+   "sample": [
+    {
+     "competition": {
+      "id": "401873062"
+     },
+     "athlete": {
+      "id": "4426385"
+     },
+     "provider": {
+      "id": "100"
+     },
+     "type": {
+      "id": "31",
+      "name": "Anytime Touchdown Scorer"
+     },
+     "lastUpdated": "2026-11-09T18:45Z",
+     "current": {},
+     "open": {}
+    },
+    {
+     "competition": {
+      "id": "401873062"
+     },
+     "athlete": {
+      "id": "4430878"
+     },
+     "provider": {
+      "id": "100"
+     },
+     "type": {
+      "id": "31",
+      "name": "Anytime Touchdown Scorer"
+     },
+     "lastUpdated": "2026-11-09T18:45Z",
+     "current": {},
+     "open": {}
+    }
+   ]
+  }
+ },
+ "names": {
+  "14880": [
+   "Kirk Cousins",
+   "LV"
+  ],
+  "16802": [
+   "DeMarcus Lawrence",
+   "SEA"
+  ],
+  "2094390": [
+   "Michael Dansby",
+   "SEA"
+  ],
+  "2473037": [
+   "Jason Myers",
+   "SEA"
+  ],
+  "2576789": [
+   "Bobby Hart",
+   "SEA"
+  ],
+  "2971622": [
+   "Leonard Williams",
+   "SEA"
+  ],
+  "2972342": [
+   "Adam Butler",
+   "LV"
+  ],
+  "2975863": [
+   "Eric Saubert",
+   "SEA"
+  ],
+  "2977187": [
+   "Cooper Kupp",
+   "SEA"
+  ],
+  "2980100": [
+   "Dante Fowler Jr.",
+   "SEA"
+  ],
+  "3045172": [
+   "Folorunso Fatukasi",
+   "LV"
+  ],
+  "3115312": [
+   "Jarran Reed",
+   "SEA"
+  ],
+  "3120358": [
+   "Uchenna Nwosu",
+   "SEA"
+  ],
+  "3121003": [
+   "Taron Johnson",
+   "LV"
+  ],
+  "3129308": [
+   "Quenton Nelson",
+   "SEA"
+  ],
+  "3134312": [
+   "Kolton Miller",
+   "LV"
+  ],
+  "3138744": [
+   "Chris Myarick",
+   "LV"
+  ],
+  "3686689": [
+   "AJ Cole",
+   "LV"
+  ],
+  "3912547": [
+   "Sam Darnold",
+   "SEA"
+  ],
+  "3914630": [
+   "Josh Jones",
+   "SEA"
+  ],
+  "3916655": [
+   "Maxx Crosby",
+   "LV"
+  ],
+  "3924327": [
+   "Drew Lock",
+   "SEA"
+  ],
+  "3929636": [
+   "Irv Charles",
+   "SEA"
+  ],
+  "3929851": [
+   "Michael Dickson",
+   "SEA"
+  ],
+  "4032473": [
+   "Rashid Shaheed",
+   "SEA"
+  ],
+  "4035693": [
+   "Velus Jones Jr.",
+   "SEA"
+  ],
+  "4037521": [
+   "Chazz Surratt",
+   "SEA"
+  ],
+  "4040966": [
+   "Trevon Diggs",
+   "SEA"
+  ],
+  "4043169": [
+   "Jeremy Chinn",
+   "LV"
+  ],
+  "4045305": [
+   "Ian Thomas",
+   "LV"
+  ],
+  "4046675": [
+   "Julian Love",
+   "SEA"
+  ],
+  "4239719": [
+   "Malcolm Koonce",
+   "LV"
+  ],
+  "4241961": [
+   "Connor Heyward",
+   "LV"
+  ],
+  "4241983": [
+   "Cody White",
+   "LV"
+  ],
+  "4243176": [
+   "Brady Russell",
+   "SEA"
+  ],
+  "4243545": [
+   "Alex Ward",
+   "LV"
+  ],
+  "4243916": [
+   "Patrick Johnson",
+   "LV"
+  ],
+  "4244768": [
+   "Julian Hicks",
+   "SEA"
+  ],
+  "4245171": [
+   "Abraham Lucas",
+   "SEA"
+  ],
+  "4247808": [
+   "Ty Okada",
+   "SEA"
+  ],
+  "4248455": [
+   "Rodney Thomas II",
+   "SEA"
+  ],
+  "4249087": [
+   "Matt Gay",
+   "LV"
+  ],
+  "4249616": [
+   "Owen Wright",
+   "LV"
+  ],
+  "4250393": [
+   "Tristin McCollum",
+   "LV"
+  ],
+  "4258194": [
+   "Kwity Paye",
+   "LV"
+  ],
+  "4259561": [
+   "Eric Stokes",
+   "LV"
+  ],
+  "4259606": [
+   "Chris Stoll",
+   "SEA"
+  ],
+  "4259632": [
+   "Isaiah Pola-Mao",
+   "LV"
+  ],
+  "4259651": [
+   "Brandon Pili",
+   "SEA"
+  ],
+  "4260394": [
+   "Aidan O'Connell",
+   "LV"
+  ],
+  "4260703": [
+   "Segun Olubi",
+   "LV"
+  ],
+  "4360405": [
+   "Jake Bobo",
+   "SEA"
+  ],
+  "4360475": [
+   "Chigozie Anusiem",
+   "LV"
+  ],
+  "4360499": [
+   "Tyler Linderbaum",
+   "LV"
+  ],
+  "4360749": [
+   "Thomas Booker IV",
+   "LV"
+  ],
+  "4361182": [
+   "Adrian Martinez",
+   "SEA"
+  ],
+  "4362851": [
+   "Ernest Jones IV",
+   "SEA"
+  ],
+  "4362999": [
+   "Spencer Burford",
+   "LV"
+  ],
+  "4364623": [
+   "Patrick O'Connell",
+   "SEA"
+  ],
+  "4366963": [
+   "Dylan Laube",
+   "LV"
+  ],
+  "4370807": [
+   "Olu Oluwatimi",
+   "SEA"
+  ],
+  "4372020": [
+   "Josh Jobe",
+   "SEA"
+  ],
+  "4372085": [
+   "Cameron McGrone",
+   "LV"
+  ],
+  "4372378": [
+   "Anthony Goodlow",
+   "LV"
+  ],
+  "4373030": [
+   "Ben Sims",
+   "SEA"
+  ],
+  "4373471": [
+   "Brennan Jackson",
+   "LV"
+  ],
+  "4374187": [
+   "Deven Thompkins",
+   "LV"
+  ],
+  "4379409": [
+   "Azeez Ojulari",
+   "LV"
+  ],
+  "4379416": [
+   "Quay Walker",
+   "LV"
+  ],
+  "4382466": [
+   "Jalen Nailor",
+   "LV"
+  ],
+  "4383409": [
+   "Jalen Sundell",
+   "SEA"
+  ],
+  "4401805": [
+   "Dareke Young",
+   "LV"
+  ],
+  "4426340": [
+   "Nakobe Dean",
+   "LV"
+  ],
+  "4426376": [
+   "Charles Cross",
+   "SEA"
+  ],
+  "4426385": [
+   "Zach Charbonnet",
+   "SEA"
+  ],
+  "4426393": [
+   "Will Putnam",
+   "LV"
+  ],
+  "4427190": [
+   "AJ Finley",
+   "SEA"
+  ],
+  "4428659": [
+   "Drake Thomas",
+   "SEA"
+  ],
+  "4428718": [
+   "Tre Tucker",
+   "LV"
+  ],
+  "4428943": [
+   "Jacardia Wright",
+   "SEA"
+  ],
+  "4429086": [
+   "Michael Mayer",
+   "LV"
+  ],
+  "4429109": [
+   "Tonka Hemingway",
+   "LV"
+  ],
+  "4429211": [
+   "Anthony Bradford",
+   "SEA"
+  ],
+  "4429560": [
+   "Tommy Eichenberg",
+   "LV"
+  ],
+  "4429835": [
+   "George Holani",
+   "SEA"
+  ],
+  "4430070": [
+   "Federico Maranges",
+   "SEA"
+  ],
+  "4430262": [
+   "Bud Clark",
+   "SEA"
+  ],
+  "4430330": [
+   "Darien Porter",
+   "LV"
+  ],
+  "4430838": [
+   "Rylie Mills",
+   "SEA"
+  ],
+  "4430878": [
+   "Jaxon Smith-Njigba",
+   "SEA"
+  ],
+  "4430896": [
+   "JJ Pegues",
+   "LV"
+  ],
+  "4431145": [
+   "Maxen Hook",
+   "SEA"
+  ],
+  "4431390": [
+   "Gary Smith III",
+   "SEA"
+  ],
+  "4431414": [
+   "Tim Keenan III",
+   "LV"
+  ],
+  "4431479": [
+   "Ricky White III",
+   "SEA"
+  ],
+  "4431623": [
+   "Trey Zuhn III",
+   "LV"
+  ],
+  "4432525": [
+   "Mason Richman",
+   "SEA"
+  ],
+  "4432665": [
+   "Brock Bowers",
+   "LV"
+  ],
+  "4432734": [
+   "Jalen Milroe",
+   "SEA"
+  ],
+  "4432775": [
+   "Dont'e Thornton Jr.",
+   "LV"
+  ],
+  "4433889": [
+   "Caleb Rogers",
+   "LV"
+  ],
+  "4565908": [
+   "Tyler Scott",
+   "LV"
+  ],
+  "4567222": [
+   "Nehemiah Pritchett",
+   "SEA"
+  ],
+  "4567226": [
+   "Derick Hall",
+   "SEA"
+  ],
+  "4569547": [
+   "Nick Kallerup",
+   "SEA"
+  ],
+  "4570040": [
+   "Byron Murphy II",
+   "SEA"
+  ],
+  "4570075": [
+   "Logan Brown",
+   "SEA"
+  ],
+  "4572055": [
+   "Mike Morris",
+   "SEA"
+  ],
+  "4575431": [
+   "Devon Witherspoon",
+   "SEA"
+  ],
+  "4576297": [
+   "AJ Barner",
+   "SEA"
+  ],
+  "4592823": [
+   "Beau Stephens",
+   "SEA"
+  ],
+  "4592837": [
+   "Terrion Arnold",
+   "SEA"
+  ],
+  "4597703": [
+   "Tory Horton",
+   "SEA"
+  ],
+  "4600597": [
+   "Montorie Foster Jr.",
+   "SEA"
+  ],
+  "4603089": [
+   "Aidan Hubbard",
+   "SEA"
+  ],
+  "4603186": [
+   "Jack Bech",
+   "LV"
+  ],
+  "4605491": [
+   "Connor O'Toole",
+   "SEA"
+  ],
+  "4606683": [
+   "DJ Glaze",
+   "LV"
+  ],
+  "4608386": [
+   "D'Anthony Bell",
+   "SEA"
+  ],
+  "4609203": [
+   "Deven Eastern",
+   "SEA"
+  ],
+  "4612077": [
+   "Bryce Cabeldue",
+   "LV"
+  ],
+  "4678006": [
+   "Elijah Arroyo",
+   "SEA"
+  ],
+  "4682488": [
+   "Dalton Johnson",
+   "LV"
+  ],
+  "4684543": [
+   "Julian Neal",
+   "SEA"
+  ],
+  "4685126": [
+   "Cody Lindenberg",
+   "LV"
+  ],
+  "4685305": [
+   "Brandon Cleveland",
+   "LV"
+  ],
+  "4685381": [
+   "Emmanuel Henderson Jr.",
+   "SEA"
+  ],
+  "4685512": [
+   "Jadarian Price",
+   "SEA"
+  ],
+  "4685978": [
+   "Darrell Luter Jr.",
+   "LV"
+  ],
+  "4685984": [
+   "Jamie Sheriff",
+   "SEA"
+  ],
+  "4686337": [
+   "Greedy Vance",
+   "LV"
+  ],
+  "4686540": [
+   "Tyrice Knight",
+   "SEA"
+  ],
+  "4686658": [
+   "Mike Washington Jr.",
+   "LV"
+  ],
+  "4688538": [
+   "Justin Pickett",
+   "LV"
+  ],
+  "4688835": [
+   "Roman Hemby",
+   "LV"
+  ],
+  "4691688": [
+   "Robbie Ouzts",
+   "SEA"
+  ],
+  "4693208": [
+   "Patrick Gurd",
+   "LV"
+  ],
+  "4693346": [
+   "Grey Zabel",
+   "SEA"
+  ],
+  "4693934": [
+   "Andre Fuller",
+   "SEA"
+  ],
+  "4694505": [
+   "Charles Grant",
+   "LV"
+  ],
+  "4697757": [
+   "Treydan Stukes",
+   "LV"
+  ],
+  "4698191": [
+   "Chris Collier",
+   "LV"
+  ],
+  "4837248": [
+   "Fernando Mendoza",
+   "LV"
+  ],
+  "4869523": [
+   "Nick Emmanwori",
+   "SEA"
+  ],
+  "4875295": [
+   "Jackson Powers-Johnson",
+   "LV"
+  ],
+  "4887558": [
+   "Emanuel Wilson",
+   "SEA"
+  ],
+  "4890973": [
+   "Ashton Jeanty",
+   "LV"
+  ],
+  "4911904": [
+   "Keyron Crawford",
+   "LV"
+  ],
+  "4917354": [
+   "Hezekiah Masses",
+   "LV"
+  ],
+  "5081916": [
+   "Uso Seumalo",
+   "SEA"
+  ],
+  "5082331": [
+   "Avery Smith",
+   "SEA"
+  ],
+  "5150247": [
+   "Malik Benson",
+   "LV"
+  ],
+  "5153665": [
+   "Cian Slone",
+   "LV"
+  ],
+  "5155825": [
+   "Carter Runyon",
+   "LV"
+  ],
+  "5157289": [
+   "Jermod McCoy",
+   "LV"
+  ],
+  "5158921": [
+   "Kansei Matsuzawa",
+   "LV"
+  ],
+  "5348412": [
+   "Niklas Henning",
+   "LV"
+  ]
+ }
 }

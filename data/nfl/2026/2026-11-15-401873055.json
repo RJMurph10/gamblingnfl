@@ -477,5 +477,715 @@
    ]
   }
  },
- "props": {}
+ "props": {
+  "open": {
+   "at": "2026-11-09T18:52:46.049Z",
+   "provider": 100,
+   "count": 18,
+   "rows": [
+  {"a":"3054850","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4241416","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4361370","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4569682","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4685472","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":"4695883","t":"Anytime Touchdown Scorer","ti":"31"},
+  {"a":null,"t":"1st Half Total","ti":"72","op":[23.5,null,null],"cur":[23.5,null,null]},
+  {"a":null,"t":"1st Half Total","ti":"72","op":[23.5,null,null],"cur":[23.5,null,null]},
+  {"a":null,"tm":"18","t":"1st Half Moneyline","ti":"73"},
+  {"a":null,"tm":"29","t":"1st Half Moneyline","ti":"73"},
+  {"a":null,"tm":"18","t":"1st Half Spread","ti":"74","op":[-0.5,null,null],"cur":[-0.5,null,null]},
+  {"a":null,"tm":"29","t":"1st Half Spread","ti":"74","op":[0.5,null,null],"cur":[0.5,null,null]},
+  {"a":null,"t":"1st Quarter Total","ti":"75","op":[9.5,null,null],"cur":[9.5,null,null]},
+  {"a":null,"t":"1st Quarter Total","ti":"75","op":[9.5,null,null],"cur":[9.5,null,null]},
+  {"a":null,"tm":"18","t":"1st Quarter Moneyline","ti":"76"},
+  {"a":null,"tm":"29","t":"1st Quarter Moneyline","ti":"76"},
+  {"a":null,"tm":"18","t":"1st Quarter Spread","ti":"77","op":[-0.5,null,null],"cur":[0.5,null,null]},
+  {"a":null,"tm":"29","t":"1st Quarter Spread","ti":"77","op":[0.5,null,null],"cur":[-0.5,null,null]}
+ ],
+   "sample": [
+    {
+     "competition": {
+      "id": "401873055"
+     },
+     "athlete": {
+      "id": "3054850"
+     },
+     "provider": {
+      "id": "100"
+     },
+     "type": {
+      "id": "31",
+      "name": "Anytime Touchdown Scorer"
+     },
+     "lastUpdated": "2026-11-09T18:06Z",
+     "current": {},
+     "open": {}
+    },
+    {
+     "competition": {
+      "id": "401873055"
+     },
+     "athlete": {
+      "id": "4241416"
+     },
+     "provider": {
+      "id": "100"
+     },
+     "type": {
+      "id": "31",
+      "name": "Anytime Touchdown Scorer"
+     },
+     "lastUpdated": "2026-11-09T18:24Z",
+     "current": {},
+     "open": {}
+    }
+   ]
+  }
+ },
+ "names": {
+  "11759": [
+   "JJ Jansen",
+   "CAR"
+  ],
+  "13971": [
+   "Cameron Jordan",
+   "NO"
+  ],
+  "15928": [
+   "Sam Martin",
+   "CAR"
+  ],
+  "2575788": [
+   "Zach Wood",
+   "NO"
+  ],
+  "2576925": [
+   "Darren Waller",
+   "CAR"
+  ],
+  "2973051": [
+   "Taylor Moton",
+   "CAR"
+  ],
+  "3054850": [
+   "Alvin Kamara",
+   "NO"
+  ],
+  "3115383": [
+   "Davon Godchaux",
+   "NO"
+  ],
+  "3116179": [
+   "Nick Scott",
+   "CAR"
+  ],
+  "3117253": [
+   "Bobby Okereke",
+   "CAR"
+  ],
+  "3124890": [
+   "Kaden Elliss",
+   "NO"
+  ],
+  "3917016": [
+   "Trevis Gipson",
+   "CAR"
+  ],
+  "3917331": [
+   "Erik McCoy",
+   "NO"
+  ],
+  "3917592": [
+   "Robert Hunt",
+   "CAR"
+  ],
+  "3917660": [
+   "David Edwards",
+   "NO"
+  ],
+  "3917853": [
+   "Mike Jackson",
+   "CAR"
+  ],
+  "3918310": [
+   "Carl Granderson",
+   "NO"
+  ],
+  "3925350": [
+   "Anfernee Jennings",
+   "NO"
+  ],
+  "3929645": [
+   "Juwan Johnson",
+   "NO"
+  ],
+  "3931399": [
+   "Justin Reid",
+   "NO"
+  ],
+  "4032481": [
+   "Jonah Williams",
+   "NO"
+  ],
+  "4034948": [
+   "Feleipe Franks",
+   "CAR"
+  ],
+  "4034959": [
+   "Jeremiah Moon",
+   "CAR"
+  ],
+  "4034962": [
+   "Stone Forsythe",
+   "CAR"
+  ],
+  "4035048": [
+   "Luke Fortner",
+   "CAR"
+  ],
+  "4035232": [
+   "Tyrel Dodson",
+   "CAR"
+  ],
+  "4035462": [
+   "Isaiah Simmons",
+   "CAR"
+  ],
+  "4035495": [
+   "Derrick Brown",
+   "CAR"
+  ],
+  "4035661": [
+   "Julian Blackmon",
+   "NO"
+  ],
+  "4035870": [
+   "Jake Curhan",
+   "CAR"
+  ],
+  "4036063": [
+   "Patrick Jones II",
+   "CAR"
+  ],
+  "4036131": [
+   "Noah Fant",
+   "NO"
+  ],
+  "4040945": [
+   "Dillon Radunz",
+   "NO"
+  ],
+  "4058925": [
+   "Tershawn Wharton",
+   "CAR"
+  ],
+  "4076951": [
+   "Nathan Shepherd",
+   "NO"
+  ],
+  "4212909": [
+   "David Moore",
+   "CAR"
+  ],
+  "4239934": [
+   "AJ Dillon",
+   "CAR"
+  ],
+  "4239996": [
+   "Travis Etienne Jr.",
+   "NO"
+  ],
+  "4240475": [
+   "Chris Rumph II",
+   "NO"
+  ],
+  "4240573": [
+   "Ihmir Smith-Marsette",
+   "CAR"
+  ],
+  "4240595": [
+   "Marco Wilson",
+   "CAR"
+  ],
+  "4240703": [
+   "Kenny Pickett",
+   "CAR"
+  ],
+  "4241416": [
+   "Chuba Hubbard",
+   "CAR"
+  ],
+  "4241986": [
+   "Chase Young",
+   "NO"
+  ],
+  "4241993": [
+   "Pete Werner",
+   "NO"
+  ],
+  "4242230": [
+   "Saahdiq Charles",
+   "CAR"
+  ],
+  "4242431": [
+   "Ty Chandler",
+   "NO"
+  ],
+  "4242975": [
+   "Jaelan Phillips",
+   "CAR"
+  ],
+  "4243186": [
+   "William Sherman",
+   "NO"
+  ],
+  "4243256": [
+   "Devin Lloyd",
+   "CAR"
+  ],
+  "4244607": [
+   "Akayleb Evans",
+   "CAR"
+  ],
+  "4248047": [
+   "John Ridgeway III",
+   "NO"
+  ],
+  "4250764": [
+   "Stone Smartt",
+   "NO"
+  ],
+  "4256062": [
+   "Brady Christensen",
+   "CAR"
+  ],
+  "4258199": [
+   "Cesar Ruiz",
+   "NO"
+  ],
+  "4360689": [
+   "Tyler Shough",
+   "NO"
+  ],
+  "4360763": [
+   "Brycen Tremayne",
+   "CAR"
+  ],
+  "4360773": [
+   "Nick Hampton",
+   "CAR"
+  ],
+  "4360949": [
+   "Jordan Howden",
+   "NO"
+  ],
+  "4361101": [
+   "Jackson Sirmon",
+   "NO"
+  ],
+  "4361194": [
+   "Isaiah Stalbird",
+   "NO"
+  ],
+  "4361259": [
+   "Zach Wilson",
+   "NO"
+  ],
+  "4361370": [
+   "Chris Olave",
+   "NO"
+  ],
+  "4361429": [
+   "Rasheed Walker",
+   "CAR"
+  ],
+  "4361600": [
+   "Nick Saldiveri",
+   "NO"
+  ],
+  "4361777": [
+   "Zamir White",
+   "NO"
+  ],
+  "4361823": [
+   "Ryan Wright",
+   "NO"
+  ],
+  "4362487": [
+   "Tre'von Moehrig",
+   "CAR"
+  ],
+  "4362647": [
+   "Damien Lewis",
+   "CAR"
+  ],
+  "4362847": [
+   "Jaycee Horn",
+   "CAR"
+  ],
+  "4369863": [
+   "Cedric Tillman",
+   "NO"
+  ],
+  "4372518": [
+   "Bobby Brown III",
+   "CAR"
+  ],
+  "4372533": [
+   "Tyree Wilson",
+   "NO"
+  ],
+  "4372758": [
+   "Kevin Austin Jr.",
+   "NO"
+  ],
+  "4372780": [
+   "Tommy Tremble",
+   "CAR"
+  ],
+  "4383391": [
+   "Jayden Price",
+   "NO"
+  ],
+  "4384595": [
+   "Khristian Boyd",
+   "NO"
+  ],
+  "4426339": [
+   "Spencer Rattler",
+   "NO"
+  ],
+  "4426507": [
+   "David Ojabo",
+   "NO"
+  ],
+  "4426990": [
+   "Jalen Moreno-Cropper",
+   "NO"
+  ],
+  "4427132": [
+   "Ikem Ekwonu",
+   "CAR"
+  ],
+  "4428350": [
+   "Quincy Riley",
+   "NO"
+  ],
+  "4428796": [
+   "Casey Washington",
+   "CAR"
+  ],
+  "4428988": [
+   "Bryan Bresee",
+   "NO"
+  ],
+  "4428993": [
+   "Haynes King",
+   "CAR"
+  ],
+  "4429040": [
+   "Vernon Broughton",
+   "NO"
+  ],
+  "4429073": [
+   "Fadil Diggs",
+   "NO"
+  ],
+  "4429110": [
+   "Lathan Ransom",
+   "CAR"
+  ],
+  "4429166": [
+   "Princely Umanmielen",
+   "CAR"
+  ],
+  "4429568": [
+   "Martin Emerson Jr.",
+   "NO"
+  ],
+  "4430034": [
+   "Xavier Legette",
+   "CAR"
+  ],
+  "4430379": [
+   "Asim Richards",
+   "NO"
+  ],
+  "4431006": [
+   "Caelen Carson",
+   "CAR"
+  ],
+  "4431077": [
+   "TeRah Edwards",
+   "CAR"
+  ],
+  "4431426": [
+   "Corey Thornton",
+   "CAR"
+  ],
+  "4431551": [
+   "Lee Hunter",
+   "CAR"
+  ],
+  "4431588": [
+   "Ja'Tavion Sanders",
+   "CAR"
+  ],
+  "4432374": [
+   "Ahmani Marshall",
+   "CAR"
+  ],
+  "4432731": [
+   "Moliki Matavao",
+   "NO"
+  ],
+  "4432768": [
+   "Lorenzo Styles Jr.",
+   "NO"
+  ],
+  "4433930": [
+   "Alex Wollschlaeger",
+   "NO"
+  ],
+  "4433938": [
+   "Jeremiah Wright",
+   "NO"
+  ],
+  "4433975": [
+   "Kool-Aid McKinstry",
+   "NO"
+  ],
+  "4566088": [
+   "Jaylan Ford",
+   "NO"
+  ],
+  "4566384": [
+   "Zakee Wheatley",
+   "CAR"
+  ],
+  "4567096": [
+   "John Metchie III",
+   "CAR"
+  ],
+  "4567224": [
+   "Colby Wooden",
+   "NO"
+  ],
+  "4567403": [
+   "Mohamoud Diabate",
+   "CAR"
+  ],
+  "4567416": [
+   "Ja'Markis Weston",
+   "CAR"
+  ],
+  "4568263": [
+   "Ryan Fitzgerald",
+   "CAR"
+  ],
+  "4569559": [
+   "Devaughn Vele",
+   "NO"
+  ],
+  "4569682": [
+   "Audric Estime",
+   "NO"
+  ],
+  "4573697": [
+   "Mason Tipton",
+   "NO"
+  ],
+  "4576075": [
+   "Corey Bullock",
+   "CAR"
+  ],
+  "4594449": [
+   "DeVonta Smith",
+   "CAR"
+  ],
+  "4602967": [
+   "Aaron Hall",
+   "CAR"
+  ],
+  "4605498": [
+   "Decamerion Richardson",
+   "NO"
+  ],
+  "4606711": [
+   "Taliese Fuaga",
+   "NO"
+  ],
+  "4678008": [
+   "Jonathon Brooks",
+   "CAR"
+  ],
+  "4682479": [
+   "Mason Murphy",
+   "NO"
+  ],
+  "4683215": [
+   "Danny Stutsman",
+   "NO"
+  ],
+  "4683243": [
+   "Mitchell Evans",
+   "CAR"
+  ],
+  "4683813": [
+   "Jonas Sanker",
+   "NO"
+  ],
+  "4685260": [
+   "Kelvin Banks Jr.",
+   "NO"
+  ],
+  "4685350": [
+   "Trevor Etienne",
+   "CAR"
+  ],
+  "4685472": [
+   "Tetairoa McMillan",
+   "CAR"
+  ],
+  "4685479": [
+   "Christen Miller",
+   "NO"
+  ],
+  "4685720": [
+   "Bryce Young",
+   "CAR"
+  ],
+  "4686911": [
+   "Jakorian Bennett",
+   "CAR"
+  ],
+  "4687513": [
+   "Cam Jackson",
+   "CAR"
+  ],
+  "4695883": [
+   "Jalen Coker",
+   "CAR"
+  ],
+  "4696043": [
+   "Rejzohn Wright",
+   "NO"
+  ],
+  "4696488": [
+   "Easton Kilty",
+   "NO"
+  ],
+  "4696902": [
+   "Torricelli Simpkins III",
+   "CAR"
+  ],
+  "4697636": [
+   "Chau Smith-Wade",
+   "CAR"
+  ],
+  "4698597": [
+   "Barion Brown",
+   "NO"
+  ],
+  "4702559": [
+   "Oscar Delp",
+   "NO"
+  ],
+  "4709392": [
+   "Anthony Tyus III",
+   "CAR"
+  ],
+  "4710341": [
+   "Jarquez Hunter",
+   "NO"
+  ],
+  "4712462": [
+   "Keith Cooper Jr.",
+   "CAR"
+  ],
+  "4714157": [
+   "Thomas Incoom",
+   "CAR"
+  ],
+  "4775268": [
+   "Mike Reid",
+   "NO"
+  ],
+  "4833355": [
+   "Nic Scourton",
+   "CAR"
+  ],
+  "4870694": [
+   "Monroe Freeling",
+   "CAR"
+  ],
+  "4873075": [
+   "TJ Hall Jr.",
+   "NO"
+  ],
+  "4874515": [
+   "Sam Hecht",
+   "CAR"
+  ],
+  "4875592": [
+   "Jackson Kuwatch",
+   "CAR"
+  ],
+  "4875848": [
+   "Parker Petersen",
+   "CAR"
+  ],
+  "4876995": [
+   "Ja'seem Reed",
+   "CAR"
+  ],
+  "4878824": [
+   "Da'Metrius Weatherspoon",
+   "CAR"
+  ],
+  "4879276": [
+   "Bryce Lance",
+   "NO"
+  ],
+  "4880281": [
+   "Jordyn Tyson",
+   "NO"
+  ],
+  "4880613": [
+   "Bam Martin-Scott",
+   "CAR"
+  ],
+  "5081999": [
+   "CJ Donaldson",
+   "NO"
+  ],
+  "5091739": [
+   "Chris Brazzell II",
+   "CAR"
+  ],
+  "5151083": [
+   "Will Lee III",
+   "CAR"
+  ],
+  "5164879": [
+   "Alan Herron",
+   "NO"
+  ],
+  "5208518": [
+   "Charlie Smyth",
+   "NO"
+  ],
+  "5213029": [
+   "Jay'viar Suggs",
+   "NO"
+  ],
+  "5225251": [
+   "Malcolm DeWalt IV",
+   "CAR"
+  ],
+  "5279357": [
+   "Mapalo Mwansa",
+   "CAR"
+  ]
+ }
 }
