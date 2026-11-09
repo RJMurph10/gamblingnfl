@@ -10,9 +10,6 @@ on:
     - cron: "47 14,18,22 * 1-6,10-12 *"
     - cron: "47 4 * 1-6,10-12 *"
   workflow_dispatch:
-  push:
-    branches: [morning-picks]
-    paths: [scripts/picks/**]
 
 permissions:
   contents: write

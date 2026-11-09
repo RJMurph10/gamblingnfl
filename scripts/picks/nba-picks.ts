@@ -110,7 +110,9 @@ async function main() {
         if (p.best && p.market === "total") fresh.push(p);
       }
     }
-    const picks = [...byId.values()].sort((a, b) => a.tip.localeCompare(b.tip) || a.id.localeCompare(b.id));
+    const picks = [...byId.values()].sort(
+      (a, b) => a.tip.localeCompare(b.tip) || a.id.localeCompare(b.id),
+    );
     await writeFile(file, JSON.stringify({ day, updated: stamp, picks }, null, 1));
     console.log(`${day}: ${picks.length} picks (${found.length} now on the board)`);
   }
@@ -118,9 +120,7 @@ async function main() {
     console.log("no new ★ picks");
     return;
   }
-  const lines = fresh.map(
-    (p) => `★ ${p.pick} · ${p.game} (model ${p.model}, ${p.edge} off)`,
-  );
+  const lines = fresh.map((p) => `★ ${p.pick} · ${p.game} (model ${p.model}, ${p.edge} off)`);
   console.log(lines.join("\n"));
   if (!TOPIC) {
     console.log("NTFY_TOPIC not set: no phone alert");
@@ -147,4 +147,3 @@ main().catch((e) => {
   console.error(e);
   process.exit(1);
 });
-// test run 2330
