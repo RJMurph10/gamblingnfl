@@ -3,6 +3,8 @@ on:
   push:
     branches: [nba-odds-probe]
     paths: [research/nba/scripts/fetch_espn_totals.mjs]
+permissions:
+  contents: write
 jobs:
   fetch:
     runs-on: ubuntu-latest
@@ -15,7 +17,15 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
       - run: node research/nba/scripts/fetch_espn_totals.mjs ${{ matrix.span[0] }} ${{ matrix.span[1] }} out-${{ matrix.span[0] }}.csv
-      - uses: actions/upload-artifact@v4
-        with:
-          name: nba-odds-${{ matrix.span[0] }}
-          path: out-${{ matrix.span[0] }}.csv
+      - name: Save to the nba-odds-data branch
+        run: |
+          url="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+          for attempt in 1 2 3 4 5 6; do
+            rm -rf d && mkdir d && cd d && git init -q && git remote add origin "$url"
+            if git fetch -q --depth 1 origin nba-odds-data 2>/dev/null; then git checkout -q -b nba-odds-data FETCH_HEAD; else git checkout -q --orphan nba-odds-data; fi
+            cp ../out-${{ matrix.span[0] }}.csv .
+            git config user.name "research-bot"; git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add -A && git commit -q -m "NBA odds ${{ matrix.span[0] }}" && git push -q origin nba-odds-data && exit 0
+            cd ..; sleep $((attempt * 10))
+          done
+          exit 1

@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// run: 2
 /** Research: every finished NBA game's opening and closing totals and spreads by book, from ESPN's odds feed.
  *  node fetch_espn_totals.mjs 2023-10-20 2026-11-08 out.csv */
 import { writeFile } from "node:fs/promises";
