@@ -168,9 +168,11 @@ function parseOdds(o: any, awayAbbr: string, homeAbbr: string): NbaOdds | undefi
     num(side?.moneyLine) ??
     num(priceToAmerican(o?.moneyline?.[key]?.close?.odds ?? o?.moneyline?.[key]?.current?.odds));
   const total = num(o.overUnder ?? o.total?.over?.close?.line ?? o.total);
+  const open = num(o.open?.total?.american ?? o.open?.total?.alternateDisplayValue ?? o.total?.over?.open?.line);
   const out: NbaOdds = {
     spread,
     total: total !== null && total > 0 ? total : null,
+    ...(open !== null && open > 0 ? { totalOpen: open } : {}),
     mlHome: mlOf(o.homeTeamOdds, "home"),
     mlAway: mlOf(o.awayTeamOdds, "away"),
     ...(o.provider?.name ? { provider: String(o.provider.name) } : {}),
@@ -297,6 +299,7 @@ async function loadClosingOdds(game: NbaGame): Promise<NbaOdds | null> {
     if (!o) return;
     if (acc.spread === null) acc.spread = o.spread;
     if (acc.total === null) acc.total = o.total;
+    if (acc.totalOpen == null && o.totalOpen != null) acc.totalOpen = o.totalOpen;
     if (acc.mlHome === null) acc.mlHome = o.mlHome;
     if (acc.mlAway === null) acc.mlAway = o.mlAway;
     if (!acc.provider && o.provider) acc.provider = o.provider;
@@ -364,6 +367,7 @@ async function withClosingOdds(games: NbaGame[]): Promise<NbaGame[]> {
     const merged: NbaOdds = {
       spread: g.odds?.spread ?? o.spread,
       total: g.odds?.total ?? o.total,
+      ...((g.odds?.totalOpen ?? o.totalOpen) != null ? { totalOpen: (g.odds?.totalOpen ?? o.totalOpen) as number } : {}),
       mlHome: g.odds?.mlHome ?? o.mlHome,
       mlAway: g.odds?.mlAway ?? o.mlAway,
       ...((g.odds?.provider ?? o.provider) ? { provider: (g.odds?.provider ?? o.provider) as string } : {}),

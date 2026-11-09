@@ -489,7 +489,7 @@ function ModelCard({ row }: { row: NbaModelRow }) {
           <dt className="text-mute">Total</dt>
           <dd className={`font-mono ${result(row.total?.result)}`}>
             {row.total
-              ? `${row.total.best ? "★ " : ""}${row.total.pick} ${row.total.line} (proj ${pred.total.toFixed(1)})${row.total.result ? ` · ${row.total.result}` : ""}`
+              ? `${row.total.best ? "★ " : ""}${row.total.pick} ${row.total.line}${game.odds?.totalOpen != null ? " (opener)" : ""} (proj ${pred.total.toFixed(1)})${row.total.result ? ` · ${row.total.result}` : ""}`
               : game.odds?.total ? `No edge (proj ${pred.total.toFixed(1)})` : `Proj ${pred.total.toFixed(1)}`}
           </dd>
         </div>

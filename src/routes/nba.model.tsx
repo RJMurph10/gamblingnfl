@@ -54,6 +54,9 @@ function PickCells({ row }: { row: NbaModelRow }) {
             {row.total.best ? "★ " : ""}
             {row.total.pick} {row.total.line}
             <span className="ml-1 text-faint">+{row.total.edge.toFixed(1)}</span>
+            {game.odds?.totalOpen != null && game.odds.total != null && game.odds.total !== row.total.line ? (
+              <span className="ml-1 text-faint">· now {game.odds.total}</span>
+            ) : null}
           </>
         ) : (
           <span className="text-faint">{game.odds?.total ? "pass" : "no line"}</span>
@@ -147,7 +150,7 @@ function NbaModelPage() {
   return (
     <>
       <PageTitle
-        eyebrow="Model · picks vs. closing lines"
+        eyebrow="Model · spreads vs. closing lines · totals vs. opening totals"
         title="Model"
         aside={
           <div className="flex gap-2">
@@ -163,7 +166,7 @@ function NbaModelPage() {
         <StatCard label="Straight-up winners" value={scope === "predictions" ? (summary.moneyline.winPct === null ? "—" : summary.moneyline.winPct.toFixed(1)) : "—"} unit={scope === "predictions" && summary.moneyline.winPct !== null ? "%" : undefined} note={scope === "predictions" ? `${rec(summary.moneyline)} picking winners` : "switch to Every pick"} />
       </div>
       <p className="mb-6 font-mono text-[10px] uppercase tracking-wider text-faint">
-        ★ = model is {`≥`}3 pts off the spread or {`≥`}5 off the total · flat 1u at -110 · every finished game is predicted using only games before its day · preseason excluded
+        Totals: a pick when the model is {`≥`}5 pts off the opening total (★ {`≥`}8), graded at the opener, since the edge is in betting early: in 2023-25 these hit 54-58% at the open but about 50% at the close, as the line moves toward the model · spreads: ★ = {`≥`}3 pts off · flat 1u at -110 · every finished game is predicted using only games before its day · preseason excluded
       </p>
 
       <div className="grid gap-6 lg:grid-cols-12">

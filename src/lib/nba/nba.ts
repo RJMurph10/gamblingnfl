@@ -25,6 +25,8 @@ export interface NbaOdds {
   /** Home-team spread: negative = home favorite (BOS -5.5 at home → -5.5). */
   spread: number | null;
   total: number | null;
+  /** The book's opening total, when ESPN has it (the model's totals are graded against it). */
+  totalOpen?: number | null;
   mlHome: number | null;
   mlAway: number | null;
   provider?: string;
