@@ -99,6 +99,8 @@ export type UpcomingPropRow = [
   number | null,
   number | null,
   number | null,
+  /** DraftKings' alternate over lines ("X+"), [[line, over price], ...], when saved. */
+  ([number, number][] | undefined)?,
 ];
 
 export interface UpcomingPropGame {
