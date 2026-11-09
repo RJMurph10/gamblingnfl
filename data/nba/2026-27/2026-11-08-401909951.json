@@ -7,18 +7,18 @@
   "id": "14",
   "abbr": "MIA",
   "name": "Miami Heat",
-  "score": 104
+  "score": 114
  },
  "home": {
   "id": "23",
   "abbr": "SAC",
   "name": "Sacramento Kings",
-  "score": 100
+  "score": 108
  },
  "neutral": false,
  "venue": "Golden 1 Center",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-08T00:43:09.397Z",
@@ -4209,5 +4209,9 @@
    "Darius Acuff Jr.",
    "SAC"
   ]
+ },
+ "final": {
+  "away": 114,
+  "home": 108
  }
 }
