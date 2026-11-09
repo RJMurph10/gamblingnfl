@@ -7,18 +7,18 @@
   "id": "153",
   "abbr": "UNC",
   "name": "North Carolina Tar Heels",
-  "score": 12
+  "score": 39
  },
  "home": {
   "id": "2579",
   "abbr": "SC",
   "name": "South Carolina Gamecocks",
-  "score": 27
+  "score": 84
  },
  "neutral": true,
  "venue": "Spectrum Center",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-08T15:19:15.044Z",
@@ -934,5 +934,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 39,
+  "home": 84
+ }
 }

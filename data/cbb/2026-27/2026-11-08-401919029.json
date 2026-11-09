@@ -2,17 +2,17 @@
  "id": "401919029",
  "league": "cbb",
  "date": "2026-11-09T04:00Z",
- "name": "USC VS WICH",
+ "name": "WICH VS USC",
  "away": {
-  "id": "30",
-  "abbr": "USC",
-  "name": "USC Trojans",
-  "score": 0
- },
- "home": {
   "id": "2724",
   "abbr": "WICH",
   "name": "Wichita State Shockers",
+  "score": 0
+ },
+ "home": {
+  "id": "30",
+  "abbr": "USC",
+  "name": "USC Trojans",
   "score": 0
  },
  "neutral": true,

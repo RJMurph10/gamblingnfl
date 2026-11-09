@@ -477,13 +477,14 @@
    ]
   },
   "close": {
-   "at": "2026-11-08T23:06:31.297Z",
+   "at": "2026-11-09T00:58:04.073Z",
    "scoreboard": [
     {
      "provider": {
       "id": "100",
       "name": "DraftKings",
-      "priority": 1
+      "priority": 1,
+      "displayName": "DraftKings"
      },
      "details": "PITT -2.5",
      "overUnder": 153.5,
@@ -519,7 +520,7 @@
       "shortDisplayName": "ML",
       "home": {
        "close": {
-        "odds": "+120",
+        "odds": "+124",
         "link": {
          "language": "en-US",
          "rel": [
@@ -551,7 +552,7 @@
       },
       "away": {
        "close": {
-        "odds": "-142",
+        "odds": "-148",
         "link": {
          "language": "en-US",
          "rel": [
@@ -778,7 +779,7 @@
      "awayTeamOdds": {
       "favorite": true,
       "underdog": false,
-      "moneyLine": -142,
+      "moneyLine": -148,
       "spreadOdds": -110,
       "open": {
        "favorite": true,
@@ -817,12 +818,12 @@
         "american": "-110"
        },
        "moneyLine": {
-        "value": 1.7,
-        "displayValue": "50/71",
-        "alternateDisplayValue": "-142",
-        "decimal": 1.7,
-        "fraction": "50/71",
-        "american": "-142"
+        "value": 1.67,
+        "displayValue": "25/37",
+        "alternateDisplayValue": "-148",
+        "decimal": 1.67,
+        "fraction": "25/37",
+        "american": "-148"
        }
       },
       "team": {
@@ -832,7 +833,7 @@
      "homeTeamOdds": {
       "favorite": false,
       "underdog": true,
-      "moneyLine": 120,
+      "moneyLine": 124,
       "spreadOdds": -110,
       "open": {
        "favorite": false,
@@ -871,12 +872,12 @@
         "american": "-110"
        },
        "moneyLine": {
-        "value": 2.2,
-        "displayValue": "6/5",
-        "alternateDisplayValue": "+120",
-        "decimal": 2.2,
-        "fraction": "6/5",
-        "american": "+120"
+        "value": 2.24,
+        "displayValue": "31/25",
+        "alternateDisplayValue": "+124",
+        "decimal": 2.24,
+        "fraction": "31/25",
+        "american": "+124"
        }
       },
       "team": {
