@@ -1,0 +1,21 @@
+name: NBA totals research fetch (temporary)
+on:
+  push:
+    branches: [nba-odds-probe]
+    paths: [research/nba/scripts/fetch_espn_totals.mjs]
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      matrix:
+        span: [["2023-10-20","2024-06-30"],["2024-10-20","2025-06-30"],["2025-10-20","2026-06-30"],["2026-10-20","2026-11-09"]]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: node research/nba/scripts/fetch_espn_totals.mjs ${{ matrix.span[0] }} ${{ matrix.span[1] }} out-${{ matrix.span[0] }}.csv
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nba-odds-${{ matrix.span[0] }}
+          path: out-${{ matrix.span[0] }}.csv
