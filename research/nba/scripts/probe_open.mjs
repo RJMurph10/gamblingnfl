@@ -6,7 +6,7 @@ for (const [sport, league] of [["basketball", "nba"], ["football", "nfl"], ["hoc
   console.log(`\n==== ${league}: ${ev?.name} ${ev?.date} status=${ev?.status?.type?.state}`);
   const o = ev?.competitions?.[0]?.odds?.[0];
   console.log("scoreboard odds keys:", o && Object.keys(o));
-  console.log("scoreboard odds:", JSON.stringify(o)?.slice(0, 2500));
+  console.log("scoreboard total/spread:", JSON.stringify({ total: o?.total, pointSpread: o?.pointSpread }, (k, v) => (k === "link" ? undefined : v)));
   if (ev) {
     const core = await get(`https://sports.core.api.espn.com/v2/sports/${sport}/leagues/${league}/events/${ev.id}/competitions/${ev.id}/odds?limit=5`);
     let it = core.items?.[0];
