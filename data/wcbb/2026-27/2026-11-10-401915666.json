@@ -7,18 +7,18 @@
   "id": "314",
   "abbr": "IONA",
   "name": "Iona Gaels",
-  "score": 0
+  "score": 41
  },
  "home": {
   "id": "2628",
   "abbr": "TCU",
   "name": "TCU Horned Frogs",
-  "score": 0
+  "score": 66
  },
  "neutral": false,
  "venue": "Schollmaier Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-10T17:55:16.070Z",
