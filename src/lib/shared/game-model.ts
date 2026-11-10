@@ -340,6 +340,11 @@ export interface ModelPick {
   result: PickResult;
   /** Units won or lost (0 for push / pending). */
   units: number;
+  /**
+   * Closing-line value (spreads and totals): points the line moved toward this pick since it opened
+   * (latest line vs ESPN's opener; final for finished games). Undefined when there's no opener.
+   */
+  clv?: number;
 }
 
 /**
@@ -400,7 +405,22 @@ export function applyQbAdjustment(p: GamePrediction, margin: number): GamePredic
   };
 }
 
-function grade(pick: Omit<ModelPick, "result" | "units">, game: Game): ModelPick {
+function lineMove(pick: Omit<ModelPick, "result" | "units">, game: Game): number | undefined {
+  const o = game.odds;
+  let move: number | undefined;
+  if (pick.market === "spread" && o?.homeSpreadOpen !== undefined && pick.line !== undefined) {
+    // pick.line is from the picked side's view; the opener is the home spread
+    const homeNow = pick.side === "home" ? pick.line : -pick.line;
+    move = pick.side === "home" ? o.homeSpreadOpen - homeNow : homeNow - o.homeSpreadOpen;
+  } else if (pick.market === "total" && o?.totalOpen !== undefined && pick.line !== undefined) {
+    move = pick.side === "over" ? pick.line - o.totalOpen : o.totalOpen - pick.line;
+  }
+  return move === undefined ? undefined : Math.round(move * 10) / 10;
+}
+
+function grade(input: Omit<ModelPick, "result" | "units">, game: Game): ModelPick {
+  const clv = lineMove(input, game);
+  const pick = clv === undefined ? input : { ...input, clv };
   if (game.status !== "final") return { ...pick, result: "pending", units: 0 };
   const s = gameScore(game);
   let margin = 0;
@@ -814,6 +834,8 @@ export interface ModelSummary {
   unitsByWeek: { week: number; units: number; weekUnits: number }[];
   /** Same figures through the previous week, for week-over-week changes. */
   previous: { overall: MarketRecord; byMarket: Record<Market, MarketRecord> } | null;
+  /** Closing-line value of graded spread and total picks that had an opener. */
+  clv: { picks: number; beat: number | null; lost: number | null; avg: number | null };
 }
 
 function record(picks: ModelPick[]): MarketRecord {
@@ -868,7 +890,16 @@ export function summarizeModel(
 
   const lastWeek = gradedWeeks.at(-1);
   const before = lastWeek === undefined ? [] : picks.filter((p) => p.week < lastWeek);
+  const moved = picks.filter((p) => p.result !== "pending" && p.market !== "moneyline" && p.clv !== undefined);
+  const n = moved.length;
+  const clv = {
+    picks: n,
+    beat: n ? (moved.filter((p) => (p.clv as number) > 0).length / n) * 100 : null,
+    lost: n ? (moved.filter((p) => (p.clv as number) < 0).length / n) * 100 : null,
+    avg: n ? Math.round((moved.reduce((s, p) => s + (p.clv as number), 0) / n) * 100) / 100 : null,
+  };
   return {
+    clv,
     overall: record(picks),
     byMarket: by(picks),
     unitsByWeek,
