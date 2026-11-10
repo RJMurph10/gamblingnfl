@@ -1,5 +1,9 @@
+import { useMemo } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { PageTitle, Panel, PanelHeader } from "@/components/shared/booth";
+import { BestBetsNow, type BestBetItem } from "@/components/shared/BestBetsNow";
+import { mlbTotalStars, UNDER_STAR_EDGE } from "@/lib/mlb/mlb-model";
+import { useMlbSchedule, useMlbWeather } from "@/lib/mlb/use-mlb";
 
 export const Route = createFileRoute("/mlb/model")({
   head: () => ({
@@ -54,9 +58,36 @@ const ANGLES: [string, number, number, number, number][] = [
 const u = (n: number) => `${n > 0 ? "+" : ""}${n.toFixed(1)}u`;
 
 function MlbModelPage() {
+  const { games, isLoading } = useMlbSchedule();
+  const { weather, isLoading: wxLoading } = useMlbWeather(games);
+  const items: BestBetItem[] = useMemo(
+    () =>
+      mlbTotalStars(games, weather).map((r) => ({
+        id: r.game.id,
+        matchup: `${r.game.away.team.abbr} @ ${r.game.home.team.abbr}`,
+        when: r.game.date,
+        pick: "Under",
+        open: r.open,
+        now: r.now,
+        model: Math.round(r.model * 10) / 10,
+        dir: -1,
+        // about 0.9 runs of total ≈ 8 points of under chance near a typical total
+        bestEdge: 0.9,
+        minEdge: 0.45,
+        timing: "now",
+        note: [`${Math.round(r.pUnder * 100)}% under`, ...r.why].join(" · "),
+      })),
+    [games, weather],
+  );
   return (
     <>
       <PageTitle eyebrow="MLB" title="Model" />
+      <BestBetsNow
+        items={items}
+        loading={isLoading || wxLoading}
+        empty={`No ★ bets on the board. A total becomes a ★ under when the model gives the under ${Math.round(UNDER_STAR_EDGE * 100)}+ points over 50% at the opening total.`}
+        footnote="★ unders: the site's run projection × game-day factors (first-pitch temperature, wind in/out at each park, day game after a night game), against the opening total. 2021-25: every season profitable at 5%+ edge (+3-4% ROI); against the closing total the edge is gone, so bet early."
+      />
       <div className="space-y-6">
         <Panel>
           <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">
@@ -71,9 +102,12 @@ function MlbModelPage() {
               model added nothing.
             </p>
             <p>
-              So the MLB pages show the model&apos;s numbers as reference only. There are no ★ best
-              bets for baseball. The one angle that held up in both halves of the test is on the
-              watch list below.
+              <b>Totals against the opening line: an edge.</b> Adding game-day factors to the run
+              projection (first-pitch temperature, wind blowing in or out at each park, a day game
+              after a night game) and betting unders when the model is 5%+ off the opening total
+              made money in every season from 2021 to 2025. At the closing total the edge is gone:
+              the market moves to it, so these are bet-early picks. Those are the ★ best bets above.
+              Moneylines and run lines stay reference only.
             </p>
           </div>
         </Panel>

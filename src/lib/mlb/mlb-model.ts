@@ -10,6 +10,7 @@
  * Pure functions (browser- and server-safe).
  */
 import { runLinePrices, type MlbGame, type MlbOdds, type MlbStarterLine } from "./mlb";
+import { dayAfterNight, gameDayFactor, type GameWeather } from "./game-day";
 
 /** Negative-binomial size for a team's runs (full game, first five innings), from 2012-2025. */
 const R_FULL = 4.08;
@@ -165,6 +166,8 @@ export function projectMlbGame(
   ratings: MlbRatings,
   /** Starter ratings from StarterBook (ERA scale); when given they replace the probables' ERA. */
   starters?: { away: number | null; home: number | null },
+  /** Game-day multipliers on each team's runs (weather, day after night; game-day.ts). */
+  gameDay?: { away: number; home: number },
 ): MlbProjection {
   const L = ratings.league;
   const team = (id: string) => ratings.teams.get(id) ?? { off: 1, def: 1, games: 0 };
@@ -182,8 +185,10 @@ export function projectMlbGame(
     ? (starters.home ?? LEAGUE_ERA) / LEAGUE_ERA
     : shrunkEra(sp ? game.home.probable?.era : null) / LEAGUE_ERA;
   const park = ratings.parks.get(game.home.team.id) ?? 1;
-  const awayRuns = L * a.off * (0.55 * spHome + 0.45 * h.def) * 0.985 * park;
-  const homeRuns = L * h.off * (0.55 * spAway + 0.45 * a.def) * 1.015 * park;
+  const gA = gameDay?.away ?? 1;
+  const gH = gameDay?.home ?? 1;
+  const awayRuns = L * a.off * (0.55 * spHome + 0.45 * h.def) * 0.985 * park * gA;
+  const homeRuns = L * h.off * (0.55 * spAway + 0.45 * a.def) * 1.015 * park * gH;
   const pa = nbPmf(awayRuns, R_FULL);
   const ph = nbPmf(homeRuns, R_FULL);
   let pHome = 0;
@@ -229,8 +234,8 @@ export function projectMlbGame(
     return cover / Math.max(1e-9, 1 - push);
   };
   // First five innings lean on the starters.
-  const f5Away = L * F5_SHARE.away * a.off * (0.85 * spHome + 0.15 * h.def) * park;
-  const f5Home = L * F5_SHARE.home * h.off * (0.85 * spAway + 0.15 * a.def) * park;
+  const f5Away = L * F5_SHARE.away * a.off * (0.85 * spHome + 0.15 * h.def) * park * gA;
+  const f5Home = L * F5_SHARE.home * h.off * (0.85 * spAway + 0.15 * a.def) * park * gH;
   const fa = nbPmf(f5Away, R_F5);
   const fh = nbPmf(f5Home, R_F5);
   let f5Home_ = 0;
@@ -547,4 +552,51 @@ export function mlbAccuracy(games: MlbGame[]): MlbAccuracy {
     agreesWithMarket: favN ? agree / favN : null,
     totalMiss: totN ? { model: missModel / totN, line: missLine / totN } : null,
   };
+}
+
+/* ---------- ★ unders at the opening total ---------- */
+
+/** ★ when the model's chance of the under at the opening total is 8+ points over a fair 50%. */
+export const UNDER_STAR_EDGE = 0.08;
+
+export interface MlbTotalStar {
+  game: MlbGame;
+  /** The opening total (the pick is graded there). */
+  open: number;
+  /** The current total. */
+  now: number | null;
+  /** Model expected runs (with the game-day factors). */
+  model: number;
+  /** Model chance of the under at the opener. */
+  pUnder: number;
+  why: string[];
+}
+
+/**
+ * Upcoming games whose total is a ★ under at the opener: the site's run projection x the game-day
+ * factors (weather forecast, day after night). Research (claude/mlb-openers.md): unders 5-8%+ off the
+ * opener won in every season 2021-2025; at the closing total they don't, so they're bet-early picks.
+ */
+export function mlbTotalStars(
+  games: MlbGame[],
+  weather: Record<string, GameWeather | null>,
+  now: number = Date.now(),
+): MlbTotalStar[] {
+  const done = games.filter(isDone).sort((a, b) => a.date.localeCompare(b.date));
+  const acc = new RatingsAcc();
+  for (const g of done) acc.add(g);
+  const ratings = acc.snapshot();
+  const dan = dayAfterNight(games);
+  const out: MlbTotalStar[] = [];
+  for (const g of games) {
+    if (g.status !== "scheduled" || Date.parse(g.date) <= now) continue;
+    const open = g.odds?.open?.total ?? null;
+    if (open === null) continue;
+    const f = gameDayFactor(g, weather[g.id], dan.get(g.id));
+    const p = projectMlbGame(g, ratings, undefined, f);
+    const pUnder = 1 - p.pOver(open);
+    if (pUnder - 0.5 < UNDER_STAR_EDGE) continue;
+    out.push({ game: g, open, now: g.odds?.total ?? null, model: p.expTotal, pUnder, why: f.why });
+  }
+  return out.sort((a, b) => a.game.date.localeCompare(b.game.date));
 }
