@@ -24,6 +24,16 @@ export interface QbWatchEvent {
   track: [string, number][];
   /** True when the news broke with no game on the board (bye week); atNews is then the first line seen after. */
   late?: boolean;
+  /**
+   * The team's other DraftKings prop lines ("player|market" → line) at the news and now, and each move
+   * after the news ([at, "player|market", line]), to see how fast books adjust teammates' props.
+   */
+  props?: {
+    atNews: Record<string, number>;
+    now: Record<string, number>;
+    track: [string, string, number][];
+    late?: boolean;
+  };
 }
 
 export interface QbWatchFile {

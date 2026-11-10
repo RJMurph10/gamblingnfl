@@ -41,6 +41,28 @@ interface Row {
   verdict: "lagging" | "priced" | "partial" | "done" | "none";
 }
 
+/** How many of the team's other prop lines have moved since the news, and how fast the first one did. */
+function PropMoves({ props, at }: { props: NonNullable<QbWatchEvent["props"]>; at: string }) {
+  const keys = Object.keys(props.atNews);
+  const moved = keys.filter((k) => props.now[k] !== props.atNews[k]);
+  const first = props.track[0];
+  const hrs = first ? (Date.parse(first[0]) - Date.parse(at)) / 3_600_000 : null;
+  const biggest = moved
+    .map((k) => ({ k, d: props.now[k] - props.atNews[k] }))
+    .sort((a, b) => Math.abs(b.d) - Math.abs(a.d))
+    .slice(0, 2);
+  return (
+    <div className="text-faint">
+      Teammate props: {moved.length} of {keys.length} lines moved since the news
+      {props.late ? " (board seen after)" : ""}
+      {hrs !== null ? ` · first move after ${hrs < 1 ? `${Math.round(hrs * 60)}m` : `${hrs.toFixed(1)}h`}` : ""}
+      {biggest.length
+        ? ` · ${biggest.map(({ k, d }) => `${k.replace("|", " ")} ${d > 0 ? "+" : ""}${Math.round(d * 10) / 10}`).join(", ")}`
+        : ""}
+    </div>
+  );
+}
+
 export function QbNewsPanel() {
   const watch = useQuery({ queryKey: ["nfl-qb-watch"], queryFn: () => getQbWatch(), refetchInterval: 5 * 60_000, retry: 1 });
   const history = useQuery({ queryKey: ["nfl-history-v2"], queryFn: () => getNflHistory(), staleTime: 60 * 60_000, retry: 1 });
@@ -127,6 +149,7 @@ export function QbNewsPanel() {
                 ) : (
                   <div className="text-faint">No game on the board yet (bye or game played).</div>
                 )}
+                {ev.props ? <PropMoves props={ev.props} at={ev.at} /> : null}
               </div>
             ))
           ) : (
