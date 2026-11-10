@@ -398,6 +398,8 @@ export interface MlbSeasonGrade {
   total: MlbRecord;
   avgRuns: number | null;
   avgLine: number | null;
+  /** ★ unders: under chance at the opening total 8+ points over 50%, graded at the opener (−110). */
+  stars: MlbRecord;
 }
 
 const win = (price: number | null | undefined) =>
@@ -408,8 +410,14 @@ const win = (price: number | null | undefined) =>
  * the result at the closing prices (−110 where a price is missing). `before` stops the replay early
  * (for week-over-week changes).
  */
-export function gradeMlbSeason(games: MlbGame[], before?: Date): MlbSeasonGrade {
+export function gradeMlbSeason(
+  games: MlbGame[],
+  before?: Date,
+  /** First-pitch weather for finished games (game-day factors); day-after-night always applies. */
+  weather: Record<string, GameWeather | null> = {},
+): MlbSeasonGrade {
   const done = games.filter(isDone).sort((a, b) => a.date.localeCompare(b.date));
+  const dan = dayAfterNight(games);
   const acc = new RatingsAcc();
   const book = new StarterBook();
   const out: MlbSeasonGrade = {
@@ -419,6 +427,7 @@ export function gradeMlbSeason(games: MlbGame[], before?: Date): MlbSeasonGrade 
     total: blank(),
     avgRuns: null,
     avgLine: null,
+    stars: blank(),
   };
   let runs = 0;
   let lineSum = 0;
@@ -428,10 +437,29 @@ export function gradeMlbSeason(games: MlbGame[], before?: Date): MlbSeasonGrade 
     if (cutoff && g.date >= cutoff) break;
     // Wait for a couple of weeks of results before grading.
     if (acc.games >= 150 && g.odds) {
-      const p = projectMlbGame(g, acc.snapshot(), g.starters ? startersFor(g, book) : undefined);
+      const ratings = acc.snapshot();
+      const gd = gameDayFactor(g, weather[g.id], dan.get(g.id));
+      const p = projectMlbGame(g, ratings, g.starters ? startersFor(g, book) : undefined, gd);
       const a = g.away.score as number;
       const h = g.home.score as number;
       const o = g.odds;
+      // ★ unders exactly as the live list picks them: no starters, factors on, at the opener
+      const open = o.open?.total ?? null;
+      if (open != null) {
+        const q = projectMlbGame(g, ratings, undefined, gd);
+        if (1 - q.pOver(open) - 0.5 >= UNDER_STAR_EDGE) {
+          const t = a + h;
+          const r = out.stars;
+          if (t === open) r.pushes += 1;
+          else if (t < open) {
+            r.wins += 1;
+            r.units += 100 / 110;
+          } else {
+            r.losses += 1;
+            r.units -= 1;
+          }
+        }
+      }
       out.games += 1;
       runs += a + h;
       if (o.mlHome != null && o.mlAway != null) {

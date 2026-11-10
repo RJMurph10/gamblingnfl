@@ -5,10 +5,14 @@ import {
   getMlbClosingLines,
   getMlbGameDetail,
   getMlbSchedule,
-  getWrigleyWind, getMlbWeather,
+  getWrigleyWind,
+  getMlbWeather,
+  getMlbPastWeather,
 } from "./mlb.functions";
 import { isWrigleyGame, type MlbGame, type MlbOdds, type WrigleyWind } from "./mlb";
 import type { GameWeather } from "./game-day";
+
+const NO_WEATHER: Record<string, GameWeather | null> = {};
 
 /* ---------- loading every finished game's closing line ---------- */
 
@@ -163,6 +167,32 @@ export function useMlbWeather(games: MlbGame[]) {
     staleTime: 30 * 60_000,
     refetchInterval: 60 * 60_000,
   });
-  const weather: Record<string, GameWeather | null> = query.data ?? {};
+  const weather: Record<string, GameWeather | null> = query.data ?? NO_WEATHER;
   return { weather, isLoading: query.isLoading && soon.length > 0 };
+}
+
+/**
+ * First-pitch weather for this season's finished games (Open-Meteo archive), for grading the season with
+ * the same game-day factors as the live picks. `ready` turns true once it's loaded or has failed, so the
+ * dashboard grades once instead of twice.
+ */
+export function useMlbPastWeather(games: MlbGame[]) {
+  const done = useMemo(
+    () =>
+      games
+        .filter((g) => g.status === "final")
+        .map((g) => [g.id, g.date, g.home.team.abbr] as [string, string, string]),
+    [games],
+  );
+  // refetch when another week of games has finished, not on every game
+  const bucket = Math.floor(done.length / 50);
+  const query = useQuery({
+    queryKey: ["mlb-past-weather", bucket],
+    queryFn: () => getMlbPastWeather({ data: { games: done.slice(-3000) } }),
+    enabled: done.length > 0,
+    staleTime: 12 * 3_600_000,
+    retry: 1,
+  });
+  const weather: Record<string, GameWeather | null> = query.data ?? NO_WEATHER;
+  return { weather, ready: !done.length || query.isSuccess || query.isError };
 }

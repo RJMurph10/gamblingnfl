@@ -5,8 +5,13 @@ import { PageTitle, Panel, PanelHeader, StatCard } from "@/components/shared/boo
 import { MlbLogo } from "@/components/mlb/MlbBits";
 import { MlbGamesTable } from "@/components/mlb/MlbGamesTable";
 import { buildMlbStandings, etDayKey, hasScore, isWrigleyBestBet, localTip } from "@/lib/mlb/mlb";
-import { gradeMlbSeason, winPct, type MlbRecord } from "@/lib/mlb/mlb-model";
-import { useMlbSchedule, useWrigleyWind } from "@/lib/mlb/use-mlb";
+import { gradeMlbSeason, mlbTotalStars, winPct, type MlbRecord } from "@/lib/mlb/mlb-model";
+import {
+  useMlbPastWeather,
+  useMlbSchedule,
+  useMlbWeather,
+  useWrigleyWind,
+} from "@/lib/mlb/use-mlb";
 
 export const Route = createFileRoute("/mlb/")({
   head: () => ({
@@ -36,8 +41,16 @@ const tone = (c: number | null): "win" | "loss" | "mute" =>
 function MlbDashboard() {
   const { games, isLoading, isError, error, linesLoading } = useMlbSchedule(60_000);
   const weekAgo = useMemo(() => new Date(Date.now() - 7 * 24 * 3_600_000), []);
-  const grade = useMemo(() => gradeMlbSeason(games), [games]);
-  const prev = useMemo(() => gradeMlbSeason(games, weekAgo), [games, weekAgo]);
+  // grade once the past games' weather is in, so the cards don't change under you
+  const past = useMlbPastWeather(games);
+  const grade = useMemo(
+    () => gradeMlbSeason(past.ready ? games : [], undefined, past.weather),
+    [games, past.ready, past.weather],
+  );
+  const prev = useMemo(
+    () => gradeMlbSeason(past.ready ? games : [], weekAgo, past.weather),
+    [games, weekAgo, past.ready, past.weather],
+  );
   const hasPrev = prev.games > 0 && prev.games !== grade.games;
 
   const live = useMemo(() => games.filter((g) => g.status === "live"), [games]);
@@ -58,22 +71,28 @@ function MlbDashboard() {
   );
   const standings = useMemo(() => buildMlbStandings(games), [games]);
   const wrigley = useWrigleyWind(games);
+  const forecast = useMlbWeather(games);
+  const unders = useMemo(() => mlbTotalStars(games, forecast.weather), [games, forecast.weather]);
   const bestBets = useMemo(
     () =>
-      new Set(wrigley.games.filter((g) => isWrigleyBestBet(wrigley.wind[g.id])).map((g) => g.id)),
-    [wrigley.games, wrigley.wind],
+      new Set([
+        ...wrigley.games.filter((g) => isWrigleyBestBet(wrigley.wind[g.id])).map((g) => g.id),
+        ...unders.map((u) => u.game.id),
+      ]),
+    [wrigley.games, wrigley.wind, unders],
   );
   const teams = useMemo(
     () => [...standings.map((s) => s.team)].sort((a, b) => a.name.localeCompare(b.name)),
     [standings],
   );
 
-  const loading = isLoading ? "Loading…" : undefined;
+  const loading = isLoading || !past.ready ? "Loading…" : undefined;
   const mlC = hasPrev ? change(winPct(grade.moneyline), winPct(prev.moneyline)) : null;
   const totC = hasPrev ? change(winPct(grade.total), winPct(prev.total)) : null;
   const rlC = hasPrev ? change(winPct(grade.runLine), winPct(prev.runLine)) : null;
   const all = grade.moneyline.units + grade.runLine.units + grade.total.units;
-  const allPrev = prev.moneyline.units + prev.runLine.units + prev.total.units;
+  const stars = grade.stars;
+  const starsPrev = prev.stars.units;
   const seasonOver = !live.length && !upcoming.length && recent.length > 0;
   // offseason: no Upcoming panel until a week before Opening Day
   const inSeason = showUpcoming(games.map((g) => ({ when: g.date, status: g.status })));
@@ -132,28 +151,30 @@ function MlbDashboard() {
             tone={tone(rlC)}
           />
           <StatCard
-            label="Every game · not bets"
-            value={units(all)}
+            label="★ Unders · at the opener"
+            value={loading ? "—" : units(stars.units)}
             note={
               loading ??
-              note(
-                hasPrev &&
-                  `${all - allPrev > 0 ? "▲" : all - allPrev < 0 ? "▼" : "—"} ${Math.abs(all - allPrev).toFixed(2)}u wk/wk`,
-                bestBets.size
-                  ? `${bestBets.size} ★ best bet${bestBets.size > 1 ? "s" : ""} now`
-                  : "★ best bets: Wrigley wind-out overs only",
-              )
+              (stars.wins + stars.losses
+                ? note(
+                    hasPrev &&
+                      `${stars.units - starsPrev > 0 ? "▲" : stars.units - starsPrev < 0 ? "▼" : "—"} ${Math.abs(stars.units - starsPrev).toFixed(2)}u wk/wk`,
+                    `${rec(stars)} · ${fmt(winPct(stars))}%`,
+                    unders.length ? `${unders.length} upcoming` : false,
+                  )
+                : "no openers on finished games yet")
             }
-            tone={all > 0 ? "win" : all < 0 ? "loss" : "mute"}
+            tone={stars.units > 0 ? "win" : stars.units < 0 ? "loss" : "mute"}
           />
         </div>
         <p className="mt-2 font-mono text-[10px] uppercase tracking-wider text-faint">
           {linesLoading ? (
             <span className="text-acc">Loading closing lines · {linesLoading} games left · </span>
           ) : null}
-          {grade.games} games graded · these grade a projection on every game at the closing ESPN odds (1u each) to
-          show how close the model is; they are not bets: the closing MLB market already prices pitchers, parks and
-          weather. ★ best bets: Wrigley wind-out overs · each game projected from earlier games only ·{" "}
+          {grade.games} games graded · the first three cards grade the projection on every game at the closing
+          ESPN odds (1u each, {units(all)} in all); they are not bets: the closing market already prices pitchers,
+          parks and weather. ★ unders: the projection × first-pitch weather and day-after-night, 8%+ under the
+          opening total, graded at the opener (−110) · each game projected from earlier games only ·{" "}
           <Link to="/mlb/model" className="text-acc">
             What the research found →
           </Link>

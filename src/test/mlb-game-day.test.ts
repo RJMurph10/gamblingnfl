@@ -113,3 +113,40 @@ describe("projection with game-day factors", () => {
     expect(stars[0].open).toBe(9.5);
   });
 });
+
+describe("season grade with game-day factors", () => {
+  it("grades ★ unders at the opening total", async () => {
+    const { gradeMlbSeason } = await import("@/lib/mlb/mlb-model");
+    const teams = ["NYY", "BOS", "TOR", "BAL", "TB", "CHC", "STL", "MIL", "CIN", "PIT"];
+    const list: MlbGame[] = [];
+    // 160 ordinary games so grading starts, then a cold, wind-in Wrigley game with a high opener
+    for (let i = 0; i < 160; i += 1) {
+      const a = teams[i % 10];
+      const h =
+        teams[(i + 1 + Math.floor(i / 10)) % 10] === a
+          ? teams[(i + 2) % 10]
+          : teams[(i + 1 + Math.floor(i / 10)) % 10];
+      const d = new Date(Date.UTC(2026, 3, 1) + i * 3 * 3_600_000).toISOString();
+      list.push(
+        g(`p${i}`, a, h, d, {
+          status: "final",
+          away: { team: team(a), score: 4 },
+          home: { team: team(h), score: 4 },
+        } as Partial<MlbGame>),
+      );
+    }
+    const x = g("x", "STL", "CHC", "2026-05-01T18:20:00Z", {
+      status: "final",
+      away: { team: team("STL"), score: 2 },
+      home: { team: team("CHC"), score: 3 },
+      odds: { total: 7.5, mlHome: -110, mlAway: -110, open: { total: 7.5 } } as MlbGame["odds"],
+    });
+    const r = gradeMlbSeason([...list, x], undefined, {
+      x: { tempF: 40, windMph: 20, windFrom: "NE" },
+    });
+    expect(r.stars.wins).toBe(1);
+    expect(r.stars.units).toBeCloseTo(100 / 110, 6);
+    const noWx = gradeMlbSeason([...list, x]);
+    expect(noWx.stars.wins + noWx.stars.losses).toBe(0);
+  });
+});
