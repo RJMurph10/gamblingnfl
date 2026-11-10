@@ -341,14 +341,24 @@ export interface CbbModelRow {
   game: CbbGame;
   pred: Prediction;
   moneyline: { pick: "home" | "away"; prob: number; result: PickResult | null; units: number | null };
-  spread: { pick: "home" | "away"; line: number; edge: number; result: PickResult | null } | null;
-  total: { pick: "over" | "under"; line: number; edge: number; result: PickResult | null } | null;
+  /** `clv`: points the line moved toward the pick from the opener to the closing line (null: no opener). */
+  spread: { pick: "home" | "away"; line: number; edge: number; result: PickResult | null; clv: number | null } | null;
+  total: { pick: "over" | "under"; line: number; edge: number; result: PickResult | null; clv: number | null } | null;
   /**
    * ★ best bet. rule "edge": the total, when the model is BEST_TOTAL_EDGE+ points from the opening total
    * (graded at the opener, which is when it has to be bet). rule "conf": the under in a conference game of
    * an UNDER_CONFERENCES conference (graded at the closing total; edge is 0).
    */
-  best: { pick: "over" | "under"; line: number; edge: number; result: PickResult | null; rule: "edge" | "conf" } | null;
+  best: { pick: "over" | "under"; line: number; edge: number; result: PickResult | null; rule: "edge" | "conf"; clv: number | null } | null;
+}
+
+/**
+ * How far the market moved toward a pick from the opener to the closing line: `dir` +1 when a higher
+ * number favors the pick (over), -1 when a lower one does (under, or the home side of a spread).
+ */
+function moveToward(open: number | null | undefined, close: number | null | undefined, dir: 1 | -1): number | null {
+  if (open == null || close == null) return null;
+  return Math.round((close - open) * dir * 10) / 10;
 }
 
 const toResult = (won: boolean, push = false): PickResult => (push ? "push" : won ? "win" : "loss");
@@ -374,7 +384,13 @@ export function rowFor(game: CbbGame, pred: Prediction): CbbModelRow {
     if (Math.abs(edge) >= SPREAD_PICK_MIN) {
       const pick = edge > 0 ? "home" : "away";
       const res = atsResult(game, line);
-      spread = { pick, line, edge: Math.abs(edge), result: res ? toResult(res === pick, res === "push") : null };
+      spread = {
+        pick,
+        line,
+        edge: Math.abs(edge),
+        result: res ? toResult(res === pick, res === "push") : null,
+        clv: moveToward(game.open?.spread, game.odds?.spread, pick === "home" ? -1 : 1),
+      };
     }
   }
   let total: CbbModelRow["total"] = null;
@@ -385,7 +401,13 @@ export function rowFor(game: CbbGame, pred: Prediction): CbbModelRow {
     if (Math.abs(edge) >= TOTAL_PICK_MIN) {
       const pick = edge > 0 ? "over" : "under";
       const res = ouResult(game, tl);
-      total = { pick, line: tl, edge: Math.abs(edge), result: res ? toResult(res === pick, res === "push") : null };
+      total = {
+        pick,
+        line: tl,
+        edge: Math.abs(edge),
+        result: res ? toResult(res === pick, res === "push") : null,
+        clv: moveToward(game.open?.total, game.odds?.total, pick === "over" ? 1 : -1),
+      };
     }
   }
   let best: CbbModelRow["best"] = null;
@@ -397,13 +419,20 @@ export function rowFor(game: CbbGame, pred: Prediction): CbbModelRow {
     if (Math.abs(edge) >= BEST_TOTAL_EDGE) {
       const pick = edge > 0 ? "over" : "under";
       const res = ouResult(game, opener);
-      best = { pick, line: opener, edge: Math.abs(edge), result: res ? toResult(res === pick, res === "push") : null, rule: "edge" };
+      best = {
+        pick,
+        line: opener,
+        edge: Math.abs(edge),
+        result: res ? toResult(res === pick, res === "push") : null,
+        rule: "edge",
+        clv: moveToward(opener, game.odds?.total, pick === "over" ? 1 : -1),
+      };
     }
   }
   const conf = game.home.team.confId;
   if (!best && tl != null && !game.nonDivisionI && conf && conf === game.away.team.confId && UNDER_CONFERENCES[conf]) {
     const res = ouResult(game, tl);
-    best = { pick: "under", line: tl, edge: 0, result: res ? toResult(res === "under", res === "push") : null, rule: "conf" };
+    best = { pick: "under", line: tl, edge: 0, result: res ? toResult(res === "under", res === "push") : null, rule: "conf", clv: null };
   }
   return {
     game,
@@ -484,6 +513,8 @@ export interface CbbSeasonGrade {
   total: CbbRecord;
   /** ★ best bets (totals 6+ points off the opener), graded at the opening total. */
   best: CbbRecord;
+  /** Closing-line value of the finished totals picks (and ★) that had an opener. */
+  clv: { picks: number; beat: number | null; lost: number | null; avg: number | null };
   /** Finished games graded. */
   games: number;
   avgPoints: number | null;
@@ -495,7 +526,19 @@ export const winPct = (r: CbbRecord) => (r.wins + r.losses ? (r.wins / (r.wins +
 
 /** The season's record: winners at the closing moneyline, spread and total picks at -110. */
 export function gradeCbbSeason(rows: CbbModelRow[], before?: Date): CbbSeasonGrade {
-  const out: CbbSeasonGrade = { moneyline: empty(), spread: empty(), total: empty(), best: empty(), games: 0, avgPoints: null, avgLine: null };
+  const out: CbbSeasonGrade = {
+    moneyline: empty(),
+    spread: empty(),
+    total: empty(),
+    best: empty(),
+    clv: { picks: 0, beat: null, lost: null, avg: null },
+    games: 0,
+    avgPoints: null,
+    avgLine: null,
+  };
+  let clvUp = 0;
+  let clvDown = 0;
+  let clvSum = 0;
   let pts = 0;
   let line = 0;
   let nLine = 0;
@@ -516,6 +559,13 @@ export function gradeCbbSeason(rows: CbbModelRow[], before?: Date): CbbSeasonGra
       ml.result === "win" ? out.moneyline.wins++ : ml.result === "loss" ? out.moneyline.losses++ : out.moneyline.pushes++;
       out.moneyline.units += ml.units;
     }
+    const c = r.total?.result ? r.total.clv : null;
+    if (c != null) {
+      out.clv.picks++;
+      clvSum += c;
+      if (c > 0) clvUp++;
+      else if (c < 0) clvDown++;
+    }
     for (const [pick, rec] of [
       [r.spread, out.spread],
       [r.total, out.total],
@@ -530,6 +580,11 @@ export function gradeCbbSeason(rows: CbbModelRow[], before?: Date): CbbSeasonGra
         rec.units -= 1;
       } else rec.pushes++;
     }
+  }
+  if (out.clv.picks) {
+    out.clv.beat = (clvUp / out.clv.picks) * 100;
+    out.clv.lost = (clvDown / out.clv.picks) * 100;
+    out.clv.avg = Math.round((clvSum / out.clv.picks) * 100) / 100;
   }
   out.avgPoints = out.games ? pts / out.games : null;
   out.avgLine = nLine ? line / nLine : null;
