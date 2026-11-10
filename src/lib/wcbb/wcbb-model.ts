@@ -12,6 +12,7 @@
  * opener too. Women's games play four 10-minute quarters.
  */
 import { WCBB_PRIOR, WCBB_PRIOR_EFF, WCBB_PRIOR_TEMPO } from "@/data/wcbb/prior-ratings";
+import { walkForward } from "../shared/walk-cache";
 import { atsResult, etDayKey, hasScore, normCdf, ouResult, winnerOf, type WcbbGame } from "./wcbb";
 
 /** Home court, in points per 100 possessions (about 2.8 points a game at average tempo). */
@@ -395,22 +396,22 @@ export function runWcbbModel(games: WcbbGame[]): WcbbModelRow[] {
     .filter((g) => g.status === "final" && hasScore(g))
     .sort((a, b) => a.date.localeCompare(b.date));
   const rows: WcbbModelRow[] = [];
-  const byDay = new Map<string, WcbbGame[]>();
-  for (const g of finals) {
-    const day = etDayKey(g.date);
-    const list = byDay.get(day);
-    if (list) list.push(g);
-    else byDay.set(day, [g]);
-  }
-  let cursor = 0;
-  for (const [day, dayGames] of byDay) {
-    while (cursor < finals.length && etDayKey(finals[cursor].date) < day) cursor++;
-    const at = Date.parse(dayGames[0].date);
-    const before = finals.slice(0, cursor);
-    const table = buildRatings(before, at);
-    const market = buildMarketRatings(before, at);
-    for (const g of dayGames) rows.push(rowFor(g, project(table, market, g)));
-  }
+  // each day's games predicted from the games before that day; saved between page loads (walk-cache.ts)
+  const preds = walkForward(
+    "wcbb",
+    finals,
+    (g) => etDayKey(g.date),
+    (g) =>
+      JSON.stringify([g.id, g.date, g.home.team.id, g.away.team.id, g.home.score, g.away.score, g.neutral, (g as { possessions?: number }).possessions, g.odds?.spread, g.odds?.total, g.open]),
+    (before, dayGames) => {
+      const at = Date.parse(dayGames[0].date);
+      const table = buildRatings(before, at);
+      const market = buildMarketRatings(before, at);
+      return dayGames.map((g) => project(table, market, g));
+    },
+    "",
+  );
+  for (const g of finals) rows.push(rowFor(g, preds.get(g.id)!));
   const now = buildRatings(finals, Date.now());
   const marketNow = buildMarketRatings(finals, Date.now());
   for (const g of usable.filter((x) => x.status !== "final" || !hasScore(x))) rows.push(rowFor(g, project(now, marketNow, g)));

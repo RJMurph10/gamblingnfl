@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Panel } from "@/components/shared/booth";
@@ -13,7 +13,7 @@ import { RushUndersPanel } from "@/components/nfl/RushUndersPanel";
 import { AltLaddersPanel } from "@/components/nfl/AltLaddersPanel";
 import { NextManUpPanel } from "@/components/shared/NextManUpPanel";
 import { QbStarsPanel } from "@/components/shared/QbStarsPanel";
-import { pastSeasonRuns, readHistory, runModelWithHistory } from "@/lib/nfl/model-history";
+import { pastSeasonRuns, readHistory, runModelWithHistory, pastRunsReady } from "@/lib/nfl/model-history";
 
 export const Route = createFileRoute("/model")({
   head: () => ({
@@ -88,24 +88,29 @@ function ModelPage() {
     }),
     [allHistory, currentSeason, upcoming, forecasts],
   );
+  // wait (a moment, once) for this browser's saved past-season replays, so the model isn't rerun from scratch
+  const [runsReady, setRunsReady] = useState(false);
+  useEffect(() => {
+    void pastRunsReady().then(() => setRunsReady(true));
+  }, []);
   const rows = useMemo(
-    () => runModelWithHistory(games, priorSeason, history, current, runOptions),
-    [games, priorSeason, history, current, runOptions],
+    () => (runsReady ? runModelWithHistory(games, priorSeason, history, current, runOptions) : []),
+    [runsReady, games, priorSeason, history, current, runOptions],
   );
   const trackRecord = useMemo(() => {
-    const past = pastSeasonRuns(history, runOptions);
+    const past = runsReady ? pastSeasonRuns(history, runOptions) : [];
     const lastPast = past.at(-1)?.season;
     return [
       { label: lastPast ? `${lastPast + 1} so far` : "This season", rows },
       ...past.map((r) => ({ label: String(r.season), rows: r.rows })).reverse(),
     ];
-  }, [rows, history, runOptions]);
+  }, [runsReady, rows, history, runOptions]);
   const qbRuns = useMemo(
     () => [
-      ...pastSeasonRuns(history, runOptions),
+      ...(runsReady ? pastSeasonRuns(history, runOptions) : []),
       ...(currentSeason ? [{ season: currentSeason, rows }] : []),
     ],
-    [history, currentSeason, rows, runOptions],
+    [runsReady, history, currentSeason, rows, runOptions],
   );
 
   // The watch list's "this week" slate: the next week that still has games to play.

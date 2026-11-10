@@ -12,6 +12,7 @@
  * moneyline winner for every game. Units are flat 1u per pick at -110 (moneyline picks
  * use the listed moneyline when ESPN has one).
  */
+import { walkForward } from "../shared/walk-cache";
 import {
   atsResult,
   etDayKey,
@@ -407,23 +408,20 @@ export function runNbaModel(games: NbaGame[], prior: NbaPriorTeam[]): NbaModelRo
     .sort((a, b) => a.date.localeCompare(b.date));
   const rows: NbaModelRow[] = [];
 
-  // Each day's games are predicted from every game before that day (grouped once, in order).
-  const byDay = new Map<string, NbaGame[]>();
-  for (const g of finals) {
-    const day = etDayKey(g.date);
-    const list = byDay.get(day);
-    if (list) list.push(g);
-    else byDay.set(day, [g]);
-  }
-  let cursor = 0;
-  for (const [day, dayGames] of byDay) {
-    while (cursor < finals.length && etDayKey(finals[cursor].date) < day) cursor++;
-    const before = finals.slice(0, cursor);
-    const table = buildRatings(before, prior);
-    const totals = buildTotalRatings(before, prior, Date.parse(dayGames[0].date));
-    for (const g of dayGames)
-      rows.push(rowFor(g, predictGame(table, g.home.team.id, g.away.team.id, totals)));
-  }
+  // Each day's games are predicted from every game before that day; saved between page loads (walk-cache.ts).
+  const preds = walkForward(
+    "nba",
+    finals,
+    (g) => etDayKey(g.date),
+    (g) => JSON.stringify([g.id, g.date, g.home.team.id, g.away.team.id, g.home.score, g.away.score]),
+    (before, dayGames) => {
+      const table = buildRatings(before, prior);
+      const totals = buildTotalRatings(before, prior, Date.parse(dayGames[0].date));
+      return dayGames.map((g) => predictGame(table, g.home.team.id, g.away.team.id, totals));
+    },
+    JSON.stringify(prior),
+  );
+  for (const g of finals) rows.push(rowFor(g, preds.get(g.id)!));
   const now = buildRatings(finals, prior);
   const nowTotals = buildTotalRatings(finals, prior);
   for (const g of rated.filter((x) => x.status !== "final" || !hasScore(x)))

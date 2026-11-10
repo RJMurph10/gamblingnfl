@@ -1,6 +1,7 @@
 /**
- * Keeps a copy of the big schedule queries in the browser (IndexedDB), so a page you've visited before
- * shows its games instantly on the next visit, then quietly refreshes from the server. Finished games
+ * Keeps a copy of the site's queries in the browser (IndexedDB): schedules, lines, props boards, model
+ * inputs, trackers. A page you've visited before shows its data instantly on the next visit (no
+ * "Loading…"), then quietly refreshes from the server and only changes on screen if the data did. Finished games
  * therefore never wait on ESPN again; live and upcoming games still update as soon as the refresh lands.
  *
  * Browser-only and best-effort: if IndexedDB is unavailable (private mode, old browser) nothing is
@@ -9,15 +10,19 @@
 import { useEffect } from "react";
 import type { QueryClient, QueryKey } from "@tanstack/react-query";
 
-/** Queries worth keeping: whole-season schedules and last season's results. */
-const PERSISTED = new Set([
-  "live-schedule",
-  "prior-season-results",
-  "cfb-schedule",
-  "cfb-prior-season",
-  "nba-schedule",
-  "nba-prior",
-  "nhl-schedule",
+/**
+ * Every query is kept except live per-game detail (box score / play-by-play, refreshed every few seconds
+ * while a game is on), where a saved copy would show an old score until the refresh lands.
+ */
+const NOT_PERSISTED = new Set([
+  "nfl-game",
+  "nba-game",
+  "nhl-game",
+  "mlb-game",
+  "cbb-game",
+  "wcbb-game",
+  "wnba-game",
+  "game-props",
 ]);
 const DB_NAME = "gamblingnfl-cache";
 const STORE = "queries";
@@ -34,8 +39,13 @@ const LIVE_FRESH_MS = 10 * 60_000;
  * They come back, with their real status, as soon as the server answers.
  */
 export function withoutStaleLive(entry: Pick<Saved, "data" | "updatedAt">, now = Date.now()): unknown {
-  if (now - entry.updatedAt < LIVE_FRESH_MS || !Array.isArray(entry.data)) return entry.data;
-  return entry.data.filter((g) => (g as { status?: unknown } | null)?.status !== "live");
+  if (now - entry.updatedAt < LIVE_FRESH_MS) return entry.data;
+  const notLive = (g: unknown) => (g as { status?: unknown } | null)?.status !== "live";
+  if (Array.isArray(entry.data)) return entry.data.filter(notLive);
+  // schedules shaped { games: [...], ... } (college basketball, WNBA, MLB)
+  const d = entry.data as { games?: unknown } | null;
+  if (d && typeof d === "object" && Array.isArray(d.games)) return { ...d, games: d.games.filter(notLive) };
+  return entry.data;
 }
 
 interface Saved {
@@ -45,7 +55,7 @@ interface Saved {
   updatedAt: number;
 }
 
-const persisted = (queryKey: QueryKey) => typeof queryKey[0] === "string" && PERSISTED.has(queryKey[0]);
+const persisted = (queryKey: QueryKey) => typeof queryKey[0] === "string" && !NOT_PERSISTED.has(queryKey[0]);
 
 let dbPromise: Promise<IDBDatabase | null> | null = null;
 function openDb(): Promise<IDBDatabase | null> {
