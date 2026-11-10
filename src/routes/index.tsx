@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { showUpcoming } from "@/lib/shared/season-window";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { LiveGamesPanel, RecentGamesPanel, UpcomingGames } from "@/components/shared/GameTables";
@@ -215,7 +216,9 @@ function Dashboard() {
         <section className="min-w-0 lg:col-span-8 space-y-6">
           <LiveGamesPanel games={live} />
 
-          <UpcomingGames games={source} />
+          {showUpcoming(source.map((g) => ({ when: g.kickoffIso, status: g.status }))) ? (
+            <UpcomingGames games={source} />
+          ) : null}
 
           <RecentGamesPanel
             games={recent}

@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { showUpcoming } from "@/lib/shared/season-window";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageTitle, Panel, PanelHeader, StatCard } from "@/components/shared/booth";
 import { NbaLogo } from "@/components/nba/NbaBits";
@@ -142,7 +143,9 @@ function NbaDashboard() {
       <div className="grid gap-6 lg:grid-cols-12">
         <section className="min-w-0 space-y-6 lg:col-span-8">
           <NbaLivePanel games={live} />
-          <NbaUpcomingGames games={games} />
+          {showUpcoming(games.map((g) => ({ when: g.date, status: g.status, preseason: g.part === "pre" }))) ? (
+            <NbaUpcomingGames games={games} />
+          ) : null}
           <NbaRecentGames
             games={recent}
             emptyText={isLoading ? "Loading games from ESPN…" : isError ? `Could not load games from ESPN. Try refreshing shortly.${error instanceof Error && error.message ? ` (${error.message})` : ""}` : "No completed NBA games are currently available from ESPN."}

@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { showUpcoming } from "@/lib/shared/season-window";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageTitle, Panel, PanelHeader, StatCard } from "@/components/shared/booth";
 import { MlbLogo } from "@/components/mlb/MlbBits";
@@ -74,6 +75,8 @@ function MlbDashboard() {
   const all = grade.moneyline.units + grade.runLine.units + grade.total.units;
   const allPrev = prev.moneyline.units + prev.runLine.units + prev.total.units;
   const seasonOver = !live.length && !upcoming.length && recent.length > 0;
+  // offseason: no Upcoming panel until a week before Opening Day
+  const inSeason = showUpcoming(games.map((g) => ({ when: g.date, status: g.status })));
 
   return (
     <>
@@ -161,14 +164,14 @@ function MlbDashboard() {
           {live.length ? (
             <MlbGamesTable title="Live now" games={live} live starred={bestBets} />
           ) : null}
-          {upcoming.length ? (
+          {upcoming.length && inSeason ? (
             <MlbGamesTable
               title="Upcoming games"
               aside={`${new Date(upcoming[0].date).toLocaleDateString([], { weekday: "short", month: "short", day: "numeric" })} · ${upcoming.length} games`}
               games={upcoming}
               starred={bestBets}
             />
-          ) : (
+          ) : isLoading || (isError && !games.length) || inSeason ? (
             <Panel>
               <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">
                 Upcoming games
@@ -183,7 +186,7 @@ function MlbDashboard() {
                       : "No games scheduled in the next two weeks."}
               </p>
             </Panel>
-          )}
+          ) : null}
           <MlbGamesTable
             title="Recent games"
             games={recent}

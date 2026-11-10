@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { showUpcoming } from "@/lib/shared/season-window";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageTitle, Panel, StatCard } from "@/components/shared/booth";
 import { WcbbLogo } from "@/components/wcbb/WcbbBits";
@@ -160,7 +161,9 @@ function WcbbDashboard() {
       <div className="grid gap-6 lg:grid-cols-12">
         <section className="min-w-0 space-y-6 lg:col-span-8">
           <WcbbLiveGames games={live} model={model} />
-          <WcbbUpcomingGames games={d1Games} model={model} />
+          {showUpcoming(d1Games.map((g) => ({ when: g.date, status: g.status }))) ? (
+            <WcbbUpcomingGames games={d1Games} model={model} />
+          ) : null}
           <WcbbRecentGames
             model={model}
             games={recent}

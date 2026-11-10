@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { showUpcoming } from "@/lib/shared/season-window";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageTitle, Panel, PanelHeader, StatCard } from "@/components/shared/booth";
 import { NhlLogo } from "@/components/nhl/NhlBits";
@@ -146,7 +147,9 @@ function NhlDashboard() {
       <div className="grid gap-6 lg:grid-cols-12">
         <section className="min-w-0 space-y-6 lg:col-span-8">
           <NhlLivePanel games={live} />
-          <NhlUpcomingGames games={games} />
+          {showUpcoming(games.map((g) => ({ when: g.date, status: g.status, preseason: g.part === "pre" }))) ? (
+            <NhlUpcomingGames games={games} />
+          ) : null}
           <NhlRecentGames
             games={recent}
             emptyText={
