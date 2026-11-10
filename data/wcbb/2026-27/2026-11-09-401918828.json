@@ -7,18 +7,18 @@
   "id": "2413",
   "abbr": "MORE",
   "name": "Morehead State Eagles",
-  "score": 0
+  "score": 41
  },
  "home": {
   "id": "238",
   "abbr": "VAN",
   "name": "Vanderbilt Commodores",
-  "score": 0
+  "score": 83
  },
  "neutral": false,
  "venue": "Memorial Gymnasium (TN)",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-09T18:52:46.049Z",

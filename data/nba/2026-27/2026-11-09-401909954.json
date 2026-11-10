@@ -7,18 +7,18 @@
   "id": "27",
   "abbr": "WSH",
   "name": "Washington Wizards",
-  "score": 0
+  "score": 91
  },
  "home": {
   "id": "8",
   "abbr": "DET",
   "name": "Detroit Pistons",
-  "score": 0
+  "score": 103
  },
  "neutral": false,
  "venue": "Little Caesars Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-09T04:18:26.311Z",

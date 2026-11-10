@@ -7,18 +7,18 @@
   "id": "11",
   "abbr": "IND",
   "name": "Indiana Pacers",
-  "score": 0
+  "score": 66
  },
  "home": {
   "id": "6",
   "abbr": "DAL",
   "name": "Dallas Mavericks",
-  "score": 0
+  "score": 56
  },
  "neutral": false,
  "venue": "American Airlines Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-09T04:18:26.311Z",

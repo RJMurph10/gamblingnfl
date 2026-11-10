@@ -7,18 +7,18 @@
   "id": "2287",
   "abbr": "ILST",
   "name": "Illinois State Redbirds",
-  "score": 0
+  "score": 19
  },
  "home": {
   "id": "2509",
   "abbr": "PUR",
   "name": "Purdue Boilermakers",
-  "score": 0
+  "score": 29
  },
  "neutral": false,
  "venue": "Mackey Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-08T23:06:31.297Z",

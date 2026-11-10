@@ -7,18 +7,18 @@
   "id": "2454",
   "abbr": "UNF",
   "name": "North Florida Ospreys",
-  "score": 0
+  "score": 51
  },
  "home": {
   "id": "2390",
   "abbr": "MIA",
   "name": "Miami Hurricanes",
-  "score": 0
+  "score": 89
  },
  "neutral": false,
  "venue": "Watsco Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-09T04:18:26.311Z",
@@ -801,5 +801,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 51,
+  "home": 89
+ }
 }

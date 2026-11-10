@@ -7,18 +7,18 @@
   "id": "47",
   "abbr": "HOW",
   "name": "Howard Bison",
-  "score": 15
+  "score": 65
  },
  "home": {
   "id": "219",
   "abbr": "PENN",
   "name": "Pennsylvania Quakers",
-  "score": 3
+  "score": 78
  },
  "neutral": false,
  "venue": "The Palestra",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-09T04:18:26.311Z",
@@ -477,5 +477,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 65,
+  "home": 78
+ }
 }

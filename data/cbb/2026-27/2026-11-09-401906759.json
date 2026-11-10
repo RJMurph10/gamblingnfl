@@ -7,18 +7,18 @@
   "id": "2473",
   "abbr": "OAK",
   "name": "Oakland Golden Grizzlies",
-  "score": 0
+  "score": 57
  },
  "home": {
   "id": "333",
   "abbr": "ALA",
   "name": "Alabama Crimson Tide",
-  "score": 0
+  "score": 95
  },
  "neutral": false,
  "venue": "Coleman Coliseum",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-08T23:06:31.297Z",

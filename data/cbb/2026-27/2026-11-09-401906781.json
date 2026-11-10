@@ -7,18 +7,18 @@
   "id": "526",
   "abbr": "FGCU",
   "name": "Florida Gulf Coast Eagles",
-  "score": 0
+  "score": 72
  },
  "home": {
   "id": "61",
   "abbr": "UGA",
   "name": "Georgia Bulldogs",
-  "score": 0
+  "score": 80
  },
  "neutral": false,
  "venue": "Stegeman Coliseum",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-09T04:18:26.311Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 72,
+  "home": 80
+ }
 }

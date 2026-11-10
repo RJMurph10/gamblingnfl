@@ -7,18 +7,18 @@
   "id": "112358",
   "abbr": "LIU",
   "name": "Long Island University Sharks",
-  "score": 0
+  "score": 46
  },
  "home": {
   "id": "119",
   "abbr": "TOW",
   "name": "Towson Tigers",
-  "score": 0
+  "score": 66
  },
  "neutral": false,
  "venue": "SECU Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-09T04:18:26.311Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 46,
+  "home": 66
+ }
 }

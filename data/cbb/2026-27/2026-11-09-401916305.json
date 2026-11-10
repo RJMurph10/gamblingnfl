@@ -7,18 +7,18 @@
   "id": "135",
   "abbr": "MINN",
   "name": "Minnesota Golden Gophers",
-  "score": 0
+  "score": 63
  },
  "home": {
   "id": "2132",
   "abbr": "CIN",
   "name": "Cincinnati Bearcats",
-  "score": 0
+  "score": 61
  },
  "neutral": false,
  "venue": "Fifth Third Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-08T23:06:31.297Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 63,
+  "home": 61
+ }
 }

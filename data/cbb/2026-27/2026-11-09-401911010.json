@@ -7,18 +7,18 @@
   "id": "325",
   "abbr": "CLE",
   "name": "Cleveland State Vikings",
-  "score": 0
+  "score": 79
  },
  "home": {
   "id": "189",
   "abbr": "BGSU",
   "name": "Bowling Green Falcons",
-  "score": 0
+  "score": 95
  },
  "neutral": false,
  "venue": "Stroh Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-09T00:58:04.073Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 79,
+  "home": 95
+ }
 }

@@ -7,18 +7,18 @@
   "id": "183",
   "abbr": "SYR",
   "name": "Syracuse Orange",
-  "score": 18
+  "score": 80
  },
  "home": {
   "id": "84",
   "abbr": "IU",
   "name": "Indiana Hoosiers",
-  "score": 13
+  "score": 83
  },
  "neutral": true,
  "venue": "Gainbridge Fieldhouse",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-08T20:31:48.043Z",
@@ -478,5 +478,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 80,
+  "home": 83
+ }
 }

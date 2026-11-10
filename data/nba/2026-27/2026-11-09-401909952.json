@@ -7,18 +7,18 @@
   "id": "13",
   "abbr": "LAL",
   "name": "Los Angeles Lakers",
-  "score": 0
+  "score": 110
  },
  "home": {
   "id": "1",
   "abbr": "ATL",
   "name": "Atlanta Hawks",
-  "score": 0
+  "score": 104
  },
  "neutral": false,
  "venue": "State Farm Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-09T04:18:26.311Z",

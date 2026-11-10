@@ -13,12 +13,12 @@
   "id": "6",
   "abbr": "EDM",
   "name": "Edmonton Oilers",
-  "score": 0
+  "score": 2
  },
  "neutral": false,
  "venue": "Rogers Place",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-08T20:31:48.043Z",

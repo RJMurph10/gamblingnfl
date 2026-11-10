@@ -7,18 +7,18 @@
   "id": "284",
   "abbr": "STO",
   "name": "Stonehill Skyhawks",
-  "score": 0
+  "score": 55
  },
  "home": {
   "id": "171",
   "abbr": "COLU",
   "name": "Columbia Lions",
-  "score": 0
+  "score": 75
  },
  "neutral": false,
  "venue": "Levien Gymnasium",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-09T04:18:26.311Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 55,
+  "home": 75
+ }
 }

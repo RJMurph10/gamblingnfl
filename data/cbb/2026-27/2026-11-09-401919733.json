@@ -7,18 +7,18 @@
   "id": "2569",
   "abbr": "SCST",
   "name": "South Carolina State Bulldogs",
-  "score": 0
+  "score": 75
  },
  "home": {
   "id": "2130",
   "abbr": "CHST",
   "name": "Chicago State Cougars",
-  "score": 0
+  "score": 63
  },
  "neutral": false,
  "venue": "Jones Convocation Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-09T04:18:26.311Z",

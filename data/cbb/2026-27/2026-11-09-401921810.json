@@ -7,18 +7,18 @@
   "id": "2348",
   "abbr": "LT",
   "name": "Louisiana Tech Bulldogs",
-  "score": 0
+  "score": 20
  },
  "home": {
   "id": "99",
   "abbr": "LSU",
   "name": "LSU Tigers",
-  "score": 0
+  "score": 52
  },
  "neutral": false,
  "venue": "Pete Maravich Assembly Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-08T23:06:31.297Z",

@@ -7,18 +7,18 @@
   "id": "5",
   "abbr": "CLE",
   "name": "Cleveland Cavaliers",
-  "score": 0
+  "score": 110
  },
  "home": {
   "id": "30",
   "abbr": "CHA",
   "name": "Charlotte Hornets",
-  "score": 0
+  "score": 120
  },
  "neutral": false,
  "venue": "Spectrum Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-09T04:18:26.311Z",

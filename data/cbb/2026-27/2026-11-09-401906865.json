@@ -7,18 +7,18 @@
   "id": "2755",
   "abbr": "GRAM",
   "name": "Grambling Tigers",
-  "score": 0
+  "score": 62
  },
  "home": {
   "id": "251",
   "abbr": "TEX",
   "name": "Texas Longhorns",
-  "score": 0
+  "score": 93
  },
  "neutral": false,
  "venue": "Moody Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-09T04:18:26.311Z",
@@ -769,5 +769,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 62,
+  "home": 93
+ }
 }

@@ -7,18 +7,18 @@
   "id": "2565",
   "abbr": "SIUE",
   "name": "SIU Edwardsville Cougars",
-  "score": 0
+  "score": 24
  },
  "home": {
   "id": "142",
   "abbr": "MIZ",
   "name": "Missouri Tigers",
-  "score": 0
+  "score": 50
  },
  "neutral": false,
  "venue": "Mizzou Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-09T00:58:04.073Z",

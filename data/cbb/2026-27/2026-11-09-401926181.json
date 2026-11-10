@@ -7,18 +7,18 @@
   "id": "2430",
   "abbr": "UNCG",
   "name": "UNC Greensboro Spartans",
-  "score": 0
+  "score": 72
  },
  "home": {
   "id": "82",
   "abbr": "UIC",
   "name": "UIC Flames",
-  "score": 0
+  "score": 82
  },
  "neutral": false,
  "venue": "Credit Union 1 Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-08T23:06:31.297Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 72,
+  "home": 82
+ }
 }

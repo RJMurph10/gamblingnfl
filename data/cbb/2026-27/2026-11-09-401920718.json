@@ -477,7 +477,7 @@
    ]
   },
   "close": {
-   "at": "2026-11-09T23:51:40.773Z",
+   "at": "2026-11-10T02:12:43.137Z",
    "scoreboard": [
     {
      "provider": {
@@ -660,7 +660,7 @@
       "over": {
        "close": {
         "line": "o162.5",
-        "odds": "-108",
+        "odds": "-110",
         "link": {
          "language": "en-US",
          "rel": [
@@ -694,7 +694,7 @@
       "under": {
        "close": {
         "line": "u162.5",
-        "odds": "-112",
+        "odds": "-110",
         "link": {
          "language": "en-US",
          "rel": [
@@ -773,8 +773,8 @@
      "details": "ORST -17.5",
      "overUnder": 162.5,
      "spread": -17.5,
-     "overOdds": -108,
-     "underOdds": -112,
+     "overOdds": -110,
+     "underOdds": -110,
      "awayTeamOdds": {
       "favorite": false,
       "underdog": true,
@@ -909,20 +909,20 @@
      },
      "current": {
       "over": {
-       "value": 1.92,
-       "displayValue": "25/27",
-       "alternateDisplayValue": "-108",
-       "decimal": 1.92,
-       "fraction": "25/27",
-       "american": "-108"
+       "value": 1.9,
+       "displayValue": "10/11",
+       "alternateDisplayValue": "-110",
+       "decimal": 1.9,
+       "fraction": "10/11",
+       "american": "-110"
       },
       "under": {
-       "value": 1.89,
-       "displayValue": "25/28",
-       "alternateDisplayValue": "-112",
-       "decimal": 1.89,
-       "fraction": "25/28",
-       "american": "-112"
+       "value": 1.9,
+       "displayValue": "10/11",
+       "alternateDisplayValue": "-110",
+       "decimal": 1.9,
+       "fraction": "10/11",
+       "american": "-110"
       },
       "total": {
        "alternateDisplayValue": "162.5",

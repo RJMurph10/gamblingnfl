@@ -7,18 +7,18 @@
   "id": "140",
   "abbr": "KC",
   "name": "Kansas City Roos",
-  "score": 0
+  "score": 61
  },
  "home": {
   "id": "294",
   "abbr": "JAX",
   "name": "Jacksonville Dolphins",
-  "score": 0
+  "score": 79
  },
  "neutral": false,
  "venue": "Swisher Gymnasium",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-09T04:18:26.311Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 61,
+  "home": 79
+ }
 }
