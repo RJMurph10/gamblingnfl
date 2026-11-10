@@ -7,7 +7,7 @@
   "id": "15",
   "abbr": "PHI",
   "name": "Philadelphia Flyers",
-  "score": 0
+  "score": 2
  },
  "home": {
   "id": "22",
@@ -18,7 +18,7 @@
  "neutral": false,
  "venue": "Rogers Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-08T20:31:48.043Z",

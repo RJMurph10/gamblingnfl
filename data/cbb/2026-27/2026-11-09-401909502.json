@@ -7,18 +7,18 @@
   "id": "2010",
   "abbr": "AAMU",
   "name": "Alabama A&M Bulldogs",
-  "score": 0
+  "score": 47
  },
  "home": {
   "id": "305",
   "abbr": "DEP",
   "name": "DePaul Blue Demons",
-  "score": 0
+  "score": 84
  },
  "neutral": false,
  "venue": "Wintrust Arena",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-09T04:18:26.311Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 47,
+  "home": 84
+ }
 }

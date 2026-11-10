@@ -7,18 +7,18 @@
   "id": "24",
   "abbr": "SA",
   "name": "San Antonio Spurs",
-  "score": 5
+  "score": 122
  },
  "home": {
   "id": "21",
   "abbr": "PHX",
   "name": "Phoenix Suns",
-  "score": 0
+  "score": 96
  },
  "neutral": false,
  "venue": "Mortgage Matchup Center",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-08T20:31:48.043Z",
@@ -4370,5 +4370,9 @@
    "Khaman Maluach",
    "PHX"
   ]
+ },
+ "final": {
+  "away": 122,
+  "home": 96
  }
 }

@@ -7,18 +7,18 @@
   "id": "3",
   "abbr": "NO",
   "name": "New Orleans Pelicans",
-  "score": 0
+  "score": 61
  },
  "home": {
   "id": "9",
   "abbr": "GS",
   "name": "Golden State Warriors",
-  "score": 0
+  "score": 101
  },
  "neutral": false,
  "venue": "Chase Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-09T04:18:26.311Z",

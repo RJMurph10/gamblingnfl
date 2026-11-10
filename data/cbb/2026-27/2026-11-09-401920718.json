@@ -7,18 +7,18 @@
   "id": "331",
   "abbr": "EWU",
   "name": "Eastern Washington Eagles",
-  "score": 0
+  "score": 77
  },
  "home": {
   "id": "204",
   "abbr": "ORST",
   "name": "Oregon State Beavers",
-  "score": 0
+  "score": 93
  },
  "neutral": false,
  "venue": "Gill Coliseum",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-08T23:06:31.297Z",

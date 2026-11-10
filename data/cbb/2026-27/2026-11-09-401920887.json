@@ -7,18 +7,18 @@
   "id": "2550",
   "abbr": "HALL",
   "name": "Seton Hall Pirates",
-  "score": 0
+  "score": 68
  },
  "home": {
   "id": "2429",
   "abbr": "CLT",
   "name": "Charlotte 49ers",
-  "score": 0
+  "score": 62
  },
  "neutral": true,
  "venue": "The Palestra",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-08T23:06:31.297Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 68,
+  "home": 62
+ }
 }

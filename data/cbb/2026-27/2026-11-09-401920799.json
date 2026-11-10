@@ -7,18 +7,18 @@
   "id": "2026",
   "abbr": "APP",
   "name": "App State Mountaineers",
-  "score": 3
+  "score": 53
  },
  "home": {
   "id": "2",
   "abbr": "AUB",
   "name": "Auburn Tigers",
-  "score": 10
+  "score": 75
  },
  "neutral": false,
  "venue": "Neville Arena",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-09T00:58:04.073Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 53,
+  "home": 75
+ }
 }
