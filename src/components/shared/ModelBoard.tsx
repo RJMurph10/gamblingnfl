@@ -408,7 +408,7 @@ export function ModelBoard({
         </Panel>
       ) : (
         <div className="space-y-6">
-          <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
+          <div className="grid grid-cols-2 gap-3 lg:grid-cols-6">
             <StatCard
               label="Units · every game"
               value={unitsText(o.units)}
@@ -423,6 +423,22 @@ export function ModelBoard({
               value={recordText(bets.overall)}
               note={`${bets.overall.winPct === null ? "—" : `${one(bets.overall.winPct)}% won`} · ${unitsText(bets.overall.units)}`}
               tone={bets.overall.units > 0 ? "win" : bets.overall.units < 0 ? "loss" : "mute"}
+            />
+            <StatCard
+              label="★ Line moved our way"
+              value={bets.clv.beat === null ? "—" : `${Math.round(bets.clv.beat)}%`}
+              note={
+                bets.clv.picks
+                  ? `${bets.clv.picks} spread/total ★ · avg ${bets.clv.avg! > 0 ? "+" : ""}${bets.clv.avg!.toFixed(1)} pts · against ${Math.round(bets.clv.lost!)}%`
+                  : "Needs games with an opening line"
+              }
+              tone={
+                bets.clv.beat === null
+                  ? "mute"
+                  : bets.clv.beat > (bets.clv.lost ?? 0)
+                    ? "win"
+                    : "loss"
+              }
             />
           </div>
 
