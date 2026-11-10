@@ -92,7 +92,7 @@ function CbbDashboard() {
           eyebrow={games.length ? `Home dashboard · ${season || "2026-27"} live schedule` : "Home dashboard"}
           title="Season Pulse"
         />
-        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
           <StatCard
             label="Win rate · model"
             value={fmt(winPct(grade.moneyline))}
@@ -122,6 +122,18 @@ function CbbDashboard() {
             unit={winPct(grade.spread) === null ? undefined : "%"}
             note={loading ?? note(weekChangeText(coverChange, " pts"), grade.games ? `${rec(grade.spread)} ATS at the opener · ${SPREAD_PICK_MIN}+ pts off, home-court games` : "No games graded yet")}
             tone={changeTone(coverChange)}
+          />
+          <StatCard
+            label="Totals · line moved our way"
+            value={fmt(grade.clv.beat)}
+            unit={grade.clv.beat === null ? undefined : "%"}
+            note={
+              loading ??
+              (grade.clv.picks
+                ? `of ${grade.clv.picks} totals picks · avg ${grade.clv.avg! > 0 ? "+" : ""}${grade.clv.avg!.toFixed(1)} pts · against us ${grade.clv.lost!.toFixed(0)}%`
+                : "Needs games with an opening line")
+            }
+            tone={grade.clv.beat === null ? "mute" : grade.clv.beat > (grade.clv.lost ?? 0) ? "win" : "loss"}
           />
           <StatCard
             label="Model edge · ★ best bets"
