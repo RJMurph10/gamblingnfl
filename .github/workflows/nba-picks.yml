@@ -3,6 +3,7 @@ name: NBA picks at the opener
 # Records the NBA model's spread and total picks the first time they appear (with the opening line),
 # tracks how the line moves after, and pushes new ★ totals to your phone through ntfy.sh (free) when
 # the NTFY_TOPIC secret is set. Files: props-site/picks/nba/<day>.json.
+# Also rebuilds this season's star list (nba/stars-<season>.json) for the star-absence total adjustment.
 # Runs 8:47am, 12:47pm, 4:47pm and 10:47pm Central, October through June.
 
 on:
@@ -36,7 +37,9 @@ jobs:
           url="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
           git clone -q --depth 1 --branch props-site "$url" site
           mkdir -p "$RUNNER_TEMP/tsx" && npm i --prefix "$RUNNER_TEMP/tsx" --no-audit --no-fund tsx@4.19.2 >/dev/null
-          node "$RUNNER_TEMP/tsx/node_modules/tsx/dist/cli.mjs" app/scripts/picks/nba-picks.ts site/picks
+          node app/scripts/picks/nba-stars.mjs site || echo "stars build failed; picks run without them"
+          STARS_FILE=site/nba/stars-$(node -e 'const d=new Date();const y=d.getUTCMonth()>=8?d.getUTCFullYear()+1:d.getUTCFullYear();console.log(`${y-1}-${String(y).slice(2)}`)').json \
+            node "$RUNNER_TEMP/tsx/node_modules/tsx/dist/cli.mjs" app/scripts/picks/nba-picks.ts site/picks
           cd site
           git config user.name "line-history-bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"

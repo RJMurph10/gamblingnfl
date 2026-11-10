@@ -297,6 +297,8 @@ export type PickResult = "win" | "loss" | "push";
 export interface NbaModelRow {
   game: NbaGame;
   pred: Prediction;
+  /** Upcoming games: the star-absence change already in pred.total, and who. */
+  adjust?: { points: number; why: string[] };
   moneyline: { pick: "home" | "away"; prob: number; result: PickResult | null; units: number | null };
   spread: {
     pick: "home" | "away";
@@ -401,7 +403,12 @@ export function rowFor(game: NbaGame, pred: Prediction): NbaModelRow {
  * Model rows for every rated game. Finished games are predicted from the games before their
  * day only; unfinished games use everything played so far.
  */
-export function runNbaModel(games: NbaGame[], prior: NbaPriorTeam[]): NbaModelRow[] {
+export function runNbaModel(
+  games: NbaGame[],
+  prior: NbaPriorTeam[],
+  /** Upcoming games only: points to add to the projected total (star absences, star-absence.ts). */
+  adjust?: (g: NbaGame) => { points: number; why: string[] } | null,
+): NbaModelRow[] {
   const rated = games.filter((g) => isRatedGame(g) && g.status !== "postponed");
   const finals = rated
     .filter((g) => g.status === "final" && hasScore(g))
@@ -424,8 +431,18 @@ export function runNbaModel(games: NbaGame[], prior: NbaPriorTeam[]): NbaModelRo
   for (const g of finals) rows.push(rowFor(g, preds.get(g.id)!));
   const now = buildRatings(finals, prior);
   const nowTotals = buildTotalRatings(finals, prior);
-  for (const g of rated.filter((x) => x.status !== "final" || !hasScore(x)))
-    rows.push(rowFor(g, predictGame(now, g.home.team.id, g.away.team.id, nowTotals)));
+  for (const g of rated.filter((x) => x.status !== "final" || !hasScore(x))) {
+    const p = predictGame(now, g.home.team.id, g.away.team.id, nowTotals);
+    const a = g.status === "scheduled" ? adjust?.(g) : null;
+    if (a && a.points !== 0) {
+      p.total += a.points;
+      p.home += a.points / 2;
+      p.away += a.points / 2;
+    }
+    const row = rowFor(g, p);
+    if (a && (a.points !== 0 || a.why.length)) row.adjust = a;
+    rows.push(row);
+  }
   return rows.sort((a, b) => a.game.date.localeCompare(b.game.date));
 }
 

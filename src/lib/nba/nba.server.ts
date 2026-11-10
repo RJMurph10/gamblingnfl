@@ -5,6 +5,7 @@
  * no sample data is ever substituted.
  */
 import type { RebStarsFile } from "./nba-reb-stars";
+import type { NbaInjury, StarFile } from "./star-absence";
 import {
   type NbaBoxTeam,
   type NbaGame,
@@ -97,6 +98,45 @@ export async function fetchNbaRebStars(): Promise<RebStarsFile | null> {
   } catch {
     return null;
   }
+}
+
+/** This season's 20+ ppg regulars per team (scripts/picks/nba-stars.mjs, rebuilt with the picks run). */
+export function fetchNbaStars(): Promise<StarFile | null> {
+  return cached("stars", 30 * 60_000, async () => {
+    const y = nbaSeasonYear();
+    const season = `${y - 1}-${String(y).slice(2)}`;
+    try {
+      const res = await fetch(
+        `https://raw.githubusercontent.com/RJMurph10/gamblingnfl/props-site/nba/stars-${season}.json`,
+      );
+      return res.ok ? ((await res.json()) as StarFile) : null;
+    } catch {
+      return null;
+    }
+  });
+}
+
+/** ESPN's league-wide injury report (who is out today). */
+export function fetchNbaInjuries(): Promise<NbaInjury[]> {
+  return cached("injuries", 10 * 60_000, async () => {
+    const json = await fetchJson(`${SITE}/injuries`);
+    const out: NbaInjury[] = [];
+    for (const t of json?.injuries ?? []) {
+      const team = String(t?.abbreviation ?? t?.team?.abbreviation ?? "");
+      for (const i of t?.injuries ?? []) {
+        const a = i?.athlete ?? {};
+        const id = String(a?.id ?? "");
+        if (!id) continue;
+        out.push({
+          athleteId: id,
+          name: String(a?.displayName ?? ""),
+          team: String(a?.team?.abbreviation ?? team),
+          status: String(i?.status ?? i?.type?.description ?? ""),
+        });
+      }
+    }
+    return out;
+  });
 }
 
 /** ESPN names a season by the year it ends: the 2026-27 season is 2027. */
