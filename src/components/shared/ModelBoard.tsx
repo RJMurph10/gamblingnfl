@@ -6,6 +6,7 @@
 import { useMemo, useState, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { MatchupLink, PageTitle, Panel, PanelHeader, StatCard, TeamLogo } from "@/components/shared/booth";
+import { BetTiming, type BetTimingKind } from "@/components/shared/BetTiming";
 import { gameScore, type Game } from "@/data/shared/games";
 import { teamById } from "@/data/shared/teams";
 import {
@@ -131,8 +132,18 @@ function PickChip({ pick, game }: { pick: ModelPick; game: Game }) {
       </span>
       <PickLabel pick={pick} game={game} />
       <span className="text-mute">{oddsText(pick.odds)}</span>
+      {pick.best && game.status === "scheduled" && timingOf(pick) ? (
+        <BetTiming kind={timingOf(pick)!} className="ml-0.5" />
+      ) : null}
     </span>
   );
+}
+
+/** NFL ★ timing (2023-26 opener replay): wind unders early, the spread rules near kickoff. */
+function timingOf(pick: ModelPick): BetTimingKind | null {
+  if (pick.reason === "wind") return "now";
+  if (pick.reason === "underdog" || pick.reason === "bounce" || pick.reason === "qb-style") return "late";
+  return null;
 }
 
 /** Why a pick is a ★ best bet, for its tooltip. */

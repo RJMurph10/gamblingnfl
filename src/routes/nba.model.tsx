@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { BetTiming } from "@/components/shared/BetTiming";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageTitle, Panel, PanelHeader, StatCard } from "@/components/shared/booth";
 import { Chip, EmptyPanel, NbaLogo } from "@/components/nba/NbaBits";
@@ -73,6 +74,7 @@ function PickCells({ row }: { row: NbaModelRow }) {
               <span className="ml-1 text-faint">· now {game.odds.total}</span>
             ) : null}
             <Clv clv={row.total.clv} />
+            {row.total.best && game.status === "scheduled" ? <BetTiming kind="now" className="ml-1" /> : null}
           </>
         ) : (
           <span className="text-faint">{game.odds?.total ? "pass" : "no line"}</span>
