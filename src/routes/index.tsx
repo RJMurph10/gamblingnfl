@@ -3,6 +3,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { LiveGamesPanel, RecentGamesPanel, UpcomingGames } from "@/components/shared/GameTables";
 import { QbNewsPanel } from "@/components/nfl/QbNewsPanel";
+import { WindUndersPanel } from "@/components/nfl/WindUndersPanel";
+import { useKickoffForecasts } from "@/components/nfl/WatchList";
 import {
   PageTitle,
   Panel,
@@ -88,6 +90,12 @@ function Dashboard() {
     staleTime: 60 * 60_000,
     retry: 1,
   });
+  // next week's kickoff forecasts: 10+ mph wind makes the under a ★ best bet (shown up top: bet those early)
+  const slateWeek = useMemo(() => {
+    const open = source.filter((g) => g.status !== "final").map((g) => g.week);
+    return open.length ? Math.min(...open) : null;
+  }, [source]);
+  const { forecasts, loading: forecastsLoading } = useKickoffForecasts(source, slateWeek);
   const { history, current, runOptions } = useMemo(() => {
     const { games, currentSeason, upcoming, qbRows } = readHistory(historyQuery.data);
     return {
@@ -97,9 +105,10 @@ function Dashboard() {
         season: currentSeason,
         games: games.filter((h) => h.season === currentSeason),
         upcoming,
+        forecasts,
       },
     };
-  }, [historyQuery.data]);
+  }, [historyQuery.data, forecasts]);
   const modelRows = useMemo(
     () => runModelWithHistory(source, priorSeason, history, current, runOptions),
     [source, priorSeason, history, current, runOptions],
@@ -201,6 +210,10 @@ function Dashboard() {
             </Link>
           </p>
         ) : null}
+      </section>
+
+      <section className="mb-6">
+        <WindUndersPanel rows={modelRows} loading={forecastsLoading} />
       </section>
 
       <div className="grid gap-6 lg:grid-cols-12">
