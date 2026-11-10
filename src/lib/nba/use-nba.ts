@@ -9,12 +9,14 @@ import {
   getNbaPlayerProfile,
   getNbaPriorTeams,
   getNbaRebStars,
+  getNbaStarStatus,
   getNbaRoster,
   getNbaSchedule,
   getNbaStandings,
   getNbaTeams,
 } from "./nba.functions";
 import { etDayKey, type NbaGame, type NbaPriorTeam, type NbaStandingRow, type NbaTeamRef } from "./nba";
+import { starAdjust } from "./star-absence";
 import { runNbaModel, type NbaModelRow } from "./nba-model";
 
 /** The season's games (refreshed every 15 seconds while one is live). */
@@ -63,10 +65,29 @@ export function useNbaPrior(): NbaPriorTeam[] {
   return useMemo(() => (Array.isArray(query.data) ? query.data : []), [query.data]);
 }
 
-/** Model rows (picks, graded) for the games loaded so far. */
+/** This season's stars and today's injury report (refreshed every 10 minutes). */
+export function useNbaStarStatus() {
+  const query = useQuery({
+    queryKey: ["nba-star-status"],
+    queryFn: () => getNbaStarStatus(),
+    staleTime: 5 * 60_000,
+    refetchInterval: 10 * 60_000,
+    retry: 1,
+  });
+  return query.data ?? null;
+}
+
+/** Model rows (picks, graded) for the games loaded so far; upcoming totals adjusted for stars out. */
 export function useNbaModelRows(games: NbaGame[]): NbaModelRow[] {
   const prior = useNbaPrior();
-  return useMemo(() => runNbaModel(games, prior), [games, prior]);
+  const status = useNbaStarStatus();
+  return useMemo(
+    () =>
+      runNbaModel(games, prior, (g) =>
+        status ? starAdjust(g.home.team.abbr, g.away.team.abbr, status.stars, status.injuries) : null,
+      ),
+    [games, prior, status],
+  );
 }
 
 export const useNbaRoster = (teamId: string) =>

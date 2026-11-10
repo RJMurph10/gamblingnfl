@@ -15,7 +15,8 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { etDayKey } from "../../src/lib/nba/nba";
 import { runNbaModel } from "../../src/lib/nba/nba-model";
-import { fetchNbaPriorTeams, fetchNbaSchedule } from "../../src/lib/nba/nba.server";
+import { fetchNbaInjuries, fetchNbaPriorTeams, fetchNbaSchedule } from "../../src/lib/nba/nba.server";
+import { starAdjust, type StarFile } from "../../src/lib/nba/star-absence";
 
 const OUT = process.argv[2] ?? "picks";
 const TOPIC = process.env.NTFY_TOPIC ?? "";
@@ -40,9 +41,22 @@ interface Saved {
 }
 
 async function main() {
-  const [games, prior] = await Promise.all([fetchNbaSchedule(), fetchNbaPriorTeams()]);
+  const [games, prior, injuries] = await Promise.all([
+    fetchNbaSchedule(),
+    fetchNbaPriorTeams(),
+    fetchNbaInjuries().catch(() => []),
+  ]);
+  // this season's stars, built just before by nba-stars.mjs
+  let stars: StarFile | null = null;
+  try {
+    if (process.env.STARS_FILE) stars = JSON.parse(await readFile(process.env.STARS_FILE, "utf8"));
+  } catch {
+    stars = null;
+  }
   const now = Date.now();
-  const rows = runNbaModel(games, prior).filter(
+  const rows = runNbaModel(games, prior, (g) =>
+    starAdjust(g.home.team.abbr, g.away.team.abbr, stars, injuries),
+  ).filter(
     (r) => r.game.status === "scheduled" && Date.parse(r.game.date) - now < HOURS * 3_600_000,
   );
   const stamp = new Date().toISOString();

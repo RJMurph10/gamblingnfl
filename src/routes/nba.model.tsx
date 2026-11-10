@@ -212,9 +212,12 @@ function NbaModelPage() {
             bestEdge: TOTAL_BEST_MIN,
             minEdge: TOTAL_PICK_MIN,
             timing: "now" as const,
+            note: r.adjust?.why.length
+              ? `${r.adjust.why.join(", ")}: ${r.adjust.points > 0 ? "+" : ""}${r.adjust.points} pts`
+              : undefined,
           }))}
         empty={`No ★ totals on the board. A total becomes a ★ when the model is ${TOTAL_BEST_MIN}+ points off the opening total; openers usually post the night before.`}
-        footnote={`Status compares the model with the line now: Still good = still ${TOTAL_BEST_MIN}+ points of edge, Partly gone = ${TOTAL_PICK_MIN}-${TOTAL_BEST_MIN}, Gone = less (the line has moved toward the model). The bet shows the total available now; the site grades these at the opener.`}
+        footnote={`Stars: when a 20+ ppg scorer is listed Out on ESPN's injury report, the projected total drops about 0.09 per point he scores (a 25 ppg star ≈ −2.3); in 2023-26 the opener missed most of that and the line closed only half of it, so bet as soon as the news posts. Status compares the model with the line now: Still good = still ${TOTAL_BEST_MIN}+ points of edge, Partly gone = ${TOTAL_PICK_MIN}-${TOTAL_BEST_MIN}, Gone = less (the line has moved toward the model). The bet shows the total available now; the site grades these at the opener.`}
       />
       <p className="mb-6 font-mono text-[10px] uppercase tracking-wider text-faint">
         Line moved our way (closing-line value): how often the line moved toward the pick between the opener and tip-off. Beating the close is the quickest sign a model has a real edge, long before the win-loss record can tell · ▲/▼ on a pick = points moved toward / away from it · Totals: a pick when the model is {`≥`}5 pts off the opening total (★ {`≥`}8), graded at the opener, since the edge is in betting early: in 2023-25 these hit 54-58% at the open but about 50% at the close, as the line moves toward the model · spreads: ★ = {`≥`}3 pts off · flat 1u at -110 · every finished game is predicted using only games before its day · preseason excluded

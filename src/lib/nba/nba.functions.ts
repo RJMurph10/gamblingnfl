@@ -8,6 +8,8 @@ import {
   fetchNbaPlayerProfile,
   fetchNbaPriorTeams,
   fetchNbaRebStars,
+  fetchNbaStars,
+  fetchNbaInjuries,
   fetchNbaRoster,
   fetchNbaSchedule,
   fetchNbaStandings,
@@ -49,6 +51,15 @@ export const getNbaGameDetail = createServerFn({ method: "GET" })
 
 /** ★ rebound unders: this season's graded picks and players' projection inputs. */
 export const getNbaRebStars = createServerFn({ method: "GET" }).handler(async () => fetchNbaRebStars());
+
+/** 20+ ppg regulars per team and today's injury report (star-absence adjustment to totals). */
+export const getNbaStarStatus = createServerFn({ method: "GET" }).handler(async () => {
+  const [stars, injuries] = await Promise.all([
+    fetchNbaStars().catch(() => null),
+    fetchNbaInjuries().catch(() => []),
+  ]);
+  return { stars, injuries };
+});
 
 /** DraftKings player props for a game, when ESPN has posted them. */
 export const getNbaGameProps = createServerFn({ method: "GET" })
