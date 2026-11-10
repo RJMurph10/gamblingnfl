@@ -4,7 +4,16 @@ import { PageTitle, Panel, PanelHeader } from "@/components/shared/booth";
 import { CbbLogo } from "@/components/cbb/CbbBits";
 import { BEST_TOTAL_EDGE, TOTAL_PICK_MIN, buildRatings, ratingRows, type CbbModelRow } from "@/lib/cbb/cbb-model";
 import { BestBetsNow, type BestBetItem } from "@/components/shared/BestBetsNow";
+import { LiveResults } from "@/components/shared/LiveResults";
+import type { LivePick } from "@/lib/shared/live-results";
 import { useCbbModel, useCbbSchedule } from "@/lib/cbb/use-cbb";
+
+/** Live results rows (the "Latest graded" list follows the first row). */
+const CBB_GROUPS = [
+  { label: "★ Totals (6+ off the opener)", test: (p: LivePick) => p.best },
+  { label: "★ Unders", test: (p: LivePick) => p.best && p.pick.startsWith("Under") },
+  { label: "★ Overs", test: (p: LivePick) => p.best && p.pick.startsWith("Over") },
+];
 
 export const Route = createFileRoute("/cbb/model")({
   head: () => ({
@@ -112,6 +121,11 @@ function CbbModelPage() {
         loading={isLoading}
         empty={`No ★ bets on the board. A total becomes a ★ when the model is ${BEST_TOTAL_EDGE}+ points off the opening total; openers usually post the day before.`}
         footnote={`Status compares the model with the total now: Still good = ${BEST_TOTAL_EDGE}+ points of edge left, Partly gone = ${TOTAL_PICK_MIN}-${BEST_TOTAL_EDGE}, Gone = less. 2023-26 ★ by tier: Power 6 65%, Mid-major 60%, Low-major 57.5%, Non-conf mix 54%.`}
+      />
+      <LiveResults
+        league="cbb"
+        groups={CBB_GROUPS}
+        footnote="Recorded by the picks job (4 times a day) the first time a ★ appears, at that opening-day line; flat 1u at −110. Line moved our way: share of picks where the total moved toward the pick before tip, and the average move."
       />
       <div className="space-y-6">
         <Panel>

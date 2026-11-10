@@ -3,6 +3,8 @@ name: NBA picks at the opener
 # Records the NBA model's spread and total picks the first time they appear (with the opening line),
 # tracks how the line moves after, and pushes new ★ totals to your phone through ntfy.sh (free) when
 # the NTFY_TOPIC secret is set. Files: props-site/picks/nba/<day>.json.
+# Also records college basketball ★ totals (cbb-picks.ts) and grades finished picks for the site's Live
+# results panels (grade-picks.mjs → picks/<league>/season-<season>.json).
 # Also rebuilds this season's star list (nba/stars-<season>.json) for the star-absence total adjustment.
 # Runs 8:47am, 12:47pm, 4:47pm and 10:47pm Central, October through June.
 
@@ -40,6 +42,10 @@ jobs:
           node app/scripts/picks/nba-stars.mjs site || echo "stars build failed; picks run without them"
           STARS_FILE=site/nba/stars-$(node -e 'const d=new Date();const y=d.getUTCMonth()>=8?d.getUTCFullYear()+1:d.getUTCFullYear();console.log(`${y-1}-${String(y).slice(2)}`)').json \
             node "$RUNNER_TEMP/tsx/node_modules/tsx/dist/cli.mjs" app/scripts/picks/nba-picks.ts site/picks
+          # college basketball ★ totals (November to early April); a failure doesn't stop the rest
+          node "$RUNNER_TEMP/tsx/node_modules/tsx/dist/cli.mjs" app/scripts/picks/cbb-picks.ts site/picks || echo "cbb picks failed"
+          # grade finished picks and rebuild the season files the site reads
+          node app/scripts/picks/grade-picks.mjs site/picks || echo "grading failed"
           cd site
           git config user.name "line-history-bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"

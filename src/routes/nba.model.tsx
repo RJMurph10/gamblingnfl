@@ -1,5 +1,7 @@
 import { useMemo, useState } from "react";
 import { BestBetsNow } from "@/components/shared/BestBetsNow";
+import { LiveResults } from "@/components/shared/LiveResults";
+import type { LivePick } from "@/lib/shared/live-results";
 import { BetTiming } from "@/components/shared/BetTiming";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageTitle, Panel, PanelHeader, StatCard } from "@/components/shared/booth";
@@ -16,6 +18,13 @@ import {
   type Record3,
 } from "@/lib/nba/nba-model";
 import { useNbaModelRows, useNbaPrior, useNbaSchedule, useNbaStandings } from "@/lib/nba/use-nba";
+
+/** Live results rows: ★ totals first (the "Latest graded" list follows the first row). */
+const NBA_GROUPS = [
+  { label: "★ Totals (8+ off)", test: (p: LivePick) => p.market === "total" && p.best },
+  { label: "All totals (5+ off)", test: (p: LivePick) => p.market === "total" },
+  { label: "Spreads (no proven edge)", test: (p: LivePick) => p.market === "spread" },
+];
 
 export const Route = createFileRoute("/nba/model")({
   head: () => ({
@@ -218,6 +227,11 @@ function NbaModelPage() {
           }))}
         empty={`No ★ totals on the board. A total becomes a ★ when the model is ${TOTAL_BEST_MIN}+ points off the opening total; openers usually post the night before.`}
         footnote={`Stars: when a 20+ ppg scorer is listed Out on ESPN's injury report, the projected total drops about 0.09 per point he scores (a 25 ppg star ≈ −2.3); in 2023-26 the opener missed most of that and the line closed only half of it, so bet as soon as the news posts. Status compares the model with the line now: Still good = still ${TOTAL_BEST_MIN}+ points of edge, Partly gone = ${TOTAL_PICK_MIN}-${TOTAL_BEST_MIN}, Gone = less (the line has moved toward the model). The bet shows the total available now; the site grades these at the opener.`}
+      />
+      <LiveResults
+        league="nba"
+        groups={NBA_GROUPS}
+        footnote="Recorded by the picks job (4 times a day) the first time a pick appears, at that line; flat 1u at −110. Line moved our way: share of picks where the line moved toward the pick before tip, and the average move. ▲/▼ on a pick = points moved toward / away."
       />
       <p className="mb-6 font-mono text-[10px] uppercase tracking-wider text-faint">
         Line moved our way (closing-line value): how often the line moved toward the pick between the opener and tip-off. Beating the close is the quickest sign a model has a real edge, long before the win-loss record can tell · ▲/▼ on a pick = points moved toward / away from it · Totals: a pick when the model is {`≥`}5 pts off the opening total (★ {`≥`}8), graded at the opener, since the edge is in betting early: in 2023-25 these hit 54-58% at the open but about 50% at the close, as the line moves toward the model · spreads: ★ = {`≥`}3 pts off · flat 1u at -110 · every finished game is predicted using only games before its day · preseason excluded
