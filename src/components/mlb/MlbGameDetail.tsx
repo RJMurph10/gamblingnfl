@@ -25,7 +25,8 @@ import {
   type MlbMarketRow,
   type MlbProjection,
 } from "@/lib/mlb/mlb-model";
-import { useMlbGameDetail, useMlbSchedule } from "@/lib/mlb/use-mlb";
+import { useMlbGameDetail, useMlbSchedule, useMlbWeather } from "@/lib/mlb/use-mlb";
+import { dayAfterNight, gameDayFactor } from "@/lib/mlb/game-day";
 
 type GameTab = "gamecast" | "stats" | "markets" | "information";
 
@@ -610,12 +611,25 @@ function TeamStats({
 
 function Markets({ game, games }: { game: MlbGame; games: MlbGame[] }) {
   const ratings = useMemo(() => mlbRatings(games, game.date), [games, game.date]);
-  const p = useMemo(() => projectMlbGame(game, ratings), [game, ratings]);
+  // game-day factors (first-pitch weather, day after night) for games that haven't started
+  const one = useMemo(() => [game], [game]);
+  const { weather } = useMlbWeather(one);
+  const gd = useMemo(
+    () =>
+      game.status === "scheduled"
+        ? gameDayFactor(game, weather[game.id], dayAfterNight(games).get(game.id))
+        : null,
+    [game, games, weather],
+  );
+  const p = useMemo(
+    () => projectMlbGame(game, ratings, undefined, gd ?? undefined),
+    [game, ratings, gd],
+  );
   const rows = useMemo(() => mlbMarketRows(game, p), [game, p]);
   return (
     <div className="mt-6 space-y-6">
       <div className="grid gap-6 lg:grid-cols-2">
-        <ModelCard game={game} p={p} rows={rows} />
+        <ModelCard game={game} p={p} rows={rows} why={gd?.why ?? []} />
         <LinesCard game={game} />
       </div>
       <Panel padded={false}>
@@ -633,7 +647,17 @@ function Markets({ game, games }: { game: MlbGame; games: MlbGame[] }) {
   );
 }
 
-function ModelCard({ game, p, rows }: { game: MlbGame; p: MlbProjection; rows: MlbMarketRow[] }) {
+function ModelCard({
+  game,
+  p,
+  rows,
+  why,
+}: {
+  game: MlbGame;
+  p: MlbProjection;
+  rows: MlbMarketRow[];
+  why: string[];
+}) {
   // Fair prices only: the research found no edge against the closing line, so no picks are shown.
   const row = (m: MlbMarketRow["market"], side: MlbMarketRow["side"]) =>
     rows.find((r) => r.market === m && r.side === side);
@@ -644,6 +668,9 @@ function ModelCard({ game, p, rows }: { game: MlbGame; p: MlbProjection; rows: M
     <Panel>
       <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">Model</h2>
       <p className="label-mono mb-3">Team runs this season + probable starters</p>
+      {why.length ? (
+        <p className="-mt-2 mb-3 font-mono text-[10px] text-faint">Game day: {why.join(" · ")}</p>
+      ) : null}
       <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 font-mono tabular-nums">
         <span className="text-2xl">{p.awayRuns.toFixed(2)}</span>
         <span className="text-[10px] uppercase tracking-wider text-faint">proj. runs</span>

@@ -5,9 +5,10 @@ import {
   getMlbClosingLines,
   getMlbGameDetail,
   getMlbSchedule,
-  getWrigleyWind,
+  getWrigleyWind, getMlbWeather,
 } from "./mlb.functions";
 import { isWrigleyGame, type MlbGame, type MlbOdds, type WrigleyWind } from "./mlb";
+import type { GameWeather } from "./game-day";
 
 /* ---------- loading every finished game's closing line ---------- */
 
@@ -143,4 +144,25 @@ export function useWrigleyWind(games: MlbGame[]) {
   });
   const wind: Record<string, WrigleyWind | null> = query.data ?? {};
   return { games: soon, wind, isLoading: query.isLoading && soon.length > 0 };
+}
+
+/** First-pitch forecasts for the next week's games at open-air parks (game-day run factors). */
+export function useMlbWeather(games: MlbGame[]) {
+  const soon = useMemo(() => {
+    const now = Date.now();
+    return games
+      .filter((g) => g.status === "scheduled" && Date.parse(g.date) > now && Date.parse(g.date) - now < 7 * 24 * 3_600_000)
+      .sort((a, b) => a.date.localeCompare(b.date))
+      .slice(0, 60);
+  }, [games]);
+  const query = useQuery({
+    queryKey: ["mlb-weather", soon.map((g) => `${g.id}@${g.date}`).join(",")],
+    queryFn: () =>
+      getMlbWeather({ data: { games: soon.map((g) => ({ id: g.id, date: g.date, home: g.home.team.abbr })) } }),
+    enabled: soon.length > 0,
+    staleTime: 30 * 60_000,
+    refetchInterval: 60 * 60_000,
+  });
+  const weather: Record<string, GameWeather | null> = query.data ?? {};
+  return { weather, isLoading: query.isLoading && soon.length > 0 };
 }

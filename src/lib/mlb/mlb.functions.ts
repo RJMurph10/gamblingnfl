@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { fetchMlbClosingLines, fetchMlbGameDetail, fetchMlbSchedule } from "./mlb.server";
 import { fetchWrigleyWind } from "./wrigley.server";
+import { fetchMlbWeather } from "./weather.server";
 
 /** The MLB season so far plus the next two weeks, with probable pitchers and lines. */
 export const getMlbSchedule = createServerFn({ method: "GET" }).handler(async () =>
@@ -30,3 +31,12 @@ export const getWrigleyWind = createServerFn({ method: "POST" })
       .parse(data),
   )
   .handler(async ({ data }) => fetchWrigleyWind(data.games));
+
+/** First-pitch temperature and wind for upcoming games at open-air parks (the game-day run factors). */
+export const getMlbWeather = createServerFn({ method: "POST" })
+  .inputValidator((data) =>
+    z
+      .object({ games: z.array(z.object({ id: z.string(), date: z.string(), home: z.string() })).max(60) })
+      .parse(data),
+  )
+  .handler(async ({ data }) => fetchMlbWeather(data.games));
