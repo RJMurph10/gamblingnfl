@@ -7,6 +7,7 @@ import { useMemo, useState, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { MatchupLink, PageTitle, Panel, PanelHeader, StatCard, TeamLogo } from "@/components/shared/booth";
 import { BetTiming, type BetTimingKind } from "@/components/shared/BetTiming";
+import { BestBetsNow, type BestBetItem } from "@/components/shared/BestBetsNow";
 import { gameScore, type Game } from "@/data/shared/games";
 import { teamById } from "@/data/shared/teams";
 import {
@@ -137,6 +138,47 @@ function PickChip({ pick, game }: { pick: ModelPick; game: Game }) {
       ) : null}
     </span>
   );
+}
+
+/** Upcoming ★ picks for the "Best bets now" list. */
+function bestBetItems(rows: GameModelRow[]): BestBetItem[] {
+  const items: BestBetItem[] = [];
+  for (const r of rows) {
+    const g = r.game;
+    if (g.status !== "scheduled" || !g.kickoffIso) continue;
+    const away = teamById(g.awayTeamId)?.abbr ?? g.awayTeamId;
+    const home = teamById(g.homeTeamId)?.abbr ?? g.homeTeamId;
+    for (const p of r.picks) {
+      if (!p.best || p.market === "moneyline" || p.line === undefined) continue;
+      const spread = p.market === "spread";
+      const open = spread
+        ? g.odds?.homeSpreadOpen === undefined
+          ? null
+          : p.side === "home"
+            ? g.odds.homeSpreadOpen
+            : -g.odds.homeSpreadOpen
+        : (g.odds?.totalOpen ?? null);
+      items.push({
+        id: `${g.id}-${p.market}`,
+        matchup: `${away} @ ${home}`,
+        when: g.kickoffIso,
+        pick: spread ? (p.side === "home" ? home : away) : p.side === "over" ? "Over" : "Under",
+        open,
+        now: p.line,
+        model: null,
+        dir: spread ? -1 : p.side === "over" ? 1 : -1,
+        timing: timingOf(p),
+        note:
+          p.reason === "wind" && p.wind !== undefined
+            ? `${Math.round(p.wind)} mph wind`
+            : p.reason
+              ? REASON_TEXT[p.reason]
+              : undefined,
+        spread,
+      });
+    }
+  }
+  return items;
 }
 
 /** NFL ★ timing (2023-26 opener replay): wind unders early, the spread rules near kickoff. */
@@ -452,6 +494,12 @@ export function ModelBoard({
               }
             />
           </div>
+
+          <BestBetsNow
+            items={bestBetItems(rows)}
+            empty="No ★ best bets on the board for upcoming games yet."
+            footnote="Wind unders: bet early (they won 56% at the opening total vs 54% at the close, 2023-26). The spread rules: bet near kickoff (58% at the closing line vs 54% at the opener), so Status says Wait. The bet shows the line available now; Opened is where it started."
+          />
 
           {latestCalibration ? (
             <Panel>

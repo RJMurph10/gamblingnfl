@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { BestBetsNow } from "@/components/shared/BestBetsNow";
 import { BetTiming } from "@/components/shared/BetTiming";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageTitle, Panel, PanelHeader, StatCard } from "@/components/shared/booth";
@@ -10,6 +11,8 @@ import {
   summarizeNba,
   unitsText,
   type NbaModelRow,
+  TOTAL_BEST_MIN,
+  TOTAL_PICK_MIN,
   type Record3,
 } from "@/lib/nba/nba-model";
 import { useNbaModelRows, useNbaPrior, useNbaSchedule, useNbaStandings } from "@/lib/nba/use-nba";
@@ -194,6 +197,25 @@ function NbaModelPage() {
         />
         <StatCard label="Straight-up winners" value={scope === "predictions" ? (summary.moneyline.winPct === null ? "—" : summary.moneyline.winPct.toFixed(1)) : "—"} unit={scope === "predictions" && summary.moneyline.winPct !== null ? "%" : undefined} note={scope === "predictions" ? `${rec(summary.moneyline)} picking winners` : "switch to Every pick"} />
       </div>
+      <BestBetsNow
+        items={rows
+          .filter((r) => r.game.status === "scheduled" && r.total?.best)
+          .map((r) => ({
+            id: r.game.id,
+            matchup: `${r.game.away.team.abbr} @ ${r.game.home.team.abbr}`,
+            when: r.game.date,
+            pick: r.total!.pick === "over" ? "Over" : "Under",
+            open: r.total!.line,
+            now: r.game.odds?.total ?? null,
+            model: Math.round(r.pred.total * 10) / 10,
+            dir: r.total!.pick === "over" ? (1 as const) : (-1 as const),
+            bestEdge: TOTAL_BEST_MIN,
+            minEdge: TOTAL_PICK_MIN,
+            timing: "now" as const,
+          }))}
+        empty={`No ★ totals on the board. A total becomes a ★ when the model is ${TOTAL_BEST_MIN}+ points off the opening total; openers usually post the night before.`}
+        footnote={`Status compares the model with the line now: Still good = still ${TOTAL_BEST_MIN}+ points of edge, Partly gone = ${TOTAL_PICK_MIN}-${TOTAL_BEST_MIN}, Gone = less (the line has moved toward the model). The bet shows the total available now; the site grades these at the opener.`}
+      />
       <p className="mb-6 font-mono text-[10px] uppercase tracking-wider text-faint">
         Line moved our way (closing-line value): how often the line moved toward the pick between the opener and tip-off. Beating the close is the quickest sign a model has a real edge, long before the win-loss record can tell · ▲/▼ on a pick = points moved toward / away from it · Totals: a pick when the model is {`≥`}5 pts off the opening total (★ {`≥`}8), graded at the opener, since the edge is in betting early: in 2023-25 these hit 54-58% at the open but about 50% at the close, as the line moves toward the model · spreads: ★ = {`≥`}3 pts off · flat 1u at -110 · every finished game is predicted using only games before its day · preseason excluded
       </p>

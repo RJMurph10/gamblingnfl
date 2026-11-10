@@ -2,8 +2,9 @@ import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageTitle, Panel, PanelHeader } from "@/components/shared/booth";
 import { CbbLogo } from "@/components/cbb/CbbBits";
-import { BEST_TOTAL_EDGE, buildRatings, ratingRows } from "@/lib/cbb/cbb-model";
-import { useCbbSchedule } from "@/lib/cbb/use-cbb";
+import { BEST_TOTAL_EDGE, TOTAL_PICK_MIN, buildRatings, ratingRows, type CbbModelRow } from "@/lib/cbb/cbb-model";
+import { BestBetsNow, type BestBetItem } from "@/components/shared/BestBetsNow";
+import { useCbbModel, useCbbSchedule } from "@/lib/cbb/use-cbb";
 
 export const Route = createFileRoute("/cbb/model")({
   head: () => ({
@@ -53,8 +54,44 @@ const ANGLES: [string, number, number, number, [number, number, number, number]]
 const u = (n: number) => `${n > 0 ? "+" : ""}${n.toFixed(1)}u`;
 const BREAK_EVEN = 52.4;
 
+/** Conference tier for the ★ list (research/cbb/tiers.py): power 6, high-mid, low-major, or mixed. */
+const POWER6 = new Set(["2", "4", "7", "8", "23", "21"]);
+const HIGH_MID = new Set(["3", "44", "29", "62", "18"]);
+const tierOf = (c: string) => (POWER6.has(c) ? "Power 6" : HIGH_MID.has(c) ? "Mid-major" : c ? "Low-major" : "");
+function gameTier(r: CbbModelRow): string {
+  const h = tierOf(r.game.home.team.confId);
+  const a = tierOf(r.game.away.team.confId);
+  return h && h === a ? h : "Non-conf mix";
+}
+
+function bestBetItems(rows: CbbModelRow[]): BestBetItem[] {
+  return rows
+    .filter((r) => r.best && r.game.status === "scheduled" && !r.game.nonDivisionI)
+    .map((r) => {
+      const b = r.best!;
+      const dir = b.pick === "over" ? (1 as const) : (-1 as const);
+      const edge = b.rule === "edge";
+      return {
+        id: r.game.id,
+        matchup: `${r.game.away.team.abbr} @ ${r.game.home.team.abbr}`,
+        when: r.game.date,
+        pick: b.pick === "over" ? "Over" : "Under",
+        open: edge ? b.line : (r.game.open?.total ?? null),
+        now: r.game.odds?.total ?? null,
+        model: edge ? Math.round((b.line + dir * b.edge) * 10) / 10 : null,
+        dir,
+        bestEdge: edge ? BEST_TOTAL_EDGE : undefined,
+        minEdge: edge ? TOTAL_PICK_MIN : undefined,
+        timing: edge ? ("now" as const) : null,
+        note: edge ? gameTier(r) : "conference under (closing total)",
+      };
+    });
+}
+
 function CbbModelPage() {
   const { games, teams, conferences, rankings, isLoading } = useCbbSchedule(60_000);
+  const modelRows = useCbbModel(games);
+  const betItems = useMemo(() => bestBetItems(modelRows), [modelRows]);
   const [q, setQ] = useState("");
   const [all, setAll] = useState(false);
   const ratings = useMemo(() => {
@@ -70,6 +107,12 @@ function CbbModelPage() {
   return (
     <>
       <PageTitle eyebrow="Men's college basketball" title="Model" />
+      <BestBetsNow
+        items={betItems}
+        loading={isLoading}
+        empty={`No ★ bets on the board. A total becomes a ★ when the model is ${BEST_TOTAL_EDGE}+ points off the opening total; openers usually post the day before.`}
+        footnote={`Status compares the model with the total now: Still good = ${BEST_TOTAL_EDGE}+ points of edge left, Partly gone = ${TOTAL_PICK_MIN}-${BEST_TOTAL_EDGE}, Gone = less. 2023-26 ★ by tier: Power 6 65%, Mid-major 60%, Low-major 57.5%, Non-conf mix 54%.`}
+      />
       <div className="space-y-6">
         <Panel>
           <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">The short version</h2>
