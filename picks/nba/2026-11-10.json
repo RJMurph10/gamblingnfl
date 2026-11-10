@@ -1,6 +1,6 @@
 {
  "day": "2026-11-10",
- "updated": "2026-11-10T13:02:15.673Z",
+ "updated": "2026-11-10T21:02:36.150Z",
  "picks": [
   {
    "id": "401909961-spread",
@@ -15,7 +15,7 @@
    "best": true,
    "firstSeen": "2026-11-09T23:30:21.298Z",
    "latest": 1.5,
-   "latestAt": "2026-11-10T13:02:15.673Z",
+   "latestAt": "2026-11-10T21:02:36.150Z",
    "alerted": false
   },
   {
@@ -31,7 +31,7 @@
    "best": false,
    "firstSeen": "2026-11-10T13:02:15.673Z",
    "latest": -3.5,
-   "latestAt": "2026-11-10T13:02:15.673Z",
+   "latestAt": "2026-11-10T21:02:36.150Z",
    "alerted": false
   },
   {
@@ -47,7 +47,7 @@
    "best": true,
    "firstSeen": "2026-11-10T13:02:15.673Z",
    "latest": 9.5,
-   "latestAt": "2026-11-10T13:02:15.673Z",
+   "latestAt": "2026-11-10T21:02:36.150Z",
    "alerted": false
   },
   {
@@ -63,7 +63,7 @@
    "best": true,
    "firstSeen": "2026-11-10T13:02:15.673Z",
    "latest": 227.5,
-   "latestAt": "2026-11-10T13:02:15.673Z",
+   "latestAt": "2026-11-10T21:02:36.150Z",
    "alerted": false
   },
   {
@@ -79,7 +79,7 @@
    "best": false,
    "firstSeen": "2026-11-10T13:02:15.673Z",
    "latest": 6.5,
-   "latestAt": "2026-11-10T13:02:15.673Z",
+   "latestAt": "2026-11-10T21:02:36.150Z",
    "alerted": false
   },
   {
@@ -95,7 +95,7 @@
    "best": false,
    "firstSeen": "2026-11-10T13:02:15.673Z",
    "latest": 222.5,
-   "latestAt": "2026-11-10T13:02:15.673Z",
+   "latestAt": "2026-11-10T21:02:36.150Z",
    "alerted": false
   },
   {
@@ -111,7 +111,7 @@
    "best": false,
    "firstSeen": "2026-11-10T13:02:15.673Z",
    "latest": 1.5,
-   "latestAt": "2026-11-10T13:02:15.673Z",
+   "latestAt": "2026-11-10T21:02:36.150Z",
    "alerted": false
   }
  ]
