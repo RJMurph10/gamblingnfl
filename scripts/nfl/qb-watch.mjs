@@ -14,7 +14,10 @@
  *   → <out>/nfl/qb-watch-2026.json
  *   { updatedAt, starters: {"team|qb": {team, qb, name, role}}, status: {"team|qb": {status, since}},
  *     events: [{ id, team, qb | player, name, role | pos+pts, from, to, at, game: {id, name, kickoff, home, away},
- *                open, atNews, now, track: [[at, spread]] }] }
+ *                open, atNews, now, track: [[at, spread]],
+ *                props: { atNews: {"player|market": line}, now: {...}, track: [[at, "player|market", line]] } }] }
+ * props: the team's other DraftKings prop lines (from <out>/nfl/upcoming.json, refreshed hourly) at the
+ * news and as they move after it, to measure how long books take to adjust teammates' props.
  * Spreads are the TEAM's own (negative = favored), so a starter going out should push it up.
  */
 import { mkdir, readFile, writeFile } from "node:fs/promises";
@@ -148,8 +151,26 @@ async function playerValues() {
   }
 }
 
+/** The team's DraftKings prop lines on the board for a game, minus the player in the news: {"name|market": line}. */
+function teamProps(board, gameId, team, exclude) {
+  const g = board?.find((x) => String(x.id) === String(gameId));
+  if (!g) return null;
+  const out = {};
+  for (const [name, tm, market, line] of g.props ?? []) {
+    if (tm !== team || norm(name) === norm(exclude)) continue;
+    out[`${name}|${market}`] = line;
+  }
+  return Object.keys(out).length ? out : null;
+}
+
 async function main() {
   const now = new Date().toISOString();
+  let board = null;
+  try {
+    board = JSON.parse(await readFile(join(OUT, "nfl", "upcoming.json"), "utf8"));
+  } catch {
+    // no props board in this checkout
+  }
   let state = { updatedAt: null, starters: {}, status: {}, events: [] };
   try {
     state = JSON.parse(await readFile(FILE, "utf8"));
@@ -162,6 +183,10 @@ async function main() {
     console.log("could not read starters or injuries; nothing changed");
     return;
   }
+  const propsAt = (g, team, name) => {
+    const lines = g?.pre ? teamProps(board, g.game.id, team, name) : null;
+    return lines ? { props: { atNews: lines, now: { ...lines }, track: [] } } : {};
+  };
   let changed = 0;
   for (const [team, list] of Object.entries(starters)) {
     for (const s of list) {
@@ -190,6 +215,7 @@ async function main() {
           atNews: g?.pre ? g.spread : null,
           now: g?.pre ? g.spread : null,
           track: g?.pre && g.spread != null ? [[now, g.spread]] : [],
+          ...propsAt(g, team, s.name),
         });
         console.log(`NEWS ${team} ${s.name} (${s.role}): ${prev.status} → ${status}${g?.pre ? ` (${g.game.name}, spread ${g.spread})` : ""}`);
         changed += 1;
@@ -226,6 +252,7 @@ async function main() {
         atNews: g?.pre ? g.spread : null,
         now: g?.pre ? g.spread : null,
         track: g?.pre && g.spread != null ? [[now, g.spread]] : [],
+        ...propsAt(g, team, name),
       });
       console.log(`NEWS ${team} ${name} (${pos}, ${pts} pts): ${prev.status} → ${status}`);
       changed += 1;
@@ -259,6 +286,24 @@ async function main() {
       changed += 1;
     }
     if (ev.open == null && g.open != null) ev.open = g.open;
+  }
+  // follow teammates' prop lines until kickoff (attach them if the board had none at the news)
+  for (const ev of state.events) {
+    if (!ev.game || Date.parse(ev.game.kickoff) <= Date.parse(now)) continue;
+    const lines = teamProps(board, ev.game.id, ev.team, ev.name);
+    if (!lines) continue;
+    if (!ev.props) {
+      ev.props = { atNews: lines, now: { ...lines }, track: [], late: true };
+      changed += 1;
+      continue;
+    }
+    for (const [k, line] of Object.entries(lines)) {
+      if (ev.props.now[k] === line) continue;
+      if (!(k in ev.props.atNews)) ev.props.atNews[k] = line; // first posted after the news
+      else ev.props.track.push([now, k, line]);
+      ev.props.now[k] = line;
+      changed += 1;
+    }
   }
   if (!changed && state.updatedAt) {
     console.log("no changes");
