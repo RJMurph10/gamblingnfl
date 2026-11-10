@@ -50,6 +50,8 @@ jobs:
             python3 app/scripts/nfl/next_man_up.py --site site-repo --cache nflverse-cache || echo "next man up failed"
             # tracked angle: the under on every DraftKings rushing-yards line
             python3 app/scripts/nfl/rush_unders.py --site site-repo --cache nflverse-cache || echo "rush unders failed"
+            # tracked: DraftKings alt-line ladders graded by price bucket
+            node app/scripts/nfl/alt-ladders.mjs --site site-repo || echo "alt ladders failed"
             cd site-repo
             git config user.name "line-history-bot"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
