@@ -19,10 +19,16 @@ import {
 export { recordedConditions, type GameConditions };
 import { homeLine } from "../shared/season-pulse";
 import { getStadiumForGame, NFL_STADIUMS } from "./stadiums";
+import { gapProjections, TOTAL_GAP } from "./total-gap";
 
 /** Kickoff conditions. `outdoor` false = dome or closed roof. Null when unknown. */
 export type AngleId =
-  "cold-visitor" | "qb-change" | "west-coast-east" | "east-at-west-night" | "road-dog";
+  | "cold-visitor"
+  | "qb-change"
+  | "west-coast-east"
+  | "east-at-west-night"
+  | "road-dog"
+  | "total-gap";
 
 export interface AngleDefinition {
   id: AngleId;
@@ -91,6 +97,12 @@ export const WATCH_ANGLES: AngleDefinition[] = [
     title: `Road underdog of ${MODEL_SETTINGS.bigUnderdogPts}+ → the underdog`,
     bet: "The road team against the spread",
     why: "Dropped from the ★ best bets in October 2026: over 1999–2025 road underdogs of 7+ went 792-767 at closing lines (−47u), about a coin flip that loses to the vig, while home underdogs won. Tracked here so a real comeback would show.",
+  },
+  {
+    id: "total-gap",
+    title: `Model ${TOTAL_GAP.minEdge}+ points off the opening total → the model's side`,
+    bet: "Over / under at the opening total (bet early in the week)",
+    why: "A points-only team model 6+ points away from the opener went 105-78 (57.4%, +17.5u) over 2011–2026, about 13 bets a season, and the line moved toward the pick 75% of the time; at the closing total the same picks won only 53%. Openers for past seasons aren't on the site, so it's graded here from 2026 on, at the opening total.",
   },
 ];
 
@@ -198,7 +210,7 @@ export interface AngleHit {
 
 const abbrOf = (teamId: string) => teamById(teamId)?.abbr ?? "";
 
-/** Watch-list angles are spread bets, graded at the standard -110. */
+/** Watch-list bets are graded at the standard -110 (margin > 0 = the bet won). */
 function settle(margin: number | null, final: boolean) {
   if (!final || margin === null) return { result: "pending" as const, units: 0 };
   const price = MODEL_SETTINGS.defaultPrice;
@@ -309,6 +321,31 @@ export function qbChangeHits(rows: GameModelRow[], season: number): AngleHit[] {
   return out;
 }
 
+/** The big-total-gap angle for this season's games (graded at the opening total). */
+export function totalGapHits(schedule: Game[], lastSeason: Game[], season: number): AngleHit[] {
+  const proj = gapProjections(schedule, lastSeason);
+  const out: AngleHit[] = [];
+  for (const game of schedule) {
+    const open = game.odds?.totalOpen;
+    const m = proj.get(game.id);
+    if (open === undefined || open === null || m === undefined) continue;
+    const edge = m - open;
+    if (Math.abs(edge) < TOTAL_GAP.minEdge) continue;
+    const over = edge > 0;
+    const final = game.status === "final";
+    const s = gameScore(game);
+    out.push({
+      angle: "total-gap",
+      game,
+      season,
+      note: `model ${m} vs opener ${open}`,
+      label: `${over ? "Over" : "Under"} ${open}`,
+      ...settle(final ? (s.home + s.away - open) * (over ? 1 : -1) : null, final),
+    });
+  }
+  return out;
+}
+
 export function buildWatchList(
   history: HistoryGame[],
   currentSeason: number,
@@ -336,6 +373,11 @@ export function buildWatchList(
       recorded.set(`espn-${h.espnId}`, recordedConditions(h));
     }
   }
+  const lastSeason = history
+    .filter((h) => h.season === currentSeason - 1)
+    .map(historyGameToGame)
+    .filter((g): g is Game => !!g);
+  hits.push(...totalGapHits(schedule, lastSeason, currentSeason));
   for (const game of schedule) {
     const c = game.status === "final" ? recorded.get(game.id) : forecasts[game.id];
     hits.push(...angleHitsForGame(game, currentSeason, c ?? null));
