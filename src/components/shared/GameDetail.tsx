@@ -25,7 +25,7 @@ import { gameScore, type BoxScoreLine, type Game, type GameProbabilityPoint } fr
 import { isCollegeId, registerTeams, teamById, type Team } from "@/data/shared/teams";
 import { headshotUrl, playerRoute, teamRoute, teamShort, useLeague } from "@/lib/shared/league-links";
 import { CFB_RULES, cfbBestBets, type CfbPick } from "@/lib/cfb/cfb-model";
-import { useCfbSchedule } from "@/lib/cfb/use-cfb";
+import { useCfbPriorSeason, useCfbSchedule } from "@/lib/cfb/use-cfb";
 import { getGameWeather, getLiveGame, getTeamSeasonAverages } from "@/lib/shared/espn.functions";
 import { showGameStatistics } from "@/lib/shared/game-visibility";
 import { DraftKingsPropsBoard } from "@/components/shared/DraftKingsPropsBoard";
@@ -580,9 +580,11 @@ export function GameDetail({ gameId }: { gameId: string }) {
 
   // College ★ best bets need the whole schedule (each team's previous game).
   const cfbSchedule = useCfbSchedule(false, college);
+  const cfbPrior = useCfbPriorSeason(college);
   const cfbPicks = useMemo(
-    () => (college ? cfbBestBets(cfbSchedule.games).filter((p) => p.game.id === gameId) : []),
-    [college, cfbSchedule.games, gameId],
+    () =>
+      college ? cfbBestBets(cfbSchedule.games, cfbPrior).filter((p) => p.game.id === gameId) : [],
+    [college, cfbSchedule.games, cfbPrior, gameId],
   );
 
   // Hooks must run on every render, so this sits above the loading / missing-game early returns.
@@ -1543,7 +1545,7 @@ function CfbBestBetBanner({ picks }: { picks: CfbPick[] }) {
             <span className="font-mono text-[11px] uppercase tracking-wider text-acc">★ Best bet</span>
             <span className="inline-flex items-center gap-1.5 font-mono font-semibold">
               {p.market === "total" ? (
-                `Under ${p.line}`
+                `${p.side === "over" ? "Over" : "Under"} ${p.line}`
               ) : (
                 <>
                   {team ? <TeamLogo team={team} className="size-4" /> : null}
@@ -1555,6 +1557,7 @@ function CfbBestBetBanner({ picks }: { picks: CfbPick[] }) {
               {rule?.title}
               {p.lastLoss ? ` · lost by ${Math.abs(p.lastLoss.margin)} last game` : ""}
               {p.miles ? ` · visitor traveled ${p.miles.toLocaleString()} mi` : ""}
+              {p.model !== undefined ? ` · model ${p.model} · bet at the opener` : ""}
             </span>
             <Link to="/cfb/model" className="font-mono text-[11px] text-acc hover:underline">
               Why →

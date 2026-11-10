@@ -332,7 +332,15 @@ export interface ModelPick {
   /** Kickoff wind (mph) behind a wind best bet. */
   wind?: number;
   /** Which rule made it a best bet. */
-  reason?: "underdog" | "wind" | "qb-style" | "bounce" | "travel" | "early" | "academy";
+  reason?:
+    | "underdog"
+    | "wind"
+    | "qb-style"
+    | "bounce"
+    | "travel"
+    | "early"
+    | "academy"
+    | "open-total";
   /** Points (spread/total) or probability (moneyline) by which the model beats the market. */
   edge: number;
   /** Model's win probability for moneyline picks. */

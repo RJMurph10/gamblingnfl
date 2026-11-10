@@ -183,7 +183,7 @@ function bestBetItems(rows: GameModelRow[]): BestBetItem[] {
 
 /** NFL ★ timing (2023-26 opener replay): wind unders early, the spread rules near kickoff. */
 function timingOf(pick: ModelPick): BetTimingKind | null {
-  if (pick.reason === "wind") return "now";
+  if (pick.reason === "wind" || pick.reason === "open-total") return "now";
   if (pick.reason === "underdog" || pick.reason === "bounce" || pick.reason === "qb-style") return "late";
   return null;
 }
@@ -197,6 +197,7 @@ const REASON_TEXT: Record<NonNullable<ModelPick["reason"]>, string> = {
   travel: "cross-country trip",
   early: "early-season under",
   academy: "service academies",
+  "open-total": "model 4+ off the opening total",
 };
 
 const NOTE_ICON: Record<PickNote["kind"], string> = {

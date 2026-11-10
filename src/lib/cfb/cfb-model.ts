@@ -27,8 +27,9 @@ import {
   type PriorResult,
 } from "../shared/game-model";
 import { homeLine } from "../shared/season-pulse";
+import { OPEN_TOTAL, openTotalProjections } from "./cfb-open-total";
 
-export type CfbRuleId = "bounce" | "travel" | "early" | "academy";
+export type CfbRuleId = "bounce" | "travel" | "early" | "academy" | "open-total";
 
 export interface CfbRule {
   id: CfbRuleId;
@@ -73,6 +74,14 @@ export const CFB_RULES: CfbRule[] = [
     found: "16-2 · 88.9% · +12.5u (2013–18)",
     tested: "14-6-1 · 70.0% · +6.7u (2019–25)",
   },
+  {
+    id: "open-total",
+    title: "Model 4+ off the opening total",
+    bet: "Over / under at the opening total, from week 3 (bet early: the edge is at the opener)",
+    why: "A 50/50 blend of a points model and ratings built from earlier games' closing lines. The opener lags what the market has learned about each team from its recent games. Flat on 2013–17 (472-450), positive every season since 2018; unders stronger than overs.",
+    found: "234-189-3 · 55.3% · +23.7u (2018–21)",
+    tested: "337-248-3 · 57.6% · +58.4u (2022–25)",
+  },
 ];
 
 /** Army, Navy, Air Force (ESPN team ids). */
@@ -101,7 +110,7 @@ export interface CfbPick {
   game: Game;
   rule: CfbRuleId;
   market: "spread" | "total";
-  side: "home" | "away" | "under";
+  side: "home" | "away" | "under" | "over";
   /** The picked team's spread (+7.5 = getting 7.5), or the total. */
   line: number;
   result: PickResult;
@@ -111,6 +120,8 @@ export interface CfbPick {
   lastLoss?: { gameId: string; margin: number };
   /** Cross-country: how far the visitor traveled. */
   miles?: number;
+  /** Opening total rule: the model's projected total. */
+  model?: number;
 }
 
 const WIN_UNITS = 100 / 110;
@@ -135,9 +146,10 @@ function gamesByTeam(games: Game[]) {
 }
 
 /** Every ★ best bet in a schedule (finished games graded, upcoming ones pending). */
-export function cfbBestBets(games: Game[]): CfbPick[] {
+export function cfbBestBets(games: Game[], priorSeason: PriorResult[] = []): CfbPick[] {
   const byTeam = gamesByTeam(games);
   const picks: CfbPick[] = [];
+  const projected = openTotalProjections(games, priorSeason);
   for (const g of games) {
     // FCS opponents and bowls weren't in the history the rules were tested on.
     if (g.fcs || g.postseason) continue;
@@ -155,6 +167,22 @@ export function cfbBestBets(games: Game[]): CfbPick[] {
         line: g.total,
         ...grade(s ? g.total - (s.home + s.away) : null),
       });
+    } else {
+      // the model 4+ points off the opening total (from week 3), graded at the opener
+      const open = g.odds?.totalOpen;
+      const m = projected.get(g.id);
+      if (open !== undefined && open > 0 && m !== undefined && Math.abs(m - open) >= OPEN_TOTAL.minEdge) {
+        const over = m > open;
+        picks.push({
+          game: g,
+          rule: "open-total",
+          market: "total",
+          side: over ? "over" : "under",
+          line: open,
+          model: m,
+          ...grade(s ? (s.home + s.away - open) * (over ? 1 : -1) : null),
+        });
+      }
     }
 
     // Spreads: the road team after a blowout loss, or the home team against a cross-country
@@ -442,6 +470,8 @@ function ruleNote(p: CfbPick): string {
   if (p.rule === "travel" && p.miles)
     return `Cross-country trip · visitor traveled ${p.miles.toLocaleString()} mi`;
   if (p.rule === "early") return "Early-season under (weeks 1–2)";
+  if (p.rule === "open-total")
+    return `Model ${p.model} vs opening total ${p.line} · bet at the opener`;
   return "Service academies under";
 }
 
@@ -476,7 +506,7 @@ export function runCfbModel(
 ): GameModelRow[] {
   const rows = runModel(games, priorSeason, [], undefined, undefined, undefined, false, cfg);
   const byGame = new Map<string, CfbPick[]>();
-  for (const p of cfbBestBets(games)) byGame.set(p.game.id, [...(byGame.get(p.game.id) ?? []), p]);
+  for (const p of cfbBestBets(games, priorSeason)) byGame.set(p.game.id, [...(byGame.get(p.game.id) ?? []), p]);
   for (const row of rows) {
     const bets = byGame.get(row.game.id);
     if (!bets) continue;
