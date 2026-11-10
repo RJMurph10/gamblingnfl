@@ -20,6 +20,7 @@
  * bets, graded at the opener. Spreads against the opener were mixed (below 50% in 2024), so not ★.
  */
 import { WNBA_PRIORS, type WnbaPrior } from "@/data/wnba/prior-ratings";
+import { walkForward } from "../shared/walk-cache";
 import { atsResult, etDayKey, hasScore, normCdf, ouResult, winnerOf, type WnbaGame } from "./wnba";
 
 /** Home court, in points per 100 possessions (about 1.6 points a game at average tempo). */
@@ -422,23 +423,23 @@ export function runWnbaModel(games: WnbaGame[]): WnbaModelRow[] {
     .filter((g) => g.status === "final" && hasScore(g))
     .sort((a, b) => a.date.localeCompare(b.date));
   const rows: WnbaModelRow[] = [];
-  const byDay = new Map<string, WnbaGame[]>();
-  for (const g of finals) {
-    const day = etDayKey(g.date);
-    const list = byDay.get(day);
-    if (list) list.push(g);
-    else byDay.set(day, [g]);
-  }
   const prior = priorForSeason(seasonOf(finals.length ? finals : usable));
-  let cursor = 0;
-  for (const [day, dayGames] of byDay) {
-    while (cursor < finals.length && etDayKey(finals[cursor].date) < day) cursor++;
-    const at = Date.parse(dayGames[0].date);
-    const before = finals.slice(0, cursor);
-    const table = buildRatings(before, at, prior);
-    const market = buildMarketRatings(before, at);
-    for (const g of dayGames) rows.push(rowFor(g, project(table, market, g)));
-  }
+  // each day's games predicted from the games before that day; saved between page loads (walk-cache.ts)
+  const preds = walkForward(
+    "wnba",
+    finals,
+    (g) => etDayKey(g.date),
+    (g) =>
+      JSON.stringify([g.id, g.date, g.home.team.id, g.away.team.id, g.home.score, g.away.score, g.neutral, (g as { possessions?: number }).possessions, g.odds?.spread, g.odds?.total, g.open]),
+    (before, dayGames) => {
+      const at = Date.parse(dayGames[0].date);
+      const table = buildRatings(before, at, prior);
+      const market = buildMarketRatings(before, at);
+      return dayGames.map((g) => project(table, market, g));
+    },
+    JSON.stringify(prior ?? null),
+  );
+  for (const g of finals) rows.push(rowFor(g, preds.get(g.id)!));
   const now = buildRatings(finals, Date.now(), prior);
   const marketNow = buildMarketRatings(finals, Date.now());
   for (const g of usable.filter((x) => x.status !== "final" || !hasScore(x))) rows.push(rowFor(g, project(now, marketNow, g)));

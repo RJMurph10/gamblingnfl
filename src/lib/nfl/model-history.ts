@@ -8,7 +8,9 @@
 
 import type { Game, TeamGameStats } from "@/data/shared/games";
 import { teamByAbbr } from "@/data/shared/teams";
-import { runModel, type GameModelRow, type KickoffWeather, type PriorResult } from "../shared/game-model";
+import { MODEL_SETTINGS, runModel, type GameModelRow, type KickoffWeather, type PriorResult } from "../shared/game-model";
+import { getSaved, saveReplacing, whenLoaded } from "../shared/blob-cache";
+import { hashStep } from "../shared/walk-cache";
 import { buildQbRatings, type QbAdjuster, type QbAdjustment, type QbStart } from "./qb-ratings";
 import { buildQbStyles, type QbGameRow } from "./qb-style";
 
@@ -309,6 +311,20 @@ export function pastSeasonRuns(input: HistoryGame[], options: RunOptions = {}): 
   const optionsKey = `${useQb}|${options.qbRows?.length ?? 0}`;
   const hit = byOptions.get(optionsKey);
   if (hit) return hit;
+  // Past seasons don't change during a season: reuse the replay saved in this browser when the
+  // history it was built from is identical (fingerprint of every game and the options).
+  // the model's own code and settings are part of the fingerprint, so a changed model never reuses an old replay
+  let fp = hashStep(
+    2166136261,
+    `${PAST_RUNS_VERSION}|${optionsKey}|${options.qbRows?.length ?? 0}|${JSON.stringify(MODEL_SETTINGS)}|${String(runModel)}|${String(buildQbRatings)}`,
+  );
+  for (const h of history) fp = hashStep(fp, JSON.stringify(h));
+  const savedKey = `nfl-past-runs|${fp.toString(36)}`;
+  const saved = getSaved<SeasonRun[]>(savedKey);
+  if (saved) {
+    byOptions.set(optionsKey, saved);
+    return saved;
+  }
   const adjust = useQb ? buildQbRatings(qbStartsFrom(history)) : undefined;
   const seasons = [...new Set(history.map((h) => h.season))].sort((a, b) => a - b);
   const out: SeasonRun[] = [];
@@ -330,7 +346,19 @@ export function pastSeasonRuns(input: HistoryGame[], options: RunOptions = {}): 
     });
   }
   byOptions.set(optionsKey, out);
+  if (typeof window !== "undefined") saveReplacing("nfl-past-runs|", savedKey, JSON.parse(JSON.stringify(out)));
   return out;
+}
+
+/**
+ * Bump when the NFL model's code changes, so browsers drop their saved past-season replays.
+ * (The current season is always recomputed; only past seasons are saved.)
+ */
+const PAST_RUNS_VERSION = "2026-11-10";
+
+/** Pages: true once the saved replays have been read (wait for it before running the model). */
+export function pastRunsReady(): Promise<void> {
+  return typeof window === "undefined" ? Promise.resolve() : whenLoaded();
 }
 
 /** This season's finished games (from nflverse) and projected starters, for QB ratings. */

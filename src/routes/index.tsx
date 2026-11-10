@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useEffect, useState } from "react";
 import { showUpcoming } from "@/lib/shared/season-window";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
@@ -20,7 +20,7 @@ import { teams } from "@/data/shared/teams";
 import { getLiveSchedule, getPriorSeasonResults } from "@/lib/shared/espn.functions";
 import { summarizeModel, unitsText } from "@/lib/shared/game-model";
 import { getNflHistory } from "@/lib/shared/history.functions";
-import { readHistory, runModelWithHistory } from "@/lib/nfl/model-history";
+import { readHistory, runModelWithHistory, pastRunsReady } from "@/lib/nfl/model-history";
 import { buildSeasonPulse, changeTone, weekChangeText } from "@/lib/shared/season-pulse";
 
 export const Route = createFileRoute("/")({
@@ -109,9 +109,14 @@ function Dashboard() {
       },
     };
   }, [historyQuery.data, forecasts]);
+  // wait (a moment, once) for this browser's saved past-season replays, so the model isn't rerun from scratch
+  const [runsReady, setRunsReady] = useState(false);
+  useEffect(() => {
+    void pastRunsReady().then(() => setRunsReady(true));
+  }, []);
   const modelRows = useMemo(
-    () => runModelWithHistory(source, priorSeason, history, current, runOptions),
-    [source, priorSeason, history, current, runOptions],
+    () => (runsReady ? runModelWithHistory(source, priorSeason, history, current, runOptions) : []),
+    [runsReady, source, priorSeason, history, current, runOptions],
   );
   // Accuracy cards grade every game; the units card follows the best bets (what it would bet).
   const model = useMemo(() => summarizeModel(modelRows, "predictions"), [modelRows]);
