@@ -304,6 +304,8 @@ export interface NbaModelRow {
     edge: number;
     best: boolean;
     result: PickResult | null;
+    /** Closing-line value: points the line moved toward this pick from the opener (null: no opener). */
+    clv: number | null;
   } | null;
   total: {
     pick: "over" | "under";
@@ -311,6 +313,7 @@ export interface NbaModelRow {
     edge: number;
     best: boolean;
     result: PickResult | null;
+    clv: number | null;
   } | null;
 }
 
@@ -323,6 +326,20 @@ function mlUnits(pickHome: boolean, game: NbaGame, result: PickResult | null): n
   if (result === "push") return 0;
   if (result === "loss") return -1;
   return price > 0 ? price / 100 : 100 / -price;
+}
+
+/**
+ * How far the market moved toward a pick between the opener and the latest (closing) line:
+ * `dir` is +1 when a higher number favors the pick (over), -1 when a lower one does (under, or a
+ * home spread getting more negative). Positive = the market agreed with the model.
+ */
+function moveToward(
+  open: number | null | undefined,
+  latest: number | null | undefined,
+  dir: 1 | -1,
+): number | null {
+  if (open == null || latest == null) return null;
+  return Math.round((latest - open) * dir * 10) / 10;
 }
 
 export function rowFor(game: NbaGame, pred: Prediction): NbaModelRow {
@@ -343,6 +360,7 @@ export function rowFor(game: NbaGame, pred: Prediction): NbaModelRow {
         edge: Math.abs(edge),
         best: Math.abs(edge) >= SPREAD_BEST_MIN,
         result: res ? toResult(res === pick, res === "push") : null,
+        clv: moveToward(game.odds?.spreadOpen, line, pick === "home" ? -1 : 1),
       };
     }
   }
@@ -360,6 +378,7 @@ export function rowFor(game: NbaGame, pred: Prediction): NbaModelRow {
         edge: Math.abs(edge),
         best: Math.abs(edge) >= TOTAL_BEST_MIN,
         result: res ? toResult(res === pick, res === "push") : null,
+        clv: moveToward(game.odds?.totalOpen, game.odds?.total, pick === "over" ? 1 : -1),
       };
     }
   }
@@ -444,6 +463,18 @@ export interface NbaModelSummary {
   total: Record3;
   /** Spread + total picks (the units card). */
   overall: Record3;
+  /** Closing-line value of finished spread + total picks that have an opener. */
+  clv: ClvStats;
+}
+
+export interface ClvStats {
+  /** Picks with an opener and a closing line. */
+  picks: number;
+  /** Share whose line moved toward the pick / away from it (the rest didn't move). */
+  beat: number | null;
+  lost: number | null;
+  /** Average points moved toward the pick. */
+  avg: number | null;
 }
 
 /**
@@ -463,6 +494,10 @@ export function summarizeNba(
   let stakes = 0;
   let spreadStaked = 0;
   let totalStaked = 0;
+  let clvN = 0;
+  let clvUp = 0;
+  let clvDown = 0;
+  let clvSum = 0;
   for (const r of rows) {
     if (r.game.status !== "final") continue;
     if (asOf && new Date(r.game.date).getTime() > asOf.getTime()) continue;
@@ -476,6 +511,12 @@ export function summarizeNba(
     ] as const) {
       if (!pick || !pick.result) continue;
       if (scope === "bets" && !pick.best) continue;
+      if (pick.clv != null) {
+        clvN++;
+        clvSum += pick.clv;
+        if (pick.clv > 0) clvUp++;
+        else if (pick.clv < 0) clvDown++;
+      }
       const u = pick.result === "win" ? WIN_UNITS : pick.result === "loss" ? -1 : 0;
       add(rec, pick.result, u);
       add(overall, pick.result, u);
@@ -488,7 +529,13 @@ export function summarizeNba(
   finish(spread, spreadStaked);
   finish(total, totalStaked);
   finish(overall, stakes);
-  return { moneyline, spread, total, overall };
+  const clv: ClvStats = {
+    picks: clvN,
+    beat: clvN ? (clvUp / clvN) * 100 : null,
+    lost: clvN ? (clvDown / clvN) * 100 : null,
+    avg: clvN ? Math.round((clvSum / clvN) * 100) / 100 : null,
+  };
+  return { moneyline, spread, total, overall, clv };
 }
 
 export const unitsText = (u: number) => `${u > 0 ? "+" : ""}${u.toFixed(2)}u`;
