@@ -1,0 +1,33 @@
+name: NBA box score research fetch (temporary)
+on:
+  push:
+    branches: [nba-box-probe]
+    paths: [research/nba/scripts/fetch_espn_box.mjs]
+permissions:
+  contents: write
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    strategy:
+      fail-fast: false
+      matrix:
+        span: [["2023-10-20","2024-01-31"],["2024-02-01","2024-06-30"],["2024-10-20","2025-01-31"],["2025-02-01","2025-06-30"],["2025-10-20","2026-01-31"],["2026-02-01","2026-06-30"],["2026-10-20","2026-11-10"]]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: node research/nba/scripts/fetch_espn_box.mjs ${{ matrix.span[0] }} ${{ matrix.span[1] }} box-${{ matrix.span[0] }}.csv
+      - name: Save to the nba-odds-data branch
+        run: |
+          gzip -9 box-${{ matrix.span[0] }}.csv
+          url="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+          for attempt in 1 2 3 4 5 6 7 8; do
+            rm -rf d && mkdir d && cd d && git init -q && git remote add origin "$url"
+            if git fetch -q --depth 1 origin nba-odds-data 2>/dev/null; then git checkout -q -b nba-odds-data FETCH_HEAD; else git checkout -q --orphan nba-odds-data; fi
+            cp ../box-${{ matrix.span[0] }}.csv.gz .
+            git config user.name "research-bot"; git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add -A && git commit -q -m "NBA box ${{ matrix.span[0] }}" && git push -q origin nba-odds-data && exit 0
+            cd ..; sleep $((attempt * 10))
+          done
+          exit 1
