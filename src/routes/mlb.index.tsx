@@ -87,7 +87,7 @@ function MlbDashboard() {
         />
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
           <StatCard
-            label="Win rate · model"
+            label="Winners · projection"
             value={fmt(winPct(grade.moneyline))}
             unit={winPct(grade.moneyline) === null ? undefined : "%"}
             note={
@@ -101,7 +101,7 @@ function MlbDashboard() {
             tone={tone(mlC)}
           />
           <StatCard
-            label="Totals · model"
+            label="Totals · projection"
             value={fmt(winPct(grade.total))}
             unit={winPct(grade.total) === null ? undefined : "%"}
             note={
@@ -117,7 +117,7 @@ function MlbDashboard() {
             tone={tone(totC)}
           />
           <StatCard
-            label="Run line · model"
+            label="Run line · projection"
             value={fmt(winPct(grade.runLine))}
             unit={winPct(grade.runLine) === null ? undefined : "%"}
             note={
@@ -132,7 +132,7 @@ function MlbDashboard() {
             tone={tone(rlC)}
           />
           <StatCard
-            label="Model · every pick"
+            label="Every game · not bets"
             value={units(all)}
             note={
               loading ??
@@ -151,8 +151,9 @@ function MlbDashboard() {
           {linesLoading ? (
             <span className="text-acc">Loading closing lines · {linesLoading} games left · </span>
           ) : null}
-          {grade.games} games graded · flat 1u per pick at the closing ESPN odds · each game
-          projected from earlier games only ·{" "}
+          {grade.games} games graded · these grade a projection on every game at the closing ESPN odds (1u each) to
+          show how close the model is; they are not bets: the closing MLB market already prices pitchers, parks and
+          weather. ★ best bets: Wrigley wind-out overs · each game projected from earlier games only ·{" "}
           <Link to="/mlb/model" className="text-acc">
             What the research found →
           </Link>
