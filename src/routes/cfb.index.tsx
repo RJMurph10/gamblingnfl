@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { showUpcoming } from "@/lib/shared/season-window";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageTitle, Panel, StatCard, TeamLogo } from "@/components/shared/booth";
 import { LiveGamesPanel, RecentGamesPanel, UpcomingGames } from "@/components/shared/GameTables";
@@ -146,7 +147,9 @@ function CfbDashboard() {
       <div className="grid gap-6 lg:grid-cols-12">
         <section className="min-w-0 space-y-6 lg:col-span-8">
           <LiveGamesPanel games={live} />
-          <UpcomingGames games={source} />
+          {showUpcoming(source.map((g) => ({ when: g.kickoffIso, status: g.status }))) ? (
+            <UpcomingGames games={source} />
+          ) : null}
           <RecentGamesPanel
             games={recent}
             allGamesTo="/cfb/games"
