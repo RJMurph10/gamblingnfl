@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { BetTiming } from "@/components/shared/BetTiming";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageTitle, Panel, StatCard } from "@/components/shared/booth";
 import { CbbLogo } from "@/components/cbb/CbbBits";
@@ -222,6 +223,7 @@ function CbbDashboard() {
                     <span className="font-semibold text-foreground">
                       {r.best!.pick === "over" ? "Over" : "Under"} {r.best!.line}
                     </span>
+                    {r.best!.rule === "edge" && r.game.status === "scheduled" ? <BetTiming kind="now" /> : null}
                     <span className="w-12 text-right text-mute">{r.best!.rule === "conf" ? "MAAC" : r.pred.total.toFixed(1)}</span>
                   </Link>
                 ))
