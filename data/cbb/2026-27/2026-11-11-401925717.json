@@ -7,18 +7,18 @@
   "id": "2065",
   "abbr": "BCU",
   "name": "Bethune-Cookman Wildcats",
-  "score": 0
+  "score": 11
  },
  "home": {
   "id": "21",
   "abbr": "SDSU",
   "name": "San Diego State Aztecs",
-  "score": 0
+  "score": 11
  },
  "neutral": false,
  "venue": "Viejas Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-11T02:59:01.228Z",

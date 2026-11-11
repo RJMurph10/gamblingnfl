@@ -2,23 +2,23 @@
  "id": "401918992",
  "league": "cbb",
  "date": "2026-11-11T20:00Z",
- "name": "JOES VS USF",
+ "name": "USF VS JOES",
  "away": {
-  "id": "2603",
-  "abbr": "JOES",
-  "name": "Saint Joseph's Hawks",
-  "score": 0
- },
- "home": {
   "id": "58",
   "abbr": "USF",
   "name": "South Florida Bulls",
-  "score": 0
+  "score": 78
+ },
+ "home": {
+  "id": "2603",
+  "abbr": "JOES",
+  "name": "Saint Joseph's Hawks",
+  "score": 82
  },
  "neutral": true,
  "venue": "Alumni Hall (Navy)",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-10T23:27:48.577Z",

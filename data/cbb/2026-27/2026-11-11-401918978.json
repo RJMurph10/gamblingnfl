@@ -7,18 +7,18 @@
   "id": "2448",
   "abbr": "NCAT",
   "name": "North Carolina A&T Aggies",
-  "score": 0
+  "score": 28
  },
  "home": {
   "id": "151",
   "abbr": "ECU",
   "name": "East Carolina Pirates",
-  "score": 0
+  "score": 35
  },
  "neutral": false,
  "venue": "Williams Arena at Minges Coliseum",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-10T23:27:48.577Z",
