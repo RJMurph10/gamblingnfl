@@ -10,6 +10,15 @@ import { BetTiming, type BetTimingKind } from "@/components/shared/BetTiming";
 import { BestBetsNow, type BestBetItem } from "@/components/shared/BestBetsNow";
 import { gameScore, type Game } from "@/data/shared/games";
 import { teamById } from "@/data/shared/teams";
+import { parkWindNote, WIND_RAIN_NOTE } from "@/lib/nfl/park-wind";
+
+/** "18 mph wind + rain · wind + rain: unders 140-77 · Linc wind: …" for a ★ wind under. */
+function windNote(game: Game, pick: ModelPick): string {
+  const mph = `${Math.round(pick.wind ?? 0)} mph wind${pick.rain ? " + rain" : ""}`;
+  return [mph, pick.rain ? WIND_RAIN_NOTE : null, parkWindNote(game, pick.wind, !!pick.rain)]
+    .filter(Boolean)
+    .join(" · ");
+}
 import {
   summarizeModel,
   unitsText,
@@ -113,7 +122,7 @@ function PickChip({ pick, game }: { pick: ModelPick; game: Game }) {
       title={`${
         pick.best
           ? pick.reason === "wind" && pick.wind !== undefined
-            ? `Best bet (wind ${Math.round(pick.wind)} mph) · `
+            ? `Best bet (${windNote(game, pick)}) · `
             : pick.reason && REASON_TEXT[pick.reason]
               ? `Best bet (${REASON_TEXT[pick.reason]}) · `
               : "Best bet · "
@@ -170,7 +179,7 @@ function bestBetItems(rows: GameModelRow[]): BestBetItem[] {
         timing: timingOf(p),
         note:
           p.reason === "wind" && p.wind !== undefined
-            ? `${Math.round(p.wind)} mph wind`
+            ? windNote(g, p)
             : p.reason
               ? REASON_TEXT[p.reason]
               : undefined,

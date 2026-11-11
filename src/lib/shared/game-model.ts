@@ -19,6 +19,8 @@ export interface KickoffWeather {
   outdoor: boolean;
   wind: number | null;
   temp: number | null;
+  /** Forecast hours of rain during the game (NWS: rain/showers/storms at 50%+ chance), when known. */
+  rainHours?: number;
 }
 
 /* ---------------- settings (tune here) ---------------- */
@@ -331,6 +333,8 @@ export interface ModelPick {
   best: boolean;
   /** Kickoff wind (mph) behind a wind best bet. */
   wind?: number;
+  /** ★ wind under with rain forecast during the game (wind + rain: unders 140-77, 2000-20). */
+  rain?: boolean;
   /** Which rule made it a best bet. */
   reason?:
     | "underdog"
@@ -550,6 +554,7 @@ export function predictionsForGame(
           best: windy,
           reason: windy ? "wind" : undefined,
           wind: windy ? weather!.wind! : undefined,
+          rain: windy && (weather!.rainHours ?? 0) > 0 ? true : undefined,
         },
         game,
       ),
