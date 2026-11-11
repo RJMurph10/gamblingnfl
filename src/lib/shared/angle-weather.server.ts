@@ -1,5 +1,6 @@
 /**
- * Kickoff forecasts (temperature + wind) for upcoming games, for the watch-list angles.
+ * Kickoff forecasts (temperature, wind, rain during the game) for upcoming games: the ★ wind
+ * unders and the watch-list angles.
  * U.S. outdoor stadiums only, from the National Weather Service hourly forecast (about a week
  * ahead). Domes and closed stadiums need no request. International games are skipped.
  */
@@ -17,6 +18,22 @@ interface NwsPeriod {
   temperature?: number;
   temperatureUnit?: string;
   windSpeed?: string;
+  shortForecast?: string;
+  probabilityOfPrecipitation?: { value?: number | null };
+}
+
+const RAIN = /rain|shower|drizzle|thunderstorm|t-storm/i;
+
+/** Hours from kickoff through the 3rd hour of the game with rain forecast at a 50%+ chance. */
+export function rainHoursOf(periods: NwsPeriod[], kickoffMs: number): number {
+  let n = 0;
+  for (const p of periods) {
+    const start = Date.parse(p.startTime);
+    if (start < kickoffMs - HOUR || start > kickoffMs + 3 * HOUR) continue;
+    const chance = p.probabilityOfPrecipitation?.value ?? 0;
+    if (chance >= 50 && RAIN.test(p.shortForecast ?? "")) n++;
+  }
+  return n;
 }
 
 /** Stadium point → hourly forecast URL (doesn't change, kept for the life of the worker). */
@@ -69,7 +86,8 @@ async function forecastOne(g: ForecastRequest): Promise<GameConditions | null> {
   }
   const forecast = await getJson<{ properties?: { periods?: NwsPeriod[] } }>(hourly);
   const target = Date.parse(g.kickoffIso);
-  const period = (forecast?.properties?.periods ?? []).find((p) => {
+  const periods = forecast?.properties?.periods ?? [];
+  const period = periods.find((p) => {
     const start = Date.parse(p.startTime);
     const end = Date.parse(p.endTime);
     return target >= start && target < end;
@@ -81,7 +99,13 @@ async function forecastOne(g: ForecastRequest): Promise<GameConditions | null> {
         ? Math.round((period.temperature * 9) / 5 + 32)
         : Math.round(period.temperature)
       : null;
-  return { outdoor: true, temp, wind: parseWindMph(period.windSpeed), source: "forecast" };
+  return {
+    outdoor: true,
+    temp,
+    wind: parseWindMph(period.windSpeed),
+    rainHours: rainHoursOf(periods, target),
+    source: "forecast",
+  };
 }
 
 /** Kickoff conditions for each requested game, by game id (null when not available). */

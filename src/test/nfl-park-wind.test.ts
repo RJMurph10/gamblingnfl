@@ -47,3 +47,30 @@ describe("Linc calm-day overs", () => {
     );
   });
 });
+
+import { rainHoursOf } from "@/lib/shared/angle-weather.server";
+
+describe("wind + rain", () => {
+  it("Tampa's note needs rain as well as wind", () => {
+    expect(parkWindNote(game("buccaneers"), 14)).toBeNull();
+    expect(parkWindNote(game("buccaneers"), 14, true)).toMatch(/^Raymond James wind: wind \+ rain/);
+  });
+  it("counts forecast rain hours (50%+ chance) from kickoff through the game", () => {
+    const k = Date.parse("2026-11-15T18:00:00Z");
+    const hour = (h: number, text: string, chance: number) => ({
+      startTime: new Date(k + h * 3_600_000).toISOString(),
+      endTime: new Date(k + (h + 1) * 3_600_000).toISOString(),
+      shortForecast: text,
+      probabilityOfPrecipitation: { value: chance },
+    });
+    const periods = [
+      hour(-3, "Rain", 90), // before the game
+      hour(0, "Rain Showers Likely", 70),
+      hour(1, "Chance Rain Showers", 40), // under 50%
+      hour(2, "Mostly Cloudy", 10),
+      hour(3, "Light Rain", 60),
+      hour(5, "Rain", 90), // after the game
+    ];
+    expect(rainHoursOf(periods, k)).toBe(2);
+  });
+});
