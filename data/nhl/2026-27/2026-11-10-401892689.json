@@ -7,7 +7,7 @@
   "id": "27",
   "abbr": "NSH",
   "name": "Nashville Predators",
-  "score": 0
+  "score": 3
  },
  "home": {
   "id": "8",
@@ -18,7 +18,7 @@
  "neutral": false,
  "venue": "crypto.com Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-09T18:52:46.049Z",
@@ -906,6 +906,243 @@
       "total": {
        "alternateDisplayValue": "5.5",
        "american": "5.5"
+      }
+     },
+     "current": {
+      "over": {
+       "value": 2.1,
+       "displayValue": "11/10",
+       "alternateDisplayValue": "+110",
+       "decimal": 2.1,
+       "fraction": "11/10",
+       "american": "+110"
+      },
+      "under": {
+       "value": 1.76,
+       "displayValue": "10/13",
+       "alternateDisplayValue": "-130",
+       "decimal": 1.76,
+       "fraction": "10/13",
+       "american": "-130"
+      },
+      "total": {
+       "alternateDisplayValue": "6.5",
+       "american": "6.5"
+      }
+     }
+    }
+   ]
+  },
+  "final": {
+   "at": "2026-11-11T06:35:40.103Z",
+   "books": [
+    {
+     "provider": {
+      "id": "100",
+      "name": "DraftKings",
+      "priority": 1
+     },
+     "details": "LA -125",
+     "overUnder": 6.5,
+     "spread": -1.5,
+     "overOdds": 110,
+     "underOdds": -130,
+     "awayTeamOdds": {
+      "favorite": false,
+      "underdog": true,
+      "moneyLine": 105,
+      "spreadOdds": -238,
+      "open": {
+       "favorite": false,
+       "pointSpread": {
+        "alternateDisplayValue": "+1.5",
+        "american": "+1.5"
+       },
+       "spread": {
+        "value": 1.48,
+        "displayValue": "20/41",
+        "alternateDisplayValue": "-205",
+        "decimal": 1.48,
+        "fraction": "20/41",
+        "american": "-205"
+       },
+       "moneyLine": {
+        "value": 2.24,
+        "displayValue": "31/25",
+        "alternateDisplayValue": "+124",
+        "decimal": 2.24,
+        "fraction": "31/25",
+        "american": "+124"
+       }
+      },
+      "close": {
+       "pointSpread": {
+        "alternateDisplayValue": "+1.5",
+        "american": "+1.5"
+       },
+       "spread": {
+        "value": 1.42,
+        "displayValue": "50/119",
+        "alternateDisplayValue": "-238",
+        "decimal": 1.42,
+        "fraction": "50/119",
+        "american": "-238"
+       },
+       "moneyLine": {
+        "value": 2.05,
+        "displayValue": "21/20",
+        "alternateDisplayValue": "+105",
+        "decimal": 2.05,
+        "fraction": "21/20",
+        "american": "+105"
+       }
+      },
+      "current": {
+       "pointSpread": {
+        "alternateDisplayValue": "+1.5",
+        "american": "+1.5"
+       },
+       "spread": {
+        "value": 1.42,
+        "displayValue": "50/119",
+        "alternateDisplayValue": "-238",
+        "decimal": 1.42,
+        "fraction": "50/119",
+        "american": "-238"
+       },
+       "moneyLine": {
+        "value": 2.05,
+        "displayValue": "21/20",
+        "alternateDisplayValue": "+105",
+        "decimal": 2.05,
+        "fraction": "21/20",
+        "american": "+105"
+       }
+      },
+      "team": {
+       "id": "27"
+      }
+     },
+     "homeTeamOdds": {
+      "favorite": true,
+      "underdog": false,
+      "moneyLine": -125,
+      "spreadOdds": 195,
+      "open": {
+       "favorite": true,
+       "pointSpread": {
+        "alternateDisplayValue": "-1.5",
+        "american": "-1.5"
+       },
+       "spread": {
+        "value": 2.7,
+        "displayValue": "17/10",
+        "alternateDisplayValue": "+170",
+        "decimal": 2.7,
+        "fraction": "17/10",
+        "american": "+170"
+       },
+       "moneyLine": {
+        "value": 1.67,
+        "displayValue": "25/37",
+        "alternateDisplayValue": "-148",
+        "decimal": 1.67,
+        "fraction": "25/37",
+        "american": "-148"
+       }
+      },
+      "close": {
+       "pointSpread": {
+        "alternateDisplayValue": "-1.5",
+        "american": "-1.5"
+       },
+       "spread": {
+        "value": 2.95,
+        "displayValue": "39/20",
+        "alternateDisplayValue": "+195",
+        "decimal": 2.95,
+        "fraction": "39/20",
+        "american": "+195"
+       },
+       "moneyLine": {
+        "value": 1.8,
+        "displayValue": "4/5",
+        "alternateDisplayValue": "-125",
+        "decimal": 1.8,
+        "fraction": "4/5",
+        "american": "-125"
+       }
+      },
+      "current": {
+       "pointSpread": {
+        "alternateDisplayValue": "-1.5",
+        "american": "-1.5"
+       },
+       "spread": {
+        "value": 2.95,
+        "displayValue": "39/20",
+        "alternateDisplayValue": "+195",
+        "decimal": 2.95,
+        "fraction": "39/20",
+        "american": "+195"
+       },
+       "moneyLine": {
+        "value": 1.8,
+        "displayValue": "4/5",
+        "alternateDisplayValue": "-125",
+        "decimal": 1.8,
+        "fraction": "4/5",
+        "american": "-125"
+       }
+      },
+      "team": {
+       "id": "8"
+      }
+     },
+     "moneylineWinner": false,
+     "spreadWinner": false,
+     "open": {
+      "over": {
+       "value": 1.74,
+       "displayValue": "20/27",
+       "alternateDisplayValue": "-135",
+       "decimal": 1.74,
+       "fraction": "20/27",
+       "american": "-135"
+      },
+      "under": {
+       "value": 2.14,
+       "displayValue": "57/50",
+       "alternateDisplayValue": "+114",
+       "decimal": 2.14,
+       "fraction": "57/50",
+       "american": "+114"
+      },
+      "total": {
+       "alternateDisplayValue": "5.5",
+       "american": "5.5"
+      }
+     },
+     "close": {
+      "over": {
+       "value": 2.1,
+       "displayValue": "11/10",
+       "alternateDisplayValue": "+110",
+       "decimal": 2.1,
+       "fraction": "11/10",
+       "american": "+110"
+      },
+      "under": {
+       "value": 1.76,
+       "displayValue": "10/13",
+       "alternateDisplayValue": "-130",
+       "decimal": 1.76,
+       "fraction": "10/13",
+       "american": "-130"
+      },
+      "total": {
+       "alternateDisplayValue": "6.5",
+       "american": "6.5"
       }
      },
      "current": {
@@ -2546,5 +2783,9 @@
    "Vitali Pinchuk",
    "NSH"
   ]
+ },
+ "final": {
+  "away": 3,
+  "home": 0
  }
 }

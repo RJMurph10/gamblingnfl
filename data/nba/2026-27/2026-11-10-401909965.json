@@ -7,18 +7,18 @@
   "id": "25",
   "abbr": "OKC",
   "name": "Oklahoma City Thunder",
-  "score": 0
+  "score": 103
  },
  "home": {
   "id": "22",
   "abbr": "POR",
   "name": "Portland Trail Blazers",
-  "score": 0
+  "score": 123
  },
  "neutral": false,
  "venue": "Moda Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-09T23:51:40.773Z",
@@ -4619,5 +4619,9 @@
    "Bennett Stirtz",
    "OKC"
   ]
+ },
+ "final": {
+  "away": 103,
+  "home": 123
  }
 }
