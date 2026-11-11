@@ -1,6 +1,6 @@
 {
  "day": "2026-11-11",
- "updated": "2026-11-11T12:13:48.507Z",
+ "updated": "2026-11-11T21:35:27.251Z",
  "picks": [
   {
    "id": "401909966-spread",
@@ -30,8 +30,8 @@
    "edge": 4.7,
    "best": true,
    "firstSeen": "2026-11-11T12:13:48.507Z",
-   "latest": 7.5,
-   "latestAt": "2026-11-11T12:13:48.507Z",
+   "latest": 5.5,
+   "latestAt": "2026-11-11T21:35:27.251Z",
    "alerted": false
   },
   {
@@ -47,7 +47,7 @@
    "best": false,
    "firstSeen": "2026-11-11T02:18:11.784Z",
    "latest": 15.5,
-   "latestAt": "2026-11-11T12:13:48.507Z",
+   "latestAt": "2026-11-11T21:35:27.251Z",
    "alerted": false
   },
   {
@@ -62,8 +62,8 @@
    "edge": 3.3,
    "best": true,
    "firstSeen": "2026-11-11T02:18:11.784Z",
-   "latest": 3.5,
-   "latestAt": "2026-11-11T12:13:48.507Z",
+   "latest": 4.5,
+   "latestAt": "2026-11-11T21:35:27.251Z",
    "alerted": false
   },
   {
@@ -78,8 +78,24 @@
    "edge": 2,
    "best": false,
    "firstSeen": "2026-11-11T12:13:48.507Z",
-   "latest": 12.5,
-   "latestAt": "2026-11-11T12:13:48.507Z",
+   "latest": 14.5,
+   "latestAt": "2026-11-11T21:35:27.251Z",
+   "alerted": false
+  },
+  {
+   "id": "401909972-spread",
+   "game": "BKN @ NO",
+   "tip": "2026-11-12T01:00Z",
+   "market": "spread",
+   "pick": "NO -3.5",
+   "line": -3.5,
+   "open": -4.5,
+   "model": 5.2,
+   "edge": 1.7,
+   "best": false,
+   "firstSeen": "2026-11-11T21:35:27.251Z",
+   "latest": -3.5,
+   "latestAt": "2026-11-11T21:35:27.251Z",
    "alerted": false
   },
   {
@@ -95,7 +111,7 @@
    "best": false,
    "firstSeen": "2026-11-11T12:13:48.507Z",
    "latest": 4.5,
-   "latestAt": "2026-11-11T12:13:48.507Z",
+   "latestAt": "2026-11-11T21:35:27.251Z",
    "alerted": false
   },
   {
@@ -110,8 +126,8 @@
    "edge": 8.1,
    "best": true,
    "firstSeen": "2026-11-11T12:13:48.507Z",
-   "latest": 217.5,
-   "latestAt": "2026-11-11T12:13:48.507Z",
+   "latest": 214.5,
+   "latestAt": "2026-11-11T21:35:27.251Z",
    "alerted": false
   },
   {
@@ -127,7 +143,23 @@
    "best": false,
    "firstSeen": "2026-11-11T12:13:48.507Z",
    "latest": -6.5,
-   "latestAt": "2026-11-11T12:13:48.507Z",
+   "latestAt": "2026-11-11T21:35:27.251Z",
+   "alerted": false
+  },
+  {
+   "id": "401909975-spread",
+   "game": "OKC @ POR",
+   "tip": "2026-11-12T03:00Z",
+   "market": "spread",
+   "pick": "OKC +2.5",
+   "line": -2.5,
+   "open": 2.5,
+   "model": -1.8,
+   "edge": 4.3,
+   "best": true,
+   "firstSeen": "2026-11-11T21:35:27.251Z",
+   "latest": -2.5,
+   "latestAt": "2026-11-11T21:35:27.251Z",
    "alerted": false
   }
  ]
