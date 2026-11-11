@@ -71,6 +71,14 @@ export const UNDER_CONFERENCES: Record<string, string> = { "13": "MAAC" };
  * season tested and projections closer to the final score than either alone.
  */
 export const MARKET_WEIGHT = 0.5;
+/**
+ * Early season the market's view gets more weight: while either team has played this few games or fewer.
+ * Last season's ratings miss roster turnover (the transfer portal), and the market learns faster.
+ * research/cbb/early_sweep.py, 2023-24 to 2025-26 vs the opener: ★ totals +101.6u → +126.5u, spread picks
+ * +22.4u → +39.8u, every season as good or better; 0.6-0.8 and cutoffs of 5-12 games all beat 0.5.
+ */
+export const EARLY_MARKET_WEIGHT = 0.7;
+export const EARLY_GAMES = 8;
 /** Market ratings need this many earlier games for both teams (until then: no ★). */
 const MARKET_MIN_GAMES = 3;
 const MARKET_HOME = 2.8;
@@ -315,14 +323,21 @@ export function buildMarketRatings(finals: CbbGame[], asOf: number): MarketTable
   return out;
 }
 
+/** Share of the projection from the market's view, given the fewer games either team has played. */
+export function marketWeight(fewerGames: number): number {
+  return fewerGames <= EARLY_GAMES ? EARLY_MARKET_WEIGHT : MARKET_WEIGHT;
+}
+
 /** The efficiency projection blended with the market's view, when both teams have enough games. */
 export function blendWithMarket(pred: Prediction, mk: MarketTable, homeId: string, awayId: string, neutral: boolean): Prediction & { market: boolean } {
   const enough = mk.ready && (mk.games.get(homeId) ?? 0) >= MARKET_MIN_GAMES && (mk.games.get(awayId) ?? 0) >= MARKET_MIN_GAMES;
   if (!enough) return { ...pred, market: false };
   const mMargin = (mk.margin.get(homeId) ?? 0) - (mk.margin.get(awayId) ?? 0) + (neutral ? 0 : MARKET_HOME);
   const mTotal = mk.mu + (mk.total.get(homeId) ?? 0) + (mk.total.get(awayId) ?? 0);
-  const margin = MARKET_WEIGHT * mMargin + (1 - MARKET_WEIGHT) * pred.margin;
-  const total = MARKET_WEIGHT * mTotal + (1 - MARKET_WEIGHT) * pred.total;
+  const fewer = Math.min(mk.games.get(homeId) ?? 0, mk.games.get(awayId) ?? 0);
+  const wt = marketWeight(fewer);
+  const margin = wt * mMargin + (1 - wt) * pred.margin;
+  const total = wt * mTotal + (1 - wt) * pred.total;
   return {
     ...pred,
     margin,
