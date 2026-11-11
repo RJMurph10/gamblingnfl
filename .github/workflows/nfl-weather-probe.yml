@@ -2,7 +2,7 @@ name: Football research fetch (temporary)
 on:
   push:
     branches: [nfl-weather-probe]
-    paths: [research/football/scripts/fetch_cfb_officials.mjs]
+    paths: [research/football/scripts/fetch_cfb_scoring.mjs]
 permissions:
   contents: write
 jobs:
@@ -17,17 +17,17 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
-      - run: node research/football/scripts/fetch_cfb_officials.mjs cfb_officials_${{ matrix.shard }}.csv ${{ matrix.shard }} 4
+      - run: node research/football/scripts/fetch_cfb_scoring.mjs cfb_scoring_${{ matrix.shard }}.csv ${{ matrix.shard }} 4
       - name: Save to the nfl-weather-data branch
         run: |
-          gzip -9 cfb_officials_${{ matrix.shard }}.csv
+          gzip -9 cfb_scoring_${{ matrix.shard }}.csv
           url="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
           for attempt in 1 2 3 4 5 6 7 8; do
             rm -rf d && mkdir d && cd d && git init -q && git remote add origin "$url"
             git fetch -q --depth 1 origin nfl-weather-data && git checkout -q -b nfl-weather-data FETCH_HEAD
-            cp ../cfb_officials_${{ matrix.shard }}.csv.gz .
+            cp ../cfb_scoring_${{ matrix.shard }}.csv.gz .
             git config user.name "research-bot"; git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add -A && git commit -q -m "CFB officials shard ${{ matrix.shard }}" && git push -q origin nfl-weather-data && exit 0
+            git add -A && git commit -q -m "CFB scoring shard ${{ matrix.shard }}" && git push -q origin nfl-weather-data && exit 0
             cd ..; sleep $((attempt * 10))
           done
           exit 1
