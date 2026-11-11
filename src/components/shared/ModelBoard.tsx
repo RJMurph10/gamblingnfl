@@ -207,6 +207,7 @@ const REASON_TEXT: Record<NonNullable<ModelPick["reason"]>, string> = {
   early: "early-season under",
   academy: "service academies",
   "open-total": "model 4+ off the opening total",
+  rivalry: "road team in a rivalry game",
 };
 
 const NOTE_ICON: Record<PickNote["kind"], string> = {

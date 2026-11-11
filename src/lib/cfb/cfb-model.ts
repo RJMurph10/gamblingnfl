@@ -16,6 +16,7 @@
  */
 
 import { gameScore, type Game } from "@/data/shared/games";
+import { CFB_RIVALRIES } from "@/data/cfb/cfb-rivalries";
 import { CFB_STADIUMS } from "@/data/cfb/cfb-stadiums";
 import {
   MODEL_SETTINGS,
@@ -29,7 +30,7 @@ import {
 import { homeLine } from "../shared/season-pulse";
 import { OPEN_TOTAL, openTotalProjections } from "./cfb-open-total";
 
-export type CfbRuleId = "bounce" | "travel" | "early" | "academy" | "open-total";
+export type CfbRuleId = "bounce" | "travel" | "early" | "academy" | "open-total" | "rivalry";
 
 export interface CfbRule {
   id: CfbRuleId;
@@ -75,6 +76,14 @@ export const CFB_RULES: CfbRule[] = [
     tested: "14-6-1 · 70.0% · +6.7u (2019–25)",
   },
   {
+    id: "rivalry",
+    title: "Road team in a rivalry game",
+    bet: "Road team against the spread in a traditional rivalry game (true home/road, trip under 800 miles)",
+    why: "Books give the usual home field, but in a rivalry it mostly disappears: the visitor knows the stadium, the trip is short and half the crowd may be theirs. Road teams covered 57% in rivalries vs 52% on similar short trips without one; cross-country rivalries don't show it, so they're left out. The old \"take the underdog\" saying didn't hold (50%).",
+    found: "150-103-5 · 59.3% · +33.4u (2013–18)",
+    tested: "179-140-12 · 56.1% · +22.7u (2019–25)",
+  },
+  {
     id: "open-total",
     title: "Model 4+ off the opening total",
     bet: "Over / under at the opening total, from week 3 (bet early: the edge is at the opener)",
@@ -89,6 +98,17 @@ export const ACADEMY_IDS = new Set(["cfb-349", "cfb-2426", "cfb-2005"]);
 export const BOUNCE_LOSS_MARGIN = 28;
 export const EARLY_LAST_WEEK = 2;
 export const TRAVEL_MILES = 2000;
+
+/** Rivalry rule: only trips under this (cross-country rivalries didn't show the road edge). */
+export const RIVALRY_MAX_MILES = 800;
+const RIVALRY_KEYS = new Set(CFB_RIVALRIES.map(([a, b]) => (a < b ? `${a}-${b}` : `${b}-${a}`)));
+
+/** True for a traditional rivalry (src/data/cfb/cfb-rivalries.ts), either team at home. */
+export function isRivalry(homeTeamId: string, awayTeamId: string): boolean {
+  const a = Number(homeTeamId.replace(/^cfb-/, ""));
+  const b = Number(awayTeamId.replace(/^cfb-/, ""));
+  return RIVALRY_KEYS.has(a < b ? `${a}-${b}` : `${b}-${a}`);
+}
 
 const stadiumOf = (teamId: string) => CFB_STADIUMS[Number(teamId.replace(/^cfb-/, ""))];
 
@@ -185,10 +205,27 @@ export function cfbBestBets(games: Game[], priorSeason: PriorResult[] = []): Cfb
       }
     }
 
-    // Spreads: the road team after a blowout loss, or the home team against a cross-country
-    // visitor. When both fire they point at opposite teams, so neither is bet.
+    // Spreads: the road team in a rivalry game (takes precedence: same side as bounce-back, and a
+    // rivalry trip is never cross-country); otherwise the road team after a blowout loss, or the home
+    // team against a cross-country visitor. When those two fire they point at opposite teams, so
+    // neither is bet.
     const home = homeLine(g);
     if (home === null) continue;
+    if (!g.neutralSite && isRivalry(g.homeTeamId, g.awayTeamId)) {
+      const trip = tripMiles(g.awayTeamId, g.homeTeamId);
+      if (trip !== null && trip < RIVALRY_MAX_MILES) {
+        picks.push({
+          game: g,
+          rule: "rivalry",
+          market: "spread",
+          side: "away",
+          line: -home,
+          miles: Math.round(trip),
+          ...grade(s ? s.away - s.home - home : null),
+        });
+        continue;
+      }
+    }
     const list = byTeam.get(g.awayTeamId) ?? [];
     const before = list.filter((x) => x !== g && kickoff(x) < kickoff(g));
     const prev = before[before.length - 1];
@@ -467,6 +504,7 @@ export function outdoorStadium(teamId: string): { lat: number; lon: number } | n
 function ruleNote(p: CfbPick): string {
   if (p.rule === "bounce" && p.lastLoss)
     return `Road bounce-back · lost by ${Math.abs(p.lastLoss.margin)} last game`;
+  if (p.rule === "rivalry") return `Rivalry game · road team${p.miles ? ` (${p.miles} mi trip)` : ""}`;
   if (p.rule === "travel" && p.miles)
     return `Cross-country trip · visitor traveled ${p.miles.toLocaleString()} mi`;
   if (p.rule === "early") return "Early-season under (weeks 1–2)";

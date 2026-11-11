@@ -344,7 +344,8 @@ export interface ModelPick {
     | "travel"
     | "early"
     | "academy"
-    | "open-total";
+    | "open-total"
+    | "rivalry";
   /** Points (spread/total) or probability (moneyline) by which the model beats the market. */
   edge: number;
   /** Model's win probability for moneyline picks. */
