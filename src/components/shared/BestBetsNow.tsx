@@ -5,6 +5,9 @@
  * still at the ★ size, "Partly gone" while it's at least the everyday pick size, "Gone" below that.
  */
 import type { ReactNode } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { bestLineFor, type ShopLeague, type ShopRequest } from "@/lib/shared/best-lines";
+import { getBestLines } from "@/lib/shared/best-lines.functions";
 import { Panel, PanelHeader } from "@/components/shared/booth";
 import { BetTiming, type BetTimingKind } from "@/components/shared/BetTiming";
 
@@ -30,6 +33,8 @@ export interface BestBetItem {
   note?: string;
   /** Spread picks show a sign. */
   spread?: boolean;
+  /** Line shopping: full team names and the side, to find the best number at every book. */
+  shop?: ShopRequest;
 }
 
 const fmt = (n: number | null, spread?: boolean) =>
@@ -53,12 +58,22 @@ export function BestBetsNow({
   loading,
   empty,
   footnote,
+  league,
 }: {
   items: BestBetItem[];
   loading?: boolean;
   empty: string;
   footnote?: ReactNode;
+  /** Line shopping across books (NFL, NBA, college basketball). */
+  league?: ShopLeague;
 }) {
+  const shop = useQuery({
+    queryKey: ["best-lines", league],
+    queryFn: () => getBestLines({ data: { league: league! } }),
+    enabled: !!league,
+    staleTime: 10 * 60_000,
+    retry: 1,
+  });
   const now = Date.now();
   const list = items
     .filter((b) => Date.parse(b.when) > now)
@@ -78,6 +93,7 @@ export function BestBetsNow({
               <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
                 <th className="px-4 py-2 font-normal">Game</th>
                 <th className="px-2 py-2 font-normal">Bet</th>
+                {league ? <th className="px-2 py-2 font-normal">Best number</th> : null}
                 <th className="px-2 py-2 font-normal">Status</th>
                 <th className="px-2 py-2 font-normal">When</th>
                 <th className="px-2 py-2 text-right font-normal">Opened</th>
@@ -90,6 +106,14 @@ export function BestBetsNow({
                 const st = status(b);
                 // the number you can bet right now
                 const line = b.now ?? b.open;
+                const best = league && b.shop ? bestLineFor(shop.data, b.shop, b.when) : null;
+                // points better than the line shown (DraftKings), from the pick's side
+                const gain =
+                  best && line !== null
+                    ? Math.round(
+                        (b.shop!.side === "over" ? line - best.line : best.line - line) * 10,
+                      ) / 10
+                    : null;
                 return (
                   <tr key={b.id} className="hover:bg-line/5">
                     <td className="px-4 py-2">
@@ -103,6 +127,30 @@ export function BestBetsNow({
                       <span className="mr-1 text-acc">★</span>
                       {b.pick} {fmt(line, b.spread)}
                     </td>
+                    {league ? (
+                      <td className="whitespace-nowrap px-2 py-2 font-mono text-[11px]">
+                        {best ? (
+                          <span
+                            title={`${best.books} books${best.at ? ` · as of ${new Date(best.at).toLocaleString()}` : ""}`}
+                          >
+                            <span
+                              className={
+                                gain && gain > 0 ? "font-semibold text-win" : "text-foreground"
+                              }
+                            >
+                              {fmt(best.line, b.spread)}
+                              {best.price !== null
+                                ? ` (${best.price > 0 ? "+" : ""}${best.price})`
+                                : ""}
+                            </span>{" "}
+                            <span className="text-mute">{best.book}</span>
+                            {gain && gain > 0 ? <span className="text-win"> +{gain}</span> : null}
+                          </span>
+                        ) : (
+                          <span className="text-faint">{shop.isLoading ? "…" : "—"}</span>
+                        )}
+                      </td>
+                    ) : null}
                     <td
                       className={`whitespace-nowrap px-2 py-2 font-mono text-[11px] uppercase tracking-wider ${st.tone}`}
                     >

@@ -8,6 +8,8 @@ name: Extra game lines (Odds API + SportsGameOdds)
 #     weekends (earlier tip-offs)
 #   - men's college basketball from SportsGameOdds (free plan, 2,500 events a month: one pull a day, in the
 #     morning; if GitHub drops the morning run, the next run that day does it)
+#   - NBA from SportsGameOdds with the same morning pull, for line shopping (every book's lines)
+# Both SportsGameOdds pulls also update props-site/best-lines/<league>.json (line shopping on the model pages).
 # Each source does nothing without its repository secret (ODDS_API_KEY, SPORTSGAMEODDS_API_KEY).
 
 on:
@@ -55,12 +57,20 @@ jobs:
           have=$(gh api "repos/${{ github.repository }}/contents/extra-lines/sgo/cbb?ref=props-site" --jq '.[].name' 2>/dev/null | grep -c "^$today" || true)
           if [ "$cron" = "10 15 * * *" ] || [ "${{ github.event_name }}" != "schedule" ] || [ "$have" = "0" ]; then
             node app/scripts/line-history/sgo-games.mjs --league NCAAB --hours 30 --out pull/sgo/cbb || echo "SportsGameOdds pull failed"
+            # NBA, for line shopping only (every book's lines; ~8 events a day)
+            node app/scripts/line-history/sgo-games.mjs --league NBA --hours 30 --out pull/sgo/nba || echo "SportsGameOdds NBA pull failed"
           fi
           if [ -z "$(find pull -name '*.json' 2>/dev/null)" ]; then echo "nothing pulled"; exit 0; fi
           url="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
           for attempt in 1 2 3 4 5; do
             rm -rf site-repo && git clone -q --depth 1 --branch props-site "$url" site-repo
             mkdir -p site-repo/extra-lines && cp -r pull/* site-repo/extra-lines/
+            # line shopping: merge today's every-book snapshots into the site's latest files
+            mkdir -p site-repo/best-lines
+            for lg in cbb nba; do
+              snaps=$(ls pull/sgo/$lg/*.json 2>/dev/null || true)
+              if [ -n "$snaps" ]; then node app/scripts/line-history/merge-best-lines.mjs site-repo/best-lines/$lg.json $snaps; fi
+            done
             cd site-repo
             git config user.name "line-history-bot"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"

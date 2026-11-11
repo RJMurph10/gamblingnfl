@@ -57,12 +57,14 @@ jobs:
                 if(k>Date.now()+h*36e5&&g.props.length&&!g.props.some(p=>p[4]!=null||p[5]!=null))t.add(new Date(k).toISOString())}
                 console.log([...t].join(","))})' $HOURS || true)
           echo "unpriced later kickoffs: ${ALSO:-none}"
-          node app/scripts/line-history/sgo-nfl-props.mjs --out pull --hours $HOURS --also "$ALSO"
+          node app/scripts/line-history/sgo-nfl-props.mjs --out pull --hours $HOURS --also "$ALSO" --best best/nfl.json
           if [ -z "$(ls pull 2>/dev/null)" ]; then echo "nothing pulled"; exit 0; fi
           url="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
           for attempt in 1 2 3 4 5; do
             rm -rf site-repo && git clone -q --depth 1 --branch props-site "$url" site-repo
             mkdir -p site-repo/nfl/odds-api && cp pull/*.json site-repo/nfl/odds-api/
+            # line shopping: every book's spreads and totals, merged into the site's latest file
+            if [ -f best/nfl.json ]; then mkdir -p site-repo/best-lines && node app/scripts/line-history/merge-best-lines.mjs site-repo/best-lines/nfl.json best/nfl.json; fi
             # the hourly line saver merges these into upcoming.json; the daily props job into past results
             cd site-repo
             git config user.name "line-history-bot"

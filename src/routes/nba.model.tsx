@@ -207,6 +207,7 @@ function NbaModelPage() {
         <StatCard label="Straight-up winners" value={scope === "predictions" ? (summary.moneyline.winPct === null ? "—" : summary.moneyline.winPct.toFixed(1)) : "—"} unit={scope === "predictions" && summary.moneyline.winPct !== null ? "%" : undefined} note={scope === "predictions" ? `${rec(summary.moneyline)} picking winners` : "switch to Every pick"} />
       </div>
       <BestBetsNow
+        league="nba"
         items={rows
           .filter((r) => r.game.status === "scheduled" && r.total?.best)
           .map((r) => ({
@@ -218,6 +219,12 @@ function NbaModelPage() {
             now: r.game.odds?.total ?? null,
             model: Math.round(r.pred.total * 10) / 10,
             dir: r.total!.pick === "over" ? (1 as const) : (-1 as const),
+            shop: {
+              home: r.game.home.team.name,
+              away: r.game.away.team.name,
+              market: "total" as const,
+              side: r.total!.pick === "over" ? ("over" as const) : ("under" as const),
+            },
             bestEdge: TOTAL_BEST_MIN,
             minEdge: TOTAL_PICK_MIN,
             timing: "now" as const,
