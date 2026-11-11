@@ -93,6 +93,12 @@ function bestBetItems(rows: CbbModelRow[]): BestBetItem[] {
         minEdge: edge ? TOTAL_PICK_MIN : undefined,
         timing: edge ? ("now" as const) : null,
         note: edge ? gameTier(r) : "conference under (closing total)",
+        shop: {
+          home: r.game.home.team.name,
+          away: r.game.away.team.name,
+          market: "total" as const,
+          side: b.pick === "over" ? ("over" as const) : ("under" as const),
+        },
       };
     });
 }
@@ -117,6 +123,7 @@ function CbbModelPage() {
     <>
       <PageTitle eyebrow="Men's college basketball" title="Model" />
       <BestBetsNow
+        league="cbb"
         items={betItems}
         loading={isLoading}
         empty={`No ★ bets on the board. A total becomes a ★ when the model is ${BEST_TOTAL_EDGE}+ points off the opening total; openers usually post the day before.`}

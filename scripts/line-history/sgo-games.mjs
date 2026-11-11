@@ -39,7 +39,8 @@ async function monthUsage() {
 
 const num = (v) => (v == null || v === "" || !Number.isFinite(Number(v)) ? null : Number(v));
 
-function booksOf(e) {
+/** Every listed book's main spread / total / moneyline for one SportsGameOdds event. */
+export function booksOf(e) {
   const o = e.odds ?? {};
   const by = (k) => o[k]?.byBookmaker ?? {};
   const keys = new Set([
@@ -109,7 +110,8 @@ async function main() {
   console.log(`${LEAGUE}: ${games.length} games with lines; month usage before: ${usage ? `${usage.used}/${usage.max}` : "?"}`);
 }
 
-main().catch((e) => {
-  console.error(e);
-  process.exit(1);
-});
+if (import.meta.url === `file://${process.argv[1]}`)
+  main().catch((e) => {
+    console.error(e);
+    process.exit(1);
+  });
