@@ -67,7 +67,10 @@ export function LiveResults({
               <th className="px-2 py-2 text-right font-normal">W-L-P</th>
               <th className="px-2 py-2 text-right font-normal">Win %</th>
               <th className="px-2 py-2 text-right font-normal">Units</th>
-              <th className="px-4 py-2 text-right font-normal" title="Share of picks posted at a better number than the closing line, and the average points">
+              <th
+                className="px-4 py-2 text-right font-normal"
+                title="Share of picks posted at a better number than the closing line, and the average points"
+              >
                 Beat the close
               </th>
             </tr>

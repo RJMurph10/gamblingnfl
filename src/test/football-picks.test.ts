@@ -2,7 +2,12 @@ import { describe as group, expect, it } from "vitest";
 import type { Game } from "@/data/shared/games";
 // @ts-expect-error plain .mjs script without types
 import { closeFrom, grade } from "../../scripts/picks/grade-picks.mjs";
-import { atMarket, describe, mergeDay, type FootballPick } from "../../scripts/picks/football-picks";
+import {
+  atMarket,
+  describe,
+  mergeDay,
+  type FootballPick,
+} from "../../scripts/picks/football-picks";
 
 const game = (extra: Partial<Game> = {}) =>
   ({

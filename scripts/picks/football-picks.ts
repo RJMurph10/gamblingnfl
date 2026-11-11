@@ -15,10 +15,7 @@ import { join } from "node:path";
 import type { Game } from "../../src/data/shared/games";
 import { registerTeams, teamById } from "../../src/data/shared/teams";
 import { cfbWatchHits, outdoorStadium, runCfbModel } from "../../src/lib/cfb/cfb-model";
-import {
-  fetchCfbPriorSeasonResults,
-  fetchCfbSchedule,
-} from "../../src/lib/cfb/cfb-espn.server";
+import { fetchCfbPriorSeasonResults, fetchCfbSchedule } from "../../src/lib/cfb/cfb-espn.server";
 import { readHistory, runModelWithHistory } from "../../src/lib/nfl/model-history";
 import { fetchNflHistory } from "../../src/lib/nfl/nfl-history.server";
 import { fetchPriorSeasonResults, fetchSchedule } from "../../src/lib/nfl/nfl-schedule.server";
@@ -132,13 +129,14 @@ function starPicks(rows: GameModelRow[], upcoming: (g: Game) => boolean, stamp: 
         tip: g.kickoffIso!,
         market,
         ...at,
-        open:
-          market === "total" ? (g.odds?.totalOpen ?? null) : (g.odds?.homeSpreadOpen ?? null),
+        open: market === "total" ? (g.odds?.totalOpen ?? null) : (g.odds?.homeSpreadOpen ?? null),
         model: p.edge ? round1(home + dir * p.edge) : null,
         edge: p.edge ? round1(p.edge) : null,
         best: true,
         tag: p.reason ?? "star",
-        ...(p.wind !== undefined ? { note: `${Math.round(p.wind)} mph${p.snow ? " · snow" : p.rain ? " · rain" : ""}` } : {}),
+        ...(p.wind !== undefined
+          ? { note: `${Math.round(p.wind)} mph${p.snow ? " · snow" : p.rain ? " · rain" : ""}` }
+          : {}),
         firstSeen: stamp,
         lastSeen: stamp,
         latest: marketNow(g, market),
@@ -264,8 +262,7 @@ async function cfbPicks(stamp: string): Promise<{ picks: FootballPick[]; games: 
       tip: g.kickoffIso!,
       market: h.market,
       ...atMarket(g, h.market, h.side, h.line),
-      open:
-        h.market === "total" ? (g.odds?.totalOpen ?? null) : (g.odds?.homeSpreadOpen ?? null),
+      open: h.market === "total" ? (g.odds?.totalOpen ?? null) : (g.odds?.homeSpreadOpen ?? null),
       model: null,
       edge: null,
       best: false,
