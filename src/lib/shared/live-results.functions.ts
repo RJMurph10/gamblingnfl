@@ -5,7 +5,7 @@ import { seasonLabel, type LivePick } from "@/lib/shared/live-results";
 
 /** This season's recorded picks for a league (props-site picks/<league>/season-<season>.json). */
 export const getLivePicks = createServerFn({ method: "GET" })
-  .inputValidator((data) => z.object({ league: z.enum(["nba", "cbb"]) }).parse(data))
+  .inputValidator((data) => z.object({ league: z.enum(["nba", "cbb", "nfl", "cfb"]) }).parse(data))
   .handler(async ({ data }) =>
     cached(
       `live-picks-${data.league}`,

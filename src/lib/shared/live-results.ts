@@ -12,12 +12,23 @@ export interface LivePick {
   pick: string;
   line: number;
   latest: number | null;
-  model: number;
-  edge: number;
+  /** The closing line (ESPN, once final); null before then. Same convention as `line`. */
+  close?: number | null;
+  model: number | null;
+  edge: number | null;
   best: boolean;
+  /** Football: which ★ rule or watch angle ("wind", "rivalry", "gusty-rain", ...). */
+  tag?: string;
+  /** Kickoff forecast behind a weather pick. */
+  note?: string;
+  /** The site stopped showing the pick well before kickoff. */
+  dropped?: boolean;
   score: [number, number] | null;
   result: "win" | "loss" | "push" | null;
-  /** Points the line moved toward the pick between first seen and tip. */
+  /**
+   * Closing-line value: points the closing line moved toward the pick from the line it was posted at
+   * (> 0 = the pick beat the close). Falls back to the last line seen before tip.
+   */
   clv: number | null;
 }
 
@@ -26,7 +37,7 @@ export interface LiveRecord {
   losses: number;
   pushes: number;
   units: number;
-  /** Graded picks with a line move: share where the line moved toward / away from the pick. */
+  /** Graded picks: share that beat / lost to the closing line, and the average points. */
   beat: number | null;
   lost: number | null;
   avgClv: number | null;

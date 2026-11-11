@@ -15,6 +15,22 @@ import {
 } from "@/lib/cfb/cfb-model";
 import { MODEL_SETTINGS, summarizeModel, unitsText, type MarketRecord } from "@/lib/shared/game-model";
 import { useCfbPriorSeason, useCfbSchedule } from "@/lib/cfb/use-cfb";
+import { LiveResults } from "@/components/shared/LiveResults";
+import type { LivePick } from "@/lib/shared/live-results";
+
+const OLD_RULES = new Set(["bounce", "travel", "early", "academy"]);
+/** Live results rows: picks recorded when they first showed on the site, graded at that line. */
+const CFB_GROUPS: { label: string; test: (p: LivePick) => boolean }[] = [
+  { label: "All ★ best bets", test: (p) => p.best },
+  { label: "★ Rivalry road teams", test: (p) => p.best && p.tag === "rivalry" },
+  { label: "★ Totals vs the opener", test: (p) => p.best && p.tag === "open-total" },
+  { label: "★ Original four rules", test: (p) => p.best && OLD_RULES.has(p.tag ?? "") },
+  {
+    label: "Watch · weather",
+    test: (p) => !p.best && (p.tag === "weather" || p.tag === "wmu-calm"),
+  },
+  { label: "All watch angles", test: (p) => !p.best },
+];
 
 export const Route = createFileRoute("/cfb/model")({
   head: () => ({
@@ -142,7 +158,16 @@ function CfbModel() {
       trackRecordAside="Walk-forward · closing lines"
       trackRecordNote={`${SEASON} runs week by week with only the games before each week, the way it runs live. Past seasons show the ★ best bets only (consensus closing lines, FBS vs FBS regular season); the every-game calls start this season.`}
       calibrationSource="this season's games before the next slate"
-      extraTop={rules}
+      extraTop={
+        <>
+          <LiveResults
+            league="cfb"
+            groups={CFB_GROUPS}
+            footnote="Recorded every 3 hours the first time a ★ or watch-list angle shows for a game in the next week, at that line (flat 1u at −110). Beat the close: share of picks posted at a better number than ESPN's closing line, and the average points; this tells whether an edge is real within weeks, long before the win-loss record can. ▲/▼ on a pick = points better / worse than the close."
+          />
+          {rules}
+        </>
+      }
       watchList={<CfbWatchList games={games} season={SEASON} />}
       howItWorks={
         <>
