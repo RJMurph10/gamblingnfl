@@ -477,7 +477,7 @@
    ]
   },
   "close": {
-   "at": "2026-11-11T22:17:30.066Z",
+   "at": "2026-11-11T22:44:30.551Z",
    "scoreboard": [
     {
      "provider": {
@@ -588,7 +588,7 @@
       "home": {
        "close": {
         "line": "-29.5",
-        "odds": "-122",
+        "odds": "-118",
         "link": {
          "language": "en-US",
          "rel": [
@@ -622,7 +622,7 @@
       "away": {
        "close": {
         "line": "+29.5",
-        "odds": "+102",
+        "odds": "-102",
         "link": {
          "language": "en-US",
          "rel": [

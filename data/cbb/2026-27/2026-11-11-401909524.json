@@ -477,7 +477,7 @@
    ]
   },
   "close": {
-   "at": "2026-11-11T22:17:30.066Z",
+   "at": "2026-11-11T22:44:30.551Z",
    "scoreboard": [
     {
      "provider": {
@@ -771,10 +771,10 @@
       "priority": 1
      },
      "details": "MICH -3.5",
-     "overUnder": 157.5,
+     "overUnder": 156.5,
      "spread": -3.5,
-     "overOdds": -105,
-     "underOdds": -115,
+     "overOdds": -115,
+     "underOdds": -105,
      "awayTeamOdds": {
       "favorite": false,
       "underdog": true,
@@ -909,14 +909,6 @@
      },
      "current": {
       "over": {
-       "value": 1.95,
-       "displayValue": "20/21",
-       "alternateDisplayValue": "-105",
-       "decimal": 1.95,
-       "fraction": "20/21",
-       "american": "-105"
-      },
-      "under": {
        "value": 1.86,
        "displayValue": "20/23",
        "alternateDisplayValue": "-115",
@@ -924,9 +916,17 @@
        "fraction": "20/23",
        "american": "-115"
       },
+      "under": {
+       "value": 1.95,
+       "displayValue": "20/21",
+       "alternateDisplayValue": "-105",
+       "decimal": 1.95,
+       "fraction": "20/21",
+       "american": "-105"
+      },
       "total": {
-       "alternateDisplayValue": "157.5",
-       "american": "157.5"
+       "alternateDisplayValue": "156.5",
+       "american": "156.5"
       }
      }
     }
