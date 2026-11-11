@@ -7,18 +7,18 @@
   "id": "2711",
   "abbr": "WMU",
   "name": "Western Michigan Broncos",
-  "score": 0
+  "score": 42
  },
  "home": {
   "id": "2006",
   "abbr": "AKR",
   "name": "Akron Zips",
-  "score": 0
+  "score": 14
  },
  "neutral": false,
  "venue": "InfoCision Stadium",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-08T00:43:09.397Z",

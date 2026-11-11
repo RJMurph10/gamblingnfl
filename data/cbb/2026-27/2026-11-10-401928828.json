@@ -7,18 +7,18 @@
   "id": "2750",
   "abbr": "WRST",
   "name": "Wright State Raiders",
-  "score": 0
+  "score": 76
  },
  "home": {
   "id": "2649",
   "abbr": "TOL",
   "name": "Toledo Rockets",
-  "score": 0
+  "score": 68
  },
  "neutral": false,
  "venue": "Savage Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-09T23:51:40.773Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 76,
+  "home": 68
+ }
 }

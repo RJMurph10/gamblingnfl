@@ -7,18 +7,18 @@
   "id": "12",
   "abbr": "LAC",
   "name": "LA Clippers",
-  "score": 0
+  "score": 41
  },
  "home": {
   "id": "21",
   "abbr": "PHX",
   "name": "Phoenix Suns",
-  "score": 0
+  "score": 53
  },
  "neutral": false,
  "venue": "Mortgage Matchup Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-10T04:46:48.984Z",

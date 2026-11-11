@@ -7,18 +7,18 @@
   "id": "94",
   "abbr": "NKU",
   "name": "Northern Kentucky Norse",
-  "score": 0
+  "score": 63
  },
  "home": {
   "id": "139",
   "abbr": "SLU",
   "name": "Saint Louis Billikens",
-  "score": 0
+  "score": 125
  },
  "neutral": false,
  "venue": "Chaifetz Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-09T23:51:40.773Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 63,
+  "home": 125
+ }
 }

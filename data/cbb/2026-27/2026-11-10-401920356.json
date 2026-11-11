@@ -7,18 +7,18 @@
   "id": "108",
   "abbr": "HARV",
   "name": "Harvard Crimson",
-  "score": 0
+  "score": 70
  },
  "home": {
   "id": "111",
   "abbr": "NE",
   "name": "Northeastern Huskies",
-  "score": 0
+  "score": 74
  },
  "neutral": false,
  "venue": "Cabot Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-09T23:51:40.773Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 70,
+  "home": 74
+ }
 }

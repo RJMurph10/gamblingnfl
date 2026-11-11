@@ -7,18 +7,18 @@
   "id": "2433",
   "abbr": "ULM",
   "name": "UL Monroe Warhawks",
-  "score": 0
+  "score": 32
  },
  "home": {
   "id": "2628",
   "abbr": "TCU",
   "name": "TCU Horned Frogs",
-  "score": 0
+  "score": 41
  },
  "neutral": false,
  "venue": "Schollmaier Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-09T23:51:40.773Z",

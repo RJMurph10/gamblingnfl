@@ -7,18 +7,18 @@
   "id": "2803",
   "abbr": "BRY",
   "name": "Bryant Bulldogs",
-  "score": 0
+  "score": 55
  },
  "home": {
   "id": "2507",
   "abbr": "PROV",
   "name": "Providence Friars",
-  "score": 0
+  "score": 78
  },
  "neutral": false,
  "venue": "Amica Mutual Pavilion",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-10T09:57:36.845Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 55,
+  "home": 78
+ }
 }

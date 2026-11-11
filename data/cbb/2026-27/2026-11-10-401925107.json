@@ -7,18 +7,18 @@
   "id": "326",
   "abbr": "TXST",
   "name": "Texas State Bobcats",
-  "score": 0
+  "score": 72
  },
  "home": {
   "id": "292",
   "abbr": "RGV",
   "name": "UT Rio Grande Valley Vaqueros",
-  "score": 0
+  "score": 65
  },
  "neutral": false,
  "venue": "UTRGV Fieldhouse",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-10T09:57:36.845Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 72,
+  "home": 65
+ }
 }

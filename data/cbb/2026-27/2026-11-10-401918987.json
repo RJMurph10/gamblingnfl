@@ -7,18 +7,18 @@
   "id": "235",
   "abbr": "MEM",
   "name": "Memphis Tigers",
-  "score": 0
+  "score": 81
  },
  "home": {
   "id": "238",
   "abbr": "VAN",
   "name": "Vanderbilt Commodores",
-  "score": 0
+  "score": 105
  },
  "neutral": false,
  "venue": "Memorial Gymnasium (TN)",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-09T23:51:40.773Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 81,
+  "home": 105
+ }
 }

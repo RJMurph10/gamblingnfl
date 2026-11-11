@@ -7,18 +7,18 @@
   "id": "2630",
   "abbr": "UTM",
   "name": "UT Martin Skyhawks",
-  "score": 0
+  "score": 77
  },
  "home": {
   "id": "2032",
   "abbr": "ARST",
   "name": "Arkansas State Red Wolves",
-  "score": 0
+  "score": 59
  },
  "neutral": false,
  "venue": "First National Bank Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-09T23:51:40.773Z",

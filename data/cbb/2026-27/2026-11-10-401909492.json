@@ -7,18 +7,18 @@
   "id": "156",
   "abbr": "CREI",
   "name": "Creighton Bluejays",
-  "score": 0
+  "score": 35
  },
  "home": {
   "id": "2306",
   "abbr": "KSU",
   "name": "Kansas State Wildcats",
-  "score": 0
+  "score": 34
  },
  "neutral": false,
  "venue": "Bramlage Coliseum",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-09T23:51:40.773Z",

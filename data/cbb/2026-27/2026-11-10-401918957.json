@@ -7,18 +7,18 @@
   "id": "2506",
   "abbr": "PRES",
   "name": "Presbyterian Blue Hose",
-  "score": 0
+  "score": 60
  },
  "home": {
   "id": "152",
   "abbr": "NCSU",
   "name": "NC State Wolfpack",
-  "score": 0
+  "score": 94
  },
  "neutral": false,
  "venue": "Lenovo Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-10T04:46:48.984Z",
@@ -766,5 +766,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 60,
+  "home": 94
+ }
 }

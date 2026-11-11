@@ -7,18 +7,18 @@
   "id": "6",
   "abbr": "USA",
   "name": "South Alabama Jaguars",
-  "score": 0
+  "score": 69
  },
  "home": {
   "id": "2116",
   "abbr": "UCF",
   "name": "UCF Knights",
-  "score": 0
+  "score": 76
  },
  "neutral": false,
  "venue": "Addition Financial Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-09T23:51:40.773Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 69,
+  "home": 76
+ }
 }

@@ -7,18 +7,18 @@
   "id": "71",
   "abbr": "BRAD",
   "name": "Bradley Braves",
-  "score": 0
+  "score": 45
  },
  "home": {
   "id": "2166",
   "abbr": "DAV",
   "name": "Davidson Wildcats",
-  "score": 0
+  "score": 62
  },
  "neutral": false,
  "venue": "John M. Belk Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-09T23:51:40.773Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 45,
+  "home": 62
+ }
 }

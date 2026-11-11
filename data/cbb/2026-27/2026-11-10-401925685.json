@@ -7,18 +7,18 @@
   "id": "2016",
   "abbr": "ALCN",
   "name": "Alcorn State Braves",
-  "score": 0
+  "score": 45
  },
  "home": {
   "id": "93",
   "abbr": "MUR",
   "name": "Murray State Racers",
-  "score": 0
+  "score": 75
  },
  "neutral": false,
  "venue": "CFSB Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-10T09:57:36.845Z",

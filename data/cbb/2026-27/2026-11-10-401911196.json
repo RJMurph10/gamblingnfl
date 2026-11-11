@@ -7,18 +7,18 @@
   "id": "314",
   "abbr": "IONA",
   "name": "Iona Gaels",
-  "score": 0
+  "score": 72
  },
  "home": {
   "id": "2230",
   "abbr": "FOR",
   "name": "Fordham Rams",
-  "score": 0
+  "score": 78
  },
  "neutral": false,
  "venue": "Rose Hill Gym",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-09T23:51:40.773Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 72,
+  "home": 78
+ }
 }

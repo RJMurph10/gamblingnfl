@@ -7,18 +7,18 @@
   "id": "339",
   "abbr": "EVAN",
   "name": "Evansville Purple Aces",
-  "score": 0
+  "score": 68
  },
  "home": {
   "id": "2393",
   "abbr": "MTSU",
   "name": "Middle Tennessee Blue Raiders",
-  "score": 0
+  "score": 73
  },
  "neutral": false,
  "venue": "Murphy Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-09T23:51:40.773Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 68,
+  "home": 73
+ }
 }

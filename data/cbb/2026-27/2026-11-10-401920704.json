@@ -7,18 +7,18 @@
   "id": "2057",
   "abbr": "BEL",
   "name": "Belmont Bruins",
-  "score": 0
+  "score": 75
  },
  "home": {
   "id": "288",
   "abbr": "LIP",
   "name": "Lipscomb Bisons",
-  "score": 0
+  "score": 88
  },
  "neutral": false,
  "venue": "Allen Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-10T09:57:36.845Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 75,
+  "home": 88
+ }
 }

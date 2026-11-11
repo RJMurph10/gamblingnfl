@@ -7,18 +7,18 @@
   "id": "17",
   "abbr": "COL",
   "name": "Colorado Avalanche",
-  "score": 0
+  "score": 6
  },
  "home": {
   "id": "21",
   "abbr": "TOR",
   "name": "Toronto Maple Leafs",
-  "score": 0
+  "score": 3
  },
  "neutral": false,
  "venue": "Scotiabank Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-09T18:52:46.049Z",
@@ -2578,5 +2578,9 @@
    "Gavin McKenna",
    "TOR"
   ]
+ },
+ "final": {
+  "away": 6,
+  "home": 3
  }
 }

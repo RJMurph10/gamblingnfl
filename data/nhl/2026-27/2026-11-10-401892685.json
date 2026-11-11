@@ -7,18 +7,18 @@
   "id": "23",
   "abbr": "WSH",
   "name": "Washington Capitals",
-  "score": 0
+  "score": 3
  },
  "home": {
   "id": "14",
   "abbr": "OTT",
   "name": "Ottawa Senators",
-  "score": 0
+  "score": 2
  },
  "neutral": false,
  "venue": "Canadian Tire Centre",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-09T18:52:46.049Z",
@@ -2589,5 +2589,9 @@
    "Ilya Protas",
    "WSH"
   ]
+ },
+ "final": {
+  "away": 3,
+  "home": 2
  }
 }

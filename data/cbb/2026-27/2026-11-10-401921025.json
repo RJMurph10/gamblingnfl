@@ -7,18 +7,18 @@
   "id": "2382",
   "abbr": "MER",
   "name": "Mercer Bears",
-  "score": 0
+  "score": 97
  },
  "home": {
   "id": "290",
   "abbr": "GASO",
   "name": "Georgia Southern Eagles",
-  "score": 0
+  "score": 91
  },
  "neutral": false,
  "venue": "Jack and Ruth Ann Hill Convocation Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-09T23:51:40.773Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 97,
+  "home": 91
+ }
 }

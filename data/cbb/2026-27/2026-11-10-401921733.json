@@ -7,18 +7,18 @@
   "id": "2275",
   "abbr": "HOF",
   "name": "Hofstra Pride",
-  "score": 0
+  "score": 32
  },
  "home": {
   "id": "9",
   "abbr": "ASU",
   "name": "Arizona State Sun Devils",
-  "score": 0
+  "score": 41
  },
  "neutral": false,
  "venue": "Desert Financial Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-09T23:51:40.773Z",

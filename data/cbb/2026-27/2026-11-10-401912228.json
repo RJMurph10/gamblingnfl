@@ -7,18 +7,18 @@
   "id": "349",
   "abbr": "ARMY",
   "name": "Army Black Knights",
-  "score": 0
+  "score": 55
  },
  "home": {
   "id": "2441",
   "abbr": "NHVN",
   "name": "New Haven Chargers",
-  "score": 0
+  "score": 63
  },
  "neutral": false,
  "venue": "Jeffery P. Hazell Athletics Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-10T04:46:48.984Z",
@@ -766,5 +766,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 55,
+  "home": 63
+ }
 }

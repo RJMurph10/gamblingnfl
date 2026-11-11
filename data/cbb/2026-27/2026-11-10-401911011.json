@@ -7,18 +7,18 @@
   "id": "2754",
   "abbr": "YSU",
   "name": "Youngstown State Penguins",
-  "score": 0
+  "score": 78
  },
  "home": {
   "id": "2117",
   "abbr": "CMU",
   "name": "Central Michigan Chippewas",
-  "score": 0
+  "score": 91
  },
  "neutral": false,
  "venue": "McGuirk Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-09T23:51:40.773Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 78,
+  "home": 91
+ }
 }

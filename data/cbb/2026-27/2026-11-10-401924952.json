@@ -7,18 +7,18 @@
   "id": "2277",
   "abbr": "HCU",
   "name": "Houston Christian Huskies",
-  "score": 0
+  "score": 79
  },
  "home": {
   "id": "233",
   "abbr": "SDAK",
   "name": "South Dakota Coyotes",
-  "score": 0
+  "score": 70
  },
  "neutral": false,
  "venue": "Sanford Coyote Sports Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-10T09:57:36.845Z",

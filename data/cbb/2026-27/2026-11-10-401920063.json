@@ -7,18 +7,18 @@
   "id": "311",
   "abbr": "ME",
   "name": "Maine Black Bears",
-  "score": 0
+  "score": 65
  },
  "home": {
   "id": "227",
   "abbr": "URI",
   "name": "Rhode Island Rams",
-  "score": 0
+  "score": 71
  },
  "neutral": false,
  "venue": "Thomas M. Ryan Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-10T09:57:36.845Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 65,
+  "home": 71
+ }
 }

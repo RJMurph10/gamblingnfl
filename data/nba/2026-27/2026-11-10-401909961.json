@@ -7,18 +7,18 @@
   "id": "2",
   "abbr": "BOS",
   "name": "Boston Celtics",
-  "score": 0
+  "score": 94
  },
  "home": {
   "id": "20",
   "abbr": "PHI",
   "name": "Philadelphia 76ers",
-  "score": 0
+  "score": 82
  },
  "neutral": false,
  "venue": "Xfinity Mobile Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-09T00:58:04.073Z",

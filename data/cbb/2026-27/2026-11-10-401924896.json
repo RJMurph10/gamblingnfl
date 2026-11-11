@@ -7,18 +7,18 @@
   "id": "2031",
   "abbr": "LR",
   "name": "Little Rock Trojans",
-  "score": 0
+  "score": 32
  },
  "home": {
   "id": "167",
   "abbr": "UNM",
   "name": "New Mexico Lobos",
-  "score": 0
+  "score": 47
  },
  "neutral": false,
  "venue": "The Pit",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-09T23:51:40.773Z",

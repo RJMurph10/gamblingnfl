@@ -7,18 +7,18 @@
   "id": "2737",
   "abbr": "WIN",
   "name": "Winthrop Eagles",
-  "score": 0
+  "score": 79
  },
  "home": {
   "id": "338",
   "abbr": "KENN",
   "name": "Kennesaw State Owls",
-  "score": 0
+  "score": 88
  },
  "neutral": false,
  "venue": "VyStar Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-10T09:57:36.845Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 79,
+  "home": 88
+ }
 }

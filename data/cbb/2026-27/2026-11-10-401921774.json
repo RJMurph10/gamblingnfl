@@ -7,18 +7,18 @@
   "id": "2325",
   "abbr": "LAS",
   "name": "La Salle Explorers",
-  "score": 0
+  "score": 59
  },
  "home": {
   "id": "222",
   "abbr": "VILL",
   "name": "Villanova Wildcats",
-  "score": 0
+  "score": 80
  },
  "neutral": false,
  "venue": "Finneran Pavilion",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-09T23:51:40.773Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 59,
+  "home": 80
+ }
 }

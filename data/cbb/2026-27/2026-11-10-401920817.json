@@ -7,18 +7,18 @@
   "id": "2545",
   "abbr": "SELA",
   "name": "SE Louisiana Lions",
-  "score": 0
+  "score": 29
  },
  "home": {
   "id": "145",
   "abbr": "MISS",
   "name": "Ole Miss Rebels",
-  "score": 0
+  "score": 66
  },
  "neutral": false,
  "venue": "The Sandy and John Black Pavilion at Ole Miss",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-10T09:57:36.845Z",

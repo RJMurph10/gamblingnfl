@@ -7,18 +7,18 @@
   "id": "2447",
   "abbr": "NICH",
   "name": "Nicholls Colonels",
-  "score": 0
+  "score": 63
  },
  "home": {
   "id": "2655",
   "abbr": "TULN",
   "name": "Tulane Green Wave",
-  "score": 0
+  "score": 77
  },
  "neutral": false,
  "venue": "Avron B. Fogelman Arena in the Devlin Fieldhouse",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-10T09:57:36.845Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 63,
+  "home": 77
+ }
 }

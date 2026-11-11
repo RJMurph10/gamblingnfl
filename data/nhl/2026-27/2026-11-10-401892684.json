@@ -7,18 +7,18 @@
   "id": "30",
   "abbr": "MIN",
   "name": "Minnesota Wild",
-  "score": 0
+  "score": 2
  },
  "home": {
   "id": "10",
   "abbr": "MTL",
   "name": "Montreal Canadiens",
-  "score": 0
+  "score": 1
  },
  "neutral": false,
  "venue": "Bell Centre",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-09T18:52:46.049Z",
@@ -2513,5 +2513,9 @@
    "Maxim Shabanov",
    "MIN"
   ]
+ },
+ "final": {
+  "away": 2,
+  "home": 1
  }
 }

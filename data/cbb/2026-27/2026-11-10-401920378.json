@@ -7,18 +7,18 @@
   "id": "259",
   "abbr": "VT",
   "name": "Virginia Tech Hokies",
-  "score": 0
+  "score": 93
  },
  "home": {
   "id": "2294",
   "abbr": "IOWA",
   "name": "Iowa Hawkeyes",
-  "score": 0
+  "score": 88
  },
  "neutral": true,
  "venue": "Tyson Events Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-09T23:51:40.773Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 93,
+  "home": 88
+ }
 }

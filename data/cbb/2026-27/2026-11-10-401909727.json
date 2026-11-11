@@ -7,18 +7,18 @@
   "id": "2127",
   "abbr": "CHSO",
   "name": "Charleston Southern Buccaneers",
-  "score": 0
+  "score": 64
  },
  "home": {
   "id": "154",
   "abbr": "WAKE",
   "name": "Wake Forest Demon Deacons",
-  "score": 0
+  "score": 82
  },
  "neutral": false,
  "venue": "LJVM Coliseum",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-10T09:57:36.845Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 64,
+  "home": 82
+ }
 }

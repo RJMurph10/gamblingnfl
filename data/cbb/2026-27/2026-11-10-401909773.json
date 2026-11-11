@@ -7,18 +7,18 @@
   "id": "2582",
   "abbr": "SOU",
   "name": "Southern Jaguars",
-  "score": 0
+  "score": 47
  },
  "home": {
   "id": "66",
   "abbr": "ISU",
   "name": "Iowa State Cyclones",
-  "score": 0
+  "score": 84
  },
  "neutral": false,
  "venue": "Hilton Coliseum",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-10T09:57:36.845Z",
@@ -769,5 +769,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 47,
+  "home": 84
+ }
 }

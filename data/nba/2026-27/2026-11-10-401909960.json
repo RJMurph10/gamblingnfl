@@ -7,18 +7,18 @@
   "id": "15",
   "abbr": "MIL",
   "name": "Milwaukee Bucks",
-  "score": 0
+  "score": 85
  },
  "home": {
   "id": "18",
   "abbr": "NY",
   "name": "New York Knicks",
-  "score": 0
+  "score": 117
  },
  "neutral": false,
  "venue": "Madison Square Garden",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-09T23:51:40.773Z",
@@ -3832,5 +3832,9 @@
    "Mohamed Diawara",
    "NY"
   ]
+ },
+ "final": {
+  "away": 85,
+  "home": 117
  }
 }
