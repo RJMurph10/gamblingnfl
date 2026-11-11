@@ -1,6 +1,6 @@
 {
  "day": "2026-11-11",
- "updated": "2026-11-11T02:18:11.784Z",
+ "updated": "2026-11-11T12:13:48.507Z",
  "picks": [
   {
    "id": "401909966-spread",
@@ -14,8 +14,24 @@
    "edge": 1,
    "best": false,
    "firstSeen": "2026-11-11T02:18:11.784Z",
-   "latest": -4.5,
-   "latestAt": "2026-11-11T02:18:11.784Z",
+   "latest": -2.5,
+   "latestAt": "2026-11-11T12:13:48.507Z",
+   "alerted": false
+  },
+  {
+   "id": "401909968-spread",
+   "game": "BOS @ TOR",
+   "tip": "2026-11-12T00:00Z",
+   "market": "spread",
+   "pick": "TOR +7.5",
+   "line": 7.5,
+   "open": 6.5,
+   "model": -2.8,
+   "edge": 4.7,
+   "best": true,
+   "firstSeen": "2026-11-11T12:13:48.507Z",
+   "latest": 7.5,
+   "latestAt": "2026-11-11T12:13:48.507Z",
    "alerted": false
   },
   {
@@ -31,7 +47,7 @@
    "best": false,
    "firstSeen": "2026-11-11T02:18:11.784Z",
    "latest": 15.5,
-   "latestAt": "2026-11-11T02:18:11.784Z",
+   "latestAt": "2026-11-11T12:13:48.507Z",
    "alerted": false
   },
   {
@@ -46,8 +62,72 @@
    "edge": 3.3,
    "best": true,
    "firstSeen": "2026-11-11T02:18:11.784Z",
+   "latest": 3.5,
+   "latestAt": "2026-11-11T12:13:48.507Z",
+   "alerted": false
+  },
+  {
+   "id": "401909971-spread",
+   "game": "LAL @ MIL",
+   "tip": "2026-11-12T01:00Z",
+   "market": "spread",
+   "pick": "MIL +12.5",
+   "line": 12.5,
+   "open": 10.5,
+   "model": -10.5,
+   "edge": 2,
+   "best": false,
+   "firstSeen": "2026-11-11T12:13:48.507Z",
+   "latest": 12.5,
+   "latestAt": "2026-11-11T12:13:48.507Z",
+   "alerted": false
+  },
+  {
+   "id": "401909973-spread",
+   "game": "ORL @ UTAH",
+   "tip": "2026-11-12T02:00Z",
+   "market": "spread",
+   "pick": "UTAH +4.5",
+   "line": 4.5,
+   "open": 4.5,
+   "model": -3,
+   "edge": 1.5,
+   "best": false,
+   "firstSeen": "2026-11-11T12:13:48.507Z",
    "latest": 4.5,
-   "latestAt": "2026-11-11T02:18:11.784Z",
+   "latestAt": "2026-11-11T12:13:48.507Z",
+   "alerted": false
+  },
+  {
+   "id": "401909973-total",
+   "game": "ORL @ UTAH",
+   "tip": "2026-11-12T02:00Z",
+   "market": "total",
+   "pick": "Over 218.5",
+   "line": 218.5,
+   "open": 218.5,
+   "model": 226.6,
+   "edge": 8.1,
+   "best": true,
+   "firstSeen": "2026-11-11T12:13:48.507Z",
+   "latest": 217.5,
+   "latestAt": "2026-11-11T12:13:48.507Z",
+   "alerted": false
+  },
+  {
+   "id": "401909974-spread",
+   "game": "GS @ HOU",
+   "tip": "2026-11-12T02:30Z",
+   "market": "spread",
+   "pick": "GS +6.5",
+   "line": -6.5,
+   "open": -5.5,
+   "model": 5.4,
+   "edge": 1.1,
+   "best": false,
+   "firstSeen": "2026-11-11T12:13:48.507Z",
+   "latest": -6.5,
+   "latestAt": "2026-11-11T12:13:48.507Z",
    "alerted": false
   }
  ]
