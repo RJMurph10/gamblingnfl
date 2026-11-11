@@ -41,10 +41,11 @@ export function useCfbSchedule(refetchMs: number | false = 60_000, enabled = tru
 }
 
 /** Last season's FBS results (fetched once; finished seasons never change). */
-export function useCfbPriorSeason(): PriorResult[] {
+export function useCfbPriorSeason(enabled = true): PriorResult[] {
   const query = useQuery({
     queryKey: ["cfb-prior-season"],
     queryFn: () => getCfbPriorSeasonResults(),
+    enabled,
     staleTime: 6 * 60 * 60_000,
     retry: 1,
   });
