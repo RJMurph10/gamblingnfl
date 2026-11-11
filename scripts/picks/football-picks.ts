@@ -43,13 +43,8 @@ export interface FootballPick {
   market: "total" | "spread";
   /** "Under 44.5", "KC -3.5" (the picked team's number). */
   pick: string;
-  /**
-   * The number you could bet when the pick first showed (the market then): the total, or the home
-   * team's spread. Picks are graded and compared with the close at this number.
-   */
+  /** The line when first seen: the total, or the home team's spread. */
   line: number;
-  /** The rule's own number when it differs (rules graded at the opener: open-total, total-gap, weather). */
-  rule?: number;
   open: number | null;
   model: number | null;
   edge: number | null;
@@ -88,17 +83,6 @@ export function describe(
   return { pick: `${abbr(team)} ${lineText(n)}`, line: homeNumber };
 }
 
-/** The pick at the number on the board now; keeps the rule's number when it differs. */
-export function atMarket(
-  g: Game,
-  market: "total" | "spread",
-  side: "home" | "away" | "over" | "under",
-  ruleHome: number,
-) {
-  const now = marketNow(g, market) ?? ruleHome;
-  return { ...describe(g, market, side, now), ...(now !== ruleHome ? { rule: ruleHome } : {}) };
-}
-
 /** Current market number on a game: the total, or the home spread. */
 const marketNow = (g: Game, market: "total" | "spread") =>
   market === "total" ? (g.total > 0 ? g.total : null) : homeLine(g);
@@ -124,17 +108,18 @@ function starPicks(rows: GameModelRow[], upcoming: (g: Game) => boolean, stamp: 
       const market = p.market;
       // ModelPick lines: home spread for "home", away spread for "away", the total for totals
       const home = market === "spread" && p.side === "away" ? -p.line : p.line;
-      const at = atMarket(g, market, p.side, home);
+      const { pick, line } = describe(g, market, p.side, home);
       const dir = market === "total" ? (p.side === "over" ? 1 : -1) : p.side === "home" ? -1 : 1;
       out.push({
         id: `${eventId(g)}-${market}-${p.reason ?? "star"}`,
         game: matchup(g),
         tip: g.kickoffIso!,
         market,
-        ...at,
+        pick,
+        line,
         open:
           market === "total" ? (g.odds?.totalOpen ?? null) : (g.odds?.homeSpreadOpen ?? null),
-        model: p.edge ? round1(home + dir * p.edge) : null,
+        model: p.edge ? round1(line + dir * p.edge) : null,
         edge: p.edge ? round1(p.edge) : null,
         best: true,
         tag: p.reason ?? "star",
@@ -214,12 +199,14 @@ async function nflPicks(stamp: string): Promise<{ picks: FootballPick[]; games: 
       const n = /pk/i.test(s[2]) ? 0 : Number(s[2]);
       home = side === "home" ? n : -n;
     }
+    const { pick, line } = describe(g, market, side, home);
     picks.push({
       id: `${eventId(g)}-${market}-${h.angle}`,
       game: matchup(g),
       tip: g.kickoffIso!,
       market,
-      ...atMarket(g, market, side, home),
+      pick,
+      line,
       open: market === "total" ? (g.odds?.totalOpen ?? null) : (g.odds?.homeSpreadOpen ?? null),
       model: null,
       edge: null,
@@ -258,12 +245,14 @@ async function cfbPicks(stamp: string): Promise<{ picks: FootballPick[]; games: 
   for (const h of cfbWatchHits(games, weather)) {
     const g = h.game;
     if (!upcoming(g)) continue;
+    const { pick, line } = describe(g, h.market, h.side, h.line);
     picks.push({
       id: `${eventId(g)}-${h.market}-${h.angle}`,
       game: matchup(g),
       tip: g.kickoffIso!,
       market: h.market,
-      ...atMarket(g, h.market, h.side, h.line),
+      pick,
+      line,
       open:
         h.market === "total" ? (g.odds?.totalOpen ?? null) : (g.odds?.homeSpreadOpen ?? null),
       model: null,
