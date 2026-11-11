@@ -1,5 +1,54 @@
 {
  "day": "2026-11-11",
- "updated": "2026-11-10T21:02:36.150Z",
- "picks": []
+ "updated": "2026-11-11T02:18:11.784Z",
+ "picks": [
+  {
+   "id": "401909966-spread",
+   "game": "WSH @ IND",
+   "tip": "2026-11-12T00:00Z",
+   "market": "spread",
+   "pick": "WSH +4.5",
+   "line": -4.5,
+   "open": -4.5,
+   "model": 3.5,
+   "edge": 1,
+   "best": false,
+   "firstSeen": "2026-11-11T02:18:11.784Z",
+   "latest": -4.5,
+   "latestAt": "2026-11-11T02:18:11.784Z",
+   "alerted": false
+  },
+  {
+   "id": "401909969-spread",
+   "game": "SA @ CHI",
+   "tip": "2026-11-12T01:00Z",
+   "market": "spread",
+   "pick": "CHI +15.5",
+   "line": 15.5,
+   "open": 14.5,
+   "model": -13.5,
+   "edge": 2,
+   "best": false,
+   "firstSeen": "2026-11-11T02:18:11.784Z",
+   "latest": 15.5,
+   "latestAt": "2026-11-11T02:18:11.784Z",
+   "alerted": false
+  },
+  {
+   "id": "401909970-spread",
+   "game": "DEN @ MEM",
+   "tip": "2026-11-12T01:00Z",
+   "market": "spread",
+   "pick": "MEM +4.5",
+   "line": 4.5,
+   "open": 4.5,
+   "model": -1.2,
+   "edge": 3.3,
+   "best": true,
+   "firstSeen": "2026-11-11T02:18:11.784Z",
+   "latest": 4.5,
+   "latestAt": "2026-11-11T02:18:11.784Z",
+   "alerted": false
+  }
+ ]
 }

@@ -16,7 +16,11 @@
    "firstSeen": "2026-11-09T23:30:21.298Z",
    "latest": -2.5,
    "latestAt": "2026-11-09T23:30:21.298Z",
-   "alerted": false
+   "alerted": false,
+   "score": [
+    124,
+    114
+   ]
   },
   {
    "id": "401909953-spread",
@@ -32,7 +36,11 @@
    "firstSeen": "2026-11-09T23:30:21.298Z",
    "latest": 9.5,
    "latestAt": "2026-11-09T23:30:21.298Z",
-   "alerted": false
+   "alerted": false,
+   "score": [
+    112,
+    124
+   ]
   },
   {
    "id": "401909954-spread",
@@ -48,7 +56,11 @@
    "firstSeen": "2026-11-09T23:30:21.298Z",
    "latest": -9.5,
    "latestAt": "2026-11-09T23:30:21.298Z",
-   "alerted": false
+   "alerted": false,
+   "score": [
+    111,
+    122
+   ]
   },
   {
    "id": "401909955-spread",
@@ -64,7 +76,11 @@
    "firstSeen": "2026-11-09T23:30:21.298Z",
    "latest": 1.5,
    "latestAt": "2026-11-09T23:30:21.298Z",
-   "alerted": false
+   "alerted": false,
+   "score": [
+    118,
+    102
+   ]
   },
   {
    "id": "401909956-spread",
@@ -80,7 +96,11 @@
    "firstSeen": "2026-11-09T23:30:21.298Z",
    "latest": -4.5,
    "latestAt": "2026-11-09T23:30:21.298Z",
-   "alerted": false
+   "alerted": false,
+   "score": [
+    122,
+    125
+   ]
   },
   {
    "id": "401909957-spread",
@@ -96,7 +116,11 @@
    "firstSeen": "2026-11-09T23:30:21.298Z",
    "latest": -4.5,
    "latestAt": "2026-11-09T23:30:21.298Z",
-   "alerted": false
+   "alerted": false,
+   "score": [
+    100,
+    110
+   ]
   },
   {
    "id": "401909958-spread",
@@ -112,7 +136,11 @@
    "firstSeen": "2026-11-09T23:30:21.298Z",
    "latest": 8.5,
    "latestAt": "2026-11-09T23:30:21.298Z",
-   "alerted": false
+   "alerted": false,
+   "score": [
+    122,
+    96
+   ]
   },
   {
    "id": "401909959-spread",
@@ -128,7 +156,11 @@
    "firstSeen": "2026-11-09T23:30:21.298Z",
    "latest": -11.5,
    "latestAt": "2026-11-09T23:30:21.298Z",
-   "alerted": false
+   "alerted": false,
+   "score": [
+    87,
+    138
+   ]
   }
  ]
 }
