@@ -14,7 +14,8 @@
  *     [--also 2026-11-13T01:15:00Z,...]   (later kickoffs whose posted lines have no prices yet)
  */
 import { mkdir, writeFile } from "node:fs/promises";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
+import { booksOf } from "./sgo-games.mjs";
 
 const args = process.argv.slice(2);
 const opt = (n, d) => {
@@ -28,6 +29,8 @@ const HOURS = Number(opt("hours", "30"));
 const ALSO = (opt("also", "") || "").split(",").filter(Boolean);
 const KEEP = Number(opt("keep", "400"));
 const BOOK = opt("book", "draftkings");
+// every book's main spread and total from the same events (line shopping; costs nothing extra)
+const BEST = opt("best", "best-lines/nfl.json");
 const KEY = process.env.SPORTSGAMEODDS_API_KEY;
 const BASE = "https://api.sportsgameodds.com/v2";
 
@@ -124,6 +127,7 @@ async function main() {
   console.log(`month usage: ${usage ? `${usage.used}/${usage.max}` : "?"}`);
   const now = Date.now();
   const games = [];
+  const lines = [];
   const seen = new Set();
   const windows = [[now, now + HOURS * 3_600_000]];
   for (const t of ALSO) {
@@ -164,10 +168,17 @@ async function main() {
         };
         console.log(`${g.away} @ ${g.home}: ${props.length} priced lines, ${alts.length} ladders`);
         if (props.length) games.push({ ...g, at: new Date().toISOString(), props, alts });
+        const books = booksOf(e);
+        if (books.length) lines.push({ ...g, books });
       }
       cursor = r?.nextCursor ?? "";
       if (!cursor) break;
     }
+  }
+  if (lines.length) {
+    await mkdir(dirname(BEST), { recursive: true });
+    await writeFile(BEST, JSON.stringify({ at: new Date().toISOString(), source: "sgo", league: "NFL", games: lines }));
+    console.log(`line shopping: ${lines.length} games, every book's lines → ${BEST}`);
   }
   if (!games.length) {
     console.log("nothing priced");

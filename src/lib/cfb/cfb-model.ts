@@ -16,12 +16,17 @@
  */
 
 import { gameScore, type Game } from "@/data/shared/games";
+import { CFB_CLIMATE_F, CFB_HIGH_ALTITUDE } from "@/data/cfb/cfb-climate";
+import { CFB_RIVALRIES } from "@/data/cfb/cfb-rivalries";
 import { CFB_STADIUMS } from "@/data/cfb/cfb-stadiums";
 import {
+  isSnowy,
+  isWet,
   MODEL_SETTINGS,
   NFL_CONFIG,
   runModel,
   type GameModelRow,
+  type KickoffWeather,
   type ModelConfig,
   type ModelPick,
   type PriorResult,
@@ -29,7 +34,7 @@ import {
 import { homeLine } from "../shared/season-pulse";
 import { OPEN_TOTAL, openTotalProjections } from "./cfb-open-total";
 
-export type CfbRuleId = "bounce" | "travel" | "early" | "academy" | "open-total";
+export type CfbRuleId = "bounce" | "travel" | "early" | "academy" | "open-total" | "rivalry";
 
 export interface CfbRule {
   id: CfbRuleId;
@@ -75,6 +80,14 @@ export const CFB_RULES: CfbRule[] = [
     tested: "14-6-1 · 70.0% · +6.7u (2019–25)",
   },
   {
+    id: "rivalry",
+    title: "Road team in a rivalry game",
+    bet: "Road team against the spread in a traditional rivalry game (true home/road, trip under 800 miles)",
+    why: "Books give the usual home field, but in a rivalry it mostly disappears: the visitor knows the stadium, the trip is short and half the crowd may be theirs. Road teams covered 57% in rivalries vs 52% on similar short trips without one; cross-country rivalries don't show it, so they're left out. The old \"take the underdog\" saying didn't hold (50%).",
+    found: "150-103-5 · 59.3% · +33.4u (2013–18)",
+    tested: "179-140-12 · 56.1% · +22.7u (2019–25)",
+  },
+  {
     id: "open-total",
     title: "Model 4+ off the opening total",
     bet: "Over / under at the opening total, from week 3 (bet early: the edge is at the opener)",
@@ -89,6 +102,17 @@ export const ACADEMY_IDS = new Set(["cfb-349", "cfb-2426", "cfb-2005"]);
 export const BOUNCE_LOSS_MARGIN = 28;
 export const EARLY_LAST_WEEK = 2;
 export const TRAVEL_MILES = 2000;
+
+/** Rivalry rule: only trips under this (cross-country rivalries didn't show the road edge). */
+export const RIVALRY_MAX_MILES = 800;
+const RIVALRY_KEYS = new Set(CFB_RIVALRIES.map(([a, b]) => (a < b ? `${a}-${b}` : `${b}-${a}`)));
+
+/** True for a traditional rivalry (src/data/cfb/cfb-rivalries.ts), either team at home. */
+export function isRivalry(homeTeamId: string, awayTeamId: string): boolean {
+  const a = Number(homeTeamId.replace(/^cfb-/, ""));
+  const b = Number(awayTeamId.replace(/^cfb-/, ""));
+  return RIVALRY_KEYS.has(a < b ? `${a}-${b}` : `${b}-${a}`);
+}
 
 const stadiumOf = (teamId: string) => CFB_STADIUMS[Number(teamId.replace(/^cfb-/, ""))];
 
@@ -185,10 +209,27 @@ export function cfbBestBets(games: Game[], priorSeason: PriorResult[] = []): Cfb
       }
     }
 
-    // Spreads: the road team after a blowout loss, or the home team against a cross-country
-    // visitor. When both fire they point at opposite teams, so neither is bet.
+    // Spreads: the road team in a rivalry game (takes precedence: same side as bounce-back, and a
+    // rivalry trip is never cross-country); otherwise the road team after a blowout loss, or the home
+    // team against a cross-country visitor. When those two fire they point at opposite teams, so
+    // neither is bet.
     const home = homeLine(g);
     if (home === null) continue;
+    if (!g.neutralSite && isRivalry(g.homeTeamId, g.awayTeamId)) {
+      const trip = tripMiles(g.awayTeamId, g.homeTeamId);
+      if (trip !== null && trip < RIVALRY_MAX_MILES) {
+        picks.push({
+          game: g,
+          rule: "rivalry",
+          market: "spread",
+          side: "away",
+          line: -home,
+          miles: Math.round(trip),
+          ...grade(s ? s.away - s.home - home : null),
+        });
+        continue;
+      }
+    }
     const list = byTeam.get(g.awayTeamId) ?? [];
     const before = list.filter((x) => x !== g && kickoff(x) < kickoff(g));
     const prev = before[before.length - 1];
@@ -277,7 +318,14 @@ export const recordText = (r: CfbRecord) =>
 
 /* ---------------- watch list (tracked, not bet) ---------------- */
 
-export type CfbWatchId = "late" | "eastlate" | "wind" | "under60" | "under65" | "tz3";
+export type CfbWatchId =
+  | "late"
+  | "eastlate"
+  | "weather"
+  | "wmu-calm"
+  | "under60"
+  | "under65"
+  | "tz3";
 
 export interface CfbWatchAngle {
   id: CfbWatchId;
@@ -309,12 +357,24 @@ export const CFB_WATCH: CfbWatchAngle[] = [
     tested: "44-26 · 62.9% · +14.0u (2018–25)",
   },
   {
-    id: "wind",
-    title: "Wind 10+ mph unders",
-    bet: "Under at outdoor stadiums with a 10+ mph wind forecast at kickoff",
-    why: "Works in the NFL, but on 2013–25 college games it faded: 53.5% on the first six seasons, 51.4% since. Tracked from the forecast; not bet.",
-    found: "493-428-12 · 53.5% · +20.2u (2013–18)",
-    tested: "466-441-15 · 51.4% · −17.4u (2019–25)",
+    id: "weather",
+    title: "Weather unders at the opener",
+    bet: "Under at the opening total when the forecast has 16+ mph wind, or rain or snow with 10+ mph wind or 20+ mph gusts (bet early: the total drops ~1.4 pts by kickoff)",
+    why: "Plain wind faded in college, but strong wind and wet + windy games still beat the opener every era (62% / 56% / 56%); at the close the edge is gone since 2022. Snow + wind went 13-3. Graded from the kickoff forecast.",
+    found: "227-142-4 · 61.5% · +64.4u (2013–17)",
+    tested: "298-236-2 · 55.8% · +34.9u (2018–25)",
+    firstYear: 2013,
+    splitYear: 2017,
+  },
+  {
+    id: "wmu-calm",
+    title: "Calm day at Western Michigan → over",
+    bet: "Over in Western Michigan home games with no wind, gusts or rain in the forecast",
+    why: "Waldo Stadium sits sunken on a hill: windy or wet home games went 24-10 under, calm ones 22-3 over (graded at the opener), the same two-sided pattern as the Eagles' Linc. Found by scanning 67 stadiums; 2-4 games a year.",
+    found: "8-0 · 100% · +7.3u (2013–17)",
+    tested: "14-3 · 82.4% · +9.7u (2018–25)",
+    firstYear: 2013,
+    splitYear: 2017,
   },
   {
     id: "under60",
@@ -368,19 +428,46 @@ export interface CfbWatchHit {
   game: Game;
   angle: CfbWatchId;
   market: "spread" | "total";
-  side: "home" | "under";
+  side: "home" | "under" | "over";
   line: number;
   result: PickResult;
   units: number;
-  /** Wind: the kickoff forecast in mph. */
-  wind?: number;
+  /** Weather angles: what the kickoff forecast says ("18 mph · rain"). */
+  weather?: string;
+}
+
+/** Weather unders: 16+ mph, or rain / snow with 10+ mph or 20+ mph gusts (forecast). */
+export function weatherUnder(w: KickoffWeather | null | undefined): boolean {
+  if (!w || !w.outdoor || w.wind === null) return false;
+  const windy = w.wind >= 10 || (w.gustMph ?? 0) >= 20;
+  return w.wind >= 16 || ((isWet(w) || isSnowy(w)) && windy);
+}
+
+/** Calm, dry forecast: under 10 mph, gusts under 20, no rain or snow. */
+export const calmDry = (w: KickoffWeather | null | undefined) =>
+  !!w && w.outdoor && w.wind !== null && w.wind < 10 && (w.gustMph ?? 0) < 20 && !isWet(w) && !isSnowy(w);
+
+const WMU = "cfb-2711";
+
+/** "18 mph · gusts 27 · rain" from a forecast. */
+function weatherText(w: KickoffWeather): string {
+  return [
+    w.wind !== null ? `${Math.round(w.wind)} mph` : null,
+    w.gustMph ? `gusts ${w.gustMph}` : null,
+    isSnowy(w) ? `snow ${w.snowIn} in` : isWet(w) ? (w.precipIn ? `rain ${w.precipIn} in` : "rain") : null,
+  ]
+    .filter(Boolean)
+    .join(" · ");
 }
 
 /**
- * Watch-list games in a schedule. Wind needs kickoff forecasts (game id → mph), so only games
- * with a forecast appear; it isn't graded from history.
+ * Watch-list games in a schedule. The weather angles need kickoff forecasts (game id → conditions),
+ * so only games with a forecast appear; they aren't graded from history.
  */
-export function cfbWatchHits(games: Game[], windByGame: Record<string, number | null> = {}) {
+export function cfbWatchHits(
+  games: Game[],
+  weatherByGame: Record<string, KickoffWeather | null> = {},
+) {
   const hits: CfbWatchHit[] = [];
   for (const g of games) {
     if (g.fcs || g.postseason || !g.kickoffIso) continue;
@@ -415,16 +502,30 @@ export function cfbWatchHits(games: Game[], windByGame: Record<string, number | 
           line: g.total,
           ...under,
         });
-      const wind = windByGame[g.id];
-      if (typeof wind === "number" && wind >= 10)
+      const w = weatherByGame[g.id];
+      // graded at the opener: the edge is gone by kickoff
+      const open = g.odds?.totalOpen && g.odds.totalOpen > 0 ? g.odds.totalOpen : g.total;
+      if (w && weatherUnder(w))
         hits.push({
           game: g,
-          angle: "wind",
+          angle: "weather",
           market: "total",
           side: "under",
-          line: g.total,
-          wind,
-          ...under,
+          line: open,
+          weather:
+            weatherText(w) +
+            (g.homeTeamId === WMU && !g.neutralSite ? " · Western Michigan: windy/wet unders 24-10" : ""),
+          ...grade(s ? open - (s.home + s.away) : null),
+        });
+      if (w && g.homeTeamId === WMU && !g.neutralSite && calmDry(w))
+        hits.push({
+          game: g,
+          angle: "wmu-calm",
+          market: "total",
+          side: "over",
+          line: open,
+          weather: weatherText(w),
+          ...grade(s ? s.home + s.away - open : null),
         });
     }
     const home = homeLine(g);
@@ -455,6 +556,28 @@ export function cfbWatchHits(games: Game[], windByGame: Record<string, number | 
   return hits.sort((a, b) => kickoff(a.game) - kickoff(b.game));
 }
 
+/* ---------------- climate / altitude home edge ---------------- */
+
+/**
+ * Cold-climate (Oct–Nov home kickoffs ≤ 50°F) or 4,000+ ft home teams vs visitors from warm climates
+ * (≥ 62°F): home teams beat the closing spread 172-138 (55.5%, all home teams 49.1%) in 2013–25,
+ * about 2 points beyond the line, nearly 4 in November (48-29). Mostly the altitude schools (Utah,
+ * BYU, Colorado, Utah State). Research: claude/cfb-weather.md.
+ */
+export const CLIMATE_EDGE = { coldF: 50, warmF: 62, points: 2, november: 3 } as const;
+
+export function climateHomeEdge(g: Game): number {
+  if (g.neutralSite || g.fcs) return 0;
+  const home = Number(g.homeTeamId.replace(/^cfb-/, ""));
+  const away = Number(g.awayTeamId.replace(/^cfb-/, ""));
+  const homeF = CFB_CLIMATE_F[home];
+  const awayF = CFB_CLIMATE_F[away];
+  const cold = CFB_HIGH_ALTITUDE.has(home) || (homeF !== undefined && homeF <= CLIMATE_EDGE.coldF);
+  if (!cold || awayF === undefined || awayF < CLIMATE_EDGE.warmF) return 0;
+  const month = g.kickoffIso ? new Date(g.kickoffIso).getUTCMonth() : -1;
+  return month === 10 ? CLIMATE_EDGE.november : CLIMATE_EDGE.points;
+}
+
 /** Outdoor FBS home stadium location for a weather forecast (null for domes / unknown). */
 export function outdoorStadium(teamId: string): { lat: number; lon: number } | null {
   const st = stadiumOf(teamId);
@@ -467,6 +590,7 @@ export function outdoorStadium(teamId: string): { lat: number; lon: number } | n
 function ruleNote(p: CfbPick): string {
   if (p.rule === "bounce" && p.lastLoss)
     return `Road bounce-back · lost by ${Math.abs(p.lastLoss.margin)} last game`;
+  if (p.rule === "rivalry") return `Rivalry game · road team${p.miles ? ` (${p.miles} mi trip)` : ""}`;
   if (p.rule === "travel" && p.miles)
     return `Cross-country trip · visitor traveled ${p.miles.toLocaleString()} mi`;
   if (p.rule === "early") return "Early-season under (weeks 1–2)";
@@ -504,7 +628,10 @@ export function runCfbModel(
   priorSeason: PriorResult[] = [],
   cfg: ModelConfig = CFB_CONFIG,
 ): GameModelRow[] {
-  const rows = runModel(games, priorSeason, [], undefined, undefined, undefined, false, cfg);
+  const rows = runModel(games, priorSeason, [], undefined, undefined, undefined, false, {
+    ...cfg,
+    homeAdjust: cfg.homeAdjust ?? climateHomeEdge,
+  });
   const byGame = new Map<string, CfbPick[]>();
   for (const p of cfbBestBets(games, priorSeason)) byGame.set(p.game.id, [...(byGame.get(p.game.id) ?? []), p]);
   for (const row of rows) {

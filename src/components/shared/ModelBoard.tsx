@@ -10,12 +10,16 @@ import { BetTiming, type BetTimingKind } from "@/components/shared/BetTiming";
 import { BestBetsNow, type BestBetItem } from "@/components/shared/BestBetsNow";
 import { gameScore, type Game } from "@/data/shared/games";
 import { teamById } from "@/data/shared/teams";
-import { parkWindNote, WIND_RAIN_NOTE } from "@/lib/nfl/park-wind";
+import { parkWindNote, WIND_RAIN_NOTE, WIND_SNOW_NOTE } from "@/lib/nfl/park-wind";
 
-/** "18 mph wind + rain · wind + rain: unders 140-77 · Linc wind: …" for a ★ wind under. */
+/** "18 mph wind + rain · wind + rain: unders 196-114 · Linc wind: …" for a ★ wind under. */
 function windNote(game: Game, pick: ModelPick): string {
-  const mph = `${Math.round(pick.wind ?? 0)} mph wind${pick.rain ? " + rain" : ""}`;
-  return [mph, pick.rain ? WIND_RAIN_NOTE : null, parkWindNote(game, pick.wind, !!pick.rain)]
+  const mph = `${Math.round(pick.wind ?? 0)} mph wind${pick.rain ? " + rain" : pick.snow ? " + snow" : ""}`;
+  return [
+    mph,
+    pick.rain ? WIND_RAIN_NOTE : pick.snow ? WIND_SNOW_NOTE : null,
+    parkWindNote(game, pick.wind),
+  ]
     .filter(Boolean)
     .join(" · ");
 }
@@ -155,8 +159,10 @@ function bestBetItems(rows: GameModelRow[]): BestBetItem[] {
   for (const r of rows) {
     const g = r.game;
     if (g.status !== "scheduled" || !g.kickoffIso) continue;
-    const away = teamById(g.awayTeamId)?.abbr ?? g.awayTeamId;
-    const home = teamById(g.homeTeamId)?.abbr ?? g.homeTeamId;
+    const awayTeam = teamById(g.awayTeamId);
+    const homeTeam = teamById(g.homeTeamId);
+    const away = awayTeam?.abbr ?? g.awayTeamId;
+    const home = homeTeam?.abbr ?? g.homeTeamId;
     for (const p of r.picks) {
       if (!p.best || p.market === "moneyline" || p.line === undefined) continue;
       const spread = p.market === "spread";
@@ -184,6 +190,15 @@ function bestBetItems(rows: GameModelRow[]): BestBetItem[] {
               ? REASON_TEXT[p.reason]
               : undefined,
         spread,
+        shop:
+          homeTeam && awayTeam && (p.side === "home" || p.side === "away" || p.side === "over" || p.side === "under")
+            ? {
+                home: `${homeTeam.city} ${homeTeam.name}`,
+                away: `${awayTeam.city} ${awayTeam.name}`,
+                market: spread ? "spread" : "total",
+                side: p.side,
+              }
+            : undefined,
       });
     }
   }
@@ -207,6 +222,7 @@ const REASON_TEXT: Record<NonNullable<ModelPick["reason"]>, string> = {
   early: "early-season under",
   academy: "service academies",
   "open-total": "model 4+ off the opening total",
+  rivalry: "road team in a rivalry game",
 };
 
 const NOTE_ICON: Record<PickNote["kind"], string> = {
@@ -507,6 +523,7 @@ export function ModelBoard({
 
           <BestBetsNow
             items={bestBetItems(rows)}
+            league={rows.some((r) => r.game.homeTeamId.startsWith("cfb-")) ? undefined : "nfl"}
             empty="No ★ best bets on the board for upcoming games yet."
             footnote="Wind unders: bet early (they won 56% at the opening total vs 54% at the close, 2023-26). The spread rules: bet near kickoff (58% at the closing line vs 54% at the opener), so Status says Wait. The bet shows the line available now; Opened is where it started."
           />
