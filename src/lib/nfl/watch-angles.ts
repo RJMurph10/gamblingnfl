@@ -28,7 +28,8 @@ export type AngleId =
   | "west-coast-east"
   | "east-at-west-night"
   | "road-dog"
-  | "total-gap";
+  | "total-gap"
+  | "linc-calm";
 
 export interface AngleDefinition {
   id: AngleId;
@@ -99,12 +100,21 @@ export const WATCH_ANGLES: AngleDefinition[] = [
     why: "Dropped from the ★ best bets in October 2026: over 1999–2025 road underdogs of 7+ went 792-767 at closing lines (−47u), about a coin flip that loses to the vig, while home underdogs won. Tracked here so a real comeback would show.",
   },
   {
+    id: "linc-calm",
+    title: "Calm day at the Linc → over",
+    bet: "Over in Eagles home games with under 10 mph wind",
+    why: "Books seem to knock wind off every Lincoln Financial Field total. On windy days (10+ mph) unders went 50-27 (31-7 since 2016); on calm days overs went 60-39 since the Linc opened (39-20 since 2012) vs ~50% at other parks. Found by scanning every stadium, so tracked here rather than as a ★.",
+  },
+  {
     id: "total-gap",
     title: `Model ${TOTAL_GAP.minEdge}+ points off the opening total → the model's side`,
     bet: "Over / under at the opening total (bet early in the week)",
     why: "A points-only team model 6+ points away from the opener went 105-78 (57.4%, +17.5u) over 2011–2026, about 13 bets a season, and the line moved toward the pick 75% of the time; at the closing total the same picks won only 53%. Openers for past seasons aren't on the site, so it's graded here from 2026 on, at the opening total.",
   },
 ];
+
+/** Linc calm-day overs: wind under this at kickoff. */
+export const LINC_CALM_MPH = 10;
 
 /** Hours behind Eastern for each stadium's time zone (Arizona counted with the West Coast). */
 const ET_OFFSET: Record<string, number> = {
@@ -232,6 +242,23 @@ export function angleHitsForGame(game: Game, season: number, c: GameConditions |
   const line = homeLine(game);
   const away = abbrOf(game.awayTeamId);
   const home = abbrOf(game.homeTeamId);
+  if (
+    home === "PHI" &&
+    season >= 2003 &&
+    c.wind !== null &&
+    c.wind < LINC_CALM_MPH &&
+    game.total > 0 &&
+    !getStadiumForGame(game.homeTeamId, game.venue)?.international
+  ) {
+    out.push({
+      angle: "linc-calm",
+      game,
+      season,
+      conditions: c,
+      label: `Over ${game.total}`,
+      ...settle(final ? s.home + s.away - game.total : null, final),
+    });
+  }
   if (
     c.temp !== null &&
     c.temp <= WATCH_ANGLE_SETTINGS.coldF &&
