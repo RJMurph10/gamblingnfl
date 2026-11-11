@@ -2,7 +2,7 @@ import { describe as group, expect, it } from "vitest";
 import type { Game } from "@/data/shared/games";
 // @ts-expect-error plain .mjs script without types
 import { closeFrom, grade } from "../../scripts/picks/grade-picks.mjs";
-import { describe, mergeDay, type FootballPick } from "../../scripts/picks/football-picks";
+import { atMarket, describe, mergeDay, type FootballPick } from "../../scripts/picks/football-picks";
 
 const game = (extra: Partial<Game> = {}) =>
   ({
@@ -40,6 +40,17 @@ group("football picks", () => {
     expect(describe(game(), "spread", "home", -3.5)).toEqual({ pick: "PHI -3.5", line: -3.5 });
     expect(describe(game(), "spread", "away", -3.5)).toEqual({ pick: "DAL +3.5", line: -3.5 });
     expect(describe(game(), "spread", "home", 0).pick).toBe("PHI PK");
+  });
+
+  it("records the number on the board, not a stale opener the rule was graded at", () => {
+    // open-total rule says Under 53.5 (the opener); the market is 38.5 now
+    expect(atMarket(game({ total: 38.5 }), "total", "under", 53.5)).toEqual({
+      pick: "Under 38.5",
+      line: 38.5,
+      rule: 53.5,
+    });
+    expect(atMarket(game(), "total", "under", 44.5)).toEqual({ pick: "Under 44.5", line: 44.5 });
+    expect(atMarket(game({ spread: "PHI -6" }), "spread", "away", -3.5).pick).toBe("DAL +6");
   });
 
   it("keeps the first-seen line and refreshes the latest until kickoff", () => {
