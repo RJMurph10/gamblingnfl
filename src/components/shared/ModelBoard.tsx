@@ -10,12 +10,16 @@ import { BetTiming, type BetTimingKind } from "@/components/shared/BetTiming";
 import { BestBetsNow, type BestBetItem } from "@/components/shared/BestBetsNow";
 import { gameScore, type Game } from "@/data/shared/games";
 import { teamById } from "@/data/shared/teams";
-import { parkWindNote, WIND_RAIN_NOTE } from "@/lib/nfl/park-wind";
+import { parkWindNote, WIND_RAIN_NOTE, WIND_SNOW_NOTE } from "@/lib/nfl/park-wind";
 
-/** "18 mph wind + rain · wind + rain: unders 140-77 · Linc wind: …" for a ★ wind under. */
+/** "18 mph wind + rain · wind + rain: unders 196-114 · Linc wind: …" for a ★ wind under. */
 function windNote(game: Game, pick: ModelPick): string {
-  const mph = `${Math.round(pick.wind ?? 0)} mph wind${pick.rain ? " + rain" : ""}`;
-  return [mph, pick.rain ? WIND_RAIN_NOTE : null, parkWindNote(game, pick.wind, !!pick.rain)]
+  const mph = `${Math.round(pick.wind ?? 0)} mph wind${pick.rain ? " + rain" : pick.snow ? " + snow" : ""}`;
+  return [
+    mph,
+    pick.rain ? WIND_RAIN_NOTE : pick.snow ? WIND_SNOW_NOTE : null,
+    parkWindNote(game, pick.wind),
+  ]
     .filter(Boolean)
     .join(" · ");
 }

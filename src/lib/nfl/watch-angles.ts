@@ -8,7 +8,7 @@
 
 import { gameScore, type Game } from "@/data/shared/games";
 import { teamById } from "@/data/shared/teams";
-import { MODEL_SETTINGS, payout, type GameModelRow } from "../shared/game-model";
+import { isWet, MODEL_SETTINGS, payout, type GameModelRow } from "../shared/game-model";
 import {
   historyGameToGame,
   recordedConditions,
@@ -29,7 +29,8 @@ export type AngleId =
   | "east-at-west-night"
   | "road-dog"
   | "total-gap"
-  | "linc-calm";
+  | "linc-calm"
+  | "gusty-rain";
 
 export interface AngleDefinition {
   id: AngleId;
@@ -103,7 +104,13 @@ export const WATCH_ANGLES: AngleDefinition[] = [
     id: "linc-calm",
     title: "Calm day at the Linc → over",
     bet: "Over in Eagles home games with under 10 mph wind",
-    why: "Books seem to knock wind off every Lincoln Financial Field total. On windy days (10+ mph) unders went 50-27 (31-7 since 2016); on calm days overs went 60-39 since the Linc opened (39-20 since 2012) vs ~50% at other parks. Found by scanning every stadium, so tracked here rather than as a ★.",
+    why: "Books seem to knock wind off every Lincoln Financial Field total. On windy days (10+ mph) unders went 50-28 (31-8 since 2016); on calm days overs went 65-41 since the Linc opened (2003-26) vs ~50% at other parks. Found by scanning every stadium, so tracked here rather than as a ★.",
+  },
+  {
+    id: "gusty-rain",
+    title: "Rain with gusts (steady wind under 10) → under",
+    bet: "Under when rain is forecast during the game and gusts reach 20+ mph, but the steady wind is under 10 (too light for the ★ wind under)",
+    why: "Rainy games with steady wind under 10 but gusts of 20+ went 97-70 under (58%) in 2000-26; with gusts under 20, 113-132. Bucs–Falcons (Nov 1, 2026: 0.43 in of rain, 9.5 mph, gusts 29) finished 26.5 under. Forecast-only, so graded live.",
   },
   {
     id: "total-gap",
@@ -242,6 +249,23 @@ export function angleHitsForGame(game: Game, season: number, c: GameConditions |
   const line = homeLine(game);
   const away = abbrOf(game.awayTeamId);
   const home = abbrOf(game.homeTeamId);
+  if (
+    c.source === "forecast" &&
+    c.wind !== null &&
+    c.wind < 10 &&
+    (c.gustMph ?? 0) >= 20 &&
+    isWet(c) &&
+    game.total > 0
+  ) {
+    out.push({
+      angle: "gusty-rain",
+      game,
+      season,
+      conditions: c,
+      label: `Under ${game.total}`,
+      ...settle(final ? game.total - (s.home + s.away) : null, final),
+    });
+  }
   if (
     home === "PHI" &&
     season >= 2003 &&

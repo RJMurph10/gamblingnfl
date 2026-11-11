@@ -20,7 +20,7 @@ import {
   type CfbRecord,
   type CfbWatchHit,
 } from "@/lib/cfb/cfb-model";
-import { unitsText } from "@/lib/shared/game-model";
+import { unitsText, type KickoffWeather } from "@/lib/shared/game-model";
 import { getAngleForecasts } from "@/lib/shared/history.functions";
 
 const one = (n: number) => (Math.round(n * 10) / 10).toFixed(1);
@@ -61,14 +61,14 @@ export function useCfbWindForecasts(games: Game[]) {
       retry: 1,
     })),
   });
-  const windByGame = useMemo(() => {
-    const out: Record<string, number | null> = {};
+  const weatherByGame = useMemo(() => {
+    const out: Record<string, KickoffWeather | null> = {};
     for (const r of results)
-      for (const [id, c] of Object.entries(r.data ?? {})) out[id] = c?.wind ?? null;
+      for (const [id, c] of Object.entries(r.data ?? {})) out[id] = c ?? null;
     return out;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [results.map((r) => r.dataUpdatedAt).join(",")]);
-  return { windByGame, loading: results.some((r) => r.isLoading) };
+  return { weatherByGame, loading: results.some((r) => r.isLoading) };
 }
 
 function HitRow({ hit }: { hit: CfbWatchHit }) {
@@ -92,7 +92,7 @@ function HitRow({ hit }: { hit: CfbWatchHit }) {
       </span>
       <span className="inline-flex items-center gap-1 font-mono">
         {hit.market === "total" ? (
-          `Under ${hit.line}`
+          `${hit.side === "over" ? "Over" : "Under"} ${hit.line}`
         ) : (
           <>
             <TeamLogo team={home} className="size-4" />
@@ -100,10 +100,8 @@ function HitRow({ hit }: { hit: CfbWatchHit }) {
           </>
         )}
       </span>
-      {hit.wind !== undefined ? (
-        <span className="font-mono text-[11px] text-mute">
-          {Math.round(hit.wind)} mph (forecast)
-        </span>
+      {hit.weather ? (
+        <span className="font-mono text-[11px] text-mute">{hit.weather} (forecast)</span>
       ) : null}
       <span
         className={`ml-auto font-mono text-[11px] uppercase ${
@@ -133,8 +131,8 @@ function RecordRow({ label, r, bold = false }: { label: string; r: CfbRecord; bo
 }
 
 export function CfbWatchList({ games, season }: { games: Game[]; season: number }) {
-  const { windByGame, loading } = useCfbWindForecasts(games);
-  const hits = useMemo(() => cfbWatchHits(games, windByGame), [games, windByGame]);
+  const { weatherByGame, loading } = useCfbWindForecasts(games);
+  const hits = useMemo(() => cfbWatchHits(games, weatherByGame), [games, weatherByGame]);
 
   return (
     <Panel padded={false}>
@@ -206,10 +204,10 @@ export function CfbWatchList({ games, season }: { games: Game[]; season: number 
                 </ul>
               ) : (
                 <p className="mt-1 text-[12px] text-faint">
-                  {angle.id === "wind" && loading
+                  {(angle.id === "weather" || angle.id === "wmu-calm") && loading
                     ? "Checking kickoff forecasts…"
-                    : angle.id === "wind"
-                      ? "No outdoor game has a 10+ mph forecast yet."
+                    : angle.id === "weather"
+                      ? "No outdoor game has a qualifying forecast yet."
                       : "No games qualify this week."}
                 </p>
               )}
@@ -222,8 +220,8 @@ export function CfbWatchList({ games, season }: { games: Game[]; season: number 
                 </ul>
               ) : (
                 <p className="mt-1 text-[12px] text-faint">
-                  {angle.id === "wind"
-                    ? "Shows this week's forecasts only; past games' wind isn't stored yet."
+                  {angle.id === "weather" || angle.id === "wmu-calm"
+                    ? "Shows this week's forecasts only; past games' forecasts aren't stored yet."
                     : "No graded games yet."}
                 </p>
               )}

@@ -21,7 +21,21 @@ export interface KickoffWeather {
   temp: number | null;
   /** Forecast hours of rain during the game (NWS: rain/showers/storms at 50%+ chance), when known. */
   rainHours?: number;
+  /** Forecast peak gust during the game, mph (NWS gridpoint data). */
+  gustMph?: number;
+  /** Forecast precipitation / snowfall during the game (kickoff + 4 h), inches (NWS gridpoint data). */
+  precipIn?: number;
+  snowIn?: number;
 }
+
+/**
+ * Wet game: rain forecast during the game (50%+ chance of rain in an hour, or 0.02+ in expected).
+ * Research (claude/nfl-stadium-wind.md): wind 10+ with rain → unders 196-114 (63%), 2000-26.
+ */
+export const isWet = (w: KickoffWeather | null | undefined) =>
+  !!w && ((w.rainHours ?? 0) > 0 || (w.precipIn ?? 0) >= 0.02) && (w.snowIn ?? 0) < 0.1;
+/** Snow game: 0.1+ in of snow forecast during the game. */
+export const isSnowy = (w: KickoffWeather | null | undefined) => !!w && (w.snowIn ?? 0) >= 0.1;
 
 /* ---------------- settings (tune here) ---------------- */
 
@@ -98,6 +112,11 @@ export interface ModelConfig {
    * carries injuries and news. Only lines of games before the one being predicted are used.
    */
   marketWeight: number;
+  /**
+   * Points of home margin the market misses for a game (applied after anchoring to the line), e.g.
+   * the college climate / altitude edge. None by default.
+   */
+  homeAdjust?: (game: Game) => number;
 }
 
 export const NFL_CONFIG: ModelConfig = {
@@ -333,8 +352,10 @@ export interface ModelPick {
   best: boolean;
   /** Kickoff wind (mph) behind a wind best bet. */
   wind?: number;
-  /** ★ wind under with rain forecast during the game (wind + rain: unders 140-77, 2000-20). */
+  /** ★ wind under with rain forecast during the game (wind + rain: unders 196-114, 2000-26). */
   rain?: boolean;
+  /** ★ wind under with snow forecast during the game. */
+  snow?: boolean;
   /** Which rule made it a best bet. */
   reason?:
     | "underdog"
@@ -555,7 +576,8 @@ export function predictionsForGame(
           best: windy,
           reason: windy ? "wind" : undefined,
           wind: windy ? weather!.wind! : undefined,
-          rain: windy && (weather!.rainHours ?? 0) > 0 ? true : undefined,
+          rain: windy && isWet(weather) ? true : undefined,
+          snow: windy && isSnowy(weather) ? true : undefined,
         },
         game,
       ),
@@ -791,7 +813,17 @@ export function runModel(
         predictGame(ratings, game.homeTeamId, game.awayTeamId, cfg, Boolean(game.neutralSite)),
         qb?.margin ?? 0,
       );
-      const prediction = anchorToMarket(game, modelPrediction, calibration, cfg);
+      const anchored = anchorToMarket(game, modelPrediction, calibration, cfg);
+      const bump = cfg.homeAdjust?.(game) ?? 0;
+      const prediction: GamePrediction = bump
+        ? {
+            homePoints: anchored.homePoints + bump / 2,
+            awayPoints: anchored.awayPoints - bump / 2,
+            homeLine: anchored.homeLine - bump,
+            total: anchored.total,
+            homeWinProb: normalCdf((-anchored.homeLine + bump) / cfg.marginSd),
+          }
+        : anchored;
       // Live games keep their pregame calls but aren't graded until final.
       const styles = stylesFor?.(game);
       const awayLast = lastMargin?.get(game.id) ?? null;
