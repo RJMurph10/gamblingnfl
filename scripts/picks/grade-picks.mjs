@@ -1,11 +1,13 @@
 #!/usr/bin/env node
 /**
- * Grades the recorded picks (nba-picks.ts, cbb-picks.ts) once their games are final, at the line each pick
- * was first seen, and rebuilds one season file per league for the site's "Live results" panel:
+ * Grades the recorded picks (nba-picks.ts, cbb-picks.ts, football-picks.ts) once their games are final, at
+ * the line each pick was first seen, and rebuilds one season file per league for the site's "Live results"
+ * panel:
  *   <dir>/<league>/season-<YYYY-YY>.json
- *   { updated, picks: [{ id, day, game, tip, market, pick, line, latest, model, edge, best,
- *     score: [away, home] | null, result: "win"|"loss"|"push"|null, clv }] }
- * clv = points the line moved toward the pick between first seen and the last line seen before tip.
+ *   { updated, picks: [{ id, day, game, tip, market, pick, line, latest, close, model, edge, best, tag,
+ *     note, score: [away, home] | null, result: "win"|"loss"|"push"|null, clv }] }
+ * close = ESPN's closing line once the game is final (pickcenter), else the last line seen before tip.
+ * clv = points the closing line moved toward the pick from the line it was posted at (beat the close > 0).
  *
  *   node scripts/picks/grade-picks.mjs <picks-dir>
  */
@@ -13,7 +15,37 @@ import { readdir, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 
 const DIR = process.argv[2] ?? "picks";
-const LEAGUES = { nba: "basketball/nba", cbb: "basketball/mens-college-basketball" };
+const LEAGUES = {
+  nba: "basketball/nba",
+  cbb: "basketball/mens-college-basketball",
+  nfl: "football/nfl",
+  cfb: "football/college-football",
+};
+
+/**
+ * The closing line from a finished game's ESPN summary: { total, home } where home is the home team's
+ * spread. pickcenter "details" reads "KC -3.5" (the favorite and its number) or "EVEN".
+ */
+export function closeFrom(summary) {
+  const pc = (summary?.pickcenter ?? []).find((x) => x && (x.details || x.overUnder != null));
+  if (!pc) return null;
+  const total = typeof pc.overUnder === "number" && pc.overUnder > 0 ? pc.overUnder : null;
+  let home = null;
+  const d = String(pc.details ?? "").trim();
+  const teams = summary?.header?.competitions?.[0]?.competitors ?? [];
+  const abbrOf = (h) => String(teams.find((x) => x.homeAway === h)?.team?.abbreviation ?? "").toUpperCase();
+  if (/^(even|pk|pick)/i.test(d)) home = 0;
+  else {
+    const m = d.match(/^(\S+)\s+([+-]?\d+(?:\.\d+)?)$/);
+    if (m) {
+      const pts = Math.abs(Number(m[2]));
+      const fav = m[1].toUpperCase();
+      if (fav === abbrOf("home")) home = -pts;
+      else if (fav === abbrOf("away")) home = pts;
+    }
+  }
+  return total === null && home === null ? null : { total, home };
+}
 
 async function get(url, tries = 3) {
   for (let i = 0; i < tries; i++) {
@@ -35,7 +67,7 @@ const seasonOf = (day) => {
   return `${end - 1}-${String(end).slice(2)}`;
 };
 
-/** Result and line move for one pick, given the final score [away, home]. */
+/** Result and closing-line value for one pick, given the final score [away, home]. */
 export function grade(p, score) {
   const [away, home] = p.game.split(" @ ");
   let result = null;
@@ -47,7 +79,8 @@ export function grade(p, score) {
       const t = score[0] + score[1];
       result = t === p.line ? "push" : t > p.line === over ? "win" : "loss";
     }
-    if (p.latest != null) clv = Math.round((p.latest - p.line) * dir * 10) / 10;
+    const end = p.close ?? p.latest;
+    if (end != null) clv = Math.round((end - p.line) * dir * 10) / 10;
   } else {
     // spread: `line` and `latest` are the home team's number
     const pickHome = p.pick.split(" ")[0] === home;
@@ -55,8 +88,8 @@ export function grade(p, score) {
       const m = score[1] - score[0] + p.line;
       result = m === 0 ? "push" : m > 0 === pickHome ? "win" : "loss";
     }
-    if (p.latest != null)
-      clv = Math.round((pickHome ? p.line - p.latest : p.latest - p.line) * 10) / 10;
+    const end = p.close ?? p.latest;
+    if (end != null) clv = Math.round((pickHome ? p.line - end : end - p.line) * 10) / 10;
   }
   void away;
   return { result, clv };
@@ -81,7 +114,8 @@ async function main() {
       let changed = false;
       for (const p of data.picks ?? []) {
         if (p.score || Date.parse(p.tip) > now - 2.5 * 3_600_000) continue;
-        const id = p.id.split("-")[0];
+        const id = p.id.match(/^\d+/)?.[0];
+        if (!id) continue;
         const s = await get(
           `https://site.api.espn.com/apis/site/v2/sports/${path}/summary?event=${id}`,
         );
@@ -96,6 +130,9 @@ async function main() {
         if (!st?.completed) continue;
         const sc = (h) => Number(c.competitors.find((x) => x.homeAway === h)?.score);
         p.score = [sc("away"), sc("home")];
+        const close = closeFrom(s);
+        const c2 = close ? (p.market === "total" ? close.total : close.home) : null;
+        if (c2 != null) p.close = c2;
         changed = true;
         graded++;
       }
@@ -114,9 +151,16 @@ async function main() {
           pick: p.pick,
           line: p.line,
           latest: p.latest ?? null,
+          close: p.close ?? null,
           model: p.model,
           edge: p.edge,
           best: Boolean(p.best),
+          tag: p.tag ?? (p.best ? "star" : "lean"),
+          ...(p.note ? { note: p.note } : {}),
+          // the site stopped showing it well before kickoff (lines or the forecast moved)
+          ...(p.lastSeen && Date.parse(p.lastSeen) < Date.parse(p.tip) - 12 * 3_600_000
+            ? { dropped: true }
+            : {}),
           score: p.score ?? null,
           result,
           clv,

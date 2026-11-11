@@ -14,6 +14,20 @@ import { AltLaddersPanel } from "@/components/nfl/AltLaddersPanel";
 import { NextManUpPanel } from "@/components/shared/NextManUpPanel";
 import { QbStarsPanel } from "@/components/shared/QbStarsPanel";
 import { pastSeasonRuns, readHistory, runModelWithHistory, pastRunsReady } from "@/lib/nfl/model-history";
+import { LiveResults } from "@/components/shared/LiveResults";
+import type { LivePick } from "@/lib/shared/live-results";
+
+const WEATHER_ANGLES = new Set(["gusty-rain", "linc-calm"]);
+/** Live results rows: picks recorded when they first showed on the site, graded at that line. */
+const NFL_GROUPS: { label: string; test: (p: LivePick) => boolean }[] = [
+  { label: "All ★ best bets", test: (p) => p.best },
+  { label: "★ Wind / weather unders", test: (p) => p.best && p.tag === "wind" },
+  { label: "★ Home underdogs", test: (p) => p.best && p.tag === "underdog" },
+  { label: "★ QB styles", test: (p) => p.best && p.tag === "qb-style" },
+  { label: "Watch · weather angles", test: (p) => !p.best && WEATHER_ANGLES.has(p.tag ?? "") },
+  { label: "Watch · total vs the opener", test: (p) => !p.best && p.tag === "total-gap" },
+  { label: "All watch angles", test: (p) => !p.best },
+];
 
 export const Route = createFileRoute("/model")({
   head: () => ({
@@ -128,6 +142,13 @@ function ModelPage() {
       trackRecordAside="Same model · walk-forward · closing lines"
       trackRecordNote="Each past season is replayed week by week with only the games before each week, the way it would have run live. Winner = the team it expected to win; spread and over / under are its lean on every game against the closing line."
       calibrationSource="past seasons plus this one before the next slate"
+      extraTop={
+        <LiveResults
+          league="nfl"
+          groups={NFL_GROUPS}
+          footnote="Recorded every 3 hours the first time a ★ or watch-list angle shows for a game this week, at that line (flat 1u at −110). Beat the close: share of picks posted at a better number than ESPN's closing line, and the average points; this tells whether an edge is real within weeks, long before the win-loss record can. ▲/▼ on a pick = points better / worse than the close."
+        />
+      }
       watchList={
         currentSeason ? (
           <WatchList

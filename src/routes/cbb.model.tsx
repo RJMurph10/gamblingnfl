@@ -132,7 +132,7 @@ function CbbModelPage() {
       <LiveResults
         league="cbb"
         groups={CBB_GROUPS}
-        footnote="Recorded by the picks job (4 times a day) the first time a ★ appears, at that opening-day line; flat 1u at −110. Line moved our way: share of picks where the total moved toward the pick before tip, and the average move."
+        footnote="Recorded by the picks job (4 times a day) the first time a ★ appears, at that opening-day line; flat 1u at −110. Beat the close: share of picks posted at a better number than ESPN's closing total, and the average points. ▲/▼ on a pick = points better / worse than the close."
       />
       <div className="space-y-6">
         <Panel>

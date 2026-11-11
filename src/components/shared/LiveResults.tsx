@@ -19,7 +19,7 @@ export function LiveResults({
   groups,
   footnote,
 }: {
-  league: "nba" | "cbb";
+  league: "nba" | "cbb" | "nfl" | "cfb";
   /** Rows of the summary table: a label and which recorded picks belong to it. */
   groups: { label: string; test: (p: LivePick) => boolean }[];
   footnote?: string;
@@ -40,12 +40,12 @@ export function LiveResults({
   const recent = useMemo(
     () =>
       picks
-        .filter((p) => p.result && groups[0]?.test(p))
+        .filter((p) => p.result && groups.some((g) => g.test(p)))
         .sort((a, b) => b.tip.localeCompare(a.tip))
         .slice(0, showAll ? 200 : 8),
     [picks, groups, showAll],
   );
-  const pending = picks.filter((p) => !p.result && groups[0]?.test(p)).length;
+  const pending = picks.filter((p) => !p.result && groups.some((g) => g.test(p))).length;
 
   return (
     <Panel padded={false} className="mb-6">
@@ -67,7 +67,12 @@ export function LiveResults({
               <th className="px-2 py-2 text-right font-normal">W-L-P</th>
               <th className="px-2 py-2 text-right font-normal">Win %</th>
               <th className="px-2 py-2 text-right font-normal">Units</th>
-              <th className="px-4 py-2 text-right font-normal">Line moved our way</th>
+              <th
+                className="px-4 py-2 text-right font-normal"
+                title="Share of picks posted at a better number than the closing line, and the average points"
+              >
+                Beat the close
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-line/5">
@@ -109,7 +114,11 @@ export function LiveResults({
                 <span className="w-24 shrink-0 text-faint">{p.day.slice(5)}</span>
                 <span className="min-w-0 flex-1 truncate">{p.game}</span>
                 <span className="text-foreground">
-                  {p.best ? <span className="mr-1 text-acc">★</span> : null}
+                  {p.best ? (
+                    <span className="mr-1 text-acc">★</span>
+                  ) : p.tag ? (
+                    <span className="mr-1 text-faint">◦</span>
+                  ) : null}
                   {p.pick}
                 </span>
                 <span className="w-16 text-right text-mute">
