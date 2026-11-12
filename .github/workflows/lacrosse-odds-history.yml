@@ -1,0 +1,62 @@
+name: Lacrosse odds history (one-time, paid Odds API month)
+
+# Pulls historical PLL and men's college lacrosse game lines (moneyline, spread, total; US books) from
+# The Odds API with a paid key, and saves every snapshot to the lacrosse-odds branch
+# (data/<sport>/<YYYY-MM-DDTHH-MM>.json). About 520 snapshots, up to ~15,600 credits of a 20K plan.
+# Snapshots already saved are skipped, so it can be rerun safely (a rerun only pulls what's missing).
+# Needs the repository secret ODDS_API_KEY_PAID (the paid plan's key); the free key is left alone.
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry:
+        description: "Dry run (plan and credit estimate only, no Odds API calls)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: lacrosse-odds
+  cancel-in-progress: false
+
+jobs:
+  pull:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: app
+          sparse-checkout: scripts/lacrosse
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Pull
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY_PAID }}
+        run: |
+          set -e
+          url="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+          if git ls-remote --exit-code --heads "$url" lacrosse-odds >/dev/null; then
+            git clone -q --depth 1 --branch lacrosse-odds "$url" store
+          else
+            mkdir store && git -C store init -q -b lacrosse-odds && git -C store remote add origin "$url"
+          fi
+          dry=""; if [ "${{ inputs.dry }}" = "true" ]; then dry="--dry"; fi
+          run() { node app/scripts/lacrosse/odds-history.mjs --sport "$1" --from "$2" --to "$3" --out store/data --reserve 300 $dry; }
+          run lacrosse_pll 2024-05-15 2024-09-30
+          run lacrosse_pll 2025-05-15 2025-09-30
+          run lacrosse_pll 2026-05-15 2026-09-30
+          run lacrosse_ncaa 2023-05-01 2023-06-01
+          run lacrosse_ncaa 2024-02-01 2024-06-01
+          run lacrosse_ncaa 2025-02-01 2025-06-01
+          run lacrosse_ncaa 2026-02-01 2026-06-01
+          cd store
+          git config user.name "line-history-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then echo "nothing new"; exit 0; fi
+          git commit -q -m "Lacrosse odds history $(date -u +%Y-%m-%d)"
+          git push -q origin lacrosse-odds
