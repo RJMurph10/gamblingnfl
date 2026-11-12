@@ -1,37 +1,19 @@
-// inventory: every player-prop market ESPN carries for a recent finished game per league / book, with
-// how many items have a price. The site's builders already use the ones marked USED.
-const USED = new Set([
-  "Total Passing Yards (incl. overtime)", "Total Passing Attempts (incl. overtime)", "Total Pass Completions (incl. overtime)",
-  "Total Passing Touchdowns (incl. overtime)", "Total Passing Interceptions (incl. overtime)", "Total Rushing Yards (incl. overtime)",
-  "Total Carries (incl. overtime)", "Total Receiving Yards (incl. overtime)", "Total Receptions (incl. overtime)",
-  "Total Rushing Plus Receiving Yards (incl. overtime)", "Total Passing Plus Rushing Yards (incl. overtime)",
-  "Total Points", "Total Goals", "Total Assists", "Total Shots on Goal", "Total Hits", "Total Blocked Shots", "Total Saves",
-  "Total Rebounds", "Total 3-Point Field Goals", "Total Points, Rebounds, and Assists", "Total Points and Rebounds",
-  "Total Points and Assists", "Total Assists and Rebounds", "Total Steals", "Total Blocks", "Total Turnovers",
-  "Total Home Runs Hit", "Total Runs Scored", "Total RBIs", "Total Hits + Runs + RBIs", "Total Strikeouts",
-  "Earned Runs Allowed", "Total Walks Allowed", "Total Hits Allowed", "Total Outs Recorded",
-]);
-const runs = [
-  ["football", "nfl", "20251109", "58"], ["football", "nfl", "20261108", "100"],
-  ["basketball", "nba", "20260215", "58"], ["basketball", "nba", "20261110", "100"],
-  ["hockey", "nhl", "20260215", "58"], ["hockey", "nhl", "20261110", "100"],
-  ["baseball", "mlb", "20260915", "100"],
-  ["football", "college-football", "20261107", "100"],
-];
-for (const [sport, league, day, pid] of runs) {
-  const sb = await (await fetch(`https://site.api.espn.com/apis/site/v2/sports/${sport}/${league}/scoreboard?dates=${day}${league === "college-football" ? "&groups=80" : ""}`)).json();
-  const e = sb.events?.[0];
-  if (!e) continue;
-  const j = await (await fetch(`https://sports.core.api.espn.com/v2/sports/${sport}/leagues/${league}/events/${e.id}/competitions/${e.id}/odds/${pid}/propBets?limit=1000`)).json();
-  const t = {};
-  for (const x of j.items ?? []) {
-    if (!x.athlete) continue; // player markets only
-    const k = x.type?.name ?? "?";
-    t[k] ??= [0, 0];
-    t[k][0]++;
-    const s = JSON.stringify([x.odds, x.current, x.open]);
-    if (/american|"over":\{"value"|"under":\{"value"/.test(s)) t[k][1]++;
-  }
-  const unused = Object.entries(t).filter(([k]) => !USED.has(k)).map(([k, [n, p]]) => `${k} ${p}/${n}`);
-  console.log(`INV ${league} ${day} book ${pid}: ${Object.keys(t).length} player markets, not used: ${unused.join(" | ") || "none"}`);
-}
+// probe: where ESPN's game summaries keep doubles / steals (MLB) and the first goal / basket (NHL, NBA)
+const sum = async (sport, league, day) => {
+  const sb = await (await fetch(`https://site.api.espn.com/apis/site/v2/sports/${sport}/${league}/scoreboard?dates=${day}`)).json();
+  const id = sb.events?.[0]?.id;
+  return [id, await (await fetch(`https://site.api.espn.com/apis/site/v2/sports/${sport}/${league}/summary?event=${id}`)).json()];
+};
+const [mid, m] = await sum("baseball", "mlb", "20260915");
+console.log("MLB", mid, "top keys", Object.keys(m).join(","));
+const bt = m.boxscore?.players?.[0]?.statistics ?? [];
+for (const g of bt) console.log("MLB stat group", g.type ?? g.name, "labels", (g.labels ?? []).join(" "), "| keys", (g.keys ?? []).join(" "));
+console.log("MLB team details", JSON.stringify(m.boxscore?.teams?.[0]?.details ?? m.boxscore?.teams?.[0]?.statistics?.slice?.(0, 3) ?? null).slice(0, 500));
+const play = (m.plays ?? []).find((p) => /double|stolen/i.test(p.text ?? ""));
+console.log("MLB play sample", JSON.stringify(play ? { text: play.text, type: play.type, participants: play.participants?.slice(0, 2) } : null).slice(0, 500));
+const [hid, h] = await sum("hockey", "nhl", "20261110");
+const goal = (h.plays ?? []).find((p) => p.scoringPlay);
+console.log("NHL", hid, "plays", (h.plays ?? []).length, "first goal", JSON.stringify(goal ? { text: goal.text, type: goal.type?.text, participants: goal.participants?.map((x) => ({ id: x.athlete?.id, t: x.type })) } : null).slice(0, 500));
+const [bid, b] = await sum("basketball", "nba", "20261110");
+const fb = (b.plays ?? []).find((p) => p.scoringPlay && !/free throw/i.test(p.type?.text ?? ""));
+console.log("NBA", bid, "plays", (b.plays ?? []).length, "first basket", JSON.stringify(fb ? { text: fb.text, type: fb.type?.text, team: fb.team?.id, participants: fb.participants?.map((x) => x.athlete?.id) } : null).slice(0, 400));
