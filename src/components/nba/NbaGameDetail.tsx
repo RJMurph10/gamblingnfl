@@ -203,10 +203,12 @@ export function NbaGameDetailView({ gameId }: { gameId: string }) {
           ) : (
             <Probabilities game={game} detail={data} />
           )}
-          <div className="grid gap-6 lg:grid-cols-2">
-            {row ? <ModelCard row={row} /> : null}
-            <LinesCard game={game} />
-          </div>
+          {game.status !== "scheduled" ? (
+            <div className="grid gap-6 lg:grid-cols-2">
+              {row ? <ModelCard row={row} /> : null}
+              <LinesCard game={game} />
+            </div>
+          ) : null}
         </div>
       ) : null}
 
