@@ -112,3 +112,61 @@ describe("history-only games", () => {
     expect(screen.getByText("Line")).toBeTruthy();
   });
 });
+
+describe("players without a box-score line", () => {
+  it("reads the game roster: played (0 of everything) or didn't play (void)", async () => {
+    // @ts-expect-error plain .mjs script without types
+    const { rosterFor } = await import("../../scripts/line-history/build-props-history.mjs");
+    const base =
+      "https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/events/9/competitions/9";
+    const docs: Record<string, unknown> = {
+      [base]: { competitors: [{ id: "16", team: { $ref: "http://x/teams/16" } }] },
+      "https://x/teams/16": { abbreviation: "MIN" },
+      [`${base}/competitors/16/roster`]: {
+        entries: [
+          {
+            playerId: 1,
+            didNotPlay: false,
+            displayName: "Beckham Jr.",
+            athlete: { $ref: "http://x/a/1" },
+          },
+          {
+            playerId: 2,
+            didNotPlay: true,
+            displayName: "Jennings",
+            athlete: { $ref: "http://x/a/2" },
+          },
+          { playerId: 3, didNotPlay: false, displayName: "Jefferson" },
+        ],
+      },
+      "https://x/a/1": { displayName: "Odell Beckham Jr." },
+      "https://x/a/2": { displayName: "Jauan Jennings" },
+    };
+    const out = await rosterFor("9", new Set(["1", "2"]), async (u: string) => docs[u] ?? null);
+    expect(out).toEqual({
+      "1": { n: "Odell Beckham Jr.", tm: "MIN", played: true },
+      "2": { n: "Jauan Jennings", tm: "MIN", played: false },
+    });
+  });
+
+  it("shows VOID for a player who didn't play and leaves him out of the over/under count", () => {
+    const past = {
+      id: board.id,
+      date: board.date,
+      name: board.name,
+      away: { abbr: "WSH", name: "Washington Commanders", score: 17 },
+      home: { abbr: "NYG", name: "New York Giants", score: 20 },
+      props: [
+        ["Cam Skattebo", "NYG", "Carries", 13.5, null, null, 18],
+        ["Malik Nabers", "NYG", "Rec yds", 69.5, null, null, null, 1],
+      ],
+    } as PropHistoryGame;
+    render(
+      <GamePropLines league="nfl" game={board} title="Player props" results={resultsOf(past)} />,
+    );
+    const row = screen.getByText(/Malik Nabers/).closest("tr")!;
+    expect(row.textContent).toMatch(/void$/i);
+    expect(screen.getByText(/1 over/)).toBeTruthy();
+    expect(screen.getByText(/0 under/)).toBeTruthy();
+  });
+});

@@ -35,10 +35,10 @@ export function historyKey(kickoffIso: string) {
   return { season: String(m >= 3 ? y : y - 1), day };
 }
 
-/** Each player's number in a finished game, keyed "player|market". */
+/** Each player's number in a finished game, keyed "player|market" ("dnp" = didn't play: void). */
 export function resultsOf(game: PropHistoryGame | undefined) {
-  const out = new Map<string, number | null>();
-  for (const r of game?.props ?? []) out.set(`${r[0]}|${r[2]}`, r[6]);
+  const out = new Map<string, number | null | "dnp">();
+  for (const r of game?.props ?? []) out.set(`${r[0]}|${r[2]}`, r[7] ? "dnp" : r[6]);
   return out;
 }
 
