@@ -33,13 +33,14 @@ export const LEAGUES = {
   nba: { sport: "basketball", league: "nba" },
   nhl: { sport: "hockey", league: "nhl" },
   mlb: { sport: "baseball", league: "mlb", query: "limit=500" },
-  // men's college basketball, Division I. DraftKings posts player props for some games (mostly
-  // bigger ones, on game day): checked only for games within 36 hours, since the slate is ~50 a day.
+  // men's college basketball, Division I; game lines only. ESPN carries no DraftKings college props
+  // (none for any game checked, the 2026 Final Four included); college props come from the
+  // SportsGameOdds pull instead (sgo-games.mjs --props, extra-lines.yml).
   cbb: {
     sport: "basketball",
     league: "mens-college-basketball",
     query: "groups=50&limit=500",
-    propsAhead: 36 * 3_600_000,
+    noProps: true,
   },
   // women's college basketball, Division I; game lines only
   wcbb: {

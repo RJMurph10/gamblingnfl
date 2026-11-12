@@ -1,7 +1,7 @@
 name: MLB 2026 prop prices (one-time rebuild)
 # Rebuilds the 2026 MLB prop history with DraftKings' over/under prices: ESPN keeps them for finished
 # games as unlabeled sides (odds.american), which the props code reads since Oct 31, after the season
-# ended. Same steps as props-daily.yml for one season.
+# ended. Same steps as props-daily.yml for one season. (run 2: lone lopsided lines kept)
 on:
   push:
     branches: [nfl-weather-probe]
