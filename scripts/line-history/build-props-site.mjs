@@ -113,7 +113,7 @@ const MARKETS = { nba: NBA, nfl: FB, cfb: FB, nhl: NHL, mlb: MLB }[KEY] ?? {};
 
 const imp = (o) => (o < 0 ? -o / (-o + 100) : 100 / (o + 100));
 
-function mainLines(books) {
+export function mainLines(books) {
   // book preference: DraftKings (40 old, 100 new), then ESPN BET, then anything
   const order = Object.keys(books).sort((a, b) => {
     const rank = (k) => (["100", "40"].includes(k) ? 0 : k === "58" ? 1 : 2);
@@ -140,11 +140,17 @@ function mainLines(books) {
       pairs.set(pk, p);
     }
     const best = new Map();
+    // how many priced lines each player's market has: a lone line is the main line however lopsided
+    // its prices (MLB "Over 0.5 RBIs" at +150 / −200); the balance test only picks among alternates
+    const lineCount = new Map();
+    for (const p of pairs.values())
+      if (p.o != null && p.u != null)
+        lineCount.set(`${p.a}|${p.t}`, (lineCount.get(`${p.a}|${p.t}`) ?? 0) + 1);
     for (const p of pairs.values()) {
       if (p.o == null || p.u == null) continue;
       const bal = Math.abs(imp(p.o) - imp(p.u));
-      if (bal > 0.25) continue;
       const key = `${p.a}|${p.t}`;
+      if (bal > 0.25 && lineCount.get(key) > 1) continue;
       if (!best.has(key) || bal < best.get(key).bal) best.set(key, { ...p, bal });
     }
     for (const [key, p] of best) if (!picked.has(key)) picked.set(key, p);
@@ -289,7 +295,8 @@ async function main() {
   await writeFile(indexPath, JSON.stringify(index));
 }
 
-main().catch((e) => {
-  console.error(e);
-  process.exit(1);
-});
+if (process.argv[1]?.endsWith("build-props-site.mjs"))
+  main().catch((e) => {
+    console.error(e);
+    process.exit(1);
+  });
