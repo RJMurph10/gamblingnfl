@@ -7,18 +7,18 @@
   "id": "30",
   "abbr": "USC",
   "name": "USC Trojans",
-  "score": 0
+  "score": 5
  },
  "home": {
   "id": "25",
   "abbr": "CAL",
   "name": "California Golden Bears",
-  "score": 0
+  "score": 9
  },
  "neutral": false,
  "venue": "Haas Pavilion",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-10T23:27:48.577Z",

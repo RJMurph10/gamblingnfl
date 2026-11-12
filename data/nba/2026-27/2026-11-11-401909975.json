@@ -7,13 +7,13 @@
   "id": "25",
   "abbr": "OKC",
   "name": "Oklahoma City Thunder",
-  "score": 42
+  "score": 50
  },
  "home": {
   "id": "22",
   "abbr": "POR",
   "name": "Portland Trail Blazers",
-  "score": 39
+  "score": 56
  },
  "neutral": false,
  "venue": "Moda Center",

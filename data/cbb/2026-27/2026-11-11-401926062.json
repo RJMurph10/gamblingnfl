@@ -7,18 +7,18 @@
   "id": "2815",
   "abbr": "LIN",
   "name": "Lindenwood Lions",
-  "score": 54
+  "score": 60
  },
  "home": {
   "id": "158",
   "abbr": "NEB",
   "name": "Nebraska Cornhuskers",
-  "score": 87
+  "score": 94
  },
  "neutral": false,
  "venue": "Pinnacle Bank Arena",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-10T23:27:48.577Z",
@@ -395,5 +395,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 60,
+  "home": 94
+ }
 }

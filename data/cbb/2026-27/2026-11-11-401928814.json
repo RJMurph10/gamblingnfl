@@ -7,18 +7,18 @@
   "id": "2473",
   "abbr": "OAK",
   "name": "Oakland Golden Grizzlies",
-  "score": 77
+  "score": 79
  },
  "home": {
   "id": "68",
   "abbr": "BOIS",
   "name": "Boise State Broncos",
-  "score": 93
+  "score": 111
  },
  "neutral": false,
  "venue": "ExtraMile Arena",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-11T06:35:40.103Z",
@@ -477,5 +477,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 79,
+  "home": 111
+ }
 }

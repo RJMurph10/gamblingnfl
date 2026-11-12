@@ -7,13 +7,13 @@
   "id": "9",
   "abbr": "GS",
   "name": "Golden State Warriors",
-  "score": 51
+  "score": 65
  },
  "home": {
   "id": "10",
   "abbr": "HOU",
   "name": "Houston Rockets",
-  "score": 56
+  "score": 69
  },
  "neutral": false,
  "venue": "Toyota Center (Houston)",
