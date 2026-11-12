@@ -1,18 +1,14 @@
-// probe: NFL touchdown-scorer props on ESPN for finished games (2023, 2024, 2025, 2026)
+// probe: one 2026 DraftKings anytime-TD item in full, plus how many anytime-TD items have any price
 const L = "football/leagues/nfl";
-for (const day of ["20231112", "20241110", "20251109", "20261108"]) {
-  const sb = await (await fetch(`https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates=${day}`)).json();
-  const e = sb.events?.[0];
-  if (!e) continue;
-  const odds = await (await fetch(`https://sports.core.api.espn.com/v2/sports/${L}/events/${e.id}/competitions/${e.id}/odds`)).json();
-  const provs = [...new Set([...(odds.items ?? []).map((x) => x.provider?.id), "100", "58"])].filter(Boolean);
-  for (const pid of provs) {
-    const r = await fetch(`https://sports.core.api.espn.com/v2/sports/${L}/events/${e.id}/competitions/${e.id}/odds/${pid}/propBets?limit=1000`);
-    if (!r.ok) continue;
-    const j = await r.json();
-    const td = (j.items ?? []).filter((x) => /touchdown|td scorer|first td|anytime/i.test(x.type?.name ?? ""));
-    const types = [...new Set(td.map((x) => x.type?.name))].join("; ");
-    const priced = td.filter((x) => x.odds?.american?.value != null || x.current?.yes || x.odds?.yes || x.odds?.american).length;
-    if (j.count) console.log("NFL", day, e.shortName, `p${pid}`, j.count, "props;", td.length, "TD-type,", priced, "priced", `[${types}]`, JSON.stringify(td[0]?.odds ?? td[0]?.current ?? null).slice(0, 160));
-  }
+for (const id of ["401873051"]) {
+  const j = await (await fetch(`https://sports.core.api.espn.com/v2/sports/${L}/events/${id}/competitions/${id}/odds/100/propBets?limit=1000`)).json();
+  const at = (j.items ?? []).filter((x) => /Anytime Touchdown/i.test(x.type?.name ?? ""));
+  console.log("ANYTIME items", at.length);
+  console.log("ITEM", JSON.stringify(at[0]).slice(0, 900));
+  const hasPrice = at.filter((x) => JSON.stringify(x.odds ?? {}).match(/american|decimal|value/) && !JSON.stringify(x.odds ?? {}).match(/^\{"target/)).length;
+  console.log("with any odds field", hasPrice);
 }
+// 2025 ESPN BET anytime TD sample
+const j2 = await (await fetch(`https://sports.core.api.espn.com/v2/sports/${L}/events/401772894/competitions/401772894/odds/58/propBets?limit=1000`)).json();
+const a2 = (j2.items ?? []).filter((x) => /Anytime Touchdown/i.test(x.type?.name ?? ""));
+console.log("2025 ANYTIME", a2.length, JSON.stringify(a2[0]?.odds ?? null).slice(0, 300));
