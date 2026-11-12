@@ -7,7 +7,7 @@ export const getPropHistory = createServerFn({ method: "GET" })
   .inputValidator((data) =>
     z
       .object({
-        league: z.enum(["nba", "nfl", "nhl", "mlb"]),
+        league: z.enum(["nba", "nfl", "nhl", "mlb", "wnba"]),
         season: z.string().max(10).optional(),
         day: z.string().max(10).optional(),
       })
@@ -17,7 +17,7 @@ export const getPropHistory = createServerFn({ method: "GET" })
 
 /** Upcoming games with the DraftKings player lines posted so far (current and opening line). */
 export const getUpcomingProps = createServerFn({ method: "GET" })
-  .inputValidator((data) => z.object({ league: z.enum(["nba", "nfl", "nhl", "mlb"]) }).parse(data))
+  .inputValidator((data) => z.object({ league: z.enum(["nba", "nfl", "nhl", "mlb", "wnba"]) }).parse(data))
   .handler(async ({ data }) => fetchUpcomingProps(data.league));
 
 /** A started or finished game's closing DraftKings player lines (null when none was saved). */
@@ -25,7 +25,7 @@ export const getClosedProps = createServerFn({ method: "GET" })
   .inputValidator((data) =>
     z
       .object({
-        league: z.enum(["nba", "nfl", "nhl", "mlb"]),
+        league: z.enum(["nba", "nfl", "nhl", "mlb", "wnba"]),
         id: z.string().regex(/^\d+$/).max(20),
       })
       .parse(data),
