@@ -91,3 +91,24 @@ describe("finished games", () => {
     expect(screen.getByText(/1 under/)).toBeTruthy();
   });
 });
+
+describe("history-only games", () => {
+  it("drops the Opened and Move columns when no line has an opener", () => {
+    const noOpen = {
+      ...board,
+      props: board.props.map((r) => [r[0], r[1], r[2], r[3], r[4], r[5], null] as typeof r),
+    };
+    render(
+      <GamePropLines
+        league="nfl"
+        game={noOpen}
+        title="Player props"
+        results={new Map()}
+        lineLabel="Line"
+      />,
+    );
+    expect(screen.queryByText("Opened")).toBeNull();
+    expect(screen.queryByText("Move")).toBeNull();
+    expect(screen.getByText("Line")).toBeTruthy();
+  });
+});
