@@ -31,9 +31,9 @@ export const Route = createFileRoute("/cbb/model")({
 
 /** Season, ★ wins, ★ losses, ★ units (totals 6+ pts off the opener, graded at the opener). */
 const BEST: [string, number, number, number][] = [
-  ["2023-24", 154, 111, 29.0],
-  ["2024-25", 158, 118, 25.6],
-  ["2025-26", 271, 188, 58.4],
+  ["2023-24", 178, 131, 30.8],
+  ["2024-25", 175, 132, 27.1],
+  ["2025-26", 298, 205, 65.9],
 ];
 
 /** Season, ATS %, ATS picks, ATS units, O/U %, O/U picks, O/U units, model margin miss, line miss, model total miss, line total miss. */
@@ -179,7 +179,8 @@ function CbbModelPage() {
               so its live record has to hold up before it&apos;s a ★. Every 6+ pick has been on the underdog. The model also
               adds each team&apos;s own home edge (how much it has beaten the closing spread at home in past seasons):
               the market gives every team about the same home court, but some buildings are worth more and some less.
-              With it the rule went <b>60-36, 128-95 and 142-98 (59.0%)</b>. Returning minutes (roster turnover) was
+              With it the rule went <b>60-36, 128-95 and 142-98 (59.0%)</b>; with the early-season weighting below,{" "}
+              <b>72-50, 145-105 and 150-101 (59.0%)</b>, more picks at the same rate. Returning minutes (roster turnover) was
               tested too and didn&apos;t help: the openers already know who left.
             </p>
           </div>
@@ -233,6 +234,12 @@ function CbbModelPage() {
             <li>
               Ratings <b>start from last season</b> (75% kept, 70% of tempo, worth five games of evidence) and then
               follow this season, with a game&apos;s weight halving every 30 days so recent form counts more.
+            </li>
+            <li>
+              <b>Early in the season the market&apos;s view counts more:</b> 70% (instead of 50%) until both teams have
+              played 9 games. Last season&apos;s ratings miss roster turnover from the transfer portal, and the market
+              learns faster. It added picks at the same hit rate: ★ totals +113u → +124u and spread picks +71u → +78u
+              over 2023-24 to 2025-26, and weights of 60–80% with cutoffs of 5–12 games all beat 50/50.
             </li>
             <li>
               <b>Home court is worth 4 points per 100 possessions</b> (about 2.8 points a game), nothing at neutral
