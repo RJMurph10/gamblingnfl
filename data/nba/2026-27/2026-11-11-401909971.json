@@ -7,18 +7,18 @@
   "id": "13",
   "abbr": "LAL",
   "name": "Los Angeles Lakers",
-  "score": 102
+  "score": 123
  },
  "home": {
   "id": "15",
   "abbr": "MIL",
   "name": "Milwaukee Bucks",
-  "score": 82
+  "score": 112
  },
  "neutral": false,
  "venue": "Fiserv Forum",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-11T06:35:40.103Z",
@@ -4114,5 +4114,9 @@
    "Bogoljub Markovic",
    "MIL"
   ]
+ },
+ "final": {
+  "away": 123,
+  "home": 112
  }
 }

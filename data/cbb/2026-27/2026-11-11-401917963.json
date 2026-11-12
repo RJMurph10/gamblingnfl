@@ -7,18 +7,18 @@
   "id": "2617",
   "abbr": "SFA",
   "name": "Stephen F. Austin Lumberjacks",
-  "score": 71
+  "score": 76
  },
  "home": {
   "id": "2000",
   "abbr": "ACU",
   "name": "Abilene Christian Wildcats",
-  "score": 69
+  "score": 71
  },
  "neutral": false,
  "venue": "Moody Coliseum (Abilene)",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-11T06:35:40.103Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 76,
+  "home": 71
+ }
 }

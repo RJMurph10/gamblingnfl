@@ -7,18 +7,18 @@
   "id": "24",
   "abbr": "SA",
   "name": "San Antonio Spurs",
-  "score": 114
+  "score": 124
  },
  "home": {
   "id": "4",
   "abbr": "CHI",
   "name": "Chicago Bulls",
-  "score": 102
+  "score": 119
  },
  "neutral": false,
  "venue": "United Center",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-10T23:27:48.577Z",
@@ -4503,5 +4503,9 @@
    "Noa Essengue",
    "CHI"
   ]
+ },
+ "final": {
+  "away": 124,
+  "home": 119
  }
 }

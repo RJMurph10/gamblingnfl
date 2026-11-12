@@ -7,13 +7,13 @@
   "id": "15",
   "abbr": "PHI",
   "name": "Philadelphia Flyers",
-  "score": 0
+  "score": 1
  },
  "home": {
   "id": "6",
   "abbr": "EDM",
   "name": "Edmonton Oilers",
-  "score": 0
+  "score": 2
  },
  "neutral": false,
  "venue": "Rogers Place",

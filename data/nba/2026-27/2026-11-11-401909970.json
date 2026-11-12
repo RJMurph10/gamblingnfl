@@ -7,18 +7,18 @@
   "id": "7",
   "abbr": "DEN",
   "name": "Denver Nuggets",
-  "score": 106
+  "score": 123
  },
  "home": {
   "id": "29",
   "abbr": "MEM",
   "name": "Memphis Grizzlies",
-  "score": 101
+  "score": 118
  },
  "neutral": false,
  "venue": "FedExForum",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-11T02:59:01.228Z",
@@ -4747,5 +4747,9 @@
    "Karim Lopez",
    "MEM"
   ]
+ },
+ "final": {
+  "away": 123,
+  "home": 118
  }
 }

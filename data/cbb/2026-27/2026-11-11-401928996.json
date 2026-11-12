@@ -7,18 +7,18 @@
   "id": "2674",
   "abbr": "VAL",
   "name": "Valparaiso Beacons",
-  "score": 61
+  "score": 69
  },
  "home": {
   "id": "2571",
   "abbr": "SDST",
   "name": "South Dakota State Jackrabbits",
-  "score": 76
+  "score": 81
  },
  "neutral": false,
  "venue": "First Bank & Trust Arena",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-10T23:27:48.577Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 69,
+  "home": 81
+ }
 }

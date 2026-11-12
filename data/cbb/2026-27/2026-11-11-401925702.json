@@ -13,12 +13,12 @@
   "id": "248",
   "abbr": "HOU",
   "name": "Houston Cougars",
-  "score": 87
+  "score": 92
  },
  "neutral": false,
  "venue": "Fertitta Center",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-10T23:27:48.577Z",
@@ -769,5 +769,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 46,
+  "home": 92
+ }
 }

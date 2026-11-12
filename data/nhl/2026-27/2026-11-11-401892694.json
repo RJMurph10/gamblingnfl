@@ -7,13 +7,13 @@
   "id": "27",
   "abbr": "NSH",
   "name": "Nashville Predators",
-  "score": 0
+  "score": 1
  },
  "home": {
   "id": "25",
   "abbr": "ANA",
   "name": "Anaheim Ducks",
-  "score": 0
+  "score": 1
  },
  "neutral": false,
  "venue": "Honda Center",

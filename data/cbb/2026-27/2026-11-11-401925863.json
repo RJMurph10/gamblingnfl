@@ -7,18 +7,18 @@
   "id": "198",
   "abbr": "ORU",
   "name": "Oral Roberts Golden Eagles",
-  "score": 68
+  "score": 71
  },
  "home": {
   "id": "202",
   "abbr": "TLSA",
   "name": "Tulsa Golden Hurricane",
-  "score": 76
+  "score": 80
  },
  "neutral": false,
  "venue": "Reynolds Center",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-10T23:27:48.577Z",
@@ -851,5 +851,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 71,
+  "home": 80
+ }
 }
