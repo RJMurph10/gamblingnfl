@@ -1,12 +1,9 @@
-// Temporary: where are 2026 NCAA baseball scores?
 const H = { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/124", Accept: "application/json" };
-const raw = async (u) => { try { const r = await fetch(u, { headers: H }); const t = await r.text(); return `${r.status} ${t.slice(0, 400).replace(/\n/g, " ")}`; } catch (e) { return "err " + e; } };
-for (const u of [
-  "https://data.ncaa.com/casablanca/scoreboard/baseball/d1/2026/04/17/scoreboard.json",
-  "https://data.ncaa.com/casablanca/scoreboard/baseball/d1/2026/04/18/scoreboard.json",
-  "https://data.ncaa.com/casablanca/scoreboard/baseball/d1/2025/06/20/scoreboard.json",
-  "https://data.ncaa.com/casablanca/schedule/baseball/d1/2026/04/schedule.json",
-  "https://data.ncaa.com/casablanca/schedule/baseball/d1/2025/04/schedule.json",
-  "https://www.ncaa.com/scoreboard/baseball/d1/2026/04/18/all-conf",
-  "https://sdataprod.ncaa.com/?meta=GetContests_web&extensions=%7B%22persistedQuery%22%3A%7B%22version%22%3A1%2C%22sha256Hash%22%3A%227287cda610a9326931931080cb3a604828febe6fe3c9016a7e4a36db99efdb7c%22%7D%7D&variables=%7B%22sportCode%22%3A%22MBA%22%2C%22division%22%3A1%2C%22seasonYear%22%3A2025%2C%22contestDate%22%3A%2204%2F18%2F2026%22%2C%22week%22%3Anull%7D",
-]) console.log("URL", u.slice(0, 110), "=>", await raw(u));
+const url = (d, y) => `https://sdataprod.ncaa.com/?meta=GetContests_web&extensions=${encodeURIComponent(JSON.stringify({ persistedQuery: { version: 1, sha256Hash: "7287cda610a9326931931080cb3a604828febe6fe3c9016a7e4a36db99efdb7c" } }))}&variables=${encodeURIComponent(JSON.stringify({ sportCode: "MBA", division: 1, seasonYear: y, contestDate: d, week: null }))}`;
+for (const [d, y] of [["04/18/2026", 2025], ["04/18/2026", 2026], ["06/20/2025", 2024], ["06/20/2025", 2025]]) {
+  const r = await fetch(url(d, y), { headers: H });
+  const j = await r.json().catch(() => null);
+  const c = j?.data?.contests ?? [];
+  console.log("DAY", d, "seasonYear", y, r.status, "contests", c.length, "final", c.filter((x) => x.gameState === "F").length);
+  if (c[0] && d === "04/18/2026" && y === 2025) console.log("ONE", JSON.stringify(c[0]).slice(0, 2500));
+}
