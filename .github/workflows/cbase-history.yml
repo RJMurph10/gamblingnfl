@@ -17,7 +17,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Export
+      - name: Export (run 2)
         run: |
           set -e
           for y in 2019 2020 2021 2022 2023 2024 2025; do node scripts/cbase/export-ncaa.mjs $y out; done
