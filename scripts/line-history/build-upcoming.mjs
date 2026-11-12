@@ -27,7 +27,7 @@ const AHEAD =(KEY === "nfl" || KEY === "cfb" ? 8 : 3) * 86_400_000;
  * game page's Props tab: <out>/<league>/closed/<event id>.json. Rewritten while the game is recent
  * (a few days), written once for older games that don't have one yet.
  */
-const CLOSED = new Set(["nfl"]);
+const CLOSED = new Set(["nfl", "nba"]);
 const RECENT = 5 * 86_400_000;
 
 const LABELS =

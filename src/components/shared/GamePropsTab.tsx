@@ -11,27 +11,51 @@ import {
 } from "@/lib/shared/prop-history.functions";
 import type { PropHistoryGame, UpcomingPropGame } from "@/lib/shared/prop-history.server";
 
-/** The saved DraftKings lines for this game, matched by ESPN event id (else by the two teams). */
+/** A game as the props files know it: ESPN event id, start time and the two teams' abbreviations. */
+export interface PropGameRef {
+  id: string;
+  date: string;
+  away: string;
+  home: string;
+}
+
+/** The saved lines for this game, matched by ESPN event id (else by the two teams within two days). */
 export function findPropGame<
   G extends { id: string; date: string; away: { abbr: string }; home: { abbr: string } },
->(games: G[], game: Game, away: Team, home: Team): G | undefined {
-  const id = game.id.replace(/^\D+-/, "");
+>(games: G[], ref: PropGameRef): G | undefined {
   return (
-    games.find((g) => g.id === id) ??
+    games.find((g) => g.id === ref.id) ??
     games.find(
       (g) =>
-        g.away.abbr.toUpperCase() === away.abbr.toUpperCase() &&
-        g.home.abbr.toUpperCase() === home.abbr.toUpperCase() &&
-        Math.abs(Date.parse(g.date) - Date.parse(game.kickoffIso ?? g.date)) < 2 * 86_400_000,
+        g.away.abbr.toUpperCase() === ref.away.toUpperCase() &&
+        g.home.abbr.toUpperCase() === ref.home.toUpperCase() &&
+        Math.abs(Date.parse(g.date) - Date.parse(ref.date || g.date)) < 2 * 86_400_000,
     )
   );
 }
 
-/** Where the prop history keeps a game: NFL season (the year it starts) and day (US date, UTC−5). */
-export function historyKey(kickoffIso: string) {
-  const t = Date.parse(kickoffIso) - 5 * 3_600_000;
+/** The NFL game page's reference for a game ("espn-401…" ids). */
+export function nflRef(game: Game, away: Team, home: Team): PropGameRef {
+  return {
+    id: game.id.replace(/^\D+-/, ""),
+    date: game.kickoffIso ?? "",
+    away: away.abbr,
+    home: home.abbr,
+  };
+}
+
+/**
+ * Where the prop history keeps a game: its day (US date, UTC−5) and season — the NFL season is the
+ * year it starts ("2026"), the NBA's spans two years ("2026-27").
+ */
+export function historyKey(startIso: string, league: "nfl" | "nba" = "nfl") {
+  const t = Date.parse(startIso) - 5 * 3_600_000;
   const day = new Date(t).toISOString().slice(0, 10);
   const [y, m] = day.split("-").map(Number);
+  if (league === "nba") {
+    const start = m >= 8 ? y : y - 1;
+    return { season: `${start}-${String((start + 1) % 100).padStart(2, "0")}`, day };
+  }
   return { season: String(m >= 3 ? y : y - 1), day };
 }
 
@@ -61,16 +85,83 @@ const Loading = () => (
 );
 
 /**
- * The game page's Props tab, for NFL games:
+ * A started or finished game's props: DraftKings' closing lines (the last ones before the start) with
+ * where each opened, and each player's result once the game is final. Falls back to the prop history
+ * (opening lines with results) when no closing board was saved, and to `fallback` when neither exists.
+ */
+export function ClosedPropLines({
+  league,
+  game,
+  final,
+  fallback,
+}: {
+  league: "nfl" | "nba";
+  game: PropGameRef;
+  final: boolean;
+  fallback: React.ReactNode;
+}) {
+  const hk = game.date ? historyKey(game.date, league) : null;
+  const closed = useQuery({
+    queryKey: ["closed-props", league, game.id],
+    queryFn: () => getClosedProps({ data: { league, id: game.id } }),
+    enabled: /^\d+$/.test(game.id),
+    // a game whose closing lines aren't saved yet (the lines job runs hourly) is checked again soon,
+    // instead of keeping "none" for half an hour
+    staleTime: (q) => (q.state.data ? 30 * 60_000 : 60_000),
+    refetchInterval: (q) => (q.state.data ? false : 2 * 60_000),
+  });
+  const history = useQuery({
+    queryKey: ["prop-history", league, hk?.season ?? "", hk?.day ?? ""],
+    queryFn: () => getPropHistory({ data: { league, season: hk!.season, day: hk!.day } }),
+    enabled: final && hk !== null,
+    staleTime: 10 * 60_000,
+  });
+  const past = useMemo(
+    () =>
+      history.data?.day === hk?.day ? findPropGame(history.data?.games ?? [], game) : undefined,
+    [history.data, hk?.day, game],
+  );
+  const results = useMemo(() => resultsOf(past), [past]);
+
+  if (closed.isLoading || history.isLoading) return <Loading />;
+  if (closed.data?.props.length)
+    return (
+      <GamePropLines
+        league={league}
+        game={closed.data}
+        title="Player props"
+        sub={
+          final
+            ? "DraftKings closing lines · where each line opened · what each player did"
+            : "DraftKings closing lines · results fill in after the game"
+        }
+        results={results}
+      />
+    );
+  if (past?.props.length)
+    return (
+      <GamePropLines
+        league={league}
+        game={fromHistory(past)}
+        title="Player props"
+        sub="The sportsbook's opening lines (no closing lines were saved for this game) · what each player did"
+        results={results}
+        lineLabel="Line"
+      />
+    );
+  return <>{fallback}</>;
+}
+
+/**
+ * The NFL game page's Props tab:
  * - before kickoff: the Prop lines table (line, where it opened, the move, prices, alternate lines);
- * - started or finished: the closing lines (the last ones before kickoff) with each player's result.
+ * - started or finished: the closing lines with each player's result (ClosedPropLines).
  * College games, or NFL games with no saved lines: ESPN's live DraftKings board.
  */
 export function GamePropsTab({ game, away, home }: { game: Game; away: Team; home: Team }) {
   const nfl = !isCollegeId(game.id);
   const before = game.status === "scheduled";
-  const id = game.id.replace(/^\D+-/, "");
-  const hk = game.kickoffIso ? historyKey(game.kickoffIso) : null;
+  const ref = nflRef(game, away, home);
   const upcoming = useQuery({
     queryKey: ["upcoming-props", "nfl"],
     queryFn: () => getUpcomingProps({ data: { league: "nfl" } }),
@@ -78,70 +169,22 @@ export function GamePropsTab({ game, away, home }: { game: Game; away: Team; hom
     staleTime: 5 * 60_000,
     refetchInterval: 15 * 60_000,
   });
-  const closed = useQuery({
-    queryKey: ["closed-props", "nfl", id],
-    queryFn: () => getClosedProps({ data: { league: "nfl", id } }),
-    enabled: nfl && !before && /^\d+$/.test(id),
-    // a game whose closing lines aren't saved yet (the lines job runs hourly) is checked again soon,
-    // instead of keeping "none" for half an hour
-    staleTime: (q) => (q.state.data ? 30 * 60_000 : 60_000),
-    refetchInterval: (q) => (q.state.data ? false : 2 * 60_000),
-  });
-  const history = useQuery({
-    queryKey: ["prop-history", "nfl", hk?.season ?? "", hk?.day ?? ""],
-    queryFn: () => getPropHistory({ data: { league: "nfl", season: hk!.season, day: hk!.day } }),
-    enabled: nfl && game.status === "final" && hk !== null,
-    staleTime: 10 * 60_000,
-  });
-  const past = useMemo(
-    () =>
-      history.data?.day === hk?.day
-        ? findPropGame(history.data?.games ?? [], game, away, home)
-        : undefined,
-    [history.data, hk?.day, game, away, home],
-  );
-  const results = useMemo(() => resultsOf(past), [past]);
-
-  if (nfl && before) {
-    if (upcoming.isLoading) return <Loading />;
-    const lines = upcoming.data ? findPropGame(upcoming.data, game, away, home) : undefined;
-    if (lines?.props.length)
-      return (
-        <GamePropLines
-          league="nfl"
-          game={lines}
-          title="Player props"
-          sub="DraftKings lines · where each line opened · tap ▾ for alternate lines"
-        />
-      );
-  }
-  if (nfl && !before) {
-    if (closed.isLoading || history.isLoading) return <Loading />;
-    if (closed.data?.props.length)
-      return (
-        <GamePropLines
-          league="nfl"
-          game={closed.data}
-          title="Player props"
-          sub={
-            game.status === "final"
-              ? "DraftKings closing lines · where each line opened · what each player did"
-              : "DraftKings closing lines · results fill in after the game"
-          }
-          results={results}
-        />
-      );
-    if (past?.props.length)
-      return (
-        <GamePropLines
-          league="nfl"
-          game={fromHistory(past)}
-          title="Player props"
-          sub="The sportsbook's opening lines (no closing lines were saved for this game) · what each player did"
-          results={results}
-          lineLabel="Line"
-        />
-      );
-  }
-  return <DraftKingsPropsBoard game={game} away={away} home={home} />;
+  const board = <DraftKingsPropsBoard game={game} away={away} home={home} />;
+  if (!nfl) return board;
+  if (!before)
+    return (
+      <ClosedPropLines league="nfl" game={ref} final={game.status === "final"} fallback={board} />
+    );
+  if (upcoming.isLoading) return <Loading />;
+  const lines = upcoming.data ? findPropGame(upcoming.data, ref) : undefined;
+  if (lines?.props.length)
+    return (
+      <GamePropLines
+        league="nfl"
+        game={lines}
+        title="Player props"
+        sub="DraftKings lines · where each line opened · tap ▾ for alternate lines"
+      />
+    );
+  return board;
 }

@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
 import type { Game } from "@/data/shared/games";
 import type { Team } from "@/data/shared/teams";
-import { findPropGame, historyKey, resultsOf } from "@/components/shared/GamePropsTab";
+import { findPropGame, historyKey, nflRef, resultsOf } from "@/components/shared/GamePropsTab";
 import { GamePropLines } from "@/components/shared/PropHistory";
 import type { PropHistoryGame, UpcomingPropGame } from "@/lib/shared/prop-history.server";
 
@@ -36,13 +36,14 @@ const team = (abbr: string) => ({ abbr }) as Team;
 
 describe("NFL game page props tab", () => {
   it("finds the game's saved lines by ESPN id, else by teams and date", () => {
+    const ref = (g: Game, a: string, h: string) => nflRef(g, team(a), team(h));
     const g = { id: "espn-401773100", kickoffIso: board.date } as Game;
-    expect(findPropGame([board], g, team("WSH"), team("NYG"))?.id).toBe("401773100");
+    expect(findPropGame([board], ref(g, "WSH", "NYG"))?.id).toBe("401773100");
     const other = { id: "espn-999", kickoffIso: "2026-11-13T00:00:00Z" } as Game;
-    expect(findPropGame([board], other, team("WSH"), team("NYG"))?.id).toBe("401773100");
-    expect(findPropGame([board], other, team("DAL"), team("NYG"))).toBeUndefined();
+    expect(findPropGame([board], ref(other, "WSH", "NYG"))?.id).toBe("401773100");
+    expect(findPropGame([board], ref(other, "DAL", "NYG"))).toBeUndefined();
     const nextYear = { id: "espn-998", kickoffIso: "2027-11-13T00:00:00Z" } as Game;
-    expect(findPropGame([board], nextYear, team("WSH"), team("NYG"))).toBeUndefined();
+    expect(findPropGame([board], ref(nextYear, "WSH", "NYG"))).toBeUndefined();
   });
 
   it("shows line, opener and move, and filters by team and market", () => {
@@ -63,6 +64,15 @@ describe("finished games", () => {
     expect(historyKey("2026-11-10T01:15:00Z")).toEqual({ season: "2026", day: "2026-11-09" });
     expect(historyKey("2027-01-04T18:00:00Z")).toEqual({ season: "2026", day: "2027-01-04" });
     expect(historyKey("2026-09-10T00:20:00Z")).toEqual({ season: "2026", day: "2026-09-09" });
+    // NBA seasons span two years
+    expect(historyKey("2026-11-12T00:00:00Z", "nba")).toEqual({
+      season: "2026-27",
+      day: "2026-11-11",
+    });
+    expect(historyKey("2027-04-02T23:30:00Z", "nba")).toEqual({
+      season: "2026-27",
+      day: "2027-04-02",
+    });
   });
 
   it("shows the closing line, the player's number and over/under", () => {

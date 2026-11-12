@@ -2,6 +2,7 @@
  * One NBA game, laid out like the NFL game page: header, then Gamecast / Stats / Markets / Props /
  * Information tabs.
  */
+import { ClosedPropLines } from "@/components/shared/GamePropsTab";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { PageTitle, Panel, PanelHeader } from "@/components/shared/booth";
@@ -33,7 +34,10 @@ export function NbaGameDetailView({ gameId }: { gameId: string }) {
   const prior = useNbaPrior();
   const data = detail.data as NbaGameDetail | undefined;
   // The schedule refreshes more often than the summary, so it wins for the live score.
-  const game: NbaGame | undefined = scheduled && data ? { ...data.game, ...scheduled, odds: scheduled.odds ?? data.game.odds } : (scheduled ?? data?.game);
+  const game: NbaGame | undefined =
+    scheduled && data
+      ? { ...data.game, ...scheduled, odds: scheduled.odds ?? data.game.odds }
+      : (scheduled ?? data?.game);
 
   const started0 = game ? game.status !== "scheduled" : false;
   // Same tabs as the NFL game page. Before tip-off the Gamecast is empty, so open on Markets.
@@ -47,7 +51,12 @@ export function NbaGameDetailView({ gameId }: { gameId: string }) {
   const row: NbaModelRow | null = useMemo(() => {
     if (!game || game.part === "pre") return null;
     const before = schedule.games.filter(
-      (g) => g.status === "final" && g.part !== "pre" && hasScore(g) && g.date < game.date && g.id !== game.id,
+      (g) =>
+        g.status === "final" &&
+        g.part !== "pre" &&
+        hasScore(g) &&
+        g.date < game.date &&
+        g.id !== game.id,
     );
     const table = buildRatings(before, prior);
     return rowFor(game, predictGame(table, game.home.team.id, game.away.team.id));
@@ -56,7 +65,10 @@ export function NbaGameDetailView({ gameId }: { gameId: string }) {
   if (!game) {
     return (
       <>
-        <PageTitle eyebrow="NBA" title={detail.isLoading || schedule.isLoading ? "Loading game…" : "Game not found"} />
+        <PageTitle
+          eyebrow="NBA"
+          title={detail.isLoading || schedule.isLoading ? "Loading game…" : "Game not found"}
+        />
         {!detail.isLoading && !schedule.isLoading ? (
           <Panel>
             <p className="py-6 text-center font-mono text-xs text-mute">
@@ -104,7 +116,9 @@ export function NbaGameDetailView({ gameId }: { gameId: string }) {
           {started ? (
             <Panel>
               <div className="flex items-center justify-between">
-                <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">Box score</h2>
+                <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">
+                  Box score
+                </h2>
                 <span className="label-mono">scoring</span>
               </div>
               <div className="mt-3">
@@ -121,8 +135,12 @@ export function NbaGameDetailView({ gameId }: { gameId: string }) {
           {data?.leaders.length ? <Leaders game={game} leaders={data.leaders} /> : null}
           {started ? (
             <div className="grid gap-6 lg:grid-cols-12">
-              <Panel className={`min-w-0 ${game.status === "live" ? "lg:col-span-12" : "lg:col-span-7"}`}>
-                <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">Play-by-play</h2>
+              <Panel
+                className={`min-w-0 ${game.status === "live" ? "lg:col-span-12" : "lg:col-span-7"}`}
+              >
+                <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">
+                  Play-by-play
+                </h2>
                 <div className="mt-3">
                   <Plays game={game} plays={data?.plays ?? []} started={started} />
                 </div>
@@ -130,7 +148,9 @@ export function NbaGameDetailView({ gameId }: { gameId: string }) {
               {/* Live games show the full probability chart on the Markets tab instead. */}
               {game.status !== "live" ? (
                 <Panel className="min-w-0 lg:col-span-5">
-                  <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">Win probability</h2>
+                  <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">
+                    Win probability
+                  </h2>
                   <div className="mt-3">
                     <WinProb game={game} detail={data} />
                   </div>
@@ -145,14 +165,18 @@ export function NbaGameDetailView({ gameId }: { gameId: string }) {
         <div className="mt-6 grid gap-6 lg:grid-cols-12">
           <Panel padded={false} className="min-w-0 lg:col-span-8">
             <div className="border-b border-line/10 px-4 py-3">
-              <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">Box score</h2>
+              <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">
+                Box score
+              </h2>
             </div>
             <div className="p-4">
               <BoxScore detail={data} started={started} loading={detail.isLoading} />
             </div>
           </Panel>
           <Panel className="min-w-0 lg:col-span-4">
-            <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">Team statistics</h2>
+            <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">
+              Team statistics
+            </h2>
             <div className="mt-4">
               <TeamStats game={game} detail={data} started={started} />
             </div>
@@ -171,7 +195,20 @@ export function NbaGameDetailView({ gameId }: { gameId: string }) {
       ) : null}
 
       {activeTab === "props" ? (
-        <div className="mt-6">
+        <div className="mt-6 space-y-4">
+          {started ? (
+            <ClosedPropLines
+              league="nba"
+              game={{
+                id: game.id,
+                date: game.date,
+                away: game.away.team.abbr,
+                home: game.home.team.abbr,
+              }}
+              final={game.status === "final"}
+              fallback={null}
+            />
+          ) : null}
           <Link
             to="/nba/props"
             search={{ game: game.id }}
@@ -204,9 +241,14 @@ function Probabilities({ game, detail }: { game: NbaGame; detail?: NbaGameDetail
   const [market, setMarket] = useState<"moneyline" | "cover" | "total">("moneyline");
   const points = detail?.probabilities ?? [];
   const spread = game.odds?.spread;
-  const favorite = spread == null || spread === 0 ? null : spread < 0 ? game.home.team : game.away.team;
+  const favorite =
+    spread == null || spread === 0 ? null : spread < 0 ? game.home.team : game.away.team;
   const spreadLabel =
-    spread == null ? "—" : spread === 0 ? "PK" : `-${Math.abs(spread).toFixed(1).replace(/\.0$/, "")}`;
+    spread == null
+      ? "—"
+      : spread === 0
+        ? "PK"
+        : `-${Math.abs(spread).toFixed(1).replace(/\.0$/, "")}`;
   const away = game.away.team;
   const home = game.home.team;
   const logo = (t: typeof away) => <NbaLogo team={t} className="size-8" />;
@@ -223,12 +265,25 @@ function Probabilities({ game, detail }: { game: NbaGame; detail?: NbaGameDetail
             </span>
           </div>
           <div className="mt-1">
-            Total: <span className="font-mono font-semibold text-foreground">{game.odds?.total ?? "—"}</span>
+            Total:{" "}
+            <span className="font-mono font-semibold text-foreground">
+              {game.odds?.total ?? "—"}
+            </span>
           </div>
         </div>
       </div>
-      <div className="mt-4 grid grid-cols-3 gap-1 rounded-lg border border-line/10 p-1" role="tablist" aria-label="Probability type">
-        {([["moneyline", "Moneyline"], ["cover", "Cover"], ["total", "Total"]] as const).map(([key, label]) => (
+      <div
+        className="mt-4 grid grid-cols-3 gap-1 rounded-lg border border-line/10 p-1"
+        role="tablist"
+        aria-label="Probability type"
+      >
+        {(
+          [
+            ["moneyline", "Moneyline"],
+            ["cover", "Cover"],
+            ["total", "Total"],
+          ] as const
+        ).map(([key, label]) => (
           <button
             key={key}
             type="button"
@@ -293,7 +348,21 @@ function GameInfo({ game }: { game: NbaGame }) {
     ["Tip-off", when || undefined],
     ["Arena", game.venue],
     ["TV", game.broadcast],
-    ["Game", [game.part === "pre" ? "Preseason" : game.part === "play-in" ? "Play-in" : game.part === "post" ? "Playoffs" : "Regular season", game.note].filter(Boolean).join(" · ")],
+    [
+      "Game",
+      [
+        game.part === "pre"
+          ? "Preseason"
+          : game.part === "play-in"
+            ? "Play-in"
+            : game.part === "post"
+              ? "Playoffs"
+              : "Regular season",
+        game.note,
+      ]
+        .filter(Boolean)
+        .join(" · "),
+    ],
   ];
   return (
     <Panel>
@@ -316,16 +385,33 @@ function GameInfo({ game }: { game: NbaGame }) {
 
 function Header({ game, plays }: { game: NbaGame; plays: NbaPlay[] }) {
   const when = game.date
-    ? new Date(game.date).toLocaleString([], { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })
+    ? new Date(game.date).toLocaleString([], {
+        weekday: "short",
+        month: "short",
+        day: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+      })
     : "";
   const finalDate = game.date
-    ? new Date(game.date).toLocaleDateString("en-US", { timeZone: "America/New_York", weekday: "short", month: "short", day: "numeric" })
+    ? new Date(game.date).toLocaleDateString("en-US", {
+        timeZone: "America/New_York",
+        weekday: "short",
+        month: "short",
+        day: "numeric",
+      })
     : "";
   const isFinal = game.status === "final";
   const isOT = game.period > 4 || /\b\d?OT\b/i.test(game.statusDetail);
   const spread = game.odds?.spread;
-  const favorite = spread == null || spread === 0 ? null : spread < 0 ? game.home.team : game.away.team;
-  const spreadLabel = spread == null ? "—" : spread === 0 ? "PK" : `-${Math.abs(spread).toFixed(1).replace(/\.0$/, "")}`;
+  const favorite =
+    spread == null || spread === 0 ? null : spread < 0 ? game.home.team : game.away.team;
+  const spreadLabel =
+    spread == null
+      ? "—"
+      : spread === 0
+        ? "PK"
+        : `-${Math.abs(spread).toFixed(1).replace(/\.0$/, "")}`;
 
   if (isFinal) {
     const awayWon = hasScore(game) && (game.away.score as number) > (game.home.score as number);
@@ -335,21 +421,49 @@ function Header({ game, plays }: { game: NbaGame; plays: NbaPlay[] }) {
         <Panel className="mb-6">
           <div className="mx-auto flex max-w-2xl items-center justify-between gap-2">
             <div className="flex min-w-0 items-center gap-2 sm:gap-4">
-              <Link to="/nba/teams/$teamId" params={{ teamId: game.away.team.id }} className="group flex shrink-0 flex-col items-center gap-1 text-center">
-                <NbaLogo team={game.away.team} className="size-10 transition-transform group-hover:scale-105 sm:size-14" />
-                <span className="font-mono text-[10px] text-mute group-hover:text-acc sm:text-xs">{game.away.record ?? ""}</span>
+              <Link
+                to="/nba/teams/$teamId"
+                params={{ teamId: game.away.team.id }}
+                className="group flex shrink-0 flex-col items-center gap-1 text-center"
+              >
+                <NbaLogo
+                  team={game.away.team}
+                  className="size-10 transition-transform group-hover:scale-105 sm:size-14"
+                />
+                <span className="font-mono text-[10px] text-mute group-hover:text-acc sm:text-xs">
+                  {game.away.record ?? ""}
+                </span>
               </Link>
-              <span className={`font-mono text-3xl font-bold tabular-nums sm:text-5xl ${awayWon ? "text-acc" : ""}`}>{game.away.score ?? ""}</span>
+              <span
+                className={`font-mono text-3xl font-bold tabular-nums sm:text-5xl ${awayWon ? "text-acc" : ""}`}
+              >
+                {game.away.score ?? ""}
+              </span>
             </div>
             <div className="flex shrink-0 flex-col items-center justify-center px-1 text-center">
-              <span className="font-disp text-base font-bold tracking-wider text-acc sm:text-xl">{isOT ? "FINAL/OT" : "FINAL"}</span>
+              <span className="font-disp text-base font-bold tracking-wider text-acc sm:text-xl">
+                {isOT ? "FINAL/OT" : "FINAL"}
+              </span>
               <span className="font-mono text-[10px] text-mute sm:text-[11px]">{finalDate}</span>
             </div>
             <div className="flex min-w-0 items-center gap-2 sm:gap-4">
-              <span className={`font-mono text-3xl font-bold tabular-nums sm:text-5xl ${homeWon ? "text-acc" : ""}`}>{game.home.score ?? ""}</span>
-              <Link to="/nba/teams/$teamId" params={{ teamId: game.home.team.id }} className="group flex shrink-0 flex-col items-center gap-1 text-center">
-                <NbaLogo team={game.home.team} className="size-10 transition-transform group-hover:scale-105 sm:size-14" />
-                <span className="font-mono text-[10px] text-mute group-hover:text-acc sm:text-xs">{game.home.record ?? ""}</span>
+              <span
+                className={`font-mono text-3xl font-bold tabular-nums sm:text-5xl ${homeWon ? "text-acc" : ""}`}
+              >
+                {game.home.score ?? ""}
+              </span>
+              <Link
+                to="/nba/teams/$teamId"
+                params={{ teamId: game.home.team.id }}
+                className="group flex shrink-0 flex-col items-center gap-1 text-center"
+              >
+                <NbaLogo
+                  team={game.home.team}
+                  className="size-10 transition-transform group-hover:scale-105 sm:size-14"
+                />
+                <span className="font-mono text-[10px] text-mute group-hover:text-acc sm:text-xs">
+                  {game.home.record ?? ""}
+                </span>
               </Link>
             </div>
           </div>
@@ -360,9 +474,13 @@ function Header({ game, plays }: { game: NbaGame; plays: NbaPlay[] }) {
                 <NbaLogo team={favorite} className="size-4" />
                 <span className="font-semibold text-foreground">{spreadLabel}</span>
               </span>
-            ) : <span className="font-semibold text-foreground">{spreadLabel}</span>}
+            ) : (
+              <span className="font-semibold text-foreground">{spreadLabel}</span>
+            )}
             <span>·</span>
-            <span>O/U: <span className="font-semibold text-foreground">{game.odds?.total ?? "—"}</span></span>
+            <span>
+              O/U: <span className="font-semibold text-foreground">{game.odds?.total ?? "—"}</span>
+            </span>
           </div>
         </Panel>
       </>
@@ -388,7 +506,11 @@ function Header({ game, plays }: { game: NbaGame; plays: NbaPlay[] }) {
                   <NbaLogo team={s.team} className="size-14 sm:size-16" />
                 </Link>
                 <div className="min-w-0">
-                  <Link to="/nba/teams/$teamId" params={{ teamId: s.team.id }} className="block truncate font-disp text-xl font-bold uppercase leading-none tracking-tight hover:text-acc sm:text-3xl">
+                  <Link
+                    to="/nba/teams/$teamId"
+                    params={{ teamId: s.team.id }}
+                    className="block truncate font-disp text-xl font-bold uppercase leading-none tracking-tight hover:text-acc sm:text-3xl"
+                  >
                     {s.team.nickname}
                   </Link>
                   <span className="font-mono text-[10px] uppercase tracking-wider text-faint">
@@ -397,16 +519,24 @@ function Header({ game, plays }: { game: NbaGame; plays: NbaPlay[] }) {
                   </span>
                 </div>
                 {hasScore(game) && game.status !== "scheduled" ? (
-                  <span className="font-mono text-3xl font-semibold tabular-nums sm:text-5xl">{s.score}</span>
+                  <span className="font-mono text-3xl font-semibold tabular-nums sm:text-5xl">
+                    {s.score}
+                  </span>
                 ) : null}
               </div>
             </div>
           ))}
           <div className="order-2 text-center">
-            <p className="font-mono text-xs uppercase tracking-wider text-mute" suppressHydrationWarning>
+            <p
+              className="font-mono text-xs uppercase tracking-wider text-mute"
+              suppressHydrationWarning
+            >
               {statusText(game)}
             </p>
-            <p className="mt-1 font-mono text-[10px] uppercase tracking-wider text-faint" suppressHydrationWarning>
+            <p
+              className="mt-1 font-mono text-[10px] uppercase tracking-wider text-faint"
+              suppressHydrationWarning
+            >
               {when}
             </p>
           </div>
@@ -424,26 +554,44 @@ const quarterHeader = (i: number) => (i < 4 ? ["1st", "2nd", "3rd", "4th"][i] : 
 
 function LineScore({ game }: { game: NbaGame }) {
   const count = Math.max(4, game.away.periods.length, game.home.periods.length);
-  const winner = game.status === "final" && hasScore(game) ? ((game.away.score as number) > (game.home.score as number) ? "away" : "home") : null;
+  const winner =
+    game.status === "final" && hasScore(game)
+      ? (game.away.score as number) > (game.home.score as number)
+        ? "away"
+        : "home"
+      : null;
   return (
     <table className="w-full text-center font-mono text-sm">
       <thead>
         <tr className="text-[10px] uppercase tracking-wider text-faint">
           <th className="text-left font-normal">Team</th>
           {Array.from({ length: count }, (_, i) => (
-            <th key={i} className="font-normal">{quarterHeader(i)}</th>
+            <th key={i} className="font-normal">
+              {quarterHeader(i)}
+            </th>
           ))}
           <th className="text-right font-normal">{game.status === "final" ? "Final" : "T"}</th>
         </tr>
       </thead>
       <tbody className="divide-y divide-line/5">
-        {([["away", game.away], ["home", game.home]] as const).map(([key, s]) => (
+        {(
+          [
+            ["away", game.away],
+            ["home", game.home],
+          ] as const
+        ).map(([key, s]) => (
           <tr key={key}>
             <td className="py-2 text-left font-medium">{s.team.nickname}</td>
             {Array.from({ length: count }, (_, i) => (
-              <td key={i} className="py-2 tabular-nums text-mute">{s.periods[i] ?? (game.status === "final" || i < game.period ? 0 : "")}</td>
+              <td key={i} className="py-2 tabular-nums text-mute">
+                {s.periods[i] ?? (game.status === "final" || i < game.period ? 0 : "")}
+              </td>
             ))}
-            <td className={`py-2 text-right font-semibold tabular-nums ${winner === key ? "text-acc" : ""}`}>{s.score ?? 0}</td>
+            <td
+              className={`py-2 text-right font-semibold tabular-nums ${winner === key ? "text-acc" : ""}`}
+            >
+              {s.score ?? 0}
+            </td>
           </tr>
         ))}
       </tbody>
@@ -455,7 +603,8 @@ function LineScore({ game }: { game: NbaGame }) {
 function ModelCard({ row }: { row: NbaModelRow }) {
   const { game, pred } = row;
   const fav = pred.margin >= 0 ? game.home.team : game.away.team;
-  const result = (r: string | null | undefined) => (r === "win" ? "text-win" : r === "loss" ? "text-loss" : "text-mute");
+  const result = (r: string | null | undefined) =>
+    r === "win" ? "text-win" : r === "loss" ? "text-loss" : "text-mute";
   return (
     <Panel>
       <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">Model</h2>
@@ -469,20 +618,29 @@ function ModelCard({ row }: { row: NbaModelRow }) {
         <div className="h-2 bg-acc" style={{ width: `${(1 - pred.homeWinProb) * 100}%` }} />
       </div>
       <div className="mt-1 flex justify-between font-mono text-[10px] uppercase tracking-wider text-mute">
-        <span>{game.away.team.abbr} {pct(1 - pred.homeWinProb, 0)}</span>
-        <span>{game.home.team.abbr} {pct(pred.homeWinProb, 0)}</span>
+        <span>
+          {game.away.team.abbr} {pct(1 - pred.homeWinProb, 0)}
+        </span>
+        <span>
+          {game.home.team.abbr} {pct(pred.homeWinProb, 0)}
+        </span>
       </div>
       <dl className="mt-4 space-y-2 text-sm">
         <div className="flex justify-between gap-3">
           <dt className="text-mute">Winner</dt>
-          <dd className={`font-mono ${result(row.moneyline.result)}`}>{fav.abbr} by {Math.abs(pred.margin).toFixed(1)}{row.moneyline.result ? ` · ${row.moneyline.result}` : ""}</dd>
+          <dd className={`font-mono ${result(row.moneyline.result)}`}>
+            {fav.abbr} by {Math.abs(pred.margin).toFixed(1)}
+            {row.moneyline.result ? ` · ${row.moneyline.result}` : ""}
+          </dd>
         </div>
         <div className="flex justify-between gap-3">
           <dt className="text-mute">Spread</dt>
           <dd className={`font-mono ${result(row.spread?.result)}`}>
             {row.spread
               ? `${row.spread.best ? "★ " : ""}${row.spread.pick === "home" ? game.home.team.abbr : game.away.team.abbr} ${spreadText(game, row.spread.line)} (${row.spread.edge.toFixed(1)} pt edge)${row.spread.result ? ` · ${row.spread.result}` : ""}`
-              : game.odds?.spread != null ? "No edge" : "No line"}
+              : game.odds?.spread != null
+                ? "No edge"
+                : "No line"}
           </dd>
         </div>
         <div className="flex justify-between gap-3">
@@ -490,7 +648,9 @@ function ModelCard({ row }: { row: NbaModelRow }) {
           <dd className={`font-mono ${result(row.total?.result)}`}>
             {row.total
               ? `${row.total.best ? "★ " : ""}${row.total.pick} ${row.total.line}${game.odds?.totalOpen != null ? " (opener)" : ""} (proj ${pred.total.toFixed(1)})${row.total.result ? ` · ${row.total.result}` : ""}`
-              : game.odds?.total ? `No edge (proj ${pred.total.toFixed(1)})` : `Proj ${pred.total.toFixed(1)}`}
+              : game.odds?.total
+                ? `No edge (proj ${pred.total.toFixed(1)})`
+                : `Proj ${pred.total.toFixed(1)}`}
           </dd>
         </div>
       </dl>
@@ -508,10 +668,32 @@ function LinesCard({ game }: { game: NbaGame }) {
       <p className="label-mono mb-3">{o?.provider ?? "ESPN odds"}</p>
       {o ? (
         <dl className="space-y-2 text-sm">
-          <div className="flex justify-between"><dt className="text-mute">Spread</dt><dd className={`font-mono ${ats === "push" ? "text-mute" : ""}`}>{o.spread !== null ? spreadText(game, o.spread) : "—"}{ats && ats !== "push" ? ` · ${ats === "home" ? game.home.team.abbr : game.away.team.abbr} covered` : ats ? " · push" : ""}</dd></div>
-          <div className="flex justify-between"><dt className="text-mute">Total</dt><dd className="font-mono">{o.total ?? "—"}{ou ? ` · ${ou}` : ""}</dd></div>
-          <div className="flex justify-between"><dt className="text-mute">{game.away.team.abbr} moneyline</dt><dd className="font-mono">{o.mlAway ?? "—"}</dd></div>
-          <div className="flex justify-between"><dt className="text-mute">{game.home.team.abbr} moneyline</dt><dd className="font-mono">{o.mlHome ?? "—"}</dd></div>
+          <div className="flex justify-between">
+            <dt className="text-mute">Spread</dt>
+            <dd className={`font-mono ${ats === "push" ? "text-mute" : ""}`}>
+              {o.spread !== null ? spreadText(game, o.spread) : "—"}
+              {ats && ats !== "push"
+                ? ` · ${ats === "home" ? game.home.team.abbr : game.away.team.abbr} covered`
+                : ats
+                  ? " · push"
+                  : ""}
+            </dd>
+          </div>
+          <div className="flex justify-between">
+            <dt className="text-mute">Total</dt>
+            <dd className="font-mono">
+              {o.total ?? "—"}
+              {ou ? ` · ${ou}` : ""}
+            </dd>
+          </div>
+          <div className="flex justify-between">
+            <dt className="text-mute">{game.away.team.abbr} moneyline</dt>
+            <dd className="font-mono">{o.mlAway ?? "—"}</dd>
+          </div>
+          <div className="flex justify-between">
+            <dt className="text-mute">{game.home.team.abbr} moneyline</dt>
+            <dd className="font-mono">{o.mlHome ?? "—"}</dd>
+          </div>
         </dl>
       ) : (
         <p className="font-mono text-xs text-mute">No lines posted yet.</p>
@@ -520,12 +702,29 @@ function LinesCard({ game }: { game: NbaGame }) {
   );
 }
 
-function BoxScore({ detail, started, loading }: { detail?: NbaGameDetail; started: boolean; loading: boolean }) {
+function BoxScore({
+  detail,
+  started,
+  loading,
+}: {
+  detail?: NbaGameDetail;
+  started: boolean;
+  loading: boolean;
+}) {
   const [side, setSide] = useState(0);
-  if (!started) return <p className="py-6 text-center font-mono text-[11px] uppercase tracking-wider text-faint">The box score appears once the game is under way</p>;
+  if (!started)
+    return (
+      <p className="py-6 text-center font-mono text-[11px] uppercase tracking-wider text-faint">
+        The box score appears once the game is under way
+      </p>
+    );
   const teams = detail?.box ?? [];
   if (!teams.length)
-    return <p className="py-6 text-center font-mono text-[11px] uppercase tracking-wider text-faint">{loading ? "Loading box score…" : "ESPN has no box score yet."}</p>;
+    return (
+      <p className="py-6 text-center font-mono text-[11px] uppercase tracking-wider text-faint">
+        {loading ? "Loading box score…" : "ESPN has no box score yet."}
+      </p>
+    );
   const t = teams[Math.min(side, teams.length - 1)];
   return (
     <div>
@@ -553,21 +752,38 @@ function BoxTable({ team }: { team: NbaBoxTeam }) {
   const group = (label: string, list: typeof team.players) => (
     <>
       <tr>
-        <td colSpan={team.labels.length + 1} className="pt-3 font-mono text-[10px] uppercase tracking-wider text-faint">{label}</td>
+        <td
+          colSpan={team.labels.length + 1}
+          className="pt-3 font-mono text-[10px] uppercase tracking-wider text-faint"
+        >
+          {label}
+        </td>
       </tr>
       {list.map((p) => (
         <tr key={p.id || p.name} className="hover:bg-line/5">
           <td className="sticky left-0 bg-panel py-1.5 pr-3">
             {p.id ? (
-              <Link to="/nba/players/$playerId" params={{ playerId: p.id }} className="font-medium hover:text-acc">{p.name}</Link>
-            ) : p.name}
+              <Link
+                to="/nba/players/$playerId"
+                params={{ playerId: p.id }}
+                className="font-medium hover:text-acc"
+              >
+                {p.name}
+              </Link>
+            ) : (
+              p.name
+            )}
             <span className="ml-1.5 font-mono text-[10px] text-faint">{p.position}</span>
           </td>
           {p.dnp ? (
-            <td colSpan={team.labels.length} className="py-1.5 font-mono text-[11px] text-faint">{p.dnp}</td>
+            <td colSpan={team.labels.length} className="py-1.5 font-mono text-[11px] text-faint">
+              {p.dnp}
+            </td>
           ) : (
             team.labels.map((_, i) => (
-              <td key={i} className="px-1.5 py-1.5 text-right font-mono text-[12px] tabular-nums">{p.stats[i] ?? ""}</td>
+              <td key={i} className="px-1.5 py-1.5 text-right font-mono text-[12px] tabular-nums">
+                {p.stats[i] ?? ""}
+              </td>
             ))
           )}
         </tr>
@@ -581,7 +797,9 @@ function BoxTable({ team }: { team: NbaBoxTeam }) {
           <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
             <th className="sticky left-0 bg-panel py-2 pr-3 font-normal">Player</th>
             {team.labels.map((l) => (
-              <th key={l} className="px-1.5 py-2 text-right font-normal">{l}</th>
+              <th key={l} className="px-1.5 py-2 text-right font-normal">
+                {l}
+              </th>
             ))}
           </tr>
         </thead>
@@ -592,7 +810,9 @@ function BoxTable({ team }: { team: NbaBoxTeam }) {
             <tr className="border-t border-line/20 font-semibold">
               <td className="sticky left-0 bg-panel py-2">Team</td>
               {team.labels.map((_, i) => (
-                <td key={i} className="px-1.5 py-2 text-right font-mono text-[12px] tabular-nums">{team.totals[i] ?? ""}</td>
+                <td key={i} className="px-1.5 py-2 text-right font-mono text-[12px] tabular-nums">
+                  {team.totals[i] ?? ""}
+                </td>
               ))}
             </tr>
           ) : null}
@@ -607,16 +827,34 @@ const asNumber = (s: string) => {
   return Number.isFinite(n) ? n : 0;
 };
 
-function TeamStats({ game, detail, started }: { game: NbaGame; detail?: NbaGameDetail; started: boolean }) {
+function TeamStats({
+  game,
+  detail,
+  started,
+}: {
+  game: NbaGame;
+  detail?: NbaGameDetail;
+  started: boolean;
+}) {
   const rows = detail?.teamStats ?? [];
   if (!started || !rows.length)
-    return <p className="py-6 text-center font-mono text-[11px] uppercase tracking-wider text-faint">Team stats appear once the game is under way</p>;
+    return (
+      <p className="py-6 text-center font-mono text-[11px] uppercase tracking-wider text-faint">
+        Team stats appear once the game is under way
+      </p>
+    );
   return (
     <div className="space-y-3 text-sm">
       <div className="grid grid-cols-[1fr_auto_1fr] items-center font-mono text-[10px] uppercase tracking-wider text-mute">
-        <span className="flex items-center gap-2"><NbaLogo team={game.away.team} className="size-6" />{game.away.team.abbr}</span>
+        <span className="flex items-center gap-2">
+          <NbaLogo team={game.away.team} className="size-6" />
+          {game.away.team.abbr}
+        </span>
         <span />
-        <span className="flex items-center justify-end gap-2">{game.home.team.abbr}<NbaLogo team={game.home.team} className="size-6" /></span>
+        <span className="flex items-center justify-end gap-2">
+          {game.home.team.abbr}
+          <NbaLogo team={game.home.team} className="size-6" />
+        </span>
       </div>
       {rows.map((r) => {
         const a = asNumber(r.away);
@@ -633,10 +871,16 @@ function TeamStats({ game, detail, started }: { game: NbaGame; detail?: NbaGameD
             </div>
             <div className="flex gap-1">
               <div className="flex h-2 flex-1 justify-end overflow-hidden rounded-full bg-panel2">
-                <div className="h-2 rounded-full" style={{ width: w(a), backgroundColor: game.away.team.color }} />
+                <div
+                  className="h-2 rounded-full"
+                  style={{ width: w(a), backgroundColor: game.away.team.color }}
+                />
               </div>
               <div className="h-2 flex-1 overflow-hidden rounded-full bg-panel2">
-                <div className="h-2 rounded-full" style={{ width: w(h), backgroundColor: game.home.team.color }} />
+                <div
+                  className="h-2 rounded-full"
+                  style={{ width: w(h), backgroundColor: game.home.team.color }}
+                />
               </div>
             </div>
           </div>
@@ -651,20 +895,46 @@ function Plays({ game, plays, started }: { game: NbaGame; plays: NbaPlay[]; star
   const [period, setPeriod] = useState<number | "all">("all");
   const periods = [...new Set(plays.map((p) => p.period))].sort((a, b) => a - b);
   const shown = useMemo(
-    () => plays.filter((p) => (!scoringOnly || p.scoring) && (period === "all" || p.period === period)).slice().reverse(),
+    () =>
+      plays
+        .filter((p) => (!scoringOnly || p.scoring) && (period === "all" || p.period === period))
+        .slice()
+        .reverse(),
     [plays, scoringOnly, period],
   );
-  if (!started) return <p className="py-6 text-center font-mono text-[11px] uppercase tracking-wider text-faint">Play-by-play appears once the game is under way</p>;
-  if (!plays.length) return <p className="py-6 text-center font-mono text-[11px] uppercase tracking-wider text-faint">ESPN has no play-by-play yet.</p>;
-  const teamOf = (id?: string) => (id === game.home.team.id ? game.home.team : id === game.away.team.id ? game.away.team : null);
+  if (!started)
+    return (
+      <p className="py-6 text-center font-mono text-[11px] uppercase tracking-wider text-faint">
+        Play-by-play appears once the game is under way
+      </p>
+    );
+  if (!plays.length)
+    return (
+      <p className="py-6 text-center font-mono text-[11px] uppercase tracking-wider text-faint">
+        ESPN has no play-by-play yet.
+      </p>
+    );
+  const teamOf = (id?: string) =>
+    id === game.home.team.id ? game.home.team : id === game.away.team.id ? game.away.team : null;
   return (
     <div>
       <div className="mb-3 flex flex-wrap gap-2">
-        <button type="button" onClick={() => setScoringOnly((v) => !v)} aria-pressed={scoringOnly} className={`rounded-full px-3 py-1 font-mono text-[11px] uppercase tracking-wider ring-1 ${scoringOnly ? "bg-acc/10 text-acc ring-acc/25" : "bg-panel2 text-mute ring-line/10"}`}>
+        <button
+          type="button"
+          onClick={() => setScoringOnly((v) => !v)}
+          aria-pressed={scoringOnly}
+          className={`rounded-full px-3 py-1 font-mono text-[11px] uppercase tracking-wider ring-1 ${scoringOnly ? "bg-acc/10 text-acc ring-acc/25" : "bg-panel2 text-mute ring-line/10"}`}
+        >
           Scoring plays
         </button>
         {(["all", ...periods] as (number | "all")[]).map((p) => (
-          <button key={p} type="button" onClick={() => setPeriod(p)} aria-pressed={period === p} className={`rounded-full px-3 py-1 font-mono text-[11px] uppercase tracking-wider ring-1 ${period === p ? "bg-acc/10 text-acc ring-acc/25" : "bg-panel2 text-mute ring-line/10 hover:text-acc"}`}>
+          <button
+            key={p}
+            type="button"
+            onClick={() => setPeriod(p)}
+            aria-pressed={period === p}
+            className={`rounded-full px-3 py-1 font-mono text-[11px] uppercase tracking-wider ring-1 ${period === p ? "bg-acc/10 text-acc ring-acc/25" : "bg-panel2 text-mute ring-line/10 hover:text-acc"}`}
+          >
             {p === "all" ? "All" : periodLabel(p - 1)}
           </button>
         ))}
@@ -674,11 +944,15 @@ function Plays({ game, plays, started }: { game: NbaGame; plays: NbaPlay[]; star
           const t = teamOf(p.teamId);
           return (
             <li key={p.id} className="flex items-center gap-3 py-2 text-sm">
-              <span className="w-16 shrink-0 font-mono text-[10px] uppercase tracking-wider text-faint">{periodLabel(p.period - 1)} {p.clock}</span>
+              <span className="w-16 shrink-0 font-mono text-[10px] uppercase tracking-wider text-faint">
+                {periodLabel(p.period - 1)} {p.clock}
+              </span>
               {t ? <NbaLogo team={t} className="size-5" /> : <span className="size-5" />}
               <span className={`min-w-0 flex-1 ${p.scoring ? "" : "text-mute"}`}>{p.text}</span>
               {p.awayScore !== null && p.homeScore !== null ? (
-                <span className="shrink-0 font-mono text-[11px] tabular-nums text-mute">{p.awayScore}–{p.homeScore}</span>
+                <span className="shrink-0 font-mono text-[11px] tabular-nums text-mute">
+                  {p.awayScore}–{p.homeScore}
+                </span>
               ) : null}
             </li>
           );
@@ -691,11 +965,17 @@ function Plays({ game, plays, started }: { game: NbaGame; plays: NbaPlay[]; star
 function WinProb({ game, detail }: { game: NbaGame; detail?: NbaGameDetail }) {
   const probs = detail?.winProb ?? [];
   if (probs.length < 2)
-    return <p className="py-6 text-center font-mono text-[11px] uppercase tracking-wider text-faint">Win probability appears once the game is under way</p>;
+    return (
+      <p className="py-6 text-center font-mono text-[11px] uppercase tracking-wider text-faint">
+        Win probability appears once the game is under way
+      </p>
+    );
   const W = 600;
   const H = 160;
   const step = W / (probs.length - 1);
-  const points = probs.map((p, i) => `${(i * step).toFixed(1)},${((1 - p) * H).toFixed(1)}`).join(" ");
+  const points = probs
+    .map((p, i) => `${(i * step).toFixed(1)},${((1 - p) * H).toFixed(1)}`)
+    .join(" ");
   const last = probs[probs.length - 1];
   return (
     <div>
@@ -703,9 +983,29 @@ function WinProb({ game, detail }: { game: NbaGame; detail?: NbaGameDetail }) {
         <span>{game.home.team.abbr} win probability</span>
         <span className="text-acc">{pct(last, 0)} now</span>
       </div>
-      <svg viewBox={`0 0 ${W} ${H}`} className="h-40 w-full rounded-lg bg-panel2" preserveAspectRatio="none" role="img" aria-label="Win probability chart">
-        <line x1="0" x2={W} y1={H / 2} y2={H / 2} stroke="currentColor" strokeOpacity="0.2" strokeDasharray="4 4" />
-        <polyline points={points} fill="none" stroke="var(--acc)" strokeWidth="2" vectorEffect="non-scaling-stroke" />
+      <svg
+        viewBox={`0 0 ${W} ${H}`}
+        className="h-40 w-full rounded-lg bg-panel2"
+        preserveAspectRatio="none"
+        role="img"
+        aria-label="Win probability chart"
+      >
+        <line
+          x1="0"
+          x2={W}
+          y1={H / 2}
+          y2={H / 2}
+          stroke="currentColor"
+          strokeOpacity="0.2"
+          strokeDasharray="4 4"
+        />
+        <polyline
+          points={points}
+          fill="none"
+          stroke="var(--acc)"
+          strokeWidth="2"
+          vectorEffect="non-scaling-stroke"
+        />
       </svg>
       <div className="mt-1 flex justify-between font-mono text-[10px] uppercase tracking-wider text-faint">
         <span>Tip-off</span>
@@ -733,13 +1033,17 @@ function Leaders({ game, leaders }: { game: NbaGame; leaders: NbaGameDetail["lea
           }}
         />
         <div className={`min-w-0 ${isHome ? "text-right" : "text-left"}`}>
-          <div className="truncate text-sm font-semibold text-foreground group-hover:text-acc">{l.name}</div>
+          <div className="truncate text-sm font-semibold text-foreground group-hover:text-acc">
+            {l.name}
+          </div>
           <div className="mt-1 font-mono text-sm font-bold tabular-nums text-acc">{l.value}</div>
         </div>
       </div>
     );
     return (
-      <div className={`flex min-w-0 items-center py-3 ${isHome ? "justify-end text-right" : "justify-start text-left"}`}>
+      <div
+        className={`flex min-w-0 items-center py-3 ${isHome ? "justify-end text-right" : "justify-start text-left"}`}
+      >
         {l.playerId ? (
           <Link
             to="/nba/players/$playerId"
@@ -783,7 +1087,9 @@ function Leaders({ game, leaders }: { game: NbaGame; leaders: NbaGameDetail["lea
                 className="grid grid-cols-[minmax(0,1fr)_112px_minmax(0,1fr)] items-center gap-2 sm:grid-cols-[minmax(0,1fr)_160px_minmax(0,1fr)]"
               >
                 {cell(away, "away")}
-                <div className="text-center font-mono text-[10px] uppercase tracking-wider text-mute">{c}</div>
+                <div className="text-center font-mono text-[10px] uppercase tracking-wider text-mute">
+                  {c}
+                </div>
                 {cell(home, "home")}
               </div>
             );
@@ -805,7 +1111,12 @@ function Injuries({ game, injuries }: { game: NbaGame; injuries: NbaGameDetail["
             <div key={`${i.name}-${n}`} className="flex items-center gap-2 px-4 py-2 text-sm">
               <NbaLogo team={t} className="size-4" />
               <span className="flex-1 truncate">{i.name}</span>
-              <span className={`font-mono text-[10px] uppercase tracking-wider ${/out/i.test(i.status) ? "text-loss" : "text-mute"}`}>{i.status}{i.detail ? ` · ${i.detail}` : ""}</span>
+              <span
+                className={`font-mono text-[10px] uppercase tracking-wider ${/out/i.test(i.status) ? "text-loss" : "text-mute"}`}
+              >
+                {i.status}
+                {i.detail ? ` · ${i.detail}` : ""}
+              </span>
             </div>
           );
         })}

@@ -4,7 +4,7 @@
  *   <out>/<league>/index.json               { seasons: { "2024-25": ["2024-10-22", ...] } }
  *   <out>/<league>/<season>/<YYYY-MM-DD>.json  [ game, ... ]
  * Each game: { id, date, name, away, home, final, props: [[player, team, market, line, over, under, actual, dnp?]] }
- * dnp = 1: the player didn't play (NFL; the bet is void), actual null.
+ * dnp = 1: the player didn't play (NFL game roster, NBA box-score DNP; the bet is void), actual null.
  * One row per player and market: the main line (the sportsbook's balanced over/under pair; for books
  * that send lines without prices, the line itself). Opening lines are used: ESPN's "current" line
  * kept moving during games for some books, so it isn't a reliable pregame close.
@@ -216,7 +216,12 @@ async function main() {
           props.push([ro.n, ro.tm, label, p.line, p.o, p.u, null, 1]);
           continue;
         }
-        if (!bx || bx.dnp) continue;
+        if (!bx) continue;
+        if (bx.dnp) {
+          // on the box score as DNP (NBA): the bet is void
+          props.push([bx.n, bx.tm, MARKETS[p.t][0], p.line, p.o, p.u, null, 1]);
+          continue;
+        }
         const [label, stat] = MARKETS[p.t];
         let { line, o, u } = p;
         if (o == null && u == null && price.size) {
