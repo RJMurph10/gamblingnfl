@@ -477,7 +477,7 @@
    ]
   },
   "close": {
-   "at": "2026-11-12T20:53:06.836Z",
+   "at": "2026-11-12T21:55:47.081Z",
    "scoreboard": [
     {
      "provider": {
@@ -487,7 +487,7 @@
       "displayName": "DraftKings"
      },
      "details": "BRAD -12.5",
-     "overUnder": 132.5,
+     "overUnder": 131.5,
      "spread": 12.5,
      "awayTeamOdds": {
       "favorite": true,
@@ -660,8 +660,8 @@
       "shortDisplayName": "Total",
       "over": {
        "close": {
-        "line": "o132.5",
-        "odds": "-115",
+        "line": "o131.5",
+        "odds": "-110",
         "link": {
          "language": "en-US",
          "rel": [
@@ -669,7 +669,7 @@
           "desktop",
           "bets"
          ],
-         "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F35006712%3Foutcomes%3D0OU87209423O13250_1",
+         "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F35006712%3Foutcomes%3D0OU87209423O13150_1",
          "text": "Over Odds",
          "shortText": "Over Odds",
          "isExternal": true,
@@ -682,7 +682,7 @@
            "gameId": 401925631,
            "betSide": "over",
            "betType": "straight",
-           "betDetails": "Over:132.5"
+           "betDetails": "Over:131.5"
           }
          }
         }
@@ -694,8 +694,8 @@
       },
       "under": {
        "close": {
-        "line": "u132.5",
-        "odds": "-105",
+        "line": "u131.5",
+        "odds": "-110",
         "link": {
          "language": "en-US",
          "rel": [
@@ -703,7 +703,7 @@
           "desktop",
           "bets"
          ],
-         "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F35006712%3Foutcomes%3D0OU87209423U13250_3",
+         "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F35006712%3Foutcomes%3D0OU87209423U13150_3",
          "text": "Under Odds",
          "shortText": "Under Odds",
          "isExternal": true,
@@ -716,7 +716,7 @@
            "gameId": 401925631,
            "betSide": "under",
            "betType": "straight",
-           "betDetails": "Under:132.5"
+           "betDetails": "Under:131.5"
           }
          }
         }
@@ -772,10 +772,10 @@
       "priority": 1
      },
      "details": "BRAD -12.5",
-     "overUnder": 132.5,
+     "overUnder": 131.5,
      "spread": 12.5,
-     "overOdds": -115,
-     "underOdds": -105,
+     "overOdds": -110,
+     "underOdds": -110,
      "awayTeamOdds": {
       "favorite": true,
       "underdog": false,
@@ -910,24 +910,24 @@
      },
      "current": {
       "over": {
-       "value": 1.86,
-       "displayValue": "20/23",
-       "alternateDisplayValue": "-115",
-       "decimal": 1.86,
-       "fraction": "20/23",
-       "american": "-115"
+       "value": 1.9,
+       "displayValue": "10/11",
+       "alternateDisplayValue": "-110",
+       "decimal": 1.9,
+       "fraction": "10/11",
+       "american": "-110"
       },
       "under": {
-       "value": 1.95,
-       "displayValue": "20/21",
-       "alternateDisplayValue": "-105",
-       "decimal": 1.95,
-       "fraction": "20/21",
-       "american": "-105"
+       "value": 1.9,
+       "displayValue": "10/11",
+       "alternateDisplayValue": "-110",
+       "decimal": 1.9,
+       "fraction": "10/11",
+       "american": "-110"
       },
       "total": {
-       "alternateDisplayValue": "132.5",
-       "american": "132.5"
+       "alternateDisplayValue": "131.5",
+       "american": "131.5"
       }
      }
     }
