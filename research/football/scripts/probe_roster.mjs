@@ -1,14 +1,13 @@
-// probe: do ESPN's DraftKings NFL props for finished 2026 games carry prices (odds.american)?
-const L = "football/leagues/nfl";
-for (const id of ["401873051"]) {
-  const j = await (await fetch(`https://sports.core.api.espn.com/v2/sports/${L}/events/${id}/competitions/${id}/odds/100/propBets?limit=1000`)).json();
-  const items = j.items ?? [];
-  const types = {};
-  for (const x of items) {
-    const t = x.type?.name; types[t] ??= [0, 0];
-    types[t][0]++; if (x.odds?.american?.value != null) types[t][1]++;
-  }
-  console.log("count", j.count, "items", items.length);
-  for (const [t, [n, p]] of Object.entries(types)) console.log("  ", t, n, "priced", p);
-  console.log("  sample", JSON.stringify(items.find((x) => /Receiving Yards/i.test(x.type?.name ?? ""))?.odds ?? null));
-}
+// dry run: snapshot plan and credit estimate for the lacrosse historical pull (no Odds API calls)
+import { execFileSync } from "node:child_process";
+const runs = [
+  ["lacrosse_pll", "2024-05-15", "2024-09-30"],
+  ["lacrosse_pll", "2025-05-15", "2025-09-30"],
+  ["lacrosse_pll", "2026-05-15", "2026-09-30"],
+  ["lacrosse_ncaa", "2023-05-01", "2023-06-01"],
+  ["lacrosse_ncaa", "2024-02-01", "2024-06-01"],
+  ["lacrosse_ncaa", "2025-02-01", "2025-06-01"],
+  ["lacrosse_ncaa", "2026-02-01", "2026-06-01"],
+];
+for (const [s, f, t] of runs)
+  console.log(execFileSync("node", ["scripts/lacrosse/odds-history.mjs", "--sport", s, "--from", f, "--to", t, "--dry", "--out", "/tmp/lax"]).toString().trim());
