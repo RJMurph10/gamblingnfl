@@ -21,7 +21,7 @@ const COVERAGE: Record<PropLeague, string> = {
   nba: "From the 2022–23 season on.",
   nhl: "Points, goals, assists, shots, hits, blocks and saves from the 2023–24 season on.",
   mlb: "Hitter props (hits, home runs, runs, RBIs) and pitcher props (strikeouts, outs, earned runs) from 2024 on.",
-  wnba: "Points, rebounds, assists and threes for the 2025 season (ESPN BET). For 2024 there are none, and for 2026 DraftKings posted only milestone props (\"15+ points\"), which aren't over/under lines.",
+  wnba: "Points, rebounds, assists and threes for the 2025 season and from late August 2024 (ESPN BET; earlier 2024 games have none). For 2026 DraftKings posted only milestone props (\"15+ points\"), which aren't over/under lines.",
 };
 
 const american = (n: number | null) => (n == null ? "—" : n > 0 ? `+${n}` : String(n));
