@@ -1,13 +1,14 @@
 name: Game lines history (other leagues)
 # Saves ESPN's game lines (moneyline, spread, total; opening and closing) for leagues the site doesn't
 # keep lines for yet, to the lines-history branch: <league>/<season>.jsonl.gz. Run by hand; each run
-# re-exports the date range given (default: ESPN BET's start in Nov 2023 to today).
+# re-exports the date range given (default: 2018 to today). Use whole seasons: a season's file is
+# replaced by what the run found.
 on:
   workflow_dispatch:
     inputs:
       from:
         description: First date (YYYY-MM-DD)
-        default: "2023-11-01"
+        default: "2018-01-01"
       to:
         description: Last date (YYYY-MM-DD, blank = today)
         default: ""
@@ -35,7 +36,6 @@ jobs:
           - { sport: soccer, league: mex.1 }
           - { sport: soccer, league: usa.nwsl }
           - { sport: baseball, league: college-baseball }
-          - { sport: baseball, league: college-softball }
           - { sport: football, league: ufl }
           - { sport: mma, league: ufc }
     steps:
@@ -48,7 +48,7 @@ jobs:
       - name: Export
         run: |
           node scripts/lines/export-lines.mjs --sport ${{ matrix.sport }} --league ${{ matrix.league }} \
-            --from "${{ inputs.from || '2023-11-01' }}" --to "${{ inputs.to }}" --out out
+            --from "${{ inputs.from || '2018-01-01' }}" --to "${{ inputs.to }}" --out out
       - uses: actions/upload-artifact@v4
         with:
           name: lines-${{ matrix.league }}

@@ -125,8 +125,8 @@ await pool(list, 8, async (g) => {
     const o = it?.provider ? it : it?.$ref ? await get(it.$ref) : null;
     if (!o) continue;
     const pid = String(o.provider?.id ?? /\/odds\/(\d+)/.exec(it?.$ref ?? "")?.[1] ?? "");
-    // in-game ("Live Odds") feeds kept updating during the game: leave them out
-    if (/live odds/i.test(o.provider?.name ?? "")) continue;
+    // in-game feeds ("ESPN BET - Live Odds", "Caesars Sportsbook (NJ)-Live") kept updating during the game
+    if (/\blive\b/i.test(o.provider?.name ?? "")) continue;
     books.push({ id: pid, ...clean(o), provider: undefined, name: o.provider?.name ?? "" });
   }
   g.books = books;
