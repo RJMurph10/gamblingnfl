@@ -4,6 +4,7 @@
  */
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
+import { ClosedPropLines } from "@/components/shared/GamePropsTab";
 import { NhlEmpty, NhlLogo } from "@/components/nhl/NhlBits";
 import { NhlGameBoard } from "@/components/nhl/NhlGameBoard";
 import { NhlLiveScoreboard } from "@/components/nhl/NhlLiveRink";
@@ -163,7 +164,20 @@ export function NhlGameDetailView({ gameId }: { gameId: string }) {
       {activeTab === "markets" ? <Markets game={game} games={games} /> : null}
 
       {activeTab === "props" ? (
-        <div className="mt-6">
+        <div className="mt-6 space-y-4">
+          {started ? (
+            <ClosedPropLines
+              league="nhl"
+              game={{ id: game.id, date: game.date, away: game.away.team.abbr, home: game.home.team.abbr }}
+              final={game.status === "final"}
+              fallback={
+                <p className="glass p-4 text-center font-mono text-[11px] text-mute">
+                  This game&apos;s closing prop lines and results aren&apos;t saved yet. Lines are added
+                  within a few hours of puck drop and results after the game.
+                </p>
+              }
+            />
+          ) : null}
           <Link
             to="/nhl/props"
             search={{ game: game.id }}
