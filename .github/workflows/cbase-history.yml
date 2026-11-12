@@ -1,0 +1,41 @@
+name: College baseball history (one-time)
+on:
+  push:
+    branches: [nfl-weather-probe]
+    paths: [.github/workflows/cbase-history.yml]
+permissions:
+  contents: write
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: cbase-research
+          sparse-checkout: scripts/cbase
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Export
+        run: |
+          set -e
+          for y in 2019 2020 2021 2022 2023 2024 2025; do node scripts/cbase/export-ncaa.mjs $y out; done
+          node scripts/cbase/export-ncaa.mjs 2026 out --espn-teams
+      - name: Publish
+        run: |
+          set -e
+          url="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+          if git ls-remote --exit-code --heads "$url" cbase-history >/dev/null; then
+            git clone -q --depth 1 --branch cbase-history "$url" dst
+          else
+            mkdir dst && cd dst && git init -q -b cbase-history && git remote add origin "$url" && cd ..
+          fi
+          cp -r out/* dst/
+          cd dst
+          git config user.name "line-history-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet && exit 0
+          git commit -q -m "college baseball NCAA results $(date -u +%Y-%m-%d)"
+          git push -q origin HEAD:cbase-history
