@@ -136,3 +136,15 @@ export async function fetchUpcomingProps(league: PropLeague): Promise<UpcomingPr
   const now = Date.now();
   return games.filter((g) => Date.parse(g.date) > now);
 }
+
+/**
+ * A started or finished NFL game's closing DraftKings board (the last snapshot before kickoff), from
+ * build-upcoming.mjs: same shape as an upcoming game. Null when none was saved.
+ */
+export async function fetchClosedProps(
+  league: PropLeague,
+  id: string,
+): Promise<UpcomingPropGame | null> {
+  if (!/^\d+$/.test(id)) return null;
+  return getJson<UpcomingPropGame>(`${BASE}/${league}/closed/${id}.json`, 30 * MINUTE);
+}

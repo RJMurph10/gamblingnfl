@@ -7,7 +7,7 @@
  *
  *   node scripts/line-history/build-upcoming.mjs --data data --out props-site --league nba
  */
-import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readdir, readFile, stat, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { loadPrices } from "./odds-api-prices.mjs";
 
@@ -22,6 +22,13 @@ const OUT = opt("out", "props-site");
 const NOW = Date.now();
 const PRICES = opt("prices"); // saved Odds API pulls (NFL), to fill prices ESPN doesn't show
 const AHEAD =(KEY === "nfl" || KEY === "cfb" ? 8 : 3) * 86_400_000;
+/**
+ * Leagues whose started and finished games also get their closing board, one file per game, for the
+ * game page's Props tab: <out>/<league>/closed/<event id>.json. Rewritten while the game is recent
+ * (a few days), written once for older games that don't have one yet.
+ */
+const CLOSED = new Set(["nfl"]);
+const RECENT = 5 * 86_400_000;
 
 const LABELS =
   {
@@ -128,59 +135,85 @@ function mainLines(rows) {
   return [...out.values()];
 }
 
+/**
+ * One game's board from a logger game file: each player's main line per market as of the newest props
+ * snapshot (closing → latest → opening), where it opened, and prices (filled from saved DraftKings pulls).
+ */
+let filled = 0;
+function boardOf(rec, price) {
+  const snap = rec.props?.close ?? rec.props?.latest ?? rec.props?.open;
+  if (!snap?.rows?.length) return null;
+  const names = rec.names ?? {};
+  const props = [];
+  for (const l of mainLines(snap.rows)) {
+    const who = names[l.a];
+    if (!who) continue;
+    let { line, o, u } = l;
+    if (o == null && u == null && price.size) {
+      // ESPN lists DraftKings' line without prices: the saved price at that line, else DraftKings'
+      // newest priced line (ESPN's copy lags when the line has moved)
+      const p = price(rec.home?.name, rec.date, who[0], LABELS[l.t], line);
+      const mn = p ? null : price.main(rec.home?.name, rec.date, who[0], LABELS[l.t]);
+      if (p) [o, u] = [p[0], p[1]];
+      else if (mn) [line, o, u] = [mn[0], mn[1], mn[2]];
+      if (p || mn) filled += 1;
+    }
+    const ladder = price.size ? price.ladder(rec.home?.name, rec.date, who[0], LABELS[l.t]) : null;
+    props.push([who[0], who[1], LABELS[l.t], line, o, u, l.opened, ...(ladder ? [ladder] : [])]);
+  }
+  if (!props.length) return null;
+  props.sort(
+    (x, y) => x[1].localeCompare(y[1]) || x[0].localeCompare(y[0]) || x[2].localeCompare(y[2]),
+  );
+  return {
+    id: rec.id,
+    date: rec.date,
+    name: rec.name,
+    at: snap.at,
+    away: { abbr: rec.away?.abbr ?? "", name: rec.away?.name ?? "" },
+    home: { abbr: rec.home?.abbr ?? "", name: rec.home?.name ?? "" },
+    props,
+  };
+}
+
 async function main() {
   const root = join(DATA, KEY);
   const seasons = (await readdir(root).catch(() => [])).sort().slice(-2);
   const games = [];
   const price = await loadPrices(PRICES);
-  let filled = 0;
+  let closed = 0;
   for (const season of seasons) {
     for (const f of await readdir(join(root, season)).catch(() => [])) {
       if (!f.endsWith(".json")) continue;
       // file names start with the game's US day; skip anything clearly past
       const day = Date.parse(`${f.slice(0, 10)}T12:00:00Z`);
-      if (!(day >= NOW - 2 * 86_400_000 && day <= NOW + AHEAD)) continue;
+      const upcoming = day >= NOW - 2 * 86_400_000 && day <= NOW + AHEAD;
+      const closedFile = (id) => join(OUT, KEY, "closed", `${id}.json`);
+      if (!upcoming && !(CLOSED.has(KEY) && day <= NOW + 86_400_000)) continue;
       const rec = JSON.parse(await readFile(join(root, season, f), "utf8"));
       const start = Date.parse(rec.date);
-      if (!(start > NOW && start <= NOW + AHEAD) || rec.state === "post") continue;
-      const snap = rec.props?.close ?? rec.props?.latest ?? rec.props?.open;
-      if (!snap?.rows?.length) continue;
-      const names = rec.names ?? {};
-      const props = [];
-      for (const l of mainLines(snap.rows)) {
-        const who = names[l.a];
-        if (!who) continue;
-        let { line, o, u } = l;
-        if (o == null && u == null && price.size) {
-          // ESPN lists DraftKings' line without prices: the saved price at that line, else DraftKings'
-          // newest priced line (ESPN's copy lags when the line has moved)
-          const p = price(rec.home?.name, rec.date, who[0], LABELS[l.t], line);
-          const mn = p ? null : price.main(rec.home?.name, rec.date, who[0], LABELS[l.t]);
-          if (p) [o, u, filled] = [p[0], p[1], filled + 1];
-          else if (mn) [line, o, u, filled] = [mn[0], mn[1], mn[2], filled + 1];
+      if (CLOSED.has(KEY) && rec.id && (start <= NOW || rec.state === "post")) {
+        // started or finished: its closing board, once (and refreshed while recent)
+        if (start > NOW - RECENT || !(await stat(closedFile(rec.id)).catch(() => null))) {
+          const board = boardOf(rec, price);
+          if (board) {
+            await mkdir(join(OUT, KEY, "closed"), { recursive: true });
+            await writeFile(closedFile(rec.id), JSON.stringify(board));
+            closed += 1;
+          }
         }
-        const ladder = price.size ? price.ladder(rec.home?.name, rec.date, who[0], LABELS[l.t]) : null;
-        props.push([who[0], who[1], LABELS[l.t], line, o, u, l.opened, ...(ladder ? [ladder] : [])]);
+        continue;
       }
-      if (!props.length) continue;
-      props.sort(
-        (x, y) => x[1].localeCompare(y[1]) || x[0].localeCompare(y[0]) || x[2].localeCompare(y[2]),
-      );
-      games.push({
-        id: rec.id,
-        date: rec.date,
-        name: rec.name,
-        at: snap.at,
-        away: { abbr: rec.away?.abbr ?? "", name: rec.away?.name ?? "" },
-        home: { abbr: rec.home?.abbr ?? "", name: rec.home?.name ?? "" },
-        props,
-      });
+      if (!upcoming) continue;
+      if (!(start > NOW && start <= NOW + AHEAD) || rec.state === "post") continue;
+      const board = boardOf(rec, price);
+      if (board) games.push(board);
     }
   }
   games.sort((a, b) => a.date.localeCompare(b.date));
   await mkdir(join(OUT, KEY), { recursive: true });
   await writeFile(join(OUT, KEY, "upcoming.json"), JSON.stringify(games));
-  console.log(`${KEY}: ${games.length} upcoming games with prop lines${price.size ? `, ${filled} priced from saved DraftKings pulls` : ""}`);
+  console.log(`${KEY}: ${games.length} upcoming games with prop lines${price.size ? `, ${filled} priced from saved DraftKings pulls` : ""}${CLOSED.has(KEY) ? `, ${closed} closing boards written` : ""}`);
 }
 
 main().catch((e) => {

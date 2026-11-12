@@ -426,12 +426,25 @@ export function GamePropLines({
   game,
   title,
   sub,
+  results,
+  lineLabel,
 }: {
   league: PropLeague;
   game: UpcomingPropGame;
   title: string;
   sub?: string;
+  /**
+   * Finished games: what each player did, keyed "player|market". Adds a Result column, and the lines
+   * are read as the closing lines.
+   */
+  results?: Map<string, number | null>;
+  /** Header for the line column (default: "Close" with results, else "Line"). */
+  lineLabel?: string;
 }) {
+  const graded = results !== undefined;
+  /** Results against the closing board (not a history-only game shown at its opening line). */
+  const closing = graded && lineLabel === undefined;
+  const cols = graded ? 8 : 7;
   const [openKey, setOpenKey] = useState<string | null>(null);
   // the ladder spans the visible width of the (horizontally scrolling) table, not the whole table
   const wrap = useRef<HTMLDivElement>(null);
@@ -473,6 +486,7 @@ export function GamePropLines({
         }
       />
       {sub ? <p className="px-4 pt-3 font-mono text-[10px] text-faint">{sub}</p> : null}
+      {graded ? <OverUnderCount rows={rows} results={results} /> : null}
       <div className="flex gap-2 overflow-x-auto px-4 pt-3">
         {["All", game.away.abbr, game.home.abbr].map((t) => (
           <button
@@ -514,11 +528,14 @@ export function GamePropLines({
             <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
               <th className="px-4 py-2 font-normal">Player</th>
               <th className="px-2 py-2 font-normal">Prop</th>
-              <th className="px-2 py-2 text-right font-normal">Line</th>
+              <th className="px-2 py-2 text-right font-normal">
+                {lineLabel ?? (graded ? "Close" : "Line")}
+              </th>
               <th className="px-2 py-2 text-right font-normal">Opened</th>
               <th className="px-2 py-2 text-right font-normal">Move</th>
               <th className="px-2 py-2 text-right font-normal">Over</th>
-              <th className="px-4 py-2 text-right font-normal">Under</th>
+              <th className={`${graded ? "px-2" : "px-4"} py-2 text-right font-normal`}>Under</th>
+              {graded ? <th className="px-4 py-2 text-right font-normal">Result</th> : null}
             </tr>
           </thead>
           <tbody className="divide-y divide-line/5">
@@ -564,13 +581,20 @@ export function GamePropLines({
                     <td className="px-2 py-2 text-right font-mono text-xs tabular-nums text-mute">
                       {american(r[4])}
                     </td>
-                    <td className="px-4 py-2 text-right font-mono text-xs tabular-nums text-mute">
+                    <td
+                      className={`${graded ? "px-2" : "px-4"} py-2 text-right font-mono text-xs tabular-nums text-mute`}
+                    >
                       {american(r[5])}
                     </td>
+                    {graded ? (
+                      <td className="px-4 py-2 text-right">
+                        <Outcome line={r[3]} actual={results.get(`${r[0]}|${r[2]}`)} />
+                      </td>
+                    ) : null}
                   </tr>
                   {isOpen ? (
                     <tr>
-                      <td colSpan={7} className="px-0 pb-2 pt-0">
+                      <td colSpan={cols} className="px-0 pb-2 pt-0">
                         <PropLadder
                           line={r[3]}
                           over={r[4]}
@@ -586,7 +610,7 @@ export function GamePropLines({
             })}
             {!rows.length ? (
               <tr>
-                <td colSpan={7} className="px-4 py-6 text-center font-mono text-xs text-mute">
+                <td colSpan={cols} className="px-4 py-6 text-center font-mono text-xs text-mute">
                   No props match.
                 </td>
               </tr>
@@ -595,10 +619,61 @@ export function GamePropLines({
         </table>
       </div>
       <p className="px-4 py-3 font-mono text-[10px] text-faint">
-        DraftKings via ESPN{game.at ? `, as of ${kickoff(game.at)}` : ""}. Move is the change since
-        the line opened ("held" = no move). "—" for prices means no price was saved for that line.
+        DraftKings via ESPN{game.at ? `, as of ${kickoff(game.at)}` : ""}
+        {closing ? " (the last lines before kickoff)" : ""}. Move is the change since the line
+        opened ("held" = no move). "—" for prices means no price was saved for that line.
+        {graded
+          ? ` Result: what the player did against the ${closing ? "closing" : "listed"} line; results fill in a few hours after the game.`
+          : ""}
       </p>
     </Panel>
+  );
+}
+
+/** A finished prop: the player's number and whether it went over or under the closing line. */
+function Outcome({ line, actual }: { line: number; actual: number | null | undefined }) {
+  if (actual == null) return <span className="font-mono text-[10px] text-faint">—</span>;
+  const res = actual > line ? "over" : actual < line ? "under" : "push";
+  const cls =
+    res === "over"
+      ? "bg-win/10 text-win ring-win/25"
+      : res === "under"
+        ? "bg-loss/10 text-loss ring-loss/25"
+        : "bg-panel2 text-mute ring-line/10";
+  return (
+    <span className="inline-flex items-center justify-end gap-2">
+      <span className="font-mono text-xs font-semibold tabular-nums">{actual}</span>
+      <span
+        className={`inline-block w-14 rounded px-1.5 py-0.5 text-center font-mono text-[10px] font-bold uppercase tracking-wider ring-1 ${cls}`}
+      >
+        {res}
+      </span>
+    </span>
+  );
+}
+
+/** Overs vs unders among the props shown, against the closing line. */
+function OverUnderCount({
+  rows,
+  results,
+}: {
+  rows: UpcomingPropGame["props"];
+  results: Map<string, number | null>;
+}) {
+  let over = 0;
+  let under = 0;
+  for (const r of rows) {
+    const a = results.get(`${r[0]}|${r[2]}`);
+    if (a == null) continue;
+    if (a > r[3]) over += 1;
+    else if (a < r[3]) under += 1;
+  }
+  if (!over && !under) return null;
+  return (
+    <p className="px-4 pt-2 font-mono text-[11px] text-mute">
+      <span className="text-win">{over} over</span> ·{" "}
+      <span className="text-loss">{under} under</span> the line
+    </p>
   );
 }
 
