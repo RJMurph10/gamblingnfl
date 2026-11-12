@@ -2,9 +2,9 @@ import { describe, expect, it } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
 import type { Game } from "@/data/shared/games";
 import type { Team } from "@/data/shared/teams";
-import { findPropGame } from "@/components/shared/GamePropsTab";
+import { findPropGame, historyKey, resultsOf } from "@/components/shared/GamePropsTab";
 import { GamePropLines } from "@/components/shared/PropHistory";
-import type { UpcomingPropGame } from "@/lib/shared/prop-history.server";
+import type { PropHistoryGame, UpcomingPropGame } from "@/lib/shared/prop-history.server";
 
 const board: UpcomingPropGame = {
   id: "401773100",
@@ -55,5 +55,39 @@ describe("NFL game page props tab", () => {
     expect(screen.getByText(/Jayden Daniels/)).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: /^Rec yds$/i }));
     expect(screen.getAllByRole("row")).toHaveLength(2); // Diggs only
+  });
+});
+
+describe("finished games", () => {
+  it("finds the prop-history day and season like the history builder (US date, NFL season year)", () => {
+    expect(historyKey("2026-11-10T01:15:00Z")).toEqual({ season: "2026", day: "2026-11-09" });
+    expect(historyKey("2027-01-04T18:00:00Z")).toEqual({ season: "2026", day: "2027-01-04" });
+    expect(historyKey("2026-09-10T00:20:00Z")).toEqual({ season: "2026", day: "2026-09-09" });
+  });
+
+  it("shows the closing line, the player's number and over/under", () => {
+    const past = {
+      id: board.id,
+      date: board.date,
+      name: board.name,
+      away: { abbr: "WSH", name: "Washington Commanders", score: 17 },
+      home: { abbr: "NYG", name: "New York Giants", score: 20 },
+      props: [
+        ["Cam Skattebo", "NYG", "Carries", 13.5, null, null, 18],
+        ["Jayden Daniels", "WSH", "Pass yds", 212.5, null, null, 188],
+        ["Stefon Diggs", "WSH", "Rec yds", 46.5, null, null, 39.5],
+      ],
+    } as PropHistoryGame;
+    const results = resultsOf(past);
+    render(<GamePropLines league="nfl" game={board} title="Player props" results={results} />);
+    expect(screen.getByText("Close")).toBeTruthy();
+    expect(screen.getByText("Result")).toBeTruthy();
+    const row = (name: string) => screen.getByText(new RegExp(name)).closest("tr")!;
+    expect(row("Cam Skattebo").textContent).toMatch(/18over/i); // 18 carries vs 15.5
+    expect(row("Jayden Daniels").textContent).toMatch(/188under/i);
+    expect(row("Stefon Diggs").textContent).toMatch(/39.5push/i); // 39.5 vs the 39.5 close
+    expect(row("Malik Nabers").textContent).toMatch(/—$/); // no result yet
+    expect(screen.getByText(/1 over/)).toBeTruthy();
+    expect(screen.getByText(/1 under/)).toBeTruthy();
   });
 });
