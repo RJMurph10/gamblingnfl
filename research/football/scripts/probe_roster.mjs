@@ -1,15 +1,12 @@
-// probe: ESPN's status for the Tue Nov 10 MAC games, by week and by date
-for (const url of [
-  "https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?groups=80&dates=20261110",
-  "https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?groups=80&week=11&dates=2026&seasontype=2&limit=400",
-  "https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?groups=80&week=12&dates=2026&seasontype=2&limit=400",
-]) {
-  const d = await (await fetch(url)).json();
-  console.log("URL", url.split("?")[1], "events", (d.events ?? []).length, "week", d.week?.number);
-  for (const e of d.events ?? [])
-    if (/Akron|Bowling|Miami \(OH\)|RedHawks|Zips|Falcons/.test(e.name))
-      console.log("  ", e.id, e.date, e.shortName, e.status?.type?.name, e.status?.type?.state, e.week?.number ?? "");
+// probe: does ESPN carry DraftKings player props for men's college basketball games?
+const sb = await (await fetch("https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/scoreboard?dates=20261112&groups=50&limit=300")).json();
+const ev = (sb.events ?? []).filter((e) => e.competitions?.[0]?.odds?.length);
+console.log("games", (sb.events ?? []).length, "with odds", ev.length);
+let withProps = 0;
+for (const e of ev.slice(0, 40)) {
+  const r = await fetch(`https://sports.core.api.espn.com/v2/sports/basketball/leagues/mens-college-basketball/events/${e.id}/competitions/${e.id}/odds/100/propBets?limit=50`);
+  const j = r.ok ? await r.json() : null;
+  const n = j?.count ?? (j?.items?.length ?? 0);
+  if (n) { withProps++; console.log("  props:", e.shortName, n, (j.items?.[0]?.type?.name ?? "")); }
 }
-const cal = await (await fetch("https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?groups=80")).json();
-const reg = (cal.leagues?.[0]?.calendar ?? []).find((c) => c.value === "2");
-console.log("calendar weeks:", JSON.stringify((reg?.entries ?? []).filter((w) => /1[0-3]/.test(w.value)).map((w) => [w.value, w.startDate, w.endDate])));
+console.log("checked", Math.min(40, ev.length), "games with DraftKings props:", withProps);
