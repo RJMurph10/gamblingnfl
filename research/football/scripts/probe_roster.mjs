@@ -2,11 +2,10 @@
 const H = { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/124", Accept: "application/json", Referer: "https://www.espn.com/" };
 const get = async (u) => { try { const r = await fetch(u, { headers: H }); return r.ok ? r.json() : { status: r.status }; } catch (e) { return { err: String(e) }; } };
 const games = [];
-for (let t = Date.UTC(2025, 5, 1); t <= Date.UTC(2025, 8, 30); t += 7 * 86400000) {
-  const a = new Date(t).toISOString().slice(0, 10).replace(/-/g, "");
-  const b = new Date(t + 6 * 86400000).toISOString().slice(0, 10).replace(/-/g, "");
-  const sb = await get(`https://site.api.espn.com/apis/site/v2/sports/lacrosse/pll/scoreboard?dates=${a}-${b}`);
-  for (const e of sb.events ?? []) games.push(e);
+for (let t = Date.UTC(2025, 4, 25); t <= Date.UTC(2025, 8, 25); t += 86400000) {
+  const d = new Date(t).toISOString().slice(0, 10).replace(/-/g, "");
+  const sb = await get(`https://site.api.espn.com/apis/site/v2/sports/lacrosse/pll/scoreboard?dates=${d}`);
+  for (const e of sb.events ?? []) if (!games.some((g) => g.id === e.id)) games.push(e);
 }
 console.log("PLL 2025 games", games.length);
 const pick = games.filter((e) => /outlaws/i.test(e.name) && /atlas/i.test(e.name));
