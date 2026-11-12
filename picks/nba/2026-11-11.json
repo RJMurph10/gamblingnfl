@@ -16,7 +16,12 @@
    "firstSeen": "2026-11-11T02:18:11.784Z",
    "latest": -2.5,
    "latestAt": "2026-11-11T12:13:48.507Z",
-   "alerted": false
+   "alerted": false,
+   "score": [
+    101,
+    114
+   ],
+   "close": -3.5
   },
   {
    "id": "401909968-spread",
@@ -32,7 +37,12 @@
    "firstSeen": "2026-11-11T12:13:48.507Z",
    "latest": 5.5,
    "latestAt": "2026-11-11T21:35:27.251Z",
-   "alerted": false
+   "alerted": false,
+   "score": [
+    98,
+    93
+   ],
+   "close": 4.5
   },
   {
    "id": "401909969-spread",

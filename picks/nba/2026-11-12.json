@@ -1,5 +1,54 @@
 {
  "day": "2026-11-12",
- "updated": "2026-11-11T21:35:27.251Z",
- "picks": []
+ "updated": "2026-11-12T03:25:11.348Z",
+ "picks": [
+  {
+   "id": "401909977-spread",
+   "game": "DET @ WSH",
+   "tip": "2026-11-13T00:00Z",
+   "market": "spread",
+   "pick": "DET -9.5",
+   "line": 9.5,
+   "open": 9.5,
+   "model": -11.4,
+   "edge": 1.9,
+   "best": false,
+   "firstSeen": "2026-11-12T03:25:11.348Z",
+   "latest": 9.5,
+   "latestAt": "2026-11-12T03:25:11.348Z",
+   "alerted": false
+  },
+  {
+   "id": "401909978-spread",
+   "game": "DAL @ MIN",
+   "tip": "2026-11-13T01:00Z",
+   "market": "spread",
+   "pick": "MIN -5.5",
+   "line": -5.5,
+   "open": -4.5,
+   "model": 8.9,
+   "edge": 3.4,
+   "best": true,
+   "firstSeen": "2026-11-12T03:25:11.348Z",
+   "latest": -5.5,
+   "latestAt": "2026-11-12T03:25:11.348Z",
+   "alerted": false
+  },
+  {
+   "id": "401909979-spread",
+   "game": "CHA @ PHX",
+   "tip": "2026-11-13T02:00Z",
+   "market": "spread",
+   "pick": "CHA +7.5",
+   "line": -7.5,
+   "open": -7.5,
+   "model": 5.5,
+   "edge": 2,
+   "best": false,
+   "firstSeen": "2026-11-12T03:25:11.348Z",
+   "latest": -7.5,
+   "latestAt": "2026-11-12T03:25:11.348Z",
+   "alerted": false
+  }
+ ]
 }
