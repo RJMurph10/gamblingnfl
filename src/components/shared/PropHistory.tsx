@@ -444,7 +444,9 @@ export function GamePropLines({
   const graded = results !== undefined;
   /** Results against the closing board (not a history-only game shown at its opening line). */
   const closing = graded && lineLabel === undefined;
-  const cols = graded ? 8 : 7;
+  /** Games shown from the prop history alone have no opening line: drop Opened and Move then. */
+  const hasOpen = game.props.some((p) => p[6] != null);
+  const cols = (graded ? 8 : 7) - (hasOpen ? 0 : 2);
   const [openKey, setOpenKey] = useState<string | null>(null);
   // the ladder spans the visible width of the (horizontally scrolling) table, not the whole table
   const wrap = useRef<HTMLDivElement>(null);
@@ -531,8 +533,12 @@ export function GamePropLines({
               <th className="px-2 py-2 text-right font-normal">
                 {lineLabel ?? (graded ? "Close" : "Line")}
               </th>
-              <th className="px-2 py-2 text-right font-normal">Opened</th>
-              <th className="px-2 py-2 text-right font-normal">Move</th>
+              {hasOpen ? (
+                <>
+                  <th className="px-2 py-2 text-right font-normal">Opened</th>
+                  <th className="px-2 py-2 text-right font-normal">Move</th>
+                </>
+              ) : null}
               <th className="px-2 py-2 text-right font-normal">Over</th>
               <th className={`${graded ? "px-2" : "px-4"} py-2 text-right font-normal`}>Under</th>
               {graded ? <th className="px-4 py-2 text-right font-normal">Result</th> : null}
@@ -572,12 +578,16 @@ export function GamePropLines({
                     <td className="px-2 py-2 text-right font-mono text-xs font-semibold tabular-nums">
                       {r[3]}
                     </td>
-                    <td className="px-2 py-2 text-right font-mono text-xs tabular-nums text-mute">
-                      {r[6] ?? "—"}
-                    </td>
-                    <td className="px-2 py-2 text-right">
-                      <MovePill move={move} />
-                    </td>
+                    {hasOpen ? (
+                      <>
+                        <td className="px-2 py-2 text-right font-mono text-xs tabular-nums text-mute">
+                          {r[6] ?? "—"}
+                        </td>
+                        <td className="px-2 py-2 text-right">
+                          <MovePill move={move} />
+                        </td>
+                      </>
+                    ) : null}
                     <td className="px-2 py-2 text-right font-mono text-xs tabular-nums text-mute">
                       {american(r[4])}
                     </td>
@@ -620,8 +630,9 @@ export function GamePropLines({
       </div>
       <p className="px-4 py-3 font-mono text-[10px] text-faint">
         DraftKings via ESPN{game.at ? `, as of ${kickoff(game.at)}` : ""}
-        {closing ? " (the last lines before kickoff)" : ""}. Move is the change since the line
-        opened ("held" = no move). "—" for prices means no price was saved for that line.
+        {closing ? " (the last lines before kickoff)" : ""}.{" "}
+        {hasOpen ? 'Move is the change since the line opened ("held" = no move). ' : ""}"—" for
+        prices means no price was saved for that line.
         {graded
           ? ` Result: what the player did against the ${closing ? "closing" : "listed"} line; results fill in a few hours after the game.`
           : ""}
