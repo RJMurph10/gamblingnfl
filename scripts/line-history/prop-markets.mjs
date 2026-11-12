@@ -259,16 +259,18 @@ export function gameEvents(summary, league, box = {}) {
     const seen = new Set();
     for (const p of plays) {
       const text = String(p.text ?? "");
-      if (!/\b(homered|tripled|doubled|singled|stole)\b/i.test(text)) continue;
+      if (!/\b(homered|tripled|doubled|singled|single|double|triple|stole)\b/i.test(text)) continue;
       // the same result can be repeated across a plate appearance's play items
       const key = `${p.atBatId ?? p.period?.number ?? ""}|${text}`;
       if (seen.has(key)) continue;
       seen.add(key);
       const batter = pid(p, "batter");
       if (/\bhomered\b/i.test(text)) fhr ??= batter;
-      else if (/\btripled\b/i.test(text)) add(batter, "3B");
-      else if (/\bdoubled\b/i.test(text)) add(batter, "2B");
-      else if (/\bsingled\b/i.test(text)) add(batter, "1B");
+      // "doubled to left", "reached on infield single", "ground rule double"
+      else if (/\btripled\b|\breached on (?:an? )?(?:\w+ )?triple\b/i.test(text)) add(batter, "3B");
+      else if (/\bdoubled\b|\bground[- ]rule double\b|\breached on (?:an? )?(?:\w+ )?double\b/i.test(text))
+        add(batter, "2B");
+      else if (/\bsingled\b|\breached on (?:an? )?(?:\w+ )?single\b/i.test(text)) add(batter, "1B");
       for (const m of text.matchAll(/([A-Z][\w'.-]+(?: [A-Z][\w'.-]+)*) stole (?:second|third|home)/g))
         add(byLast.get(lastName(m[1])) ?? null, "SB");
     }
