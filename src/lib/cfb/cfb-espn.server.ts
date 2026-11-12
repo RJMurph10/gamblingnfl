@@ -155,7 +155,10 @@ export async function fetchCfbSchedule(): Promise<Game[]> {
         `cfb-schedule-week-${w.number}`,
         async () => {
           try {
-            const data = await fetchJson(weekScoreboardUrl("cfb", w.number));
+            // Weeks still being played get a minute-stamped URL so no cache in between (ESPN's or the
+            // host's) can hand back a copy from before games finished.
+            const url = weekScoreboardUrl("cfb", w.number);
+            const data = await fetchJson(done ? url : `${url}&_=${Math.floor(Date.now() / MINUTE)}`);
             const weekGames = (data?.events ?? [])
               .map((e: any) => mapCollegeEvent(e, w.number, fbsIds))
               .filter((g: Game | null): g is Game => g !== null);

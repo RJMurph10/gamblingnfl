@@ -138,7 +138,13 @@ const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "
 // One entry per calendar day, covering the next 7 days only, so a weekday never repeats.
 function buildDays(all: Game[]): GameDay[] {
   const upcoming = all
-    .filter((g) => g.status === "scheduled" && g.kickoffIso)
+    // a feed can lag on a game's status: one that kicked off 5+ hours ago is never "upcoming"
+    .filter(
+      (g) =>
+        g.status === "scheduled" &&
+        g.kickoffIso &&
+        Date.parse(g.kickoffIso) > Date.now() - 5 * 3_600_000,
+    )
     .sort((a, b) => new Date(a.kickoffIso!).getTime() - new Date(b.kickoffIso!).getTime());
   const days = new Map<string, GameDay>();
   let firstDay = 0;
