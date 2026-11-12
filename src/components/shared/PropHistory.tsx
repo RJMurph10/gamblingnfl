@@ -8,6 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { PageTitle, Panel, PanelHeader, TeamLogo } from "@/components/shared/booth";
 import { teamByAbbr } from "@/data/shared/teams";
 import { getPropHistory, getUpcomingProps } from "@/lib/shared/prop-history.functions";
+import { PropSpecials } from "@/components/shared/PropSpecials";
 import type {
   PropHistoryGame,
   PropHistoryRow,
@@ -313,6 +314,19 @@ function PastResults({ league, tabs }: { league: PropLeague; tabs: ReactNode }) 
           </p>
         </Panel>
       ) : null}
+      {game?.sp?.length ? (
+        <div className="mt-6">
+          <PropSpecials
+            key={`sp-${game.id}`}
+            league={league}
+            away={game.away.abbr}
+            home={game.home.abbr}
+            rows={game.sp.map((r) => [r[0], r[1], r[2], r[3], r[4]])}
+            results={new Map(game.sp.map((r) => [`${r[0]}|${r[2]}`, r[5]]))}
+            closing
+          />
+        </div>
+      ) : null}
     </>
   );
 }
@@ -396,7 +410,10 @@ function Upcoming({ league, tabs }: { league: PropLeague; tabs: ReactNode }) {
               <span className="text-faint">@</span>
               <PropTeam league={league} abbr={g.home.abbr} />
               <span className="ml-1 text-[10px] text-faint" suppressHydrationWarning>
-                {kickoff(g.date)} · {g.props.length} props
+                {kickoff(g.date)} ·{" "}
+                {g.props.length || !g.sp?.length
+                  ? `${g.props.length} props`
+                  : `${g.sp.length} specials`}
               </span>
             </button>
           ))}
@@ -407,13 +424,24 @@ function Upcoming({ league, tabs }: { league: PropLeague; tabs: ReactNode }) {
           ) : null}
         </div>
       </Panel>
-      {game ? (
+      {game?.props.length ? (
         <GamePropLines
           key={game.id}
           league={league}
           game={game}
           title={`${game.away.name} @ ${game.home.name}`}
         />
+      ) : null}
+      {game?.sp?.length ? (
+        <div className="mt-6">
+          <PropSpecials
+            key={`sp-${game.id}`}
+            league={league}
+            away={game.away.abbr}
+            home={game.home.abbr}
+            rows={game.sp}
+          />
+        </div>
       ) : null}
     </>
   );

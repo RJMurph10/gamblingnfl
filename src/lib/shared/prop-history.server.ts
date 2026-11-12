@@ -23,6 +23,15 @@ export type PropHistoryRow = [
   (1 | undefined)?,
 ];
 
+/**
+ * A yes-only bet (anytime goalscorer, double-double, first basket, first home run…):
+ * [player, team, bet, price, opening price]
+ */
+export type SpecialRow = [string, string, string, number, number | null];
+
+/** Did it win: 1 / 0, "void" (the player didn't play), null (can't tell from what ESPN saved). */
+export type SpecialResult = 1 | 0 | "void" | null;
+
 export interface PropHistoryGame {
   id: string;
   date: string;
@@ -30,6 +39,8 @@ export interface PropHistoryGame {
   away: { abbr: string; name: string; score: number | null };
   home: { abbr: string; name: string; score: number | null };
   props: PropHistoryRow[];
+  /** Yes-only bets at their closing price, with the result. */
+  sp?: [...SpecialRow, SpecialResult][];
 }
 
 export interface PropHistoryDay {
@@ -121,6 +132,8 @@ export interface UpcomingPropGame {
   away: { abbr: string; name: string };
   home: { abbr: string; name: string };
   props: UpcomingPropRow[];
+  /** Yes-only bets (anytime goalscorer, double-double, first basket…). */
+  sp?: SpecialRow[];
   /**
    * NFL: DraftKings' touchdown-scorer prices (from the SportsGameOdds pull):
    * [player, team abbr, anytime, first TD, 2+ TDs, last TD].

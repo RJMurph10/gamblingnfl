@@ -48,6 +48,11 @@ export const STATS = {
   receiving_receptions: "Receptions",
   "rushing+receiving_yards": "Rush+Rec yds",
   "passing+rushing_yards": "Pass+Rush yds",
+  // kickers and sacks (DraftKings prices sacks as over only); tackles aren't priced there
+  kicking_totalPoints: "Kicking pts",
+  fieldGoals_made: "FGs made",
+  extraPoints_kicksMade: "XPs made",
+  defense_sacks: "Sacks",
 };
 
 async function get(path) {

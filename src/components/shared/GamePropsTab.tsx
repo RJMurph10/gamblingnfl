@@ -5,12 +5,18 @@ import { isCollegeId, type Team } from "@/data/shared/teams";
 import { DraftKingsPropsBoard } from "@/components/shared/DraftKingsPropsBoard";
 import { GamePropLines } from "@/components/shared/PropHistory";
 import { TdScorers, tdName } from "@/components/shared/TdScorers";
+import { PropSpecials } from "@/components/shared/PropSpecials";
 import {
   getClosedProps,
   getPropHistory,
   getUpcomingProps,
 } from "@/lib/shared/prop-history.functions";
-import type { PropHistoryGame, UpcomingPropGame } from "@/lib/shared/prop-history.server";
+import type {
+  PropHistoryGame,
+  SpecialResult,
+  SpecialRow,
+  UpcomingPropGame,
+} from "@/lib/shared/prop-history.server";
 
 /** A game as the props files know it: ESPN event id, start time and the two teams' abbreviations. */
 export interface PropGameRef {
@@ -65,6 +71,13 @@ export function historyKey(startIso: string, league: "nfl" | "nba" | "nhl" | "ml
 export function resultsOf(game: PropHistoryGame | undefined) {
   const out = new Map<string, number | null | "dnp">();
   for (const r of game?.props ?? []) out.set(`${r[0]}|${r[2]}`, r[7] ? "dnp" : r[6]);
+  return out;
+}
+
+/** Each yes-only bet's result in a finished game, keyed "player|bet". */
+export function specialResultsOf(game: PropHistoryGame | undefined) {
+  const out = new Map<string, SpecialResult>();
+  for (const r of game?.sp ?? []) out.set(`${r[0]}|${r[2]}`, r[5]);
   return out;
 }
 
@@ -124,10 +137,19 @@ export function ClosedPropLines({
     [history.data, hk?.day, game],
   );
   const results = useMemo(() => resultsOf(past), [past]);
+  const spResults = useMemo(() => specialResultsOf(past), [past]);
 
   if (closed.isLoading || history.isLoading) return <Loading />;
+  const sp: SpecialRow[] | undefined =
+    closed.data?.sp ?? past?.sp?.map((r) => [r[0], r[1], r[2], r[3], r[4]] as SpecialRow);
+  const away = closed.data?.away.abbr ?? past?.away.abbr ?? game.away;
+  const home = closed.data?.home.abbr ?? past?.home.abbr ?? game.home;
+  const specials = sp?.length ? (
+    <PropSpecials league={league} away={away} home={home} rows={sp} results={spResults} closing />
+  ) : null;
+  let lines: React.ReactNode = null;
   if (closed.data?.props.length)
-    return (
+    lines = (
       <GamePropLines
         league={league}
         game={closed.data}
@@ -140,8 +162,8 @@ export function ClosedPropLines({
         results={results}
       />
     );
-  if (past?.props.length)
-    return (
+  else if (past?.props.length)
+    lines = (
       <GamePropLines
         league={league}
         game={fromHistory(past)}
@@ -151,7 +173,13 @@ export function ClosedPropLines({
         lineLabel="Line"
       />
     );
-  return <>{fallback}</>;
+  if (!lines && !specials) return <>{fallback}</>;
+  return (
+    <div className="space-y-6">
+      {lines}
+      {specials}
+    </div>
+  );
 }
 
 /**
@@ -175,14 +203,19 @@ export function UpcomingPropLines({
   });
   if (upcoming.isLoading) return <Loading />;
   const lines = upcoming.data ? findPropGame(upcoming.data, game) : undefined;
-  if (!lines?.props.length) return <>{fallback}</>;
+  if (!lines?.props.length && !lines?.sp?.length) return <>{fallback}</>;
   return (
-    <GamePropLines
-      league={league}
-      game={lines}
-      title="Player props"
-      sub="DraftKings lines · where each line opened · tap ▾ for alternate lines"
-    />
+    <div className="space-y-6">
+      {lines.props.length ? (
+        <GamePropLines
+          league={league}
+          game={lines}
+          title="Player props"
+          sub="DraftKings lines · where each line opened · tap ▾ for alternate lines"
+        />
+      ) : null}
+      <PropSpecials league={league} away={lines.away.abbr} home={lines.home.abbr} rows={lines.sp} />
+    </div>
   );
 }
 
