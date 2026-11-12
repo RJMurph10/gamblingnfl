@@ -1,0 +1,81 @@
+name: Game lines history (other leagues)
+# Saves ESPN's game lines (moneyline, spread, total; opening and closing) for leagues the site doesn't
+# keep lines for yet, to the lines-history branch: <league>/<season>.jsonl.gz. Run by hand; each run
+# re-exports the date range given (default: 2018 to today). Use whole seasons: a season's file is
+# replaced by what the run found.
+on:
+  workflow_dispatch:
+    inputs:
+      from:
+        description: First date (YYYY-MM-DD)
+        default: "2018-01-01"
+      to:
+        description: Last date (YYYY-MM-DD, blank = today)
+        default: ""
+permissions:
+  contents: write
+concurrency:
+  group: lines-history
+  cancel-in-progress: false
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    strategy:
+      fail-fast: false
+      max-parallel: 6
+      matrix:
+        include:
+          - { sport: soccer, league: eng.1 }
+          - { sport: soccer, league: esp.1 }
+          - { sport: soccer, league: ita.1 }
+          - { sport: soccer, league: ger.1 }
+          - { sport: soccer, league: fra.1 }
+          - { sport: soccer, league: uefa.champions }
+          - { sport: soccer, league: uefa.europa }
+          - { sport: soccer, league: mex.1 }
+          - { sport: soccer, league: usa.nwsl }
+          - { sport: baseball, league: college-baseball }
+          - { sport: football, league: ufl }
+          - { sport: mma, league: ufc }
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: scripts/lines
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Export
+        run: |
+          node scripts/lines/export-lines.mjs --sport ${{ matrix.sport }} --league ${{ matrix.league }} \
+            --from "${{ inputs.from || '2018-01-01' }}" --to "${{ inputs.to }}" --out out
+      - uses: actions/upload-artifact@v4
+        with:
+          name: lines-${{ matrix.league }}
+          path: out
+          retention-days: 3
+  publish:
+    needs: export
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: art
+      - name: Publish to lines-history
+        run: |
+          set -e
+          url="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+          if git ls-remote --exit-code --heads "$url" lines-history >/dev/null; then
+            git clone -q --depth 1 --branch lines-history "$url" dst
+          else
+            mkdir dst && cd dst && git init -q -b lines-history && git remote add origin "$url" && cd ..
+          fi
+          for d in art/*/; do cp -r "$d"* dst/; done
+          cd dst
+          git config user.name "line-history-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet && exit 0
+          git commit -q -m "game lines $(date -u +%Y-%m-%d)"
+          git push -q origin HEAD:lines-history
