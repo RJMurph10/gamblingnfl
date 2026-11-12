@@ -11,6 +11,7 @@ const MINUTE = 60_000;
 /** [player, team, market, line, over price, under price, actual] */
 export type PropLeague = "nba" | "nfl" | "nhl" | "mlb";
 
+/** [player, team, market, line, over, under, actual, dnp? (1 = didn't play: the bet is void)] */
 export type PropHistoryRow = [
   string,
   string,
@@ -19,6 +20,7 @@ export type PropHistoryRow = [
   number | null,
   number | null,
   number | null,
+  (1 | undefined)?,
 ];
 
 export interface PropHistoryGame {

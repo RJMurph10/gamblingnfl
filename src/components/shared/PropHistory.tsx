@@ -35,8 +35,9 @@ function dayLabel(day: string) {
   }).format(new Date(Date.UTC(y, m - 1, d, 12)));
 }
 
-function result(r: PropHistoryRow): "over" | "under" | "push" | null {
-  const [, , , line, , , actual] = r;
+function result(r: PropHistoryRow): "over" | "under" | "push" | "void" | null {
+  const [, , , line, , , actual, dnp] = r;
+  if (dnp) return "void";
   if (actual == null) return null;
   return actual > line ? "over" : actual < line ? "under" : "push";
 }
@@ -124,7 +125,7 @@ function PastResults({ league, tabs }: { league: PropLeague; tabs: ReactNode }) 
 
   const dayStats = useMemo(() => {
     const all = games.flatMap((g) => g.props);
-    const graded = all.filter((r) => result(r) && result(r) !== "push");
+    const graded = all.filter((r) => result(r) === "over" || result(r) === "under");
     const overs = graded.filter((r) => result(r) === "over").length;
     return { props: all.length, overPct: graded.length ? (100 * overs) / graded.length : null };
   }, [games]);
@@ -437,7 +438,7 @@ export function GamePropLines({
    * Finished games: what each player did, keyed "player|market". Adds a Result column, and the lines
    * are read as the closing lines.
    */
-  results?: Map<string, number | null>;
+  results?: Map<string, number | null | "dnp">;
   /** Header for the line column (default: "Close" with results, else "Line"). */
   lineLabel?: string;
 }) {
@@ -642,7 +643,16 @@ export function GamePropLines({
 }
 
 /** A finished prop: the player's number and whether it went over or under the closing line. */
-function Outcome({ line, actual }: { line: number; actual: number | null | undefined }) {
+function Outcome({ line, actual }: { line: number; actual: number | null | "dnp" | undefined }) {
+  if (actual === "dnp")
+    return (
+      <span
+        className="inline-block w-14 rounded bg-panel2 px-1.5 py-0.5 text-center font-mono text-[10px] font-bold uppercase tracking-wider text-faint ring-1 ring-line/10"
+        title="Didn't play: the bet is void"
+      >
+        void
+      </span>
+    );
   if (actual == null) return <span className="font-mono text-[10px] text-faint">—</span>;
   const res = actual > line ? "over" : actual < line ? "under" : "push";
   const cls =
@@ -669,13 +679,13 @@ function OverUnderCount({
   results,
 }: {
   rows: UpcomingPropGame["props"];
-  results: Map<string, number | null>;
+  results: Map<string, number | null | "dnp">;
 }) {
   let over = 0;
   let under = 0;
   for (const r of rows) {
     const a = results.get(`${r[0]}|${r[2]}`);
-    if (a == null) continue;
+    if (a == null || a === "dnp") continue;
     if (a > r[3]) over += 1;
     else if (a < r[3]) under += 1;
   }

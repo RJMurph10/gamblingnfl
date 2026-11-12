@@ -4,6 +4,7 @@
  * player's box score attached so every prop can be graded:
  *   <out>/<league>/<season>.jsonl.gz — one JSON line per game:
  *   { id, date, name, seasonType, away, home, final, books: { <id>: { name, rows } }, box: { athleteId: {...} },
+ *     roster: { athleteId: { n, tm, played } } (NFL: players with a prop line but no box-score line),
  *     ls: { away: [points per quarter / period / inning, then overtimes], home: [...] } }
  * Live-betting books ("Live Odds") are dropped: their last price is from during the game.
  *
@@ -87,6 +88,37 @@ function linescoresFrom(summary) {
   return out.home && out.away ? out : undefined;
 }
 
+/** Athlete ids that have a prop line in any book. */
+function propAthletes(books) {
+  const ids = new Set();
+  for (const b of Object.values(books)) for (const r of b.rows ?? []) if (r.a) ids.add(String(r.a));
+  return ids;
+}
+
+/**
+ * NFL: did players with a prop line but no box-score line play? ESPN's box score only lists players
+ * who recorded a stat, so a receiver who played without a catch is missing from it, the same as one
+ * who sat out. The game roster (core API) marks each player's didNotPlay. Returns
+ * { athleteId: { n, tm, played } } for the asked ids found on either roster.
+ */
+export async function rosterFor(id, ids, fetchJson = get) {
+  const out = {};
+  if (!ids.size) return out;
+  const base = `https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/events/${id}/competitions/${id}`;
+  const comp = await fetchJson(base);
+  for (const c of comp?.competitors ?? []) {
+    const tm = (await fetchJson(String(c.team?.$ref ?? "").replace("http://", "https://")))?.abbreviation ?? "";
+    const r = await fetchJson(`${base}/competitors/${c.id}/roster`);
+    for (const e of r?.entries ?? []) {
+      const aid = String(e.playerId ?? "");
+      if (!ids.has(aid)) continue;
+      const a = e.athlete?.$ref ? await fetchJson(String(e.athlete.$ref).replace("http://", "https://")) : null;
+      out[aid] = { n: a?.displayName ?? e.displayName ?? "", tm, played: !e.didNotPlay };
+    }
+  }
+  return out;
+}
+
 async function main() {
   const root = join(DATA, KEY);
   const seasons = (await readdir(root, { withFileTypes: true }).catch(() => []))
@@ -107,6 +139,13 @@ async function main() {
           const s = await get(
             `https://site.api.espn.com/apis/site/v2/sports/${sport}/${league}/summary?event=${rec.id}`,
           );
+          const box = boxFrom(s);
+          // NFL players with a line but no box-score line: did they play? (only for finished games)
+          let roster;
+          if (KEY === "nfl" && rec.final && Object.keys(box).length) {
+            const missing = new Set([...propAthletes(books)].filter((a) => !box[a]));
+            roster = await rosterFor(rec.id, missing).catch(() => undefined);
+          }
           return {
             id: rec.id,
             date: rec.date,
@@ -116,7 +155,8 @@ async function main() {
             home: rec.home,
             final: rec.final,
             books,
-            box: boxFrom(s),
+            box,
+            ...(roster && Object.keys(roster).length ? { roster } : {}),
             ls: linescoresFrom(s),
           };
         }),
@@ -133,7 +173,8 @@ async function main() {
   console.log(`${requests} requests`);
 }
 
-main().catch((e) => {
-  console.error(e);
-  process.exit(1);
-});
+if (process.argv[1]?.endsWith("build-props-history.mjs"))
+  main().catch((e) => {
+    console.error(e);
+    process.exit(1);
+  });
