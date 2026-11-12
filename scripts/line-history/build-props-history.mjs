@@ -5,7 +5,8 @@
  *   <out>/<league>/<season>.jsonl.gz — one JSON line per game:
  *   { id, date, name, seasonType, away, home, final, books: { <id>: { name, rows } }, box: { athleteId: {...} },
  *     roster: { athleteId: { n, tm, played } } (NFL: players with a prop line but no box-score line),
- *     ls: { away: [points per quarter / period / inning, then overtimes], home: [...] } }
+ *     ls: { away: [points per quarter / period / inning, then overtimes], home: [...] },
+ *     ev: play-by-play facts for the first / last scorer specials and MLB hit types (prop-markets.mjs) }
  * Live-betting books ("Live Odds") are dropped: their last price is from during the game.
  *
  *   node scripts/line-history/build-props-history.mjs --data line-history/data --out props-history --league nba
@@ -14,6 +15,7 @@ import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { gzipSync } from "node:zlib";
 import { LEAGUES } from "./snapshot.mjs";
+import { gameEvents } from "./prop-markets.mjs";
 
 const args = process.argv.slice(2);
 const opt = (n, d) => {
@@ -158,6 +160,7 @@ async function main() {
             box,
             ...(roster && Object.keys(roster).length ? { roster } : {}),
             ls: linescoresFrom(s),
+            ...(rec.final ? { ev: gameEvents(s, KEY, box) ?? undefined } : {}),
           };
         }),
       );

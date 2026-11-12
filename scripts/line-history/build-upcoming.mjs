@@ -3,13 +3,16 @@
  * The site's "Upcoming games" prop lines: from the hourly logger's game files (line-history branch),
  * every game that hasn't started, with each player's main line per market as of the newest snapshot
  * (closing → latest → opening), where it opened, and prices when posted.
- *   <out>/<league>/upcoming.json  [{ id, date, name, away, home, at, props: [[player, team, market, line, over, under, opened]] }]
+ *   <out>/<league>/upcoming.json  [{ id, date, name, away, home, at,
+ *     props: [[player, team, market, line, over, under, opened, alternate overs?]],
+ *     sp?: [[player, team, bet, price, opening price]] }]   (sp: yes-only bets, see prop-markets.mjs)
  *
  *   node scripts/line-history/build-upcoming.mjs --data data --out props-site --league nba
  */
 import { mkdir, readdir, readFile, stat, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { loadPrices } from "./odds-api-prices.mjs";
+import { EXTRA_OU, milestonesOf, specialsOf } from "./prop-markets.mjs";
 
 const args = process.argv.slice(2);
 const opt = (n, d) => {
@@ -30,8 +33,8 @@ const AHEAD =(KEY === "nfl" || KEY === "cfb" ? 8 : 3) * 86_400_000;
 const CLOSED = new Set(["nfl", "nba", "nhl"]);
 const RECENT = 5 * 86_400_000;
 
-const LABELS =
-  {
+const LABELS = {
+  ...({
     nba: {
       "Total Points": "Points",
       "Total Rebounds": "Rebounds",
@@ -79,7 +82,9 @@ const LABELS =
     "Total Hits Allowed": "Hits allowed",
     "Total Outs Recorded": "Outs recorded",
   },
-}[KEY] ?? {};
+}[KEY] ?? {}),
+  ...(EXTRA_OU[KEY] ?? {}),
+};
 
 const imp = (o) => (o < 0 ? -o / (-o + 100) : 100 / (o + 100));
 
@@ -144,6 +149,7 @@ function boardOf(rec, price) {
   const snap = rec.props?.close ?? rec.props?.latest ?? rec.props?.open;
   if (!snap?.rows?.length) return null;
   const names = rec.names ?? {};
+  const milestones = milestonesOf(snap.rows, KEY);
   const props = [];
   for (const l of mainLines(snap.rows)) {
     const who = names[l.a];
@@ -158,9 +164,20 @@ function boardOf(rec, price) {
       else if (mn) [line, o, u] = [mn[0], mn[1], mn[2]];
       if (p || mn) filled += 1;
     }
-    const ladder = price.size ? price.ladder(rec.home?.name, rec.date, who[0], LABELS[l.t]) : null;
-    props.push([who[0], who[1], LABELS[l.t], line, o, u, l.opened, ...(ladder ? [ladder] : [])]);
+    // alternate overs: ESPN's milestone ("X+") rungs plus DraftKings' ladder from the saved pulls,
+    // leaving out the main line itself
+    const rungs = new Map(milestones.get(`${l.a}|${LABELS[l.t]}`) ?? []);
+    for (const [ln, px] of (price.size ? price.ladder(rec.home?.name, rec.date, who[0], LABELS[l.t]) : null) ?? [])
+      rungs.set(ln, px);
+    rungs.delete(line);
+    const ladder = [...rungs].sort((x, y) => x[0] - y[0]);
+    props.push([who[0], who[1], LABELS[l.t], line, o, u, l.opened, ...(ladder.length ? [ladder] : [])]);
   }
+  // yes-only bets (anytime goalscorer, double-double, first basket…): [[player, team, bet, price, opened]]
+  const sp = specialsOf(snap.rows, KEY)
+    .filter(([a]) => names[a])
+    .map(([a, label, px, open]) => [names[a][0], names[a][1], label, px, open])
+    .sort((x, y) => x[1].localeCompare(y[1]) || x[2].localeCompare(y[2]) || x[3] - y[3]);
   // DraftKings' touchdown-scorer prices from the newest saved pull (NFL): [[player, team abbr, anytime,
   // first, 2+, last]]
   const td = price.td
@@ -168,7 +185,7 @@ function boardOf(rec, price) {
         .td(rec.home?.name, rec.date)
         ?.map(([n, side, ...px]) => [n, side === "home" ? (rec.home?.abbr ?? "") : side === "away" ? (rec.away?.abbr ?? "") : "", ...px])
     : null;
-  if (!props.length) return null;
+  if (!props.length && !sp.length) return null;
   props.sort(
     (x, y) => x[1].localeCompare(y[1]) || x[0].localeCompare(y[0]) || x[2].localeCompare(y[2]),
   );
@@ -181,6 +198,7 @@ function boardOf(rec, price) {
     home: { abbr: rec.home?.abbr ?? "", name: rec.home?.name ?? "" },
     props,
     ...(td?.length ? { td } : {}),
+    ...(sp.length ? { sp } : {}),
   };
 }
 

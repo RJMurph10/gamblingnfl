@@ -3,8 +3,11 @@
  * Small per-day files for the site's "Prop history" pages, built from the props-history branch:
  *   <out>/<league>/index.json               { seasons: { "2024-25": ["2024-10-22", ...] } }
  *   <out>/<league>/<season>/<YYYY-MM-DD>.json  [ game, ... ]
- * Each game: { id, date, name, away, home, final, props: [[player, team, market, line, over, under, actual, dnp?]] }
+ * Each game: { id, date, name, away, home, final, props: [[player, team, market, line, over, under, actual, dnp?]],
+ *   sp?: [[player, team, bet, price, opening price, won]] }
  * dnp = 1: the player didn't play (NFL game roster, NBA box-score DNP; the bet is void), actual null.
+ * sp: yes-only bets (anytime goalscorer, double-double, first basket…) at the last price ESPN kept;
+ * won = 1 / 0, "void" (didn't play), null (can't tell from what ESPN saved).
  * One row per player and market: the main line (the sportsbook's balanced over/under pair; for books
  * that send lines without prices, the line itself). Opening lines are used: ESPN's "current" line
  * kept moving during games for some books, so it isn't a reliable pregame close.
@@ -18,7 +21,13 @@ import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { gunzipSync } from "node:zlib";
 import { loadPrices } from "./odds-api-prices.mjs";
-import { replayRebStars, REB_STAR_EDGE, REB_STAR_MIN_GAMES, REB_STAR_WORST_PRICE } from "./nba-reb-stars.mjs";
+import {
+  replayRebStars,
+  REB_STAR_EDGE,
+  REB_STAR_MIN_GAMES,
+  REB_STAR_WORST_PRICE,
+} from "./nba-reb-stars.mjs";
+import { EXTRA_OU, milestonesOf, specialsOf } from "./prop-markets.mjs";
 
 const args = process.argv.slice(2);
 const opt = (n, d) => {
@@ -83,7 +92,8 @@ const NHL = {
   "Total Points": ["Points", (s) => sum(nhl(s, "G"), nhl(s, "A"))],
   "Total Goals": ["Goals", (s) => nhl(s, "G")],
   "Total Assists": ["Assists", (s) => nhl(s, "A")],
-  "Total Shots on Goal": ["Shots on goal", (s) => nhl(s, "SOG")],
+  // ESPN's box "SOG" column is always 0; "S" is shots on goal (missed shots are "SM")
+  "Total Shots on Goal": ["Shots on goal", (s) => nhl(s, "S") ?? nhl(s, "SOG")],
   "Total Hits": ["Hits", (s) => nhl(s, "HT")],
   "Total Blocked Shots": ["Blocked shots", (s) => nhl(s, "BS")],
   "Total Saves": ["Saves", (s) => nhl(s, "SV")],
@@ -102,14 +112,120 @@ const MLB = {
   "Total Home Runs Hit": ["Home runs", bat("HR")],
   "Total Runs Scored": ["Runs", bat("R")],
   "Total RBIs": ["RBIs", bat("RBI")],
-  "Total Hits + Runs + RBIs": ["Hits+Runs+RBIs", (s) => sum(bat("H")(s), bat("R")(s), bat("RBI")(s))],
+  "Total Hits + Runs + RBIs": [
+    "Hits+Runs+RBIs",
+    (s) => sum(bat("H")(s), bat("R")(s), bat("RBI")(s)),
+  ],
   "Total Strikeouts": ["Pitcher strikeouts", pit("K")],
   "Earned Runs Allowed": ["Earned runs allowed", pit("ER")],
   "Total Walks Allowed": ["Walks allowed", pit("BB")],
   "Total Hits Allowed": ["Hits allowed", pit("H")],
   "Total Outs Recorded": ["Outs recorded", (s) => (isPitcher(s) ? outs(s.IP) : null)],
 };
-const MARKETS = { nba: NBA, wnba: NBA, nfl: FB, cfb: FB, nhl: NHL, mlb: MLB }[KEY] ?? {};
+/**
+ * Graders for the extra over/unders in prop-markets.mjs, by site label. (s, { a, g }): the player's box
+ * line, their athlete id and the game (g.ev holds the play-by-play facts).
+ */
+const def = (k) => (s) => num(s[`defensive.${k}`]) ?? 0;
+/** A batter's hit types from the plays, only when they add up to the box score's hits. */
+const hitTypes = (s, { a, g }) => {
+  if (!g.ev?.bat || (isPitcher(s) && s.AB == null)) return null;
+  const b = g.ev.bat[a] ?? { "1B": 0, "2B": 0, "3B": 0, SB: 0 };
+  const hr = num(s.HR) ?? 0;
+  return b["1B"] + b["2B"] + b["3B"] + hr === num(s.H) ? { ...b, HR: hr } : null;
+};
+const EXTRA_GRADE = {
+  Tackles: def("SOLO"),
+  "Tackles+Ast": def("TOT"),
+  "Tackle ast": (s) => (num(s["defensive.TOT"]) ?? 0) - (num(s["defensive.SOLO"]) ?? 0),
+  Sacks: def("SACKS"),
+  "Kicking pts": (s) => num(s["kicking.PTS"]) ?? 0,
+  "FGs made": (s) => num(s["kicking.FG"]) ?? 0,
+  "XPs made": (s) => num(s["kicking.XP"]) ?? 0,
+  "Longest rec": (s) => num(s["receiving.LONG"]) ?? 0,
+  "Longest rush": (s) => num(s["rushing.LONG"]) ?? 0,
+  "Total bases": (s, c) => {
+    const h = hitTypes(s, c);
+    return h ? h["1B"] + 2 * h["2B"] + 3 * h["3B"] + 4 * h.HR : null;
+  },
+  Singles: (s, c) => hitTypes(s, c)?.["1B"] ?? null,
+  Doubles: (s, c) => hitTypes(s, c)?.["2B"] ?? null,
+  "Stolen bases": (s, { a, g }) =>
+    g.ev?.bat && !(isPitcher(s) && s.AB == null) ? (g.ev.bat[a]?.SB ?? 0) : null,
+  Walks: bat("BB"),
+  "Stl+Blk": (s) => sum(num(s.STL), num(s.BLK)),
+};
+const BASE = { nba: NBA, wnba: NBA, nfl: FB, cfb: FB, nhl: NHL, mlb: MLB }[KEY] ?? {};
+const MARKETS = { ...BASE };
+for (const [t, label] of Object.entries(EXTRA_OU[KEY] ?? {}))
+  if (EXTRA_GRADE[label]) MARKETS[t] = [label, EXTRA_GRADE[label]];
+
+/** Did a yes-only bet win? 1 / 0, "void" (didn't play), null (not enough saved to tell). */
+export function gradeSpecial(label, a, g) {
+  const bx = g.box?.[a];
+  if (!bx) return null;
+  if (bx.dnp) return "void";
+  const s = bx.s ?? {};
+  const ev = g.ev;
+  const first = (id) => (ev ? (id === a ? 1 : 0) : null);
+  const at = (n, k) => (n == null ? null : n >= k ? 1 : 0);
+  switch (label) {
+    case "Anytime goal":
+      return at(nhl(s, "G"), 1);
+    case "2+ goals":
+      return at(nhl(s, "G"), 2);
+    case "Hat trick":
+      return at(nhl(s, "G"), 3);
+    case "First goal":
+      return first(ev?.fg);
+    case "Last goal":
+      return first(ev?.lg);
+    case "First team goal":
+      return first(ev?.ftg?.[bx.tm]);
+    case "Double-double":
+    case "Triple-double": {
+      const v = [s.PTS, s.REB, s.AST, s.STL, s.BLK].map(num);
+      if (v.some((x) => x == null)) return null;
+      return at(v.filter((x) => x >= 10).length, label === "Double-double" ? 2 : 3);
+    }
+    case "First basket":
+      return first(ev?.fb);
+    case "First team basket":
+      return first(ev?.ftb?.[bx.tm]);
+    case "First home run":
+      return first(ev?.fhr);
+    case "Win (pitcher)":
+      return ev?.w ? (ev.w === a ? 1 : 0) : null;
+    default:
+      return null;
+  }
+}
+
+/** A game's yes-only bets: [[player, team, bet, price, opening price, won?]] for players on the box score. */
+function specialsBoard(g, graded) {
+  const rows = [];
+  for (const b of Object.values(g.books ?? {}))
+    for (const [a, label, price, open] of specialsOf(b.rows, KEY)) {
+      const bx = g.box?.[a];
+      if (!bx || rows.some((r) => r.a === a && r.label === label)) continue;
+      rows.push({
+        a,
+        label,
+        row: [bx.n, bx.tm, label, price, open, ...(graded ? [gradeSpecial(label, a, g)] : [])],
+      });
+    }
+  return rows
+    .map((r) => r.row)
+    .sort((x, y) => x[1].localeCompare(y[1]) || x[2].localeCompare(y[2]) || x[3] - y[3]);
+}
+
+/** Each player's milestone ladder ("15+ points" = over 14.5) from the most preferred book that has one. */
+function laddersOf(g) {
+  const out = new Map();
+  for (const b of Object.values(g.books ?? {}))
+    for (const [k, ladder] of milestonesOf(b.rows, KEY)) if (!out.has(k)) out.set(k, ladder);
+  return out;
+}
 /**
  * Leagues whose game pages read each finished game's closing board from here (the line logger saves
  * none for them): <out>/<league>/closed/<event id>.json, the same shape as build-upcoming.mjs writes.
@@ -133,14 +249,29 @@ export function closingBoard(g, openMain = mainLines(g.books ?? {})) {
       }),
     };
   const opened = new Map(openMain.map((p) => [`${p.a}|${p.t}`, p.line]));
+  const ladders = laddersOf(g);
   const props = [];
   for (const p of mainLines(books)) {
     const bx = g.box?.[p.a];
     if (!bx || bx.dnp) continue;
     const [label] = MARKETS[p.t];
-    props.push([bx.n, bx.tm, label, p.line, p.o, p.u, opened.get(`${p.a}|${p.t}`) ?? null]);
+    // milestone rungs other than the main line itself ("1+ hits" is the same bet as over 0.5)
+    const ladder = ladders.get(`${p.a}|${label}`)?.filter(([ln]) => ln !== p.line);
+    props.push([
+      bx.n,
+      bx.tm,
+      label,
+      p.line,
+      p.o,
+      p.u,
+      opened.get(`${p.a}|${p.t}`) ?? null,
+      ...(ladder?.length ? [ladder] : []),
+    ]);
   }
-  props.sort((x, y) => x[1].localeCompare(y[1]) || x[0].localeCompare(y[0]) || x[2].localeCompare(y[2]));
+  const sp = specialsBoard(g, false);
+  props.sort(
+    (x, y) => x[1].localeCompare(y[1]) || x[0].localeCompare(y[0]) || x[2].localeCompare(y[2]),
+  );
   return {
     id: g.id,
     date: g.date,
@@ -148,6 +279,7 @@ export function closingBoard(g, openMain = mainLines(g.books ?? {})) {
     away: { abbr: g.away?.abbr, name: g.away?.name },
     home: { abbr: g.home?.abbr, name: g.home?.name },
     props,
+    ...(sp.length ? { sp } : {}),
   };
 }
 
@@ -249,7 +381,9 @@ async function main() {
           date: g.date,
           name: g.name,
           box: g.box,
-          reb: main.filter((p) => p.t === "Total Rebounds").map((p) => ({ a: p.a, line: p.line, u: p.u })),
+          reb: main
+            .filter((p) => p.t === "Total Rebounds")
+            .map((p) => ({ a: p.a, line: p.line, u: p.u })),
         });
       }
       for (const p of main) {
@@ -278,12 +412,21 @@ async function main() {
           if (px) [o, u] = px;
           else if (mn) [line, o, u] = mn;
         }
-        props.push([bx.n, bx.tm, label, line, o, u, ro?.played ? 0 : stat(bx.s ?? {})]);
+        props.push([
+          bx.n,
+          bx.tm,
+          label,
+          line,
+          o,
+          u,
+          ro?.played ? 0 : stat(bx.s ?? {}, { a: p.a, g }),
+        ]);
       }
-      if (!props.length) continue;
+      const sp = specialsBoard(g, true);
+      if (!props.length && !sp.length) continue;
       if (CLOSED_FROM_HISTORY.has(KEY)) {
         const board = closingBoard(g, main);
-        if (board.props.length) {
+        if (board.props.length || board.sp) {
           await mkdir(join(OUT, KEY, "closed"), { recursive: true });
           await writeFile(join(OUT, KEY, "closed", `${g.id}.json`), JSON.stringify(board));
         }
@@ -300,6 +443,7 @@ async function main() {
         away: { abbr: g.away.abbr, name: g.away.name, score: g.final?.away ?? null },
         home: { abbr: g.home.abbr, name: g.home.name, score: g.final?.home ?? null },
         props,
+        ...(sp.length ? { sp } : {}),
       });
       byDay.set(day, list);
     }
@@ -326,7 +470,11 @@ async function main() {
         JSON.stringify({
           season,
           updated: new Date().toISOString(),
-          rule: { edge: REB_STAR_EDGE, minGames: REB_STAR_MIN_GAMES, worstPrice: REB_STAR_WORST_PRICE },
+          rule: {
+            edge: REB_STAR_EDGE,
+            minGames: REB_STAR_MIN_GAMES,
+            worstPrice: REB_STAR_WORST_PRICE,
+          },
           record: [w, l, picks.length - w - l, Math.round(units * 100) / 100],
           // [date, gameId, game, player, team, opening line, under price, projection, rebounds, result]
           picks,
@@ -334,7 +482,9 @@ async function main() {
           inputs,
         }),
       );
-      console.log(`nba ${season} ★ rebound unders: ${w}-${l} (${units.toFixed(1)}u), ${Object.keys(inputs).length} players`);
+      console.log(
+        `nba ${season} ★ rebound unders: ${w}-${l} (${units.toFixed(1)}u), ${Object.keys(inputs).length} players`,
+      );
     }
     console.log(`${KEY} ${season}: ${byDay.size} days, ${[...byDay.values()].flat().length} games`);
   }
