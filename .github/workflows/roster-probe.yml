@@ -1,0 +1,13 @@
+name: Roster probe (temporary)
+on:
+  push:
+    branches: [nfl-weather-probe]
+    paths: [research/football/scripts/probe_roster.mjs, .github/workflows/roster-probe.yml]
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: node research/football/scripts/probe_roster.mjs 401873051
