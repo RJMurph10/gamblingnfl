@@ -64,6 +64,7 @@ const wnbaNav = [
   { to: "/wnba", label: "Dashboard" },
   { to: "/wnba/teams", label: "Teams" },
   { to: "/wnba/games", label: "Games" },
+  { to: "/wnba/props", label: "Props" },
   { to: "/wnba/model", label: "Model" },
 ] as const;
 

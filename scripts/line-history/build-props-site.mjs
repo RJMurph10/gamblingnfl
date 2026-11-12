@@ -109,12 +109,12 @@ const MLB = {
   "Total Hits Allowed": ["Hits allowed", pit("H")],
   "Total Outs Recorded": ["Outs recorded", (s) => (isPitcher(s) ? outs(s.IP) : null)],
 };
-const MARKETS = { nba: NBA, nfl: FB, cfb: FB, nhl: NHL, mlb: MLB }[KEY] ?? {};
+const MARKETS = { nba: NBA, wnba: NBA, nfl: FB, cfb: FB, nhl: NHL, mlb: MLB }[KEY] ?? {};
 /**
  * Leagues whose game pages read each finished game's closing board from here (the line logger saves
  * none for them): <out>/<league>/closed/<event id>.json, the same shape as build-upcoming.mjs writes.
  */
-const CLOSED_FROM_HISTORY = new Set(["mlb"]);
+const CLOSED_FROM_HISTORY = new Set(["mlb", "wnba"]);
 
 /**
  * A finished game's closing board from ESPN's props history: each player's main line as ESPN last kept

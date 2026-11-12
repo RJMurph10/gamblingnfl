@@ -53,7 +53,7 @@ function seasonOf(iso) {
   const d = new Date(iso);
   const y = d.getUTCFullYear();
   const m = d.getUTCMonth() + 1;
-  if (KEY === "mlb") return String(y);
+  if (KEY === "mlb" || KEY === "wnba") return String(y);
   if (KEY === "nfl" || KEY === "cfb") return String(m <= 7 ? y - 1 : y);
   return m <= 7 ? `${y - 1}-${String(y).slice(2)}` : `${y}-${String(y + 1).slice(2)}`;
 }
