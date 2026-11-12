@@ -61,18 +61,22 @@ async function getJson(url, tries = 3) {
 
 const ymd = (t) => new Date(t).toISOString().slice(0, 10).replace(/-/g, "");
 
-/** Every scheduled game's start time from ESPN, a week at a time (longer ranges return 400). */
+/** Every scheduled game's start time from ESPN, one day at a time (date ranges return 400). */
 async function gameTimes(league, from, to) {
   const out = [];
-  for (let t = Date.parse(`${from}T00:00:00Z`); t <= Date.parse(`${to}T00:00:00Z`); t += 7 * DAY) {
-    const end = Math.min(t + 6 * DAY, Date.parse(`${to}T00:00:00Z`));
-    const { json } = await getJson(
-      `https://site.api.espn.com/apis/site/v2/sports/lacrosse/${league}/scoreboard?dates=${ymd(t)}-${ymd(end)}&limit=500`,
+  const days = [];
+  for (let t = Date.parse(`${from}T00:00:00Z`); t <= Date.parse(`${to}T00:00:00Z`); t += DAY) days.push(t);
+  for (let i = 0; i < days.length; i += 8) {
+    const got = await Promise.all(
+      days.slice(i, i + 8).map((t) =>
+        getJson(`https://site.api.espn.com/apis/site/v2/sports/lacrosse/${league}/scoreboard?dates=${ymd(t)}`),
+      ),
     );
-    for (const e of json?.events ?? []) {
-      const d = Date.parse(e.date);
-      if (Number.isFinite(d)) out.push(d);
-    }
+    for (const { json } of got)
+      for (const e of json?.events ?? []) {
+        const d = Date.parse(e.date);
+        if (Number.isFinite(d)) out.push(d);
+      }
   }
   return [...new Set(out)].sort((a, b) => a - b);
 }
