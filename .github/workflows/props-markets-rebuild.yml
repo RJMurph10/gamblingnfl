@@ -29,8 +29,9 @@ jobs:
           set -e
           url="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
           git clone -q --depth 1 --branch props-history "$url" ph
-          for x in mlb:2026 mlb:2025 mlb:2024 wnba:2025 nhl:2026-27 nhl:2025-26 nhl:2024-25 nhl:2023-24 nba:2026-27 nba:2025-26 nba:2024-25; do
-            node app/scripts/line-history/add-events.mjs --dir ph --league ${x%%:*} --season ${x#*:}
+          # run 2: NBA again for the first 3-pointer (the others already have their facts)
+          for x in nba:2026-27 nba:2025-26 nba:2024-25 wnba:2025; do
+            node app/scripts/line-history/add-events.mjs --dir ph --league ${x%%:*} --season ${x#*:} --force
           done
       - name: Publish
         run: |
