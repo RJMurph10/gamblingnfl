@@ -407,6 +407,8 @@ export interface NbaGameDetail {
   probabilities?: import("@/data/shared/games").GameProbabilityPoint[];
   injuries: { teamId: string; name: string; status: string; detail?: string }[];
   leaders: { teamId: string; category: string; name: string; value: string; playerId?: string }[];
+  /** ESPN's pregame Matchup Predictor: each team's win %, upcoming games only. */
+  predictor?: { away: number; home: number };
 }
 
 /* ---------- props ---------- */
