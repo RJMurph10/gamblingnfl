@@ -1,33 +1,27 @@
-// Temporary: which books ESPN still has player props from on dates our prop history is missing.
+// Temporary: (1) college basketball propBets 500s: smaller pages? (2) which 2025-26 NBA/NHL/NFL days still have DraftKings props.
 const H = { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/124", Accept: "application/json", Referer: "https://www.espn.com/" };
-const get = async (u) => { try { const r = await fetch(u, { headers: H }); return r.ok ? r.json() : { status: r.status }; } catch (e) { return { err: String(e) }; } };
-const SPORT = { mlb: "baseball/mlb", nhl: "hockey/nhl", nba: "basketball/nba", wnba: "basketball/wnba", nfl: "football/nfl", cfb: "football/college-football", cbb: "basketball/mens-college-basketball" };
-const CASES = [
-  ["mlb", "20240415"], ["mlb", "20240815"], ["mlb", "20240328"],
-  ["nhl", "20231205"], ["nhl", "20240110"], ["nhl", "20231115"],
-  ["wnba", "20240710"], ["wnba", "20240915"],
-  ["cfb", "20251115"], ["cfb", "20251206"], ["cfb", "20260101"],
-  ["nba", "20251215"], ["nba", "20260115"], ["nba", "20260310"],
-  ["nhl", "20260115"], ["nfl", "20251214"], ["nfl", "20260111"],
-  ["nfl", "20231015"], ["nfl", "20231210"], ["nba", "20231101"],
-  ["cbb", "20250115"], ["cbb", "20240320"],
-];
-for (const [lg, d] of CASES) {
-  const [sport, league] = SPORT[lg].split("/");
-  const q = lg === "cfb" ? "&groups=80" : lg === "cbb" ? "&groups=50" : "";
-  const sb = await get(`https://site.api.espn.com/apis/site/v2/sports/${sport}/${league}/scoreboard?dates=${d}${q}&limit=300`);
-  const evs = (sb.events ?? []).filter((e) => e.status?.type?.completed).slice(0, 3);
-  const out = [];
-  for (const e of evs) {
-    const core = `https://sports.core.api.espn.com/v2/sports/${sport}/leagues/${league}/events/${e.id}/competitions/${e.id}/odds`;
-    const odds = await get(core);
-    const pids = (odds.items ?? []).map((it) => String(it?.provider?.id ?? /\/odds\/(\d+)/.exec(it?.$ref ?? "")?.[1] ?? ""));
-    const counts = [];
-    for (const p of pids) {
-      const pb = await get(`${core}/${p}/propBets?limit=1000`);
-      counts.push(`${p}:${pb.count ?? pb.status ?? "?"}`);
-    }
-    out.push(`${e.id}[${counts.join(",")}]`);
+const get = async (u) => { try { const r = await fetch(u, { headers: H }); return r.ok ? r.json() : { status: r.status, body: (await r.text()).slice(0, 150) }; } catch (e) { return { err: String(e) }; } };
+const cb = (id) => `https://sports.core.api.espn.com/v2/sports/basketball/leagues/mens-college-basketball/events/${id}/competitions/${id}/odds`;
+for (const id of ["401725667", "401638582"]) {
+  for (const q of ["", "?limit=25", "?limit=100", "?limit=10&page=2", "?lang=en&region=us&limit=50"]) {
+    const r = await get(`${cb(id)}/58/propBets${q}`);
+    console.log("CBB", id, q || "(none)", r.count ?? r.status, r.pageCount ?? "", JSON.stringify(r.items?.[0] ?? r.body ?? r.err)?.slice(0, 300));
   }
-  console.log(`CASE ${lg} ${d} games=${(sb.events ?? []).length} ${out.join(" ")}`);
+  const o = await get(`${cb(id)}/58`);
+  console.log("CBB odds58 keys", id, Object.keys(o).join(","), JSON.stringify(o.propBets ?? null));
+}
+// day scan, one game per day
+const SP = { nba: "basketball/nba", nhl: "hockey/nhl", nfl: "football/nfl" };
+for (const lg of ["nba", "nhl", "nfl"]) {
+  const [s, l] = SP[lg].split("/");
+  const line = [];
+  for (let t = Date.UTC(2025, 10, 25); t <= Date.UTC(2026, 3, 10); t += 86400000 * 3) {
+    const d = new Date(t).toISOString().slice(0, 10).replace(/-/g, "");
+    const sb = await get(`https://site.api.espn.com/apis/site/v2/sports/${s}/${l}/scoreboard?dates=${d}`);
+    const e = (sb.events ?? []).find((x) => x.status?.type?.completed);
+    if (!e) continue;
+    const pb = await get(`https://sports.core.api.espn.com/v2/sports/${s}/leagues/${l}/events/${e.id}/competitions/${e.id}/odds/100/propBets?limit=1000`);
+    line.push(`${d.slice(4)}:${pb.count ?? pb.status}`);
+  }
+  console.log("SCAN", lg, line.join(" "));
 }
