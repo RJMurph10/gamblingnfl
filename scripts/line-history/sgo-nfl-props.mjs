@@ -6,7 +6,8 @@
  * graded history read both:
  *   <out>/<YYYY-MM-DDTHH>-sgo.json
  *   [{ home, away, commence, at, props: [[player, market, line, over, under]],
- *      alts: [[player, market, [[line, over price], ...]]] }]   (alts: BOOK's live alternate over lines)
+ *      alts: [[player, market, [[line, over price], ...]]],   (alts: BOOK's live alternate over lines)
+ *      td: [[player, home|away, anytime, first, 2+, last]] }]  (BOOK's touchdown-scorer prices)
  * Only games that haven't kicked off (live lines are skipped). Keeps --keep events in reserve for the
  * other SportsGameOdds pulls (NHL periods, college basketball).
  *
@@ -117,6 +118,39 @@ export function altsOf(e, book = BOOK) {
   return out;
 }
 
+/**
+ * BOOK's touchdown-scorer prices for one event: [[player, home|away, anytime, first TD, 2+ TDs, last TD]].
+ * SportsGameOdds: anytime = touchdowns yes, 2+ = touchdowns over 1.5, first / last = firstTouchdown /
+ * lastTouchdown yes (full game only).
+ */
+export function tdOf(e, book = BOOK) {
+  const rows = new Map();
+  for (const m of Object.values(e.odds ?? {})) {
+    if (!m?.playerID || m.periodID !== "game" || m.started) continue;
+    const b = m.byBookmaker?.[book];
+    if (!b || b.available === false) continue;
+    const price = num(b.odds);
+    if (price == null) continue;
+    let col = -1;
+    if (m.statID === "touchdowns" && m.betTypeID === "yn" && m.sideID === "yes") col = 2;
+    else if (m.statID === "firstTouchdown" && m.betTypeID === "yn" && m.sideID === "yes") col = 3;
+    else if (m.statID === "touchdowns" && m.betTypeID === "ou" && m.sideID === "over" && num(b.overUnder) === 1.5)
+      col = 4;
+    else if (m.statID === "lastTouchdown" && m.betTypeID === "yn" && m.sideID === "yes") col = 5;
+    if (col < 0) continue;
+    const p = e.players?.[m.playerID];
+    const name = p?.name ?? [p?.firstName, p?.lastName].filter(Boolean).join(" ");
+    if (!name) continue;
+    const side =
+      p?.teamID && p.teamID === e.teams?.home?.teamID ? "home" : p?.teamID === e.teams?.away?.teamID ? "away" : "";
+    const row = rows.get(m.playerID) ?? [name, side, null, null, null, null];
+    row[col] = price;
+    rows.set(m.playerID, row);
+  }
+  // most likely scorers first
+  return [...rows.values()].sort((a, b) => (a[2] ?? 99999) - (b[2] ?? 99999));
+}
+
 async function main() {
   if (!KEY) {
     console.log("SPORTSGAMEODDS_API_KEY is not set; nothing to do.");
@@ -161,13 +195,14 @@ async function main() {
         const name = (t) => t?.names?.long ?? t?.names?.medium ?? t?.teamID ?? "";
         const props = propsOf(e);
         const alts = altsOf(e);
+        const td = tdOf(e);
         const g = {
           home: name(e.teams?.home),
           away: name(e.teams?.away),
           commence: e.status?.startsAt,
         };
-        console.log(`${g.away} @ ${g.home}: ${props.length} priced lines, ${alts.length} ladders`);
-        if (props.length) games.push({ ...g, at: new Date().toISOString(), props, alts });
+        console.log(`${g.away} @ ${g.home}: ${props.length} priced lines, ${alts.length} ladders, ${td.length} TD scorers`);
+        if (props.length || td.length) games.push({ ...g, at: new Date().toISOString(), props, alts, td });
         const books = booksOf(e);
         if (books.length) lines.push({ ...g, books });
       }

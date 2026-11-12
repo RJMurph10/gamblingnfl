@@ -4,6 +4,7 @@ import type { Game } from "@/data/shared/games";
 import { isCollegeId, type Team } from "@/data/shared/teams";
 import { DraftKingsPropsBoard } from "@/components/shared/DraftKingsPropsBoard";
 import { GamePropLines } from "@/components/shared/PropHistory";
+import { TdScorers, tdName } from "@/components/shared/TdScorers";
 import {
   getClosedProps,
   getPropHistory,
@@ -206,18 +207,65 @@ export function GamePropsTab({ game, away, home }: { game: Game; away: Team; hom
   if (!nfl) return board;
   if (!before)
     return (
-      <ClosedPropLines league="nfl" game={ref} final={game.status === "final"} fallback={board} />
+      <div className="space-y-6">
+        <ClosedPropLines league="nfl" game={ref} final={game.status === "final"} fallback={board} />
+        <ClosedTdScorers game={game} id={ref.id} />
+      </div>
     );
   if (upcoming.isLoading) return <Loading />;
   const lines = upcoming.data ? findPropGame(upcoming.data, ref) : undefined;
-  if (lines?.props.length)
+  if (lines?.props.length || lines?.td?.length)
     return (
-      <GamePropLines
-        league="nfl"
-        game={lines}
-        title="Player props"
-        sub="DraftKings lines · where each line opened · tap ▾ for alternate lines"
-      />
+      <div className="space-y-6">
+        {lines.props.length ? (
+          <GamePropLines
+            league="nfl"
+            game={lines}
+            title="Player props"
+            sub="DraftKings lines · where each line opened · tap ▾ for alternate lines"
+          />
+        ) : null}
+        <TdScorers game={lines} />
+      </div>
     );
   return board;
+}
+
+/** Box-score stats that count toward a touchdown-scorer bet (passing TDs don't). */
+const SCORING_TDS = [
+  "rushingTouchdowns",
+  "receivingTouchdowns",
+  "kickReturnTouchdowns",
+  "puntReturnTouchdowns",
+];
+
+/**
+ * Touchdowns each player scored, from the box score's raw ESPN stats (rushing, receiving, kick and
+ * punt returns), summed across a player's lines (a back's rushing and receiving lines).
+ */
+export function touchdownsByPlayer(lines: { name: string; stats?: Record<string, string> }[]) {
+  const m = new Map<string, number>();
+  for (const l of lines) {
+    let n = 0;
+    for (const k of SCORING_TDS) n += Number(l.stats?.[k]) || 0;
+    const key = tdName(l.name);
+    m.set(key, (m.get(key) ?? 0) + n);
+  }
+  return m;
+}
+
+/** A started or finished NFL game's touchdown-scorer prices (last pull before kickoff) and who scored. */
+function ClosedTdScorers({ game, id }: { game: Game; id: string }) {
+  const closed = useQuery({
+    queryKey: ["closed-props", "nfl", id],
+    queryFn: () => getClosedProps({ data: { league: "nfl", id } }),
+    enabled: /^\d+$/.test(id),
+    staleTime: (q) => (q.state.data ? 30 * 60_000 : 60_000),
+  });
+  const touchdowns = useMemo(() => {
+    if (game.status !== "final") return undefined;
+    return touchdownsByPlayer(game.boxScore ?? []);
+  }, [game.status, game.boxScore]);
+  if (!closed.data?.td?.length) return null;
+  return <TdScorers game={closed.data} touchdowns={touchdowns} />;
 }

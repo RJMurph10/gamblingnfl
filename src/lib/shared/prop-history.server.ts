@@ -121,6 +121,11 @@ export interface UpcomingPropGame {
   away: { abbr: string; name: string };
   home: { abbr: string; name: string };
   props: UpcomingPropRow[];
+  /**
+   * NFL: DraftKings' touchdown-scorer prices (from the SportsGameOdds pull):
+   * [player, team abbr, anytime, first TD, 2+ TDs, last TD].
+   */
+  td?: [string, string, number | null, number | null, number | null, number | null][];
 }
 
 /**
