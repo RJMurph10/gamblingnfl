@@ -46,13 +46,13 @@ export function nflRef(game: Game, away: Team, home: Team): PropGameRef {
 
 /**
  * Where the prop history keeps a game: its day (US date, UTC−5) and season — the NFL season is the
- * year it starts ("2026"), the NBA's spans two years ("2026-27").
+ * year it starts ("2026"), the NBA's and NHL's span two years ("2026-27").
  */
-export function historyKey(startIso: string, league: "nfl" | "nba" = "nfl") {
+export function historyKey(startIso: string, league: "nfl" | "nba" | "nhl" = "nfl") {
   const t = Date.parse(startIso) - 5 * 3_600_000;
   const day = new Date(t).toISOString().slice(0, 10);
   const [y, m] = day.split("-").map(Number);
-  if (league === "nba") {
+  if (league === "nba" || league === "nhl") {
     const start = m >= 8 ? y : y - 1;
     return { season: `${start}-${String((start + 1) % 100).padStart(2, "0")}`, day };
   }
@@ -95,7 +95,7 @@ export function ClosedPropLines({
   final,
   fallback,
 }: {
-  league: "nfl" | "nba";
+  league: "nfl" | "nba" | "nhl";
   game: PropGameRef;
   final: boolean;
   fallback: React.ReactNode;
