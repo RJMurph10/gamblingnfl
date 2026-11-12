@@ -110,6 +110,46 @@ const MLB = {
   "Total Outs Recorded": ["Outs recorded", (s) => (isPitcher(s) ? outs(s.IP) : null)],
 };
 const MARKETS = { nba: NBA, nfl: FB, cfb: FB, nhl: NHL, mlb: MLB }[KEY] ?? {};
+/**
+ * Leagues whose game pages read each finished game's closing board from here (the line logger saves
+ * none for them): <out>/<league>/closed/<event id>.json, the same shape as build-upcoming.mjs writes.
+ */
+const CLOSED_FROM_HISTORY = new Set(["mlb"]);
+
+/**
+ * A finished game's closing board from ESPN's props history: each player's main line as ESPN last kept
+ * it (the close) with its prices, and where that market opened. Rows: [player, team, market, close,
+ * over, under, opened]. Players not on the box score are left out.
+ */
+export function closingBoard(g, openMain = mainLines(g.books ?? {})) {
+  const books = {};
+  for (const [pid, b] of Object.entries(g.books ?? {}))
+    books[pid] = {
+      ...b,
+      rows: b.rows.map((r) => {
+        const cur = r.cur ?? r.cl ?? r.op;
+        const px = r.px ? (r.px[0] ?? r.px[1]) : null;
+        return { ...r, op: cur, ...(r.px ? { px: [px, px] } : {}) };
+      }),
+    };
+  const opened = new Map(openMain.map((p) => [`${p.a}|${p.t}`, p.line]));
+  const props = [];
+  for (const p of mainLines(books)) {
+    const bx = g.box?.[p.a];
+    if (!bx || bx.dnp) continue;
+    const [label] = MARKETS[p.t];
+    props.push([bx.n, bx.tm, label, p.line, p.o, p.u, opened.get(`${p.a}|${p.t}`) ?? null]);
+  }
+  props.sort((x, y) => x[1].localeCompare(y[1]) || x[0].localeCompare(y[0]) || x[2].localeCompare(y[2]));
+  return {
+    id: g.id,
+    date: g.date,
+    name: g.name,
+    away: { abbr: g.away?.abbr, name: g.away?.name },
+    home: { abbr: g.home?.abbr, name: g.home?.name },
+    props,
+  };
+}
 
 const imp = (o) => (o < 0 ? -o / (-o + 100) : 100 / (o + 100));
 
@@ -241,6 +281,13 @@ async function main() {
         props.push([bx.n, bx.tm, label, line, o, u, ro?.played ? 0 : stat(bx.s ?? {})]);
       }
       if (!props.length) continue;
+      if (CLOSED_FROM_HISTORY.has(KEY)) {
+        const board = closingBoard(g, main);
+        if (board.props.length) {
+          await mkdir(join(OUT, KEY, "closed"), { recursive: true });
+          await writeFile(join(OUT, KEY, "closed", `${g.id}.json`), JSON.stringify(board));
+        }
+      }
       props.sort(
         (x, y) => x[1].localeCompare(y[1]) || x[0].localeCompare(y[0]) || x[2].localeCompare(y[2]),
       );

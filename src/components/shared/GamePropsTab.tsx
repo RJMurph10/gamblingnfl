@@ -46,9 +46,9 @@ export function nflRef(game: Game, away: Team, home: Team): PropGameRef {
 
 /**
  * Where the prop history keeps a game: its day (US date, UTC−5) and season — the NFL season is the
- * year it starts ("2026"), the NBA's and NHL's span two years ("2026-27").
+ * year it starts ("2026"), MLB's is its calendar year, the NBA's and NHL's span two years ("2026-27").
  */
-export function historyKey(startIso: string, league: "nfl" | "nba" | "nhl" = "nfl") {
+export function historyKey(startIso: string, league: "nfl" | "nba" | "nhl" | "mlb" = "nfl") {
   const t = Date.parse(startIso) - 5 * 3_600_000;
   const day = new Date(t).toISOString().slice(0, 10);
   const [y, m] = day.split("-").map(Number);
@@ -56,6 +56,7 @@ export function historyKey(startIso: string, league: "nfl" | "nba" | "nhl" = "nf
     const start = m >= 8 ? y : y - 1;
     return { season: `${start}-${String((start + 1) % 100).padStart(2, "0")}`, day };
   }
+  if (league === "mlb") return { season: String(y), day };
   return { season: String(m >= 3 ? y : y - 1), day };
 }
 
@@ -95,7 +96,7 @@ export function ClosedPropLines({
   final,
   fallback,
 }: {
-  league: "nfl" | "nba" | "nhl";
+  league: "nfl" | "nba" | "nhl" | "mlb";
   game: PropGameRef;
   final: boolean;
   fallback: React.ReactNode;
@@ -150,6 +151,38 @@ export function ClosedPropLines({
       />
     );
   return <>{fallback}</>;
+}
+
+/**
+ * An upcoming game's props: DraftKings' current lines with where each opened, from the saved board
+ * the Prop lines page uses. `fallback` when this game has no lines posted yet.
+ */
+export function UpcomingPropLines({
+  league,
+  game,
+  fallback,
+}: {
+  league: "nfl" | "nba" | "nhl" | "mlb";
+  game: PropGameRef;
+  fallback: React.ReactNode;
+}) {
+  const upcoming = useQuery({
+    queryKey: ["upcoming-props", league],
+    queryFn: () => getUpcomingProps({ data: { league } }),
+    staleTime: 5 * 60_000,
+    refetchInterval: 15 * 60_000,
+  });
+  if (upcoming.isLoading) return <Loading />;
+  const lines = upcoming.data ? findPropGame(upcoming.data, game) : undefined;
+  if (!lines?.props.length) return <>{fallback}</>;
+  return (
+    <GamePropLines
+      league={league}
+      game={lines}
+      title="Player props"
+      sub="DraftKings lines · where each line opened · tap ▾ for alternate lines"
+    />
+  );
 }
 
 /**

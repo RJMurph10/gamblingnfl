@@ -7,6 +7,7 @@ import { Link } from "@tanstack/react-router";
 import { MlbEmpty, MlbLogo } from "@/components/mlb/MlbBits";
 import { MlbLiveScoreboard } from "@/components/mlb/MlbLiveDiamond";
 import { Panel, PanelHeader } from "@/components/shared/booth";
+import { ClosedPropLines, UpcomingPropLines } from "@/components/shared/GamePropsTab";
 import {
   americanText,
   firstFive,
@@ -28,7 +29,7 @@ import {
 import { useMlbGameDetail, useMlbSchedule, useMlbWeather } from "@/lib/mlb/use-mlb";
 import { dayAfterNight, gameDayFactor } from "@/lib/mlb/game-day";
 
-type GameTab = "gamecast" | "stats" | "markets" | "information";
+type GameTab = "gamecast" | "stats" | "markets" | "props" | "information";
 
 const pct = (p: number | null | undefined, digits = 0) =>
   p == null ? "—" : `${(p * 100).toFixed(digits)}%`;
@@ -69,11 +70,13 @@ export function MlbGameDetailView({ gameId }: { gameId: string }) {
   }
 
   const started = game.status === "live" || game.status === "final";
+  const propRef = { id: game.id, date: game.date, away: game.away.team.abbr, home: game.home.team.abbr };
   const plays = data?.plays ?? [];
   const tabs: [GameTab, string][] = [
     ["gamecast", "Gamecast"],
     ["stats", "Stats"],
     ["markets", "Markets"],
+    ["props", "Props"],
     ...(game.status !== "live" ? ([["information", "Information"]] as [GameTab, string][]) : []),
   ];
 
@@ -156,6 +159,34 @@ export function MlbGameDetailView({ gameId }: { gameId: string }) {
       ) : null}
 
       {activeTab === "markets" ? <Markets game={game} games={games} /> : null}
+      {activeTab === "props" ? (
+        <div className="mt-6">
+          {started ? (
+            <ClosedPropLines
+              league="mlb"
+              game={propRef}
+              final={game.status === "final"}
+              fallback={
+                <p className="glass p-4 text-center font-mono text-[11px] text-mute">
+                  This game&apos;s player prop lines and results aren&apos;t saved yet. They&apos;re added
+                  a few hours after the game.
+                </p>
+              }
+            />
+          ) : (
+            <UpcomingPropLines
+              league="mlb"
+              game={propRef}
+              fallback={
+                <p className="glass p-4 text-center font-mono text-[11px] text-mute">
+                  No player prop lines posted for this game yet. DraftKings usually posts them on game
+                  day.
+                </p>
+              }
+            />
+          )}
+        </div>
+      ) : null}
 
       {activeTab === "information" && game.status !== "live" ? (
         <div className="mt-6 grid gap-6 lg:grid-cols-2">
