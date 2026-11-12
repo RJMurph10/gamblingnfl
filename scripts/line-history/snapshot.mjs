@@ -33,6 +33,9 @@ export const LEAGUES = {
   nba: { sport: "basketball", league: "nba" },
   nhl: { sport: "hockey", league: "nhl" },
   mlb: { sport: "baseball", league: "mlb", query: "limit=500" },
+  // WNBA (May–October): DraftKings props on ESPN since 2026 are milestones ("15+ points"); the
+  // builders read whatever over/under lines are posted
+  wnba: { sport: "basketball", league: "wnba" },
   // men's college basketball, Division I; game lines only. ESPN carries no DraftKings college props
   // (none for any game checked, the 2026 Final Four included); college props come from the
   // SportsGameOdds pull instead (sgo-games.mjs --props, extra-lines.yml).
@@ -113,7 +116,7 @@ function seasonOf(key, iso) {
   const y = d.getUTCFullYear();
   const m = d.getUTCMonth() + 1;
   // Fall/winter leagues: Jan–Jul belongs to the season that started the year before.
-  if (key === "mlb") return String(y);
+  if (key === "mlb" || key === "wnba") return String(y);
   if (key === "nfl" || key === "cfb") return String(m <= 7 ? y - 1 : y);
   return m <= 7 ? `${y - 1}-${String(y).slice(2)}` : `${y}-${String(y + 1).slice(2)}`;
 }

@@ -1,0 +1,49 @@
+name: WNBA 2025 props (one-time backfill)
+# One-time: WNBA 2025 player props from ESPN (ESPN BET over/unders), same steps as props-daily.yml.
+on:
+  push:
+    branches: [nfl-weather-probe]
+    paths: [.github/workflows/wnba-2025-props.yml]
+permissions:
+  contents: write
+concurrency:
+  group: props-daily
+  cancel-in-progress: false
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: app
+          sparse-checkout: scripts/line-history
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Download and build
+        run: |
+          set -e
+          node app/scripts/line-history/backfill-props.mjs --league wnba --from 2025-05-01 --to 2025-10-31 --out work/data
+          node app/scripts/line-history/build-props-history.mjs --league wnba --data work/data --out work/ph
+      - name: Publish
+        run: |
+          set -e
+          url="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+          publish() {
+            for attempt in 1 2 3 4 5; do
+              rm -rf dst && git clone -q --depth 1 --branch "$1" "$url" dst
+              ( cd dst && eval "$2" )
+              cd dst
+              git config user.name "line-history-bot"
+              git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+              git add -A
+              if git diff --cached --quiet; then cd ..; return 0; fi
+              git commit -q -m "wnba 2025 props $(date -u +%Y-%m-%d)"
+              if git push -q origin "$1"; then cd ..; return 0; fi
+              cd ..; sleep $((attempt * 15))
+            done
+            return 1
+          }
+          publish props-site "node ../app/scripts/line-history/build-props-site.mjs --league wnba --data ../work/ph --out . --season 2025"
+          publish props-history "mkdir -p wnba && cp ../work/ph/wnba/*.jsonl.gz wnba/"
