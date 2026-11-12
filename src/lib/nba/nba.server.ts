@@ -28,6 +28,7 @@ import {
   nbaLogoFor,
 } from "./nba";
 import { possessionFromSummary } from "../shared/basketball-possession";
+import { parsePredictor } from "../shared/espn-core.server";
 import { finalCached, finalLinesStore, readFinal, writeFinal } from "../shared/final-cache.server";
 import { athleteIdOf, findPropPrice, priceToAmerican } from "../shared/props.parse";
 import { buildNbaProbabilities } from "./nba-probabilities";
@@ -905,7 +906,19 @@ function loadNbaGameDetail(gameId: string): Promise<NbaGameDetail> {
       })),
     );
 
-    return { game, teamStats, box, plays, winProb, probabilities, injuries, leaders };
+    // ESPN's pregame Matchup Predictor (win % per team), shown on the Markets tab before tip-off
+    const predictor = game.status === "scheduled" ? parsePredictor(json?.predictor) : undefined;
+    return {
+      game,
+      teamStats,
+      box,
+      plays,
+      winProb,
+      probabilities,
+      injuries,
+      leaders,
+      ...(predictor ? { predictor } : {}),
+    };
   });
 }
 

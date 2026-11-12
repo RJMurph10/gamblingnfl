@@ -2,10 +2,10 @@
  * One NBA game, laid out like the NFL game page: header, then Gamecast / Stats / Markets / Props /
  * Information tabs.
  */
-import { ClosedPropLines } from "@/components/shared/GamePropsTab";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { PageTitle, Panel, PanelHeader } from "@/components/shared/booth";
+import { ClosedPropLines } from "@/components/shared/GamePropsTab";
+import { PageTitle, Panel, PanelHeader, PredictorDonut, type PredictorSide } from "@/components/shared/booth";
 import { BASKETBALL_CLOCK, ProbabilityGraph } from "@/components/shared/ProbabilityGraph";
 import { NbaLogo, oddsLine, statusText } from "@/components/nba/NbaBits";
 import { NbaLiveScoreboard } from "@/components/nba/NbaLiveCourt";
@@ -21,9 +21,17 @@ import {
   type NbaGame,
   type NbaGameDetail,
   type NbaPlay,
+  type NbaTeamRef,
 } from "@/lib/nba/nba";
 import { predictGame, buildRatings, rowFor, type NbaModelRow } from "@/lib/nba/nba-model";
 import { useNbaGameDetail, useNbaPrior, useNbaSchedule } from "@/lib/nba/use-nba";
+
+/** An NBA team as one side of the Matchup Predictor. */
+const predictorSide = (t: NbaTeamRef): PredictorSide => ({
+  abbr: t.abbr,
+  color: t.color,
+  logo: <img src={t.logo} alt={t.abbr} className="size-12 object-contain sm:size-16" />,
+});
 
 type GameTab = "gamecast" | "stats" | "markets" | "props" | "information";
 
@@ -186,7 +194,15 @@ export function NbaGameDetailView({ gameId }: { gameId: string }) {
 
       {activeTab === "markets" ? (
         <div className="mt-6 space-y-6">
-          <Probabilities game={game} detail={data} />
+          {game.status === "scheduled" ? (
+            <PredictorDonut
+              predictor={data?.predictor}
+              away={predictorSide(game.away.team)}
+              home={predictorSide(game.home.team)}
+            />
+          ) : (
+            <Probabilities game={game} detail={data} />
+          )}
           <div className="grid gap-6 lg:grid-cols-2">
             {row ? <ModelCard row={row} /> : null}
             <LinesCard game={game} />
