@@ -82,7 +82,10 @@ export function GamePropsTab({ game, away, home }: { game: Game; away: Team; hom
     queryKey: ["closed-props", "nfl", id],
     queryFn: () => getClosedProps({ data: { league: "nfl", id } }),
     enabled: nfl && !before && /^\d+$/.test(id),
-    staleTime: 30 * 60_000,
+    // a game whose closing lines aren't saved yet (the lines job runs hourly) is checked again soon,
+    // instead of keeping "none" for half an hour
+    staleTime: (q) => (q.state.data ? 30 * 60_000 : 60_000),
+    refetchInterval: (q) => (q.state.data ? false : 2 * 60_000),
   });
   const history = useQuery({
     queryKey: ["prop-history", "nfl", hk?.season ?? "", hk?.day ?? ""],
