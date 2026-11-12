@@ -1,25 +1,22 @@
-// Temporary: does ESPN keep ESPN BET odds for PLL games anywhere (e.g. Outlaws vs Atlas, Aug 2025)?
+// Temporary: college baseball: full schedules (scoreboard groups / team schedule), box scores, pitchers.
 const H = { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/124", Accept: "application/json", Referer: "https://www.espn.com/" };
 const get = async (u) => { try { const r = await fetch(u, { headers: H }); return r.ok ? r.json() : { status: r.status }; } catch (e) { return { err: String(e) }; } };
-const games = [];
-for (let t = Date.UTC(2025, 4, 25); t <= Date.UTC(2025, 8, 25); t += 86400000) {
-  const d = new Date(t).toISOString().slice(0, 10).replace(/-/g, "");
-  const sb = await get(`https://site.api.espn.com/apis/site/v2/sports/lacrosse/pll/scoreboard?dates=${d}`);
-  for (const e of sb.events ?? []) if (!games.some((g) => g.id === e.id)) games.push(e);
+const B = "https://site.api.espn.com/apis/site/v2/sports/baseball/college-baseball";
+for (const q of ["", "&groups=50", "&groups=26", "&groups=1", "&limit=1000", "&groups=50&limit=1000", "&division=1"]) {
+  const sb = await get(`${B}/scoreboard?dates=20250418${q}`);
+  console.log("SB", q || "(none)", (sb.events ?? []).length, sb.status ?? "");
 }
-console.log("PLL 2025 games", games.length);
-const pick = games.filter((e) => /outlaws/i.test(e.name) && /atlas/i.test(e.name));
-console.log("Outlaws-Atlas:", pick.map((e) => `${e.id} ${e.date} ${e.name}`).join(" | "));
-const scoreboardOdds = games.filter((e) => e.competitions?.[0]?.odds?.length).length;
-console.log("scoreboard events with odds:", scoreboardOdds);
-for (const e of [...pick, ...games.slice(-2)]) {
-  const core = `https://sports.core.api.espn.com/v2/sports/lacrosse/leagues/pll/events/${e.id}/competitions/${e.id}`;
-  const comp = await get(core);
-  const odds = await get(`${core}/odds`);
-  const p58 = await get(`${core}/odds/58`);
-  const pb58 = await get(`${core}/odds/58/propBets?limit=1000`);
-  const s = await get(`https://site.api.espn.com/apis/site/v2/sports/lacrosse/pll/summary?event=${e.id}`);
-  console.log("GAME", e.id, e.name, "| comp keys:", Object.keys(comp).join(","), "| odds:", odds.count ?? odds.status, "| odds/58:", p58.status ?? JSON.stringify(p58).slice(0, 200), "| propBets58:", pb58.count ?? pb58.status);
-  console.log("  summary keys:", Object.keys(s).join(","), "| pickcenter:", JSON.stringify(s.pickcenter ?? null).slice(0, 300), "| odds:", JSON.stringify(s.odds ?? null).slice(0, 200));
-  console.log("  scoreboard odds:", JSON.stringify(e.competitions?.[0]?.odds ?? null).slice(0, 300));
-}
+const g = await get(`${B}/groups`);
+console.log("GROUPS", JSON.stringify(g).slice(0, 600));
+const sched = await get(`${B}/teams/74/schedule?season=2025`);
+const evs = sched.events ?? [];
+console.log("SCHED Stetson 2025", evs.length, evs.slice(0, 2).map((e) => `${e.id} ${e.name}`).join(" | "));
+const teams = await get(`${B}/teams?limit=1000`);
+console.log("TEAMS", teams.sports?.[0]?.leagues?.[0]?.teams?.length);
+const s = await get(`${B}/summary?event=${evs.find((e) => e.competitions?.[0]?.status?.type?.completed)?.id}`);
+console.log("SUMMARY keys", Object.keys(s).join(","));
+for (const t of s.boxscore?.players ?? []) for (const grp of t.statistics ?? []) console.log("BOX", t.team?.abbreviation, grp.type ?? grp.name, JSON.stringify(grp.labels ?? grp.keys), (grp.athletes ?? []).length, JSON.stringify(grp.athletes?.[0]?.stats));
+console.log("TEAMBOX", JSON.stringify(s.boxscore?.teams?.[0]?.statistics?.map((x) => x.name + ":" + (x.stats?.length ?? x.displayValue))).slice(0, 400));
+console.log("PROBABLES", JSON.stringify(s.header?.competitions?.[0]?.competitors?.map((c) => c.probables ?? null)).slice(0, 300));
+console.log("PLAYS", (s.plays ?? []).length, "pickcenter", JSON.stringify(s.pickcenter ?? null).slice(0, 300));
+console.log("VENUE", JSON.stringify(s.gameInfo?.venue ?? null).slice(0, 200));
