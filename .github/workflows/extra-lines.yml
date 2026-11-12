@@ -10,6 +10,8 @@ name: Extra game lines (Odds API + SportsGameOdds)
 #     morning; if GitHub drops the morning run, the next run that day does it)
 #   - NBA from SportsGameOdds with the same morning pull, for line shopping (every book's lines)
 # Both SportsGameOdds pulls also update props-site/best-lines/<league>.json (line shopping on the model pages).
+# The men's pull also saves every posted player prop (DraftKings, FanDuel, BetMGM, Caesars) to
+# props-site/extra-lines/sgo-props/cbb/, building a college props history at no extra cost.
 # Each source does nothing without its repository secret (ODDS_API_KEY, SPORTSGAMEODDS_API_KEY).
 
 on:
@@ -56,7 +58,8 @@ jobs:
           today=$(date -u +%Y-%m-%d)
           have=$(gh api "repos/${{ github.repository }}/contents/extra-lines/sgo/cbb?ref=props-site" --jq '.[].name' 2>/dev/null | grep -c "^$today" || true)
           if [ "$cron" = "10 15 * * *" ] || [ "${{ github.event_name }}" != "schedule" ] || [ "$have" = "0" ]; then
-            node app/scripts/line-history/sgo-games.mjs --league NCAAB --hours 30 --out pull/sgo/cbb || echo "SportsGameOdds pull failed"
+            # player props come in the same events at no extra cost: saved to extra-lines/sgo-props/cbb
+            node app/scripts/line-history/sgo-games.mjs --league NCAAB --hours 30 --out pull/sgo/cbb --props pull/sgo-props/cbb || echo "SportsGameOdds pull failed"
             # NBA, for line shopping only (every book's lines; ~8 events a day)
             node app/scripts/line-history/sgo-games.mjs --league NBA --hours 30 --out pull/sgo/nba || echo "SportsGameOdds NBA pull failed"
           fi

@@ -5,7 +5,8 @@
  *   <out>/<YYYY-MM-DDTHH>.json  { at, source: "sgo", league, games: [{ home, away, commence, books: [...] }] }
  * Stops before the month's event allowance would run out (keeps --keep events in reserve).
  *
- *   SPORTSGAMEODDS_API_KEY=... node scripts/line-history/sgo-games.mjs --league NCAAB --out pull/sgo/cbb
+ *   SPORTSGAMEODDS_API_KEY=... node scripts/line-history/sgo-games.mjs --league NCAAB --out pull/sgo/cbb \
+ *     [--props pull/sgo-props/cbb]   (also save the player props in those events, at no extra cost)
  */
 import { mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
@@ -19,6 +20,10 @@ const LEAGUE = opt("league", "NCAAB");
 const OUT = opt("out", "pull/sgo/cbb");
 const HOURS = Number(opt("hours", "30"));
 const KEEP = Number(opt("keep", "150"));
+// also save every posted player prop from the same events (costs nothing extra: one game = one event)
+const PROPS_OUT = opt("props", "");
+/** Books whose player props are kept (SportsGameOdds bookmaker ids). */
+export const PROP_BOOKS = ["draftkings", "fanduel", "betmgm", "caesars"];
 const KEY = process.env.SPORTSGAMEODDS_API_KEY;
 const BASE = "https://api.sportsgameodds.com/v2";
 
@@ -73,6 +78,37 @@ export function booksOf(e) {
   return books;
 }
 
+/**
+ * Every player over/under posted for the full game in one SportsGameOdds event, per book:
+ * [[player, team, statID, line, over, under, book]]. statID is SportsGameOdds' own ("points",
+ * "rebounds", "assists", "threePointersMade", "points+rebounds+assists", ...).
+ */
+export function playerPropsOf(e, books = PROP_BOOKS) {
+  const rows = new Map();
+  for (const m of Object.values(e.odds ?? {})) {
+    if (!m?.playerID || m.periodID !== "game" || m.betTypeID !== "ou" || m.started) continue;
+    if (m.sideID !== "over" && m.sideID !== "under") continue;
+    const p = e.players?.[m.playerID];
+    const name = p?.name ?? [p?.firstName, p?.lastName].filter(Boolean).join(" ");
+    if (!name) continue;
+    const team =
+      p?.teamID && p.teamID === e.teams?.home?.teamID ? "home" : p?.teamID === e.teams?.away?.teamID ? "away" : "";
+    for (const book of books) {
+      const b = m.byBookmaker?.[book];
+      if (!b || b.available === false) continue;
+      const line = num(b.overUnder);
+      const price = num(b.odds);
+      if (line == null || price == null) continue;
+      const k = `${m.playerID}|${m.statID}|${book}|${line}`;
+      const row = rows.get(k) ?? [name, team, m.statID, line, null, null, book];
+      if (m.sideID === "over") row[4] = price;
+      else row[5] = price;
+      rows.set(k, row);
+    }
+  }
+  return [...rows.values()];
+}
+
 async function main() {
   if (!KEY) {
     console.log("SPORTSGAMEODDS_API_KEY is not set; nothing to do.");
@@ -85,6 +121,7 @@ async function main() {
   }
   const now = Date.now();
   const games = [];
+  const propGames = [];
   let cursor = "";
   for (let page = 0; page < 10; page += 1) {
     const q = new URLSearchParams({
@@ -100,6 +137,9 @@ async function main() {
       const name = (t) => t?.names?.long ?? t?.names?.medium ?? t?.teamID ?? "";
       const books = booksOf(e);
       if (books.length) games.push({ home: name(e.teams?.home), away: name(e.teams?.away), commence: e.status?.startsAt, books });
+      const props = PROPS_OUT ? playerPropsOf(e) : [];
+      if (props.length)
+        propGames.push({ id: e.eventID, home: name(e.teams?.home), away: name(e.teams?.away), commence: e.status?.startsAt, props });
     }
     cursor = r?.nextCursor ?? "";
     if (!cursor) break;
@@ -108,6 +148,13 @@ async function main() {
   await mkdir(OUT, { recursive: true });
   await writeFile(join(OUT, `${at.slice(0, 13)}.json`), JSON.stringify({ at, source: "sgo", league: LEAGUE, usage, games }));
   console.log(`${LEAGUE}: ${games.length} games with lines; month usage before: ${usage ? `${usage.used}/${usage.max}` : "?"}`);
+  if (PROPS_OUT && propGames.length) {
+    // { at, source, league, games: [{ id, home, away, commence, props: [[player, team, statID, line, over, under, book]] }] }
+    await mkdir(PROPS_OUT, { recursive: true });
+    await writeFile(join(PROPS_OUT, `${at.slice(0, 13)}.json`), JSON.stringify({ at, source: "sgo", league: LEAGUE, games: propGames }));
+  }
+  if (PROPS_OUT)
+    console.log(`${LEAGUE}: ${propGames.length} games with player props (${propGames.reduce((n, g) => n + g.props.length, 0)} prop lines)`);
 }
 
 if (import.meta.url === `file://${process.argv[1]}`)
