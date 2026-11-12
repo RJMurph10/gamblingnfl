@@ -28,7 +28,7 @@ import { CFB_RULES, cfbBestBets, type CfbPick } from "@/lib/cfb/cfb-model";
 import { useCfbPriorSeason, useCfbSchedule } from "@/lib/cfb/use-cfb";
 import { getGameWeather, getLiveGame, getTeamSeasonAverages } from "@/lib/shared/espn.functions";
 import { showGameStatistics } from "@/lib/shared/game-visibility";
-import { DraftKingsPropsBoard } from "@/components/shared/DraftKingsPropsBoard";
+import { GamePropsTab } from "@/components/shared/GamePropsTab";
 import { ProbabilityGraph } from "@/components/shared/ProbabilityGraph";
 
 /* ---------- Interactive 100-Yard Field Visualizer ---------- */
@@ -1485,7 +1485,7 @@ export function GameDetail({ gameId }: { gameId: string }) {
                     {/* Live / Finished games Props tab */}
           {activeGameTab === "props" ? (
             <section className="mt-6">
-              <DraftKingsPropsBoard game={game} away={away} home={home} />
+              <GamePropsTab game={game} away={away} home={home} />
             </section>
           ) : null}
             </>
@@ -1519,7 +1519,7 @@ export function GameDetail({ gameId }: { gameId: string }) {
           ) : activeGameTab === "props" ? (
             /* Upcoming / Scheduled games Props tab */
             <section className="mt-6">
-              <DraftKingsPropsBoard game={game} away={away} home={home} />
+              <GamePropsTab game={game} away={away} home={home} />
             </section>
           ) : activeGameTab === "gamecast" ? (
             <section className="mt-6">

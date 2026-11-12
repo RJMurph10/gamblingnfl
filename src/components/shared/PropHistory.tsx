@@ -344,19 +344,6 @@ function saveBoard(league: PropLeague, games: UpcomingPropGame[]) {
 
 function Upcoming({ league, tabs }: { league: PropLeague; tabs: ReactNode }) {
   const [gameId, setGameId] = useState<string | undefined>();
-  const [openKey, setOpenKey] = useState<string | null>(null);
-  // the ladder spans the visible width of the (horizontally scrolling) table, not the whole table
-  const wrap = useRef<HTMLDivElement>(null);
-  const [wrapW, setWrapW] = useState<number | undefined>();
-  useEffect(() => {
-    const el = wrap.current;
-    if (!el || typeof ResizeObserver === "undefined") return;
-    const ro = new ResizeObserver(() => setWrapW(el.clientWidth));
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, [openKey]);
-  const [market, setMarket] = useState("All");
-  const [search, setSearch] = useState("");
   // The games don't change between refreshes, only prices: remember the last board in this browser
   // and show it at once on reload (and if a refresh comes back empty) instead of a blank page.
   const [saved, setSaved] = useState<UpcomingPropGame[] | null>(null);
@@ -379,16 +366,6 @@ function Upcoming({ league, tabs }: { league: PropLeague; tabs: ReactNode }) {
     return (saved ?? []).filter((g) => Date.parse(g.date) > now);
   }, [q.data, saved]);
   const game = games.find((g) => g.id === gameId) ?? games[0];
-  const markets = useMemo(
-    () => ["All", ...Array.from(new Set((game?.props ?? []).map((p) => p[2]))).sort()],
-    [game],
-  );
-  const rows = useMemo(() => {
-    const s = search.trim().toLowerCase();
-    return (game?.props ?? []).filter(
-      (p) => (market === "All" || p[2] === market) && (!s || p[0].toLowerCase().includes(s)),
-    );
-  }, [game, market, search]);
   const L = league.toUpperCase();
   return (
     <>
@@ -405,10 +382,7 @@ function Upcoming({ league, tabs }: { league: PropLeague; tabs: ReactNode }) {
             <button
               key={g.id}
               type="button"
-              onClick={() => {
-                setGameId(g.id);
-                setMarket("All");
-              }}
+              onClick={() => setGameId(g.id)}
               aria-label={`${g.away.name} at ${g.home.name}, ${g.props.length} props`}
               className={`inline-flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-2 text-left font-mono text-xs ring-1 transition ${
                 g.id === game?.id
@@ -432,128 +406,199 @@ function Upcoming({ league, tabs }: { league: PropLeague; tabs: ReactNode }) {
         </div>
       </Panel>
       {game ? (
-        <Panel padded={false}>
-          <PanelHeader
-            title={`${game.away.name} @ ${game.home.name}`}
-            aside={
-              <input
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Find a player"
-                className="w-40 rounded-lg bg-panel2 px-3 py-1.5 font-mono text-xs ring-1 ring-line/10"
-              />
-            }
-          />
-          <div className="flex gap-2 overflow-x-auto px-4 py-3">
-            {markets.map((m) => (
-              <button
-                key={m}
-                type="button"
-                onClick={() => setMarket(m)}
-                className={`shrink-0 rounded-full px-3 py-1 font-mono text-[11px] uppercase tracking-wider ring-1 ${
-                  market === m
-                    ? "bg-acc/10 text-acc ring-acc/25"
-                    : "bg-panel2 text-mute ring-line/10 hover:text-acc"
-                }`}
-              >
-                {m}
-              </button>
-            ))}
-          </div>
-          <div ref={wrap} className="overflow-x-auto">
-            <table className="w-full min-w-[620px] text-sm">
-              <thead>
-                <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
-                  <th className="px-4 py-2 font-normal">Player</th>
-                  <th className="px-2 py-2 font-normal">Prop</th>
-                  <th className="px-2 py-2 text-right font-normal">Line</th>
-                  <th className="px-2 py-2 text-right font-normal">Opened</th>
-                  <th className="px-2 py-2 text-right font-normal">Move</th>
-                  <th className="px-2 py-2 text-right font-normal">Over</th>
-                  <th className="px-4 py-2 text-right font-normal">Under</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-line/5">
-                {rows.map((r, i) => {
-                  const move = r[6] == null ? null : Math.round((r[3] - r[6]) * 10) / 10;
-                  const key = `${r[0]}-${r[2]}`;
-                  const ladder = r[7]?.length ? r[7] : null;
-                  const isOpen = ladder != null && openKey === key;
-                  return (
-                    <Fragment key={`${key}-${i}`}>
-                      <tr className={`hover:bg-line/5 ${isOpen ? "bg-line/5" : ""}`}>
-                        <td className="px-4 py-2">
-                          <span className="inline-flex items-center gap-1.5">
-                            {r[0]} <PropTeam league={league} abbr={r[1]} />
-                            {ladder ? (
-                              <button
-                                type="button"
-                                onClick={() => setOpenKey(isOpen ? null : key)}
-                                aria-expanded={isOpen}
-                                aria-label={`${isOpen ? "Hide" : "Show"} alternate lines`}
-                                title="Alternate lines"
-                                className={`inline-flex size-5 shrink-0 items-center justify-center rounded-full font-mono text-[10px] ring-1 ${
-                                  isOpen
-                                    ? "bg-acc/15 text-acc ring-acc/40"
-                                    : "text-mute ring-line/15 hover:text-acc"
-                                }`}
-                              >
-                                {isOpen ? "▴" : "▾"}
-                              </button>
-                            ) : null}
-                          </span>
-                        </td>
-                        <td className="px-2 py-2 font-mono text-xs text-mute">{r[2]}</td>
-                        <td className="px-2 py-2 text-right font-mono text-xs font-semibold tabular-nums">
-                          {r[3]}
-                        </td>
-                        <td className="px-2 py-2 text-right font-mono text-xs tabular-nums text-mute">
-                          {r[6] ?? "—"}
-                        </td>
-                        <td className="px-2 py-2 text-right">
-                          <MovePill move={move} />
-                        </td>
-                        <td className="px-2 py-2 text-right font-mono text-xs tabular-nums text-mute">
-                          {american(r[4])}
-                        </td>
-                        <td className="px-4 py-2 text-right font-mono text-xs tabular-nums text-mute">
-                          {american(r[5])}
-                        </td>
-                      </tr>
-                      {isOpen ? (
-                        <tr>
-                          <td colSpan={7} className="px-0 pb-2 pt-0">
-                            <PropLadder
-                              line={r[3]}
-                              over={r[4]}
-                              ladder={ladder}
-                              unit={r[2]}
-                              width={wrapW}
-                            />
-                          </td>
-                        </tr>
-                      ) : null}
-                    </Fragment>
-                  );
-                })}
-                {!rows.length ? (
-                  <tr>
-                    <td colSpan={7} className="px-4 py-6 text-center font-mono text-xs text-mute">
-                      No props match.
-                    </td>
-                  </tr>
-                ) : null}
-              </tbody>
-            </table>
-          </div>
-          <p className="px-4 py-3 font-mono text-[10px] text-faint">
-            DraftKings via ESPN{game.at ? `, as of ${kickoff(game.at)}` : ""}. Move is the change
-            since the line opened ("held" = no move). "—" for prices means no price was saved for
-            that line.
-          </p>
-        </Panel>
+        <GamePropLines
+          key={game.id}
+          league={league}
+          game={game}
+          title={`${game.away.name} @ ${game.home.name}`}
+        />
       ) : null}
     </>
+  );
+}
+
+/**
+ * One game's DraftKings player lines: team and market filters, a player search, the line against where
+ * it opened, and each prop's alternate lines. Used by the Prop lines page and the NFL game page's Props tab.
+ */
+export function GamePropLines({
+  league,
+  game,
+  title,
+  sub,
+}: {
+  league: PropLeague;
+  game: UpcomingPropGame;
+  title: string;
+  sub?: string;
+}) {
+  const [openKey, setOpenKey] = useState<string | null>(null);
+  // the ladder spans the visible width of the (horizontally scrolling) table, not the whole table
+  const wrap = useRef<HTMLDivElement>(null);
+  const [wrapW, setWrapW] = useState<number | undefined>();
+  useEffect(() => {
+    const el = wrap.current;
+    if (!el || typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver(() => setWrapW(el.clientWidth));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [openKey]);
+  const [team, setTeam] = useState("All");
+  const [market, setMarket] = useState("All");
+  const [search, setSearch] = useState("");
+  const markets = useMemo(
+    () => ["All", ...Array.from(new Set(game.props.map((p) => p[2]))).sort()],
+    [game],
+  );
+  const rows = useMemo(() => {
+    const s = search.trim().toLowerCase();
+    return game.props.filter(
+      (p) =>
+        (team === "All" || p[1] === team) &&
+        (market === "All" || p[2] === market) &&
+        (!s || p[0].toLowerCase().includes(s)),
+    );
+  }, [game, team, market, search]);
+  return (
+    <Panel padded={false}>
+      <PanelHeader
+        title={title}
+        aside={
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Find a player"
+            className="w-40 rounded-lg bg-panel2 px-3 py-1.5 font-mono text-xs ring-1 ring-line/10"
+          />
+        }
+      />
+      {sub ? <p className="px-4 pt-3 font-mono text-[10px] text-faint">{sub}</p> : null}
+      <div className="flex gap-2 overflow-x-auto px-4 pt-3">
+        {["All", game.away.abbr, game.home.abbr].map((t) => (
+          <button
+            key={t}
+            type="button"
+            onClick={() => setTeam(t)}
+            aria-pressed={team === t}
+            aria-label={t === "All" ? "Both teams" : `${t} players`}
+            className={`inline-flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-1.5 font-mono text-xs ring-1 ${
+              team === t
+                ? "bg-acc/10 text-acc ring-acc/30"
+                : "bg-panel2/40 text-mute ring-line/10 hover:text-acc"
+            }`}
+          >
+            {t === "All" ? null : <PropTeam league={league} abbr={t} />}
+            {t}
+          </button>
+        ))}
+      </div>
+      <div className="flex gap-2 overflow-x-auto px-4 py-3">
+        {markets.map((m) => (
+          <button
+            key={m}
+            type="button"
+            onClick={() => setMarket(m)}
+            className={`shrink-0 rounded-full px-3 py-1 font-mono text-[11px] uppercase tracking-wider ring-1 ${
+              market === m
+                ? "bg-acc/10 text-acc ring-acc/25"
+                : "bg-panel2 text-mute ring-line/10 hover:text-acc"
+            }`}
+          >
+            {m}
+          </button>
+        ))}
+      </div>
+      <div ref={wrap} className="overflow-x-auto">
+        <table className="w-full min-w-[620px] text-sm">
+          <thead>
+            <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
+              <th className="px-4 py-2 font-normal">Player</th>
+              <th className="px-2 py-2 font-normal">Prop</th>
+              <th className="px-2 py-2 text-right font-normal">Line</th>
+              <th className="px-2 py-2 text-right font-normal">Opened</th>
+              <th className="px-2 py-2 text-right font-normal">Move</th>
+              <th className="px-2 py-2 text-right font-normal">Over</th>
+              <th className="px-4 py-2 text-right font-normal">Under</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-line/5">
+            {rows.map((r, i) => {
+              const move = r[6] == null ? null : Math.round((r[3] - r[6]) * 10) / 10;
+              const key = `${r[0]}-${r[2]}`;
+              const ladder = r[7]?.length ? r[7] : null;
+              const isOpen = ladder != null && openKey === key;
+              return (
+                <Fragment key={`${key}-${i}`}>
+                  <tr className={`hover:bg-line/5 ${isOpen ? "bg-line/5" : ""}`}>
+                    <td className="px-4 py-2">
+                      <span className="inline-flex items-center gap-1.5">
+                        {r[0]} <PropTeam league={league} abbr={r[1]} />
+                        {ladder ? (
+                          <button
+                            type="button"
+                            onClick={() => setOpenKey(isOpen ? null : key)}
+                            aria-expanded={isOpen}
+                            aria-label={`${isOpen ? "Hide" : "Show"} alternate lines`}
+                            title="Alternate lines"
+                            className={`inline-flex size-5 shrink-0 items-center justify-center rounded-full font-mono text-[10px] ring-1 ${
+                              isOpen
+                                ? "bg-acc/15 text-acc ring-acc/40"
+                                : "text-mute ring-line/15 hover:text-acc"
+                            }`}
+                          >
+                            {isOpen ? "▴" : "▾"}
+                          </button>
+                        ) : null}
+                      </span>
+                    </td>
+                    <td className="px-2 py-2 font-mono text-xs text-mute">{r[2]}</td>
+                    <td className="px-2 py-2 text-right font-mono text-xs font-semibold tabular-nums">
+                      {r[3]}
+                    </td>
+                    <td className="px-2 py-2 text-right font-mono text-xs tabular-nums text-mute">
+                      {r[6] ?? "—"}
+                    </td>
+                    <td className="px-2 py-2 text-right">
+                      <MovePill move={move} />
+                    </td>
+                    <td className="px-2 py-2 text-right font-mono text-xs tabular-nums text-mute">
+                      {american(r[4])}
+                    </td>
+                    <td className="px-4 py-2 text-right font-mono text-xs tabular-nums text-mute">
+                      {american(r[5])}
+                    </td>
+                  </tr>
+                  {isOpen ? (
+                    <tr>
+                      <td colSpan={7} className="px-0 pb-2 pt-0">
+                        <PropLadder
+                          line={r[3]}
+                          over={r[4]}
+                          ladder={ladder}
+                          unit={r[2]}
+                          width={wrapW}
+                        />
+                      </td>
+                    </tr>
+                  ) : null}
+                </Fragment>
+              );
+            })}
+            {!rows.length ? (
+              <tr>
+                <td colSpan={7} className="px-4 py-6 text-center font-mono text-xs text-mute">
+                  No props match.
+                </td>
+              </tr>
+            ) : null}
+          </tbody>
+        </table>
+      </div>
+      <p className="px-4 py-3 font-mono text-[10px] text-faint">
+        DraftKings via ESPN{game.at ? `, as of ${kickoff(game.at)}` : ""}. Move is the change since
+        the line opened ("held" = no move). "—" for prices means no price was saved for that line.
+      </p>
+    </Panel>
   );
 }
 
