@@ -35,11 +35,13 @@ export async function loadPrices(dir) {
       const t = Date.parse(g.commence);
       const list = byHome.get(norm(g.home)) ?? [];
       let slot = list.find((s) => Math.abs(s.t - t) < 12 * 3_600_000);
-      if (!slot) list.push((slot = { t, map: new Map(), main: new Map(), alts: new Map() }));
+      if (!slot) list.push((slot = { t, map: new Map(), main: new Map(), alts: new Map(), td: null }));
+      // newest pull's touchdown-scorer prices win
+      if (g.td?.length) slot.td = g.td;
       // newest pull's ladder wins (files are read oldest first)
       for (const [player, label, ladder] of g.alts ?? [])
         slot.alts.set(`${norm(player)}|${label}`, ladder);
-      for (const [player, label, line, o, u] of g.props) {
+      for (const [player, label, line, o, u] of g.props ?? []) {
         slot.map.set(`${norm(player)}|${label}|${line}`, [o, u]);
         // the player's main line in this pull: the most balanced priced pair
         if (o == null || u == null) continue;
@@ -66,6 +68,11 @@ export async function loadPrices(dir) {
         const t = Date.parse(date);
         const slot = byHome.get(norm(home))?.find((s) => Math.abs(s.t - t) < 12 * 3_600_000);
         return slot?.main.get(`${norm(player)}|${label}`)?.v ?? null;
+      },
+      /** The newest saved touchdown-scorer prices: [[player, home|away, anytime, first, 2+, last]] | null. */
+      td(home, date) {
+        const t = Date.parse(date);
+        return byHome.get(norm(home))?.find((s) => Math.abs(s.t - t) < 12 * 3_600_000)?.td ?? null;
       },
       /** The newest saved alternate over lines: [[line, over price], ...] | null. */
       ladder(home, date, player, label) {

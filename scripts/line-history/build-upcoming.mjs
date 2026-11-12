@@ -161,6 +161,13 @@ function boardOf(rec, price) {
     const ladder = price.size ? price.ladder(rec.home?.name, rec.date, who[0], LABELS[l.t]) : null;
     props.push([who[0], who[1], LABELS[l.t], line, o, u, l.opened, ...(ladder ? [ladder] : [])]);
   }
+  // DraftKings' touchdown-scorer prices from the newest saved pull (NFL): [[player, team abbr, anytime,
+  // first, 2+, last]]
+  const td = price.td
+    ? price
+        .td(rec.home?.name, rec.date)
+        ?.map(([n, side, ...px]) => [n, side === "home" ? (rec.home?.abbr ?? "") : side === "away" ? (rec.away?.abbr ?? "") : "", ...px])
+    : null;
   if (!props.length) return null;
   props.sort(
     (x, y) => x[1].localeCompare(y[1]) || x[0].localeCompare(y[0]) || x[2].localeCompare(y[2]),
@@ -173,6 +180,7 @@ function boardOf(rec, price) {
     away: { abbr: rec.away?.abbr ?? "", name: rec.away?.name ?? "" },
     home: { abbr: rec.home?.abbr ?? "", name: rec.home?.name ?? "" },
     props,
+    ...(td?.length ? { td } : {}),
   };
 }
 
