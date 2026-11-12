@@ -14,7 +14,7 @@ concurrency:
 jobs:
   export:
     runs-on: ubuntu-latest
-    timeout-minutes: 300
+    timeout-minutes: 360
     strategy:
       fail-fast: false
       max-parallel: 6
@@ -30,7 +30,6 @@ jobs:
           - { sport: soccer, league: mex.1 }
           - { sport: soccer, league: usa.nwsl }
           - { sport: baseball, league: college-baseball }
-          - { sport: baseball, league: college-softball }
           - { sport: football, league: ufl }
           - { sport: mma, league: ufc }
     steps:
@@ -44,7 +43,7 @@ jobs:
       - name: Export
         run: |
           node scripts/lines/export-lines.mjs --sport ${{ matrix.sport }} --league ${{ matrix.league }} \
-            --from 2023-11-01 --to 2026-11-12 --out out
+            --from 2018-01-01 --to 2026-11-12 --out out
       - uses: actions/upload-artifact@v4
         with:
           name: lines-${{ matrix.league }}
