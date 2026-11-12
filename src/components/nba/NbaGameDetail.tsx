@@ -206,7 +206,12 @@ export function NbaGameDetailView({ gameId }: { gameId: string }) {
                 home: game.home.team.abbr,
               }}
               final={game.status === "final"}
-              fallback={null}
+              fallback={
+                <p className="glass p-4 text-center font-mono text-[11px] text-mute">
+                  This game&apos;s closing prop lines and results aren&apos;t saved yet. Lines are added
+                  within a few hours of tip-off and results after the game.
+                </p>
+              }
             />
           ) : null}
           <Link
