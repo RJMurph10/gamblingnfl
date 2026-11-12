@@ -3,7 +3,8 @@
  * Small per-day files for the site's "Prop history" pages, built from the props-history branch:
  *   <out>/<league>/index.json               { seasons: { "2024-25": ["2024-10-22", ...] } }
  *   <out>/<league>/<season>/<YYYY-MM-DD>.json  [ game, ... ]
- * Each game: { id, date, name, away, home, final, props: [[player, team, market, line, over, under, actual]] }
+ * Each game: { id, date, name, away, home, final, props: [[player, team, market, line, over, under, actual, dnp?]] }
+ * dnp = 1: the player didn't play (NFL game roster, NBA box-score DNP; the bet is void), actual null.
  * One row per player and market: the main line (the sportsbook's balanced over/under pair; for books
  * that send lines without prices, the line itself). Opening lines are used: ESPN's "current" line
  * kept moving during games for some books, so it isn't a reliable pregame close.
@@ -206,8 +207,21 @@ async function main() {
         });
       }
       for (const p of main) {
-        const bx = g.box?.[p.a];
-        if (!bx || bx.dnp) continue;
+        let bx = g.box?.[p.a];
+        // NFL: no box-score line. Played (on the game roster) = 0 of everything; didn't play = void.
+        const ro = !bx ? g.roster?.[p.a] : undefined;
+        if (ro?.played) bx = { n: ro.n, tm: ro.tm, s: {} };
+        if (ro && !ro.played) {
+          const [label] = MARKETS[p.t];
+          props.push([ro.n, ro.tm, label, p.line, p.o, p.u, null, 1]);
+          continue;
+        }
+        if (!bx) continue;
+        if (bx.dnp) {
+          // on the box score as DNP (NBA): the bet is void
+          props.push([bx.n, bx.tm, MARKETS[p.t][0], p.line, p.o, p.u, null, 1]);
+          continue;
+        }
         const [label, stat] = MARKETS[p.t];
         let { line, o, u } = p;
         if (o == null && u == null && price.size) {
@@ -218,7 +232,7 @@ async function main() {
           if (px) [o, u] = px;
           else if (mn) [line, o, u] = mn;
         }
-        props.push([bx.n, bx.tm, label, line, o, u, stat(bx.s ?? {})]);
+        props.push([bx.n, bx.tm, label, line, o, u, ro?.played ? 0 : stat(bx.s ?? {})]);
       }
       if (!props.length) continue;
       props.sort(

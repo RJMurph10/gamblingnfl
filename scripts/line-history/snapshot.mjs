@@ -33,12 +33,13 @@ export const LEAGUES = {
   nba: { sport: "basketball", league: "nba" },
   nhl: { sport: "hockey", league: "nhl" },
   mlb: { sport: "baseball", league: "mlb", query: "limit=500" },
-  // men's college basketball, Division I; game lines only (books post few college props)
+  // men's college basketball, Division I. DraftKings posts player props for some games (mostly
+  // bigger ones, on game day): checked only for games within 36 hours, since the slate is ~50 a day.
   cbb: {
     sport: "basketball",
     league: "mens-college-basketball",
     query: "groups=50&limit=500",
-    noProps: true,
+    propsAhead: 36 * 3_600_000,
   },
   // women's college basketball, Division I; game lines only
   wcbb: {
@@ -307,7 +308,8 @@ export async function updateGame(g, rec, now, fetchers = { gameLines, props, nam
     }
     const stale = !rec.props.latest || now - Date.parse(rec.props.latest.at) >= LATEST_EVERY;
     const refresh = untilStart <= LATEST_WINDOW && stale;
-    if (!LEAGUES[g.league]?.noProps && (!rec.props.open || closing || refresh)) {
+    const propsWindow = untilStart <= (LEAGUES[g.league]?.propsAhead ?? OPEN_AHEAD);
+    if (!LEAGUES[g.league]?.noProps && propsWindow && (!rec.props.open || closing || refresh)) {
       const list = await fetchers.props(g.league, g.id);
       if (list.length) {
         // Compact rows, plus two raw items so the format can be checked later.
