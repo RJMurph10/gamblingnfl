@@ -1,0 +1,38 @@
+name: NFL TD scorer history (one-time)
+on:
+  push:
+    branches: [nfl-weather-probe]
+    paths: [research/props/nfl_td_scorers.mjs, .github/workflows/td-history.yml]
+permissions:
+  contents: write
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - name: Grade
+        run: |
+          set -e
+          url="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+          git clone -q --depth 1 --branch props-history "$url" ph
+          node research/props/nfl_td_scorers.mjs ph out 2023 2024 2025
+      - name: Publish
+        run: |
+          set -e
+          url="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+          for attempt in 1 2 3 4 5; do
+            rm -rf dst && git clone -q --depth 1 --branch props-site "$url" dst
+            mkdir -p dst/nfl/td-history && cp out/nfl/td-history/*.json dst/nfl/td-history/
+            cd dst
+            git config user.name "line-history-bot"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add -A
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -q -m "NFL TD scorer history 2023-2025"
+            if git push -q origin props-site; then exit 0; fi
+            cd ..; sleep $((attempt * 15))
+          done
+          exit 1
