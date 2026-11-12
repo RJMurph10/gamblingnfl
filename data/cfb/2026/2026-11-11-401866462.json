@@ -7,18 +7,18 @@
   "id": "16",
   "abbr": "SAC",
   "name": "Sacramento State Hornets",
-  "score": 0
+  "score": 7
  },
  "home": {
   "id": "2117",
   "abbr": "CMU",
   "name": "Central Michigan Chippewas",
-  "score": 0
+  "score": 21
  },
  "neutral": false,
  "venue": "Kelly/Shorts Stadium",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-08T00:43:09.397Z",

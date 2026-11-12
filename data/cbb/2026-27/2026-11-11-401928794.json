@@ -7,18 +7,18 @@
   "id": "2492",
   "abbr": "PEPP",
   "name": "Pepperdine Waves",
-  "score": 0
+  "score": 77
  },
  "home": {
   "id": "2534",
   "abbr": "SHSU",
   "name": "Sam Houston Bearkats",
-  "score": 0
+  "score": 85
  },
  "neutral": false,
  "venue": "Bernard G. Johnson Coliseum",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-10T23:27:48.577Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 77,
+  "home": 85
+ }
 }

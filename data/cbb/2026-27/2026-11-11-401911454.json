@@ -7,18 +7,18 @@
   "id": "2440",
   "abbr": "NEV",
   "name": "Nevada Wolf Pack",
-  "score": 0
+  "score": 24
  },
  "home": {
   "id": "2540",
   "abbr": "UCSB",
   "name": "UC Santa Barbara Gauchos",
-  "score": 0
+  "score": 40
  },
  "neutral": false,
  "venue": "The Thunderdome",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-10T23:27:48.577Z",

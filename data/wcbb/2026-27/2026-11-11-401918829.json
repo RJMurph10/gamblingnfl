@@ -7,18 +7,18 @@
   "id": "98",
   "abbr": "WKU",
   "name": "Western Kentucky Lady Toppers",
-  "score": 0
+  "score": 59
  },
  "home": {
   "id": "238",
   "abbr": "VAN",
   "name": "Vanderbilt Commodores",
-  "score": 0
+  "score": 101
  },
  "neutral": false,
  "venue": "Memorial Gymnasium (TN)",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-11T15:19:31.407Z",
@@ -769,5 +769,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 59,
+  "home": 101
+ }
 }

@@ -7,18 +7,18 @@
   "id": "2541",
   "abbr": "SCU",
   "name": "Santa Clara Broncos",
-  "score": 0
+  "score": 72
  },
  "home": {
   "id": "249",
   "abbr": "UNT",
   "name": "North Texas Mean Green",
-  "score": 0
+  "score": 71
  },
  "neutral": false,
  "venue": "The Super Pit",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-10T23:27:48.577Z",

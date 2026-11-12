@@ -7,18 +7,18 @@
   "id": "2502",
   "abbr": "PRST",
   "name": "Portland State Vikings",
-  "score": 0
+  "score": 32
  },
  "home": {
   "id": "36",
   "abbr": "CSU",
   "name": "Colorado State Rams",
-  "score": 0
+  "score": 44
  },
  "neutral": false,
  "venue": "Moby Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-10T23:27:48.577Z",

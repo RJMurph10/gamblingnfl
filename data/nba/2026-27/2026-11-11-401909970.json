@@ -7,18 +7,18 @@
   "id": "7",
   "abbr": "DEN",
   "name": "Denver Nuggets",
-  "score": 0
+  "score": 106
  },
  "home": {
   "id": "29",
   "abbr": "MEM",
   "name": "Memphis Grizzlies",
-  "score": 0
+  "score": 101
  },
  "neutral": false,
  "venue": "FedExForum",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-11T02:59:01.228Z",

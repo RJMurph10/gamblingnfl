@@ -7,7 +7,7 @@
   "id": "279",
   "abbr": "PAC",
   "name": "Pacific Tigers",
-  "score": 0
+  "score": 3
  },
  "home": {
   "id": "299",
@@ -18,7 +18,7 @@
  "neutral": false,
  "venue": "LBS Financial Credit Union Pyramid",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-10T23:27:48.577Z",
