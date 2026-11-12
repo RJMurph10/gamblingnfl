@@ -1,0 +1,56 @@
+name: Prop markets rebuild (one-time)
+# Adds play-by-play facts (first scorers, MLB hit types) to past seasons' prop history, then rebuilds
+# every season's prop site files with the new markets (more over/unders, specials, milestone ladders)
+# and the NHL shots-on-goal fix. Scripts from the more-prop-markets branch.
+on:
+  push:
+    branches: [nfl-weather-probe]
+    paths: [.github/workflows/props-markets-rebuild.yml]
+permissions:
+  contents: write
+concurrency:
+  group: props-daily
+  cancel-in-progress: false
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: more-prop-markets
+          path: app
+          sparse-checkout: scripts/line-history
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Add play-by-play facts
+        run: |
+          set -e
+          url="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+          git clone -q --depth 1 --branch props-history "$url" ph
+          for x in mlb:2026 mlb:2025 mlb:2024 wnba:2025 nhl:2026-27 nhl:2025-26 nhl:2024-25 nhl:2023-24 nba:2026-27 nba:2025-26 nba:2024-25; do
+            node app/scripts/line-history/add-events.mjs --dir ph --league ${x%%:*} --season ${x#*:}
+          done
+      - name: Publish
+        run: |
+          set -e
+          url="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+          publish() { # branch, build command, message
+            for attempt in 1 2 3 4 5; do
+              rm -rf dst && git clone -q --depth 1 --branch "$1" "$url" dst
+              ( cd dst && eval "$2" )
+              cd dst
+              git config user.name "line-history-bot"
+              git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+              git add -A
+              if git diff --cached --quiet; then cd ..; return 0; fi
+              git commit -q -m "$3 $(date -u +%Y-%m-%d)"
+              if git push -q origin "$1"; then cd ..; return 0; fi
+              cd ..; sleep $((attempt * 15))
+            done
+            return 1
+          }
+          publish props-history "for l in mlb wnba nhl nba; do cp ../ph/\$l/*.jsonl.gz \$l/; done" "play-by-play facts for prop specials"
+          build="set -e; for l in nba nhl nfl mlb wnba; do for f in ../ph/\$l/*.jsonl.gz; do s=\$(basename \$f .jsonl.gz); node ../app/scripts/line-history/build-props-site.mjs --league \$l --data ../ph --out . --season \$s --prices ./\$l/odds-api; done; done"
+          publish props-site "$build" "props rebuild: new markets, specials, ladders"
