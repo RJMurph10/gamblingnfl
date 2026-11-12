@@ -27,7 +27,10 @@ export const EXTRA_OU = {
     "Total Stolen Bases": "Stolen bases",
     "Total Walks (Batter)": "Walks",
   },
-  nba: { "Total Steals and Blocks": "Stl+Blk" },
+  nba: {
+    "Total Steals and Blocks": "Stl+Blk",
+    "Total Field Goals Made (incl. overtime)": "Field goals",
+  },
   wnba: { "Total Steals and Blocks": "Stl+Blk" },
   nhl: {},
 };
@@ -47,6 +50,7 @@ export const SPECIALS = {
     "To Record a Triple Double": "Triple-double",
     "First Basket": "First basket",
     "1st Team FG Scorer": "First team basket",
+    "1st 3PT FG Scorer": "First 3-pointer",
   },
   wnba: {
     "To Record a Double Double": "Double-double",
@@ -134,22 +138,49 @@ export function yesPrice(r, close = true) {
   return close ? (r.px[0] ?? r.px[1]) : (r.px[1] ?? r.px[0]);
 }
 
+/** Specials whose "yes" is always the longer price, so a yes / no pair can be told apart. */
+const YES_IS_LONGER = new Set([
+  "First goal",
+  "Last goal",
+  "2+ goals",
+  "Hat trick",
+  "First team goal",
+  "Triple-double",
+  "First basket",
+  "First team basket",
+  "First home run",
+  "First 3-pointer",
+]);
+
 /**
  * Specials from one snapshot's rows: [[athlete id, label, price, opening price]], one per player and
- * market. price = the latest ESPN kept (the close, for a finished game).
+ * market. price = the latest ESPN kept (the close, for a finished game). ESPN BET (2023–25) sends some
+ * as an unlabeled yes / no pair: the longer price is the yes for long shots (first home run); other
+ * pairs (pitcher win) can't be told apart and are left out, as is ESPN BET's pitcher win altogether
+ * (a lone row may be either side). book = the ESPN provider id the rows are from, when known.
  */
-export function specialsOf(rows, league) {
-  const map = SPECIALS[league] ?? {};
-  const out = new Map();
+export function specialsOf(rows, league, book) {
+  const map = { ...SPECIALS[league] };
+  if (book === "58") delete map["To Record Win"];
+  const seen = new Map();
   for (const r of rows ?? []) {
     const label = map[r.t];
     if (!label || !r.a) continue;
     const price = yesPrice(r, true);
     if (price == null) continue;
     const k = `${r.a}|${label}`;
-    if (!out.has(k)) out.set(k, [String(r.a), label, price, yesPrice(r, false)]);
+    const list = seen.get(k) ?? [];
+    if (!list.some((x) => x[0] === price)) list.push([price, yesPrice(r, false)]);
+    seen.set(k, list);
   }
-  return [...out.values()];
+  const out = [];
+  for (const [k, list] of seen) {
+    const [a, label] = k.split("|");
+    if (list.length > 1 && !YES_IS_LONGER.has(label)) continue;
+    const [price, open] = list.sort((x, y) => y[0] - x[0])[0];
+    out.push([a, label, price, open]);
+  }
+  return out;
 }
 
 /**
@@ -201,7 +232,8 @@ function winningPitcher(summary) {
 /**
  * Play-by-play facts for grading, from an ESPN game summary (team keys are abbreviations):
  *   nhl: { fg, lg, ftg: { [team]: athleteId } }  first / last goal scorer, each team's first (no shootout)
- *   nba / wnba: { fb, ftb: { [team]: athleteId } }  first made field goal, each team's first
+ *   nba / wnba: { fb, f3, ftb: { [team]: athleteId } }  first made field goal, first made three, each
+ *        team's first field goal
  *   mlb: { fhr, w, bat: { athleteId: { "1B", "2B", "3B", SB } } }  first home run, winning pitcher,
  *        hit types and steals from the play text
  * box (athleteId → { n }) matches MLB stolen-base plays, which name the runner by last name only.
@@ -251,7 +283,8 @@ export function gameEvents(summary, league, box = {}) {
       const t = teamOf(b);
       if (t && !ftb[t]) ftb[t] = pid(b);
     }
-    return { fb: fgs.length ? pid(fgs[0]) : null, ftb };
+    const three = fgs.find((p) => /three point/i.test(`${p.type?.text ?? ""} ${p.text ?? ""}`));
+    return { fb: fgs.length ? pid(fgs[0]) : null, f3: three ? pid(three) : null, ftb };
   }
   if (league === "mlb") {
     const bat = {};

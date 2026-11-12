@@ -16,6 +16,7 @@ const COLUMNS: [label: string, head: string][] = [
   ["Triple-double", "Trpl-dbl"],
   ["First basket", "First basket"],
   ["First team basket", "1st on team"],
+  ["First 3-pointer", "First 3"],
   ["First home run", "First HR"],
   ["Win (pitcher)", "Win (SP)"],
 ];

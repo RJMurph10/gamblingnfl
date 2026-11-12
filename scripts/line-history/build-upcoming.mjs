@@ -133,6 +133,8 @@ function mainLines(rows) {
   }
   for (const [key, m] of bare) {
     if (out.has(key)) continue;
+    // a newly added market listed at several unpriced lines is a ladder of alternates, not a main line
+    if (EXTRA_OU[KEY]?.[key.split("|")[1]] && m.size > 1) continue;
     const [line, e] = [...m.entries()].sort((x, y) => y[1].n - x[1].n || x[0] - y[0])[0];
     const [a, t] = key.split("|");
     out.set(key, { a, t, line, opened: e.opened, o: null, u: null });

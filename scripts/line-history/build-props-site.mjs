@@ -154,9 +154,11 @@ const EXTRA_GRADE = {
     g.ev?.bat && !(isPitcher(s) && s.AB == null) ? (g.ev.bat[a]?.SB ?? 0) : null,
   Walks: bat("BB"),
   "Stl+Blk": (s) => sum(num(s.STL), num(s.BLK)),
+  "Field goals": (s) => num(s.FG),
 };
 const BASE = { nba: NBA, wnba: NBA, nfl: FB, cfb: FB, nhl: NHL, mlb: MLB }[KEY] ?? {};
 const MARKETS = { ...BASE };
+const EXTRA_MARKETS = new Set(Object.keys(EXTRA_OU[KEY] ?? {}));
 for (const [t, label] of Object.entries(EXTRA_OU[KEY] ?? {}))
   if (EXTRA_GRADE[label]) MARKETS[t] = [label, EXTRA_GRADE[label]];
 
@@ -192,6 +194,8 @@ export function gradeSpecial(label, a, g) {
       return first(ev?.fb);
     case "First team basket":
       return first(ev?.ftb?.[bx.tm]);
+    case "First 3-pointer":
+      return ev && "f3" in ev ? first(ev.f3) : null;
     case "First home run":
       return first(ev?.fhr);
     case "Win (pitcher)":
@@ -204,8 +208,8 @@ export function gradeSpecial(label, a, g) {
 /** A game's yes-only bets: [[player, team, bet, price, opening price, won?]] for players on the box score. */
 function specialsBoard(g, graded) {
   const rows = [];
-  for (const b of Object.values(g.books ?? {}))
-    for (const [a, label, price, open] of specialsOf(b.rows, KEY)) {
+  for (const [pid, b] of Object.entries(g.books ?? {}))
+    for (const [a, label, price, open] of specialsOf(b.rows, KEY, pid)) {
       const bx = g.box?.[a];
       if (!bx || rows.some((r) => r.a === a && r.label === label)) continue;
       rows.push({
@@ -345,8 +349,11 @@ export function mainLines(books) {
       seen.set(key, m);
     }
     for (const [key, m] of seen) {
-      const [line, e] = [...m.entries()].sort((x, y) => y[1].n - x[1].n || x[0] - y[0])[0];
       const [a, t] = key.split("|");
+      // a newly added market listed at several lines with no prices is a ladder of alternates (ESPN
+      // BET's 2024-25 steals + blocks: 0.5 through 4.5), not a main line: leave it out
+      if (EXTRA_MARKETS.has(t) && m.size > 1) continue;
+      const [line, e] = [...m.entries()].sort((x, y) => y[1].n - x[1].n || x[0] - y[0])[0];
       picked.set(key, { a, t, line, o: e.o, u: e.u });
     }
   }

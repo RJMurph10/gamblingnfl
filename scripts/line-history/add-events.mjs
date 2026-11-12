@@ -5,7 +5,7 @@
  * them yet. One ESPN summary per game. build-props-history.mjs saves them for new games; this fills
  * seasons built before it did.
  *
- *   node scripts/line-history/add-events.mjs --dir props-history --league mlb --season 2026
+ *   node scripts/line-history/add-events.mjs --dir props-history --league mlb --season 2026 [--force]
  */
 import { readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
@@ -21,6 +21,7 @@ const opt = (n, d) => {
 const KEY = opt("league", "mlb");
 const DIR = opt("dir", "props-history");
 const SEASON = opt("season");
+const FORCE = args.includes("--force"); // recompute games that already have them
 const { sport, league } = LEAGUES[KEY];
 const HEADERS = { "User-Agent": "Mozilla/5.0 (props-history)", Accept: "application/json" };
 
@@ -44,7 +45,7 @@ const games = gunzipSync(await readFile(path))
   .split("\n")
   .filter((l) => l.trim())
   .map((l) => JSON.parse(l));
-const todo = games.filter((g) => g.final && !g.ev && Object.keys(g.box ?? {}).length);
+const todo = games.filter((g) => g.final && (FORCE || !g.ev) && Object.keys(g.box ?? {}).length);
 let added = 0;
 for (let i = 0; i < todo.length; i += 8) {
   await Promise.all(
