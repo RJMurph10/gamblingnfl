@@ -27,14 +27,25 @@ export interface CbaseModel {
 }
 
 export interface CbasePick {
-  k: "ml" | "rl";
-  side: "home" | "away";
+  /** Moneyline, run line or total. */
+  k: "ml" | "rl" | "tot";
+  /** home / away (moneyline, run line) or over / under (total). */
+  side: "home" | "away" | "over" | "under";
   /** Model chance minus the no-vig opening chance. */
   edge: number;
   price: number;
-  /** The picked side's run line (run line picks). */
+  /** The picked side's run line (run line picks), or the total. */
   line?: number;
-  res?: "W" | "L";
+  /** P: a total that landed on the number. */
+  res?: "W" | "L" | "P";
+}
+
+/** Model v2's game context: projected starters (home / away), first-pitch temperature (°F) and wind (mph). */
+export interface CbaseContext {
+  sph?: string;
+  spa?: string;
+  temp?: number;
+  wind?: number;
 }
 
 export interface CbaseLinedGame {
@@ -52,6 +63,7 @@ export interface CbaseLinedGame {
   open: CbaseLine | null;
   close: CbaseLine | null;
   m?: CbaseModel;
+  ctx?: CbaseContext;
   picks?: CbasePick[];
 }
 
@@ -67,6 +79,7 @@ export interface CbaseUpcoming {
   open?: CbaseLine | null;
   close?: CbaseLine | null;
   m?: CbaseModel;
+  ctx?: CbaseContext;
   picks?: CbasePick[];
 }
 
@@ -105,6 +118,8 @@ export interface CbaseSeason {
     minGames: number;
     mlEdge: number;
     rlEdge: number;
+    /** Total watch picks: model over/under chance this far over the no-vig opening total (v2). */
+    totEdge?: number;
     halfLife: number;
     carry: number;
     priorGames: number;
@@ -113,7 +128,7 @@ export interface CbaseSeason {
   teams: Record<string, CbaseTeam>;
   lined: CbaseLinedGame[];
   upcoming: CbaseUpcoming[];
-  record: { ml: CbaseRecord; rl: CbaseRecord };
+  record: { ml: CbaseRecord; rl: CbaseRecord; tot?: CbaseRecord };
 }
 
 /** A finished game, compact: [NCAA id, date, home, away, home runs, away runs]. */
@@ -185,7 +200,12 @@ export function startTime(iso: string): string {
 }
 
 export const pickLabel = (p: CbasePick, homeName: string, awayName: string) =>
-  `${p.side === "home" ? homeName : awayName} ${p.k === "ml" ? "ML" : signed(p.line, 1)} ${american(p.price)}`;
+  p.k === "tot"
+    ? `${p.side === "over" ? "Over" : "Under"} ${p.line} ${american(p.price)}`
+    : `${p.side === "home" ? homeName : awayName} ${p.k === "ml" ? "ML" : signed(p.line, 1)} ${american(p.price)}`;
+
+export const pickKindName = (k: CbasePick["k"]) =>
+  k === "ml" ? "moneyline" : k === "rl" ? "run line" : "total";
 
 export function recordText(r: CbaseRecord | undefined) {
   if (!r) return "—";

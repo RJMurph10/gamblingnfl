@@ -20,6 +20,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+import cbase_context as C
 import cbase_model as M
 
 ap = argparse.ArgumentParser()
@@ -28,6 +29,8 @@ ap.add_argument("--lines", required=True)
 ap.add_argument("--espn-teams", required=True)
 ap.add_argument("--season", type=int, required=True)
 ap.add_argument("--out", required=True)
+ap.add_argument("--box", help="dir with box/<year>.jsonl.gz (scripts/cbase/export-box.mjs)")
+ap.add_argument("--env", help="dir with venues.json and weather-<year>.json (venues.mjs, weather-history.mjs)")
 args = ap.parse_args()
 Y = args.season
 NCAA, LINES = Path(args.ncaa), Path(args.lines)
@@ -98,10 +101,49 @@ d1 = [t for t, x in teams.items() if x["conf"] and x["w"] + x["l"] >= 15 and "of
 for rank, t in enumerate(sorted(d1, key=lambda t: -(teams[t]["off"] + teams[t]["dfn"])), 1):
     teams[t]["rank"] = rank
 
+# ---- model v2 context: projected starters, weather, altitude, travel (cbase_context.py) ----
+ctx_by_row, ctx_up = {}, {}
+if args.box and args.env and Path(args.env, "venues.json").exists():
+    venues = json.loads(Path(args.env, "venues.json").read_text())
+    wpath = Path(args.env, f"weather-{Y}.json")
+    weather = C.Weather(json.loads(wpath.read_text()) if wpath.exists() else {}, venues)
+    ctx = C.Context(venues, seo_to_espn, weather)
+    pitchers = C.Pitchers(C.read_box(Path(args.box, f"{Y - 1}.jsonl.gz")))
+    box_by_day = {}
+    for g in C.read_box(Path(args.box, f"{Y}.jsonl.gz")):
+        box_by_day.setdefault(g["date"], []).append(g)
+    lined_by_day = {}
+    for i, (e, _) in matches.items():
+        lined_by_day.setdefault(rows[i]["date"], []).append((i, e))
+    for day in sorted(set(box_by_day) | set(lined_by_day)):
+        for i, e in lined_by_day.get(day, []):
+            g = rows[i]
+            ctx_by_row[i] = ctx.adjust(g["home"], g["away"], day, e["date"],
+                                       pitchers.projected(g["home"], day), pitchers.projected(g["away"], day))
+        pitchers.add_day(box_by_day.get(day, []))
+    for e in upcoming_espn:
+        th = next((t for t in e["teams"] if t["homeAway"] == "home"), None)
+        ta = next((t for t in e["teams"] if t["homeAway"] == "away"), None)
+        h, a = (team_map.get(th["id"]) if th else None), (team_map.get(ta["id"]) if ta else None)
+        if h and a:
+            day = (datetime.fromisoformat(e["date"].replace("Z", "+00:00")) - pd.Timedelta(hours=5)).strftime("%Y-%m-%d")
+            ctx_up[e["id"]] = ctx.adjust(h, a, day, e["date"], pitchers.projected(h, day), pitchers.projected(a, day))
+    print(f"context: {len(ctx_by_row)} lined games, {len(ctx_up)} upcoming; "
+          f"{sum(1 for x in ctx_by_row.values() if 'temp' in x[2])} with weather, "
+          f"{sum(1 for x in ctx_by_row.values() if 'sph' in x[2] and 'spa' in x[2])} with both starters projected")
+
+
+def with_ctx(ex, c):
+    """Expected runs with the context adjustment, and the context details for the site."""
+    if not c:
+        return ex, None
+    return (ex[0] + c[0], ex[1] + c[1]), (c[2] or None)
+
+
 # ---- games ----
 games = [[g["ncaa_id"], g["date"], g["home"], g["away"], g["hr"], g["ar"]] for g in rows if g["final"]]
 lined = []
-record = {k: dict(w=0, l=0, u=0.0) for k in ("ml", "rl")}
+record = {k: dict(w=0, l=0, u=0.0) for k in ("ml", "rl", "tot")}
 for i, (e, flip) in sorted(matches.items(), key=lambda x: rows[x[0]]["date"]):
     g = rows[i]
     got = M.espn_lines(e)
@@ -113,14 +155,19 @@ for i, (e, flip) in sorted(matches.items(), key=lambda x: rows[x[0]]["date"]):
     item = dict(id=g["ncaa_id"], espn=e["id"], date=g["date"], start=e["date"], home=g["home"], away=g["away"], hr=g["hr"],
                 ar=g["ar"], book=book, open=op, close=cu)
     if i in preds:
-        m = M.model_numbers(*preds[i])
+        ex, info = with_ctx(preds[i], ctx_by_row.get(i))
+        m = M.model_numbers(*ex)
         item["m"] = m
+        if info:
+            item["ctx"] = info
         gh, ga = gp_before.get(i, (0, 0))
         if gh >= M.MIN_GP and ga >= M.MIN_GP:
             picks = M.picks_for(m, op)
             for p in picks:
                 p["res"] = M.grade(p, g["hr"], g["ar"])
                 r = record[p["k"]]
+                if p["res"] == "P":
+                    continue
                 r["w" if p["res"] == "W" else "l"] += 1
                 r["u"] = round(r["u"] + (M.payout(p["price"]) if p["res"] == "W" else -1.0), 2)
             if picks:
@@ -145,7 +192,10 @@ for e in upcoming_espn:
         flags = M.add_day_flags(pd.DataFrame([{"date": day}])).iloc[0]
         ex = M.expected(sol, idx, T, h, a, flags)
         if ex:
+            ex, info = with_ctx(ex, ctx_up.get(e["id"]))
             item["m"] = M.model_numbers(*ex)
+            if info:
+                item["ctx"] = info
             if played[h] >= M.MIN_GP and played[a] >= M.MIN_GP and got:
                 picks = M.picks_for(item["m"], item.get("open") or item.get("close"))
                 if picks:
@@ -156,7 +206,7 @@ upcoming.sort(key=lambda x: x["start"])
 out = dict(
     season=Y,
     updated=datetime.now(timezone.utc).isoformat(timespec="seconds"),
-    model=dict(K=M.K, SIGMA=M.SIGMA, SD=M.SD_MARGIN, minGames=M.MIN_GP, mlEdge=M.ML_EDGE, rlEdge=M.RL_EDGE,
+    model=dict(K=M.K, SIGMA=M.SIGMA, SD=M.SD_MARGIN, minGames=M.MIN_GP, mlEdge=M.ML_EDGE, rlEdge=M.RL_EDGE, totEdge=M.TOT_EDGE,
                halfLife=M.HALF_LIFE, carry=M.CARRY, priorGames=M.PRIOR_GAMES),
     effects=dict(zip(["mu", "home", "midweek", "fri", "sun"], [round(float(x), 2) for x in sol[2 * T : 2 * T + 5]])) if sol is not None else {},
     teams=teams,
@@ -168,4 +218,5 @@ out = dict(
 Path(args.out).mkdir(parents=True, exist_ok=True)
 Path(args.out, f"season-{Y}.json").write_text(json.dumps(out, separators=(",", ":")))
 print(f"college baseball {Y}: {len(games)} games, {len(teams)} teams, {len(lined)} with lines, {len(upcoming)} upcoming, "
-      f"watch ML {record['ml']['w']}-{record['ml']['l']} {record['ml']['u']:+.1f}u, RL {record['rl']['w']}-{record['rl']['l']} {record['rl']['u']:+.1f}u")
+      f"watch ML {record['ml']['w']}-{record['ml']['l']} {record['ml']['u']:+.1f}u, RL {record['rl']['w']}-{record['rl']['l']} {record['rl']['u']:+.1f}u, "
+      f"totals {record['tot']['w']}-{record['tot']['l']} {record['tot']['u']:+.1f}u")

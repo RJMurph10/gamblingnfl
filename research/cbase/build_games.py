@@ -149,6 +149,7 @@ def block(o, which):
 BOOK_ORDER = ["100", "58", "40", "47", "45", "41", "52", "57"]  # DraftKings, ESPN BET, then older books
 
 rows_lines = {}
+team_votes = defaultdict(lambda: defaultdict(int))  # NCAA seo -> ESPN team id -> matched games
 unmatched = 0
 matched = 0
 swapped = 0
@@ -192,7 +193,10 @@ for p in sorted((DATA / "college-baseball").glob("*.jsonl.gz")):
                 b["ml_h"], b["ml_a"] = b["ml_a"], b["ml_h"]
                 b["rl_h_px"], b["rl_a_px"] = b["rl_a_px"], b["rl_h_px"]
                 b["rl_h"] = -b["rl_h"] if b["rl_h"] is not None else None
-        rec = dict(espn_id=e["id"], book=o.get("name", pid))
+        g = ncaa[i]
+        team_votes[g["away"] if flip else g["home"]][th["id"]] += 1
+        team_votes[g["home"] if flip else g["away"]][ta["id"]] += 1
+        rec = dict(espn_id=e["id"], espn_start=e["date"], book=o.get("name", pid))
         rec.update({f"o_{k}": v for k, v in op.items()})
         rec.update({f"c_{k}": v for k, v in cu.items()})
         rows_lines[i] = rec
@@ -202,4 +206,8 @@ df = pd.DataFrame(ncaa)
 lines = pd.DataFrame.from_dict(rows_lines, orient="index")
 df = df.join(lines)
 df.to_csv(OUT / "games.csv.gz", index=False)
+# NCAA team -> ESPN team id (most matched games), for venues and logos
+team_map = {seo: max(v.items(), key=lambda kv: kv[1])[0] for seo, v in team_votes.items()}
+(OUT / "team_map.json").write_text(json.dumps(team_map))
+print(f"team map: {len(team_map)} NCAA teams with an ESPN id")
 print(df.groupby("season").agg(games=("hr", "size"), with_line=("o_tot", lambda s: s.notna().sum())))

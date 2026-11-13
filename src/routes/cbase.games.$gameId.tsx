@@ -137,6 +137,27 @@ function CbaseGamePage() {
                   <td className="px-4 py-2 font-sans text-sm">Total</td>
                   <td className="px-4 py-2 text-right">{m.t.toFixed(1)}</td>
                 </tr>
+                {g.ctx?.sph || g.ctx?.spa ? (
+                  <tr>
+                    <td
+                      className="px-4 py-2 font-sans text-sm"
+                      title="The NCAA posts no probable starters: each team's starter from its last game on the same kind of day (Fri / Sat / Sun / midweek)"
+                    >
+                      Projected starters
+                    </td>
+                    <td className="px-4 py-2 text-right">
+                      {g.ctx.spa ?? "?"} · {g.ctx.sph ?? "?"}
+                    </td>
+                  </tr>
+                ) : null}
+                {g.ctx?.temp != null ? (
+                  <tr>
+                    <td className="px-4 py-2 font-sans text-sm">Weather at first pitch</td>
+                    <td className="px-4 py-2 text-right">
+                      {g.ctx.temp}°{g.ctx.wind != null ? ` · wind ${g.ctx.wind} mph` : ""}
+                    </td>
+                  </tr>
+                ) : null}
               </tbody>
             </table>
           ) : (
@@ -155,7 +176,8 @@ function CbaseGamePage() {
           <LineTable open={g.open} close={g.close} homeName={homeName} awayName={awayName} />
           <p className="px-4 py-3 text-sm text-mute">
             Watch picks are graded at the opening price: moneyline when the model is{" "}
-            {pct(data.model.mlEdge)}+ over the no-vig opener, run line {pct(data.model.rlEdge)}+.{" "}
+            {pct(data.model.mlEdge)}+ over the no-vig opener, run line {pct(data.model.rlEdge)}+,
+            total {pct(data.model.totEdge ?? 0.12)}+.{" "}
             <Link to="/cbase/model" className="text-acc hover:underline">
               About the model
             </Link>
