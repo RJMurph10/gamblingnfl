@@ -1,0 +1,22 @@
+name: College baseball box scores (research)
+on:
+  push:
+    branches: [nfl-weather-probe]
+    paths: [scripts/cbase/export-box.mjs, .github/workflows/cbase-box-probe.yml]
+jobs:
+  box:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        year: [2022, 2023, 2024, 2025, 2026]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: git clone -q --depth 1 --branch cbase-history "https://github.com/${{ github.repository }}.git" hist
+      - run: node scripts/cbase/export-box.mjs ${{ matrix.year }} hist out
+      - uses: actions/upload-artifact@v4
+        with:
+          name: box-${{ matrix.year }}
+          path: out/box/${{ matrix.year }}.jsonl.gz
