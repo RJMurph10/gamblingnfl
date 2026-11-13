@@ -173,20 +173,14 @@ function CbaseDashboard() {
 
       <div className="grid gap-6 lg:grid-cols-12">
         <section className="min-w-0 space-y-6 lg:col-span-8">
-          <CbaseUpcomingGames
-            rows={upcoming}
-            teams={teams}
-            empty={
-              <>
-                The season is over. College baseball runs mid-February to late June; the{" "}
-                {data.season} season&apos;s games are under{" "}
-                <Link to="/cbase/games" className="text-acc hover:underline">
-                  Games
-                </Link>
-                .
-              </>
-            }
-          />
+          {/* like MLB: no Upcoming panel until there are upcoming games with lines */}
+          {upcoming.length ? (
+            <CbaseUpcomingGames
+              rows={upcoming}
+              teams={teams}
+              empty="No upcoming games with lines."
+            />
+          ) : null}
           <CbaseRecentGames
             title="Recent games"
             rows={recent}

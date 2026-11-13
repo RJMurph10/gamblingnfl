@@ -91,14 +91,17 @@ function CbaseGamesPage() {
         }
       />
       <div className="mb-4 flex flex-wrap items-center gap-2">
-        <button
-          type="button"
-          aria-pressed={active === "upcoming"}
-          onClick={() => setTab("upcoming")}
-          className={chip(active === "upcoming")}
-        >
-          Upcoming{upcoming.length ? "" : " (none)"}
-        </button>
+        {/* like MLB: the Upcoming tab only shows once there are upcoming games with lines */}
+        {(data?.upcoming ?? []).length ? (
+          <button
+            type="button"
+            aria-pressed={active === "upcoming"}
+            onClick={() => setTab("upcoming")}
+            className={chip(active === "upcoming")}
+          >
+            Upcoming{upcoming.length ? "" : " (none)"}
+          </button>
+        ) : null}
         <button
           type="button"
           aria-pressed={active === "results"}
