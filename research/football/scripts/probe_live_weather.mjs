@@ -1,5 +1,8 @@
 // Temporary: what ESPN and NWS say about weather for a live game.
-const id = process.argv[2];
+const sb = await (await fetch("https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates=20261112")).json();
+const ev = sb.events?.find((e) => /NYG/.test(e.shortName ?? "")) ?? sb.events?.[0];
+const id = ev?.id;
+console.log("event", id, ev?.shortName, "scoreboard weather:", JSON.stringify(ev?.weather));
 const UA = { "User-Agent": "GamblingNFL/1.0 https://gamblingnfl.lovable.app/", Accept: "application/geo+json" };
 const j = async (u, h = {}) => { try { const r = await fetch(u, { headers: h }); return r.ok ? r.json() : `HTTP ${r.status}`; } catch (e) { return String(e); } };
 const s = await j(`https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=${id}`);
