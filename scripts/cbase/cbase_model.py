@@ -28,8 +28,10 @@ K = 0.349  # P(home win) = logistic(K × predicted margin)
 SIGMA = 6.12  # sd of the total around the predicted total
 SD_MARGIN = 5.77  # sd of the margin around the predicted margin
 MIN_GP = 5  # both teams need this many earlier games for a pick
-ML_EDGE = 0.08  # watch: model win chance 8+ points over the no-vig opening moneyline
-RL_EDGE = 0.05  # watch: model cover chance 5+ points over the no-vig opening run line
+# watch picks against the no-vig opening line (model v2, research/cbase/compare.py, 2024–26 at the opening price):
+ML_EDGE = 0.08  # moneyline: +8.8% / −0.3% / +8.6%
+RL_EDGE = 0.08  # run line: +14.5% / −12.1% / +17.2% (no steady edge; tracked)
+TOT_EDGE = 0.12  # total: +2.5% / +11.5% / +8.8%, positive every season under every setting tried
 
 
 def read_jsonl(p):
@@ -303,10 +305,24 @@ def picks_for(m, line):
             side = "home" if edge > 0 else "away"
             out.append(dict(k="rl", side=side, edge=round(abs(edge), 4), line=line["rl"] if side == "home" else -line["rl"],
                             price=line["rlH"] if side == "home" else line["rlA"]))
+    if line.get("tot") is not None and line.get("ov") is not None and line.get("un") is not None:
+        io, iu = implied(line["ov"]), implied(line["un"])
+        p_over = 1 - phi((line["tot"] - m["t"]) / SIGMA)
+        edge = p_over - io / (io + iu)
+        if abs(edge) >= TOT_EDGE:
+            side = "over" if edge > 0 else "under"
+            out.append(dict(k="tot", side=side, edge=round(abs(edge), 4), line=line["tot"],
+                            price=line["ov"] if side == "over" else line["un"]))
     return out
 
 
 def grade(p, hr, ar):
+    """'W', 'L' or 'P' (a total that lands on the number)."""
+    if p["k"] == "tot":
+        runs = hr + ar
+        if runs == p["line"]:
+            return "P"
+        return "W" if (runs > p["line"]) == (p["side"] == "over") else "L"
     margin = (hr - ar) if p["side"] == "home" else (ar - hr)
     if p["k"] == "ml":
         return "W" if margin > 0 else "L"

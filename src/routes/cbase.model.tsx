@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { PageTitle, Panel, PanelHeader } from "@/components/shared/booth";
 import { pct, signed } from "@/lib/cbase/cbase";
@@ -10,25 +11,29 @@ export const Route = createFileRoute("/cbase/model")({
       {
         name: "description",
         content:
-          "How the college baseball run-ratings model works and what three seasons of lines say about it: watch picks on moneylines and run lines, no edge on totals.",
+          "How the college baseball model works (run ratings plus starting pitchers, weather, altitude and travel) and what three seasons of lines say about it: watch picks on totals, moneylines and run lines.",
       },
     ],
   }),
   component: CbaseModelPage,
 });
 
-/** Season, ML w, l, units, RL w, l, units: the season builder's replay (each game predicted from earlier games). */
-const REPLAY: [number, number, number, number, number, number, number][] = [
-  [2024, 340, 234, 27.9, 278, 239, 8.8],
-  [2025, 155, 153, -0.6, 222, 215, 12.6],
-  [2026, 58, 65, 9.6, 111, 109, 1.3],
+/** Season, then w, l, units for totals, moneylines and run lines: the season builder's replay of model v2
+ * (each game predicted from earlier games; totals 12%+, moneylines 8%+, run lines 8%+ off the no-vig opener). */
+const REPLAY: [number, ...number[]][] = [
+  [2024, 207, 165, 13.1, 310, 205, 29.5, 154, 103, 32.6],
+  [2025, 186, 137, 34.3, 147, 139, 8.4, 84, 98, -11.6],
+  [2026, 176, 130, 22.9, 44, 45, 17.6, 27, 22, 7.4],
 ];
 
-/** Season, model total miss, opening total miss, closing total miss (runs, games with lines). */
-const ACCURACY: [number, number, number, number][] = [
-  [2024, 4.82, 4.79, 4.73],
-  [2025, 4.57, 4.54, 4.44],
-  [2026, 4.45, 4.36, 4.29],
+/** What model v2 adds to each side's expected runs (research fit on 2022–25, walk-forward). */
+const CONTEXT: [string, string][] = [
+  ["Temperature", "+0.014 per °F above 65 (each side)"],
+  ["Wind speed", "+0.06 per mph above 8 (each side)"],
+  ["Altitude", "+0.10 per 1,000 ft (each side)"],
+  ["Opposing starter", "−0.15 per run he saves vs an average starter"],
+  ["Visitors' time zones crossed", "−0.13 their runs, +0.10 allowed, per hour"],
+  ["Rain", "left out: its effect flipped sign by season"],
 ];
 
 const u = (n: number) => `${n > 0 ? "+" : ""}${n.toFixed(1)}u`;
@@ -54,17 +59,25 @@ function CbaseModelPage() {
               game, since ESPN lists only about a third of them.
             </p>
             <p>
-              <b>Watch picks, not ★.</b> Moneylines when the model&apos;s win chance is{" "}
-              {pct(data?.model.mlEdge ?? 0.08)}+ over the no-vig opening moneyline, and run lines at{" "}
-              {pct(data?.model.rlEdge ?? 0.05)}+, were up +36.9 and +22.7 units over 2024–26, every
-              season positive except 2025 moneylines (about even). But the same rules lost money in
-              2025 and 2026 under slightly different model settings, so it isn&apos;t proven the way
-              the college basketball ★ picks are. The next step is starting pitchers, the biggest
-              thing the model doesn&apos;t know yet.
+              <b>Model v2</b> adds what the ratings can&apos;t see: each game&apos;s{" "}
+              <b>projected starting pitchers</b> (rated from their earlier starts in the NCAA box
+              scores; the NCAA posts no probables, so each team&apos;s starter from its last game on
+              the same kind of day), the <b>weather</b> at first pitch (temperature, wind), the home
+              town&apos;s <b>altitude</b>, and the visitors&apos; <b>travel</b> (time zones,
+              distance).
             </p>
             <p>
-              <b>Totals: no edge.</b> The model&apos;s totals miss by more than the opening total
-              every season, so it makes no total picks.
+              <b>Totals: the steadiest edge.</b> When the model&apos;s over or under chance is{" "}
+              {pct(data?.model.totEdge ?? 0.12)}+ over the no-vig opening total, picks were up in
+              2024, 2025 and 2026 (+2.5%, +11.5%, +8.8% in the research), under every model setting
+              tried, overs and unders both, and the total moved toward the pick twice as often as
+              away from it.
+            </p>
+            <p>
+              <b>Moneylines</b> ({pct(data?.model.mlEdge ?? 0.08)}+) and <b>run lines</b> (
+              {pct(data?.model.rlEdge ?? 0.08)}+) are still watch picks: up overall, but a season
+              can swing either way with the model&apos;s settings, so neither is proven the way the
+              college basketball ★ picks are.
             </p>
           </div>
         </Panel>
@@ -75,32 +88,33 @@ function CbaseModelPage() {
             aside={<span className="label-mono">graded at the opening price · 1u each</span>}
           />
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[480px] text-sm">
+            <table className="w-full min-w-[560px] text-sm">
               <thead>
                 <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
                   <th className="px-4 py-2 font-normal">Season</th>
-                  <th className="px-2 py-2 text-right font-normal">Moneyline</th>
-                  <th className="px-2 py-2 text-right font-normal">Units</th>
-                  <th className="px-2 py-2 text-right font-normal">Run line</th>
-                  <th className="px-4 py-2 text-right font-normal">Units</th>
+                  {["Totals", "Moneyline", "Run line"].map((k) => (
+                    <th key={k} colSpan={2} className="px-2 py-2 text-right font-normal">
+                      {k}
+                    </th>
+                  ))}
                 </tr>
               </thead>
               <tbody className="divide-y divide-line/5 font-mono text-xs">
-                {REPLAY.map(([s, mw, ml, mu, rw, rl, ru]) => (
+                {REPLAY.map(([s, ...r]) => (
                   <tr key={s}>
                     <td className="px-4 py-2">{s}</td>
-                    <td className="px-2 py-2 text-right">
-                      {mw}-{ml}
-                    </td>
-                    <td className={`px-2 py-2 text-right ${mu > 0 ? "text-win" : "text-loss"}`}>
-                      {u(mu)}
-                    </td>
-                    <td className="px-2 py-2 text-right">
-                      {rw}-{rl}
-                    </td>
-                    <td className={`px-4 py-2 text-right ${ru > 0 ? "text-win" : "text-loss"}`}>
-                      {u(ru)}
-                    </td>
+                    {[0, 3, 6].map((i) => (
+                      <Fragment key={i}>
+                        <td className="px-2 py-2 text-right">
+                          {r[i]}-{r[i + 1]}
+                        </td>
+                        <td
+                          className={`px-2 py-2 text-right ${r[i + 2] > 0 ? "text-win" : "text-loss"}`}
+                        >
+                          {u(r[i + 2])}
+                        </td>
+                      </Fragment>
+                    ))}
                   </tr>
                 ))}
               </tbody>
@@ -116,25 +130,15 @@ function CbaseModelPage() {
         <div className="grid gap-6 lg:grid-cols-2">
           <Panel padded={false}>
             <PanelHeader
-              title="Totals vs the market"
-              aside={<span className="label-mono">average miss, runs</span>}
+              title="What v2 adds"
+              aside={<span className="label-mono">runs per side per game</span>}
             />
             <table className="w-full text-sm">
-              <thead>
-                <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
-                  <th className="px-4 py-2 font-normal">Season</th>
-                  <th className="px-2 py-2 text-right font-normal">Model</th>
-                  <th className="px-2 py-2 text-right font-normal">Opener</th>
-                  <th className="px-4 py-2 text-right font-normal">Close</th>
-                </tr>
-              </thead>
               <tbody className="divide-y divide-line/5 font-mono text-xs">
-                {ACCURACY.map(([s, m, o, c]) => (
-                  <tr key={s}>
-                    <td className="px-4 py-2">{s}</td>
-                    <td className="px-2 py-2 text-right text-loss">{m.toFixed(2)}</td>
-                    <td className="px-2 py-2 text-right">{o.toFixed(2)}</td>
-                    <td className="px-4 py-2 text-right">{c.toFixed(2)}</td>
+                {CONTEXT.map(([k, v]) => (
+                  <tr key={k}>
+                    <td className="px-4 py-2 font-sans text-sm">{k}</td>
+                    <td className="px-4 py-2 text-right">{v}</td>
                   </tr>
                 ))}
               </tbody>

@@ -94,8 +94,8 @@ function CbaseDashboard() {
     return <CbaseEmpty>College baseball data couldn&apos;t be loaded right now.</CbaseEmpty>;
 
   const { ml, rl } = data.record;
+  const tot = data.record.tot ?? { w: 0, l: 0, u: 0 };
   const winRate = winShare(stats.winner.right, stats.winner.wrong);
-  const totRate = winShare(stats.totals.w, stats.totals.l);
   const clvRate = stats.clv.picks ? (stats.clv.ours / stats.clv.picks) * 100 : null;
   const through = stats.through
     ? new Date(`${stats.through}T12:00:00Z`).toLocaleDateString([], {
@@ -122,14 +122,11 @@ function CbaseDashboard() {
             tone={tone(winRate, stats.winner.market ?? 50)}
           />
           <StatCard
-            label="Totals · model"
-            value={fmt(totRate)}
-            unit={totRate === null ? undefined : "%"}
-            note={note(
-              `${stats.totals.w}-${stats.totals.l} O/U at the opening total`,
-              "not a watch pick",
-            )}
-            tone={tone(totRate, 52.4)}
+            label="Totals · watch picks"
+            value={fmt(winShare(tot.w, tot.l))}
+            unit={tot.w + tot.l ? "%" : undefined}
+            note={recText(tot)}
+            tone={tot.u > 0 ? "win" : tot.u < 0 ? "loss" : "mute"}
           />
           <StatCard
             label="Run lines · watch picks"
@@ -160,7 +157,7 @@ function CbaseDashboard() {
           <StatCard
             label="Model edge · watch moneylines"
             value={unitsText(ml.u)}
-            note={note(recText(ml), `every watch pick ${unitsText(ml.u + rl.u)}`)}
+            note={note(recText(ml), `every watch pick ${unitsText(ml.u + rl.u + tot.u)}`)}
             tone={ml.u > 0 ? "win" : ml.u < 0 ? "loss" : "mute"}
           />
         </div>
@@ -211,12 +208,13 @@ function CbaseDashboard() {
             </h2>
             <p className="mt-2 text-sm text-mute">
               <span className="font-semibold text-foreground">
-                Not ★ best bets yet. Moneylines {Math.round(data.model.mlEdge * 100)}%+ and run
-                lines {Math.round(data.model.rlEdge * 100)}%+ off the no-vig opener.
+                Not ★ best bets yet. Totals {Math.round((data.model.totEdge ?? 0.12) * 100)}%+,
+                moneylines {Math.round(data.model.mlEdge * 100)}%+ and run lines{" "}
+                {Math.round(data.model.rlEdge * 100)}%+ off the no-vig opener.
               </span>{" "}
-              Up +37u and +23u over 2024–26 (2025 moneylines about even), but the result depends on
-              the model&apos;s settings, so they&apos;re tracked here while the model gets stronger
-              (starting pitchers next).
+              The model now knows each game&apos;s projected starters, the weather at first pitch,
+              altitude and travel. Totals were up in all three seasons (2024–26) under every setting
+              tested; moneylines and run lines still swing with the settings.
             </p>
             <div className="mt-3 divide-y divide-line/5 rounded-lg border border-line/10">
               {watch.length ? (

@@ -6,6 +6,7 @@ import {
   dayLabel,
   etDay,
   pct,
+  pickKindName,
   pickLabel,
   signed,
   startTime,
@@ -137,10 +138,12 @@ export function PickChip({
       ? "bg-win/10 text-win ring-win/25"
       : pick.res === "L"
         ? "bg-loss/10 text-loss ring-loss/25"
-        : "bg-acc/10 text-acc ring-acc/25";
+        : pick.res === "P"
+          ? "bg-panel2 text-mute ring-line/10"
+          : "bg-acc/10 text-acc ring-acc/25";
   return (
     <span
-      title={`Watch: model ${pct(pick.edge, 1)} over the no-vig opening ${pick.k === "ml" ? "moneyline" : "run line"}`}
+      title={`Watch: model ${pct(pick.edge, 1)} over the no-vig opening ${pickKindName(pick.k)}`}
       className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 font-mono text-[10px] ring-1 ${tone}`}
     >
       {pickLabel(pick, homeName, awayName)}
