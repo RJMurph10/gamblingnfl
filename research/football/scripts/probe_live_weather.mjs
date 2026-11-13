@@ -1,20 +1,47 @@
-// Temporary: what ESPN and NWS say about weather for a live game.
-const sb = await (await fetch("https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates=20261112")).json();
-const ev = sb.events?.find((e) => /NYG/.test(e.shortName ?? "")) ?? sb.events?.[0];
-const id = ev?.id;
-console.log("event", id, ev?.shortName, "scoreboard weather:", JSON.stringify(ev?.weather));
-const UA = { "User-Agent": "GamblingNFL/1.0 https://gamblingnfl.lovable.app/", Accept: "application/geo+json" };
-const j = async (u, h = {}) => { try { const r = await fetch(u, { headers: h }); return r.ok ? r.json() : `HTTP ${r.status}`; } catch (e) { return String(e); } };
-const s = await j(`https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=${id}`);
-console.log("ESPN status:", s?.header?.competitions?.[0]?.status?.type?.detail);
-console.log("ESPN gameInfo.weather:", JSON.stringify(s?.gameInfo?.weather, null, 1));
-const p = await j("https://api.weather.gov/points/40.8135,-74.0745", UA);
-const h = await j(p?.properties?.forecastHourly, UA);
-console.log("NWS hourly (next 6):");
-for (const x of (h?.properties?.periods ?? []).slice(0, 6))
-  console.log(x.startTime, x.temperature, x.shortForecast, "| wind", x.windSpeed, x.windDirection, "| pop", x.probabilityOfPrecipitation?.value);
-for (const st of ["KTEB", "KEWR"]) {
-  const o = await j(`https://api.weather.gov/stations/${st}/observations/latest`, UA);
-  const q = o?.properties;
-  console.log(st, q?.timestamp, q?.textDescription, "| wind km/h", q?.windSpeed?.value, "gust", q?.windGust?.value, "| precip last hr mm", q?.precipitationLastHour?.value);
+/**
+ * ESPN's college baseball teams (id, names, abbreviation, logo) for matching ESPN's games to the NCAA's
+ * and for team logos. ESPN's college baseball team ids are their own: they don't match the ids in
+ * ESPN's logo URLs (Oklahoma baseball is 112, but teamlogos/ncaa/500/112.png is Tufts), so the logo
+ * comes from ESPN's own team record.
+ *
+ *   node scripts/cbase/espn-teams.mjs <out-dir>   → <out-dir>/espn-teams.json
+ */
+import { mkdir, writeFile } from "node:fs/promises";
+import { join } from "node:path";
+
+const OUT = process.argv[2] ?? "out";
+const url =
+  "https://site.api.espn.com/apis/site/v2/sports/baseball/college-baseball/teams?limit=1000";
+let data = null;
+for (let i = 1; i <= 4 && !data; i++) {
+  try {
+    const r = await fetch(url);
+    if (r.ok) data = await r.json();
+  } catch {
+    // retry
+  }
+  if (!data) await new Promise((res) => setTimeout(res, i * 3000));
 }
+const teams = (data?.sports?.[0]?.leagues?.[0]?.teams ?? []).map(({ team: x }) => {
+  const logos = x.logos ?? [];
+  const logo = (logos.find((l) => (l.rel ?? []).includes("default")) ?? logos[0])?.href ?? "";
+  return {
+    id: String(x.id),
+    location: x.location ?? "",
+    name: x.name ?? "",
+    nickname: x.nickname ?? "",
+    abbr: x.abbreviation ?? "",
+    display: x.displayName ?? "",
+    short: x.shortDisplayName ?? "",
+    logo,
+  };
+});
+if (!teams.length) {
+  console.error("ESPN teams: none returned");
+  process.exit(1);
+}
+await mkdir(OUT, { recursive: true });
+await writeFile(join(OUT, "espn-teams.json"), JSON.stringify(teams));
+console.log(`ESPN teams: ${teams.length}, ${teams.filter((t) => t.logo).length} with logos`);
+const ou = teams.find((t) => t.location === "Oklahoma");
+if (ou) console.log(`  e.g. ${ou.display}: ${ou.id} → ${ou.logo}`);

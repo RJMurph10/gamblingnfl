@@ -10,4 +10,4 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
-      - run: node research/football/scripts/probe_live_weather.mjs 401773100
+      - run: node research/football/scripts/probe_live_weather.mjs /tmp/out && node -e "const t=require('/tmp/out/espn-teams.json');for (const n of ['Oklahoma','Tufts','Georgia Tech','North Carolina']) console.log(JSON.stringify(t.find(x=>x.location===n)))"
