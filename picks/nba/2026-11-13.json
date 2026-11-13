@@ -1,6 +1,6 @@
 {
  "day": "2026-11-13",
- "updated": "2026-11-13T12:39:56.424Z",
+ "updated": "2026-11-13T21:00:52.122Z",
  "picks": [
   {
    "id": "401909296-spread",
@@ -30,8 +30,8 @@
    "edge": 14.3,
    "best": true,
    "firstSeen": "2026-11-13T09:24:21.461Z",
-   "latest": 218.5,
-   "latestAt": "2026-11-13T12:39:56.424Z",
+   "latest": 219.5,
+   "latestAt": "2026-11-13T21:00:52.122Z",
    "alerted": false
   },
   {
@@ -47,7 +47,7 @@
    "best": true,
    "firstSeen": "2026-11-13T09:24:21.461Z",
    "latest": -2.5,
-   "latestAt": "2026-11-13T12:39:56.424Z",
+   "latestAt": "2026-11-13T21:00:52.122Z",
    "alerted": false
   },
   {
@@ -63,7 +63,39 @@
    "best": false,
    "firstSeen": "2026-11-13T09:24:21.461Z",
    "latest": 7.5,
-   "latestAt": "2026-11-13T12:39:56.424Z",
+   "latestAt": "2026-11-13T21:00:52.122Z",
+   "alerted": false
+  },
+  {
+   "id": "401909299-total",
+   "game": "ATL @ CHI",
+   "tip": "2026-11-14T01:00Z",
+   "market": "total",
+   "pick": "Under 246.5",
+   "line": 246.5,
+   "open": 246.5,
+   "model": 241.5,
+   "edge": 5,
+   "best": false,
+   "firstSeen": "2026-11-13T21:00:52.122Z",
+   "latest": 245.5,
+   "latestAt": "2026-11-13T21:00:52.122Z",
+   "alerted": false
+  },
+  {
+   "id": "401909301-spread",
+   "game": "UTAH @ HOU",
+   "tip": "2026-11-14T01:30Z",
+   "market": "spread",
+   "pick": "HOU -15.5",
+   "line": -15.5,
+   "open": -17.5,
+   "model": 17.4,
+   "edge": 1.9,
+   "best": false,
+   "firstSeen": "2026-11-13T21:00:52.122Z",
+   "latest": -15.5,
+   "latestAt": "2026-11-13T21:00:52.122Z",
    "alerted": false
   },
   {
@@ -78,8 +110,8 @@
    "edge": 6.9,
    "best": false,
    "firstSeen": "2026-11-13T09:24:21.461Z",
-   "latest": 219.5,
-   "latestAt": "2026-11-13T12:39:56.424Z",
+   "latest": 220.5,
+   "latestAt": "2026-11-13T21:00:52.122Z",
    "alerted": false
   },
   {
@@ -95,7 +127,7 @@
    "best": true,
    "firstSeen": "2026-11-13T09:24:21.461Z",
    "latest": -12.5,
-   "latestAt": "2026-11-13T12:39:56.424Z",
+   "latestAt": "2026-11-13T21:00:52.122Z",
    "alerted": false
   },
   {
@@ -110,8 +142,8 @@
    "edge": 6.7,
    "best": false,
    "firstSeen": "2026-11-13T09:24:21.461Z",
-   "latest": 219.5,
-   "latestAt": "2026-11-13T12:39:56.424Z",
+   "latest": 218.5,
+   "latestAt": "2026-11-13T21:00:52.122Z",
    "alerted": false
   },
   {
@@ -127,7 +159,7 @@
    "best": false,
    "firstSeen": "2026-11-13T09:24:21.461Z",
    "latest": 7.5,
-   "latestAt": "2026-11-13T09:24:21.461Z",
+   "latestAt": "2026-11-13T21:00:52.122Z",
    "alerted": false
   }
  ]
