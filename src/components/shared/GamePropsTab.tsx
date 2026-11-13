@@ -173,7 +173,9 @@ export function ClosedPropLines({
   }, [past, live.data]);
   const inPlay = !final && live.data?.state !== "post";
 
-  if (closed.isLoading || history.isLoading) return <Loading />;
+  // don't flash the fallback while the pregame board loads
+  if (closed.isLoading || history.isLoading || (!closed.data && pregame.isLoading))
+    return <Loading />;
   const sp: SpecialRow[] | undefined =
     board?.sp ?? past?.sp?.map((r) => [r[0], r[1], r[2], r[3], r[4]] as SpecialRow);
   const away = board?.away.abbr ?? past?.away.abbr ?? game.away;
@@ -277,7 +279,7 @@ export function GamePropsTab({ game, away, home }: { game: Game; away: Team; hom
     return (
       <div className="space-y-6">
         <ClosedPropLines league="nfl" game={ref} final={game.status === "final"} fallback={board} />
-        <ClosedTdScorers game={game} id={ref.id} />
+        <ClosedTdScorers game={game} gameRef={ref} />
       </div>
     );
   if (upcoming.isLoading) return <Loading />;
@@ -323,17 +325,31 @@ export function touchdownsByPlayer(lines: { name: string; stats?: Record<string,
 }
 
 /** A started or finished NFL game's touchdown-scorer prices (last pull before kickoff) and who scored. */
-function ClosedTdScorers({ game, id }: { game: Game; id: string }) {
+function ClosedTdScorers({ game, gameRef }: { game: Game; gameRef: PropGameRef }) {
+  const id = gameRef.id;
   const closed = useQuery({
     queryKey: ["closed-props", "nfl", id],
     queryFn: () => getClosedProps({ data: { league: "nfl", id } }),
     enabled: /^\d+$/.test(id),
     staleTime: (q) => (q.state.data ? 30 * 60_000 : 60_000),
   });
+  // a live game whose closing board isn't saved yet: the last pregame board's touchdown prices
+  const pregame = useQuery({
+    queryKey: ["upcoming-props", "nfl"],
+    queryFn: () => getUpcomingProps({ data: { league: "nfl" } }),
+    enabled: game.status !== "final" && !closed.isLoading && !closed.data?.td?.length,
+    staleTime: 5 * 60_000,
+  });
+  const board = closed.data?.td?.length
+    ? closed.data
+    : pregame.data
+      ? findPropGame(pregame.data, gameRef)
+      : undefined;
+  // touchdowns so far (live) or final; anytime and 2+ cash as they happen
   const touchdowns = useMemo(() => {
-    if (game.status !== "final") return undefined;
+    if (game.status !== "final" && game.status !== "live") return undefined;
     return touchdownsByPlayer(game.boxScore ?? []);
   }, [game.status, game.boxScore]);
-  if (!closed.data?.td?.length) return null;
-  return <TdScorers game={closed.data} touchdowns={touchdowns} />;
+  if (!board?.td?.length) return null;
+  return <TdScorers game={board} touchdowns={touchdowns} live={game.status === "live"} />;
 }
