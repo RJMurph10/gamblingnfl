@@ -22,15 +22,16 @@ export const Route = createFileRoute("/cbase/model")({
  * (each game predicted from earlier games; totals 8%+ priced by simulation, moneylines 8%+, run lines 8%+
  * off the no-vig opener; no picks in June, the NCAA tournament). */
 const REPLAY: [number, ...number[]][] = [
-  [2024, 417, 297, 65.5, 301, 188, 30.5, 151, 94, 38.8],
-  [2025, 427, 309, 84.5, 143, 131, 8.8, 82, 88, -4.0],
-  [2026, 311, 228, 43.3, 43, 45, 16.4, 24, 21, 5.6],
+  [2024, 469, 308, 95.1, 301, 188, 30.5, 151, 94, 38.8],
+  [2025, 456, 304, 112.8, 143, 131, 8.8, 82, 88, -4.0],
+  [2026, 344, 237, 62.6, 43, 45, 16.4, 24, 21, 5.6],
 ];
 
 /** What model v2 adds to each side's expected runs (research fit on 2022–25, walk-forward). */
 const CONTEXT: [string, string][] = [
   ["Temperature", "+0.014 per °F above 65 (each side)"],
   ["Wind speed", "+0.06 per mph above 8 (each side)"],
+  ["Wind direction", "each park's own: learned from its earlier games, capped at ±4 runs"],
   ["Altitude", "+0.10 per 1,000 ft (each side)"],
   ["Opposing starter", "−0.15 per run he saves vs an average starter"],
   ["Visitors' time zones crossed", "−0.13 their runs, +0.10 allowed, per hour"],

@@ -11,6 +11,10 @@ Each side's expected runs move by:
   altitude               the home town's elevation
   travel                 the visitors' time-zone change and distance from home
 
+  wind direction         each home park's own response to the wind's direction (wind_parks.json: total runs
+                         per mph of wind blowing east / north, ridge-fit per park on earlier seasons only,
+                         research/cbase/wind.py), since park orientations aren't on file
+
 Coefficients: the research fit on 2022–25 (walk-forward), used for 2026 there. Rain is left out: its fitted
 effect flipped sign from season to season.
 """
@@ -26,7 +30,10 @@ from zoneinfo import ZoneInfo
 
 import numpy as np
 
-COEF = dict(opp_sp=-0.154, opp_spd=0.101, temp=0.014, wind=0.059, elev=0.104, tz_bat=-0.132, tz_pitch=-0.099, dist_bat=0.205)
+COEF = dict(const=0.037, opp_sp=-0.154, opp_spd=0.101, temp=0.014, wind=0.059, elev=0.104, tz_bat=-0.132, tz_pitch=-0.099,
+            dist_bat=0.205)
+WIND_PARKS = json.loads((Path(__file__).parent / "wind_parks.json").read_text())
+WIND_CAP = 4.0  # runs, either way
 SHRINK_IP = 15.0
 IP_PRIOR, IP_PRIOR_N = 4.5, 3.0
 
@@ -169,13 +176,14 @@ class Weather:
         if v and v.get("lat") is not None and v.get("tz"):
             url = (
                 f"https://api.open-meteo.com/v1/forecast?latitude={v['lat']}&longitude={v['lon']}"
-                "&hourly=temperature_2m,wind_speed_10m&temperature_unit=fahrenheit&wind_speed_unit=mph"
+                "&hourly=temperature_2m,wind_speed_10m,wind_direction_10m&temperature_unit=fahrenheit&wind_speed_unit=mph"
                 f"&past_days=14&forecast_days=14&timezone={v['tz']}"
             )
             try:
                 with urllib.request.urlopen(url, timeout=20) as r:
                     h = json.load(r).get("hourly") or {}
-                out = {t: (h["temperature_2m"][i], h["wind_speed_10m"][i]) for i, t in enumerate(h.get("time", []))}
+                out = {t: (h["temperature_2m"][i], h["wind_speed_10m"][i], h["wind_direction_10m"][i])
+                       for i, t in enumerate(h.get("time", []))}
             except Exception:
                 out = None
         self.forecast[espn_id] = out
@@ -184,26 +192,32 @@ class Weather:
     def at(self, espn_id, date, hour):
         hours = [h for h in range(hour, hour + 3) if 10 <= h <= 22]
         w = self.archive.get(espn_id)
-        temps, winds = [], []
+        temps, winds, vec = [], [], []
+
+        def add(t, sp, d):
+            temps.append(t)
+            if sp is not None:
+                winds.append(sp)
+                if d is not None:
+                    to = math.radians((d + 180) % 360)  # the direction the wind blows toward
+                    vec.append((sp * math.sin(to), sp * math.cos(to)))
+
         if w:
             day_i = (datetime.strptime(date, "%Y-%m-%d") - datetime.strptime(w["start"], "%Y-%m-%d")).days
             for h in hours:
                 j = day_i * 13 + (h - 10)
                 if 0 <= j < len(w["t"]) and w["t"][j] is not None:
-                    temps.append(w["t"][j])
-                    if w["w"][j] is not None:
-                        winds.append(w["w"][j])
+                    add(w["t"][j], w["w"][j], (w.get("d") or [None] * len(w["t"]))[j])
         if not temps:
             f = self._fetch(espn_id)
             for h in hours:
                 x = (f or {}).get(f"{date}T{h:02d}:00")
                 if x and x[0] is not None:
-                    temps.append(x[0])
-                    if x[1] is not None:
-                        winds.append(x[1])
+                    add(*x)
         if not temps:
             return None
-        return float(np.mean(temps)), (float(np.mean(winds)) if winds else None)
+        v = (float(np.mean([a for a, _ in vec])), float(np.mean([b for _, b in vec]))) if vec else None
+        return float(np.mean(temps)), (float(np.mean(winds)) if winds else None), v
 
 
 def _hav(a, b):
@@ -217,11 +231,18 @@ def _offset(tz, date):
     return ZoneInfo(tz).utcoffset(datetime(d.year, d.month, d.day, 15)).total_seconds() / 3600
 
 
+COMPASS = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"]
+
+
 class Context:
-    def __init__(self, venues, seo_to_espn, weather):
+    def __init__(self, venues, seo_to_espn, weather, season):
         self.venues = venues
         self.seo_to_espn = seo_to_espn
         self.weather = weather
+        # each season uses the wind fit from earlier seasons; later seasons use the latest fit
+        keys = sorted(int(k) for k in WIND_PARKS)
+        use = max([k for k in keys if k <= season], default=keys[0])
+        self.wind_parks = WIND_PARKS[str(use)]
 
     def venue(self, team):
         e = self.seo_to_espn.get(team)
@@ -230,7 +251,7 @@ class Context:
 
     def adjust(self, home, away, date, start_iso, sp_home, sp_away):
         """(home runs adjustment, away runs adjustment, details) for one game. sp_*: Pitchers.projected()."""
-        adj_h = adj_a = 0.0
+        adj_h = adj_a = COEF["const"]
         info = {}
         # the home side scores against the away starter, and the other way round
         if sp_away:
@@ -257,7 +278,7 @@ class Context:
                 hour = 14 if day_kind(date) in ("sat", "sun") else 18
             w = self.weather.at(eh, date, hour)
             if w:
-                temp, wind = w
+                temp, wind, vec = w
                 adj_h += COEF["temp"] * (temp - 65)
                 adj_a += COEF["temp"] * (temp - 65)
                 info["temp"] = round(temp)
@@ -265,4 +286,14 @@ class Context:
                     adj_h += COEF["wind"] * (wind - 8)
                     adj_a += COEF["wind"] * (wind - 8)
                     info["wind"] = round(wind)
+                if vec:
+                    # where it blows from, for the site
+                    frm = (math.degrees(math.atan2(vec[0], vec[1])) + 180) % 360
+                    info["windFrom"] = COMPASS[round(frm / 45) % 8]
+                    c = self.wind_parks.get(home)
+                    if c:
+                        runs = max(-WIND_CAP, min(WIND_CAP, c[0] * vec[0] + c[1] * vec[1]))
+                        adj_h += runs / 2
+                        adj_a += runs / 2
+                        info["windRuns"] = round(runs, 1)
         return adj_h, adj_a, info

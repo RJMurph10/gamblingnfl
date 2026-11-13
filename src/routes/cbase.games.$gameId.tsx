@@ -154,7 +154,11 @@ function CbaseGamePage() {
                   <tr>
                     <td className="px-4 py-2 font-sans text-sm">Weather at first pitch</td>
                     <td className="px-4 py-2 text-right">
-                      {g.ctx.temp}°{g.ctx.wind != null ? ` · wind ${g.ctx.wind} mph` : ""}
+                      {g.ctx.temp}°
+                      {g.ctx.wind != null
+                        ? ` · wind ${g.ctx.wind} mph${g.ctx.windFrom ? ` from ${g.ctx.windFrom}` : ""}`
+                        : ""}
+                      {g.ctx.windRuns ? ` (${signed(g.ctx.windRuns, 1)} runs here)` : ""}
                     </td>
                   </tr>
                 ) : null}

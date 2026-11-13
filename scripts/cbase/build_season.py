@@ -107,7 +107,7 @@ if args.box and args.env and Path(args.env, "venues.json").exists():
     venues = json.loads(Path(args.env, "venues.json").read_text())
     wpath = Path(args.env, f"weather-{Y}.json")
     weather = C.Weather(json.loads(wpath.read_text()) if wpath.exists() else {}, venues)
-    ctx = C.Context(venues, seo_to_espn, weather)
+    ctx = C.Context(venues, seo_to_espn, weather, Y)
     pitchers = C.Pitchers(C.read_box(Path(args.box, f"{Y - 1}.jsonl.gz")))
     box_by_day = {}
     for g in C.read_box(Path(args.box, f"{Y}.jsonl.gz")):
