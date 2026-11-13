@@ -181,7 +181,7 @@ function boardOf(rec, price) {
     .map(([a, label, px, open]) => [names[a][0], names[a][1], label, px, open])
     .sort((x, y) => x[1].localeCompare(y[1]) || x[2].localeCompare(y[2]) || x[3] - y[3]);
   // DraftKings' touchdown-scorer prices from the newest saved pull (NFL): [[player, team abbr, anytime,
-  // first, 2+, last]]
+  // first, 2+, last, then where each of those four opened]]
   const td = price.td
     ? price
         .td(rec.home?.name, rec.date)

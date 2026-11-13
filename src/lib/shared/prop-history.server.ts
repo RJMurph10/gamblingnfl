@@ -136,9 +136,21 @@ export interface UpcomingPropGame {
   sp?: SpecialRow[];
   /**
    * NFL: DraftKings' touchdown-scorer prices (from the SportsGameOdds pull):
-   * [player, team abbr, anytime, first TD, 2+ TDs, last TD].
+   * [player, team abbr, anytime, first TD, 2+ TDs, last TD, then where each of those opened (the first
+   * saved pull; missing on boards saved before November 12, 2026)].
    */
-  td?: [string, string, number | null, number | null, number | null, number | null][];
+  td?: [
+    string,
+    string,
+    number | null,
+    number | null,
+    number | null,
+    number | null,
+    (number | null)?,
+    (number | null)?,
+    (number | null)?,
+    (number | null)?,
+  ][];
 }
 
 /**

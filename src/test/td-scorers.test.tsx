@@ -65,4 +65,34 @@ describe("touchdown scorers", () => {
     expect(screen.getByText("+400").className).toMatch(/text-win/); // 2+ cashed
     expect(screen.getByText("+120").className).toMatch(/line-through/); // Jefferson: no TD
   });
+
+  it("shows where a price opened, and grades live without marking losses early", () => {
+    const game = {
+      id: "2",
+      date: "2026-11-13T01:15:00Z",
+      name: "WSH @ NYG",
+      away: { abbr: "WSH", name: "Commanders" },
+      home: { abbr: "NYG", name: "Giants" },
+      props: [],
+      td: [
+        ["Cam Skattebo", "NYG", 125, 600, 900, 650, 140, 600, 950, 700],
+        ["Malik Nabers", "NYG", 175, 1000, 1400, 800, 175, 1000, 1400, 800],
+      ],
+    } as UpcomingPropGame;
+    render(
+      <TdScorers
+        game={game}
+        touchdowns={new Map([["cam skattebo", 1]])}
+        firstScorer="cam skattebo"
+        live
+      />,
+    );
+    expect(screen.getByText("opened +140")).toBeTruthy(); // anytime moved 140 → 125
+    expect(screen.queryByText("opened +175")).toBeNull(); // unchanged: no "opened"
+    expect(screen.getByText("+125").className).toMatch(/text-win/); // anytime cashed
+    expect(screen.getByText("+600").className).toMatch(/text-win/); // first TD
+    expect(screen.getByText("+1000").className).toMatch(/line-through/); // Nabers' first TD lost
+    expect(screen.getByText("+175").className).not.toMatch(/line-through/); // anytime still open
+    expect(screen.getByText("+900").className).not.toMatch(/line-through/); // Skattebo 2+: still open
+  });
 });

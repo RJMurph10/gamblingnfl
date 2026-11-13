@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { Panel, PanelHeader } from "@/components/shared/booth";
 import type { UpcomingPropGame } from "@/lib/shared/prop-history.server";
 
-const american = (n: number | null) => (n == null ? "—" : n > 0 ? `+${n}` : String(n));
+const american = (n: number | null | undefined) => (n == null ? "—" : n > 0 ? `+${n}` : String(n));
 const norm = (s: string) =>
   s
     .toLowerCase()
@@ -14,47 +14,66 @@ const norm = (s: string) =>
     .trim();
 
 /**
- * DraftKings' touchdown-scorer prices for an NFL game: anytime, first, 2+ and last TD. For a finished
- * game, `touchdowns` (player name → touchdowns scored) marks the anytime and 2+ bets that cashed; while
- * the game is `live`, only the ones that have cashed so far (nothing is marked lost before the final).
+ * DraftKings' touchdown-scorer board for an NFL game, laid out like the sportsbook: one row per player,
+ * Anytime TD, First TD and 2+ TDs side by side. The lines never move (a TD is a TD), only the prices, so
+ * each cell shows the price and, when it changed, where it opened.
+ *
+ * Graded when `touchdowns` (normalized player name → TDs) is given: green = cashed, struck through = lost.
+ * While the game is `live` nothing is marked lost except First TD once someone else scored it
+ * (`firstScorer`: normalized name of the first TD scorer, "" for a player not listed, null before any TD).
  */
 export function TdScorers({
   game,
   touchdowns,
+  firstScorer,
   live = false,
 }: {
   game: UpcomingPropGame;
   touchdowns?: Map<string, number>;
+  firstScorer?: string | null;
   live?: boolean;
 }) {
   const [team, setTeam] = useState("All");
   const rows = useMemo(
-    () => (game.td ?? []).filter((r) => team === "All" || r[1] === team),
+    () =>
+      (game.td ?? [])
+        .filter((r) => team === "All" || r[1] === team)
+        .sort((a, b) => (a[2] ?? 99_999) - (b[2] ?? 99_999)),
     [game.td, team],
   );
   if (!game.td?.length) return null;
-  const tdsOf = (name: string) => touchdowns?.get(norm(name));
-  const cell = (price: number | null, hit: boolean | undefined) => (
-    <td
-      className={`px-2 py-2 text-right font-mono text-xs tabular-nums ${
-        hit === true
-          ? "font-semibold text-win"
-          : hit === false
-            ? "text-faint line-through"
-            : "text-mute"
-      }`}
-    >
-      {american(price)}
+  const graded = touchdowns !== undefined;
+  const hasOpen = game.td.some((r) => r[6] != null);
+
+  const cell = (
+    price: number | null,
+    open: number | null | undefined,
+    result: boolean | undefined,
+  ) => (
+    <td className="px-3 py-2 text-right align-top">
+      <span
+        className={`font-mono text-xs tabular-nums ${
+          result === true
+            ? "font-semibold text-win"
+            : result === false
+              ? "text-faint line-through"
+              : "text-foreground"
+        }`}
+      >
+        {american(price)}
+      </span>
+      {open != null && price != null && open !== price ? (
+        <span className="block font-mono text-[9px] text-faint">opened {american(open)}</span>
+      ) : null}
     </td>
   );
+
   return (
     <Panel padded={false}>
       <PanelHeader
-        title="TD scorers"
+        title={live ? "Touchdown scorers · live" : "Touchdown scorers"}
         aside={
-          <span className="font-mono text-[10px] uppercase tracking-wider text-faint">
-            DraftKings{touchdowns ? " · closing prices" : ""}
-          </span>
+          <span className="label-mono">DraftKings{graded && !live ? " · closing prices" : ""}</span>
         }
       />
       <div className="flex gap-2 overflow-x-auto px-4 pt-3">
@@ -64,7 +83,6 @@ export function TdScorers({
             type="button"
             onClick={() => setTeam(t)}
             aria-pressed={team === t}
-            aria-label={t === "All" ? "Both teams" : `${t} TD scorers`}
             className={`shrink-0 rounded-lg px-3 py-1.5 font-mono text-xs ring-1 ${
               team === t
                 ? "bg-acc/10 text-acc ring-acc/30"
@@ -76,30 +94,40 @@ export function TdScorers({
         ))}
       </div>
       <div className="overflow-x-auto">
-        <table className="mt-2 w-full min-w-[520px] text-sm">
+        <table className="mt-2 w-full min-w-[420px] text-sm">
           <thead>
             <tr className="font-mono text-[10px] uppercase tracking-wider text-faint">
               <th className="px-4 py-2 text-left font-normal">Player</th>
-              <th className="px-2 py-2 text-right font-normal">Anytime</th>
-              <th className="px-2 py-2 text-right font-normal">First TD</th>
-              <th className="px-2 py-2 text-right font-normal">2+ TDs</th>
-              <th className="px-2 py-2 text-right font-normal">Last TD</th>
-              {touchdowns ? <th className="px-4 py-2 text-right font-normal">TDs</th> : null}
+              <th className="px-3 py-2 text-right font-normal">Anytime TD</th>
+              <th className="px-3 py-2 text-right font-normal">First TD</th>
+              <th className="px-3 py-2 text-right font-normal">2+ TDs</th>
+              {graded ? (
+                <th className="px-4 py-2 text-right font-normal">{live ? "TDs so far" : "TDs"}</th>
+              ) : null}
             </tr>
           </thead>
           <tbody>
             {rows.map((r) => {
-              const tds = touchdowns ? (tdsOf(r[0]) ?? 0) : undefined;
+              const key = norm(r[0]);
+              const tds = graded ? (touchdowns.get(key) ?? 0) : undefined;
+              const lostIfFinal = (won: boolean) => (won ? true : live ? undefined : false);
+              const anytime = tds === undefined ? undefined : lostIfFinal(tds >= 1);
+              const twoPlus = tds === undefined ? undefined : lostIfFinal(tds >= 2);
+              const first =
+                firstScorer === undefined || firstScorer === null
+                  ? graded && !live && firstScorer === null
+                    ? false
+                    : undefined
+                  : firstScorer === key;
               return (
                 <tr key={r[0]} className="border-t border-line/5">
                   <td className="px-4 py-2">
                     {r[0]} <span className="font-mono text-[10px] text-faint">{r[1]}</span>
                   </td>
-                  {cell(r[2], tds === undefined || (live && tds < 1) ? undefined : tds >= 1)}
-                  {cell(r[3], undefined)}
-                  {cell(r[4], tds === undefined || (live && tds < 2) ? undefined : tds >= 2)}
-                  {cell(r[5], undefined)}
-                  {touchdowns ? (
+                  {cell(r[2], r[6], anytime)}
+                  {cell(r[3], r[7], first)}
+                  {cell(r[4], r[8], twoPlus)}
+                  {graded ? (
                     <td className="px-4 py-2 text-right font-mono text-xs font-semibold tabular-nums">
                       {tds}
                     </td>
@@ -111,12 +139,13 @@ export function TdScorers({
         </table>
       </div>
       <p className="px-4 py-3 font-mono text-[10px] text-faint">
-        Prices are DraftKings&apos; from the latest pull{touchdowns ? " before kickoff" : ""}{" "}
-        (updated twice a day).
-        {touchdowns
+        Prices are DraftKings&apos;
+        {graded ? " from the last pull before kickoff" : ", updated twice a day"}
+        {hasOpen ? "; “opened” is the first price saved when it has changed since" : ""}.
+        {graded
           ? live
-            ? " Live: TDs so far; green = the anytime or 2+ bet has already cashed. First and last TD aren't graded here."
-            : " Green = the anytime or 2+ bet cashed; struck through = it lost. First and last TD aren't graded here."
+            ? " Green = cashed so far; First TD is struck through once someone else scores first."
+            : " Green = cashed; struck through = lost."
           : ""}
       </p>
     </Panel>

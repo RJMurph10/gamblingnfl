@@ -35,9 +35,23 @@ export async function loadPrices(dir) {
       const t = Date.parse(g.commence);
       const list = byHome.get(norm(g.home)) ?? [];
       let slot = list.find((s) => Math.abs(s.t - t) < 12 * 3_600_000);
-      if (!slot) list.push((slot = { t, map: new Map(), main: new Map(), alts: new Map(), td: null }));
-      // newest pull's touchdown-scorer prices win
-      if (g.td?.length) slot.td = g.td;
+      if (!slot)
+        list.push(
+          (slot = {
+            t,
+            map: new Map(),
+            main: new Map(),
+            alts: new Map(),
+            td: null,
+            tdOpen: new Map(),
+          }),
+        );
+      // newest pull's touchdown-scorer prices win; the first pull that had a player is where it opened
+      if (g.td?.length) {
+        slot.td = g.td;
+        for (const r of g.td)
+          if (!slot.tdOpen.has(norm(r[0]))) slot.tdOpen.set(norm(r[0]), r.slice(2, 6));
+      }
       // newest pull's ladder wins (files are read oldest first)
       for (const [player, label, ladder] of g.alts ?? [])
         slot.alts.set(`${norm(player)}|${label}`, ladder);
@@ -69,10 +83,18 @@ export async function loadPrices(dir) {
         const slot = byHome.get(norm(home))?.find((s) => Math.abs(s.t - t) < 12 * 3_600_000);
         return slot?.main.get(`${norm(player)}|${label}`)?.v ?? null;
       },
-      /** The newest saved touchdown-scorer prices: [[player, home|away, anytime, first, 2+, last]] | null. */
+      /**
+       * The newest saved touchdown-scorer prices, with where each opened (the first saved pull):
+       * [[player, team, anytime, first, 2+, last, open anytime, open first, open 2+, open last]] | null.
+       */
       td(home, date) {
         const t = Date.parse(date);
-        return byHome.get(norm(home))?.find((s) => Math.abs(s.t - t) < 12 * 3_600_000)?.td ?? null;
+        const slot = byHome.get(norm(home))?.find((s) => Math.abs(s.t - t) < 12 * 3_600_000);
+        if (!slot?.td) return null;
+        return slot.td.map((r) => [
+          ...r.slice(0, 6),
+          ...(slot.tdOpen.get(norm(r[0])) ?? [null, null, null, null]),
+        ]);
       },
       /** The newest saved alternate over lines: [[line, over price], ...] | null. */
       ladder(home, date, player, label) {
