@@ -8,7 +8,7 @@
  *
  *   node scripts/cbase/export-ncaa.mjs 2025 out   → out/ncaa/2025.jsonl.gz
  * Row: { id, date, start, state, home: { seo, short, full, conf, score, winner, rank }, away: {...}, url }
- * Plus out/espn-teams.json: ESPN's college baseball teams (id, location, name, abbreviation), for matching
+ * ESPN's college baseball teams (out/espn-teams.json) come from scripts/cbase/espn-teams.mjs, for matching
  * ESPN's lines to these games.
  */
 import { mkdir, writeFile } from "node:fs/promises";
@@ -137,20 +137,4 @@ console.log(
   `NCAA ${YEAR}: ${list.length} games, ${final.length} final (${fromGql} from the GraphQL feed)`,
 );
 
-// ESPN's team list, once
-if (process.argv.includes("--espn-teams")) {
-  const t = await get(
-    "https://site.api.espn.com/apis/site/v2/sports/baseball/college-baseball/teams?limit=1000",
-  );
-  const teams = (t?.sports?.[0]?.leagues?.[0]?.teams ?? []).map(({ team: x }) => ({
-    id: String(x.id),
-    location: x.location ?? "",
-    name: x.name ?? "",
-    nickname: x.nickname ?? "",
-    abbr: x.abbreviation ?? "",
-    display: x.displayName ?? "",
-    short: x.shortDisplayName ?? "",
-  }));
-  await writeFile(join(OUT, "espn-teams.json"), JSON.stringify(teams));
-  console.log(`ESPN teams: ${teams.length}`);
-}
+// ESPN's team list (with logos): scripts/cbase/espn-teams.mjs

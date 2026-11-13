@@ -51,6 +51,8 @@ jobs:
       - name: Rebuild seasons
         if: ${{ inputs.seasons }}
         run: echo "SEASONS=${{ inputs.seasons }}" >> "$GITHUB_ENV"
+      - name: ESPN teams (ids and logos)
+        run: node scripts/cbase/espn-teams.mjs hist
       - name: Season files
         run: |
           set -e
@@ -82,6 +84,6 @@ jobs:
           publish props-site "$index" "college baseball season"
           if [ -z "${{ inputs.seasons }}" ]; then
             Y=$(date -u +%Y)
-            publish cbase-history "mkdir -p ncaa && cp ../hist/ncaa/$Y.jsonl.gz ncaa/" "college baseball NCAA results"
+            publish cbase-history "mkdir -p ncaa && cp ../hist/ncaa/$Y.jsonl.gz ncaa/ && cp ../hist/espn-teams.json ." "college baseball NCAA results"
             publish lines-history "mkdir -p college-baseball && cp ../lines/college-baseball/$Y.jsonl.gz college-baseball/" "college baseball lines"
           fi

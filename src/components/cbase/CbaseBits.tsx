@@ -2,7 +2,6 @@ import { useState, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { Panel, PanelHeader } from "@/components/shared/booth";
 import {
-  cbaseLogoFor,
   american,
   dayLabel,
   etDay,
@@ -58,7 +57,8 @@ export function SeasonPicker({
 /** A team's ESPN logo, or its initials when ESPN has none. */
 export function CbaseLogo({ team, className = "size-6" }: { team: CbaseTeam; className?: string }) {
   const [failed, setFailed] = useState(false);
-  const src = cbaseLogoFor(team.espn);
+  // ESPN's own logo URL from the season file: the baseball team id isn't the id in ESPN's logo URLs
+  const src = team.logo ?? "";
   if (failed || !src)
     return (
       <span
