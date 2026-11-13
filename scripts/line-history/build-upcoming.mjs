@@ -153,6 +153,8 @@ function boardOf(rec, price) {
   const names = rec.names ?? {};
   const milestones = milestonesOf(snap.rows, KEY);
   const props = [];
+  /** "player|market" → the book whose prices fill a row DraftKings has none for (FD, MGM…). */
+  const bk = {};
   for (const l of mainLines(snap.rows)) {
     const who = names[l.a];
     if (!who) continue;
@@ -165,6 +167,12 @@ function boardOf(rec, price) {
       if (p) [o, u] = [p[0], p[1]];
       else if (mn) [line, o, u] = [mn[0], mn[1], mn[2]];
       if (p || mn) filled += 1;
+      // DraftKings has no price at all: another book's, at exactly this line
+      const other = p || mn ? null : price.other?.(rec.home?.name, rec.date, who[0], LABELS[l.t], line);
+      if (other) {
+        [o, u] = [other[0], other[1]];
+        bk[`${who[0]}|${LABELS[l.t]}`] = other[2];
+      }
     }
     // alternate overs: ESPN's milestone ("X+") rungs plus DraftKings' ladder from the saved pulls,
     // leaving out the main line itself
@@ -201,6 +209,7 @@ function boardOf(rec, price) {
     props,
     ...(td?.length ? { td } : {}),
     ...(sp.length ? { sp } : {}),
+    ...(Object.keys(bk).length ? { bk } : {}),
   };
 }
 

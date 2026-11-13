@@ -44,8 +44,12 @@ export async function loadPrices(dir) {
             alts: new Map(),
             td: null,
             tdOpen: new Map(),
+            other: new Map(),
           }),
         );
+      // other books' prices where DraftKings has none (newest pull wins)
+      for (const [player, label, line, o, u, book] of g.others ?? [])
+        slot.other.set(`${norm(player)}|${label}|${Number(line)}`, [o, u, book]);
       // newest pull's touchdown-scorer prices win; the first pull that had a player is where it opened
       if (g.td?.length) {
         slot.td = g.td;
@@ -95,6 +99,12 @@ export async function loadPrices(dir) {
           ...r.slice(0, 6),
           ...(slot.tdOpen.get(norm(r[0])) ?? [null, null, null, null]),
         ]);
+      },
+      /** Another book's prices at exactly this line, where DraftKings has none: [over, under, book tag] | null. */
+      other(home, date, player, label, line) {
+        const t = Date.parse(date);
+        const slot = byHome.get(norm(home))?.find((s) => Math.abs(s.t - t) < 12 * 3_600_000);
+        return slot?.other.get(`${norm(player)}|${label}|${Number(line)}`) ?? null;
       },
       /** The newest saved alternate over lines: [[line, over price], ...] | null. */
       ladder(home, date, player, label) {
