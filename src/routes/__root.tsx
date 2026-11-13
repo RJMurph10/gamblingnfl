@@ -231,7 +231,10 @@ function SiteFooter() {
       <p className="mx-auto max-w-[1400px] font-mono text-[10px] uppercase leading-relaxed tracking-wider text-faint">
         Gambling{league.short} · {league.name} analytics & betting research ·{" "}
         {league.id === "cbase" ? "results from the NCAA, lines from ESPN" : "live data from ESPN"}
-        {league.id === "nba" || league.id === "nhl" || league.id === "mlb" || league.id === "cbb" || league.id === "wnba" || league.id === "wcbb" || league.id === "cbase" ? "" : " and nflverse"} · for research, not betting advice
+        {league.id === "nba" || league.id === "nhl" || league.id === "mlb" || league.id === "cbb" || league.id === "wnba" || league.id === "wcbb" || league.id === "cbase" ? "" : " and nflverse"} · for research, not betting advice ·{" "}
+        <Link to="/status" className="text-acc hover:underline">
+          Status
+        </Link>
       </p>
     </footer>
   );

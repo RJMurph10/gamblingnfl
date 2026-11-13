@@ -36,7 +36,7 @@ jobs:
           url="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
           git clone -q --depth 1 --branch props-site "$url" site
           mkdir -p "$RUNNER_TEMP/tsx" && npm i --prefix "$RUNNER_TEMP/tsx" --no-audit --no-fund tsx@4.19.2 >/dev/null
-          node "$RUNNER_TEMP/tsx/node_modules/tsx/dist/cli.mjs" app/scripts/picks/football-picks.ts site/picks nfl cfb
+          node "$RUNNER_TEMP/tsx/node_modules/tsx/dist/cli.mjs" --tsconfig app/tsconfig.json app/scripts/picks/football-picks.ts site/picks nfl cfb
           node app/scripts/picks/grade-picks.mjs site/picks || echo "grading failed"
           cd site
           git config user.name "line-history-bot"
