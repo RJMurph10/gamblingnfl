@@ -89,6 +89,7 @@ for t, name in names.items():
         name=name,
         conf=confs.get(t, ""),
         espn=seo_to_espn.get(t),
+        logo=(espn_teams.get(seo_to_espn.get(t)) or {}).get("logo") or None,
         **r,
         **(dict(off=round(sol[i], 2), dfn=round(sol[T + i], 2), park=round(sol[2 * T + 5 + i], 2)) if i is not None else {}),
     )

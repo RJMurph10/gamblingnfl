@@ -73,7 +73,10 @@ export interface CbaseUpcoming {
 export interface CbaseTeam {
   name: string;
   conf: string;
+  /** ESPN's college baseball team id (not the id in ESPN's logo URLs). */
   espn?: string | null;
+  /** ESPN's logo for the team. */
+  logo?: string | null;
   w: number;
   l: number;
   rs: number;
@@ -257,6 +260,3 @@ export const winShare = (w: number, l: number) => (w + l ? (w / (w + l)) * 100 :
 
 /** Return on 1-unit stakes, in percent. */
 export const roi = (r: CbaseRecord) => (r.w + r.l ? (r.u / (r.w + r.l)) * 100 : null);
-
-export const cbaseLogoFor = (espnId: string | null | undefined) =>
-  espnId ? `https://a.espncdn.com/i/teamlogos/ncaa/500/${espnId}.png` : "";
