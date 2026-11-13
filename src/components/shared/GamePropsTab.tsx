@@ -111,6 +111,7 @@ export function withTdRows<G extends UpcomingPropGame>(g: G): G {
 function liveResults(
   stats: [string, string, number | "dnp"][],
   rows: UpcomingPropGame["props"],
+  over: boolean,
 ): Map<string, number | null | "dnp"> {
   const m = new Map<string, number | null | "dnp">();
   const byName = new Map<string, number | "dnp">();
@@ -121,7 +122,9 @@ function liveResults(
   for (const r of rows)
     if (TD_LABELS.has(r[2]) && !m.has(`${r[0]}|${r[2]}`)) {
       const v = byName.get(`${tdName(r[0])}|${r[2]}`);
+      // after the final, a listed player with no box-score line didn't score
       if (v !== undefined) m.set(`${r[0]}|${r[2]}`, v);
+      else if (over) m.set(`${r[0]}|${r[2]}`, 0);
     }
   return m;
 }
@@ -208,7 +211,7 @@ export function ClosedPropLines({
   const rawBoard = closed.data ?? pregame.data ?? undefined;
   const board = useMemo(() => (rawBoard ? withTdRows(rawBoard) : undefined), [rawBoard]);
   const results = useMemo(() => {
-    const m = liveResults(live.data?.stats ?? [], board?.props ?? []);
+    const m = liveResults(live.data?.stats ?? [], board?.props ?? [], live.data?.state === "post");
     if (past?.props.length) for (const [k, v] of resultsOf(past)) m.set(k, v);
     return m;
   }, [past, live.data, board]);
