@@ -633,7 +633,12 @@ export function GamePropLines({
                     </td>
                     {graded ? (
                       <td className="px-4 py-2 text-right">
-                        <Outcome line={r[3]} actual={results.get(`${r[0]}|${r[2]}`)} live={live} />
+                        <Outcome
+                          line={r[3]}
+                          actual={results.get(`${r[0]}|${r[2]}`)}
+                          live={live}
+                          settled={SETTLED_EARLY.has(r[2])}
+                        />
                       </td>
                     ) : null}
                   </tr>
@@ -679,14 +684,20 @@ export function GamePropLines({
 }
 
 /** A finished prop: the player's number and whether it went over or under the closing line. */
+/** Markets settled by one moment: a 0 is final as soon as it's known (someone else scored the first TD). */
+const SETTLED_EARLY = new Set(["First TD"]);
+
 function Outcome({
   line,
   actual,
   live = false,
+  settled = false,
 }: {
   line: number;
   actual: number | null | "dnp" | undefined;
   live?: boolean;
+  /** A live 0 is already a loss (first touchdown scored by someone else). */
+  settled?: boolean;
 }) {
   if (actual === "dnp")
     return (
@@ -699,7 +710,7 @@ function Outcome({
     );
   if (actual == null)
     return <span className="font-mono text-[10px] text-faint">{live ? "0" : "—"}</span>;
-  if (live && actual <= line) {
+  if (live && actual <= line && !(settled && actual === 0)) {
     // still open: how many more the over needs
     const need = Math.floor(line) + 1 - actual;
     return (

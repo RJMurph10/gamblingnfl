@@ -239,6 +239,7 @@ function winningPitcher(summary) {
  * box (athleteId → { n }) matches MLB stolen-base plays, which name the runner by last name only.
  */
 export function gameEvents(summary, league, box = {}) {
+  if (league === "nfl" || league === "cfb") return footballEvents(summary, box);
   const plays = summary?.plays ?? [];
   if (!plays.length) return null;
   const comp = summary?.header?.competitions?.[0];
@@ -326,4 +327,35 @@ export function gameEvents(summary, league, box = {}) {
     return { fhr, w: winningPitcher(summary), bat };
   }
   return null;
+}
+
+const plainName = (s) =>
+  String(s ?? "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[.'’-]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+
+/**
+ * Football: the first and last touchdown scorers ({ ftd, ltd, tds }, athlete ids) from the summary's
+ * scoring plays, whose text starts with the scorer ("James Cook III 5 Yd Rush (Tyler Bass Kick)").
+ * A touchdown whose scorer isn't on the box score is "" (the bet is settled, for nobody listed).
+ */
+function footballEvents(summary, box) {
+  const tds = (summary?.scoringPlays ?? []).filter((p) => p?.type?.abbreviation === "TD");
+  const names = Object.entries(box)
+    .map(([id, b]) => [id, plainName(b.n)])
+    .filter(([, n]) => n)
+    .sort((a, b) => b[1].length - a[1].length);
+  const who = (p) => {
+    const text = plainName(p?.text);
+    return names.find(([, n]) => text.startsWith(`${n} `))?.[0] ?? "";
+  };
+  return {
+    ftd: tds.length ? who(tds[0]) : null,
+    ltd: tds.length ? who(tds.at(-1)) : null,
+    tds: tds.length,
+  };
 }

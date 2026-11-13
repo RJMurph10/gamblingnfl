@@ -64,6 +64,8 @@ async function load(league: LivePropLeague, id: string): Promise<LiveProps | nul
   const bets = specialLabels(league);
   for (const [a, bx] of Object.entries(box)) {
     for (const [label, fn] of fns) {
+      // the last touchdown isn't known until the game ends
+      if (label === "Last TD" && !final) continue;
       if (bx.dnp) {
         stats.push([bx.n, label, "dnp"]);
         continue;

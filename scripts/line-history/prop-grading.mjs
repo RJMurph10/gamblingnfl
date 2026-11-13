@@ -130,9 +130,36 @@ export function marketsFor(league) {
   return out;
 }
 
+/** Touchdowns a player scored (rushing, receiving, kick and punt returns; passing TDs don't count). */
+const touchdowns = (s) =>
+  ["rushing.TD", "receiving.TD", "kickReturns.TD", "puntReturns.TD"].reduce(
+    (t, k) => t + (num(s[k]) ?? 0),
+    0,
+  );
+/** 1 if this player scored the game's first / last touchdown, 0 once someone else did, null before. */
+const scorer =
+  (key) =>
+  (s, { a, g }) => {
+    const id = g.ev?.[key];
+    return id == null ? null : id === a ? 1 : 0;
+  };
+/**
+ * Touchdown-scorer bets as over/under rows on the site (anytime = over 0.5 TDs, 2+ = over 1.5; first and
+ * last TD = over 0.5 of "scored it"). Live grading only: the prop history doesn't keep these.
+ */
+export const TD_MARKETS = {
+  "Anytime TD": touchdowns,
+  "2+ TDs": touchdowns,
+  "First TD": scorer("ftd"),
+  "Last TD": scorer("ltd"),
+};
+
 /** Site label → stat, for a league. */
 export function statsByLabel(league) {
-  return new Map(Object.values(marketsFor(league)).map(([label, fn]) => [label, fn]));
+  const out = new Map(Object.values(marketsFor(league)).map(([label, fn]) => [label, fn]));
+  if (league === "nfl" || league === "cfb")
+    for (const [label, fn] of Object.entries(TD_MARKETS)) out.set(label, fn);
+  return out;
 }
 
 /** The yes-only bets' site labels for a league. */
