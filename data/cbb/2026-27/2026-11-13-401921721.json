@@ -7,18 +7,18 @@
   "id": "2453",
   "abbr": "UNA",
   "name": "North Alabama Lions",
-  "score": 0
+  "score": 36
  },
  "home": {
   "id": "2390",
   "abbr": "MIA",
   "name": "Miami Hurricanes",
-  "score": 0
+  "score": 75
  },
  "neutral": false,
  "venue": "Watsco Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-13T01:36:25.578Z",

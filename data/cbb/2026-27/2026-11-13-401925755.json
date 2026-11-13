@@ -477,12 +477,12 @@
    ]
   },
   "close": {
-   "at": "2026-11-13T21:38:28.633Z",
+   "at": "2026-11-13T23:38:17.369Z",
    "scoreboard": [
     {
      "provider": {
       "id": "100",
-      "name": "DraftKings",
+      "name": "Draft Kings",
       "priority": 1
      },
      "details": "MSU -27.5",
@@ -526,7 +526,7 @@
           "home",
           "desktop",
           "bets",
-          "draftkings"
+          "draft-kings"
          ],
          "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F35012659%3Foutcomes%3D0ML87225302_1",
          "text": "Home Bet",
@@ -558,7 +558,7 @@
           "away",
           "desktop",
           "bets",
-          "draftkings"
+          "draft-kings"
          ],
          "href": "https://sportsbook.draftkings.com/gateway?s=__s__&wpcid=__wpcid__&wpsrc=413&wpcn=ESPN&wpscn=Widget&wpcrn=BetSlipDeepLink&wpscid=__wpscid__&wpcrid=xx&preurl=https%3A%2F%2Fsportsbook.draftkings.com%2Fevent%2F35012659%3Foutcomes%3D0ML87225302_3",
          "text": "Away Bet",
@@ -588,7 +588,7 @@
       "home": {
        "close": {
         "line": "-27.5",
-        "odds": "-115",
+        "odds": "-110",
         "link": {
          "language": "en-US",
          "rel": [
@@ -622,7 +622,7 @@
       "away": {
        "close": {
         "line": "+27.5",
-        "odds": "-105",
+        "odds": "-110",
         "link": {
          "language": "en-US",
          "rel": [
@@ -767,7 +767,7 @@
     {
      "provider": {
       "id": "100",
-      "name": "DraftKings",
+      "name": "Draft Kings",
       "priority": 1
      },
      "details": "MSU -27.5",
@@ -779,7 +779,7 @@
       "favorite": false,
       "underdog": true,
       "moneyLine": 4000,
-      "spreadOdds": -105,
+      "spreadOdds": -110,
       "open": {
        "favorite": false,
        "pointSpread": {
@@ -809,12 +809,12 @@
         "american": "+27.5"
        },
        "spread": {
-        "value": 1.95,
-        "displayValue": "20/21",
-        "alternateDisplayValue": "-105",
-        "decimal": 1.95,
-        "fraction": "20/21",
-        "american": "-105"
+        "value": 1.9,
+        "displayValue": "10/11",
+        "alternateDisplayValue": "-110",
+        "decimal": 1.9,
+        "fraction": "10/11",
+        "american": "-110"
        },
        "moneyLine": {
         "value": 41,
@@ -833,7 +833,7 @@
       "favorite": true,
       "underdog": false,
       "moneyLine": -50000,
-      "spreadOdds": -115,
+      "spreadOdds": -110,
       "open": {
        "favorite": true,
        "pointSpread": {
@@ -863,12 +863,12 @@
         "american": "-27.5"
        },
        "spread": {
-        "value": 1.86,
-        "displayValue": "20/23",
-        "alternateDisplayValue": "-115",
-        "decimal": 1.86,
-        "fraction": "20/23",
-        "american": "-115"
+        "value": 1.9,
+        "displayValue": "10/11",
+        "alternateDisplayValue": "-110",
+        "decimal": 1.9,
+        "fraction": "10/11",
+        "american": "-110"
        },
        "moneyLine": {
         "value": 1.002,

@@ -7,18 +7,18 @@
   "id": "46",
   "abbr": "GTWN",
   "name": "Georgetown Hoyas",
-  "score": 0
+  "score": 43
  },
  "home": {
   "id": "228",
   "abbr": "CLEM",
   "name": "Clemson Tigers",
-  "score": 0
+  "score": 25
  },
  "neutral": false,
  "venue": "Littlejohn Coliseum",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-13T01:36:25.578Z",

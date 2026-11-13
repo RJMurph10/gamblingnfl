@@ -7,18 +7,18 @@
   "id": "221",
   "abbr": "PITT",
   "name": "Pittsburgh Panthers",
-  "score": 0
+  "score": 2
  },
  "home": {
   "id": "2086",
   "abbr": "BTLR",
   "name": "Butler Bulldogs",
-  "score": 0
+  "score": 7
  },
  "neutral": false,
  "venue": "Hinkle Fieldhouse",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-13T01:36:25.578Z",
