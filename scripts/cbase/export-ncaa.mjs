@@ -47,7 +47,13 @@ const gqlUrl = (d) => {
   return `https://sdataprod.ncaa.com/?meta=GetContests_web&extensions=${encodeURIComponent(
     JSON.stringify({ persistedQuery: { version: 1, sha256Hash: GQL_HASH } }),
   )}&variables=${encodeURIComponent(
-    JSON.stringify({ sportCode: "MBA", division: 1, seasonYear: Number(y) - 1, contestDate: `${m}/${dd}/${y}`, week: null }),
+    JSON.stringify({
+      sportCode: "MBA",
+      division: 1,
+      seasonYear: Number(y) - 1,
+      contestDate: `${m}/${dd}/${y}`,
+      week: null,
+    }),
   )}`;
 };
 const gqlSide = (t) => ({
@@ -62,7 +68,11 @@ const gqlSide = (t) => ({
 let fromGql = 0;
 
 const days = [];
-for (let t = Date.UTC(YEAR, 1, 10); t <= Math.min(Date.UTC(YEAR, 6, 1), Date.now()); t += 86_400_000)
+for (
+  let t = Date.UTC(YEAR, 1, 10);
+  t <= Math.min(Date.UTC(YEAR, 6, 1), Date.now());
+  t += 86_400_000
+)
   days.push(new Date(t).toISOString().slice(0, 10));
 const rows = new Map();
 let next = 0;
@@ -70,7 +80,9 @@ await Promise.all(
   Array.from({ length: 6 }, async () => {
     while (next < days.length) {
       const d = days[next++];
-      const j = await get(`https://data.ncaa.com/casablanca/scoreboard/baseball/d1/${d.replace(/-/g, "/")}/scoreboard.json`);
+      const j = await get(
+        `https://data.ncaa.com/casablanca/scoreboard/baseball/d1/${d.replace(/-/g, "/")}/scoreboard.json`,
+      );
       if (!j) {
         const q = await get(gqlUrl(d));
         for (const c of q?.data?.contests ?? []) {
@@ -112,15 +124,24 @@ await Promise.all(
     }
   }),
 );
-const list = [...rows.values()].sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id));
+const list = [...rows.values()].sort(
+  (a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id),
+);
 await mkdir(join(OUT, "ncaa"), { recursive: true });
-await writeFile(join(OUT, "ncaa", `${YEAR}.jsonl.gz`), gzipSync(list.map((r) => JSON.stringify(r)).join("\n") + "\n"));
+await writeFile(
+  join(OUT, "ncaa", `${YEAR}.jsonl.gz`),
+  gzipSync(list.map((r) => JSON.stringify(r)).join("\n") + "\n"),
+);
 const final = list.filter((r) => /final/i.test(r.state) && r.home.score != null);
-console.log(`NCAA ${YEAR}: ${list.length} games, ${final.length} final (${fromGql} from the GraphQL feed)`);
+console.log(
+  `NCAA ${YEAR}: ${list.length} games, ${final.length} final (${fromGql} from the GraphQL feed)`,
+);
 
 // ESPN's team list, once
 if (process.argv.includes("--espn-teams")) {
-  const t = await get("https://site.api.espn.com/apis/site/v2/sports/baseball/college-baseball/teams?limit=1000");
+  const t = await get(
+    "https://site.api.espn.com/apis/site/v2/sports/baseball/college-baseball/teams?limit=1000",
+  );
   const teams = (t?.sports?.[0]?.leagues?.[0]?.teams ?? []).map(({ team: x }) => ({
     id: String(x.id),
     location: x.location ?? "",

@@ -90,7 +90,7 @@ for t, name in names.items():
         conf=confs.get(t, ""),
         espn=seo_to_espn.get(t),
         **r,
-        **(dict(off=round(sol[i], 2), dfn=round(-sol[T + i], 2), park=round(sol[2 * T + 5 + i], 2)) if i is not None else {}),
+        **(dict(off=round(sol[i], 2), dfn=round(sol[T + i], 2), park=round(sol[2 * T + 5 + i], 2)) if i is not None else {}),
     )
 # D-I teams: those in a conference (opponents outside D-I have none and few games)
 d1 = [t for t, x in teams.items() if x["conf"] and x["w"] + x["l"] >= 15 and "off" in x]
