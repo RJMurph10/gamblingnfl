@@ -65,36 +65,38 @@ for path in sys.argv[1:]:
             f" ML ll {ll(ph):.4f} (open {ll(pm):.4f}, blend {ll((ph + pm) / 2):.4f})"
         )
     print("  " + "\n  ".join(acc))
-    # moneyline
+    def grade_all(ph, p_over, p_cover, tag):
+        pm = ip(P.o_ml_h) / (ip(P.o_ml_h) + ip(P.o_ml_a))
+        edge = ph - pm
+        pick_h = edge > 0
+        price = np.where(pick_h, P.o_ml_h, P.o_ml_a)
+        won = np.where(pick_h, hw, ~hw)
+        nopush = np.zeros(len(P), bool)
+        for thr in (0.05, 0.08, 0.12):
+            print(line(f"{tag}ML {thr:.0%}+", np.abs(edge) >= thr, won, nopush, price, s))
+        ot = P.o_tot.values
+        has = np.isfinite(ot) & np.isfinite(P.o_over.values) & np.isfinite(P.o_under.values) & np.isfinite(p_over)
+        pov = ip(P.o_over) / (ip(P.o_over) + ip(P.o_under))
+        tedge = p_over - pov
+        over = tedge > 0
+        tprice = np.where(over, P.o_over, P.o_under)
+        twon = np.where(over, runs > ot, runs < ot)
+        tpush = runs == ot
+        for thr in (0.05, 0.08, 0.12):
+            print(line(f"{tag}Total {thr:.0%}+", has & (np.abs(tedge) >= thr), twon, tpush, tprice, s))
+        rl = P.o_rl_h.values
+        hasr = np.isin(rl, [-1.5, 1.5]) & np.isfinite(P.o_rl_h_px.values) & np.isfinite(P.o_rl_a_px.values) & np.isfinite(p_cover)
+        pmc = ip(P.o_rl_h_px) / (ip(P.o_rl_h_px) + ip(P.o_rl_a_px))
+        redge = p_cover - pmc
+        rh = redge > 0
+        rprice = np.where(rh, P.o_rl_h_px, P.o_rl_a_px)
+        rwon = np.where(rh, margin + rl > 0, margin + rl < 0)
+        for thr in (0.05, 0.08, 0.12):
+            print(line(f"{tag}Run line {thr:.0%}+", hasr & (np.abs(redge) >= thr), rwon, nopush, rprice, s))
+
     ph = 1 / (1 + np.exp(-K * mar))
-    pm = ip(P.o_ml_h) / (ip(P.o_ml_h) + ip(P.o_ml_a))
-    edge = ph - pm
-    pick_h = edge > 0
-    price = np.where(pick_h, P.o_ml_h, P.o_ml_a)
-    won = np.where(pick_h, hw, ~hw)
-    nopush = np.zeros(len(P), bool)
-    for thr in (0.05, 0.08, 0.12):
-        print(line(f"ML {thr:.0%}+", np.abs(edge) >= thr, won, nopush, price, s))
-    # totals
-    ot = P.o_tot.values
-    has = np.isfinite(ot) & np.isfinite(P.o_over.values) & np.isfinite(P.o_under.values)
-    p_over = 1 - Phi((ot - tot) / SD_TOTAL)
-    pov = ip(P.o_over) / (ip(P.o_over) + ip(P.o_under))
-    tedge = p_over - pov
-    over = tedge > 0
-    tprice = np.where(over, P.o_over, P.o_under)
-    twon = np.where(over, runs > ot, runs < ot)
-    tpush = runs == ot
-    for thr in (0.05, 0.08, 0.12):
-        print(line(f"Total {thr:.0%}+", has & (np.abs(tedge) >= thr), twon, tpush, tprice, s))
-    # run line (opening ±1.5)
-    rl = P.o_rl_h.values
-    hasr = np.isin(rl, [-1.5, 1.5]) & np.isfinite(P.o_rl_h_px.values) & np.isfinite(P.o_rl_a_px.values)
-    p_cover = 1 - Phi((-rl - mar) / SD_MARGIN)  # home covers its run line
-    pmc = ip(P.o_rl_h_px) / (ip(P.o_rl_h_px) + ip(P.o_rl_a_px))
-    redge = p_cover - pmc
-    rh = redge > 0
-    rprice = np.where(rh, P.o_rl_h_px, P.o_rl_a_px)
-    rwon = np.where(rh, margin + rl > 0, margin + rl < 0)
-    for thr in (0.05, 0.08, 0.12):
-        print(line(f"Run line {thr:.0%}+", hasr & (np.abs(redge) >= thr), rwon, nopush, rprice, s))
+    p_over = 1 - Phi((P.o_tot.values - tot) / SD_TOTAL)
+    p_cover = 1 - Phi((-P.o_rl_h.values - mar) / SD_MARGIN)
+    grade_all(ph, p_over, p_cover, "")
+    if "sim_home" in P.columns and P.sim_home.notna().any():
+        grade_all(P.sim_home.values, P.sim_over.values, P.sim_cover.values, "sim ")

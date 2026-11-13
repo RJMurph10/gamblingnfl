@@ -177,7 +177,7 @@ function CbaseGamePage() {
           <p className="px-4 py-3 text-sm text-mute">
             Watch picks are graded at the opening price: moneyline when the model is{" "}
             {pct(data.model.mlEdge)}+ over the no-vig opener, run line {pct(data.model.rlEdge)}+,
-            total {pct(data.model.totEdge ?? 0.12)}+.{" "}
+            total {pct(data.model.totEdge ?? 0.08)}+ (simulated).{" "}
             <Link to="/cbase/model" className="text-acc hover:underline">
               About the model
             </Link>
