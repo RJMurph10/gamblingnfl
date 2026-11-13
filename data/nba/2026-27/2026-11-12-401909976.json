@@ -7,13 +7,13 @@
   "id": "28",
   "abbr": "TOR",
   "name": "Toronto Raptors",
-  "score": 74
+  "score": 85
  },
  "home": {
   "id": "20",
   "abbr": "PHI",
   "name": "Philadelphia 76ers",
-  "score": 76
+  "score": 94
  },
  "neutral": false,
  "venue": "Xfinity Mobile Arena",

@@ -7,13 +7,13 @@
   "id": "56",
   "abbr": "STET",
   "name": "Stetson Hatters",
-  "score": 50
+  "score": 60
  },
  "home": {
   "id": "47",
   "abbr": "HOW",
   "name": "Howard Bison",
-  "score": 60
+  "score": 70
  },
  "neutral": false,
  "venue": "Burr Gymnasium",

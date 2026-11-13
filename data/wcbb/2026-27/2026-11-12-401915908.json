@@ -7,7 +7,7 @@
   "id": "150",
   "abbr": "DUKE",
   "name": "Duke Blue Devils",
-  "score": 83
+  "score": 85
  },
  "home": {
   "id": "2450",
@@ -18,7 +18,7 @@
  "neutral": false,
  "venue": "Joseph G. Echols Hall",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-12T20:53:06.836Z",
@@ -769,5 +769,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 85,
+  "home": 23
+ }
 }

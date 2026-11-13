@@ -7,13 +7,13 @@
   "id": "6",
   "abbr": "DAL",
   "name": "Dallas Mavericks",
-  "score": 24
+  "score": 42
  },
  "home": {
   "id": "16",
   "abbr": "MIN",
   "name": "Minnesota Timberwolves",
-  "score": 31
+  "score": 45
  },
  "neutral": false,
  "venue": "Target Center",
