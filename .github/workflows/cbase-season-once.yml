@@ -1,0 +1,84 @@
+name: College baseball season (one-time backfill)
+# Every 3 hours from February through June: this season's NCAA D-I results (scripts/cbase/export-ncaa.mjs)
+# and ESPN lines including the next week's games (scripts/lines/export-lines.mjs --upcoming), then the
+# season file the site reads (scripts/cbase/build_season.py → props-site cbase/season-<year>.json).
+# Run by hand with "seasons" to rebuild past seasons from the saved data.
+on:
+  push:
+    branches: [nfl-weather-probe]
+    paths: [.github/workflows/cbase-season-once.yml]
+permissions:
+  contents: write
+concurrency:
+  group: cbase-season
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: cbase-section
+          sparse-checkout: |
+            scripts/cbase
+            scripts/lines
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -q numpy scipy pandas
+      - name: Saved data
+        run: |
+          set -e
+          url="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+          git clone -q --depth 1 --branch cbase-history "$url" hist
+          git clone -q --depth 1 --branch lines-history "$url" lines
+      - name: This season's results and lines
+        if: false
+        run: |
+          set -e
+          Y=$(date -u +%Y)
+          echo "SEASONS=$Y" >> "$GITHUB_ENV"
+          node scripts/cbase/export-ncaa.mjs $Y hist
+          node scripts/lines/export-lines.mjs --sport baseball --league college-baseball \
+            --from "$Y-02-01" --to "$(date -u -d '+7 days' +%Y-%m-%d)" --upcoming --out lines
+      - name: Rebuild seasons
+        if: true
+        run: echo "SEASONS=2024 2025 2026" >> "$GITHUB_ENV"
+      - name: Season files
+        run: |
+          set -e
+          mkdir -p site
+          for y in $SEASONS; do
+            python scripts/cbase/build_season.py --ncaa hist/ncaa --lines lines/college-baseball \
+              --espn-teams hist/espn-teams.json --season $y --out site
+          done
+      - name: Publish
+        run: |
+          set -e
+          url="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+          publish() { # branch, copy command, message
+            for attempt in 1 2 3 4 5; do
+              rm -rf dst && git clone -q --depth 1 --branch "$1" "$url" dst
+              ( cd dst && eval "$2" )
+              cd dst
+              git config user.name "line-history-bot"
+              git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+              git add -A
+              if git diff --cached --quiet; then cd ..; return 0; fi
+              git commit -q -m "$3 $(date -u +%Y-%m-%d)"
+              if git push -q origin "$1"; then cd ..; return 0; fi
+              cd ..; sleep $((attempt * 15))
+            done
+            return 1
+          }
+          index='mkdir -p cbase && cp ../site/*.json cbase/ && python3 -c "import json,glob,os; s=sorted(int(os.path.basename(p)[7:11]) for p in glob.glob(\"cbase/season-*.json\")); json.dump({\"seasons\": s, \"current\": s[-1]}, open(\"cbase/index.json\",\"w\"))"'
+          publish props-site "$index" "college baseball season"
+          if false; then
+            Y=$(date -u +%Y)
+            publish cbase-history "mkdir -p ncaa && cp ../hist/ncaa/$Y.jsonl.gz ncaa/" "college baseball NCAA results"
+            publish lines-history "mkdir -p college-baseball && cp ../lines/college-baseball/$Y.jsonl.gz college-baseball/" "college baseball lines"
+          fi
