@@ -28,7 +28,9 @@ const DRY = args.includes("--dry");
 const NOW = Number(process.env.SNAPSHOT_NOW ?? Date.now());
 
 export const LEAGUES = {
-  nfl: { sport: "football", league: "nfl" },
+  // NFL: DraftKings posts the week's player props midweek, days before kickoff, so "latest" snapshots
+  // start 5 days out (not 48 hours) and the Upcoming tab gets them as soon as they're up
+  nfl: { sport: "football", league: "nfl", latestWindow: 5 * 24 * 3_600_000 },
   cfb: { sport: "football", league: "college-football", query: "groups=80&limit=400" },
   nba: { sport: "basketball", league: "nba" },
   nhl: { sport: "hockey", league: "nhl" },
@@ -311,7 +313,10 @@ export async function updateGame(g, rec, now, fetchers = { gameLines, props, nam
       }
     }
     const stale = !rec.props.latest || now - Date.parse(rec.props.latest.at) >= LATEST_EVERY;
-    const refresh = untilStart <= LATEST_WINDOW && stale;
+    // an opening snapshot taken before any player props were up (only game-level markets like
+    // 1st-half totals) isn't a real opener: keep looking until players appear
+    const noPlayers = rec.props.open && !rec.props.open.rows?.some((r) => r.a);
+    const refresh = (untilStart <= (LEAGUES[g.league]?.latestWindow ?? LATEST_WINDOW) || noPlayers) && stale;
     const propsWindow = untilStart <= (LEAGUES[g.league]?.propsAhead ?? OPEN_AHEAD);
     if (!LEAGUES[g.league]?.noProps && propsWindow && (!rec.props.open || closing || refresh)) {
       const list = await fetchers.props(g.league, g.id);
@@ -324,12 +329,12 @@ export async function updateGame(g, rec, now, fetchers = { gameLines, props, nam
           rows: list.map(compactProp),
           sample: list.slice(0, 2).map((x) => trim(x)),
         };
-        if (!rec.props.open) rec.props.open = snap;
+        if (!rec.props.open || (noPlayers && snap.rows.some((r) => r.a))) rec.props.open = snap;
         if (closing) rec.props.close = { ...snap };
         if (closing || refresh)
           rec.props.latest = { at: stamp, count: snap.count, rows: snap.rows };
         // player names for the site (ESPN prop rows only carry athlete ids)
-        if (!rec.names && fetchers.names) rec.names = await fetchers.names(g);
+        if ((!rec.names || !Object.keys(rec.names).length) && fetchers.names) rec.names = await fetchers.names(g);
       }
     }
   }
