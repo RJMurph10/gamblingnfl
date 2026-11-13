@@ -9,6 +9,7 @@ import { PropSpecials } from "@/components/shared/PropSpecials";
 import {
   getClosedProps,
   getLiveProps,
+  getPregameProps,
   getPropHistory,
   getUpcomingProps,
 } from "@/lib/shared/prop-history.functions";
@@ -153,12 +154,12 @@ export function ClosedPropLines({
   });
   // the last pregame board while the closing one isn't saved yet
   const pregame = useQuery({
-    queryKey: ["upcoming-props", league],
-    queryFn: () => getUpcomingProps({ data: { league } }),
-    enabled: !final && !closed.isLoading && !closed.data,
+    queryKey: ["pregame-props", league, game.id],
+    queryFn: () => getPregameProps({ data: { league, id: game.id } }),
+    enabled: !final && /^\d+$/.test(game.id) && !closed.isLoading && !closed.data,
     staleTime: 5 * 60_000,
   });
-  const board = closed.data ?? (pregame.data ? findPropGame(pregame.data, game) : undefined);
+  const board = closed.data ?? pregame.data ?? undefined;
   const results = useMemo(() => {
     if (past?.props.length) return resultsOf(past);
     const m = new Map<string, number | null | "dnp">();
@@ -335,16 +336,13 @@ function ClosedTdScorers({ game, gameRef }: { game: Game; gameRef: PropGameRef }
   });
   // a live game whose closing board isn't saved yet: the last pregame board's touchdown prices
   const pregame = useQuery({
-    queryKey: ["upcoming-props", "nfl"],
-    queryFn: () => getUpcomingProps({ data: { league: "nfl" } }),
-    enabled: game.status !== "final" && !closed.isLoading && !closed.data?.td?.length,
+    queryKey: ["pregame-props", "nfl", id],
+    queryFn: () => getPregameProps({ data: { league: "nfl", id } }),
+    enabled:
+      game.status !== "final" && /^\d+$/.test(id) && !closed.isLoading && !closed.data?.td?.length,
     staleTime: 5 * 60_000,
   });
-  const board = closed.data?.td?.length
-    ? closed.data
-    : pregame.data
-      ? findPropGame(pregame.data, gameRef)
-      : undefined;
+  const board = closed.data?.td?.length ? closed.data : (pregame.data ?? undefined);
   // touchdowns so far (live) or final; anytime and 2+ cash as they happen
   const touchdowns = useMemo(() => {
     if (game.status !== "final" && game.status !== "live") return undefined;

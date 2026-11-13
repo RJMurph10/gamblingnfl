@@ -146,6 +146,22 @@ export interface UpcomingPropGame {
  * (scripts/line-history/build-upcoming.mjs) from its saved snapshots, so the site needs one small read.
  */
 export async function fetchUpcomingProps(league: PropLeague): Promise<UpcomingPropGame[]> {
+  const now = Date.now();
+  return (await allUpcomingProps(league)).filter((g) => Date.parse(g.date) > now);
+}
+
+/**
+ * One game's last pregame board from the upcoming file, even after it has started (until the next lines
+ * run drops it): what a live game's Props tab shows before its closing board is saved.
+ */
+export async function fetchPregameProps(
+  league: PropLeague,
+  id: string,
+): Promise<UpcomingPropGame | null> {
+  return (await allUpcomingProps(league)).find((g) => g.id === id) ?? null;
+}
+
+async function allUpcomingProps(league: PropLeague): Promise<UpcomingPropGame[]> {
   const games =
     (await getJson<UpcomingPropGame[]>(
       `${BASE}/${league}/upcoming.json`,
@@ -153,8 +169,7 @@ export async function fetchUpcomingProps(league: PropLeague): Promise<UpcomingPr
       // jsDelivr's copy of the same branch (can lag a few hours, but keeps the games up)
       `https://cdn.jsdelivr.net/gh/RJMurph10/gamblingnfl@props-site/${league}/upcoming.json`,
     )) ?? [];
-  const now = Date.now();
-  return games.filter((g) => Date.parse(g.date) > now);
+  return games;
 }
 
 /**

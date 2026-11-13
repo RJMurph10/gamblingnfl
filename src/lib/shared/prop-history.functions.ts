@@ -1,6 +1,11 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { fetchClosedProps, fetchPropHistory, fetchUpcomingProps } from "./prop-history.server";
+import {
+  fetchClosedProps,
+  fetchPregameProps,
+  fetchPropHistory,
+  fetchUpcomingProps,
+} from "./prop-history.server";
 import { fetchLiveProps } from "./live-props.server";
 
 /** One day of historical player props (main lines, prices, results) for a league. */
@@ -46,3 +51,15 @@ export const getLiveProps = createServerFn({ method: "GET" })
       .parse(data),
   )
   .handler(async ({ data }) => fetchLiveProps(data.league, data.id));
+
+/** A started game's last pregame board (until its closing board is saved); null when none. */
+export const getPregameProps = createServerFn({ method: "GET" })
+  .inputValidator((data) =>
+    z
+      .object({
+        league: z.enum(["nba", "nfl", "nhl", "mlb", "wnba"]),
+        id: z.string().regex(/^\d+$/).max(20),
+      })
+      .parse(data),
+  )
+  .handler(async ({ data }) => fetchPregameProps(data.league, data.id));
