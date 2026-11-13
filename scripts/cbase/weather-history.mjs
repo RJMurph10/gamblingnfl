@@ -1,6 +1,6 @@
 /**
  * Hourly weather at each home location for a season (Feb 10 – Jun 30), from Open-Meteo's archive:
- * temperature (°F), wind speed (mph), precipitation (inches). Hours 10:00–22:00 local only.
+ * temperature (°F), wind speed (mph), wind direction (degrees it blows from), precipitation (inches). Hours 10:00–22:00 local only.
  *
  *   node scripts/cbase/weather-history.mjs <venues.json> <year> <out.json>
  *   → { "<espn id>": { "start": "YYYY-MM-DD", "t": [...], "w": [...], "p": [...] } }  (13 values a day)
@@ -32,19 +32,20 @@ await Promise.all(
       const [id, v] = list[next++];
       const j = await get(
         `https://archive-api.open-meteo.com/v1/archive?latitude=${v.lat}&longitude=${v.lon}&start_date=${Y}-02-10&end_date=${end}` +
-          `&hourly=temperature_2m,wind_speed_10m,precipitation&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&timezone=${encodeURIComponent(v.tz)}`,
+          `&hourly=temperature_2m,wind_speed_10m,wind_direction_10m,precipitation&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&timezone=${encodeURIComponent(v.tz)}`,
       );
       const h = j?.hourly;
       if (!h?.time?.length) continue;
-      const t = [], w = [], p = [];
+      const t = [], w = [], p = [], dir = [];
       h.time.forEach((ts, i) => {
         const hr = Number(ts.slice(11, 13));
         if (hr < 10 || hr > 22) return;
         t.push(h.temperature_2m[i] == null ? null : Math.round(h.temperature_2m[i]));
         w.push(h.wind_speed_10m[i] == null ? null : Math.round(h.wind_speed_10m[i]));
         p.push(h.precipitation[i] == null ? null : Math.round(h.precipitation[i] * 100) / 100);
+        dir.push(h.wind_direction_10m[i] == null ? null : Math.round(h.wind_direction_10m[i]));
       });
-      out[id] = { start: `${Y}-02-10`, t, w, p };
+      out[id] = { start: `${Y}-02-10`, t, w, p, d: dir };
       await new Promise((res) => setTimeout(res, 400));
     }
   }),

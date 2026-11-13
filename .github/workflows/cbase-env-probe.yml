@@ -14,7 +14,7 @@ jobs:
         with: { node-version: 22 }
       - run: git clone -q --depth 1 --branch main "https://github.com/${{ github.repository }}.git" main
       - run: mkdir -p out && node main/scripts/cbase/espn-teams.mjs out
-      - run: node scripts/cbase/venues.mjs out/espn-teams.json out/venues.json
+      - run: git clone -q --depth 1 --branch cbase-history "https://github.com/${{ github.repository }}.git" hist && cp hist/env/venues.json out/venues.json
       - run: for y in 2022 2023 2024 2025 2026; do node scripts/cbase/weather-history.mjs out/venues.json $y out/weather-$y.json; done
       - name: Publish to cbase-history
         run: |
