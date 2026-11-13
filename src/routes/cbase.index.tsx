@@ -1,9 +1,9 @@
 import { useMemo } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageTitle, Panel, PanelHeader, StatCard } from "@/components/shared/booth";
+import { CbaseRecentGames, CbaseUpcomingGames } from "@/components/cbase/CbaseDashTables";
 import {
   CbaseEmpty,
-  CbaseGamesTable,
   CbaseLogo,
   CbaseTeamLink,
   rowFromLined,
@@ -11,8 +11,6 @@ import {
 } from "@/components/cbase/CbaseBits";
 import {
   cbaseDashStats,
-  dayLabel,
-  etDay,
   pickLabel,
   roi,
   signed,
@@ -57,24 +55,21 @@ function CbaseDashboard() {
     () => (data?.upcoming ?? []).map((g) => rowFromUpcoming(g, teams)),
     [data, teams],
   );
-  const days = useMemo(() => {
-    const out: { day: string; rows: typeof upcoming }[] = [];
-    for (const r of upcoming) {
-      const day = etDay(r.start);
-      const last = out[out.length - 1];
-      if (last?.day === day) last.rows.push(r);
-      else out.push({ day, rows: [r] });
-    }
-    return out.slice(0, 3);
-  }, [upcoming]);
+  const finals = useMemo(
+    () => [...(data?.lined ?? [])].sort((a, b) => b.start.localeCompare(a.start)),
+    [data],
+  );
   const recent = useMemo(
+    () => finals.slice(0, 5).map((g) => rowFromLined(g, teams)),
+    [finals, teams],
+  );
+  const picked = useMemo(
     () =>
-      [...(data?.lined ?? [])]
+      finals
         .filter((g) => g.picks?.length)
-        .sort((a, b) => b.start.localeCompare(a.start))
-        .slice(0, 12)
+        .slice(0, 10)
         .map((g) => rowFromLined(g, teams)),
-    [data, teams],
+    [finals, teams],
   );
   const top = useMemo(
     () =>
@@ -181,40 +176,32 @@ function CbaseDashboard() {
 
       <div className="grid gap-6 lg:grid-cols-12">
         <section className="min-w-0 space-y-6 lg:col-span-8">
-          {days.length ? (
-            days.map((d) => (
-              <CbaseGamesTable
-                key={d.day}
-                title={dayLabel(d.day)}
-                aside={`${d.rows.length} game${d.rows.length === 1 ? "" : "s"} with lines`}
-                rows={d.rows}
-                teams={teams}
-              />
-            ))
-          ) : (
-            <Panel>
-              <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">
-                Upcoming games
-              </h2>
-              <p className="mt-3 font-mono text-xs text-mute">
+          <CbaseUpcomingGames
+            rows={upcoming}
+            teams={teams}
+            empty={
+              <>
                 The season is over. College baseball runs mid-February to late June; the{" "}
                 {data.season} season&apos;s games are under{" "}
                 <Link to="/cbase/games" className="text-acc hover:underline">
                   Games
                 </Link>
                 .
-              </p>
-            </Panel>
-          )}
-          {recent.length ? (
-            <CbaseGamesTable
-              title="Latest watch picks"
-              withDate
-              rows={recent}
-              teams={teams}
-              season={data.season}
-            />
-          ) : null}
+              </>
+            }
+          />
+          <CbaseRecentGames
+            title="Recent games"
+            rows={recent}
+            teams={teams}
+            empty="No finished games with lines yet."
+          />
+          <CbaseRecentGames
+            title="Latest watch picks"
+            rows={picked}
+            teams={teams}
+            empty="No watch picks graded yet."
+          />
         </section>
 
         <aside className="min-w-0 space-y-6 lg:col-span-4">
