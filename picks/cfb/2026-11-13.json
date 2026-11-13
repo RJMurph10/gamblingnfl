@@ -1,0 +1,41 @@
+{
+ "day": "2026-11-13",
+ "updated": "2026-11-13T09:24:59.223Z",
+ "picks": [
+  {
+   "id": "401858526-total-weather",
+   "game": "ILL @ UCLA",
+   "tip": "2026-11-14T02:00Z",
+   "market": "total",
+   "pick": "Under 47.5",
+   "line": 47.5,
+   "open": 47.5,
+   "model": null,
+   "edge": null,
+   "best": false,
+   "tag": "weather",
+   "note": "10 mph · gusts 12 · rain 0.11 in",
+   "firstSeen": "2026-11-13T09:24:59.223Z",
+   "lastSeen": "2026-11-13T09:24:59.223Z",
+   "latest": 47.5,
+   "latestAt": "2026-11-13T09:24:59.223Z"
+  },
+  {
+   "id": "401856860-total-late",
+   "game": "HOU @ COLO",
+   "tip": "2026-11-14T03:15Z",
+   "market": "total",
+   "pick": "Under 51.5",
+   "line": 51.5,
+   "open": 47.5,
+   "model": null,
+   "edge": null,
+   "best": false,
+   "tag": "late",
+   "firstSeen": "2026-11-13T09:24:59.223Z",
+   "lastSeen": "2026-11-13T09:24:59.223Z",
+   "latest": 51.5,
+   "latestAt": "2026-11-13T09:24:59.223Z"
+  }
+ ]
+}

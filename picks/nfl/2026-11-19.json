@@ -1,0 +1,23 @@
+{
+ "day": "2026-11-19",
+ "updated": "2026-11-13T09:24:59.223Z",
+ "picks": [
+  {
+   "id": "401873066-spread-road-dog",
+   "game": "IND @ HOU",
+   "tip": "2026-11-20T01:15Z",
+   "market": "spread",
+   "pick": "IND +10",
+   "line": -10,
+   "open": -5.5,
+   "model": null,
+   "edge": null,
+   "best": false,
+   "tag": "road-dog",
+   "firstSeen": "2026-11-13T09:24:59.223Z",
+   "lastSeen": "2026-11-13T09:24:59.223Z",
+   "latest": -10,
+   "latestAt": "2026-11-13T09:24:59.223Z"
+  }
+ ]
+}
