@@ -14,6 +14,7 @@ import { Route as FuturesRouteImport } from './routes/futures'
 import { Route as ModelRouteImport } from './routes/model'
 import { Route as PropHistoryRouteImport } from './routes/prop-history'
 import { Route as PropsRouteImport } from './routes/props'
+import { Route as StatusRouteImport } from './routes/status'
 import { Route as CbaseIndexRouteImport } from './routes/cbase.index'
 import { Route as CbaseModelRouteImport } from './routes/cbase.model'
 import { Route as CbbIndexRouteImport } from './routes/cbb.index'
@@ -106,6 +107,11 @@ const PropHistoryRoute = PropHistoryRouteImport.update({
 const PropsRoute = PropsRouteImport.update({
   id: '/props',
   path: '/props',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StatusRoute = StatusRouteImport.update({
+  id: '/status',
+  path: '/status',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CbaseIndexRoute = CbaseIndexRouteImport.update({
@@ -455,6 +461,7 @@ export interface FileRoutesByFullPath {
   '/model': typeof ModelRoute
   '/prop-history': typeof PropHistoryRoute
   '/props': typeof PropsRoute
+  '/status': typeof StatusRoute
   '/cbase/model': typeof CbaseModelRoute
   '/cbb/model': typeof CbbModelRoute
   '/cfb/model': typeof CfbModelRoute
@@ -530,6 +537,7 @@ export interface FileRoutesByTo {
   '/model': typeof ModelRoute
   '/prop-history': typeof PropHistoryRoute
   '/props': typeof PropsRoute
+  '/status': typeof StatusRoute
   '/cbase/model': typeof CbaseModelRoute
   '/cbb/model': typeof CbbModelRoute
   '/cfb/model': typeof CfbModelRoute
@@ -606,6 +614,7 @@ export interface FileRoutesById {
   '/model': typeof ModelRoute
   '/prop-history': typeof PropHistoryRoute
   '/props': typeof PropsRoute
+  '/status': typeof StatusRoute
   '/cbase/model': typeof CbaseModelRoute
   '/cbb/model': typeof CbbModelRoute
   '/cfb/model': typeof CfbModelRoute
@@ -683,6 +692,7 @@ export interface FileRouteTypes {
     | '/model'
     | '/prop-history'
     | '/props'
+    | '/status'
     | '/cbase/model'
     | '/cbb/model'
     | '/cfb/model'
@@ -758,6 +768,7 @@ export interface FileRouteTypes {
     | '/model'
     | '/prop-history'
     | '/props'
+    | '/status'
     | '/cbase/model'
     | '/cbb/model'
     | '/cfb/model'
@@ -833,6 +844,7 @@ export interface FileRouteTypes {
     | '/model'
     | '/prop-history'
     | '/props'
+    | '/status'
     | '/cbase/model'
     | '/cbb/model'
     | '/cfb/model'
@@ -909,6 +921,7 @@ export interface RootRouteChildren {
   ModelRoute: typeof ModelRoute
   PropHistoryRoute: typeof PropHistoryRoute
   PropsRoute: typeof PropsRoute
+  StatusRoute: typeof StatusRoute
   CbaseModelRoute: typeof CbaseModelRoute
   CbbModelRoute: typeof CbbModelRoute
   CfbModelRoute: typeof CfbModelRoute
@@ -1014,6 +1027,13 @@ declare module '@tanstack/react-router' {
       path: '/props'
       fullPath: '/props'
       preLoaderRoute: typeof PropsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/status': {
+      id: '/status'
+      path: '/status'
+      fullPath: '/status'
+      preLoaderRoute: typeof StatusRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/cbase/': {
@@ -1501,6 +1521,7 @@ const rootRouteChildren: RootRouteChildren = {
   ModelRoute: ModelRoute,
   PropHistoryRoute: PropHistoryRoute,
   PropsRoute: PropsRoute,
+  StatusRoute: StatusRoute,
   CbaseModelRoute: CbaseModelRoute,
   CbbModelRoute: CbbModelRoute,
   CfbModelRoute: CfbModelRoute,

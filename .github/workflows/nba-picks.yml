@@ -41,9 +41,9 @@ jobs:
           mkdir -p "$RUNNER_TEMP/tsx" && npm i --prefix "$RUNNER_TEMP/tsx" --no-audit --no-fund tsx@4.19.2 >/dev/null
           node app/scripts/picks/nba-stars.mjs site || echo "stars build failed; picks run without them"
           STARS_FILE=site/nba/stars-$(node -e 'const d=new Date();const y=d.getUTCMonth()>=8?d.getUTCFullYear()+1:d.getUTCFullYear();console.log(`${y-1}-${String(y).slice(2)}`)').json \
-            node "$RUNNER_TEMP/tsx/node_modules/tsx/dist/cli.mjs" app/scripts/picks/nba-picks.ts site/picks
+            node "$RUNNER_TEMP/tsx/node_modules/tsx/dist/cli.mjs" --tsconfig app/tsconfig.json app/scripts/picks/nba-picks.ts site/picks
           # college basketball ★ totals (November to early April); a failure doesn't stop the rest
-          node "$RUNNER_TEMP/tsx/node_modules/tsx/dist/cli.mjs" app/scripts/picks/cbb-picks.ts site/picks || echo "cbb picks failed"
+          node "$RUNNER_TEMP/tsx/node_modules/tsx/dist/cli.mjs" --tsconfig app/tsconfig.json app/scripts/picks/cbb-picks.ts site/picks || echo "cbb picks failed"
           # grade finished picks and rebuild the season files the site reads
           node app/scripts/picks/grade-picks.mjs site/picks || echo "grading failed"
           cd site
