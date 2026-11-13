@@ -35,6 +35,10 @@ export interface GameWeather {
   high: number | null;
   low: number | null;
   isIndoor: boolean;
+  /** e.g. "NE 10 mph" or "NE 10 to 15 mph" (outdoor forecasts only). */
+  wind?: string | null;
+  /** Chance of rain or snow, 0–100 (when the source gives one). */
+  precipChance?: number | null;
 }
 
 const USER_AGENT = "GamblingNFL/1.0 https://gamblingnfl.lovable.app/";
@@ -243,6 +247,9 @@ interface NwsPeriod {
   temperature?: number;
   temperatureUnit?: string;
   shortForecast?: string;
+  windSpeed?: string;
+  windDirection?: string;
+  probabilityOfPrecipitation?: { value?: number | null };
 }
 
 interface NwsPointsResponse {
@@ -328,6 +335,7 @@ async function nwsWeather(
   const range = getTemperatureRange(sameDayTemperatures);
   const condition = best.shortForecast || "Cloudy";
   const emoji = conditionToEmoji(condition);
+  const pop = best.probabilityOfPrecipitation?.value;
 
   return {
     temperature,
@@ -336,7 +344,17 @@ async function nwsWeather(
     high: range.high,
     low: range.low,
     isIndoor: false,
+    wind: best.windSpeed
+      ? `${best.windDirection ? `${best.windDirection} ` : ""}${best.windSpeed}`
+      : null,
+    precipChance: validNumber(pop) ? Math.round(pop) : null,
   };
+}
+
+/** Degrees the wind blows from → a 16-point compass label ("NE"). */
+function compass(deg: number): string {
+  const points = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"];
+  return points[Math.round((((deg % 360) + 360) % 360) / 22.5) % 16];
 }
 
 /* ---------- International forecast: MET Norway ---------- */
@@ -347,6 +365,8 @@ interface MetTimeseriesEntry {
     instant?: {
       details?: {
         air_temperature?: number;
+        wind_speed?: number;
+        wind_from_direction?: number;
       };
     };
     next_1_hours?: {
@@ -443,6 +463,9 @@ async function metNorwayWeather(
 
   const range = getTemperatureRange(sameDayTemperatures);
 
+  const ms = best.data?.instant?.details?.wind_speed;
+  const from = best.data?.instant?.details?.wind_from_direction;
+
   return {
     temperature: celsiusToFahrenheit(celsius),
     condition,
@@ -450,6 +473,10 @@ async function metNorwayWeather(
     high: range.high,
     low: range.low,
     isIndoor: false,
+    wind: validNumber(ms)
+      ? `${validNumber(from) ? `${compass(from)} ` : ""}${Math.round(ms * 2.237)} mph`
+      : null,
+    precipChance: null,
   };
 }
 
@@ -460,6 +487,9 @@ interface VisualCrossingHour {
   temp?: number;
   conditions?: string;
   icon?: string;
+  windspeed?: number;
+  winddir?: number;
+  precipprob?: number;
 }
 
 interface VisualCrossingDay {
@@ -542,7 +572,7 @@ async function visualCrossingPastWeather(
   url.searchParams.set("timezone", stadium.timezone);
   url.searchParams.set(
     "elements",
-    "datetime,tempmax,tempmin,temp,conditions,icon",
+    "datetime,tempmax,tempmin,temp,conditions,icon,windspeed,winddir,precipprob",
   );
 
   const data = await getJson<VisualCrossingResponse>(url.toString());
@@ -594,6 +624,10 @@ async function visualCrossingPastWeather(
     high: validNumber(day.tempmax) ? Math.round(day.tempmax) : null,
     low: validNumber(day.tempmin) ? Math.round(day.tempmin) : null,
     isIndoor: false,
+    wind: validNumber(best.windspeed)
+      ? `${validNumber(best.winddir) ? `${compass(best.winddir)} ` : ""}${Math.round(best.windspeed)} mph`
+      : null,
+    precipChance: validNumber(best.precipprob) ? Math.round(best.precipprob) : null,
   };
 }
 

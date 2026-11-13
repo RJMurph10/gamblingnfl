@@ -528,11 +528,23 @@ export function parseGameInfo(d: any): Game["info"] {
     const high = Number(w.highTemperature);
     const parts: string[] = [];
     if (Number.isFinite(temp)) parts.push(`${Math.round(temp)}°`);
-    if (w.displayValue || w.conditionDescription)
-      parts.push(String(w.displayValue ?? w.conditionDescription));
+    // ESPN puts the condition in displayValue, conditionDescription or conditionId, and sometimes
+    // only a numeric AccuWeather icon code there (e.g. displayValue "7"), which isn't readable.
+    const condition = [w.displayValue, w.conditionDescription, w.conditionId]
+      .map((v) => (v == null ? "" : String(v).trim()))
+      .find((v) => v && !/^\d+$/.test(v));
+    if (condition) parts.push(condition);
     let summary = parts.join(", ");
     if (summary && Number.isFinite(high) && high !== temp)
       summary += ` (High ${Math.round(high)}°)`;
+    const precip = Number(w.precipitation);
+    const gust = Number(w.gust);
+    const extras: string[] = [];
+    if (w.precipitation != null && Number.isFinite(precip))
+      extras.push(`${Math.round(precip)}% chance of rain`);
+    if (w.gust != null && Number.isFinite(gust) && gust > 0)
+      extras.push(`gusts ${Math.round(gust)} mph`);
+    if (summary && extras.length) summary += ` · ${extras.join(" · ")}`;
     if (summary) {
       weather = {
         summary,
