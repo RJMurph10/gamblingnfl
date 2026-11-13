@@ -2,8 +2,9 @@
  * NCAA D-I baseball box scores, pitchers only: for every final game in <hist>/ncaa/<year>.jsonl.gz, the
  * NCAA's gamecenter box score (GraphQL NCAA_GetGamecenterBoxscoreBaseballById_web, contest id = the game
  * url's number). Writes <out>/box/<year>.jsonl.gz, one line per game:
- *   { id, url, date, teams: [{ seo, home, pitchers: [[first, last, number, ip, h, r, er, bb, so, bf, np]...] }] }
- * Pitchers keep the box score's order (the first is the starter).
+ *   { id, url, date, teams: [{ seo, home, pitchers: [[first, last, number, ip, h, r, er, bb, so, bf, np, position, starter]...] }] }
+ * The box score lists players in lineup order, not pitching order: the starting pitcher is the one with
+ * position "p" and starter true.
  *
  *   node scripts/cbase/export-box.mjs <year> <hist-dir> <out-dir> [--only-missing <existing.jsonl.gz>]
  */
@@ -97,6 +98,8 @@ await Promise.all(
               P(s, "strikeouts"),
               P(s, "battersFaced"),
               P(s, "pitchCount"),
+              x.position ?? "",
+              x.starter === true,
             ];
           });
         return { seo: t.seoname, home: t.isHome === true, pitchers };

@@ -11,13 +11,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        year: [2022, 2023, 2024, 2025, 2026]
+        year: [2023, 2024, 2025, 2026]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
       - run: git clone -q --depth 1 --branch cbase-history "https://github.com/${{ github.repository }}.git" hist
-      - run: node scripts/cbase/export-box.mjs ${{ matrix.year }} hist out  # re-run 2
+      - run: node scripts/cbase/export-box.mjs ${{ matrix.year }} hist out  # re-run 3
       - name: Publish to cbase-history
         run: |
           url="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
