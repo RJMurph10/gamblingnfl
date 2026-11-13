@@ -7,18 +7,18 @@
   "id": "20",
   "abbr": "TB",
   "name": "Tampa Bay Lightning",
-  "score": 0
+  "score": 1
  },
  "home": {
   "id": "29",
   "abbr": "CBJ",
   "name": "Columbus Blue Jackets",
-  "score": 0
+  "score": 1
  },
  "neutral": false,
  "venue": "Nationwide Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-11T22:17:30.066Z",

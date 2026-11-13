@@ -7,18 +7,18 @@
   "id": "2",
   "abbr": "BUF",
   "name": "Buffalo Sabres",
-  "score": 0
+  "score": 1
  },
  "home": {
   "id": "4",
   "abbr": "CHI",
   "name": "Chicago Blackhawks",
-  "score": 0
+  "score": 1
  },
  "neutral": false,
  "venue": "United Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-11T22:17:30.066Z",

@@ -7,18 +7,18 @@
   "id": "2415",
   "abbr": "MORG",
   "name": "Morgan State Bears",
-  "score": 0
+  "score": 70
  },
  "home": {
   "id": "2378",
   "abbr": "UMBC",
   "name": "UMBC Retrievers",
-  "score": 0
+  "score": 85
  },
  "neutral": false,
  "venue": "Chesapeake Employers Insurance Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-12T03:07:07.660Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 70,
+  "home": 85
+ }
 }

@@ -7,18 +7,18 @@
   "id": "130",
   "abbr": "MICH",
   "name": "Michigan Wolverines",
-  "score": 0
+  "score": 64
  },
  "home": {
   "id": "171",
   "abbr": "COLU",
   "name": "Columbia Lions",
-  "score": 0
+  "score": 40
  },
  "neutral": false,
  "venue": "Levien Gymnasium",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-12T20:53:06.836Z",

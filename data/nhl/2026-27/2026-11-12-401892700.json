@@ -7,18 +7,18 @@
   "id": "23",
   "abbr": "WSH",
   "name": "Washington Capitals",
-  "score": 0
+  "score": 2
  },
  "home": {
   "id": "11",
   "abbr": "NJ",
   "name": "New Jersey Devils",
-  "score": 0
+  "score": 2
  },
  "neutral": false,
  "venue": "Prudential Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-11T22:17:30.066Z",

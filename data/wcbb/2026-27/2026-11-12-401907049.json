@@ -7,18 +7,18 @@
   "id": "197",
   "abbr": "OKST",
   "name": "Oklahoma State Cowgirls",
-  "score": 0
+  "score": 62
  },
  "home": {
   "id": "202",
   "abbr": "TLSA",
   "name": "Tulsa Golden Hurricane",
-  "score": 0
+  "score": 64
  },
  "neutral": false,
  "venue": "Reynolds Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-12T20:53:06.836Z",
@@ -935,5 +935,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 62,
+  "home": 64
+ }
 }

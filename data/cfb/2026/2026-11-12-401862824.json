@@ -7,7 +7,7 @@
   "id": "235",
   "abbr": "MEM",
   "name": "Memphis Tigers",
-  "score": 0
+  "score": 14
  },
  "home": {
   "id": "58",
@@ -18,7 +18,7 @@
  "neutral": false,
  "venue": "Raymond James Stadium",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-08T07:27:09.725Z",

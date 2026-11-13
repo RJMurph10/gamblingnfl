@@ -7,18 +7,18 @@
   "id": "2115",
   "abbr": "CCSU",
   "name": "Central Connecticut Blue Devils",
-  "score": 0
+  "score": 66
  },
  "home": {
   "id": "2529",
   "abbr": "SHU",
   "name": "Sacred Heart Pioneers",
-  "score": 0
+  "score": 68
  },
  "neutral": false,
  "venue": "William H. Pitt Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-12T03:07:07.660Z",

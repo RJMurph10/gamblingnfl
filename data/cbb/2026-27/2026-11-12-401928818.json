@@ -7,18 +7,18 @@
   "id": "2711",
   "abbr": "WMU",
   "name": "Western Michigan Broncos",
-  "score": 0
+  "score": 65
  },
  "home": {
   "id": "2870",
   "abbr": "PFW",
   "name": "Purdue Fort Wayne Mastodons",
-  "score": 0
+  "score": 49
  },
  "neutral": false,
  "venue": "Memorial Coliseum (IN)",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-12T03:07:07.660Z",

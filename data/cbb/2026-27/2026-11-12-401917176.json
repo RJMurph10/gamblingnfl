@@ -7,18 +7,18 @@
   "id": "2385",
   "abbr": "MERC",
   "name": "Mercyhurst Lakers",
-  "score": 0
+  "score": 57
  },
  "home": {
   "id": "213",
   "abbr": "PSU",
   "name": "Penn State Nittany Lions",
-  "score": 0
+  "score": 72
  },
  "neutral": false,
  "venue": "Bryce Jordan Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-12T03:07:07.660Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 57,
+  "home": 72
+ }
 }

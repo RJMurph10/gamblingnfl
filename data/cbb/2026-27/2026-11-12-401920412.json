@@ -7,18 +7,18 @@
   "id": "253",
   "abbr": "SUU",
   "name": "Southern Utah Thunderbirds",
-  "score": 0
+  "score": 44
  },
  "home": {
   "id": "2272",
   "abbr": "HPU",
   "name": "High Point Panthers",
-  "score": 0
+  "score": 63
  },
  "neutral": false,
  "venue": "Qubein Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-12T03:07:07.660Z",

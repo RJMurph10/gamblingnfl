@@ -7,18 +7,18 @@
   "id": "2379",
   "abbr": "UMES",
   "name": "Maryland Eastern Shore Hawks",
-  "score": 0
+  "score": 44
  },
  "home": {
   "id": "227",
   "abbr": "URI",
   "name": "Rhode Island Rams",
-  "score": 0
+  "score": 60
  },
  "neutral": false,
  "venue": "Thomas M. Ryan Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-12T03:07:07.660Z",

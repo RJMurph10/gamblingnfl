@@ -7,18 +7,18 @@
   "id": "5",
   "abbr": "DET",
   "name": "Detroit Red Wings",
-  "score": 0
+  "score": 3
  },
  "home": {
   "id": "26",
   "abbr": "FLA",
   "name": "Florida Panthers",
-  "score": 0
+  "score": 1
  },
  "neutral": false,
  "venue": "Amerant Bank Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-11T22:17:30.066Z",

@@ -7,18 +7,18 @@
   "id": "71",
   "abbr": "BRAD",
   "name": "Bradley Braves",
-  "score": 0
+  "score": 56
  },
  "home": {
   "id": "2154",
   "abbr": "COPP",
   "name": "Coppin State Eagles",
-  "score": 0
+  "score": 54
  },
  "neutral": true,
  "venue": "McArthur Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-12T03:07:07.660Z",
@@ -934,5 +934,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 56,
+  "home": 54
+ }
 }

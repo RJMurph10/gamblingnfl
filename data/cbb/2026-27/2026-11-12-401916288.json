@@ -7,18 +7,18 @@
   "id": "2635",
   "abbr": "TNTC",
   "name": "Tennessee Tech Golden Eagles",
-  "score": 0
+  "score": 59
  },
  "home": {
   "id": "84",
   "abbr": "IU",
   "name": "Indiana Hoosiers",
-  "score": 0
+  "score": 82
  },
  "neutral": false,
  "venue": "Simon Skjodt Assembly Hall",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-12T03:07:07.660Z",

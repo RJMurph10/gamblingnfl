@@ -7,18 +7,18 @@
   "id": "150",
   "abbr": "DUKE",
   "name": "Duke Blue Devils",
-  "score": 0
+  "score": 83
  },
  "home": {
   "id": "2450",
   "abbr": "NORF",
   "name": "Norfolk State Spartans",
-  "score": 0
+  "score": 23
  },
  "neutral": false,
  "venue": "Joseph G. Echols Hall",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-12T20:53:06.836Z",

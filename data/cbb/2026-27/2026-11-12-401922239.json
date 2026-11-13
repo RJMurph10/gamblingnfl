@@ -7,18 +7,18 @@
   "id": "56",
   "abbr": "STET",
   "name": "Stetson Hatters",
-  "score": 0
+  "score": 50
  },
  "home": {
   "id": "47",
   "abbr": "HOW",
   "name": "Howard Bison",
-  "score": 0
+  "score": 60
  },
  "neutral": false,
  "venue": "Burr Gymnasium",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-12T03:07:07.660Z",
