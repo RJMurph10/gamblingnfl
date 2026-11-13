@@ -24,6 +24,8 @@ export interface CbaseModel {
   a: number;
   p: number;
   t: number;
+  /** Simulated chance of going over the opening (else latest) total, pushes left out. */
+  po?: number;
 }
 
 export interface CbasePick {
@@ -93,6 +95,8 @@ export interface CbaseTeam {
   espn?: string | null;
   /** ESPN's logo for the team. */
   logo?: string | null;
+  /** Home town, "Norman, OK". */
+  town?: string | null;
   w: number;
   l: number;
   rs: number;
@@ -165,6 +169,29 @@ export function noVig(h: number | null | undefined, a: number | null | undefined
   const pa = ip(a);
   return ph / (ph + pa);
 }
+
+const erf = (x: number) => {
+  // Abramowitz–Stegun 7.1.26
+  const t = 1 / (1 + 0.3275911 * Math.abs(x));
+  const y =
+    1 -
+    ((((1.061405429 * t - 1.453152027) * t + 1.421413741) * t - 0.284496736) * t + 0.254829592) *
+      t *
+      Math.exp(-x * x);
+  return x >= 0 ? y : -y;
+};
+export const normCdf = (z: number) => 0.5 * (1 + erf(z / Math.SQRT2));
+
+/** Margin spread the model uses for run lines (cbase_model.py SD_MARGIN). */
+export const CBASE_MARGIN_SD = 5.77;
+
+/** Home side covers its run line `rl` (e.g. −1.5), from the model's expected runs. */
+export const homeCover = (m: CbaseModel, rl: number) =>
+  1 - normCdf((-rl - (m.h - m.a)) / CBASE_MARGIN_SD);
+
+/** Fair American price for a chance. */
+export const fairPrice = (p: number) =>
+  p <= 0 || p >= 1 ? null : Math.round(p >= 0.5 ? (-100 * p) / (1 - p) : (100 * (1 - p)) / p);
 
 /** Units won or lost on a 1-unit bet. */
 export const units = (price: number, won: boolean) =>

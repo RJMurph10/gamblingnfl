@@ -83,6 +83,15 @@ for g in rows:
     rec[g["home"]]["rs"] += g["hr"]; rec[g["home"]]["ra"] += g["ar"]
     rec[g["away"]]["rs"] += g["ar"]; rec[g["away"]]["ra"] += g["hr"]
 teams = {}
+# home towns (venues.mjs), for the game page's Information tab
+venues_all = json.loads(Path(args.env, "venues.json").read_text()) if args.env and Path(args.env, "venues.json").exists() else {}
+
+
+def town(t):
+    v = venues_all.get(seo_to_espn.get(t) or "")
+    return f"{v['city']}, {v['state']}" if v and v.get("city") else None
+
+
 for t, name in names.items():
     r = rec[t]
     if r["w"] + r["l"] == 0:
@@ -93,6 +102,7 @@ for t, name in names.items():
         conf=confs.get(t, ""),
         espn=seo_to_espn.get(t),
         logo=(espn_teams.get(seo_to_espn.get(t)) or {}).get("logo") or None,
+        town=town(t),
         **r,
         **(dict(off=round(sol[i], 2), dfn=round(sol[T + i], 2), park=round(sol[2 * T + 5 + i], 2)) if i is not None else {}),
     )
@@ -157,6 +167,8 @@ for i, (e, flip) in sorted(matches.items(), key=lambda x: rows[x[0]]["date"]):
     if i in preds:
         ex, info = with_ctx(preds[i], ctx_by_row.get(i))
         m = M.model_numbers(*ex)
+        if (op or cu or {}).get("tot") is not None:
+            m["po"] = round(M.sim_total_over(m["h"], m["a"], (op or cu)["tot"]), 4)  # simulated over, opening total
         item["m"] = m
         if info:
             item["ctx"] = info
@@ -194,6 +206,9 @@ for e in upcoming_espn:
         if ex:
             ex, info = with_ctx(ex, ctx_up.get(e["id"]))
             item["m"] = M.model_numbers(*ex)
+            line = item.get("open") or item.get("close") or {}
+            if line.get("tot") is not None:
+                item["m"]["po"] = round(M.sim_total_over(item["m"]["h"], item["m"]["a"], line["tot"]), 4)
             if info:
                 item["ctx"] = info
             if played[h] >= M.MIN_GP and played[a] >= M.MIN_GP and got:
