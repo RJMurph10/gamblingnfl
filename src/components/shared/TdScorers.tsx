@@ -15,14 +15,17 @@ const norm = (s: string) =>
 
 /**
  * DraftKings' touchdown-scorer prices for an NFL game: anytime, first, 2+ and last TD. For a finished
- * game, `touchdowns` (player name → touchdowns scored) marks the anytime and 2+ bets that cashed.
+ * game, `touchdowns` (player name → touchdowns scored) marks the anytime and 2+ bets that cashed; while
+ * the game is `live`, only the ones that have cashed so far (nothing is marked lost before the final).
  */
 export function TdScorers({
   game,
   touchdowns,
+  live = false,
 }: {
   game: UpcomingPropGame;
   touchdowns?: Map<string, number>;
+  live?: boolean;
 }) {
   const [team, setTeam] = useState("All");
   const rows = useMemo(
@@ -92,9 +95,9 @@ export function TdScorers({
                   <td className="px-4 py-2">
                     {r[0]} <span className="font-mono text-[10px] text-faint">{r[1]}</span>
                   </td>
-                  {cell(r[2], tds === undefined ? undefined : tds >= 1)}
+                  {cell(r[2], tds === undefined || (live && tds < 1) ? undefined : tds >= 1)}
                   {cell(r[3], undefined)}
-                  {cell(r[4], tds === undefined ? undefined : tds >= 2)}
+                  {cell(r[4], tds === undefined || (live && tds < 2) ? undefined : tds >= 2)}
                   {cell(r[5], undefined)}
                   {touchdowns ? (
                     <td className="px-4 py-2 text-right font-mono text-xs font-semibold tabular-nums">
@@ -111,7 +114,9 @@ export function TdScorers({
         Prices are DraftKings&apos; from the latest pull{touchdowns ? " before kickoff" : ""}{" "}
         (updated twice a day).
         {touchdowns
-          ? " Green = the anytime or 2+ bet cashed; struck through = it lost. First and last TD aren't graded here."
+          ? live
+            ? " Live: TDs so far; green = the anytime or 2+ bet has already cashed. First and last TD aren't graded here."
+            : " Green = the anytime or 2+ bet cashed; struck through = it lost. First and last TD aren't graded here."
           : ""}
       </p>
     </Panel>
