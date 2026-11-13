@@ -1,0 +1,308 @@
+{
+ "checkedAt": "2026-11-13T09:24:01.166Z",
+ "summary": {
+  "ok": 33,
+  "warn": 1,
+  "fail": 3
+ },
+ "checks": [
+  {
+   "group": "Data",
+   "id": "data:props-site/picks/nba",
+   "name": "NBA / CBB opener picks",
+   "status": "fail",
+   "detail": "updated 30.0 h ago (expected within 14 h)",
+   "since": "2026-11-13T09:24:01.166Z"
+  },
+  {
+   "group": "Data",
+   "id": "data:props-site/cbase",
+   "name": "College baseball season file",
+   "status": "ok",
+   "detail": "updated 3.2 h ago · off season",
+   "since": "2026-11-13T09:24:01.166Z"
+  },
+  {
+   "group": "Data",
+   "id": "data:line-history/",
+   "name": "Line history branch",
+   "status": "ok",
+   "detail": "updated 5.8 h ago",
+   "since": "2026-11-13T09:24:01.166Z"
+  },
+  {
+   "group": "Data",
+   "id": "data:props-site/mlb/upcoming.json",
+   "name": "MLB upcoming props",
+   "status": "ok",
+   "detail": "updated 12.2 days ago · off season",
+   "since": "2026-11-13T09:24:01.166Z"
+  },
+  {
+   "group": "Data",
+   "id": "data:props-site/nba/upcoming.json",
+   "name": "NBA upcoming props",
+   "status": "ok",
+   "detail": "updated 6.9 h ago",
+   "since": "2026-11-13T09:24:01.166Z"
+  },
+  {
+   "group": "Data",
+   "id": "data:props-site/nfl/upcoming.json",
+   "name": "NFL upcoming props",
+   "status": "ok",
+   "detail": "updated 7.8 h ago",
+   "since": "2026-11-13T09:24:01.166Z"
+  },
+  {
+   "group": "Data",
+   "id": "data:props-site/period-lines/nhl",
+   "name": "NHL period lines",
+   "status": "ok",
+   "detail": "updated 6.8 h ago",
+   "since": "2026-11-13T09:24:01.166Z"
+  },
+  {
+   "group": "Data",
+   "id": "data:props-site/nhl/upcoming.json",
+   "name": "NHL upcoming props",
+   "status": "ok",
+   "detail": "updated 5.8 h ago",
+   "since": "2026-11-13T09:24:01.166Z"
+  },
+  {
+   "group": "Feeds",
+   "id": "feed:espn:baseball/college-baseball",
+   "name": "ESPN College baseball scoreboard",
+   "status": "ok",
+   "detail": "1 games today · off season",
+   "since": "2026-11-13T09:24:01.166Z"
+  },
+  {
+   "group": "Feeds",
+   "id": "feed:espn:football/college-football",
+   "name": "ESPN College football scoreboard",
+   "status": "ok",
+   "detail": "20 games today, odds on 20 of 20 upcoming",
+   "since": "2026-11-13T09:24:01.166Z"
+  },
+  {
+   "group": "Feeds",
+   "id": "feed:espn:summary",
+   "name": "ESPN game summary",
+   "status": "ok",
+   "detail": "header, box score and game info present",
+   "since": "2026-11-13T09:24:01.166Z"
+  },
+  {
+   "group": "Feeds",
+   "id": "feed:espn:basketball/mens-college-basketball",
+   "name": "ESPN Men's college basketball scoreboard",
+   "status": "ok",
+   "detail": "1 games today",
+   "since": "2026-11-13T09:24:01.166Z"
+  },
+  {
+   "group": "Feeds",
+   "id": "feed:espn:baseball/mlb",
+   "name": "ESPN MLB scoreboard",
+   "status": "ok",
+   "detail": "1 games today · off season",
+   "since": "2026-11-13T09:24:01.166Z"
+  },
+  {
+   "group": "Feeds",
+   "id": "feed:espn:basketball/nba",
+   "name": "ESPN NBA scoreboard",
+   "status": "ok",
+   "detail": "4 games today",
+   "since": "2026-11-13T09:24:01.166Z"
+  },
+  {
+   "group": "Feeds",
+   "id": "feed:espn:football/nfl",
+   "name": "ESPN NFL scoreboard",
+   "status": "ok",
+   "detail": "14 games today, odds on 13 of 13 upcoming",
+   "since": "2026-11-13T09:24:01.166Z"
+  },
+  {
+   "group": "Feeds",
+   "id": "feed:espn:hockey/nhl",
+   "name": "ESPN NHL scoreboard",
+   "status": "ok",
+   "detail": "11 games today",
+   "since": "2026-11-13T09:24:01.166Z"
+  },
+  {
+   "group": "Feeds",
+   "id": "feed:nws",
+   "name": "National Weather Service",
+   "status": "ok",
+   "detail": "points lookup has an hourly forecast",
+   "since": "2026-11-13T09:24:01.166Z"
+  },
+  {
+   "group": "Feeds",
+   "id": "feed:ncaa:NCAA_GetGamecenterBoxscoreBaseballById_web",
+   "name": "NCAA box score",
+   "status": "ok",
+   "detail": "saved query still answers",
+   "since": "2026-11-13T09:24:01.166Z"
+  },
+  {
+   "group": "Feeds",
+   "id": "feed:ncaa:GetContests_web",
+   "name": "NCAA scoreboard (GetContests)",
+   "status": "ok",
+   "detail": "saved query still answers",
+   "since": "2026-11-13T09:24:01.166Z"
+  },
+  {
+   "group": "Feeds",
+   "id": "feed:open-meteo",
+   "name": "Open-Meteo forecast",
+   "status": "ok",
+   "detail": "24 hours",
+   "since": "2026-11-13T09:24:01.166Z"
+  },
+  {
+   "group": "Jobs",
+   "id": "job:football-picks.yml",
+   "name": "Football picks (live results)",
+   "status": "fail",
+   "detail": "stale: last run failed 7.5 h ago; never succeeded recently (expected within 9 h)",
+   "url": "https://github.com/RJMurph10/gamblingnfl/actions/runs/43348355686",
+   "since": "2026-11-13T09:24:01.166Z"
+  },
+  {
+   "group": "Jobs",
+   "id": "job:nba-picks.yml",
+   "name": "NBA / CBB picks at the opener",
+   "status": "fail",
+   "detail": "stale: last run failed 6.4 h ago (3 in a row); last success 30.0 h ago (expected within 12 h)",
+   "url": "https://github.com/RJMurph10/gamblingnfl/actions/runs/43355629043",
+   "since": "2026-11-13T09:24:01.166Z"
+  },
+  {
+   "group": "Jobs",
+   "id": "job:cbase-season.yml",
+   "name": "College baseball season",
+   "status": "ok",
+   "detail": "last success 3.2 h ago · off season",
+   "since": "2026-11-13T09:24:01.166Z"
+  },
+  {
+   "group": "Jobs",
+   "id": "job:extra-lines.yml",
+   "name": "Extra game lines (SportsGameOdds / Odds API)",
+   "status": "ok",
+   "detail": "last success 6.5 h ago",
+   "since": "2026-11-13T09:24:01.166Z"
+  },
+  {
+   "group": "Jobs",
+   "id": "job:line-history.yml",
+   "name": "Line history (hourly lines, every league)",
+   "status": "ok",
+   "detail": "last success 5.8 h ago",
+   "since": "2026-11-13T09:24:01.166Z"
+  },
+  {
+   "group": "Jobs",
+   "id": "job:nba-lines.yml",
+   "name": "NBA game lines",
+   "status": "ok",
+   "detail": "last success 3.4 days ago",
+   "since": "2026-11-13T09:24:01.166Z"
+  },
+  {
+   "group": "Jobs",
+   "id": "job:nfl-openers.yml",
+   "name": "NFL opening lines",
+   "status": "ok",
+   "detail": "last success 2.5 days ago",
+   "since": "2026-11-13T09:24:01.166Z"
+  },
+  {
+   "group": "Jobs",
+   "id": "job:odds-api-nfl.yml",
+   "name": "NFL prop prices (Odds API)",
+   "status": "ok",
+   "detail": "last success 7.9 h ago",
+   "since": "2026-11-13T09:24:01.166Z"
+  },
+  {
+   "group": "Jobs",
+   "id": "job:sgo-nfl-props.yml",
+   "name": "NFL prop prices (SportsGameOdds)",
+   "status": "ok",
+   "detail": "last success 5.8 h ago",
+   "since": "2026-11-13T09:24:01.166Z"
+  },
+  {
+   "group": "Jobs",
+   "id": "job:nfl-qb-stars.yml",
+   "name": "NFL QB ★ props",
+   "status": "ok",
+   "detail": "last success 11.0 h ago",
+   "since": "2026-11-13T09:24:01.166Z"
+  },
+  {
+   "group": "Jobs",
+   "id": "job:nhl-periods.yml",
+   "name": "NHL period history",
+   "status": "ok",
+   "detail": "last success 12.9 h ago",
+   "since": "2026-11-13T09:24:01.166Z"
+  },
+  {
+   "group": "Jobs",
+   "id": "job:period-lines.yml",
+   "name": "NHL period lines",
+   "status": "ok",
+   "detail": "last success 6.8 h ago",
+   "since": "2026-11-13T09:24:01.166Z"
+  },
+  {
+   "group": "Jobs",
+   "id": "job:props-daily.yml",
+   "name": "Props daily (prop boards, grading)",
+   "status": "ok",
+   "detail": "last success 1.2 h ago",
+   "since": "2026-11-13T09:24:01.166Z"
+  },
+  {
+   "group": "Jobs",
+   "id": "job:qb-watch.yml",
+   "name": "QB watch (injury news)",
+   "status": "ok",
+   "detail": "last success 7.1 h ago",
+   "since": "2026-11-13T09:24:01.166Z"
+  },
+  {
+   "group": "Quotas",
+   "id": "quota:sgo",
+   "name": "SportsGameOdds monthly events",
+   "status": "ok",
+   "detail": "1,073 of 2,500 used this month (43%)",
+   "since": "2026-11-13T09:24:01.166Z"
+  },
+  {
+   "group": "Quotas",
+   "id": "quota:odds-api",
+   "name": "The Odds API credits",
+   "status": "ok",
+   "detail": "304 credits left this month",
+   "since": "2026-11-13T09:24:01.166Z"
+  },
+  {
+   "group": "Site",
+   "id": "site:home",
+   "name": "Website home page",
+   "status": "warn",
+   "detail": "set the SITE_URL repository variable to the published site's address",
+   "since": "2026-11-13T09:24:01.166Z"
+  }
+ ]
+}
