@@ -7,18 +7,18 @@
   "id": "2582",
   "abbr": "SOU",
   "name": "Southern Jaguars",
-  "score": 43
+  "score": 61
  },
  "home": {
   "id": "135",
   "abbr": "MINN",
   "name": "Minnesota Golden Gophers",
-  "score": 70
+  "score": 91
  },
  "neutral": false,
  "venue": "The Barn by Blue Cross and Blue Shield of Minnesota",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-12T03:07:07.660Z",
@@ -477,5 +477,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 61,
+  "home": 91
+ }
 }

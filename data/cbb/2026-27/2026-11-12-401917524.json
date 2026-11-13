@@ -7,18 +7,18 @@
   "id": "2351",
   "abbr": "LMU",
   "name": "Loyola Marymount Lions",
-  "score": 59
+  "score": 72
  },
  "home": {
   "id": "6",
   "abbr": "USA",
   "name": "South Alabama Jaguars",
-  "score": 60
+  "score": 79
  },
  "neutral": true,
  "venue": "Pensacola Bay Center",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-12T03:07:07.660Z",
@@ -477,5 +477,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 72,
+  "home": 79
+ }
 }

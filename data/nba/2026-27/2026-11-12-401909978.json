@@ -7,18 +7,18 @@
   "id": "6",
   "abbr": "DAL",
   "name": "Dallas Mavericks",
-  "score": 56
+  "score": 94
  },
  "home": {
   "id": "16",
   "abbr": "MIN",
   "name": "Minnesota Timberwolves",
-  "score": 84
+  "score": 133
  },
  "neutral": false,
  "venue": "Target Center",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-12T03:07:07.660Z",
@@ -2378,5 +2378,9 @@
    "Joan Beringer",
    "MIN"
   ]
+ },
+ "final": {
+  "away": 94,
+  "home": 133
  }
 }

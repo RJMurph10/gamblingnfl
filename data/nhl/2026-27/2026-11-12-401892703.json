@@ -7,13 +7,13 @@
   "id": "28",
   "abbr": "WPG",
   "name": "Winnipeg Jets",
-  "score": 2
+  "score": 8
  },
  "home": {
   "id": "9",
   "abbr": "DAL",
   "name": "Dallas Stars",
-  "score": 2
+  "score": 3
  },
  "neutral": false,
  "venue": "American Airlines Center",

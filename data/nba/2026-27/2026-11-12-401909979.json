@@ -7,13 +7,13 @@
   "id": "30",
   "abbr": "CHA",
   "name": "Charlotte Hornets",
-  "score": 18
+  "score": 62
  },
  "home": {
   "id": "21",
   "abbr": "PHX",
   "name": "Phoenix Suns",
-  "score": 22
+  "score": 63
  },
  "neutral": false,
  "venue": "Mortgage Matchup Center",

@@ -7,18 +7,18 @@
   "id": "97",
   "abbr": "LOU",
   "name": "Louisville Cardinals",
-  "score": 65
+  "score": 94
  },
  "home": {
   "id": "2050",
   "abbr": "BALL",
   "name": "Ball State Cardinals",
-  "score": 50
+  "score": 73
  },
  "neutral": false,
  "venue": "Worthen Arena",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-12T20:53:06.836Z",
@@ -477,5 +477,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 94,
+  "home": 73
+ }
 }

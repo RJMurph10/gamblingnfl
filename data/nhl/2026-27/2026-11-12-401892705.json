@@ -7,18 +7,18 @@
   "id": "12",
   "abbr": "NYI",
   "name": "New York Islanders",
-  "score": 0
+  "score": 1
  },
  "home": {
   "id": "8",
   "abbr": "LA",
   "name": "Los Angeles Kings",
-  "score": 0
+  "score": 1
  },
  "neutral": false,
  "venue": "crypto.com Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-11T22:17:30.066Z",
