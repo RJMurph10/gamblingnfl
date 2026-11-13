@@ -7,18 +7,18 @@
   "id": "2099",
   "abbr": "CAN",
   "name": "Canisius Golden Griffins",
-  "score": 82
+  "score": 86
  },
  "home": {
   "id": "225",
   "abbr": "BRWN",
   "name": "Brown Bears",
-  "score": 77
+  "score": 81
  },
  "neutral": false,
  "venue": "Pizzitola Sports Center",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-12T03:07:07.660Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 86,
+  "home": 81
+ }
 }

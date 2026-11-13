@@ -7,18 +7,18 @@
   "id": "2579",
   "abbr": "SC",
   "name": "South Carolina Gamecocks",
-  "score": 58
+  "score": 65
  },
  "home": {
   "id": "228",
   "abbr": "CLEM",
   "name": "Clemson Tigers",
-  "score": 39
+  "score": 44
  },
  "neutral": false,
  "venue": "Littlejohn Coliseum",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-12T20:53:06.836Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 65,
+  "home": 44
+ }
 }

@@ -7,18 +7,18 @@
   "id": "315",
   "abbr": "NIA",
   "name": "Niagara Purple Eagles",
-  "score": 70
+  "score": 76
  },
  "home": {
   "id": "189",
   "abbr": "BGSU",
   "name": "Bowling Green Falcons",
-  "score": 80
+  "score": 88
  },
  "neutral": false,
  "venue": "Stroh Center",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-12T03:07:07.660Z",
@@ -851,5 +851,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 76,
+  "home": 88
+ }
 }

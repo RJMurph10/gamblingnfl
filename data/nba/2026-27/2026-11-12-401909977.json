@@ -7,13 +7,13 @@
   "id": "8",
   "abbr": "DET",
   "name": "Detroit Pistons",
-  "score": 94
+  "score": 117
  },
  "home": {
   "id": "27",
   "abbr": "WSH",
   "name": "Washington Wizards",
-  "score": 90
+  "score": 118
  },
  "neutral": false,
  "venue": "Capital One Arena",

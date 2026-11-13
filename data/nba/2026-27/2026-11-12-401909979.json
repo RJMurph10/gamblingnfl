@@ -7,18 +7,18 @@
   "id": "30",
   "abbr": "CHA",
   "name": "Charlotte Hornets",
-  "score": 0
+  "score": 18
  },
  "home": {
   "id": "21",
   "abbr": "PHX",
   "name": "Phoenix Suns",
-  "score": 0
+  "score": 22
  },
  "neutral": false,
  "venue": "Mortgage Matchup Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-12T03:07:07.660Z",

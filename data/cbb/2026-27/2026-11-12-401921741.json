@@ -7,18 +7,18 @@
   "id": "147",
   "abbr": "MTST",
   "name": "Montana State Bobcats",
-  "score": 0
+  "score": 17
  },
  "home": {
   "id": "252",
   "abbr": "BYU",
   "name": "BYU Cougars",
-  "score": 0
+  "score": 26
  },
  "neutral": false,
  "venue": "Marriott Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-12T03:07:07.660Z",

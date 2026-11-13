@@ -7,18 +7,18 @@
   "id": "28",
   "abbr": "TOR",
   "name": "Toronto Raptors",
-  "score": 85
+  "score": 112
  },
  "home": {
   "id": "20",
   "abbr": "PHI",
   "name": "Philadelphia 76ers",
-  "score": 94
+  "score": 123
  },
  "neutral": false,
  "venue": "Xfinity Mobile Arena",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-12T06:09:37.940Z",
@@ -3500,5 +3500,9 @@
    "Allen Graves",
    "TOR"
   ]
+ },
+ "final": {
+  "away": 112,
+  "home": 123
  }
 }

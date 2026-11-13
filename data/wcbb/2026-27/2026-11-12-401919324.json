@@ -7,18 +7,18 @@
   "id": "130",
   "abbr": "MICH",
   "name": "Michigan Wolverines",
-  "score": 79
+  "score": 81
  },
  "home": {
   "id": "171",
   "abbr": "COLU",
   "name": "Columbia Lions",
-  "score": 55
+  "score": 58
  },
  "neutral": false,
  "venue": "Levien Gymnasium",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-12T20:53:06.836Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 81,
+  "home": 58
+ }
 }
