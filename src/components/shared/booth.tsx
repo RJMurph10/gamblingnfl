@@ -84,14 +84,24 @@ export function GameInformation({
           </span>
         ),
       });
-    } else if (weather && weather.condition.toLowerCase() !== "weather unavailable") {
-      rows.push({
-        label: "Weather",
-        value: weather.isIndoor
-          ? `Indoor stadium${weather.temperature != null ? `, ${weather.temperature}°` : ""}`
-          : `${weather.temperature != null ? `${weather.temperature}°, ` : ""}${weather.condition}${
-              weather.high != null && weather.low != null ? ` (High ${weather.high}° · Low ${weather.low}°)` : ""
+    }
+    // Our hourly forecast for the stadium (NWS in the U.S., MET Norway abroad): condition, rain, wind.
+    // Shown under ESPN's line too, since ESPN's line can lag (e.g. "Cloudy" while it's pouring).
+    if (weather && weather.condition.toLowerCase() !== "weather unavailable") {
+      const parts = weather.isIndoor
+        ? [`Indoor stadium${weather.temperature != null ? `, ${weather.temperature}°` : ""}`]
+        : [
+            `${weather.temperature != null ? `${weather.temperature}°, ` : ""}${weather.condition}${
+              weather.high != null && weather.low != null
+                ? ` (High ${weather.high}° · Low ${weather.low}°)`
+                : ""
             }`,
+            weather.precipChance != null ? `${weather.precipChance}% chance of rain` : "",
+            weather.wind ? `wind ${weather.wind}` : "",
+          ].filter(Boolean);
+      rows.push({
+        label: info?.weather ? (game.status === "live" ? "This hour" : "Forecast") : "Weather",
+        value: parts.join(" · "),
       });
     }
   }
