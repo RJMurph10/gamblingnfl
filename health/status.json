@@ -1,9 +1,9 @@
 {
- "checkedAt": "2026-11-13T16:45:57.424Z",
+ "checkedAt": "2026-11-13T22:13:53.537Z",
  "summary": {
-  "ok": 35,
+  "ok": 36,
   "warn": 1,
-  "fail": 1
+  "fail": 0
  },
  "checks": [
   {
@@ -11,7 +11,7 @@
    "id": "data:props-site/cbase",
    "name": "College baseball season file",
    "status": "ok",
-   "detail": "updated 10.6 h ago · off season",
+   "detail": "updated 16.1 h ago · off season",
    "since": "2026-11-13T09:24:01.166Z"
   },
   {
@@ -19,7 +19,7 @@
    "id": "data:line-history/",
    "name": "Line history branch",
    "status": "ok",
-   "detail": "updated 6.6 h ago",
+   "detail": "updated 35 min ago",
    "since": "2026-11-13T09:24:01.166Z"
   },
   {
@@ -27,7 +27,7 @@
    "id": "data:props-site/mlb/upcoming.json",
    "name": "MLB upcoming props",
    "status": "ok",
-   "detail": "updated 12.5 days ago · off season",
+   "detail": "updated 12.8 days ago · off season",
    "since": "2026-11-13T09:24:01.166Z"
   },
   {
@@ -35,7 +35,7 @@
    "id": "data:props-site/picks/nba",
    "name": "NBA / CBB opener picks",
    "status": "ok",
-   "detail": "updated 4.1 h ago",
+   "detail": "updated 1.2 h ago",
    "since": "2026-11-13T16:45:57.424Z"
   },
   {
@@ -43,7 +43,7 @@
    "id": "data:props-site/nba/upcoming.json",
    "name": "NBA upcoming props",
    "status": "ok",
-   "detail": "updated 7.1 h ago",
+   "detail": "updated 35 min ago",
    "since": "2026-11-13T09:24:01.166Z"
   },
   {
@@ -51,7 +51,7 @@
    "id": "data:props-site/nfl/upcoming.json",
    "name": "NFL upcoming props",
    "status": "ok",
-   "detail": "updated 6.6 h ago",
+   "detail": "updated 35 min ago",
    "since": "2026-11-13T09:24:01.166Z"
   },
   {
@@ -59,7 +59,7 @@
    "id": "data:props-site/period-lines/nhl",
    "name": "NHL period lines",
    "status": "ok",
-   "detail": "updated 14.1 h ago",
+   "detail": "updated 12 min ago",
    "since": "2026-11-13T09:24:01.166Z"
   },
   {
@@ -67,7 +67,7 @@
    "id": "data:props-site/nhl/upcoming.json",
    "name": "NHL upcoming props",
    "status": "ok",
-   "detail": "updated 7.1 h ago",
+   "detail": "updated 35 min ago",
    "since": "2026-11-13T09:24:01.166Z"
   },
   {
@@ -99,7 +99,7 @@
    "id": "feed:espn:basketball/mens-college-basketball",
    "name": "ESPN Men's college basketball scoreboard",
    "status": "ok",
-   "detail": "13 games today, odds on 13 of 13 upcoming",
+   "detail": "13 games today, odds on 12 of 12 upcoming",
    "since": "2026-11-13T09:24:01.166Z"
   },
   {
@@ -168,18 +168,10 @@
   },
   {
    "group": "Jobs",
-   "id": "job:period-lines.yml",
-   "name": "NHL period lines",
-   "status": "fail",
-   "detail": "stale: last success 14.1 h ago (expected within 14 h)",
-   "since": "2026-11-13T16:45:57.424Z"
-  },
-  {
-   "group": "Jobs",
    "id": "job:cbase-season.yml",
    "name": "College baseball season",
    "status": "ok",
-   "detail": "last success 10.6 h ago · off season",
+   "detail": "last success 16.1 h ago · off season",
    "since": "2026-11-13T09:24:01.166Z"
   },
   {
@@ -187,7 +179,7 @@
    "id": "job:extra-lines.yml",
    "name": "Extra game lines (SportsGameOdds / Odds API)",
    "status": "ok",
-   "detail": "last success 13.9 h ago",
+   "detail": "last success 49 min ago",
    "since": "2026-11-13T09:24:01.166Z"
   },
   {
@@ -195,7 +187,7 @@
    "id": "job:football-picks.yml",
    "name": "Football picks (live results)",
    "status": "ok",
-   "detail": "last success 5.6 h ago",
+   "detail": "last success 2.4 h ago",
    "since": "2026-11-13T16:45:57.424Z"
   },
   {
@@ -203,7 +195,7 @@
    "id": "job:line-history.yml",
    "name": "Line history (hourly lines, every league)",
    "status": "ok",
-   "detail": "last success 6.6 h ago",
+   "detail": "last success 34 min ago",
    "since": "2026-11-13T09:24:01.166Z"
   },
   {
@@ -211,7 +203,7 @@
    "id": "job:nba-picks.yml",
    "name": "NBA / CBB picks at the opener",
    "status": "ok",
-   "detail": "last success 4.1 h ago",
+   "detail": "last success 1.2 h ago",
    "since": "2026-11-13T16:45:57.424Z"
   },
   {
@@ -219,7 +211,7 @@
    "id": "job:nba-lines.yml",
    "name": "NBA game lines",
    "status": "ok",
-   "detail": "last success 3.7 days ago",
+   "detail": "last success 4.0 days ago",
    "since": "2026-11-13T09:24:01.166Z"
   },
   {
@@ -227,7 +219,7 @@
    "id": "job:nfl-openers.yml",
    "name": "NFL opening lines",
    "status": "ok",
-   "detail": "last success 2.8 days ago",
+   "detail": "last success 3.1 days ago",
    "since": "2026-11-13T09:24:01.166Z"
   },
   {
@@ -235,7 +227,7 @@
    "id": "job:odds-api-nfl.yml",
    "name": "NFL prop prices (Odds API)",
    "status": "ok",
-   "detail": "last success 15.3 h ago",
+   "detail": "last success 20.8 h ago",
    "since": "2026-11-13T09:24:01.166Z"
   },
   {
@@ -243,7 +235,7 @@
    "id": "job:sgo-nfl-props.yml",
    "name": "NFL prop prices (SportsGameOdds)",
    "status": "ok",
-   "detail": "last success 6.6 h ago",
+   "detail": "last success 36 min ago",
    "since": "2026-11-13T09:24:01.166Z"
   },
   {
@@ -251,7 +243,7 @@
    "id": "job:nfl-qb-stars.yml",
    "name": "NFL QB ★ props",
    "status": "ok",
-   "detail": "last success 18.3 h ago",
+   "detail": "last success 4 min ago",
    "since": "2026-11-13T09:24:01.166Z"
   },
   {
@@ -259,15 +251,23 @@
    "id": "job:nhl-periods.yml",
    "name": "NHL period history",
    "status": "ok",
-   "detail": "last success 20.3 h ago",
+   "detail": "last success 2.2 h ago",
    "since": "2026-11-13T09:24:01.166Z"
+  },
+  {
+   "group": "Jobs",
+   "id": "job:period-lines.yml",
+   "name": "NHL period lines",
+   "status": "ok",
+   "detail": "last success 11 min ago",
+   "since": "2026-11-13T22:13:53.537Z"
   },
   {
    "group": "Jobs",
    "id": "job:props-daily.yml",
    "name": "Props daily (prop boards, grading)",
    "status": "ok",
-   "detail": "last success 2.0 h ago",
+   "detail": "last success 1.7 h ago",
    "since": "2026-11-13T09:24:01.166Z"
   },
   {
@@ -275,7 +275,7 @@
    "id": "job:qb-watch.yml",
    "name": "QB watch (injury news)",
    "status": "ok",
-   "detail": "last success 6.9 h ago",
+   "detail": "last success 4.8 h ago",
    "since": "2026-11-13T09:24:01.166Z"
   },
   {
@@ -283,7 +283,7 @@
    "id": "quota:sgo",
    "name": "SportsGameOdds monthly events",
    "status": "ok",
-   "detail": "1,086 of 2,500 used this month (43%)",
+   "detail": "1,216 of 2,500 used this month (49%)",
    "since": "2026-11-13T09:24:01.166Z"
   },
   {
