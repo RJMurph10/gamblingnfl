@@ -21,7 +21,7 @@ const COVERAGE: Record<PropLeague, string> = {
   nba: "From the 2022–23 season on.",
   nhl: "Points, goals, assists, shots, hits, blocks and saves from the 2023–24 season on.",
   mlb: "Hitter props (hits, home runs, runs, RBIs) and pitcher props (strikeouts, outs, earned runs) from 2024 on.",
-  wnba: "Points, rebounds, assists and threes for the 2025 season and from late August 2024 (ESPN BET; earlier 2024 games have none). For 2026 DraftKings posted only milestone props (\"15+ points\"), which aren't over/under lines.",
+  wnba: 'Points, rebounds, assists and threes for the 2025 season and from late August 2024 (ESPN BET; earlier 2024 games have none). For 2026 DraftKings posted only milestone props ("15+ points"), which aren\'t over/under lines.',
 };
 
 const american = (n: number | null) => (n == null ? "—" : n > 0 ? `+${n}` : String(n));
@@ -458,11 +458,14 @@ export function GamePropLines({
   sub,
   results,
   lineLabel,
+  live = false,
 }: {
   league: PropLeague;
   game: UpcomingPropGame;
   title: string;
   sub?: string;
+  /** A game in progress: results are the numbers so far (an over that's already cashed shows as over). */
+  live?: boolean;
   /**
    * Finished games: what each player did, keyed "player|market". Adds a Result column, and the lines
    * are read as the closing lines.
@@ -518,7 +521,7 @@ export function GamePropLines({
         }
       />
       {sub ? <p className="px-4 pt-3 font-mono text-[10px] text-faint">{sub}</p> : null}
-      {graded ? <OverUnderCount rows={rows} results={results} /> : null}
+      {graded ? <OverUnderCount rows={rows} results={results} live={live} /> : null}
       <div className="flex gap-2 overflow-x-auto px-4 pt-3">
         {["All", game.away.abbr, game.home.abbr].map((t) => (
           <button
@@ -571,7 +574,9 @@ export function GamePropLines({
               ) : null}
               <th className="px-2 py-2 text-right font-normal">Over</th>
               <th className={`${graded ? "px-2" : "px-4"} py-2 text-right font-normal`}>Under</th>
-              {graded ? <th className="px-4 py-2 text-right font-normal">Result</th> : null}
+              {graded ? (
+                <th className="px-4 py-2 text-right font-normal">{live ? "So far" : "Result"}</th>
+              ) : null}
             </tr>
           </thead>
           <tbody className="divide-y divide-line/5">
@@ -628,7 +633,7 @@ export function GamePropLines({
                     </td>
                     {graded ? (
                       <td className="px-4 py-2 text-right">
-                        <Outcome line={r[3]} actual={results.get(`${r[0]}|${r[2]}`)} />
+                        <Outcome line={r[3]} actual={results.get(`${r[0]}|${r[2]}`)} live={live} />
                       </td>
                     ) : null}
                   </tr>
@@ -664,7 +669,9 @@ export function GamePropLines({
         {hasOpen ? 'Move is the change since the line opened ("held" = no move). ' : ""}"—" for
         prices means no price was saved for that line.
         {graded
-          ? ` Result: what the player did against the ${closing ? "closing" : "listed"} line; results fill in a few hours after the game.`
+          ? live
+            ? " Live: each player's number so far, updated every 20 seconds; an over shows once it has cashed, and every under stays open until the final."
+            : ` Result: what the player did against the ${closing ? "closing" : "listed"} line; results fill in a few hours after the game.`
           : ""}
       </p>
     </Panel>
@@ -672,7 +679,15 @@ export function GamePropLines({
 }
 
 /** A finished prop: the player's number and whether it went over or under the closing line. */
-function Outcome({ line, actual }: { line: number; actual: number | null | "dnp" | undefined }) {
+function Outcome({
+  line,
+  actual,
+  live = false,
+}: {
+  line: number;
+  actual: number | null | "dnp" | undefined;
+  live?: boolean;
+}) {
   if (actual === "dnp")
     return (
       <span
@@ -682,7 +697,23 @@ function Outcome({ line, actual }: { line: number; actual: number | null | "dnp"
         void
       </span>
     );
-  if (actual == null) return <span className="font-mono text-[10px] text-faint">—</span>;
+  if (actual == null)
+    return <span className="font-mono text-[10px] text-faint">{live ? "0" : "—"}</span>;
+  if (live && actual <= line) {
+    // still open: how many more the over needs
+    const need = Math.floor(line) + 1 - actual;
+    return (
+      <span className="inline-flex items-center justify-end gap-2">
+        <span className="font-mono text-xs font-semibold tabular-nums">{actual}</span>
+        <span
+          className="inline-block w-14 rounded bg-acc/10 px-1.5 py-0.5 text-center font-mono text-[10px] font-bold uppercase tracking-wider text-acc ring-1 ring-acc/25"
+          title={`Still open: the over needs ${need} more`}
+        >
+          {need} to go
+        </span>
+      </span>
+    );
+  }
   const res = actual > line ? "over" : actual < line ? "under" : "push";
   const cls =
     res === "over"
@@ -706,9 +737,11 @@ function Outcome({ line, actual }: { line: number; actual: number | null | "dnp"
 function OverUnderCount({
   rows,
   results,
+  live = false,
 }: {
   rows: UpcomingPropGame["props"];
   results: Map<string, number | null | "dnp">;
+  live?: boolean;
 }) {
   let over = 0;
   let under = 0;
@@ -718,6 +751,12 @@ function OverUnderCount({
     if (a > r[3]) over += 1;
     else if (a < r[3]) under += 1;
   }
+  if (live)
+    return (
+      <p className="px-4 pt-2 font-mono text-[11px] text-mute">
+        <span className="text-win">{over} over</span> already · {rows.length - over} still open
+      </p>
+    );
   if (!over && !under) return null;
   return (
     <p className="px-4 pt-2 font-mono text-[11px] text-mute">

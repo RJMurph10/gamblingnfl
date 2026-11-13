@@ -16,6 +16,7 @@ import { join } from "node:path";
 import { gzipSync } from "node:zlib";
 import { LEAGUES } from "./snapshot.mjs";
 import { gameEvents } from "./prop-markets.mjs";
+import { boxFrom as boxFromSummary } from "./prop-grading.mjs";
 
 const args = process.argv.slice(2);
 const opt = (n, d) => {
@@ -48,31 +49,7 @@ async function get(url, tries = 3) {
 }
 
 /** { athleteId: { n, tm, pos, dnp?, s: { "group.LABEL": value } } } (NBA labels unprefixed). */
-function boxFrom(summary) {
-  const out = {};
-  for (const team of summary?.boxscore?.players ?? []) {
-    const abbr = team?.team?.abbreviation ?? "";
-    for (const group of team?.statistics ?? []) {
-      const prefix = KEY !== "nba" && group?.name ? `${group.name}.` : "";
-      const labels = group?.labels ?? group?.keys ?? [];
-      for (const a of group?.athletes ?? []) {
-        const id = a?.athlete?.id;
-        if (!id) continue;
-        const row = (out[id] ??= {
-          n: a.athlete.displayName ?? "",
-          tm: abbr,
-          pos: a.athlete.position?.abbreviation ?? "",
-          s: {},
-        });
-        if (a.didNotPlay) row.dnp = true;
-        (a.stats ?? []).forEach((v, i) => {
-          if (labels[i]) row.s[`${prefix}${labels[i]}`] = v;
-        });
-      }
-    }
-  }
-  return out;
-}
+const boxFrom = (summary) => boxFromSummary(summary, KEY);
 
 /** Scores by quarter / period / inning from the summary header (for grading half, quarter, period and
  *  first-five-innings lines). */

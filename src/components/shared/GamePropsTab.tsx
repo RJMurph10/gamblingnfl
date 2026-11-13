@@ -8,6 +8,7 @@ import { TdScorers, tdName } from "@/components/shared/TdScorers";
 import { PropSpecials } from "@/components/shared/PropSpecials";
 import {
   getClosedProps,
+  getLiveProps,
   getPropHistory,
   getUpcomingProps,
 } from "@/lib/shared/prop-history.functions";
@@ -101,8 +102,13 @@ const Loading = () => (
 
 /**
  * A started or finished game's props: DraftKings' closing lines (the last ones before the start) with
- * where each opened, and each player's result once the game is final. Falls back to the prop history
- * (opening lines with results) when no closing board was saved, and to `fallback` when neither exists.
+ * where each opened.
+ * - Live: each player's numbers so far from ESPN's live box score, graded like finished games
+ *   (getLiveProps), every 20 seconds; before the closing board is saved, the last pregame board.
+ * - Final: each player's result from the prop history, or from the final box score until the history
+ *   has the game.
+ * Falls back to the prop history (opening lines with results) when no closing board was saved, and to
+ * `fallback` when nothing exists.
  */
 export function ClosedPropLines({
   league,
@@ -136,30 +142,59 @@ export function ClosedPropLines({
       history.data?.day === hk?.day ? findPropGame(history.data?.games ?? [], game) : undefined,
     [history.data, hk?.day, game],
   );
-  const results = useMemo(() => resultsOf(past), [past]);
-  const spResults = useMemo(() => specialResultsOf(past), [past]);
+  // live numbers: while the game is on, and after it until the prop history has it
+  const useLive = /^\d+$/.test(game.id) && (!final || (!history.isLoading && !past?.props.length));
+  const live = useQuery({
+    queryKey: ["live-props", league, game.id],
+    queryFn: () => getLiveProps({ data: { league, id: game.id } }),
+    enabled: useLive,
+    refetchInterval: final ? false : 20_000,
+    staleTime: final ? 5 * 60_000 : 10_000,
+  });
+  // the last pregame board while the closing one isn't saved yet
+  const pregame = useQuery({
+    queryKey: ["upcoming-props", league],
+    queryFn: () => getUpcomingProps({ data: { league } }),
+    enabled: !final && !closed.isLoading && !closed.data,
+    staleTime: 5 * 60_000,
+  });
+  const board = closed.data ?? (pregame.data ? findPropGame(pregame.data, game) : undefined);
+  const results = useMemo(() => {
+    if (past?.props.length) return resultsOf(past);
+    const m = new Map<string, number | null | "dnp">();
+    for (const [player, label, v] of live.data?.stats ?? []) m.set(`${player}|${label}`, v);
+    return m;
+  }, [past, live.data]);
+  const spResults = useMemo(() => {
+    if (past?.sp?.length) return specialResultsOf(past);
+    return new Map<string, SpecialResult>(
+      (live.data?.specials ?? []).map(([p, label, r]) => [`${p}|${label}`, r]),
+    );
+  }, [past, live.data]);
+  const inPlay = !final && live.data?.state !== "post";
 
   if (closed.isLoading || history.isLoading) return <Loading />;
   const sp: SpecialRow[] | undefined =
-    closed.data?.sp ?? past?.sp?.map((r) => [r[0], r[1], r[2], r[3], r[4]] as SpecialRow);
-  const away = closed.data?.away.abbr ?? past?.away.abbr ?? game.away;
-  const home = closed.data?.home.abbr ?? past?.home.abbr ?? game.home;
+    board?.sp ?? past?.sp?.map((r) => [r[0], r[1], r[2], r[3], r[4]] as SpecialRow);
+  const away = board?.away.abbr ?? past?.away.abbr ?? game.away;
+  const home = board?.home.abbr ?? past?.home.abbr ?? game.home;
   const specials = sp?.length ? (
     <PropSpecials league={league} away={away} home={home} rows={sp} results={spResults} closing />
   ) : null;
   let lines: React.ReactNode = null;
-  if (closed.data?.props.length)
+  if (board?.props.length)
     lines = (
       <GamePropLines
         league={league}
-        game={closed.data}
-        title="Player props"
+        game={board}
+        title={inPlay ? "Player props · live" : "Player props"}
         sub={
-          final
-            ? "DraftKings closing lines · where each line opened · what each player did"
-            : "DraftKings closing lines · results fill in after the game"
+          inPlay
+            ? `DraftKings ${closed.data ? "closing" : "last pregame"} lines · each player's numbers so far${live.data?.detail ? ` · ${live.data.detail}` : ""}`
+            : "DraftKings closing lines · where each line opened · what each player did"
         }
         results={results}
+        live={inPlay}
       />
     );
   else if (past?.props.length)
