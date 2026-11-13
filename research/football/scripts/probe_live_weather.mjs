@@ -1,28 +1,18 @@
-const H = { "User-Agent": "Mozilla/5.0 (gamblingnfl research)", Accept: "*/*" };
-const get = async (u) => { try { const r = await fetch(u, { headers: H, signal: AbortSignal.timeout(25000) }); return { status: r.status, text: await r.text() }; } catch (e) { return { status: "ERR " + e, text: "" }; } };
-for (const id of ["6419542", "6584993"])
-  for (const f of ["boxscore.json", "gameInfo.json", "teamStats.json"]) {
-    const x = await get(`https://data.ncaa.com/casablanca/game/${id}/${f}`);
-    console.log(`\n== ${id} ${f}: ${x.status}\n${x.text.slice(0, 1800)}`);
+const H = { "User-Agent": "Mozilla/5.0 (gamblingnfl research)", Accept: "application/json" };
+const BOX = "5e92118b2f424040aa96067aba6d34e882165aaf02e9e73cb9d69317066c6ae8";
+const js = await (await fetch("https://www.ncaa.com/modules/custom/casablanca_gamecenter/pkg/gc-game.min.js?v=master-10168", { headers: H })).text();
+const i = js.indexOf("GetGamecenterBoxscoreBaseballById_web");
+console.log("js ctx:", js.slice(i - 600, i + 600));
+const j = js.indexOf("contestId");
+console.log("contestId ctx:", js.slice(j - 300, j + 300));
+const q = async (op, hash, vars) => {
+  const u = `https://sdataprod.ncaa.com/?meta=${op}&extensions=${encodeURIComponent(JSON.stringify({ persistedQuery: { version: 1, sha256Hash: hash } }))}&variables=${encodeURIComponent(JSON.stringify(vars))}`;
+  const r = await fetch(u, { headers: H });
+  return [r.status, await r.text()];
+};
+for (const id of ["6584993", "6419542"])
+  for (const vars of [{ contestId: id, staticTestEnv: null }, { contestId: id }, { id }]) {
+    const [s, t] = await q("NCAA_GetGamecenterBoxscoreBaseballById_web", BOX, vars);
+    console.log(`\n== ${id} ${JSON.stringify(vars)} ${s} len ${t.length}\n${t.slice(0, 3000)}`);
+    if (s === 200 && !t.includes('"errors"')) break;
   }
-const page = await get("https://www.ncaa.com/game/6584993/boxscore");
-const html = page.text;
-for (const m of html.matchAll(/GetGamecenter[A-Za-z_]*/g)) {
-  const i = m.index;
-  console.log("\nctx:", html.slice(Math.max(0, i - 300), i + 400).replace(/\s+/g, " "));
-  break;
-}
-const srcs = [...html.matchAll(/(?:src|href)="([^"]+\.js[^"]*)"/g)].map((m) => m[1]);
-console.log("\nall js:", srcs.length);
-for (const s of srcs) {
-  const url = s.startsWith("http") ? s : s.startsWith("//") ? "https:" + s : `https://www.ncaa.com${s}`;
-  const js = (await get(url)).text;
-  const ops = [...new Set([...js.matchAll(/(Get[A-Za-z]*_web)/g)].map((m) => m[1]))];
-  const hs = [...new Set([...js.matchAll(/["']([0-9a-f]{64})["']/g)].map((m) => m[1]))];
-  if (ops.length || hs.length) console.log("\n", s, "\nops:", ops.join(","), "\nhashes:", hs.slice(0, 30).join(" "));
-}
-// inline scripts with hashes
-const inl = [...new Set([...html.matchAll(/([0-9a-f]{64})/g)].map((m) => m[1]))];
-console.log("\ninline 64-hex:", inl.join(" "));
-const idx = html.indexOf("sha256");
-console.log("sha256 ctx:", idx >= 0 ? html.slice(idx - 400, idx + 400) : "none");
