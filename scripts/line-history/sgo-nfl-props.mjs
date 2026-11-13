@@ -53,6 +53,8 @@ export const STATS = {
   fieldGoals_made: "FGs made",
   extraPoints_kicksMade: "XPs made",
   defense_sacks: "Sacks",
+  // DraftKings prices longest reception on SportsGameOdds (longest rush and tackles it doesn't)
+  receiving_longestReception: "Longest rec",
 };
 
 async function get(path) {
