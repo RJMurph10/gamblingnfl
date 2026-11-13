@@ -40,7 +40,6 @@ export function GameInformation({
   weather?: GameWeather | null;
 }) {
   const info = game.info;
-  const isScheduled = game.status === "scheduled";
   const isFinal = game.status === "final";
   const rows: { label: string; value: ReactNode }[] = [];
 
@@ -61,8 +60,8 @@ export function GameInformation({
   if (info?.capacity) rows.push({ label: "Capacity", value: info.capacity.toLocaleString() });
   if (info?.broadcast) rows.push({ label: "TV", value: info.broadcast });
   // Weather, like ESPN's Game Information: ESPN's own AccuWeather line when it has one,
-  // otherwise our forecast. Upcoming games only.
-  if (isScheduled) {
+  // otherwise our forecast. Upcoming and live games.
+  if (!isFinal) {
     if (info?.weather) {
       rows.push({
         label: "Weather",
