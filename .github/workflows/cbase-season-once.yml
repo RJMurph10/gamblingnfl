@@ -2,7 +2,7 @@ name: College baseball season (one-time backfill)
 # Every 3 hours from February through June: this season's NCAA D-I results (scripts/cbase/export-ncaa.mjs)
 # and ESPN lines including the next week's games (scripts/lines/export-lines.mjs --upcoming), then the
 # season file the site reads (scripts/cbase/build_season.py → props-site cbase/season-<year>.json).
-# Run by hand with "seasons" to rebuild past seasons from the saved data.
+# (run 2) Run by hand with "seasons" to rebuild past seasons from the saved data.
 on:
   push:
     branches: [nfl-weather-probe]
