@@ -72,6 +72,8 @@ async function load(league: LivePropLeague, id: string): Promise<LiveProps | nul
       if (v != null) stats.push([bx.n, label, v]);
     }
     for (const label of bets) {
+      // the last goal isn't known until the game ends
+      if (label === "Last goal" && !final) continue;
       const r = gradeSpecial(label, a, g);
       if (r === 1 || r === "void") specials.push([bx.n, label, r]);
       else if (r === 0 && (final || (ev && DECIDED_BY[label]?.(ev))))
