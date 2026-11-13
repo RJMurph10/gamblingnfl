@@ -9,6 +9,7 @@ import { PageTitle, Panel, PanelHeader, TeamLogo } from "@/components/shared/boo
 import { teamByAbbr } from "@/data/shared/teams";
 import { getPropHistory, getUpcomingProps } from "@/lib/shared/prop-history.functions";
 import { PropSpecials } from "@/components/shared/PropSpecials";
+import { TdScorers } from "@/components/shared/TdScorers";
 import type {
   PropHistoryGame,
   PropHistoryRow,
@@ -430,9 +431,31 @@ function Upcoming({ league, tabs }: { league: PropLeague; tabs: ReactNode }) {
           league={league}
           game={game}
           title={`${game.away.name} @ ${game.home.name}`}
+          extraTabs={[
+            ...(game.td?.length
+              ? [{ label: "TD Scorers", node: <TdScorers bare game={game} />, first: true }]
+              : []),
+            ...(game.sp?.length
+              ? [
+                  {
+                    label: league === "nhl" ? "Goalscorers" : "Specials",
+                    first: league === "nhl",
+                    node: (
+                      <PropSpecials
+                        bare
+                        league={league}
+                        away={game.away.abbr}
+                        home={game.home.abbr}
+                        rows={game.sp}
+                      />
+                    ),
+                  },
+                ]
+              : []),
+          ]}
         />
       ) : null}
-      {game?.sp?.length ? (
+      {!game?.props.length && game?.sp?.length ? (
         <div className="mt-6">
           <PropSpecials
             key={`sp-${game.id}`}
@@ -447,6 +470,71 @@ function Upcoming({ league, tabs }: { league: PropLeague; tabs: ReactNode }) {
   );
 }
 
+/** The sportsbook's tabs: market labels grouped the way DraftKings groups them, per league. */
+const CATEGORIES: Record<string, [string, string[]][]> = {
+  nfl: [
+    [
+      "Passing",
+      ["Pass yds", "Pass att", "Completions", "Pass TDs", "Interceptions", "Pass+Rush yds"],
+    ],
+    ["Receiving", ["Rec yds", "Receptions", "Longest rec"]],
+    ["Rushing", ["Rush yds", "Carries", "Longest rush", "Rush+Rec yds"]],
+    ["Defensive", ["Tackles", "Tackles+Ast", "Tackle ast", "Sacks"]],
+    ["Special Teams", ["Kicking pts", "FGs made", "XPs made"]],
+  ],
+  nba: [
+    ["Points", ["Points", "Field goals"]],
+    ["Rebounds", ["Rebounds"]],
+    ["Assists", ["Assists"]],
+    ["Threes", ["3-pointers"]],
+    ["Combos", ["Pts+Reb+Ast", "Pts+Reb", "Pts+Ast", "Reb+Ast"]],
+    ["Defense", ["Steals", "Blocks", "Stl+Blk", "Turnovers"]],
+  ],
+  nhl: [
+    ["Points", ["Points", "Goals", "Assists"]],
+    ["Shots", ["Shots on goal"]],
+    ["Goalie", ["Saves"]],
+    ["Hits & Blocks", ["Hits", "Blocked shots"]],
+  ],
+  mlb: [
+    [
+      "Batting",
+      [
+        "Hits",
+        "Home runs",
+        "Runs",
+        "RBIs",
+        "Hits+Runs+RBIs",
+        "Total bases",
+        "Singles",
+        "Doubles",
+        "Stolen bases",
+        "Walks",
+      ],
+    ],
+    [
+      "Pitching",
+      [
+        "Pitcher strikeouts",
+        "Earned runs allowed",
+        "Walks allowed",
+        "Hits allowed",
+        "Outs recorded",
+      ],
+    ],
+  ],
+};
+CATEGORIES.wnba = CATEGORIES.nba;
+CATEGORIES.cfb = CATEGORIES.nfl;
+
+/** A tab next to the market tabs with its own content (touchdown scorers, goalscorers, specials). */
+export interface PropExtraTab {
+  label: string;
+  node: React.ReactNode;
+  /** Before the market tabs (DraftKings puts TD scorers and goalscorers first). */
+  first?: boolean;
+}
+
 /**
  * One game's DraftKings player lines: team and market filters, a player search, the line against where
  * it opened, and each prop's alternate lines. Used by the Prop lines page and the NFL game page's Props tab.
@@ -459,11 +547,14 @@ export function GamePropLines({
   results,
   lineLabel,
   live = false,
+  extraTabs = [],
 }: {
   league: PropLeague;
   game: UpcomingPropGame;
   title: string;
   sub?: string;
+  /** More tabs beside the market tabs (touchdown scorers, specials), each with its own table. */
+  extraTabs?: PropExtraTab[];
   /** A game in progress: results are the numbers so far (an over that's already cashed shows as over). */
   live?: boolean;
   /**
@@ -494,19 +585,53 @@ export function GamePropLines({
   const [team, setTeam] = useState("All");
   const [market, setMarket] = useState("All");
   const [search, setSearch] = useState("");
+  // the sportsbook's tabs: its groups of markets that have props here, then "Other" for the rest
+  const cats = useMemo(() => {
+    const have = new Set(game.props.map((p) => p[2]));
+    const known = new Set<string>();
+    const out: { label: string; markets: string[] }[] = [];
+    for (const [label, ms] of CATEGORIES[league] ?? []) {
+      ms.forEach((m) => known.add(m));
+      const here = ms.filter((m) => have.has(m));
+      if (here.length) out.push({ label, markets: here });
+    }
+    const other = [...have].filter((m) => !known.has(m)).sort();
+    if (other.length) out.push({ label: "Other", markets: other });
+    return out;
+  }, [game, league]);
+  const tabs = useMemo(
+    () => [
+      ...extraTabs.filter((t) => t.first).map((t) => t.label),
+      ...cats.map((c) => c.label),
+      ...extraTabs.filter((t) => !t.first).map((t) => t.label),
+    ],
+    [cats, extraTabs],
+  );
+  const [tabPick, setTab] = useState<string | null>(null);
+  const tab = tabPick && tabs.includes(tabPick) ? tabPick : (tabs[0] ?? "");
+  const extra = extraTabs.find((t) => t.label === tab);
+  const cat = cats.find((c) => c.label === tab);
+  const searching = search.trim().length > 0;
   const markets = useMemo(
-    () => ["All", ...Array.from(new Set(game.props.map((p) => p[2]))).sort()],
-    [game],
+    () => (cat && cat.markets.length > 1 ? ["All", ...cat.markets] : []),
+    [cat],
   );
   const rows = useMemo(() => {
     const s = search.trim().toLowerCase();
+    // a search looks across every tab
+    if (s)
+      return game.props.filter(
+        (p) => (team === "All" || p[1] === team) && p[0].toLowerCase().includes(s),
+      );
+    const inCat = new Set(cat?.markets ?? []);
     return game.props.filter(
       (p) =>
         (team === "All" || p[1] === team) &&
-        (market === "All" || p[2] === market) &&
-        (!s || p[0].toLowerCase().includes(s)),
+        inCat.has(p[2]) &&
+        (market === "All" || p[2] === market),
     );
-  }, [game, team, market, search]);
+  }, [game, team, market, search, cat]);
+  const showTable = searching || !extra;
   return (
     <Panel padded={false}>
       <PanelHeader
@@ -521,8 +646,31 @@ export function GamePropLines({
         }
       />
       {sub ? <p className="px-4 pt-3 font-mono text-[10px] text-faint">{sub}</p> : null}
-      {graded ? <OverUnderCount rows={rows} results={results} live={live} /> : null}
-      <div className="flex gap-2 overflow-x-auto px-4 pt-3">
+      <div className="flex gap-1 overflow-x-auto border-b border-line/10 px-3 pt-3" role="tablist">
+        {tabs.map((t) => (
+          <button
+            key={t}
+            type="button"
+            role="tab"
+            aria-selected={!searching && tab === t}
+            onClick={() => {
+              setTab(t);
+              setMarket("All");
+              setSearch("");
+            }}
+            className={`shrink-0 border-b-2 px-3 pb-2 pt-1 font-disp text-sm font-semibold uppercase tracking-tight ${
+              !searching && tab === t
+                ? "border-acc text-acc"
+                : "border-transparent text-mute hover:text-foreground"
+            }`}
+          >
+            {t}
+          </button>
+        ))}
+      </div>
+      {showTable && graded ? <OverUnderCount rows={rows} results={results} live={live} /> : null}
+      {!showTable ? <div className="pt-1">{extra?.node}</div> : null}
+      <div className={showTable ? "flex gap-2 overflow-x-auto px-4 pt-3" : "hidden"}>
         {["All", game.away.abbr, game.home.abbr].map((t) => (
           <button
             key={t}
@@ -541,7 +689,9 @@ export function GamePropLines({
           </button>
         ))}
       </div>
-      <div className="flex gap-2 overflow-x-auto px-4 py-3">
+      <div
+        className={showTable && markets.length ? "flex gap-2 overflow-x-auto px-4 pt-3" : "hidden"}
+      >
         {markets.map((m) => (
           <button
             key={m}
@@ -557,7 +707,7 @@ export function GamePropLines({
           </button>
         ))}
       </div>
-      <div ref={wrap} className="overflow-x-auto">
+      <div ref={wrap} className={showTable ? "mt-3 overflow-x-auto" : "hidden"}>
         <table className="w-full min-w-[620px] text-sm">
           <thead>
             <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
@@ -670,7 +820,7 @@ export function GamePropLines({
           </tbody>
         </table>
       </div>
-      <p className="px-4 py-3 font-mono text-[10px] text-faint">
+      <p className={showTable ? "px-4 py-3 font-mono text-[10px] text-faint" : "hidden"}>
         DraftKings via ESPN{game.at ? `, as of ${kickoff(game.at)}` : ""}
         {closing ? " (the last lines before kickoff)" : ""}.{" "}
         {hasOpen ? 'Move is the change since the line opened ("held" = no move). ' : ""}"—" for

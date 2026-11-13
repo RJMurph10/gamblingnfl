@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import type { Game } from "@/data/shared/games";
 import { isCollegeId, type Team } from "@/data/shared/teams";
 import { DraftKingsPropsBoard } from "@/components/shared/DraftKingsPropsBoard";
-import { GamePropLines } from "@/components/shared/PropHistory";
+import { GamePropLines, type PropExtraTab } from "@/components/shared/PropHistory";
 import { TdScorers, tdName } from "@/components/shared/TdScorers";
 import { PropSpecials } from "@/components/shared/PropSpecials";
 import {
@@ -103,6 +103,13 @@ function touchdownResults(stats: [string, string, number | "dnp"][] | undefined)
 }
 
 /** A history-only game (no closing board saved) in the table's shape: the sportsbook's opening line. */
+/** Where the yes-only bets sit among the props tabs: DraftKings leads with goalscorers, the rest go last. */
+function specialsTab(league: string, node: React.ReactNode): PropExtraTab {
+  return league === "nhl"
+    ? { label: "Goalscorers", node, first: true }
+    : { label: "Specials", node };
+}
+
 function fromHistory(g: PropHistoryGame): UpcomingPropGame {
   return {
     id: g.id,
@@ -204,9 +211,32 @@ export function ClosedPropLines({
     board?.sp ?? past?.sp?.map((r) => [r[0], r[1], r[2], r[3], r[4]] as SpecialRow);
   const away = board?.away.abbr ?? past?.away.abbr ?? game.away;
   const home = board?.home.abbr ?? past?.home.abbr ?? game.home;
-  const specials = sp?.length ? (
-    <PropSpecials league={league} away={away} home={home} rows={sp} results={spResults} closing />
-  ) : null;
+  const tdProps = {
+    game: board!,
+    touchdowns: live.data ? td.touchdowns : undefined,
+    firstScorer: live.data ? td.firstScorer : undefined,
+    live: inPlay,
+  };
+  const hasTd = !!board?.td?.length;
+  const hasSp = !!sp?.length;
+  const extraTabs: PropExtraTab[] = [];
+  if (hasTd)
+    extraTabs.push({ label: "TD Scorers", node: <TdScorers bare {...tdProps} />, first: true });
+  if (hasSp)
+    extraTabs.push(
+      specialsTab(
+        league,
+        <PropSpecials
+          bare
+          league={league}
+          away={away}
+          home={home}
+          rows={sp}
+          results={spResults}
+          closing
+        />,
+      ),
+    );
   let lines: React.ReactNode = null;
   if (board?.props.length)
     lines = (
@@ -221,6 +251,7 @@ export function ClosedPropLines({
         }
         results={results}
         live={inPlay}
+        extraTabs={extraTabs}
       />
     );
   else if (past?.props.length)
@@ -232,22 +263,25 @@ export function ClosedPropLines({
         sub="The sportsbook's opening lines (no closing lines were saved for this game) · what each player did"
         results={results}
         lineLabel="Line"
+        extraTabs={extraTabs}
       />
     );
-  const tdBoard = board?.td?.length ? (
-    <TdScorers
-      game={board}
-      touchdowns={live.data ? td.touchdowns : undefined}
-      firstScorer={live.data ? td.firstScorer : undefined}
-      live={inPlay}
-    />
-  ) : null;
-  if (!lines && !specials && !tdBoard) return <>{fallback}</>;
+  if (lines) return <div className="space-y-6">{lines}</div>;
+  // no over/under lines: the yes-only boards stand on their own
+  if (!hasTd && !hasSp) return <>{fallback}</>;
   return (
     <div className="space-y-6">
-      {lines}
-      {tdBoard}
-      {specials}
+      {hasTd ? <TdScorers {...tdProps} /> : null}
+      {hasSp ? (
+        <PropSpecials
+          league={league}
+          away={away}
+          home={home}
+          rows={sp}
+          results={spResults}
+          closing
+        />
+      ) : null}
     </div>
   );
 }
@@ -282,9 +316,31 @@ export function UpcomingPropLines({
           game={lines}
           title="Player props"
           sub="DraftKings lines · where each line opened · tap ▾ for alternate lines"
+          extraTabs={
+            lines.sp?.length
+              ? [
+                  specialsTab(
+                    league,
+                    <PropSpecials
+                      bare
+                      league={league}
+                      away={lines.away.abbr}
+                      home={lines.home.abbr}
+                      rows={lines.sp}
+                    />,
+                  ),
+                ]
+              : []
+          }
         />
-      ) : null}
-      <PropSpecials league={league} away={lines.away.abbr} home={lines.home.abbr} rows={lines.sp} />
+      ) : (
+        <PropSpecials
+          league={league}
+          away={lines.away.abbr}
+          home={lines.home.abbr}
+          rows={lines.sp}
+        />
+      )}
     </div>
   );
 }
@@ -325,9 +381,15 @@ export function GamePropsTab({ game, away, home }: { game: Game; away: Team; hom
             game={lines}
             title="Player props"
             sub="DraftKings lines · where each line opened · tap ▾ for alternate lines"
+            extraTabs={
+              lines.td?.length
+                ? [{ label: "TD Scorers", node: <TdScorers bare game={lines} />, first: true }]
+                : []
+            }
           />
-        ) : null}
-        <TdScorers game={lines} />
+        ) : (
+          <TdScorers game={lines} />
+        )}
       </div>
     );
   return board;
