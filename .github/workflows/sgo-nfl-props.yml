@@ -10,6 +10,9 @@ name: NFL prop prices (SportsGameOdds)
 #   shortly before kickoff (games in the next 3 hours only, about 17 events a week): Sunday 10:20am,
 #   1:40pm and 5:50pm Central in standard time (16:20, 19:40, 23:50 UTC; an hour later in daylight time), Thursday and
 #   Monday 5:50pm Central; then the board is rebuilt so the closing lines carry these prices
+#   about 45 minutes after the Sunday, Thursday and Monday kickoffs (--live, games in progress only):
+#   each prop's closing line and price, averaged across books, for props whose DraftKings price wasn't
+#   saved before kickoff (tagged CLOSE on the site)
 # Needs the repository secret SPORTSGAMEODDS_API_KEY; without it the job does nothing.
 
 on:
@@ -19,12 +22,19 @@ on:
     - cron: "20 16 * 1,2,9-12 0" # Sunday before the noon games
     - cron: "40 19 * 1,2,9-12 0" # Sunday before the 3pm games
     - cron: "50 23 * 1,2,9-12 0,1,4" # before Sunday, Monday and Thursday night games
+    - cron: "45 18 * 1,2,9-12 0" # live: after the noon kickoffs
+    - cron: "5 22 * 1,2,9-12 0" # live: after the 3pm kickoffs
+    - cron: "5 2 * 1,2,9-12 1,2,5" # live: after the Sunday, Monday and Thursday night kickoffs
   workflow_dispatch:
     inputs:
       hours:
         description: "Price every game starting in the next N hours"
         required: false
         default: ""
+      live:
+        description: "Games in progress: save their closing lines (fills props priced too late)"
+        type: boolean
+        default: false
   push:
     branches: [sgo-props]
     paths: [scripts/line-history/sgo-nfl-props.trigger]
@@ -59,6 +69,11 @@ jobs:
             "20 16 * 1,2,9-12 0" | "40 19 * 1,2,9-12 0" | "50 23 * 1,2,9-12 0,1,4") HOURS=3 ;;
           esac
           if [ -n "${{ inputs.hours }}" ]; then HOURS="${{ inputs.hours }}"; fi
+          LIVE=""
+          case "${{ github.event.schedule }}" in
+            "45 18 * 1,2,9-12 0" | "5 22 * 1,2,9-12 0" | "5 2 * 1,2,9-12 1,2,5") LIVE="--live" ;;
+          esac
+          if [ "${{ inputs.live }}" = "true" ]; then LIVE="--live"; fi
           # later games ESPN already lists DraftKings lines for, with no saved prices yet: price them once now
           ALSO=$(curl -sf https://raw.githubusercontent.com/${{ github.repository }}/props-site/nfl/upcoming.json \
             | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const h=+process.argv[1];
@@ -66,7 +81,8 @@ jobs:
                 if(k>Date.now()+h*36e5&&g.props.length&&!g.props.some(p=>p[4]!=null||p[5]!=null))t.add(new Date(k).toISOString())}
                 console.log([...t].join(","))})' $HOURS || true)
           echo "unpriced later kickoffs: ${ALSO:-none}"
-          node app/scripts/line-history/sgo-nfl-props.mjs --out pull --hours $HOURS --also "$ALSO" --best best/nfl.json
+          if [ -n "$LIVE" ]; then ALSO=""; fi
+          node app/scripts/line-history/sgo-nfl-props.mjs --out pull --hours $HOURS --also "$ALSO" --best best/nfl.json $LIVE
           if [ -z "$(ls pull 2>/dev/null)" ]; then echo "nothing pulled"; exit 0; fi
           url="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
           for attempt in 1 2 3 4 5; do

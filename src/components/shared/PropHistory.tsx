@@ -676,7 +676,7 @@ export function GamePropLines({
         {hasOpen ? 'Move is the change since the line opened ("held" = no move). ' : ""}"—" for
         prices means no price was saved for that line
         {game.bk && Object.keys(game.bk).length
-          ? "; a book tag (FD, MGM…) marks another book's price where DraftKings had none"
+          ? "; a tag marks a price that isn't DraftKings': another book's (FD, MGM…) where DraftKings had none, or CLOSE, the closing price averaged across books"
           : ""}
         .
         {graded
@@ -695,7 +695,11 @@ function BookTag({ book }: { book?: string }) {
   return (
     <span
       className="ml-1 rounded bg-panel2 px-1 py-px font-sans text-[9px] font-semibold uppercase tracking-wide text-faint ring-1 ring-line/10"
-      title={`DraftKings had no price for this prop; this is ${book}'s at the same line`}
+      title={
+        book === "CLOSE"
+          ? "DraftKings' price wasn't saved before kickoff; this is the closing price at the same line, averaged across books"
+          : `DraftKings had no price for this prop; this is ${book}'s at the same line`
+      }
     >
       {book}
     </span>
