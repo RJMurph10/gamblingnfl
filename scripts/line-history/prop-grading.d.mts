@@ -15,6 +15,7 @@ export type StatFn = (s: Record<string, string>, ctx: { a: string; g: GradedGame
 export function num(v: unknown): number | null;
 export function marketsFor(league: string): Record<string, [string, StatFn]>;
 export function statsByLabel(league: string): Map<string, StatFn>;
+export const TD_MARKETS: Record<string, StatFn>;
 export function specialLabels(league: string): string[];
 export function boxFrom(summary: unknown, league: string): Box;
 export function gradeSpecial(label: string, a: string, g: GradedGame): 1 | 0 | "void" | null;

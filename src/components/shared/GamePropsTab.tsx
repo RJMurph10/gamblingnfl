@@ -4,7 +4,7 @@ import type { Game } from "@/data/shared/games";
 import { isCollegeId, type Team } from "@/data/shared/teams";
 import { DraftKingsPropsBoard } from "@/components/shared/DraftKingsPropsBoard";
 import { GamePropLines } from "@/components/shared/PropHistory";
-import { TdScorers, tdName } from "@/components/shared/TdScorers";
+import { tdName } from "@/components/shared/TdScorers";
 import { PropSpecials } from "@/components/shared/PropSpecials";
 import {
   getClosedProps,
@@ -83,6 +83,52 @@ export function specialResultsOf(game: PropHistoryGame | undefined) {
   return out;
 }
 
+/** Touchdown-scorer bets as rows of the props table: anytime = over 0.5 TDs, 2+ = over 1.5, first / last TD. */
+const TD_ROWS: [label: string, col: 2 | 3 | 4 | 5, line: number][] = [
+  ["Anytime TD", 2, 0.5],
+  ["2+ TDs", 4, 1.5],
+  ["First TD", 3, 0.5],
+  ["Last TD", 5, 0.5],
+];
+export const TD_LABELS = new Set(TD_ROWS.map(([l]) => l));
+
+/** A board with its touchdown-scorer prices folded into the props (and the separate list dropped). */
+export function withTdRows<G extends UpcomingPropGame>(g: G): G {
+  if (!g.td?.length) return g;
+  const extra: UpcomingPropGame["props"] = [];
+  for (const r of g.td)
+    for (const [label, col, line] of TD_ROWS) {
+      const price = r[col];
+      if (price != null) extra.push([r[0], r[1], label, line, price, null, null]);
+    }
+  return { ...g, props: [...g.props, ...extra], td: undefined };
+}
+
+/**
+ * Live / final numbers keyed "player|market", with touchdown-scorer rows matched by name (the TD prices
+ * come from another feed, so "Robert Henry" has to find the box score's "Robert Henry Jr.").
+ */
+function liveResults(
+  stats: [string, string, number | "dnp"][],
+  rows: UpcomingPropGame["props"],
+  over: boolean,
+): Map<string, number | null | "dnp"> {
+  const m = new Map<string, number | null | "dnp">();
+  const byName = new Map<string, number | "dnp">();
+  for (const [player, label, v] of stats) {
+    m.set(`${player}|${label}`, v);
+    if (TD_LABELS.has(label)) byName.set(`${tdName(player)}|${label}`, v);
+  }
+  for (const r of rows)
+    if (TD_LABELS.has(r[2]) && !m.has(`${r[0]}|${r[2]}`)) {
+      const v = byName.get(`${tdName(r[0])}|${r[2]}`);
+      // after the final, a listed player with no box-score line didn't score
+      if (v !== undefined) m.set(`${r[0]}|${r[2]}`, v);
+      else if (over) m.set(`${r[0]}|${r[2]}`, 0);
+    }
+  return m;
+}
+
 /** A history-only game (no closing board saved) in the table's shape: the sportsbook's opening line. */
 function fromHistory(g: PropHistoryGame): UpcomingPropGame {
   return {
@@ -143,8 +189,11 @@ export function ClosedPropLines({
       history.data?.day === hk?.day ? findPropGame(history.data?.games ?? [], game) : undefined,
     [history.data, hk?.day, game],
   );
-  // live numbers: while the game is on, and after it until the prop history has it
-  const useLive = /^\d+$/.test(game.id) && (!final || (!history.isLoading && !past?.props.length));
+  // live numbers: while the game is on, and after it until the prop history has it (always for the
+  // NFL: the history doesn't keep the touchdown-scorer bets)
+  const useLive =
+    /^\d+$/.test(game.id) &&
+    (!final || league === "nfl" || (!history.isLoading && !past?.props.length));
   const live = useQuery({
     queryKey: ["live-props", league, game.id],
     queryFn: () => getLiveProps({ data: { league, id: game.id } }),
@@ -159,13 +208,13 @@ export function ClosedPropLines({
     enabled: !final && /^\d+$/.test(game.id) && !closed.isLoading && !closed.data,
     staleTime: 5 * 60_000,
   });
-  const board = closed.data ?? pregame.data ?? undefined;
+  const rawBoard = closed.data ?? pregame.data ?? undefined;
+  const board = useMemo(() => (rawBoard ? withTdRows(rawBoard) : undefined), [rawBoard]);
   const results = useMemo(() => {
-    if (past?.props.length) return resultsOf(past);
-    const m = new Map<string, number | null | "dnp">();
-    for (const [player, label, v] of live.data?.stats ?? []) m.set(`${player}|${label}`, v);
+    const m = liveResults(live.data?.stats ?? [], board?.props ?? [], live.data?.state === "post");
+    if (past?.props.length) for (const [k, v] of resultsOf(past)) m.set(k, v);
     return m;
-  }, [past, live.data]);
+  }, [past, live.data, board]);
   const spResults = useMemo(() => {
     if (past?.sp?.length) return specialResultsOf(past);
     return new Map<string, SpecialResult>(
@@ -280,24 +329,19 @@ export function GamePropsTab({ game, away, home }: { game: Game; away: Team; hom
     return (
       <div className="space-y-6">
         <ClosedPropLines league="nfl" game={ref} final={game.status === "final"} fallback={board} />
-        <ClosedTdScorers game={game} gameRef={ref} />
       </div>
     );
   if (upcoming.isLoading) return <Loading />;
-  const lines = upcoming.data ? findPropGame(upcoming.data, ref) : undefined;
-  if (lines?.props.length || lines?.td?.length)
+  const found = upcoming.data ? findPropGame(upcoming.data, ref) : undefined;
+  const lines = found ? withTdRows(found) : undefined;
+  if (lines?.props.length)
     return (
-      <div className="space-y-6">
-        {lines.props.length ? (
-          <GamePropLines
-            league="nfl"
-            game={lines}
-            title="Player props"
-            sub="DraftKings lines · where each line opened · tap ▾ for alternate lines"
-          />
-        ) : null}
-        <TdScorers game={lines} />
-      </div>
+      <GamePropLines
+        league="nfl"
+        game={lines}
+        title="Player props"
+        sub="DraftKings lines · where each line opened · tap ▾ for alternate lines · TD scorers under the Anytime TD, 2+ TDs, First TD and Last TD markets"
+      />
     );
   return board;
 }
@@ -326,28 +370,3 @@ export function touchdownsByPlayer(lines: { name: string; stats?: Record<string,
 }
 
 /** A started or finished NFL game's touchdown-scorer prices (last pull before kickoff) and who scored. */
-function ClosedTdScorers({ game, gameRef }: { game: Game; gameRef: PropGameRef }) {
-  const id = gameRef.id;
-  const closed = useQuery({
-    queryKey: ["closed-props", "nfl", id],
-    queryFn: () => getClosedProps({ data: { league: "nfl", id } }),
-    enabled: /^\d+$/.test(id),
-    staleTime: (q) => (q.state.data ? 30 * 60_000 : 60_000),
-  });
-  // a live game whose closing board isn't saved yet: the last pregame board's touchdown prices
-  const pregame = useQuery({
-    queryKey: ["pregame-props", "nfl", id],
-    queryFn: () => getPregameProps({ data: { league: "nfl", id } }),
-    enabled:
-      game.status !== "final" && /^\d+$/.test(id) && !closed.isLoading && !closed.data?.td?.length,
-    staleTime: 5 * 60_000,
-  });
-  const board = closed.data?.td?.length ? closed.data : (pregame.data ?? undefined);
-  // touchdowns so far (live) or final; anytime and 2+ cash as they happen
-  const touchdowns = useMemo(() => {
-    if (game.status !== "final" && game.status !== "live") return undefined;
-    return touchdownsByPlayer(game.boxScore ?? []);
-  }, [game.status, game.boxScore]);
-  if (!board?.td?.length) return null;
-  return <TdScorers game={board} touchdowns={touchdowns} live={game.status === "live"} />;
-}
