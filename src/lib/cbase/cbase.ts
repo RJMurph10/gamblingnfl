@@ -46,6 +46,9 @@ export interface CbaseContext {
   spa?: string;
   temp?: number;
   wind?: number;
+  /** Compass point the wind blows from, and what this park's wind history says it adds to the total. */
+  windFrom?: string;
+  windRuns?: number;
 }
 
 export interface CbaseLinedGame {

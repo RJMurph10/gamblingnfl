@@ -31,7 +31,12 @@ MIN_GP = 5  # both teams need this many earlier games for a pick
 # watch picks against the no-vig opening line (model v2, research/cbase/compare.py, 2024–26 at the opening price):
 ML_EDGE = 0.08  # moneyline: +8.8% / −0.3% / +8.6%
 RL_EDGE = 0.08  # run line: +14.5% / −12.1% / +17.2% (no steady edge; tracked)
-TOT_EDGE = 0.12  # total: +2.5% / +11.5% / +8.8%, positive every season under every setting tried
+# total: priced by simulating the game (sim_total_over), 8%+: +9.1% / +10.4% / +8.7%, positive every season
+# under every rating setting and dispersion tried (research/cbase/extras.py)
+TOT_EDGE = 0.08
+SIM_K = 0.4  # runs per half-inning: negative binomial, size 0.4 (fit on 2023, a season without lines)
+SIM_N = 6000
+NO_PICK_MONTHS = (6,)  # the NCAA tournament: aces, neutral sites; totals picks lost (−8%) and the model ran 1 run high
 
 
 def read_jsonl(p):
@@ -286,10 +291,43 @@ def model_numbers(h, a):
     return dict(h=round(h, 2), a=round(a, 2), p=round(1 / (1 + np.exp(-K * (h - a))), 4), t=round(h + a, 2))
 
 
-def picks_for(m, line):
-    """Watch picks from the model numbers and an opening line block."""
+def sim_total_over(h, a, line):
+    """P(over the total | not a push), simulating the game inning by inning: each half-inning's runs
+    negative binomial (mean = expected runs / 9), the home team skips the bottom of the 9th when ahead,
+    the 10-run rule after 7, extra innings (runner on second) until someone wins. Seeded by the inputs, so
+    the same game gets the same number every run."""
+    rng = np.random.default_rng(abs(hash((round(h, 2), round(a, 2), line))) % (2**32))
+    k = SIM_K
+
+    def half(m):
+        return rng.negative_binomial(k, k / (k + m), size=SIM_N)
+
+    H = np.zeros(SIM_N)
+    A = np.zeros(SIM_N)
+    alive = np.ones(SIM_N, bool)
+    lh, la = max(h, 0.5) / 9, max(a, 0.5) / 9
+    for inn in range(1, 10):
+        A += np.where(alive, half(la), 0)
+        bat = alive & ~((inn == 9) & (H > A))
+        H += np.where(bat, half(lh), 0)
+        if inn >= 7:
+            alive &= np.abs(H - A) < 10
+    tie = H == A
+    while tie.any():
+        A += np.where(tie, half(la * 1.4), 0)
+        H += np.where(tie, half(lh * 1.4), 0)
+        tie = H == A
+    T = H + A
+    decided = np.mean(T != line)
+    return float(np.mean(T > line) / decided) if decided else 0.5
+
+
+def picks_for(m, line, date=None):
+    """Watch picks from the model numbers and an opening line block (none in NO_PICK_MONTHS)."""
     out = []
     if not line:
+        return out
+    if date and int(str(date)[5:7]) in NO_PICK_MONTHS:
         return out
     ih, ia = implied(line["mlH"]), implied(line["mlA"])
     if ih and ia:
@@ -307,7 +345,7 @@ def picks_for(m, line):
                             price=line["rlH"] if side == "home" else line["rlA"]))
     if line.get("tot") is not None and line.get("ov") is not None and line.get("un") is not None:
         io, iu = implied(line["ov"]), implied(line["un"])
-        p_over = 1 - phi((line["tot"] - m["t"]) / SIGMA)
+        p_over = sim_total_over(m["h"], m["a"], line["tot"])
         edge = p_over - io / (io + iu)
         if abs(edge) >= TOT_EDGE:
             side = "over" if edge > 0 else "under"

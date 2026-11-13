@@ -19,17 +19,19 @@ export const Route = createFileRoute("/cbase/model")({
 });
 
 /** Season, then w, l, units for totals, moneylines and run lines: the season builder's replay of model v2
- * (each game predicted from earlier games; totals 12%+, moneylines 8%+, run lines 8%+ off the no-vig opener). */
+ * (each game predicted from earlier games; totals 8%+ priced by simulation, moneylines 8%+, run lines 8%+
+ * off the no-vig opener; no picks in June, the NCAA tournament). */
 const REPLAY: [number, ...number[]][] = [
-  [2024, 207, 165, 13.1, 310, 205, 29.5, 154, 103, 32.6],
-  [2025, 186, 137, 34.3, 147, 139, 8.4, 84, 98, -11.6],
-  [2026, 176, 130, 22.9, 44, 45, 17.6, 27, 22, 7.4],
+  [2024, 469, 308, 95.1, 301, 188, 30.5, 151, 94, 38.8],
+  [2025, 456, 304, 112.8, 143, 131, 8.8, 82, 88, -4.0],
+  [2026, 344, 237, 62.6, 43, 45, 16.4, 24, 21, 5.6],
 ];
 
 /** What model v2 adds to each side's expected runs (research fit on 2022–25, walk-forward). */
 const CONTEXT: [string, string][] = [
   ["Temperature", "+0.014 per °F above 65 (each side)"],
   ["Wind speed", "+0.06 per mph above 8 (each side)"],
+  ["Wind direction", "each park's own: learned from its earlier games, capped at ±4 runs"],
   ["Altitude", "+0.10 per 1,000 ft (each side)"],
   ["Opposing starter", "−0.15 per run he saves vs an average starter"],
   ["Visitors' time zones crossed", "−0.13 their runs, +0.10 allowed, per hour"],

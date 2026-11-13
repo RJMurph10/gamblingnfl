@@ -107,7 +107,7 @@ if args.box and args.env and Path(args.env, "venues.json").exists():
     venues = json.loads(Path(args.env, "venues.json").read_text())
     wpath = Path(args.env, f"weather-{Y}.json")
     weather = C.Weather(json.loads(wpath.read_text()) if wpath.exists() else {}, venues)
-    ctx = C.Context(venues, seo_to_espn, weather)
+    ctx = C.Context(venues, seo_to_espn, weather, Y)
     pitchers = C.Pitchers(C.read_box(Path(args.box, f"{Y - 1}.jsonl.gz")))
     box_by_day = {}
     for g in C.read_box(Path(args.box, f"{Y}.jsonl.gz")):
@@ -162,7 +162,7 @@ for i, (e, flip) in sorted(matches.items(), key=lambda x: rows[x[0]]["date"]):
             item["ctx"] = info
         gh, ga = gp_before.get(i, (0, 0))
         if gh >= M.MIN_GP and ga >= M.MIN_GP:
-            picks = M.picks_for(m, op)
+            picks = M.picks_for(m, op, g["date"])
             for p in picks:
                 p["res"] = M.grade(p, g["hr"], g["ar"])
                 r = record[p["k"]]
@@ -197,7 +197,7 @@ for e in upcoming_espn:
             if info:
                 item["ctx"] = info
             if played[h] >= M.MIN_GP and played[a] >= M.MIN_GP and got:
-                picks = M.picks_for(item["m"], item.get("open") or item.get("close"))
+                picks = M.picks_for(item["m"], item.get("open") or item.get("close"), day)
                 if picks:
                     item["picks"] = picks
     upcoming.append(item)

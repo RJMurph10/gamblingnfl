@@ -208,7 +208,7 @@ function CbaseDashboard() {
             </h2>
             <p className="mt-2 text-sm text-mute">
               <span className="font-semibold text-foreground">
-                Not ★ best bets yet. Totals {Math.round((data.model.totEdge ?? 0.12) * 100)}%+,
+                Not ★ best bets yet. Totals {Math.round((data.model.totEdge ?? 0.08) * 100)}%+,
                 moneylines {Math.round(data.model.mlEdge * 100)}%+ and run lines{" "}
                 {Math.round(data.model.rlEdge * 100)}%+ off the no-vig opener.
               </span>{" "}

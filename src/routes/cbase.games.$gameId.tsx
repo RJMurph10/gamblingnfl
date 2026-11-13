@@ -154,7 +154,11 @@ function CbaseGamePage() {
                   <tr>
                     <td className="px-4 py-2 font-sans text-sm">Weather at first pitch</td>
                     <td className="px-4 py-2 text-right">
-                      {g.ctx.temp}°{g.ctx.wind != null ? ` · wind ${g.ctx.wind} mph` : ""}
+                      {g.ctx.temp}°
+                      {g.ctx.wind != null
+                        ? ` · wind ${g.ctx.wind} mph${g.ctx.windFrom ? ` from ${g.ctx.windFrom}` : ""}`
+                        : ""}
+                      {g.ctx.windRuns ? ` (${signed(g.ctx.windRuns, 1)} runs here)` : ""}
                     </td>
                   </tr>
                 ) : null}
@@ -177,7 +181,7 @@ function CbaseGamePage() {
           <p className="px-4 py-3 text-sm text-mute">
             Watch picks are graded at the opening price: moneyline when the model is{" "}
             {pct(data.model.mlEdge)}+ over the no-vig opener, run line {pct(data.model.rlEdge)}+,
-            total {pct(data.model.totEdge ?? 0.12)}+.{" "}
+            total {pct(data.model.totEdge ?? 0.08)}+ (simulated).{" "}
             <Link to="/cbase/model" className="text-acc hover:underline">
               About the model
             </Link>
