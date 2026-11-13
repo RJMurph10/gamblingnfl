@@ -32,6 +32,9 @@ const KEEP = Number(opt("keep", "400"));
 const BOOK = opt("book", "draftkings");
 // every book's main spread and total from the same events (line shopping; costs nothing extra)
 const BEST = opt("best", "best-lines/nfl.json");
+// games in progress: their closing lines and prices (SportsGameOdds keeps each prop's close, averaged
+// across books, after kickoff), for props whose DraftKings price wasn't saved before kickoff
+const LIVE = args.includes("--live");
 const KEY = process.env.SPORTSGAMEODDS_API_KEY;
 const BASE = "https://api.sportsgameodds.com/v2";
 
@@ -53,6 +56,11 @@ export const STATS = {
   fieldGoals_made: "FGs made",
   extraPoints_kicksMade: "XPs made",
   defense_sacks: "Sacks",
+  // tackles and longest rush: DraftKings posts these on game day
+  defense_soloTackles: "Tackles",
+  defense_combinedTackles: "Tackles+Ast",
+  defense_assistedTackles: "Tackle ast",
+  rushing_longestRush: "Longest rush",
   // DraftKings prices longest reception on SportsGameOdds (longest rush and tackles it doesn't)
   receiving_longestReception: "Longest rec",
 };
@@ -131,6 +139,30 @@ export function otherPropsOf(e, book = BOOK) {
   return [...out.values()];
 }
 
+/**
+ * A started game's closing lines: [[player, label, line, over, under, "CLOSE"]] from SportsGameOdds' close
+ * (averaged across books), for every over/under prop with both sides.
+ */
+export function closeOf(e) {
+  const pairs = new Map();
+  for (const m of Object.values(e.odds ?? {})) {
+    const label = STATS[m.statID];
+    if (!label || !m.playerID || m.periodID !== "game" || m.betTypeID !== "ou") continue;
+    const line = num(m.closeBookOverUnder);
+    const price = num(m.closeBookOdds);
+    if (line == null || price == null) continue;
+    const p = e.players?.[m.playerID];
+    const name = p?.name ?? [p?.firstName, p?.lastName].filter(Boolean).join(" ");
+    if (!name) continue;
+    const k = `${m.playerID}|${label}|${line}`;
+    const row = pairs.get(k) ?? [name, label, line, null, null, "CLOSE"];
+    if (m.sideID === "over") row[3] = price;
+    else if (m.sideID === "under") row[4] = price;
+    pairs.set(k, row);
+  }
+  return [...pairs.values()].filter((r) => r[3] != null && r[4] != null);
+}
+
 /** [[player, label, [[line, over price], ...]]]: BOOK's live alternate over lines (the "X+ yards" ladder). */
 export function altsOf(e, book = BOOK) {
   const out = [];
@@ -202,7 +234,7 @@ async function main() {
   const games = [];
   const lines = [];
   const seen = new Set();
-  const windows = [[now, now + HOURS * 3_600_000]];
+  const windows = LIVE ? [[null, null]] : [[now, now + HOURS * 3_600_000]];
   for (const t of ALSO) {
     const k = Date.parse(t);
     if (Number.isFinite(k) && k > now + HOURS * 3_600_000) windows.push([k - 60_000, k + 60_000]);
@@ -216,14 +248,18 @@ async function main() {
         console.log(`stopping: ${left} events left this month (keeping ${KEEP})`);
         break;
       }
-      const q = new URLSearchParams({
-        leagueID: "NFL",
-        oddsAvailable: "true",
-        startsAfter: new Date(after).toISOString(),
-        startsBefore: new Date(before).toISOString(),
-        limit: String(room),
-        includeAltLines: "true",
-      });
+      const q = new URLSearchParams(
+        LIVE
+          ? { leagueID: "NFL", live: "true", limit: String(room) }
+          : {
+              leagueID: "NFL",
+              oddsAvailable: "true",
+              startsAfter: new Date(after).toISOString(),
+              startsBefore: new Date(before).toISOString(),
+              limit: String(room),
+              includeAltLines: "true",
+            },
+      );
       if (cursor) q.set("cursor", cursor);
       const r = await get(`/events/?${q}`);
       const data = r?.data ?? [];
@@ -232,10 +268,11 @@ async function main() {
         if (seen.has(e.eventID)) continue;
         seen.add(e.eventID);
         const name = (t) => t?.names?.long ?? t?.names?.medium ?? t?.teamID ?? "";
-        const props = propsOf(e);
-        const alts = altsOf(e);
-        const td = tdOf(e);
-        const others = otherPropsOf(e);
+        // a game in progress: only its closing lines (the books' current prices are in-game ones)
+        const props = LIVE ? [] : propsOf(e);
+        const alts = LIVE ? [] : altsOf(e);
+        const td = LIVE ? [] : tdOf(e);
+        const others = LIVE ? closeOf(e) : otherPropsOf(e);
         const g = {
           home: name(e.teams?.home),
           away: name(e.teams?.away),
@@ -246,7 +283,7 @@ async function main() {
         );
         if (props.length || td.length || others.length)
           games.push({ ...g, at: new Date().toISOString(), props, alts, td, others });
-        const books = booksOf(e);
+        const books = LIVE ? [] : booksOf(e);
         if (books.length) lines.push({ ...g, books });
       }
       cursor = r?.nextCursor ?? "";
@@ -263,7 +300,7 @@ async function main() {
     return;
   }
   await mkdir(OUT, { recursive: true });
-  const file = join(OUT, `${new Date().toISOString().slice(0, 13)}-sgo.json`);
+  const file = join(OUT, `${new Date().toISOString().slice(0, 13)}-sgo${LIVE ? "-close" : ""}.json`);
   await writeFile(file, JSON.stringify(games));
   console.log(`saved ${games.length} games to ${file}`);
 }
