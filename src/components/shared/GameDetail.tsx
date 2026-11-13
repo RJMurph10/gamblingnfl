@@ -1,7 +1,7 @@
 /**
  * Game page body, shared by the NFL and college game routes.
  */
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { isScoreOrKickoffPlay, useRunningGameClock } from "@/lib/shared/use-running-game-clock";
@@ -571,10 +571,6 @@ export function GameDetail({ gameId }: { gameId: string }) {
   const [activeGameTab, setActiveGameTab] =
     useState<"gamecast" | "stats" | "markets" | "props" | "information">("gamecast");
 
-  // The Information tab isn't offered during live games; fall back to Gamecast if a game goes live.
-  useEffect(() => {
-    if (game?.status === "live" && activeGameTab === "information") setActiveGameTab("gamecast");
-  }, [game?.status, activeGameTab]);
   const [activeMarketTab, setActiveMarketTab] =
     useState<"moneyline" | "cover" | "total">("moneyline");
 
@@ -966,7 +962,7 @@ export function GameDetail({ gameId }: { gameId: string }) {
         <>
           {showGameStatistics(game.status) ? (
             <nav
-              className={`mt-6 grid border-b border-line/15 ${game.status === "live" ? "grid-cols-4" : "grid-cols-5"}`}
+              className={`mt-6 grid border-b border-line/15 grid-cols-5`}
               aria-label="Game details tabs"
             >
               {([
@@ -974,7 +970,7 @@ export function GameDetail({ gameId }: { gameId: string }) {
                 ["stats", "Stats"],
                 ["markets", "Markets"],
                 ["props", "Props"],
-                ...(game.status !== "live" ? ([["information", "Information"]] as const) : []),
+                ["information", "Information"],
               ] as const).map(([tab, label]) => (
                 <button
                   key={tab}
@@ -989,7 +985,7 @@ export function GameDetail({ gameId }: { gameId: string }) {
             </nav>
           ) : null}
           {/* Tab content only appears once the game is live or finished. */}
-          {activeGameTab === "information" && game.status !== "live" ? (
+          {activeGameTab === "information" ? (
             <section className="mt-6">
               <GameInformation game={game} away={away} home={home} weather={weatherQuery.data} />
             </section>
