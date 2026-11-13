@@ -40,6 +40,7 @@ export function PropSpecials({
   rows,
   results,
   closing,
+  bare = false,
 }: {
   league: string;
   away: string;
@@ -47,6 +48,8 @@ export function PropSpecials({
   rows: SpecialRow[] | undefined;
   results?: Map<string, SpecialResult>;
   closing?: boolean;
+  /** Skip the panel and header (when it sits inside the props tabs). */
+  bare?: boolean;
 }) {
   const [team, setTeam] = useState("All");
   const cols = useMemo(() => {
@@ -74,16 +77,8 @@ export function PropSpecials({
   }, [rows, team, cols]);
   if (!rows?.length || !cols.length) return null;
   const graded = results != null && results.size > 0;
-  return (
-    <Panel padded={false}>
-      <PanelHeader
-        title={TITLES[league] ?? "Specials"}
-        aside={
-          <span className="font-mono text-[10px] uppercase tracking-wider text-faint">
-            DraftKings{closing ? " · closing prices" : ""}
-          </span>
-        }
-      />
+  const body = (
+    <>
       <div className="flex gap-2 overflow-x-auto px-4 pt-3">
         {["All", away, home].map((t) => (
           <button
@@ -168,6 +163,20 @@ export function PropSpecials({
           ? " Green = the bet cashed; struck through = it lost; faint = void (didn't play). Ungraded bets keep their plain price."
           : ""}
       </p>
+    </>
+  );
+  if (bare) return body;
+  return (
+    <Panel padded={false}>
+      <PanelHeader
+        title={TITLES[league] ?? "Specials"}
+        aside={
+          <span className="font-mono text-[10px] uppercase tracking-wider text-faint">
+            DraftKings{closing ? " · closing prices" : ""}
+          </span>
+        }
+      />
+      {body}
     </Panel>
   );
 }

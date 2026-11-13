@@ -27,11 +27,14 @@ export function TdScorers({
   touchdowns,
   firstScorer,
   live = false,
+  bare = false,
 }: {
   game: UpcomingPropGame;
   touchdowns?: Map<string, number>;
   firstScorer?: string | null;
   live?: boolean;
+  /** Inside another panel's tab: no panel or title of its own. */
+  bare?: boolean;
 }) {
   const [team, setTeam] = useState("All");
   const rows = useMemo(
@@ -68,14 +71,8 @@ export function TdScorers({
     </td>
   );
 
-  return (
-    <Panel padded={false}>
-      <PanelHeader
-        title={live ? "Touchdown scorers · live" : "Touchdown scorers"}
-        aside={
-          <span className="label-mono">DraftKings{graded && !live ? " · closing prices" : ""}</span>
-        }
-      />
+  const body = (
+    <>
       <div className="flex gap-2 overflow-x-auto px-4 pt-3">
         {["All", game.away.abbr, game.home.abbr].map((t) => (
           <button
@@ -148,6 +145,18 @@ export function TdScorers({
             : " Green = cashed; struck through = lost."
           : ""}
       </p>
+    </>
+  );
+  if (bare) return body;
+  return (
+    <Panel padded={false}>
+      <PanelHeader
+        title={live ? "Touchdown scorers · live" : "Touchdown scorers"}
+        aside={
+          <span className="label-mono">DraftKings{graded && !live ? " · closing prices" : ""}</span>
+        }
+      />
+      {body}
     </Panel>
   );
 }

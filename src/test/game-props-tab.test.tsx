@@ -46,16 +46,41 @@ describe("NFL game page props tab", () => {
     expect(findPropGame([board], ref(nextYear, "WSH", "NYG"))).toBeUndefined();
   });
 
-  it("shows line, opener and move, and filters by team and market", () => {
+  it("groups markets into DraftKings-style tabs, filters by team and searches every tab", () => {
     render(<GamePropLines league="nfl" game={board} title="Player props" />);
     expect(screen.getByText("Player props")).toBeTruthy();
-    expect(screen.getAllByRole("row")).toHaveLength(5); // header + 4
+    const tabs = screen.getAllByRole("tab").map((t) => t.textContent);
+    expect(tabs).toEqual(["Passing", "Receiving", "Rushing"]);
+    // Passing first: Daniels only
+    expect(screen.getAllByRole("row")).toHaveLength(2);
     expect(screen.getByTitle("Down 12 since it opened")).toBeTruthy(); // Daniels 212.5 → 200.5
+    fireEvent.click(screen.getByRole("tab", { name: "Receiving" }));
+    expect(screen.getAllByRole("row")).toHaveLength(3); // Nabers, Diggs
     fireEvent.click(screen.getByRole("button", { name: "WSH players" }));
-    expect(screen.queryByText("Cam Skattebo")).toBeNull();
+    expect(screen.queryByText(/Malik Nabers/)).toBeNull();
+    expect(screen.getByText(/Stefon Diggs/)).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Both teams" }));
+    fireEvent.change(screen.getByPlaceholderText("Find a player"), {
+      target: { value: "skatt" },
+    });
+    expect(screen.getByText(/Cam Skattebo/)).toBeTruthy(); // a Rushing prop, found from Receiving
+  });
+
+  it("puts extra boards (TD scorers) in their own tab", () => {
+    render(
+      <GamePropLines
+        league="nfl"
+        game={board}
+        title="Player props"
+        extraTabs={[{ label: "TD Scorers", node: <p>td board</p>, first: true }]}
+      />,
+    );
+    expect(screen.getAllByRole("tab")[0].textContent).toBe("TD Scorers");
+    expect(screen.getByText("td board")).toBeTruthy();
+    expect(screen.getByRole("table").parentElement!.className).toMatch(/\bhidden\b/);
+    fireEvent.click(screen.getByRole("tab", { name: "Passing" }));
+    expect(screen.queryByText("td board")).toBeNull();
     expect(screen.getByText(/Jayden Daniels/)).toBeTruthy();
-    fireEvent.click(screen.getByRole("button", { name: /^Rec yds$/i }));
-    expect(screen.getAllByRole("row")).toHaveLength(2); // Diggs only
   });
 });
 
@@ -91,6 +116,8 @@ describe("finished games", () => {
     const results = resultsOf(past);
     render(<GamePropLines league="nfl" game={board} title="Player props" results={results} />);
     expect(screen.getByText("Close")).toBeTruthy();
+    // a search covers every tab
+    fireEvent.change(screen.getByPlaceholderText("Find a player"), { target: { value: "s" } });
     expect(screen.getByText("Result")).toBeTruthy();
     const row = (name: string) => screen.getByText(new RegExp(name)).closest("tr")!;
     expect(row("Cam Skattebo").textContent).toMatch(/18over/i); // 18 carries vs 15.5
@@ -174,6 +201,7 @@ describe("players without a box-score line", () => {
     render(
       <GamePropLines league="nfl" game={board} title="Player props" results={resultsOf(past)} />,
     );
+    fireEvent.change(screen.getByPlaceholderText("Find a player"), { target: { value: "s" } });
     const row = screen.getByText(/Malik Nabers/).closest("tr")!;
     expect(row.textContent).toMatch(/void$/i);
     expect(screen.getByText(/1 over/)).toBeTruthy();
