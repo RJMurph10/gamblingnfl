@@ -10,9 +10,14 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as FuturesRouteImport } from './routes/futures'
 import { Route as ModelRouteImport } from './routes/model'
 import { Route as PropHistoryRouteImport } from './routes/prop-history'
 import { Route as PropsRouteImport } from './routes/props'
+import { Route as CbaseIndexRouteImport } from './routes/cbase.index'
+import { Route as CbaseModelRouteImport } from './routes/cbase.model'
+import { Route as CbbIndexRouteImport } from './routes/cbb.index'
+import { Route as CbbModelRouteImport } from './routes/cbb.model'
 import { Route as CfbIndexRouteImport } from './routes/cfb.index'
 import { Route as CfbModelRouteImport } from './routes/cfb.model'
 import { Route as CfbPropsRouteImport } from './routes/cfb.props'
@@ -34,6 +39,19 @@ import { Route as PlayersIndexRouteImport } from './routes/players.index'
 import { Route as PlayersPlayerIdRouteImport } from './routes/players.$playerId'
 import { Route as TeamsIndexRouteImport } from './routes/teams.index'
 import { Route as TeamsTeamIdRouteImport } from './routes/teams.$teamId'
+import { Route as WcbbIndexRouteImport } from './routes/wcbb.index'
+import { Route as WcbbModelRouteImport } from './routes/wcbb.model'
+import { Route as WnbaIndexRouteImport } from './routes/wnba.index'
+import { Route as WnbaModelRouteImport } from './routes/wnba.model'
+import { Route as WnbaPropsRouteImport } from './routes/wnba.props'
+import { Route as CbaseGamesIndexRouteImport } from './routes/cbase.games.index'
+import { Route as CbaseGamesGameIdRouteImport } from './routes/cbase.games.$gameId'
+import { Route as CbaseTeamsIndexRouteImport } from './routes/cbase.teams.index'
+import { Route as CbaseTeamsTeamIdRouteImport } from './routes/cbase.teams.$teamId'
+import { Route as CbbGamesIndexRouteImport } from './routes/cbb.games.index'
+import { Route as CbbGamesGameIdRouteImport } from './routes/cbb.games.$gameId'
+import { Route as CbbTeamsIndexRouteImport } from './routes/cbb.teams.index'
+import { Route as CbbTeamsTeamIdRouteImport } from './routes/cbb.teams.$teamId'
 import { Route as CfbGamesIndexRouteImport } from './routes/cfb.games.index'
 import { Route as CfbGamesGameIdRouteImport } from './routes/cfb.games.$gameId'
 import { Route as CfbPlayersIndexRouteImport } from './routes/cfb.players.index'
@@ -56,10 +74,23 @@ import { Route as NhlPlayersIndexRouteImport } from './routes/nhl.players.index'
 import { Route as NhlPlayersPlayerIdRouteImport } from './routes/nhl.players.$playerId'
 import { Route as NhlTeamsIndexRouteImport } from './routes/nhl.teams.index'
 import { Route as NhlTeamsTeamIdRouteImport } from './routes/nhl.teams.$teamId'
+import { Route as WcbbGamesIndexRouteImport } from './routes/wcbb.games.index'
+import { Route as WcbbGamesGameIdRouteImport } from './routes/wcbb.games.$gameId'
+import { Route as WcbbTeamsIndexRouteImport } from './routes/wcbb.teams.index'
+import { Route as WcbbTeamsTeamIdRouteImport } from './routes/wcbb.teams.$teamId'
+import { Route as WnbaGamesIndexRouteImport } from './routes/wnba.games.index'
+import { Route as WnbaGamesGameIdRouteImport } from './routes/wnba.games.$gameId'
+import { Route as WnbaTeamsIndexRouteImport } from './routes/wnba.teams.index'
+import { Route as WnbaTeamsTeamIdRouteImport } from './routes/wnba.teams.$teamId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FuturesRoute = FuturesRouteImport.update({
+  id: '/futures',
+  path: '/futures',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ModelRoute = ModelRouteImport.update({
@@ -75,6 +106,26 @@ const PropHistoryRoute = PropHistoryRouteImport.update({
 const PropsRoute = PropsRouteImport.update({
   id: '/props',
   path: '/props',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CbaseIndexRoute = CbaseIndexRouteImport.update({
+  id: '/cbase/',
+  path: '/cbase/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CbaseModelRoute = CbaseModelRouteImport.update({
+  id: '/cbase/model',
+  path: '/cbase/model',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CbbIndexRoute = CbbIndexRouteImport.update({
+  id: '/cbb/',
+  path: '/cbb/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CbbModelRoute = CbbModelRouteImport.update({
+  id: '/cbb/model',
+  path: '/cbb/model',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CfbIndexRoute = CfbIndexRouteImport.update({
@@ -180,6 +231,71 @@ const TeamsIndexRoute = TeamsIndexRouteImport.update({
 const TeamsTeamIdRoute = TeamsTeamIdRouteImport.update({
   id: '/teams/$teamId',
   path: '/teams/$teamId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WcbbIndexRoute = WcbbIndexRouteImport.update({
+  id: '/wcbb/',
+  path: '/wcbb/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WcbbModelRoute = WcbbModelRouteImport.update({
+  id: '/wcbb/model',
+  path: '/wcbb/model',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WnbaIndexRoute = WnbaIndexRouteImport.update({
+  id: '/wnba/',
+  path: '/wnba/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WnbaModelRoute = WnbaModelRouteImport.update({
+  id: '/wnba/model',
+  path: '/wnba/model',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WnbaPropsRoute = WnbaPropsRouteImport.update({
+  id: '/wnba/props',
+  path: '/wnba/props',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CbaseGamesIndexRoute = CbaseGamesIndexRouteImport.update({
+  id: '/cbase/games/',
+  path: '/cbase/games/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CbaseGamesGameIdRoute = CbaseGamesGameIdRouteImport.update({
+  id: '/cbase/games/$gameId',
+  path: '/cbase/games/$gameId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CbaseTeamsIndexRoute = CbaseTeamsIndexRouteImport.update({
+  id: '/cbase/teams/',
+  path: '/cbase/teams/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CbaseTeamsTeamIdRoute = CbaseTeamsTeamIdRouteImport.update({
+  id: '/cbase/teams/$teamId',
+  path: '/cbase/teams/$teamId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CbbGamesIndexRoute = CbbGamesIndexRouteImport.update({
+  id: '/cbb/games/',
+  path: '/cbb/games/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CbbGamesGameIdRoute = CbbGamesGameIdRouteImport.update({
+  id: '/cbb/games/$gameId',
+  path: '/cbb/games/$gameId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CbbTeamsIndexRoute = CbbTeamsIndexRouteImport.update({
+  id: '/cbb/teams/',
+  path: '/cbb/teams/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CbbTeamsTeamIdRoute = CbbTeamsTeamIdRouteImport.update({
+  id: '/cbb/teams/$teamId',
+  path: '/cbb/teams/$teamId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CfbGamesIndexRoute = CfbGamesIndexRouteImport.update({
@@ -292,12 +408,55 @@ const NhlTeamsTeamIdRoute = NhlTeamsTeamIdRouteImport.update({
   path: '/nhl/teams/$teamId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WcbbGamesIndexRoute = WcbbGamesIndexRouteImport.update({
+  id: '/wcbb/games/',
+  path: '/wcbb/games/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WcbbGamesGameIdRoute = WcbbGamesGameIdRouteImport.update({
+  id: '/wcbb/games/$gameId',
+  path: '/wcbb/games/$gameId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WcbbTeamsIndexRoute = WcbbTeamsIndexRouteImport.update({
+  id: '/wcbb/teams/',
+  path: '/wcbb/teams/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WcbbTeamsTeamIdRoute = WcbbTeamsTeamIdRouteImport.update({
+  id: '/wcbb/teams/$teamId',
+  path: '/wcbb/teams/$teamId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WnbaGamesIndexRoute = WnbaGamesIndexRouteImport.update({
+  id: '/wnba/games/',
+  path: '/wnba/games/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WnbaGamesGameIdRoute = WnbaGamesGameIdRouteImport.update({
+  id: '/wnba/games/$gameId',
+  path: '/wnba/games/$gameId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WnbaTeamsIndexRoute = WnbaTeamsIndexRouteImport.update({
+  id: '/wnba/teams/',
+  path: '/wnba/teams/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WnbaTeamsTeamIdRoute = WnbaTeamsTeamIdRouteImport.update({
+  id: '/wnba/teams/$teamId',
+  path: '/wnba/teams/$teamId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/futures': typeof FuturesRoute
   '/model': typeof ModelRoute
   '/prop-history': typeof PropHistoryRoute
   '/props': typeof PropsRoute
+  '/cbase/model': typeof CbaseModelRoute
+  '/cbb/model': typeof CbbModelRoute
   '/cfb/model': typeof CfbModelRoute
   '/cfb/props': typeof CfbPropsRoute
   '/games/$gameId': typeof GamesGameIdRoute
@@ -312,6 +471,11 @@ export interface FileRoutesByFullPath {
   '/nhl/props': typeof NhlPropsRoute
   '/players/$playerId': typeof PlayersPlayerIdRoute
   '/teams/$teamId': typeof TeamsTeamIdRoute
+  '/wcbb/model': typeof WcbbModelRoute
+  '/wnba/model': typeof WnbaModelRoute
+  '/wnba/props': typeof WnbaPropsRoute
+  '/cbase/': typeof CbaseIndexRoute
+  '/cbb/': typeof CbbIndexRoute
   '/cfb/': typeof CfbIndexRoute
   '/games/': typeof GamesIndexRoute
   '/mlb/': typeof MlbIndexRoute
@@ -319,6 +483,12 @@ export interface FileRoutesByFullPath {
   '/nhl/': typeof NhlIndexRoute
   '/players/': typeof PlayersIndexRoute
   '/teams/': typeof TeamsIndexRoute
+  '/wcbb/': typeof WcbbIndexRoute
+  '/wnba/': typeof WnbaIndexRoute
+  '/cbase/games/$gameId': typeof CbaseGamesGameIdRoute
+  '/cbase/teams/$teamId': typeof CbaseTeamsTeamIdRoute
+  '/cbb/games/$gameId': typeof CbbGamesGameIdRoute
+  '/cbb/teams/$teamId': typeof CbbTeamsTeamIdRoute
   '/cfb/games/$gameId': typeof CfbGamesGameIdRoute
   '/cfb/players/$playerId': typeof CfbPlayersPlayerIdRoute
   '/cfb/teams/$teamId': typeof CfbTeamsTeamIdRoute
@@ -330,6 +500,14 @@ export interface FileRoutesByFullPath {
   '/nhl/games/$gameId': typeof NhlGamesGameIdRoute
   '/nhl/players/$playerId': typeof NhlPlayersPlayerIdRoute
   '/nhl/teams/$teamId': typeof NhlTeamsTeamIdRoute
+  '/wcbb/games/$gameId': typeof WcbbGamesGameIdRoute
+  '/wcbb/teams/$teamId': typeof WcbbTeamsTeamIdRoute
+  '/wnba/games/$gameId': typeof WnbaGamesGameIdRoute
+  '/wnba/teams/$teamId': typeof WnbaTeamsTeamIdRoute
+  '/cbase/games/': typeof CbaseGamesIndexRoute
+  '/cbase/teams/': typeof CbaseTeamsIndexRoute
+  '/cbb/games/': typeof CbbGamesIndexRoute
+  '/cbb/teams/': typeof CbbTeamsIndexRoute
   '/cfb/games/': typeof CfbGamesIndexRoute
   '/cfb/players/': typeof CfbPlayersIndexRoute
   '/cfb/teams/': typeof CfbTeamsIndexRoute
@@ -341,12 +519,19 @@ export interface FileRoutesByFullPath {
   '/nhl/games/': typeof NhlGamesIndexRoute
   '/nhl/players/': typeof NhlPlayersIndexRoute
   '/nhl/teams/': typeof NhlTeamsIndexRoute
+  '/wcbb/games/': typeof WcbbGamesIndexRoute
+  '/wcbb/teams/': typeof WcbbTeamsIndexRoute
+  '/wnba/games/': typeof WnbaGamesIndexRoute
+  '/wnba/teams/': typeof WnbaTeamsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/futures': typeof FuturesRoute
   '/model': typeof ModelRoute
   '/prop-history': typeof PropHistoryRoute
   '/props': typeof PropsRoute
+  '/cbase/model': typeof CbaseModelRoute
+  '/cbb/model': typeof CbbModelRoute
   '/cfb/model': typeof CfbModelRoute
   '/cfb/props': typeof CfbPropsRoute
   '/games/$gameId': typeof GamesGameIdRoute
@@ -361,6 +546,11 @@ export interface FileRoutesByTo {
   '/nhl/props': typeof NhlPropsRoute
   '/players/$playerId': typeof PlayersPlayerIdRoute
   '/teams/$teamId': typeof TeamsTeamIdRoute
+  '/wcbb/model': typeof WcbbModelRoute
+  '/wnba/model': typeof WnbaModelRoute
+  '/wnba/props': typeof WnbaPropsRoute
+  '/cbase': typeof CbaseIndexRoute
+  '/cbb': typeof CbbIndexRoute
   '/cfb': typeof CfbIndexRoute
   '/games': typeof GamesIndexRoute
   '/mlb': typeof MlbIndexRoute
@@ -368,6 +558,12 @@ export interface FileRoutesByTo {
   '/nhl': typeof NhlIndexRoute
   '/players': typeof PlayersIndexRoute
   '/teams': typeof TeamsIndexRoute
+  '/wcbb': typeof WcbbIndexRoute
+  '/wnba': typeof WnbaIndexRoute
+  '/cbase/games/$gameId': typeof CbaseGamesGameIdRoute
+  '/cbase/teams/$teamId': typeof CbaseTeamsTeamIdRoute
+  '/cbb/games/$gameId': typeof CbbGamesGameIdRoute
+  '/cbb/teams/$teamId': typeof CbbTeamsTeamIdRoute
   '/cfb/games/$gameId': typeof CfbGamesGameIdRoute
   '/cfb/players/$playerId': typeof CfbPlayersPlayerIdRoute
   '/cfb/teams/$teamId': typeof CfbTeamsTeamIdRoute
@@ -379,6 +575,14 @@ export interface FileRoutesByTo {
   '/nhl/games/$gameId': typeof NhlGamesGameIdRoute
   '/nhl/players/$playerId': typeof NhlPlayersPlayerIdRoute
   '/nhl/teams/$teamId': typeof NhlTeamsTeamIdRoute
+  '/wcbb/games/$gameId': typeof WcbbGamesGameIdRoute
+  '/wcbb/teams/$teamId': typeof WcbbTeamsTeamIdRoute
+  '/wnba/games/$gameId': typeof WnbaGamesGameIdRoute
+  '/wnba/teams/$teamId': typeof WnbaTeamsTeamIdRoute
+  '/cbase/games': typeof CbaseGamesIndexRoute
+  '/cbase/teams': typeof CbaseTeamsIndexRoute
+  '/cbb/games': typeof CbbGamesIndexRoute
+  '/cbb/teams': typeof CbbTeamsIndexRoute
   '/cfb/games': typeof CfbGamesIndexRoute
   '/cfb/players': typeof CfbPlayersIndexRoute
   '/cfb/teams': typeof CfbTeamsIndexRoute
@@ -390,13 +594,20 @@ export interface FileRoutesByTo {
   '/nhl/games': typeof NhlGamesIndexRoute
   '/nhl/players': typeof NhlPlayersIndexRoute
   '/nhl/teams': typeof NhlTeamsIndexRoute
+  '/wcbb/games': typeof WcbbGamesIndexRoute
+  '/wcbb/teams': typeof WcbbTeamsIndexRoute
+  '/wnba/games': typeof WnbaGamesIndexRoute
+  '/wnba/teams': typeof WnbaTeamsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/futures': typeof FuturesRoute
   '/model': typeof ModelRoute
   '/prop-history': typeof PropHistoryRoute
   '/props': typeof PropsRoute
+  '/cbase/model': typeof CbaseModelRoute
+  '/cbb/model': typeof CbbModelRoute
   '/cfb/model': typeof CfbModelRoute
   '/cfb/props': typeof CfbPropsRoute
   '/games/$gameId': typeof GamesGameIdRoute
@@ -411,6 +622,11 @@ export interface FileRoutesById {
   '/nhl/props': typeof NhlPropsRoute
   '/players/$playerId': typeof PlayersPlayerIdRoute
   '/teams/$teamId': typeof TeamsTeamIdRoute
+  '/wcbb/model': typeof WcbbModelRoute
+  '/wnba/model': typeof WnbaModelRoute
+  '/wnba/props': typeof WnbaPropsRoute
+  '/cbase/': typeof CbaseIndexRoute
+  '/cbb/': typeof CbbIndexRoute
   '/cfb/': typeof CfbIndexRoute
   '/games/': typeof GamesIndexRoute
   '/mlb/': typeof MlbIndexRoute
@@ -418,6 +634,12 @@ export interface FileRoutesById {
   '/nhl/': typeof NhlIndexRoute
   '/players/': typeof PlayersIndexRoute
   '/teams/': typeof TeamsIndexRoute
+  '/wcbb/': typeof WcbbIndexRoute
+  '/wnba/': typeof WnbaIndexRoute
+  '/cbase/games/$gameId': typeof CbaseGamesGameIdRoute
+  '/cbase/teams/$teamId': typeof CbaseTeamsTeamIdRoute
+  '/cbb/games/$gameId': typeof CbbGamesGameIdRoute
+  '/cbb/teams/$teamId': typeof CbbTeamsTeamIdRoute
   '/cfb/games/$gameId': typeof CfbGamesGameIdRoute
   '/cfb/players/$playerId': typeof CfbPlayersPlayerIdRoute
   '/cfb/teams/$teamId': typeof CfbTeamsTeamIdRoute
@@ -429,6 +651,14 @@ export interface FileRoutesById {
   '/nhl/games/$gameId': typeof NhlGamesGameIdRoute
   '/nhl/players/$playerId': typeof NhlPlayersPlayerIdRoute
   '/nhl/teams/$teamId': typeof NhlTeamsTeamIdRoute
+  '/wcbb/games/$gameId': typeof WcbbGamesGameIdRoute
+  '/wcbb/teams/$teamId': typeof WcbbTeamsTeamIdRoute
+  '/wnba/games/$gameId': typeof WnbaGamesGameIdRoute
+  '/wnba/teams/$teamId': typeof WnbaTeamsTeamIdRoute
+  '/cbase/games/': typeof CbaseGamesIndexRoute
+  '/cbase/teams/': typeof CbaseTeamsIndexRoute
+  '/cbb/games/': typeof CbbGamesIndexRoute
+  '/cbb/teams/': typeof CbbTeamsIndexRoute
   '/cfb/games/': typeof CfbGamesIndexRoute
   '/cfb/players/': typeof CfbPlayersIndexRoute
   '/cfb/teams/': typeof CfbTeamsIndexRoute
@@ -440,14 +670,21 @@ export interface FileRoutesById {
   '/nhl/games/': typeof NhlGamesIndexRoute
   '/nhl/players/': typeof NhlPlayersIndexRoute
   '/nhl/teams/': typeof NhlTeamsIndexRoute
+  '/wcbb/games/': typeof WcbbGamesIndexRoute
+  '/wcbb/teams/': typeof WcbbTeamsIndexRoute
+  '/wnba/games/': typeof WnbaGamesIndexRoute
+  '/wnba/teams/': typeof WnbaTeamsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/futures'
     | '/model'
     | '/prop-history'
     | '/props'
+    | '/cbase/model'
+    | '/cbb/model'
     | '/cfb/model'
     | '/cfb/props'
     | '/games/$gameId'
@@ -462,6 +699,11 @@ export interface FileRouteTypes {
     | '/nhl/props'
     | '/players/$playerId'
     | '/teams/$teamId'
+    | '/wcbb/model'
+    | '/wnba/model'
+    | '/wnba/props'
+    | '/cbase/'
+    | '/cbb/'
     | '/cfb/'
     | '/games/'
     | '/mlb/'
@@ -469,6 +711,12 @@ export interface FileRouteTypes {
     | '/nhl/'
     | '/players/'
     | '/teams/'
+    | '/wcbb/'
+    | '/wnba/'
+    | '/cbase/games/$gameId'
+    | '/cbase/teams/$teamId'
+    | '/cbb/games/$gameId'
+    | '/cbb/teams/$teamId'
     | '/cfb/games/$gameId'
     | '/cfb/players/$playerId'
     | '/cfb/teams/$teamId'
@@ -480,6 +728,14 @@ export interface FileRouteTypes {
     | '/nhl/games/$gameId'
     | '/nhl/players/$playerId'
     | '/nhl/teams/$teamId'
+    | '/wcbb/games/$gameId'
+    | '/wcbb/teams/$teamId'
+    | '/wnba/games/$gameId'
+    | '/wnba/teams/$teamId'
+    | '/cbase/games/'
+    | '/cbase/teams/'
+    | '/cbb/games/'
+    | '/cbb/teams/'
     | '/cfb/games/'
     | '/cfb/players/'
     | '/cfb/teams/'
@@ -491,12 +747,19 @@ export interface FileRouteTypes {
     | '/nhl/games/'
     | '/nhl/players/'
     | '/nhl/teams/'
+    | '/wcbb/games/'
+    | '/wcbb/teams/'
+    | '/wnba/games/'
+    | '/wnba/teams/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/futures'
     | '/model'
     | '/prop-history'
     | '/props'
+    | '/cbase/model'
+    | '/cbb/model'
     | '/cfb/model'
     | '/cfb/props'
     | '/games/$gameId'
@@ -511,6 +774,11 @@ export interface FileRouteTypes {
     | '/nhl/props'
     | '/players/$playerId'
     | '/teams/$teamId'
+    | '/wcbb/model'
+    | '/wnba/model'
+    | '/wnba/props'
+    | '/cbase'
+    | '/cbb'
     | '/cfb'
     | '/games'
     | '/mlb'
@@ -518,6 +786,12 @@ export interface FileRouteTypes {
     | '/nhl'
     | '/players'
     | '/teams'
+    | '/wcbb'
+    | '/wnba'
+    | '/cbase/games/$gameId'
+    | '/cbase/teams/$teamId'
+    | '/cbb/games/$gameId'
+    | '/cbb/teams/$teamId'
     | '/cfb/games/$gameId'
     | '/cfb/players/$playerId'
     | '/cfb/teams/$teamId'
@@ -529,6 +803,14 @@ export interface FileRouteTypes {
     | '/nhl/games/$gameId'
     | '/nhl/players/$playerId'
     | '/nhl/teams/$teamId'
+    | '/wcbb/games/$gameId'
+    | '/wcbb/teams/$teamId'
+    | '/wnba/games/$gameId'
+    | '/wnba/teams/$teamId'
+    | '/cbase/games'
+    | '/cbase/teams'
+    | '/cbb/games'
+    | '/cbb/teams'
     | '/cfb/games'
     | '/cfb/players'
     | '/cfb/teams'
@@ -540,12 +822,19 @@ export interface FileRouteTypes {
     | '/nhl/games'
     | '/nhl/players'
     | '/nhl/teams'
+    | '/wcbb/games'
+    | '/wcbb/teams'
+    | '/wnba/games'
+    | '/wnba/teams'
   id:
     | '__root__'
     | '/'
+    | '/futures'
     | '/model'
     | '/prop-history'
     | '/props'
+    | '/cbase/model'
+    | '/cbb/model'
     | '/cfb/model'
     | '/cfb/props'
     | '/games/$gameId'
@@ -560,6 +849,11 @@ export interface FileRouteTypes {
     | '/nhl/props'
     | '/players/$playerId'
     | '/teams/$teamId'
+    | '/wcbb/model'
+    | '/wnba/model'
+    | '/wnba/props'
+    | '/cbase/'
+    | '/cbb/'
     | '/cfb/'
     | '/games/'
     | '/mlb/'
@@ -567,6 +861,12 @@ export interface FileRouteTypes {
     | '/nhl/'
     | '/players/'
     | '/teams/'
+    | '/wcbb/'
+    | '/wnba/'
+    | '/cbase/games/$gameId'
+    | '/cbase/teams/$teamId'
+    | '/cbb/games/$gameId'
+    | '/cbb/teams/$teamId'
     | '/cfb/games/$gameId'
     | '/cfb/players/$playerId'
     | '/cfb/teams/$teamId'
@@ -578,6 +878,14 @@ export interface FileRouteTypes {
     | '/nhl/games/$gameId'
     | '/nhl/players/$playerId'
     | '/nhl/teams/$teamId'
+    | '/wcbb/games/$gameId'
+    | '/wcbb/teams/$teamId'
+    | '/wnba/games/$gameId'
+    | '/wnba/teams/$teamId'
+    | '/cbase/games/'
+    | '/cbase/teams/'
+    | '/cbb/games/'
+    | '/cbb/teams/'
     | '/cfb/games/'
     | '/cfb/players/'
     | '/cfb/teams/'
@@ -589,13 +897,20 @@ export interface FileRouteTypes {
     | '/nhl/games/'
     | '/nhl/players/'
     | '/nhl/teams/'
+    | '/wcbb/games/'
+    | '/wcbb/teams/'
+    | '/wnba/games/'
+    | '/wnba/teams/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  FuturesRoute: typeof FuturesRoute
   ModelRoute: typeof ModelRoute
   PropHistoryRoute: typeof PropHistoryRoute
   PropsRoute: typeof PropsRoute
+  CbaseModelRoute: typeof CbaseModelRoute
+  CbbModelRoute: typeof CbbModelRoute
   CfbModelRoute: typeof CfbModelRoute
   CfbPropsRoute: typeof CfbPropsRoute
   GamesGameIdRoute: typeof GamesGameIdRoute
@@ -610,6 +925,11 @@ export interface RootRouteChildren {
   NhlPropsRoute: typeof NhlPropsRoute
   PlayersPlayerIdRoute: typeof PlayersPlayerIdRoute
   TeamsTeamIdRoute: typeof TeamsTeamIdRoute
+  WcbbModelRoute: typeof WcbbModelRoute
+  WnbaModelRoute: typeof WnbaModelRoute
+  WnbaPropsRoute: typeof WnbaPropsRoute
+  CbaseIndexRoute: typeof CbaseIndexRoute
+  CbbIndexRoute: typeof CbbIndexRoute
   CfbIndexRoute: typeof CfbIndexRoute
   GamesIndexRoute: typeof GamesIndexRoute
   MlbIndexRoute: typeof MlbIndexRoute
@@ -617,6 +937,12 @@ export interface RootRouteChildren {
   NhlIndexRoute: typeof NhlIndexRoute
   PlayersIndexRoute: typeof PlayersIndexRoute
   TeamsIndexRoute: typeof TeamsIndexRoute
+  WcbbIndexRoute: typeof WcbbIndexRoute
+  WnbaIndexRoute: typeof WnbaIndexRoute
+  CbaseGamesGameIdRoute: typeof CbaseGamesGameIdRoute
+  CbaseTeamsTeamIdRoute: typeof CbaseTeamsTeamIdRoute
+  CbbGamesGameIdRoute: typeof CbbGamesGameIdRoute
+  CbbTeamsTeamIdRoute: typeof CbbTeamsTeamIdRoute
   CfbGamesGameIdRoute: typeof CfbGamesGameIdRoute
   CfbPlayersPlayerIdRoute: typeof CfbPlayersPlayerIdRoute
   CfbTeamsTeamIdRoute: typeof CfbTeamsTeamIdRoute
@@ -628,6 +954,14 @@ export interface RootRouteChildren {
   NhlGamesGameIdRoute: typeof NhlGamesGameIdRoute
   NhlPlayersPlayerIdRoute: typeof NhlPlayersPlayerIdRoute
   NhlTeamsTeamIdRoute: typeof NhlTeamsTeamIdRoute
+  WcbbGamesGameIdRoute: typeof WcbbGamesGameIdRoute
+  WcbbTeamsTeamIdRoute: typeof WcbbTeamsTeamIdRoute
+  WnbaGamesGameIdRoute: typeof WnbaGamesGameIdRoute
+  WnbaTeamsTeamIdRoute: typeof WnbaTeamsTeamIdRoute
+  CbaseGamesIndexRoute: typeof CbaseGamesIndexRoute
+  CbaseTeamsIndexRoute: typeof CbaseTeamsIndexRoute
+  CbbGamesIndexRoute: typeof CbbGamesIndexRoute
+  CbbTeamsIndexRoute: typeof CbbTeamsIndexRoute
   CfbGamesIndexRoute: typeof CfbGamesIndexRoute
   CfbPlayersIndexRoute: typeof CfbPlayersIndexRoute
   CfbTeamsIndexRoute: typeof CfbTeamsIndexRoute
@@ -639,6 +973,10 @@ export interface RootRouteChildren {
   NhlGamesIndexRoute: typeof NhlGamesIndexRoute
   NhlPlayersIndexRoute: typeof NhlPlayersIndexRoute
   NhlTeamsIndexRoute: typeof NhlTeamsIndexRoute
+  WcbbGamesIndexRoute: typeof WcbbGamesIndexRoute
+  WcbbTeamsIndexRoute: typeof WcbbTeamsIndexRoute
+  WnbaGamesIndexRoute: typeof WnbaGamesIndexRoute
+  WnbaTeamsIndexRoute: typeof WnbaTeamsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -648,6 +986,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/futures': {
+      id: '/futures'
+      path: '/futures'
+      fullPath: '/futures'
+      preLoaderRoute: typeof FuturesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/model': {
@@ -669,6 +1014,34 @@ declare module '@tanstack/react-router' {
       path: '/props'
       fullPath: '/props'
       preLoaderRoute: typeof PropsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cbase/': {
+      id: '/cbase/'
+      path: '/cbase'
+      fullPath: '/cbase/'
+      preLoaderRoute: typeof CbaseIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cbase/model': {
+      id: '/cbase/model'
+      path: '/cbase/model'
+      fullPath: '/cbase/model'
+      preLoaderRoute: typeof CbaseModelRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cbb/': {
+      id: '/cbb/'
+      path: '/cbb'
+      fullPath: '/cbb/'
+      preLoaderRoute: typeof CbbIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cbb/model': {
+      id: '/cbb/model'
+      path: '/cbb/model'
+      fullPath: '/cbb/model'
+      preLoaderRoute: typeof CbbModelRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/cfb/': {
@@ -816,6 +1189,97 @@ declare module '@tanstack/react-router' {
       path: '/teams/$teamId'
       fullPath: '/teams/$teamId'
       preLoaderRoute: typeof TeamsTeamIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/wcbb/': {
+      id: '/wcbb/'
+      path: '/wcbb'
+      fullPath: '/wcbb/'
+      preLoaderRoute: typeof WcbbIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/wcbb/model': {
+      id: '/wcbb/model'
+      path: '/wcbb/model'
+      fullPath: '/wcbb/model'
+      preLoaderRoute: typeof WcbbModelRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/wnba/': {
+      id: '/wnba/'
+      path: '/wnba'
+      fullPath: '/wnba/'
+      preLoaderRoute: typeof WnbaIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/wnba/model': {
+      id: '/wnba/model'
+      path: '/wnba/model'
+      fullPath: '/wnba/model'
+      preLoaderRoute: typeof WnbaModelRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/wnba/props': {
+      id: '/wnba/props'
+      path: '/wnba/props'
+      fullPath: '/wnba/props'
+      preLoaderRoute: typeof WnbaPropsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cbase/games/': {
+      id: '/cbase/games/'
+      path: '/cbase/games'
+      fullPath: '/cbase/games/'
+      preLoaderRoute: typeof CbaseGamesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cbase/games/$gameId': {
+      id: '/cbase/games/$gameId'
+      path: '/cbase/games/$gameId'
+      fullPath: '/cbase/games/$gameId'
+      preLoaderRoute: typeof CbaseGamesGameIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cbase/teams/': {
+      id: '/cbase/teams/'
+      path: '/cbase/teams'
+      fullPath: '/cbase/teams/'
+      preLoaderRoute: typeof CbaseTeamsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cbase/teams/$teamId': {
+      id: '/cbase/teams/$teamId'
+      path: '/cbase/teams/$teamId'
+      fullPath: '/cbase/teams/$teamId'
+      preLoaderRoute: typeof CbaseTeamsTeamIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cbb/games/': {
+      id: '/cbb/games/'
+      path: '/cbb/games'
+      fullPath: '/cbb/games/'
+      preLoaderRoute: typeof CbbGamesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cbb/games/$gameId': {
+      id: '/cbb/games/$gameId'
+      path: '/cbb/games/$gameId'
+      fullPath: '/cbb/games/$gameId'
+      preLoaderRoute: typeof CbbGamesGameIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cbb/teams/': {
+      id: '/cbb/teams/'
+      path: '/cbb/teams'
+      fullPath: '/cbb/teams/'
+      preLoaderRoute: typeof CbbTeamsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cbb/teams/$teamId': {
+      id: '/cbb/teams/$teamId'
+      path: '/cbb/teams/$teamId'
+      fullPath: '/cbb/teams/$teamId'
+      preLoaderRoute: typeof CbbTeamsTeamIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/cfb/games/': {
@@ -972,14 +1436,73 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NhlTeamsTeamIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/wcbb/games/': {
+      id: '/wcbb/games/'
+      path: '/wcbb/games'
+      fullPath: '/wcbb/games/'
+      preLoaderRoute: typeof WcbbGamesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/wcbb/games/$gameId': {
+      id: '/wcbb/games/$gameId'
+      path: '/wcbb/games/$gameId'
+      fullPath: '/wcbb/games/$gameId'
+      preLoaderRoute: typeof WcbbGamesGameIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/wcbb/teams/': {
+      id: '/wcbb/teams/'
+      path: '/wcbb/teams'
+      fullPath: '/wcbb/teams/'
+      preLoaderRoute: typeof WcbbTeamsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/wcbb/teams/$teamId': {
+      id: '/wcbb/teams/$teamId'
+      path: '/wcbb/teams/$teamId'
+      fullPath: '/wcbb/teams/$teamId'
+      preLoaderRoute: typeof WcbbTeamsTeamIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/wnba/games/': {
+      id: '/wnba/games/'
+      path: '/wnba/games'
+      fullPath: '/wnba/games/'
+      preLoaderRoute: typeof WnbaGamesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/wnba/games/$gameId': {
+      id: '/wnba/games/$gameId'
+      path: '/wnba/games/$gameId'
+      fullPath: '/wnba/games/$gameId'
+      preLoaderRoute: typeof WnbaGamesGameIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/wnba/teams/': {
+      id: '/wnba/teams/'
+      path: '/wnba/teams'
+      fullPath: '/wnba/teams/'
+      preLoaderRoute: typeof WnbaTeamsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/wnba/teams/$teamId': {
+      id: '/wnba/teams/$teamId'
+      path: '/wnba/teams/$teamId'
+      fullPath: '/wnba/teams/$teamId'
+      preLoaderRoute: typeof WnbaTeamsTeamIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  FuturesRoute: FuturesRoute,
   ModelRoute: ModelRoute,
   PropHistoryRoute: PropHistoryRoute,
   PropsRoute: PropsRoute,
+  CbaseModelRoute: CbaseModelRoute,
+  CbbModelRoute: CbbModelRoute,
   CfbModelRoute: CfbModelRoute,
   CfbPropsRoute: CfbPropsRoute,
   GamesGameIdRoute: GamesGameIdRoute,
@@ -994,6 +1517,11 @@ const rootRouteChildren: RootRouteChildren = {
   NhlPropsRoute: NhlPropsRoute,
   PlayersPlayerIdRoute: PlayersPlayerIdRoute,
   TeamsTeamIdRoute: TeamsTeamIdRoute,
+  WcbbModelRoute: WcbbModelRoute,
+  WnbaModelRoute: WnbaModelRoute,
+  WnbaPropsRoute: WnbaPropsRoute,
+  CbaseIndexRoute: CbaseIndexRoute,
+  CbbIndexRoute: CbbIndexRoute,
   CfbIndexRoute: CfbIndexRoute,
   GamesIndexRoute: GamesIndexRoute,
   MlbIndexRoute: MlbIndexRoute,
@@ -1001,6 +1529,12 @@ const rootRouteChildren: RootRouteChildren = {
   NhlIndexRoute: NhlIndexRoute,
   PlayersIndexRoute: PlayersIndexRoute,
   TeamsIndexRoute: TeamsIndexRoute,
+  WcbbIndexRoute: WcbbIndexRoute,
+  WnbaIndexRoute: WnbaIndexRoute,
+  CbaseGamesGameIdRoute: CbaseGamesGameIdRoute,
+  CbaseTeamsTeamIdRoute: CbaseTeamsTeamIdRoute,
+  CbbGamesGameIdRoute: CbbGamesGameIdRoute,
+  CbbTeamsTeamIdRoute: CbbTeamsTeamIdRoute,
   CfbGamesGameIdRoute: CfbGamesGameIdRoute,
   CfbPlayersPlayerIdRoute: CfbPlayersPlayerIdRoute,
   CfbTeamsTeamIdRoute: CfbTeamsTeamIdRoute,
@@ -1012,6 +1546,14 @@ const rootRouteChildren: RootRouteChildren = {
   NhlGamesGameIdRoute: NhlGamesGameIdRoute,
   NhlPlayersPlayerIdRoute: NhlPlayersPlayerIdRoute,
   NhlTeamsTeamIdRoute: NhlTeamsTeamIdRoute,
+  WcbbGamesGameIdRoute: WcbbGamesGameIdRoute,
+  WcbbTeamsTeamIdRoute: WcbbTeamsTeamIdRoute,
+  WnbaGamesGameIdRoute: WnbaGamesGameIdRoute,
+  WnbaTeamsTeamIdRoute: WnbaTeamsTeamIdRoute,
+  CbaseGamesIndexRoute: CbaseGamesIndexRoute,
+  CbaseTeamsIndexRoute: CbaseTeamsIndexRoute,
+  CbbGamesIndexRoute: CbbGamesIndexRoute,
+  CbbTeamsIndexRoute: CbbTeamsIndexRoute,
   CfbGamesIndexRoute: CfbGamesIndexRoute,
   CfbPlayersIndexRoute: CfbPlayersIndexRoute,
   CfbTeamsIndexRoute: CfbTeamsIndexRoute,
@@ -1023,6 +1565,10 @@ const rootRouteChildren: RootRouteChildren = {
   NhlGamesIndexRoute: NhlGamesIndexRoute,
   NhlPlayersIndexRoute: NhlPlayersIndexRoute,
   NhlTeamsIndexRoute: NhlTeamsIndexRoute,
+  WcbbGamesIndexRoute: WcbbGamesIndexRoute,
+  WcbbTeamsIndexRoute: WcbbTeamsIndexRoute,
+  WnbaGamesIndexRoute: WnbaGamesIndexRoute,
+  WnbaTeamsIndexRoute: WnbaTeamsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

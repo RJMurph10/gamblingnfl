@@ -6,6 +6,7 @@
  * UFL, UFC…). Runs in GitHub Actions (.github/workflows/lines-history.yml).
  *
  *   node scripts/lines/export-lines.mjs --sport soccer --league eng.1 --from 2023-11-01 --to 2026-11-12 --out out
+ *     [--upcoming: also games not started yet, with their current lines]
  *     → out/<league>/<season year>.jsonl.gz
  *
  * Row: { id, comp, date, season, type, name, status,
@@ -29,6 +30,7 @@ const FROM = opt("from", "2023-11-01");
 const TO = opt("to", new Date().toISOString().slice(0, 10));
 const OUT = opt("out", "out");
 const QUERY = opt("query", "");
+const UPCOMING = args.includes("--upcoming"); // also games not played yet (their current lines)
 if (!SPORT || !LEAGUE) throw new Error("--sport and --league are required");
 
 const HEADERS = {
@@ -93,7 +95,8 @@ await pool(days, 8, async (d) => {
   const sb = await get(`${SITE}/scoreboard?dates=${d}&limit=500${QUERY ? `&${QUERY}` : ""}`);
   for (const e of sb?.events ?? [])
     for (const c of e.competitions ?? []) {
-      if (!c.status?.type?.completed) continue;
+      const done = c.status?.type?.completed;
+      if (!done && !(UPCOMING && c.status?.type?.state === "pre")) continue;
       const key = `${e.id}/${c.id}`;
       if (comps.has(key)) continue;
       comps.set(key, {
@@ -104,6 +107,7 @@ await pool(days, 8, async (d) => {
         type: e.season?.type ?? null,
         name: e.name ?? "",
         status: c.status?.type?.name ?? "",
+        state: c.status?.type?.state ?? "",
         teams: (c.competitors ?? []).map((k) => ({
           id: String(k.team?.id ?? k.athlete?.id ?? k.id ?? ""),
           abbr: k.team?.abbreviation ?? k.athlete?.shortName ?? "",

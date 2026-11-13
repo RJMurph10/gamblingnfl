@@ -84,6 +84,7 @@
   --acc-cbb: oklch(0.782 0.129 212);
   --acc-wnba: oklch(0.782 0.129 212);
   --acc-wcbb: oklch(0.782 0.129 212);
+  --acc-cbase: oklch(0.782 0.129 212);
 
   --background: var(--bg);
   --foreground: var(--ink);
@@ -198,4 +199,8 @@
 
 [data-league="wcbb"] {
   --acc: var(--acc-wcbb);
+}
+
+[data-league="cbase"] {
+  --acc: var(--acc-cbase);
 }
