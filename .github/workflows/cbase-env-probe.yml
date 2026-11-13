@@ -1,0 +1,20 @@
+name: College baseball venues and weather (research)
+on:
+  push:
+    branches: [nfl-weather-probe]
+    paths: [scripts/cbase/venues.mjs, scripts/cbase/weather-history.mjs, .github/workflows/cbase-env-probe.yml]
+jobs:
+  env:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: git clone -q --depth 1 --branch main "https://github.com/${{ github.repository }}.git" main
+      - run: mkdir -p out && node main/scripts/cbase/espn-teams.mjs out
+      - run: node scripts/cbase/venues.mjs out/espn-teams.json out/venues.json
+      - run: for y in 2022 2023 2024 2025 2026; do node scripts/cbase/weather-history.mjs out/venues.json $y out/weather-$y.json; done
+      - uses: actions/upload-artifact@v4
+        with:
+          name: env
+          path: out/*.json
