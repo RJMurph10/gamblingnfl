@@ -1,7 +1,23 @@
 {
  "day": "2026-11-13",
- "updated": "2026-11-13T09:24:21.461Z",
+ "updated": "2026-11-13T12:39:56.424Z",
  "picks": [
+  {
+   "id": "401909296-spread",
+   "game": "NY @ IND",
+   "tip": "2026-11-14T00:00Z",
+   "market": "spread",
+   "pick": "NY -6.5",
+   "line": 6.5,
+   "open": 2.5,
+   "model": -7.9,
+   "edge": 1.4,
+   "best": false,
+   "firstSeen": "2026-11-13T12:39:56.424Z",
+   "latest": 6.5,
+   "latestAt": "2026-11-13T12:39:56.424Z",
+   "alerted": false
+  },
   {
    "id": "401909296-total",
    "game": "NY @ IND",
@@ -14,8 +30,8 @@
    "edge": 14.3,
    "best": true,
    "firstSeen": "2026-11-13T09:24:21.461Z",
-   "latest": 220.5,
-   "latestAt": "2026-11-13T09:24:21.461Z",
+   "latest": 218.5,
+   "latestAt": "2026-11-13T12:39:56.424Z",
    "alerted": false
   },
   {
@@ -31,7 +47,7 @@
    "best": true,
    "firstSeen": "2026-11-13T09:24:21.461Z",
    "latest": -2.5,
-   "latestAt": "2026-11-13T09:24:21.461Z",
+   "latestAt": "2026-11-13T12:39:56.424Z",
    "alerted": false
   },
   {
@@ -47,7 +63,7 @@
    "best": false,
    "firstSeen": "2026-11-13T09:24:21.461Z",
    "latest": 7.5,
-   "latestAt": "2026-11-13T09:24:21.461Z",
+   "latestAt": "2026-11-13T12:39:56.424Z",
    "alerted": false
   },
   {
@@ -63,7 +79,7 @@
    "best": false,
    "firstSeen": "2026-11-13T09:24:21.461Z",
    "latest": 219.5,
-   "latestAt": "2026-11-13T09:24:21.461Z",
+   "latestAt": "2026-11-13T12:39:56.424Z",
    "alerted": false
   },
   {
@@ -79,7 +95,7 @@
    "best": true,
    "firstSeen": "2026-11-13T09:24:21.461Z",
    "latest": -12.5,
-   "latestAt": "2026-11-13T09:24:21.461Z",
+   "latestAt": "2026-11-13T12:39:56.424Z",
    "alerted": false
   },
   {
@@ -94,8 +110,8 @@
    "edge": 6.7,
    "best": false,
    "firstSeen": "2026-11-13T09:24:21.461Z",
-   "latest": 220.5,
-   "latestAt": "2026-11-13T09:24:21.461Z",
+   "latest": 219.5,
+   "latestAt": "2026-11-13T12:39:56.424Z",
    "alerted": false
   },
   {

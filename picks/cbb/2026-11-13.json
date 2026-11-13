@@ -1,6 +1,6 @@
 {
  "day": "2026-11-13",
- "updated": "2026-11-13T09:24:22.516Z",
+ "updated": "2026-11-13T12:39:57.234Z",
  "picks": [
   {
    "id": "401911210-total",
@@ -15,7 +15,7 @@
    "best": true,
    "firstSeen": "2026-11-13T09:24:22.516Z",
    "latest": 133.5,
-   "latestAt": "2026-11-13T09:24:22.516Z",
+   "latestAt": "2026-11-13T12:39:57.234Z",
    "alerted": false
   },
   {
@@ -31,7 +31,23 @@
    "best": true,
    "firstSeen": "2026-11-13T09:24:22.516Z",
    "latest": 173.5,
-   "latestAt": "2026-11-13T09:24:22.516Z",
+   "latestAt": "2026-11-13T12:39:57.234Z",
+   "alerted": false
+  },
+  {
+   "id": "401924796-total",
+   "game": "MRST @ LEH",
+   "tip": "2026-11-14T00:00Z",
+   "market": "total",
+   "pick": "Over 134.5",
+   "line": 134.5,
+   "open": 134.5,
+   "model": 141.8,
+   "edge": 7.3,
+   "best": true,
+   "firstSeen": "2026-11-13T12:39:57.234Z",
+   "latest": 132.5,
+   "latestAt": "2026-11-13T12:39:57.234Z",
    "alerted": false
   },
   {
@@ -47,7 +63,7 @@
    "best": true,
    "firstSeen": "2026-11-13T09:24:22.516Z",
    "latest": 154.5,
-   "latestAt": "2026-11-13T09:24:22.516Z",
+   "latestAt": "2026-11-13T12:39:57.234Z",
    "alerted": false
   },
   {
@@ -63,7 +79,7 @@
    "best": true,
    "firstSeen": "2026-11-13T09:24:22.516Z",
    "latest": 165.5,
-   "latestAt": "2026-11-13T09:24:22.516Z",
+   "latestAt": "2026-11-13T12:39:57.234Z",
    "alerted": false
   }
  ]
