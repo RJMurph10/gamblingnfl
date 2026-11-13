@@ -1,47 +1,45 @@
-/**
- * ESPN's college baseball teams (id, names, abbreviation, logo) for matching ESPN's games to the NCAA's
- * and for team logos. ESPN's college baseball team ids are their own: they don't match the ids in
- * ESPN's logo URLs (Oklahoma baseball is 112, but teamlogos/ncaa/500/112.png is Tufts), so the logo
- * comes from ESPN's own team record.
- *
- *   node scripts/cbase/espn-teams.mjs <out-dir>   → <out-dir>/espn-teams.json
- */
-import { mkdir, writeFile } from "node:fs/promises";
-import { join } from "node:path";
-
-const OUT = process.argv[2] ?? "out";
-const url =
-  "https://site.api.espn.com/apis/site/v2/sports/baseball/college-baseball/teams?limit=1000";
-let data = null;
-for (let i = 1; i <= 4 && !data; i++) {
+// Temporary: where do college baseball box scores (starting pitchers) live?
+const H = { "User-Agent": "Mozilla/5.0 (gamblingnfl research)", Accept: "application/json" };
+const get = async (u, json = true) => {
   try {
-    const r = await fetch(url);
-    if (r.ok) data = await r.json();
-  } catch {
-    // retry
-  }
-  if (!data) await new Promise((res) => setTimeout(res, i * 3000));
+    const r = await fetch(u, { headers: H, signal: AbortSignal.timeout(25000) });
+    const t = await r.text();
+    return { status: r.status, body: json ? (() => { try { return JSON.parse(t); } catch { return t.slice(0, 300); } })() : t };
+  } catch (e) { return { status: "ERR " + e }; }
+};
+const show = (label, x) => console.log(`\n== ${label}: ${x.status}\n` + (typeof x.body === "string" ? x.body.slice(0, 1500) : JSON.stringify(x.body).slice(0, 2500)));
+
+// 2025 game via casablanca
+const sb = await get("https://data.ncaa.com/casablanca/scoreboard/baseball/d1/2025/05/10/scoreboard.json");
+const g25 = sb.body?.games?.[0]?.game;
+console.log("2025 game", g25?.gameID, g25?.url, g25?.away?.names?.short, "@", g25?.home?.names?.short);
+for (const f of ["boxscore.json", "gameInfo.json", "pbp.json", "teamStats.json"])
+  show(`casablanca 2025 ${f}`, await get(`https://data.ncaa.com/casablanca/game/${g25?.gameID}/${f}`));
+
+// 2026 via GraphQL contests
+const HASH = "7287cda610a9326931931080cb3a604828febe6fe3c9016a7e4a36db99efdb7c";
+const u = `https://sdataprod.ncaa.com/?meta=GetContests_web&extensions=${encodeURIComponent(JSON.stringify({ persistedQuery: { version: 1, sha256Hash: HASH } }))}&variables=${encodeURIComponent(JSON.stringify({ sportCode: "MBA", division: 1, seasonYear: 2025, contestDate: "05/09/2026", week: null }))}`;
+const q = await get(u);
+const c = q.body?.data?.contests?.[0];
+console.log("\n2026 contest keys", Object.keys(c ?? {}).join(","), "\n", JSON.stringify(c).slice(0, 800));
+const id26 = c?.contestId;
+for (const f of ["boxscore.json", "gameInfo.json"])
+  show(`casablanca 2026 ${f}`, await get(`https://data.ncaa.com/casablanca/game/${id26}/${f}`));
+
+// game page html → find GraphQL operation names / hashes
+const page = await get(`https://www.ncaa.com${c?.url ?? `/game/${id26}`}/boxscore`, false);
+console.log("\npage", page.status, typeof page.body === "string" ? page.body.length : 0);
+const html = typeof page.body === "string" ? page.body : "";
+const ops = new Set([...html.matchAll(/meta=([A-Za-z_]+)/g)].map((m) => m[1]));
+console.log("ops in html:", [...ops].join(", "));
+const hashes = [...html.matchAll(/sha256Hash[\\"]*:[\\"]*([0-9a-f]{64})/g)].map((m) => m[1]);
+console.log("hashes:", [...new Set(hashes)].join(" "));
+const scripts = [...html.matchAll(/<script[^>]+src="([^"]+)"/g)].map((m) => m[1]).slice(0, 40);
+console.log("scripts:", scripts.join("\n"));
+for (const s of scripts.filter((s) => /gamecenter|game|boxscore|main|app/i.test(s)).slice(0, 12)) {
+  const js = await get(s.startsWith("http") ? s : `https://www.ncaa.com${s}`, false);
+  const t = typeof js.body === "string" ? js.body : "";
+  const found = [...t.matchAll(/(Get[A-Za-z_]*(?:Box|Score|Stat|Gamecenter|Game)[A-Za-z_]*)/g)].map((m) => m[1]);
+  const hs = [...t.matchAll(/([0-9a-f]{64})/g)].map((m) => m[1]);
+  if (found.length || hs.length) console.log("\n", s, [...new Set(found)].slice(0, 30).join(","), [...new Set(hs)].slice(0, 20).join(" "));
 }
-const teams = (data?.sports?.[0]?.leagues?.[0]?.teams ?? []).map(({ team: x }) => {
-  const logos = x.logos ?? [];
-  const logo = (logos.find((l) => (l.rel ?? []).includes("default")) ?? logos[0])?.href ?? "";
-  return {
-    id: String(x.id),
-    location: x.location ?? "",
-    name: x.name ?? "",
-    nickname: x.nickname ?? "",
-    abbr: x.abbreviation ?? "",
-    display: x.displayName ?? "",
-    short: x.shortDisplayName ?? "",
-    logo,
-  };
-});
-if (!teams.length) {
-  console.error("ESPN teams: none returned");
-  process.exit(1);
-}
-await mkdir(OUT, { recursive: true });
-await writeFile(join(OUT, "espn-teams.json"), JSON.stringify(teams));
-console.log(`ESPN teams: ${teams.length}, ${teams.filter((t) => t.logo).length} with logos`);
-const ou = teams.find((t) => t.location === "Oklahoma");
-if (ou) console.log(`  e.g. ${ou.display}: ${ou.id} → ${ou.logo}`);
