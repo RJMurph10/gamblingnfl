@@ -1,6 +1,6 @@
 {
  "day": "2026-11-14",
- "updated": "2026-11-13T11:11:51.835Z",
+ "updated": "2026-11-13T19:50:13.278Z",
  "picks": [
   {
    "id": "401858301-total-under60",
@@ -15,9 +15,9 @@
    "best": false,
    "tag": "under60",
    "firstSeen": "2026-11-13T09:24:59.223Z",
-   "lastSeen": "2026-11-13T11:11:51.835Z",
+   "lastSeen": "2026-11-13T19:50:13.278Z",
    "latest": 60.5,
-   "latestAt": "2026-11-13T11:11:51.835Z"
+   "latestAt": "2026-11-13T19:50:13.278Z"
   },
   {
    "id": "401856862-spread-bounce",
@@ -32,9 +32,9 @@
    "best": true,
    "tag": "bounce",
    "firstSeen": "2026-11-13T09:24:59.223Z",
-   "lastSeen": "2026-11-13T11:11:51.835Z",
-   "latest": -10.5,
-   "latestAt": "2026-11-13T11:11:51.835Z"
+   "lastSeen": "2026-11-13T19:50:13.278Z",
+   "latest": -11.5,
+   "latestAt": "2026-11-13T19:50:13.278Z"
   },
   {
    "id": "401856862-total-open-total",
@@ -50,9 +50,9 @@
    "best": true,
    "tag": "open-total",
    "firstSeen": "2026-11-13T09:24:59.223Z",
-   "lastSeen": "2026-11-13T11:11:51.835Z",
+   "lastSeen": "2026-11-13T19:50:13.278Z",
    "latest": 44.5,
-   "latestAt": "2026-11-13T11:11:51.835Z"
+   "latestAt": "2026-11-13T19:50:13.278Z"
   },
   {
    "id": "401862828-spread-bounce",
@@ -67,9 +67,9 @@
    "best": true,
    "tag": "bounce",
    "firstSeen": "2026-11-13T09:24:59.223Z",
-   "lastSeen": "2026-11-13T11:11:51.835Z",
+   "lastSeen": "2026-11-13T19:50:13.278Z",
    "latest": -2.5,
-   "latestAt": "2026-11-13T11:11:51.835Z"
+   "latestAt": "2026-11-13T19:50:13.278Z"
   },
   {
    "id": "401862828-total-open-total",
@@ -85,9 +85,9 @@
    "best": true,
    "tag": "open-total",
    "firstSeen": "2026-11-13T09:24:59.223Z",
-   "lastSeen": "2026-11-13T11:11:51.835Z",
+   "lastSeen": "2026-11-13T19:50:13.278Z",
    "latest": 48.5,
-   "latestAt": "2026-11-13T11:11:51.835Z"
+   "latestAt": "2026-11-13T19:50:13.278Z"
   },
   {
    "id": "401870769-total-open-total",
@@ -103,9 +103,9 @@
    "best": true,
    "tag": "open-total",
    "firstSeen": "2026-11-13T09:24:59.223Z",
-   "lastSeen": "2026-11-13T11:11:51.835Z",
+   "lastSeen": "2026-11-13T19:50:13.278Z",
    "latest": 46.5,
-   "latestAt": "2026-11-13T11:11:51.835Z"
+   "latestAt": "2026-11-13T19:50:13.278Z"
   },
   {
    "id": "401856888-total-open-total",
@@ -121,9 +121,9 @@
    "best": true,
    "tag": "open-total",
    "firstSeen": "2026-11-13T09:24:59.223Z",
-   "lastSeen": "2026-11-13T11:11:51.835Z",
+   "lastSeen": "2026-11-13T19:50:13.278Z",
    "latest": 43.5,
-   "latestAt": "2026-11-13T11:11:51.835Z"
+   "latestAt": "2026-11-13T19:50:13.278Z"
   },
   {
    "id": "401871060-total-open-total",
@@ -139,9 +139,9 @@
    "best": true,
    "tag": "open-total",
    "firstSeen": "2026-11-13T09:24:59.223Z",
-   "lastSeen": "2026-11-13T11:11:51.835Z",
-   "latest": 53.5,
-   "latestAt": "2026-11-13T11:11:51.835Z"
+   "lastSeen": "2026-11-13T19:50:13.278Z",
+   "latest": 54.5,
+   "latestAt": "2026-11-13T19:50:13.278Z"
   },
   {
    "id": "401856857-total-open-total",
@@ -157,9 +157,9 @@
    "best": true,
    "tag": "open-total",
    "firstSeen": "2026-11-13T09:24:59.223Z",
-   "lastSeen": "2026-11-13T11:11:51.835Z",
+   "lastSeen": "2026-11-13T19:50:13.278Z",
    "latest": 48.5,
-   "latestAt": "2026-11-13T11:11:51.835Z"
+   "latestAt": "2026-11-13T19:50:13.278Z"
   },
   {
    "id": "401856858-total-open-total",
@@ -175,9 +175,9 @@
    "best": true,
    "tag": "open-total",
    "firstSeen": "2026-11-13T09:24:59.223Z",
-   "lastSeen": "2026-11-13T11:11:51.835Z",
+   "lastSeen": "2026-11-13T19:50:13.278Z",
    "latest": 49.5,
-   "latestAt": "2026-11-13T11:11:51.835Z"
+   "latestAt": "2026-11-13T19:50:13.278Z"
   },
   {
    "id": "401858295-spread-travel",
@@ -192,9 +192,9 @@
    "best": true,
    "tag": "travel",
    "firstSeen": "2026-11-13T09:24:59.223Z",
-   "lastSeen": "2026-11-13T11:11:51.835Z",
-   "latest": -10,
-   "latestAt": "2026-11-13T11:11:51.835Z"
+   "lastSeen": "2026-11-13T19:50:13.278Z",
+   "latest": -10.5,
+   "latestAt": "2026-11-13T19:50:13.278Z"
   },
   {
    "id": "401858295-spread-tz3",
@@ -209,9 +209,9 @@
    "best": false,
    "tag": "tz3",
    "firstSeen": "2026-11-13T09:24:59.223Z",
-   "lastSeen": "2026-11-13T11:11:51.835Z",
-   "latest": -10,
-   "latestAt": "2026-11-13T11:11:51.835Z"
+   "lastSeen": "2026-11-13T19:50:13.278Z",
+   "latest": -10.5,
+   "latestAt": "2026-11-13T19:50:13.278Z"
   },
   {
    "id": "401858518-spread-tz3",
@@ -226,9 +226,9 @@
    "best": false,
    "tag": "tz3",
    "firstSeen": "2026-11-13T09:24:59.223Z",
-   "lastSeen": "2026-11-13T11:11:51.835Z",
+   "lastSeen": "2026-11-13T19:50:13.278Z",
    "latest": -8.5,
-   "latestAt": "2026-11-13T11:11:51.835Z"
+   "latestAt": "2026-11-13T19:50:13.278Z"
   },
   {
    "id": "401858518-total-open-total",
@@ -244,9 +244,9 @@
    "best": true,
    "tag": "open-total",
    "firstSeen": "2026-11-13T09:24:59.223Z",
-   "lastSeen": "2026-11-13T11:11:51.835Z",
+   "lastSeen": "2026-11-13T19:50:13.278Z",
    "latest": 50.5,
-   "latestAt": "2026-11-13T11:11:51.835Z"
+   "latestAt": "2026-11-13T19:50:13.278Z"
   },
   {
    "id": "401858523-spread-tz3",
@@ -261,9 +261,9 @@
    "best": false,
    "tag": "tz3",
    "firstSeen": "2026-11-13T09:24:59.223Z",
-   "lastSeen": "2026-11-13T11:11:51.835Z",
+   "lastSeen": "2026-11-13T19:50:13.278Z",
    "latest": -10.5,
-   "latestAt": "2026-11-13T11:11:51.835Z"
+   "latestAt": "2026-11-13T19:50:13.278Z"
   },
   {
    "id": "401858523-total-open-total",
@@ -279,9 +279,9 @@
    "best": true,
    "tag": "open-total",
    "firstSeen": "2026-11-13T09:24:59.223Z",
-   "lastSeen": "2026-11-13T11:11:51.835Z",
+   "lastSeen": "2026-11-13T19:50:13.278Z",
    "latest": 38.5,
-   "latestAt": "2026-11-13T11:11:51.835Z"
+   "latestAt": "2026-11-13T19:50:13.278Z"
   },
   {
    "id": "401862826-total-open-total",
@@ -297,9 +297,9 @@
    "best": true,
    "tag": "open-total",
    "firstSeen": "2026-11-13T09:24:59.223Z",
-   "lastSeen": "2026-11-13T11:11:51.835Z",
+   "lastSeen": "2026-11-13T19:50:13.278Z",
    "latest": 74.5,
-   "latestAt": "2026-11-13T11:11:51.835Z"
+   "latestAt": "2026-11-13T19:50:13.278Z"
   },
   {
    "id": "401862826-total-under60",
@@ -314,9 +314,9 @@
    "best": false,
    "tag": "under60",
    "firstSeen": "2026-11-13T09:24:59.223Z",
-   "lastSeen": "2026-11-13T11:11:51.835Z",
+   "lastSeen": "2026-11-13T19:50:13.278Z",
    "latest": 74.5,
-   "latestAt": "2026-11-13T11:11:51.835Z"
+   "latestAt": "2026-11-13T19:50:13.278Z"
   },
   {
    "id": "401862826-total-under65",
@@ -331,9 +331,9 @@
    "best": false,
    "tag": "under65",
    "firstSeen": "2026-11-13T09:24:59.223Z",
-   "lastSeen": "2026-11-13T11:11:51.835Z",
+   "lastSeen": "2026-11-13T19:50:13.278Z",
    "latest": 74.5,
-   "latestAt": "2026-11-13T11:11:51.835Z"
+   "latestAt": "2026-11-13T19:50:13.278Z"
   },
   {
    "id": "401864536-spread-bounce",
@@ -348,9 +348,9 @@
    "best": true,
    "tag": "bounce",
    "firstSeen": "2026-11-13T09:24:59.223Z",
-   "lastSeen": "2026-11-13T11:11:51.835Z",
-   "latest": 7,
-   "latestAt": "2026-11-13T11:11:51.835Z"
+   "lastSeen": "2026-11-13T19:50:13.278Z",
+   "latest": 6,
+   "latestAt": "2026-11-13T19:50:13.278Z"
   },
   {
    "id": "401860916-total-weather",
@@ -367,9 +367,9 @@
    "tag": "weather",
    "note": "15 mph · gusts 28 · rain 0.01 in",
    "firstSeen": "2026-11-13T09:24:59.223Z",
-   "lastSeen": "2026-11-13T11:11:51.835Z",
+   "lastSeen": "2026-11-13T19:50:13.278Z",
    "latest": 59.5,
-   "latestAt": "2026-11-13T11:11:51.835Z"
+   "latestAt": "2026-11-13T19:50:13.278Z"
   },
   {
    "id": "401856887-spread-bounce",
@@ -384,9 +384,9 @@
    "best": true,
    "tag": "bounce",
    "firstSeen": "2026-11-13T09:24:59.223Z",
-   "lastSeen": "2026-11-13T11:11:51.835Z",
+   "lastSeen": "2026-11-13T19:50:13.278Z",
    "latest": -1.5,
-   "latestAt": "2026-11-13T11:11:51.835Z"
+   "latestAt": "2026-11-13T19:50:13.278Z"
   },
   {
    "id": "401856887-total-weather",
@@ -403,9 +403,9 @@
    "tag": "weather",
    "note": "13 mph · gusts 20 · rain 0.01 in",
    "firstSeen": "2026-11-13T09:24:59.223Z",
-   "lastSeen": "2026-11-13T11:11:51.835Z",
+   "lastSeen": "2026-11-13T19:50:13.278Z",
    "latest": 49.5,
-   "latestAt": "2026-11-13T11:11:51.835Z"
+   "latestAt": "2026-11-13T19:50:13.278Z"
   },
   {
    "id": "401858521-spread-tz3",
@@ -420,9 +420,9 @@
    "best": false,
    "tag": "tz3",
    "firstSeen": "2026-11-13T09:24:59.223Z",
-   "lastSeen": "2026-11-13T11:11:51.835Z",
+   "lastSeen": "2026-11-13T19:50:13.278Z",
    "latest": 3.5,
-   "latestAt": "2026-11-13T11:11:51.835Z"
+   "latestAt": "2026-11-13T19:50:13.278Z"
   },
   {
    "id": "401856861-total-under60",
@@ -437,9 +437,9 @@
    "best": false,
    "tag": "under60",
    "firstSeen": "2026-11-13T09:24:59.223Z",
-   "lastSeen": "2026-11-13T11:11:51.835Z",
+   "lastSeen": "2026-11-13T19:50:13.278Z",
    "latest": 67.5,
-   "latestAt": "2026-11-13T11:11:51.835Z"
+   "latestAt": "2026-11-13T19:50:13.278Z"
   },
   {
    "id": "401856861-total-under65",
@@ -454,9 +454,9 @@
    "best": false,
    "tag": "under65",
    "firstSeen": "2026-11-13T09:24:59.223Z",
-   "lastSeen": "2026-11-13T11:11:51.835Z",
+   "lastSeen": "2026-11-13T19:50:13.278Z",
    "latest": 67.5,
-   "latestAt": "2026-11-13T11:11:51.835Z"
+   "latestAt": "2026-11-13T19:50:13.278Z"
   },
   {
    "id": "401860914-total-under60",
@@ -471,9 +471,9 @@
    "best": false,
    "tag": "under60",
    "firstSeen": "2026-11-13T09:24:59.223Z",
-   "lastSeen": "2026-11-13T11:11:51.835Z",
+   "lastSeen": "2026-11-13T19:50:13.278Z",
    "latest": 63.5,
-   "latestAt": "2026-11-13T11:11:51.835Z"
+   "latestAt": "2026-11-13T19:50:13.278Z"
   },
   {
    "id": "401858298-total-open-total",
@@ -489,9 +489,9 @@
    "best": true,
    "tag": "open-total",
    "firstSeen": "2026-11-13T09:24:59.223Z",
-   "lastSeen": "2026-11-13T11:11:51.835Z",
+   "lastSeen": "2026-11-13T19:50:13.278Z",
    "latest": 58.5,
-   "latestAt": "2026-11-13T11:11:51.835Z"
+   "latestAt": "2026-11-13T19:50:13.278Z"
   },
   {
    "id": "401856885-total-open-total",
@@ -507,9 +507,9 @@
    "best": true,
    "tag": "open-total",
    "firstSeen": "2026-11-13T09:24:59.223Z",
-   "lastSeen": "2026-11-13T11:11:51.835Z",
+   "lastSeen": "2026-11-13T19:50:13.278Z",
    "latest": 46.5,
-   "latestAt": "2026-11-13T11:11:51.835Z"
+   "latestAt": "2026-11-13T19:50:13.278Z"
   },
   {
    "id": "401858299-spread-tz3",
@@ -524,9 +524,9 @@
    "best": false,
    "tag": "tz3",
    "firstSeen": "2026-11-13T09:24:59.223Z",
-   "lastSeen": "2026-11-13T11:11:51.835Z",
+   "lastSeen": "2026-11-13T19:50:13.278Z",
    "latest": -15.5,
-   "latestAt": "2026-11-13T11:11:51.835Z"
+   "latestAt": "2026-11-13T19:50:13.278Z"
   },
   {
    "id": "401858299-total-open-total",
@@ -542,9 +542,9 @@
    "best": true,
    "tag": "open-total",
    "firstSeen": "2026-11-13T09:24:59.223Z",
-   "lastSeen": "2026-11-13T11:11:51.835Z",
+   "lastSeen": "2026-11-13T19:50:13.278Z",
    "latest": 57.5,
-   "latestAt": "2026-11-13T11:11:51.835Z"
+   "latestAt": "2026-11-13T19:50:13.278Z"
   },
   {
    "id": "401862827-total-open-total",
@@ -560,9 +560,9 @@
    "best": true,
    "tag": "open-total",
    "firstSeen": "2026-11-13T09:24:59.223Z",
-   "lastSeen": "2026-11-13T11:11:51.835Z",
-   "latest": 76.5,
-   "latestAt": "2026-11-13T11:11:51.835Z"
+   "lastSeen": "2026-11-13T19:50:13.278Z",
+   "latest": 75.5,
+   "latestAt": "2026-11-13T19:50:13.278Z"
   },
   {
    "id": "401862827-total-under60",
@@ -577,9 +577,9 @@
    "best": false,
    "tag": "under60",
    "firstSeen": "2026-11-13T09:24:59.223Z",
-   "lastSeen": "2026-11-13T11:11:51.835Z",
-   "latest": 76.5,
-   "latestAt": "2026-11-13T11:11:51.835Z"
+   "lastSeen": "2026-11-13T19:50:13.278Z",
+   "latest": 75.5,
+   "latestAt": "2026-11-13T19:50:13.278Z"
   },
   {
    "id": "401862827-total-under65",
@@ -594,9 +594,9 @@
    "best": false,
    "tag": "under65",
    "firstSeen": "2026-11-13T09:24:59.223Z",
-   "lastSeen": "2026-11-13T11:11:51.835Z",
-   "latest": 76.5,
-   "latestAt": "2026-11-13T11:11:51.835Z"
+   "lastSeen": "2026-11-13T19:50:13.278Z",
+   "latest": 75.5,
+   "latestAt": "2026-11-13T19:50:13.278Z"
   },
   {
    "id": "401856863-total-under60",
@@ -611,9 +611,9 @@
    "best": false,
    "tag": "under60",
    "firstSeen": "2026-11-13T09:24:59.223Z",
-   "lastSeen": "2026-11-13T11:11:51.835Z",
+   "lastSeen": "2026-11-13T19:50:13.278Z",
    "latest": 73.5,
-   "latestAt": "2026-11-13T11:11:51.835Z"
+   "latestAt": "2026-11-13T19:50:13.278Z"
   },
   {
    "id": "401856863-total-under65",
@@ -628,9 +628,9 @@
    "best": false,
    "tag": "under65",
    "firstSeen": "2026-11-13T09:24:59.223Z",
-   "lastSeen": "2026-11-13T11:11:51.835Z",
+   "lastSeen": "2026-11-13T19:50:13.278Z",
    "latest": 73.5,
-   "latestAt": "2026-11-13T11:11:51.835Z"
+   "latestAt": "2026-11-13T19:50:13.278Z"
   },
   {
    "id": "401864540-total-late",
@@ -645,9 +645,9 @@
    "best": false,
    "tag": "late",
    "firstSeen": "2026-11-13T09:24:59.223Z",
-   "lastSeen": "2026-11-13T11:11:51.835Z",
+   "lastSeen": "2026-11-13T19:50:13.278Z",
    "latest": 40.5,
-   "latestAt": "2026-11-13T11:11:51.835Z"
+   "latestAt": "2026-11-13T19:50:13.278Z"
   },
   {
    "id": "401860917-total-late",
@@ -662,9 +662,9 @@
    "best": false,
    "tag": "late",
    "firstSeen": "2026-11-13T09:24:59.223Z",
-   "lastSeen": "2026-11-13T11:11:51.835Z",
+   "lastSeen": "2026-11-13T19:50:13.278Z",
    "latest": 66.5,
-   "latestAt": "2026-11-13T11:11:51.835Z"
+   "latestAt": "2026-11-13T19:50:13.278Z"
   },
   {
    "id": "401860917-total-open-total",
@@ -680,9 +680,9 @@
    "best": true,
    "tag": "open-total",
    "firstSeen": "2026-11-13T09:24:59.223Z",
-   "lastSeen": "2026-11-13T11:11:51.835Z",
+   "lastSeen": "2026-11-13T19:50:13.278Z",
    "latest": 66.5,
-   "latestAt": "2026-11-13T11:11:51.835Z"
+   "latestAt": "2026-11-13T19:50:13.278Z"
   },
   {
    "id": "401860917-total-under60",
@@ -697,9 +697,9 @@
    "best": false,
    "tag": "under60",
    "firstSeen": "2026-11-13T09:24:59.223Z",
-   "lastSeen": "2026-11-13T11:11:51.835Z",
+   "lastSeen": "2026-11-13T19:50:13.278Z",
    "latest": 66.5,
-   "latestAt": "2026-11-13T11:11:51.835Z"
+   "latestAt": "2026-11-13T19:50:13.278Z"
   },
   {
    "id": "401860917-total-under65",
@@ -714,9 +714,9 @@
    "best": false,
    "tag": "under65",
    "firstSeen": "2026-11-13T09:24:59.223Z",
-   "lastSeen": "2026-11-13T11:11:51.835Z",
+   "lastSeen": "2026-11-13T19:50:13.278Z",
    "latest": 66.5,
-   "latestAt": "2026-11-13T11:11:51.835Z"
+   "latestAt": "2026-11-13T19:50:13.278Z"
   },
   {
    "id": "401864537-total-late",
@@ -731,9 +731,9 @@
    "best": false,
    "tag": "late",
    "firstSeen": "2026-11-13T09:24:59.223Z",
-   "lastSeen": "2026-11-13T11:11:51.835Z",
+   "lastSeen": "2026-11-13T19:50:13.278Z",
    "latest": 38.5,
-   "latestAt": "2026-11-13T11:11:51.835Z"
+   "latestAt": "2026-11-13T19:50:13.278Z"
   },
   {
    "id": "401864537-total-weather",
@@ -750,9 +750,9 @@
    "tag": "weather",
    "note": "23 mph · gusts 32",
    "firstSeen": "2026-11-13T09:24:59.223Z",
-   "lastSeen": "2026-11-13T11:11:51.835Z",
+   "lastSeen": "2026-11-13T19:50:13.278Z",
    "latest": 38.5,
-   "latestAt": "2026-11-13T11:11:51.835Z"
+   "latestAt": "2026-11-13T19:50:13.278Z"
   }
  ]
 }

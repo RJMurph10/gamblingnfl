@@ -1,6 +1,6 @@
 {
  "day": "2026-11-15",
- "updated": "2026-11-13T11:11:51.835Z",
+ "updated": "2026-11-13T19:50:13.278Z",
  "picks": [
   {
    "id": "401873054-spread-underdog",
@@ -15,9 +15,9 @@
    "best": true,
    "tag": "underdog",
    "firstSeen": "2026-11-13T09:24:59.223Z",
-   "lastSeen": "2026-11-13T11:11:51.835Z",
+   "lastSeen": "2026-11-13T19:50:13.278Z",
    "latest": 8.5,
-   "latestAt": "2026-11-13T11:11:51.835Z"
+   "latestAt": "2026-11-13T19:50:13.278Z"
   },
   {
    "id": "401873054-total-total-gap",
@@ -33,9 +33,9 @@
    "best": false,
    "tag": "total-gap",
    "firstSeen": "2026-11-13T09:24:59.223Z",
-   "lastSeen": "2026-11-13T11:11:51.835Z",
+   "lastSeen": "2026-11-13T19:50:13.278Z",
    "latest": 50.5,
-   "latestAt": "2026-11-13T11:11:51.835Z"
+   "latestAt": "2026-11-13T19:50:13.278Z"
   },
   {
    "id": "401873054-total-wind",
@@ -51,9 +51,9 @@
    "tag": "wind",
    "note": "13 mph",
    "firstSeen": "2026-11-13T09:24:59.223Z",
-   "lastSeen": "2026-11-13T11:11:51.835Z",
+   "lastSeen": "2026-11-13T19:50:13.278Z",
    "latest": 50.5,
-   "latestAt": "2026-11-13T11:11:51.835Z"
+   "latestAt": "2026-11-13T19:50:13.278Z"
   },
   {
    "id": "401873055-spread-qb-style",
@@ -68,9 +68,9 @@
    "best": true,
    "tag": "qb-style",
    "firstSeen": "2026-11-13T09:24:59.223Z",
-   "lastSeen": "2026-11-13T11:11:51.835Z",
+   "lastSeen": "2026-11-13T19:50:13.278Z",
    "latest": -2.5,
-   "latestAt": "2026-11-13T11:11:51.835Z"
+   "latestAt": "2026-11-13T19:50:13.278Z"
   },
   {
    "id": "401873055-total-total-gap",
@@ -86,9 +86,9 @@
    "best": false,
    "tag": "total-gap",
    "firstSeen": "2026-11-13T09:24:59.223Z",
-   "lastSeen": "2026-11-13T11:11:51.835Z",
+   "lastSeen": "2026-11-13T19:50:13.278Z",
    "latest": 48.5,
-   "latestAt": "2026-11-13T11:11:51.835Z"
+   "latestAt": "2026-11-13T19:50:13.278Z"
   },
   {
    "id": "401873056-spread-qb-style",
@@ -103,9 +103,9 @@
    "best": true,
    "tag": "qb-style",
    "firstSeen": "2026-11-13T09:24:59.223Z",
-   "lastSeen": "2026-11-13T11:11:51.835Z",
+   "lastSeen": "2026-11-13T19:50:13.278Z",
    "latest": 4.5,
-   "latestAt": "2026-11-13T11:11:51.835Z"
+   "latestAt": "2026-11-13T19:50:13.278Z"
   },
   {
    "id": "401873056-total-wind",
@@ -121,9 +121,9 @@
    "tag": "wind",
    "note": "12 mph",
    "firstSeen": "2026-11-13T09:24:59.223Z",
-   "lastSeen": "2026-11-13T11:11:51.835Z",
+   "lastSeen": "2026-11-13T19:50:13.278Z",
    "latest": 40.5,
-   "latestAt": "2026-11-13T11:11:51.835Z"
+   "latestAt": "2026-11-13T19:50:13.278Z"
   },
   {
    "id": "401873057-spread-underdog",
@@ -138,9 +138,9 @@
    "best": true,
    "tag": "underdog",
    "firstSeen": "2026-11-13T09:24:59.223Z",
-   "lastSeen": "2026-11-13T11:11:51.835Z",
+   "lastSeen": "2026-11-13T19:50:13.278Z",
    "latest": 10.5,
-   "latestAt": "2026-11-13T11:11:51.835Z"
+   "latestAt": "2026-11-13T19:50:13.278Z"
   },
   {
    "id": "401873059-spread-qb-style",
@@ -155,9 +155,9 @@
    "best": true,
    "tag": "qb-style",
    "firstSeen": "2026-11-13T09:24:59.223Z",
-   "lastSeen": "2026-11-13T11:11:51.835Z",
+   "lastSeen": "2026-11-13T19:50:13.278Z",
    "latest": -3.5,
-   "latestAt": "2026-11-13T11:11:51.835Z"
+   "latestAt": "2026-11-13T19:50:13.278Z"
   },
   {
    "id": "401873060-spread-qb-change",
@@ -172,9 +172,9 @@
    "best": false,
    "tag": "qb-change",
    "firstSeen": "2026-11-13T09:24:59.223Z",
-   "lastSeen": "2026-11-13T11:11:51.835Z",
+   "lastSeen": "2026-11-13T19:50:13.278Z",
    "latest": -3,
-   "latestAt": "2026-11-13T11:11:51.835Z"
+   "latestAt": "2026-11-13T19:50:13.278Z"
   },
   {
    "id": "401873060-total-total-gap",
@@ -190,9 +190,9 @@
    "best": false,
    "tag": "total-gap",
    "firstSeen": "2026-11-13T09:24:59.223Z",
-   "lastSeen": "2026-11-13T11:11:51.835Z",
-   "latest": 42.5,
-   "latestAt": "2026-11-13T11:11:51.835Z"
+   "lastSeen": "2026-11-13T19:50:13.278Z",
+   "latest": 41.5,
+   "latestAt": "2026-11-13T19:50:13.278Z"
   },
   {
    "id": "401873061-spread-underdog",
@@ -207,9 +207,9 @@
    "best": true,
    "tag": "underdog",
    "firstSeen": "2026-11-13T09:24:59.223Z",
-   "lastSeen": "2026-11-13T11:11:51.835Z",
+   "lastSeen": "2026-11-13T19:50:13.278Z",
    "latest": 9.5,
-   "latestAt": "2026-11-13T11:11:51.835Z"
+   "latestAt": "2026-11-13T19:50:13.278Z"
   },
   {
    "id": "401873062-spread-qb-change",
@@ -224,9 +224,9 @@
    "best": false,
    "tag": "qb-change",
    "firstSeen": "2026-11-13T09:24:59.223Z",
-   "lastSeen": "2026-11-13T11:11:51.835Z",
+   "lastSeen": "2026-11-13T19:50:13.278Z",
    "latest": 6.5,
-   "latestAt": "2026-11-13T11:11:51.835Z"
+   "latestAt": "2026-11-13T19:50:13.278Z"
   }
  ]
 }
