@@ -1,0 +1,20 @@
+name: Health probe (temporary)
+on:
+  push:
+    branches: [nfl-weather-probe]
+    paths: [scripts/health/check.mjs, .github/workflows/health-probe.yml]
+permissions:
+  contents: read
+  actions: read
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SPORTSGAMEODDS_API_KEY: ${{ secrets.SPORTSGAMEODDS_API_KEY }}
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        run: mkdir -p site && node scripts/health/check.mjs site && cat site/health/status.json | head -c 3000
