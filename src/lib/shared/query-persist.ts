@@ -24,7 +24,13 @@ const NOT_PERSISTED = new Set([
   "wnba-game",
   "game-props",
 ]);
-const DB_NAME = "gamblingnfl-cache";
+// v2 (Nov 2026): the first cache read every saved query at startup with getAll() and kept multi-MB
+// datasets (whole seasons of props, NFL history). On iPhones that froze page loads for minutes, so v2
+// reads each query only when a page asks for it, skips large results, and deletes the old database.
+const DB_NAME = "gamblingnfl-cache-v2";
+const OLD_DB_NAMES = ["gamblingnfl-cache"];
+/** Results bigger than this (JSON characters) aren't saved: reading them back costs more than refetching. */
+const MAX_SAVED_CHARS = 750_000;
 const STORE = "queries";
 const VERSION = 1;
 /** Copies older than this are ignored (the season has moved on too much to be useful). */
@@ -38,13 +44,17 @@ const LIVE_FRESH_MS = 10 * 60_000;
  * otherwise last night's games show as "live" (with last night's scores) until the refresh lands.
  * They come back, with their real status, as soon as the server answers.
  */
-export function withoutStaleLive(entry: Pick<Saved, "data" | "updatedAt">, now = Date.now()): unknown {
+export function withoutStaleLive(
+  entry: Pick<Saved, "data" | "updatedAt">,
+  now = Date.now(),
+): unknown {
   if (now - entry.updatedAt < LIVE_FRESH_MS) return entry.data;
   const notLive = (g: unknown) => (g as { status?: unknown } | null)?.status !== "live";
   if (Array.isArray(entry.data)) return entry.data.filter(notLive);
   // schedules shaped { games: [...], ... } (college basketball, WNBA, MLB)
   const d = entry.data as { games?: unknown } | null;
-  if (d && typeof d === "object" && Array.isArray(d.games)) return { ...d, games: d.games.filter(notLive) };
+  if (d && typeof d === "object" && Array.isArray(d.games))
+    return { ...d, games: d.games.filter(notLive) };
   return entry.data;
 }
 
@@ -55,7 +65,8 @@ interface Saved {
   updatedAt: number;
 }
 
-const persisted = (queryKey: QueryKey) => typeof queryKey[0] === "string" && !NOT_PERSISTED.has(queryKey[0]);
+const persisted = (queryKey: QueryKey) =>
+  typeof queryKey[0] === "string" && !NOT_PERSISTED.has(queryKey[0]);
 
 let dbPromise: Promise<IDBDatabase | null> | null = null;
 function openDb(): Promise<IDBDatabase | null> {
@@ -65,7 +76,8 @@ function openDb(): Promise<IDBDatabase | null> {
       if (typeof indexedDB === "undefined") return resolve(null);
       const req = indexedDB.open(DB_NAME, VERSION);
       req.onupgradeneeded = () => {
-        if (!req.result.objectStoreNames.contains(STORE)) req.result.createObjectStore(STORE, { keyPath: "key" });
+        if (!req.result.objectStoreNames.contains(STORE))
+          req.result.createObjectStore(STORE, { keyPath: "key" });
       };
       req.onsuccess = () => resolve(req.result);
       req.onerror = () => resolve(null);
@@ -77,18 +89,35 @@ function openDb(): Promise<IDBDatabase | null> {
   return dbPromise;
 }
 
-async function readAll(): Promise<Saved[]> {
+async function read(key: string): Promise<Saved | null> {
   const db = await openDb();
-  if (!db) return [];
+  if (!db) return null;
   return new Promise((resolve) => {
     try {
-      const req = db.transaction(STORE, "readonly").objectStore(STORE).getAll();
-      req.onsuccess = () => resolve((req.result as Saved[]) ?? []);
-      req.onerror = () => resolve([]);
+      const req = db.transaction(STORE, "readonly").objectStore(STORE).get(key);
+      req.onsuccess = () => resolve((req.result as Saved | undefined) ?? null);
+      req.onerror = () => resolve(null);
     } catch {
-      resolve([]);
+      resolve(null);
     }
   });
+}
+
+function dropOldDatabases() {
+  try {
+    for (const name of OLD_DB_NAMES) indexedDB.deleteDatabase(name);
+  } catch {
+    // nothing to clean up
+  }
+}
+
+/** Whether a result is over the size cap (JSON characters). */
+function tooBig(data: unknown): boolean {
+  try {
+    return JSON.stringify(data).length > MAX_SAVED_CHARS;
+  } catch {
+    return true;
+  }
 }
 
 async function put(entry: Saved): Promise<void> {
@@ -120,47 +149,59 @@ export function useQueryPersistence(queryClient: QueryClient) {
     let cancelled = false;
     const timers = new Map<string, ReturnType<typeof setTimeout>>();
 
-    const saved = new Map<string, Saved>();
+    const tried = new Set<string>(); // keys already looked up this visit
+    const big = new Set<string>(); // keys whose results are too large to save
+    if (typeof indexedDB !== "undefined") dropOldDatabases();
+
     const restore = (entry: Saved) => {
       const state = queryClient.getQueryState(entry.queryKey);
       // Never overwrite data the server already delivered this visit.
       if (state?.dataUpdatedAt) return;
       // The old timestamp keeps the copy "stale", so the page still refreshes it in the background.
-      queryClient.setQueryData(entry.queryKey, withoutStaleLive(entry), { updatedAt: entry.updatedAt });
+      queryClient.setQueryData(entry.queryKey, withoutStaleLive(entry), {
+        updatedAt: entry.updatedAt,
+      });
     };
-
-    void readAll().then((entries) => {
-      if (cancelled) return;
-      for (const entry of entries) {
-        if (!persisted(entry.queryKey) || Date.now() - entry.updatedAt > MAX_AGE_MS) {
-          void remove(entry.key);
-          continue;
-        }
-        saved.set(entry.key, entry);
-        // Pages already open get their copy now; others get it when they open (below).
-        if (queryClient.getQueryCache().get(entry.key)) restore(entry);
-      }
-    });
+    // Look up one query's saved copy, only when a page uses that query.
+    const lookUp = (key: string, queryKey: QueryKey) => {
+      if (tried.has(key) || !persisted(queryKey)) return;
+      tried.add(key);
+      void read(key).then((entry) => {
+        if (cancelled || !entry) return;
+        if (Date.now() - entry.updatedAt > MAX_AGE_MS) return void remove(key);
+        restore(entry);
+      });
+    };
+    for (const q of queryClient.getQueryCache().getAll()) lookUp(q.queryHash, q.queryKey);
 
     const unsubscribe = queryClient.getQueryCache().subscribe((event) => {
       if (event.type === "added") {
-        const entry = saved.get(event.query.queryHash);
-        if (entry) restore(entry);
+        lookUp(event.query.queryHash, event.query.queryKey);
         return;
       }
-      if (event.type !== "updated" || event.action.type !== "success" || event.action.manual) return;
+      if (event.type !== "updated" || event.action.type !== "success" || event.action.manual)
+        return;
       const { query } = event;
       if (!persisted(query.queryKey) || query.state.data === undefined) return;
       const key = query.queryHash;
+      if (big.has(key)) return;
       // Schedules refetch every few seconds during live games; save at most once per couple of seconds.
       clearTimeout(timers.get(key));
       timers.set(
         key,
         setTimeout(() => {
           timers.delete(key);
-          const entry: Saved = { key, queryKey: query.queryKey, data: query.state.data, updatedAt: query.state.dataUpdatedAt };
-          saved.set(key, entry);
-          void put(entry);
+          if (tooBig(query.state.data)) {
+            big.add(key);
+            void remove(key);
+            return;
+          }
+          void put({
+            key,
+            queryKey: query.queryKey,
+            data: query.state.data,
+            updatedAt: query.state.dataUpdatedAt,
+          });
         }, SAVE_DELAY_MS),
       );
     });
