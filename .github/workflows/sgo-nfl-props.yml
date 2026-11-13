@@ -7,12 +7,18 @@ name: NFL prop prices (SportsGameOdds)
 #   9:41am and 5:41pm Central: games in the next 30h (Thursday, Saturday, Sunday and Monday games on the day)
 #   plus any later game whose lines ESPN already shows without prices (priced once as soon as lines post)
 #   Wednesday morning: the whole week
+#   shortly before kickoff (games in the next 3 hours only, about 17 events a week): Sunday 10:20am,
+#   1:40pm and 5:50pm Central in standard time (16:20, 19:40, 23:50 UTC; an hour later in daylight time), Thursday and
+#   Monday 5:50pm Central; then the board is rebuilt so the closing lines carry these prices
 # Needs the repository secret SPORTSGAMEODDS_API_KEY; without it the job does nothing.
 
 on:
   schedule:
     - cron: "41 15 * 1,2,9-12 *" # 9:41am Central
     - cron: "41 23 * 1,2,9-12 *" # 5:41pm Central: prices for lines posted during the day
+    - cron: "20 16 * 1,2,9-12 0" # Sunday before the noon games
+    - cron: "40 19 * 1,2,9-12 0" # Sunday before the 3pm games
+    - cron: "50 23 * 1,2,9-12 0,1,4" # before Sunday, Monday and Thursday night games
   workflow_dispatch:
     inputs:
       hours:
@@ -49,6 +55,9 @@ jobs:
           if [ -z "$SPORTSGAMEODDS_API_KEY" ]; then echo "SPORTSGAMEODDS_API_KEY secret not set; skipping."; exit 0; fi
           HOURS=30
           if [ "$(date -u +%u)" = "3" ] && [ "$(date -u +%H)" = "15" ]; then HOURS=132; fi
+          case "${{ github.event.schedule }}" in
+            "20 16 * 1,2,9-12 0" | "40 19 * 1,2,9-12 0" | "50 23 * 1,2,9-12 0,1,4") HOURS=3 ;;
+          esac
           if [ -n "${{ inputs.hours }}" ]; then HOURS="${{ inputs.hours }}"; fi
           # later games ESPN already lists DraftKings lines for, with no saved prices yet: price them once now
           ALSO=$(curl -sf https://raw.githubusercontent.com/${{ github.repository }}/props-site/nfl/upcoming.json \

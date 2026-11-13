@@ -53,6 +53,8 @@ export const STATS = {
   fieldGoals_made: "FGs made",
   extraPoints_kicksMade: "XPs made",
   defense_sacks: "Sacks",
+  // DraftKings prices longest reception on SportsGameOdds (longest rush and tackles it doesn't)
+  receiving_longestReception: "Longest rec",
 };
 
 async function get(path) {
@@ -95,6 +97,38 @@ export function propsOf(e, book = BOOK) {
     pairs.set(k, row);
   }
   return [...pairs.values()];
+}
+
+/** Other books, in the order their prices fill a gap DraftKings leaves, with the tag the site shows. */
+export const OTHER_BOOKS = [
+  ["fanduel", "FD"],
+  ["betmgm", "MGM"],
+  ["caesars", "CZR"],
+  ["espnbet", "ESPN BET"],
+  ["fanatics", "FAN"],
+  ["bovada", "BOV"],
+];
+
+/**
+ * Other books' over/under prices for the player props BOOK doesn't price at all (any line):
+ * [[player, label, line, over, under, book tag]], one per player / market / line, best-ranked book first.
+ * Only lines with both sides priced.
+ */
+export function otherPropsOf(e, book = BOOK) {
+  const have = new Set(
+    propsOf(e, book)
+      .filter((r) => r[3] != null && r[4] != null)
+      .map((r) => `${r[0]}|${r[1]}`),
+  );
+  const out = new Map();
+  for (const [b, tag] of OTHER_BOOKS) {
+    for (const r of propsOf(e, b)) {
+      if (r[3] == null || r[4] == null || have.has(`${r[0]}|${r[1]}`)) continue;
+      const k = `${r[0]}|${r[1]}|${r[2]}`;
+      if (!out.has(k)) out.set(k, [...r, tag]);
+    }
+  }
+  return [...out.values()];
 }
 
 /** [[player, label, [[line, over price], ...]]]: BOOK's live alternate over lines (the "X+ yards" ladder). */
@@ -201,13 +235,17 @@ async function main() {
         const props = propsOf(e);
         const alts = altsOf(e);
         const td = tdOf(e);
+        const others = otherPropsOf(e);
         const g = {
           home: name(e.teams?.home),
           away: name(e.teams?.away),
           commence: e.status?.startsAt,
         };
-        console.log(`${g.away} @ ${g.home}: ${props.length} priced lines, ${alts.length} ladders, ${td.length} TD scorers`);
-        if (props.length || td.length) games.push({ ...g, at: new Date().toISOString(), props, alts, td });
+        console.log(
+          `${g.away} @ ${g.home}: ${props.length} priced lines, ${alts.length} ladders, ${td.length} TD scorers, ${others.length} other-book lines`,
+        );
+        if (props.length || td.length || others.length)
+          games.push({ ...g, at: new Date().toISOString(), props, alts, td, others });
         const books = booksOf(e);
         if (books.length) lines.push({ ...g, books });
       }

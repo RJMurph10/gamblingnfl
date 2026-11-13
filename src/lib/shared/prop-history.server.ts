@@ -134,6 +134,8 @@ export interface UpcomingPropGame {
   props: UpcomingPropRow[];
   /** Yes-only bets (anytime goalscorer, double-double, first basket…). */
   sp?: SpecialRow[];
+  /** "player|market" → another book's tag (FD, MGM, CZR…) where DraftKings had no price for the prop. */
+  bk?: Record<string, string>;
   /**
    * NFL: DraftKings' touchdown-scorer prices (from the SportsGameOdds pull):
    * [player, team abbr, anytime, first TD, 2+ TDs, last TD, then where each of those opened (the first

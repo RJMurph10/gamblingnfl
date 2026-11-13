@@ -625,11 +625,13 @@ export function GamePropLines({
                     ) : null}
                     <td className="px-2 py-2 text-right font-mono text-xs tabular-nums text-mute">
                       {american(r[4])}
+                      <BookTag book={game.bk?.[`${r[0]}|${r[2]}`]} />
                     </td>
                     <td
                       className={`${graded ? "px-2" : "px-4"} py-2 text-right font-mono text-xs tabular-nums text-mute`}
                     >
                       {american(r[5])}
+                      <BookTag book={game.bk?.[`${r[0]}|${r[2]}`]} />
                     </td>
                     {graded ? (
                       <td className="px-4 py-2 text-right">
@@ -672,7 +674,11 @@ export function GamePropLines({
         DraftKings via ESPN{game.at ? `, as of ${kickoff(game.at)}` : ""}
         {closing ? " (the last lines before kickoff)" : ""}.{" "}
         {hasOpen ? 'Move is the change since the line opened ("held" = no move). ' : ""}"—" for
-        prices means no price was saved for that line.
+        prices means no price was saved for that line
+        {game.bk && Object.keys(game.bk).length
+          ? "; a book tag (FD, MGM…) marks another book's price where DraftKings had none"
+          : ""}
+        .
         {graded
           ? live
             ? " Live: each player's number so far, updated every 20 seconds; an over shows once it has cashed, and every under stays open until the final."
@@ -680,6 +686,19 @@ export function GamePropLines({
           : ""}
       </p>
     </Panel>
+  );
+}
+
+/** The book a price is from, when it isn't DraftKings (DraftKings had no price for this prop). */
+function BookTag({ book }: { book?: string }) {
+  if (!book) return null;
+  return (
+    <span
+      className="ml-1 rounded bg-panel2 px-1 py-px font-sans text-[9px] font-semibold uppercase tracking-wide text-faint ring-1 ring-line/10"
+      title={`DraftKings had no price for this prop; this is ${book}'s at the same line`}
+    >
+      {book}
+    </span>
   );
 }
 
