@@ -189,3 +189,74 @@ export function recordText(r: CbaseRecord | undefined) {
   const n = r.w + r.l;
   return `${r.w}-${r.l}${n ? ` · ${r.u > 0 ? "+" : ""}${r.u.toFixed(1)}u` : ""}`;
 }
+
+const implied = (x: number) => (x < 0 ? -x / (-x + 100) : 100 / (x + 100));
+
+export interface CbaseDashStats {
+  /** Lined games the model had numbers for and that finished. */
+  graded: number;
+  /** The model's winner (home chance above or below 50%) vs the no-vig opener's favorite. */
+  winner: { right: number; wrong: number; market: number | null };
+  /** The model's total vs the opening total (pushes and missing totals left out). */
+  totals: { w: number; l: number };
+  /** Moneyline watch picks whose price shortened from the opener to the close. */
+  clv: { picks: number; ours: number; against: number };
+  /** Date of the last graded game. */
+  through: string | null;
+}
+
+/** Season numbers for the dashboard's cards, from the season file's lined games. */
+export function cbaseDashStats(lined: CbaseLinedGame[]): CbaseDashStats {
+  const out: CbaseDashStats = {
+    graded: 0,
+    winner: { right: 0, wrong: 0, market: null },
+    totals: { w: 0, l: 0 },
+    clv: { picks: 0, ours: 0, against: 0 },
+    through: null,
+  };
+  let marketRight = 0;
+  let marketN = 0;
+  for (const g of lined) {
+    if (g.hr === g.ar) continue;
+    const homeWon = g.hr > g.ar;
+    if (!out.through || g.date > out.through) out.through = g.date;
+    if (g.m) {
+      out.graded++;
+      if (g.m.p !== 0.5) {
+        if (g.m.p > 0.5 === homeWon) out.winner.right++;
+        else out.winner.wrong++;
+      }
+      const tot = g.open?.tot;
+      const runs = g.hr + g.ar;
+      if (tot != null && g.m.t !== tot && runs !== tot) {
+        if (g.m.t > tot === runs > tot) out.totals.w++;
+        else out.totals.l++;
+      }
+    }
+    const nv = noVig(g.open?.mlH, g.open?.mlA);
+    if (nv != null && nv !== 0.5) {
+      marketN++;
+      if (nv > 0.5 === homeWon) marketRight++;
+    }
+    for (const p of g.picks ?? []) {
+      if (p.k !== "ml" || !g.open || !g.close) continue;
+      const o = p.side === "home" ? g.open.mlH : g.open.mlA;
+      const c = p.side === "home" ? g.close.mlH : g.close.mlA;
+      if (o == null || c == null) continue;
+      out.clv.picks++;
+      if (implied(c) > implied(o)) out.clv.ours++;
+      else if (implied(c) < implied(o)) out.clv.against++;
+    }
+  }
+  out.winner.market = marketN ? (marketRight / marketN) * 100 : null;
+  return out;
+}
+
+/** Win share of a record, in percent (null before any result). */
+export const winShare = (w: number, l: number) => (w + l ? (w / (w + l)) * 100 : null);
+
+/** Return on 1-unit stakes, in percent. */
+export const roi = (r: CbaseRecord) => (r.w + r.l ? (r.u / (r.w + r.l)) * 100 : null);
+
+export const cbaseLogoFor = (espnId: string | null | undefined) =>
+  espnId ? `https://a.espncdn.com/i/teamlogos/ncaa/500/${espnId}.png` : "";

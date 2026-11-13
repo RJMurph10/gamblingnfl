@@ -1,7 +1,8 @@
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { Panel, PanelHeader } from "@/components/shared/booth";
 import {
+  cbaseLogoFor,
   american,
   dayLabel,
   etDay,
@@ -51,6 +52,34 @@ export function SeasonPicker({
         </button>
       ))}
     </div>
+  );
+}
+
+/** A team's ESPN logo, or its initials when ESPN has none. */
+export function CbaseLogo({ team, className = "size-6" }: { team: CbaseTeam; className?: string }) {
+  const [failed, setFailed] = useState(false);
+  const src = cbaseLogoFor(team.espn);
+  if (failed || !src)
+    return (
+      <span
+        className={`inline-grid shrink-0 place-items-center font-mono text-[9px] uppercase text-mute ${className}`}
+      >
+        {team.name
+          .split(/[\s.()-]+/)
+          .filter(Boolean)
+          .map((w) => w[0])
+          .join("")
+          .slice(0, 4)}
+      </span>
+    );
+  return (
+    <img
+      src={src}
+      alt={`${team.name} logo`}
+      loading="lazy"
+      className={`inline-block shrink-0 object-contain ${className}`}
+      onError={() => setFailed(true)}
+    />
   );
 }
 
