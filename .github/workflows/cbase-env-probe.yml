@@ -3,6 +3,8 @@ on:
   push:
     branches: [nfl-weather-probe]
     paths: [scripts/cbase/venues.mjs, scripts/cbase/weather-history.mjs, .github/workflows/cbase-env-probe.yml]
+permissions:
+  contents: write
 jobs:
   env:
     runs-on: ubuntu-latest
@@ -14,7 +16,19 @@ jobs:
       - run: mkdir -p out && node main/scripts/cbase/espn-teams.mjs out
       - run: node scripts/cbase/venues.mjs out/espn-teams.json out/venues.json
       - run: for y in 2022 2023 2024 2025 2026; do node scripts/cbase/weather-history.mjs out/venues.json $y out/weather-$y.json; done
-      - uses: actions/upload-artifact@v4
-        with:
-          name: env
-          path: out/*.json
+      - name: Publish to cbase-history
+        run: |
+          url="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+          for attempt in 1 2 3 4 5 6; do
+            rm -rf dst && git clone -q --depth 1 --branch cbase-history "$url" dst
+            mkdir -p dst/env && cp out/venues.json out/weather-*.json out/espn-teams.json dst/env/
+            cd dst
+            git config user.name "line-history-bot"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add -A
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -q -m "college baseball research data $(date -u +%Y-%m-%d)"
+            if git push -q origin cbase-history; then exit 0; fi
+            cd ..; sleep $((attempt * 10 + RANDOM % 10))
+          done
+          exit 1
