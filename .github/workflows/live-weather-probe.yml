@@ -1,0 +1,13 @@
+name: Live weather probe (temporary)
+on:
+  push:
+    branches: [nfl-weather-probe]
+    paths: [research/football/scripts/probe_live_weather.mjs, .github/workflows/live-weather-probe.yml]
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: node research/football/scripts/probe_live_weather.mjs 401773100
