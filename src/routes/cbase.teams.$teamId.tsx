@@ -90,6 +90,7 @@ function CbaseTeamPage() {
         <div className="mb-6">
           <CbaseGamesTable
             title="Upcoming"
+            withDate
             rows={data.upcoming.map((g) => rowFromUpcoming(g, data.teams))}
             teams={data.teams}
           />
@@ -99,6 +100,7 @@ function CbaseTeamPage() {
         <div className="mb-6">
           <CbaseGamesTable
             title="Games with lines"
+            withDate
             aside={`${data.lined.length} games`}
             rows={[...data.lined]
               .sort((a, b) => b.start.localeCompare(a.start))

@@ -75,9 +75,10 @@ function CbaseDashboard() {
       <Panel className="mb-6">
         <p className="text-sm leading-relaxed text-foreground/90">
           <b>Watch picks, not ★ best bets.</b> The model rates every D-I team from runs scored and
-          allowed. Its moneyline (8%+ off the no-vig opener) and run-line (5%+) picks made money in
-          each of 2024–26, but the result depends on the model&apos;s settings, so they&apos;re
-          tracked here while the model gets stronger (starting pitchers next).{" "}
+          allowed. Its moneyline (8%+ off the no-vig opener) and run-line (5%+) picks were up +37u
+          and +23u over 2024–26 (2025 moneylines about even), but the result depends on the
+          model&apos;s settings, so they&apos;re tracked here while the model gets stronger
+          (starting pitchers next).{" "}
           <Link to="/cbase/model" className="text-acc hover:underline">
             How it works →
           </Link>
@@ -89,7 +90,7 @@ function CbaseDashboard() {
             <CbaseGamesTable
               key={d.day}
               title={dayLabel(d.day)}
-              aside={`${d.rows.length} games with lines`}
+              aside={`${d.rows.length} game${d.rows.length === 1 ? "" : "s"} with lines`}
               rows={d.rows}
               teams={teams}
             />
@@ -105,6 +106,7 @@ function CbaseDashboard() {
         {recent.length ? (
           <CbaseGamesTable
             title="Latest watch picks"
+            withDate
             rows={recent}
             teams={teams}
             season={data.season}

@@ -56,10 +56,11 @@ function CbaseModelPage() {
             <p>
               <b>Watch picks, not ★.</b> Moneylines when the model&apos;s win chance is{" "}
               {pct(data?.model.mlEdge ?? 0.08)}+ over the no-vig opening moneyline, and run lines at{" "}
-              {pct(data?.model.rlEdge ?? 0.05)}+, made money in each of the last three seasons. But
-              the same rules lost money in 2025 and 2026 under slightly different model settings, so
-              it isn&apos;t proven the way the college basketball ★ picks are. The next step is
-              starting pitchers, the biggest thing the model doesn&apos;t know yet.
+              {pct(data?.model.rlEdge ?? 0.05)}+, were up +36.9 and +22.7 units over 2024–26, every
+              season positive except 2025 moneylines (about even). But the same rules lost money in
+              2025 and 2026 under slightly different model settings, so it isn&apos;t proven the way
+              the college basketball ★ picks are. The next step is starting pitchers, the biggest
+              thing the model doesn&apos;t know yet.
             </p>
             <p>
               <b>Totals: no edge.</b> The model&apos;s totals miss by more than the opening total

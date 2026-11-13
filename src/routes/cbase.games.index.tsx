@@ -139,7 +139,7 @@ function CbaseGamesPage() {
             <CbaseGamesTable
               key={d.day}
               title={dayLabel(d.day)}
-              aside={`${d.rows.length} games`}
+              aside={`${d.rows.length} game${d.rows.length === 1 ? "" : "s"}`}
               rows={d.rows}
               teams={teams}
               season={data?.season}

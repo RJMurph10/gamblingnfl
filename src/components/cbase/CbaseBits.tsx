@@ -3,6 +3,8 @@ import { Link } from "@tanstack/react-router";
 import { Panel, PanelHeader } from "@/components/shared/booth";
 import {
   american,
+  dayLabel,
+  etDay,
   pct,
   pickLabel,
   signed,
@@ -181,12 +183,15 @@ export function CbaseGamesTable({
   rows,
   teams,
   season,
+  withDate = false,
 }: {
   title: ReactNode;
   aside?: ReactNode;
   rows: CbaseRow[];
   teams: Record<string, CbaseTeam>;
   season?: number;
+  /** Show each game's date (tables not already grouped by day). */
+  withDate?: boolean;
 }) {
   return (
     <Panel padded={false}>
@@ -195,7 +200,16 @@ export function CbaseGamesTable({
         aside={aside ? <span className="label-mono">{aside}</span> : undefined}
       />
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[760px] text-sm">
+        <table className="w-full min-w-[760px] table-fixed text-sm">
+          <colgroup>
+            <col className="w-[26%]" />
+            <col className="w-[7%]" />
+            <col className="w-[12%]" />
+            <col className="w-[11%]" />
+            <col className="w-[11%]" />
+            <col className="w-[8%]" />
+            <col className="w-[25%]" />
+          </colgroup>
           <thead>
             <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
               <th className="px-4 py-2 font-normal">Game</th>
@@ -234,6 +248,7 @@ export function CbaseGamesTable({
                       params={{ gameId: g.id }}
                       className="font-mono text-[10px] text-faint hover:text-acc"
                     >
+                      {withDate ? `${dayLabel(etDay(g.start)).replace(/, \d{4}$/, "")} · ` : ""}
                       {startTime(g.start)}
                     </Link>
                     <div className={final && !homeWon ? "font-semibold" : ""}>
