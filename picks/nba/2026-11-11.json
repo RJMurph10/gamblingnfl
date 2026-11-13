@@ -58,7 +58,12 @@
    "firstSeen": "2026-11-11T02:18:11.784Z",
    "latest": 15.5,
    "latestAt": "2026-11-11T21:35:27.251Z",
-   "alerted": false
+   "alerted": false,
+   "score": [
+    124,
+    119
+   ],
+   "close": 15.5
   },
   {
    "id": "401909970-spread",
@@ -74,7 +79,12 @@
    "firstSeen": "2026-11-11T02:18:11.784Z",
    "latest": 4.5,
    "latestAt": "2026-11-11T21:35:27.251Z",
-   "alerted": false
+   "alerted": false,
+   "score": [
+    123,
+    118
+   ],
+   "close": 3.5
   },
   {
    "id": "401909971-spread",
@@ -90,7 +100,12 @@
    "firstSeen": "2026-11-11T12:13:48.507Z",
    "latest": 14.5,
    "latestAt": "2026-11-11T21:35:27.251Z",
-   "alerted": false
+   "alerted": false,
+   "score": [
+    123,
+    112
+   ],
+   "close": 14.5
   },
   {
    "id": "401909972-spread",
@@ -106,7 +121,12 @@
    "firstSeen": "2026-11-11T21:35:27.251Z",
    "latest": -3.5,
    "latestAt": "2026-11-11T21:35:27.251Z",
-   "alerted": false
+   "alerted": false,
+   "score": [
+    145,
+    111
+   ],
+   "close": -2.5
   },
   {
    "id": "401909973-spread",
@@ -122,7 +142,12 @@
    "firstSeen": "2026-11-11T12:13:48.507Z",
    "latest": 4.5,
    "latestAt": "2026-11-11T21:35:27.251Z",
-   "alerted": false
+   "alerted": false,
+   "score": [
+    123,
+    108
+   ],
+   "close": 4.5
   },
   {
    "id": "401909973-total",
@@ -138,7 +163,12 @@
    "firstSeen": "2026-11-11T12:13:48.507Z",
    "latest": 214.5,
    "latestAt": "2026-11-11T21:35:27.251Z",
-   "alerted": false
+   "alerted": false,
+   "score": [
+    123,
+    108
+   ],
+   "close": 215.5
   },
   {
    "id": "401909974-spread",
@@ -154,7 +184,12 @@
    "firstSeen": "2026-11-11T12:13:48.507Z",
    "latest": -6.5,
    "latestAt": "2026-11-11T21:35:27.251Z",
-   "alerted": false
+   "alerted": false,
+   "score": [
+    108,
+    115
+   ],
+   "close": -6.5
   },
   {
    "id": "401909975-spread",
@@ -170,7 +205,12 @@
    "firstSeen": "2026-11-11T21:35:27.251Z",
    "latest": -2.5,
    "latestAt": "2026-11-11T21:35:27.251Z",
-   "alerted": false
+   "alerted": false,
+   "score": [
+    108,
+    118
+   ],
+   "close": -2.5
   }
  ]
 }

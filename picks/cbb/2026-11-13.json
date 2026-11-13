@@ -1,0 +1,70 @@
+{
+ "day": "2026-11-13",
+ "updated": "2026-11-13T09:24:22.516Z",
+ "picks": [
+  {
+   "id": "401911210-total",
+   "game": "HARV @ GW",
+   "tip": "2026-11-14T00:00Z",
+   "market": "total",
+   "pick": "Over 134.5",
+   "line": 134.5,
+   "open": 134.5,
+   "model": 144.6,
+   "edge": 10.1,
+   "best": true,
+   "firstSeen": "2026-11-13T09:24:22.516Z",
+   "latest": 133.5,
+   "latestAt": "2026-11-13T09:24:22.516Z",
+   "alerted": false
+  },
+  {
+   "id": "401913528-total",
+   "game": "SHSU @ ILL",
+   "tip": "2026-11-14T00:00Z",
+   "market": "total",
+   "pick": "Under 170.5",
+   "line": 170.5,
+   "open": 170.5,
+   "model": 163,
+   "edge": 7.5,
+   "best": true,
+   "firstSeen": "2026-11-13T09:24:22.516Z",
+   "latest": 173.5,
+   "latestAt": "2026-11-13T09:24:22.516Z",
+   "alerted": false
+  },
+  {
+   "id": "401925755-total",
+   "game": "UNI @ MSU",
+   "tip": "2026-11-14T00:00Z",
+   "market": "total",
+   "pick": "Under 155.5",
+   "line": 155.5,
+   "open": 155.5,
+   "model": 148.7,
+   "edge": 6.8,
+   "best": true,
+   "firstSeen": "2026-11-13T09:24:22.516Z",
+   "latest": 154.5,
+   "latestAt": "2026-11-13T09:24:22.516Z",
+   "alerted": false
+  },
+  {
+   "id": "401906794-total",
+   "game": "XAV @ MSST",
+   "tip": "2026-11-14T02:00Z",
+   "market": "total",
+   "pick": "Under 165.5",
+   "line": 165.5,
+   "open": 165.5,
+   "model": 155.8,
+   "edge": 9.7,
+   "best": true,
+   "firstSeen": "2026-11-13T09:24:22.516Z",
+   "latest": 165.5,
+   "latestAt": "2026-11-13T09:24:22.516Z",
+   "alerted": false
+  }
+ ]
+}
