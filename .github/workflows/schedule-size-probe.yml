@@ -1,0 +1,17 @@
+name: Schedule size probe
+on:
+  push:
+    branches: [nfl-weather-probe]
+    paths: [probe/schedule-size.ts]
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { ref: main, path: app }
+      - uses: actions/checkout@v4
+        with: { path: probe-repo }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: cd app && npm ci --no-audit --no-fund >/dev/null 2>&1 || npm install --no-audit --no-fund >/dev/null 2>&1
+      - run: cp probe-repo/probe/schedule-size.ts app/schedule-size.ts && cd app && npx tsx --tsconfig tsconfig.json schedule-size.ts
