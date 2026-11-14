@@ -1,5 +1,6 @@
 import { writeFileSync } from "node:fs";
-const ids = ["401772510", "401872656"];
+const sb = await (await fetch("https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates=20261108")).json();
+const ids = (sb.events ?? []).filter((e) => /BAL @ BUF|NE @ MIA|TB @ CHI|ATL @ TB/.test(e.shortName)).map((e) => e.id);
 const out = {};
 for (const id of ids) {
   const s = await (await fetch(`https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=${id}`)).json();
