@@ -8,6 +8,7 @@ import {
   getNbaPlayerIndex,
   getNbaPlayerProfile,
   getNbaPriorTeams,
+  getNbaEdges,
   getNbaRebStars,
   getNbaStarStatus,
   getNbaRoster,
@@ -15,7 +16,13 @@ import {
   getNbaStandings,
   getNbaTeams,
 } from "./nba.functions";
-import { etDayKey, type NbaGame, type NbaPriorTeam, type NbaStandingRow, type NbaTeamRef } from "./nba";
+import {
+  etDayKey,
+  type NbaGame,
+  type NbaPriorTeam,
+  type NbaStandingRow,
+  type NbaTeamRef,
+} from "./nba";
 import { starAdjust } from "./star-absence";
 import { runNbaModel, type NbaModelRow } from "./nba-model";
 
@@ -34,13 +41,24 @@ export function useNbaSchedule(refetchMs: number | false = 60_000, enabled = tru
     staleTime: 20_000,
     retry: 1,
   });
-  const games: NbaGame[] = useMemo(() => (Array.isArray(query.data) ? query.data : []), [query.data]);
+  const games: NbaGame[] = useMemo(
+    () => (Array.isArray(query.data) ? query.data : []),
+    [query.data],
+  );
   return { ...query, games };
 }
 
 export function useNbaTeams() {
-  const query = useQuery({ queryKey: ["nba-teams"], queryFn: () => getNbaTeams(), staleTime: 6 * 3_600_000, retry: 1 });
-  const teams: NbaTeamRef[] = useMemo(() => (Array.isArray(query.data) ? query.data : []), [query.data]);
+  const query = useQuery({
+    queryKey: ["nba-teams"],
+    queryFn: () => getNbaTeams(),
+    staleTime: 6 * 3_600_000,
+    retry: 1,
+  });
+  const teams: NbaTeamRef[] = useMemo(
+    () => (Array.isArray(query.data) ? query.data : []),
+    [query.data],
+  );
   return { ...query, teams };
 }
 
@@ -51,7 +69,10 @@ export function useNbaStandings() {
     staleTime: 5 * 60_000,
     retry: 1,
   });
-  const rows: NbaStandingRow[] = useMemo(() => (Array.isArray(query.data) ? query.data : []), [query.data]);
+  const rows: NbaStandingRow[] = useMemo(
+    () => (Array.isArray(query.data) ? query.data : []),
+    [query.data],
+  );
   return { ...query, rows };
 }
 
@@ -84,17 +105,29 @@ export function useNbaModelRows(games: NbaGame[]): NbaModelRow[] {
   return useMemo(
     () =>
       runNbaModel(games, prior, (g) =>
-        status ? starAdjust(g.home.team.abbr, g.away.team.abbr, status.stars, status.injuries) : null,
+        status
+          ? starAdjust(g.home.team.abbr, g.away.team.abbr, status.stars, status.injuries)
+          : null,
       ),
     [games, prior, status],
   );
 }
 
 export const useNbaRoster = (teamId: string) =>
-  useQuery({ queryKey: ["nba-roster", teamId], queryFn: () => getNbaRoster({ data: { teamId } }), staleTime: 30 * 60_000, retry: 1 });
+  useQuery({
+    queryKey: ["nba-roster", teamId],
+    queryFn: () => getNbaRoster({ data: { teamId } }),
+    staleTime: 30 * 60_000,
+    retry: 1,
+  });
 
 export const useNbaPlayerIndex = () =>
-  useQuery({ queryKey: ["nba-player-index"], queryFn: () => getNbaPlayerIndex(), staleTime: 10 * 60_000, retry: 1 });
+  useQuery({
+    queryKey: ["nba-player-index"],
+    queryFn: () => getNbaPlayerIndex(),
+    staleTime: 10 * 60_000,
+    retry: 1,
+  });
 
 export const useNbaPlayerProfile = (playerId: string) =>
   useQuery({
@@ -114,6 +147,15 @@ export function useNbaGameDetail(gameId: string, live: boolean) {
   });
 }
 
+/** Prop edge finder flags and results, refreshed by the daily edges job. */
+export const useNbaEdges = () =>
+  useQuery({
+    queryKey: ["nba-edges"],
+    queryFn: () => getNbaEdges(),
+    staleTime: 15 * 60_000,
+    retry: 1,
+  });
+
 /** ★ rebound unders (graded picks + projection inputs), refreshed by the daily props job. */
 export const useNbaRebStars = () =>
   useQuery({
@@ -127,7 +169,9 @@ export const useNbaGameProps = (game: NbaGame | undefined) =>
   useQuery({
     queryKey: ["nba-props", game?.id],
     queryFn: () =>
-      getNbaGameProps({ data: { gameId: game!.id, awayId: game!.away.team.id, homeId: game!.home.team.id } }),
+      getNbaGameProps({
+        data: { gameId: game!.id, awayId: game!.away.team.id, homeId: game!.home.team.id },
+      }),
     enabled: Boolean(game),
     refetchInterval: 60_000,
     staleTime: 30_000,
@@ -137,7 +181,8 @@ export const useNbaGameProps = (game: NbaGame | undefined) =>
 export const useNbaGameRosterStats = (game: NbaGame | undefined) =>
   useQuery({
     queryKey: ["nba-roster-stats", game?.away.team.id, game?.home.team.id],
-    queryFn: () => getNbaGameRosterStats({ data: { awayId: game!.away.team.id, homeId: game!.home.team.id } }),
+    queryFn: () =>
+      getNbaGameRosterStats({ data: { awayId: game!.away.team.id, homeId: game!.home.team.id } }),
     enabled: Boolean(game),
     staleTime: 10 * 60_000,
     retry: 1,

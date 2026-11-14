@@ -1,0 +1,68 @@
+name: NBA prop edge finder
+
+# Once a day before the evening games (11:10pm UTC ≈ 6:10pm Eastern): every book's NBA player props from
+# SportsGameOdds (one event per game, about 10 a day), flags a book whose line or price is off the other
+# books' consensus (scripts/props/nba-edges.mjs), grades earlier flags from ESPN box scores, and publishes
+# props-site nba/edges-<season>.json. Skips the pull (grades only) when fewer than 300 of the month's
+# 2,500 SportsGameOdds events are left, so the NFL, NHL and college basketball pulls keep their share.
+# Needs the repository secret SPORTSGAMEODDS_API_KEY; without it the job only grades.
+
+on:
+  schedule:
+    - cron: "10 23 * 1-6,10-12 *"
+    - cron: "40 14 * 1-6,10-12 *" # morning: grade last night's flags (no pull)
+  workflow_dispatch:
+    inputs:
+      hours:
+        description: "Games starting in the next N hours"
+        required: false
+        default: "16"
+      pull:
+        description: "Pull prices (off = grade only)"
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: props-site-nba-edges
+  cancel-in-progress: false
+
+jobs:
+  edges:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: app
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Find edges, grade and publish
+        env:
+          SPORTSGAMEODDS_API_KEY: ${{ secrets.SPORTSGAMEODDS_API_KEY }}
+        run: |
+          set -e
+          NOPULL=""
+          if [ "${{ github.event.schedule }}" = "40 14 * 1-6,10-12 *" ]; then NOPULL="--no-pull"; fi
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.pull }}" != "true" ]; then NOPULL="--no-pull"; fi
+          HOURS="${{ inputs.hours }}"; HOURS="${HOURS:-16}"
+          url="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+          rm -rf site-repo && git clone -q --depth 1 --branch props-site "$url" site-repo
+          mkdir -p out/nba && cp site-repo/nba/edges-*.json out/nba/ 2>/dev/null || true
+          node app/scripts/props/nba-edges.mjs --out out --hours "$HOURS" $NOPULL
+          for attempt in 1 2 3 4 5; do
+            rm -rf site-repo && git clone -q --depth 1 --branch props-site "$url" site-repo
+            mkdir -p site-repo/nba && cp out/nba/edges-*.json site-repo/nba/
+            cd site-repo
+            git config user.name "line-history-bot"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add -A
+            if git diff --cached --quiet; then echo "no changes"; exit 0; fi
+            git commit -q -m "NBA prop edges $(date -u +%Y-%m-%dT%H:%MZ)"
+            if git push -q origin props-site; then exit 0; fi
+            cd ..
+            sleep $((attempt * 15))
+          done
+          exit 1

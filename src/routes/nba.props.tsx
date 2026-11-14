@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageTitle, Panel, PanelHeader } from "@/components/shared/booth";
 import { EmptyPanel, NbaLogo, statusText } from "@/components/nba/NbaBits";
+import { NbaPropEdges } from "@/components/nba/NbaPropEdges";
 import { NbaPropsBoard, NbaRebStarsRecord } from "@/components/nba/NbaPropsBoard";
 import { etDayKey, localTip, type NbaGame } from "@/lib/nba/nba";
 import { defaultNbaDay, useNbaSchedule } from "@/lib/nba/use-nba";
@@ -70,9 +71,7 @@ function SlateCard({
           {[game.away, game.home].map((side) => (
             <div key={side.team.id} className="flex items-center gap-2.5">
               <NbaLogo team={side.team} className="size-5 shrink-0" />
-              <span className="truncate text-sm font-semibold">
-                {side.team.nickname}
-              </span>
+              <span className="truncate text-sm font-semibold">{side.team.nickname}</span>
             </div>
           ))}
         </div>
@@ -87,9 +86,7 @@ function SlateCard({
             }`}
             suppressHydrationWarning
           >
-            {game.status === "scheduled"
-              ? game.broadcast ?? "Upcoming"
-              : statusText(game)}
+            {game.status === "scheduled" ? (game.broadcast ?? "Upcoming") : statusText(game)}
           </p>
         </div>
       </div>
@@ -101,10 +98,7 @@ function NbaPropsPage() {
   const search = Route.useSearch();
   const { games, isLoading, isError } = useNbaSchedule(30_000);
 
-  const slate = useMemo(
-    () => games.filter((game) => game.status !== "postponed"),
-    [games]
-  );
+  const slate = useMemo(() => games.filter((game) => game.status !== "postponed"), [games]);
 
   const days = useMemo(() => {
     const today = etDayKey(new Date());
@@ -117,9 +111,7 @@ function NbaPropsPage() {
   const [dayKey, setDayKey] = useState<string | null>(null);
   const [gameId, setGameId] = useState<string | null>(search.game ?? null);
 
-  const linkedGame = search.game
-    ? slate.find((game) => game.id === search.game)
-    : undefined;
+  const linkedGame = search.game ? slate.find((game) => game.id === search.game) : undefined;
 
   const day =
     dayKey ??
@@ -127,13 +119,10 @@ function NbaPropsPage() {
       ? etDayKey(linkedGame.date)
       : days.includes(defaultNbaDay(slate) ?? "")
         ? defaultNbaDay(slate)
-        : days[0] ?? defaultNbaDay(slate));
+        : (days[0] ?? defaultNbaDay(slate)));
 
-  const dayGames = slate.filter(
-    (game) => day !== null && etDayKey(game.date) === day
-  );
-  const selectedGame =
-    dayGames.find((game) => game.id === gameId) ?? dayGames[0];
+  const dayGames = slate.filter((game) => day !== null && etDayKey(game.date) === day);
+  const selectedGame = dayGames.find((game) => game.id === gameId) ?? dayGames[0];
 
   const pickDay = (nextDay: string) => {
     setDayKey(nextDay);
@@ -145,7 +134,10 @@ function NbaPropsPage() {
       <PageTitle
         title="Player Props"
         aside={
-          <Link to="/nba/prop-history" className="font-mono text-[11px] uppercase tracking-wider text-acc">
+          <Link
+            to="/nba/prop-history"
+            className="font-mono text-[11px] uppercase tracking-wider text-acc"
+          >
             Prop lines →
           </Link>
         }
@@ -211,11 +203,11 @@ function NbaPropsPage() {
             </div>
           </Panel>
 
+          <NbaPropEdges />
+
           <NbaRebStarsRecord />
 
-          {selectedGame ? (
-            <NbaPropsBoard key={selectedGame.id} game={selectedGame} />
-          ) : null}
+          {selectedGame ? <NbaPropsBoard key={selectedGame.id} game={selectedGame} /> : null}
         </div>
       )}
     </>
