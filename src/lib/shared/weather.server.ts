@@ -165,6 +165,8 @@ async function getJson<T>(
         ...headers,
       },
       cache: "no-store",
+      // weather is extra: give up after 8 seconds rather than hold the page
+      signal: AbortSignal.timeout(8_000),
     });
 
     if (!response.ok) {
