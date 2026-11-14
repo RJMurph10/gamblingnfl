@@ -799,15 +799,27 @@ export function GamePropLines({
                         </td>
                       </>
                     ) : null}
-                    <td className="px-2 py-2 text-right font-mono text-xs tabular-nums text-mute">
-                      {american(r[4])}
-                      <BookTag book={game.bk?.[`${r[0]}|${r[2]}`]} />
+                    <td className="px-2 py-2 text-right align-top font-mono text-xs tabular-nums text-mute">
+                      <BestPrice
+                        price={r[4]}
+                        tag={game.bk?.[`${r[0]}|${r[2]}`]}
+                        best={
+                          game.bp?.[`${r[0]}|${r[2]}`]?.slice(0, 2) as
+                            [number | null, string | null] | undefined
+                        }
+                      />
                     </td>
                     <td
-                      className={`${graded ? "px-2" : "px-4"} py-2 text-right font-mono text-xs tabular-nums text-mute`}
+                      className={`${graded ? "px-2" : "px-4"} py-2 text-right align-top font-mono text-xs tabular-nums text-mute`}
                     >
-                      {american(r[5])}
-                      <BookTag book={game.bk?.[`${r[0]}|${r[2]}`]} />
+                      <BestPrice
+                        price={r[5]}
+                        tag={game.bk?.[`${r[0]}|${r[2]}`]}
+                        best={
+                          game.bp?.[`${r[0]}|${r[2]}`]?.slice(2, 4) as
+                            [number | null, string | null] | undefined
+                        }
+                      />
                     </td>
                     {graded ? (
                       <td className="px-4 py-2 text-right">
@@ -851,9 +863,11 @@ export function GamePropLines({
         {closing ? " (the last lines before kickoff)" : ""}.{" "}
         {hasOpen ? 'Move is the change since the line opened ("held" = no move). ' : ""}"—" for
         prices means no price was saved for that line
-        {game.bk && Object.keys(game.bk).length
-          ? "; a tag marks a price that isn't DraftKings': another book's (FD, MGM…) where DraftKings had none, or CLOSE, the closing price averaged across books"
-          : ""}
+        {game.bp && Object.keys(game.bp).length
+          ? "; each price is the best at the big books (DraftKings, FanDuel, BetMGM, Caesars, theScore Bet, Fanatics, Hard Rock, bet365) on that line, with the book underneath, highlighted when it beats DraftKings"
+          : game.bk && Object.keys(game.bk).length
+            ? "; the book under a price is where it came from (another book's where DraftKings had none, or CLOSE, the closing price averaged across books)"
+            : ""}
         .
         {graded
           ? live
@@ -866,6 +880,60 @@ export function GamePropLines({
 }
 
 /** The book a price is from, when it isn't DraftKings (DraftKings had no price for this prop). */
+/** Short tags on the saved boards → the book's name under a price. */
+const TAG_NAMES: Record<string, string> = {
+  DK: "DraftKings",
+  FD: "FanDuel",
+  MGM: "BetMGM",
+  CZR: "Caesars",
+  "ESPN BET": "theScore Bet",
+  theScore: "theScore Bet",
+  FAN: "Fanatics",
+  HR: "Hard Rock",
+  "365": "bet365",
+};
+const payout = (p: number) => (p > 0 ? p / 100 : 100 / -p);
+
+/**
+ * A price with the sportsbook underneath: the best price at the big books on this line when the pulls saved
+ * one (highlighted when it beats DraftKings'), else DraftKings' (or the tagged book's when DraftKings had none).
+ */
+function BestPrice({
+  price,
+  tag,
+  best,
+}: {
+  price: number | null;
+  tag?: string;
+  best?: [number | null, string | null];
+}) {
+  if (tag === "CLOSE")
+    return (
+      <>
+        {american(price)}
+        <BookTag book={tag} />
+      </>
+    );
+  const [bp, bb] = best ?? [null, null];
+  const useBest = bp != null && (price == null || payout(bp) >= payout(price));
+  const shown = useBest ? bp : price;
+  const book = useBest ? bb : shown != null ? (tag ? (TAG_NAMES[tag] ?? tag) : "DraftKings") : null;
+  const better = useBest && price != null && payout(bp!) > payout(price);
+  return (
+    <span className="inline-flex flex-col items-end leading-tight">
+      <span className={better ? "font-semibold text-acc" : undefined}>{american(shown)}</span>
+      {book ? (
+        <span
+          className="font-sans text-[9px] font-semibold uppercase tracking-wide text-faint"
+          title={better && price != null ? `DraftKings: ${american(price)}` : undefined}
+        >
+          {book}
+        </span>
+      ) : null}
+    </span>
+  );
+}
+
 function BookTag({ book }: { book?: string }) {
   if (!book) return null;
   return (

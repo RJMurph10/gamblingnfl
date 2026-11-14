@@ -52,8 +52,12 @@ export async function loadPrices(dir) {
             opened: new Map(),
             sides: new Map(),
             tdb: new Map(),
+            bp: new Map(),
           }),
         );
+      // best price per side across the big books, by player / market / line (newest pull wins)
+      for (const [n, label, line, o, ob, u, ub] of g.bp ?? [])
+        slot.bp.set(`${norm(n)}|${label}|${Number(line)}`, [o, ob, u, ub]);
       for (const [n, side] of Object.entries(g.sides ?? {})) slot.sides.set(norm(n), [n, side]);
       for (const [n, side, price, book] of g.tdb ?? [])
         slot.tdb.set(norm(n), [n, side, price, book]);
@@ -171,6 +175,12 @@ export async function loadPrices(dir) {
           ]);
         }
         return [...out.values()];
+      },
+      /** The best over / under price across the big books at this line: [over, book, under, book] | null. */
+      best(home, date, player, label, line) {
+        const t = Date.parse(date);
+        const slot = byHome.get(norm(home))?.find((s) => Math.abs(s.t - t) < 12 * 3_600_000);
+        return slot?.bp.get(`${norm(player)}|${label}|${Number(line)}`) ?? null;
       },
       /** Another book's prices at exactly this line, where DraftKings has none: [over, under, book tag] | null. */
       other(home, date, player, label, line) {

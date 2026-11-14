@@ -153,6 +153,37 @@ export const OTHER_BOOKS = [
   ["bet365", "365"],
 ];
 
+/** Full book names for the best-price labels on the props board. */
+export const BOOK_NAMES = {
+  draftkings: "DraftKings",
+  fanduel: "FanDuel",
+  betmgm: "BetMGM",
+  caesars: "Caesars",
+  espnbet: "theScore Bet",
+  fanatics: "Fanatics",
+  hardrockbet: "Hard Rock",
+  bet365: "bet365",
+};
+
+/**
+ * The best over and the best under price for every player prop line across the big books:
+ * [[player, label, line, best over, its book, best under, its book]] (book names from BOOK_NAMES).
+ */
+export function bestPricesOf(e) {
+  const pay = (p) => (p > 0 ? p / 100 : 100 / -p);
+  const best = new Map();
+  for (const book of Object.keys(BOOK_NAMES)) {
+    for (const [name, label, line, o, u] of propsOf(e, book)) {
+      const k = `${name}|${label}|${line}`;
+      const row = best.get(k) ?? [name, label, line, null, null, null, null];
+      if (o != null && (row[3] == null || pay(o) > pay(row[3]))) [row[3], row[4]] = [o, BOOK_NAMES[book]];
+      if (u != null && (row[5] == null || pay(u) > pay(row[5]))) [row[5], row[6]] = [u, BOOK_NAMES[book]];
+      best.set(k, row);
+    }
+  }
+  return [...best.values()];
+}
+
 /**
  * Other books' over/under prices for the player props BOOK doesn't price at all (any line):
  * [[player, label, line, over, under, book tag]], one per player / market / line, best-ranked book first.
@@ -363,6 +394,7 @@ async function main() {
         const td = LIVE ? [] : tdOf(e);
         const others = LIVE ? closeOf(e) : otherPropsOf(e);
         const tdb = LIVE ? [] : tdBestOf(e);
+        const bp = LIVE ? [] : bestPricesOf(e);
         const sides = LIVE ? {} : sidesOf(e);
         const g = {
           home: name(e.teams?.home),
@@ -373,7 +405,7 @@ async function main() {
           `${g.away} @ ${g.home}: ${props.length} priced lines, ${alts.length} ladders, ${td.length} TD scorers, ${others.length} other-book lines`,
         );
         if (props.length || td.length || others.length)
-          games.push({ ...g, at: new Date().toISOString(), props, alts, td, others, tdb, sides });
+          games.push({ ...g, at: new Date().toISOString(), props, alts, td, others, tdb, sides, bp });
         const books = LIVE ? [] : booksOf(e);
         if (books.length) lines.push({ ...g, books });
         const mk = LIVE ? [] : marketsOf(e);

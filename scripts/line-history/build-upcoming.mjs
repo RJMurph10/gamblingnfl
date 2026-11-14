@@ -228,6 +228,13 @@ function boardOf(rec, price) {
       if (book) bk[`${player}|${label}`] = book;
     }
   }
+  // the best price per side across the big books at each row's line: "player|market" → [over, book, under, book]
+  const bp = {};
+  if (price.best)
+    for (const r of props) {
+      const b = price.best(rec.home?.name, rec.date, r[0], r[2], r[3]);
+      if (b && (b[0] != null || b[2] != null)) bp[`${r[0]}|${r[2]}`] = b;
+    }
   // yes-only bets (anytime goalscorer, double-double, first basket…): [[player, team, bet, price, opened]]
   const sp = specialsOf(snap.rows, KEY)
     .filter(([a]) => names[a])
@@ -259,6 +266,7 @@ function boardOf(rec, price) {
     ...(td?.length ? { td } : {}),
     ...(sp.length ? { sp } : {}),
     ...(Object.keys(bk).length ? { bk } : {}),
+    ...(Object.keys(bp).length ? { bp } : {}),
   };
 }
 
