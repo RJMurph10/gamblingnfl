@@ -29,6 +29,8 @@ export const useNflLineGame = (home: string, away: string, when: string) =>
     queryKey: ["nfl-line-game", home, away, when],
     queryFn: () => getNflLineGame({ data: { home, away, when } }),
     enabled: Boolean(home && away && when),
-    staleTime: 10 * 60_000,
+    // nothing saved yet: look again in a minute instead of keeping "none"
+    staleTime: (q) => (q.state.data ? 10 * 60_000 : 60_000),
+    refetchInterval: (q) => (q.state.data ? false : 60_000),
     retry: 1,
   });

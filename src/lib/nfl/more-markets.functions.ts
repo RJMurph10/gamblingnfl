@@ -1,10 +1,26 @@
 import { createServerFn } from "@tanstack/react-start";
-import { cached } from "@/lib/shared/espn-core.server";
+import { cached, clearCached } from "@/lib/shared/espn-core.server";
 import { z } from "zod";
 import { nameMatch } from "@/lib/shared/best-lines";
 import type { LineGame, LineIndexRow, MarketsFile, PartialsFile } from "@/lib/nfl/more-markets";
 
 const RAW = "https://raw.githubusercontent.com/RJMurph10/gamblingnfl/props-site";
+
+/**
+ * cached(), but a missing file isn't kept: it's asked for again after a minute (a file published moments
+ * after a visit would otherwise stay "missing" for the whole cache time).
+ */
+const missedAt = new Map<string, number>();
+async function cachedFile<T>(key: string, url: string, ttl: number): Promise<T | null> {
+  const miss = missedAt.get(key);
+  if (miss && Date.now() - miss < 60_000) return null;
+  const v = await cached(key, () => json<T>(url), ttl);
+  if (v == null) {
+    missedAt.set(key, Date.now());
+    clearCached(key);
+  } else missedAt.delete(key);
+  return v;
+}
 
 async function json<T>(url: string): Promise<T | null> {
   try {
@@ -46,12 +62,17 @@ export const getNflLineGame = createServerFn({ method: "GET" })
       10 * 60_000,
     );
     const t = Date.parse(data.when);
-    const row = (index ?? []).find(
-      (r) =>
-        Math.abs(Date.parse(r.commence) - t) <= 6 * 3_600_000 &&
-        nameMatch(r.home, data.home) >= 0.6 &&
-        nameMatch(r.away, data.away) >= 0.6,
-    );
+    // the closest names among games within 6 hours (New York Jets / Giants share two of three words)
+    let row: LineIndexRow | null = null;
+    let best = 0;
+    for (const r of index ?? []) {
+      if (Math.abs(Date.parse(r.commence) - t) > 6 * 3_600_000) continue;
+      const score = Math.min(nameMatch(r.home, data.home), nameMatch(r.away, data.away));
+      if (score >= 0.6 && score > best) {
+        row = r;
+        best = score;
+      }
+    }
     if (!row) return null;
     // a game that has started keeps its lines; an upcoming one refreshes with each pull
     const ttl = Date.parse(row.commence) < Date.now() ? 60 * 60_000 : 10 * 60_000;
