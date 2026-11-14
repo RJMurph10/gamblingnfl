@@ -55,8 +55,8 @@ const BOOK_NAMES: Record<string, string> = {
   betmgm: "BetMGM",
   caesars: "Caesars",
   williamhill: "Caesars",
-  espnbet: "ESPN BET",
-  thescorebet: "theScore",
+  espnbet: "theScore Bet",
+  thescorebet: "theScore Bet",
   bovada: "Bovada",
   betonline: "BetOnline",
   betrivers: "BetRivers",
@@ -71,6 +71,25 @@ const BOOK_NAMES: Record<string, string> = {
   consensus: "Consensus",
 };
 export const bookName = (k: string) => BOOK_NAMES[k.toLowerCase()] ?? k;
+
+/**
+ * The big US books the site shops and bets at: DraftKings, FanDuel, BetMGM, Caesars, theScore Bet (was ESPN
+ * BET), Fanatics, Hard Rock and bet365 (SportsGameOdds bookmaker ids). Offshore and regional books are left
+ * out of every best price.
+ */
+export const MAJOR_BOOKS = new Set([
+  "draftkings",
+  "fanduel",
+  "betmgm",
+  "caesars",
+  "williamhill",
+  "espnbet",
+  "thescorebet",
+  "fanatics",
+  "hardrockbet",
+  "bet365",
+]);
+export const isMajorBook = (k: string) => MAJOR_BOOKS.has(k.toLowerCase());
 
 const tokens = (s: string) =>
   new Set(
@@ -121,6 +140,7 @@ export function bestLineFor(
   if (!g) return null;
   const offers: { book: string; line: number; price: number | null }[] = [];
   for (const b of g.books) {
+    if (!isMajorBook(b.key)) continue;
     if (req.market === "total" && b.total) {
       const [line, over, under] = b.total;
       offers.push({ book: b.key, line, price: req.side === "over" ? over : under });

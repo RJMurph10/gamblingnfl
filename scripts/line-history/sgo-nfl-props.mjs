@@ -139,14 +139,18 @@ export function propsOf(e, book = BOOK) {
   return [...pairs.values()];
 }
 
-/** Other books, in the order their prices fill a gap DraftKings leaves, with the tag the site shows. */
+/**
+ * The other big books (no offshore or regional books), in the order their prices fill a gap DraftKings
+ * leaves, with the tag the site shows.
+ */
 export const OTHER_BOOKS = [
   ["fanduel", "FD"],
   ["betmgm", "MGM"],
   ["caesars", "CZR"],
-  ["espnbet", "ESPN BET"],
+  ["espnbet", "theScore"],
   ["fanatics", "FAN"],
-  ["bovada", "BOV"],
+  ["hardrockbet", "HR"],
+  ["bet365", "365"],
 ];
 
 /**

@@ -37,11 +37,14 @@ export interface EdgesFile {
   usage?: { used: number | null; max: number | null; at: string };
 }
 
-/** Tiers 10 and 6 are bets (1 unit each); tier 4 is tracked only. */
+/**
+ * Only tier 10 is a bet (1 unit); 6 and 4 are tracked. Backtest: 2023-24 closing lines, flags bet only at the
+ * big books in that data (DraftKings, MGM, Caesars, ESPN BET → theScore Bet).
+ */
 export const EDGE_TIERS: { tier: EdgeTier; label: string; bet: boolean; backtest: string }[] = [
-  { tier: "10", label: "EV 10%+", bet: true, backtest: "+20.4%" },
-  { tier: "6", label: "EV 6–10%", bet: true, backtest: "+7.4%" },
-  { tier: "4", label: "EV 4–6%", bet: false, backtest: "+2.5%" },
+  { tier: "10", label: "EV 10%+", bet: true, backtest: "+14.2%" },
+  { tier: "6", label: "EV 6–10%", bet: false, backtest: "−0.6%" },
+  { tier: "4", label: "EV 4–6%", bet: false, backtest: "+1.0%" },
 ];
 
 export const fmtOdds = (o: number) => (o > 0 ? `+${o}` : `${o}`);

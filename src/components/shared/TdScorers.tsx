@@ -47,7 +47,8 @@ export function TdScorers({
   if (!game.td?.length) return null;
   const graded = touchdowns !== undefined;
   const hasOpen = game.td.some((r) => r[6] != null);
-  // the best anytime price across DraftKings, FanDuel, BetMGM, Caesars, ESPN BET, Fanatics and Bovada
+  // the best anytime price across the big books (DraftKings, FanDuel, BetMGM, Caesars, theScore Bet,
+  // Fanatics, Hard Rock, bet365)
   const hasBest = game.td.some((r) => r[10] != null);
   const pay = (n: number) => (n > 0 ? n / 100 : 100 / -n);
 
@@ -167,7 +168,7 @@ export function TdScorers({
         Prices are DraftKings&apos;
         {graded ? " from the last pull before kickoff" : ", updated twice a day"}
         {hasBest
-          ? "; best anytime = the best price at 7 books (highlighted when it beats DraftKings)"
+          ? "; best anytime = the best price at the big books (highlighted when it beats DraftKings)"
           : ""}
         {hasOpen ? "; “opened” is the first price saved when it has changed since" : ""}.
         {graded

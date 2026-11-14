@@ -17,15 +17,10 @@ const MARKET: Record<EdgeFlag["market"], string> = {
 };
 
 function TierBadge({ tier }: { tier: EdgeTier }) {
-  const cls =
-    tier === "10"
-      ? "bg-win/20 text-win font-semibold"
-      : tier === "6"
-        ? "bg-win/10 text-win"
-        : "bg-line/10 text-faint";
+  const cls = tier === "10" ? "bg-win/20 text-win font-semibold" : "bg-line/10 text-faint";
   return (
     <span className={`rounded px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wider ${cls}`}>
-      {tier === "4" ? "Track" : `${tier}%+`}
+      {tier === "10" ? "Bet" : "Track"}
     </span>
   );
 }
@@ -45,16 +40,16 @@ export function NbaPropEdges() {
   const now = Date.now();
   const open = (f?.flags ?? [])
     .filter((x) => !x.res && Date.parse(x.start) > now - 3 * 3_600_000)
-    .filter((x) => showTrack || x.tier !== "4")
+    .filter((x) => showTrack || x.tier === "10")
     .sort((a, b) => b.ev - a.ev);
   const recent = (f?.flags ?? [])
-    .filter((x) => x.res && x.res !== "void" && x.tier !== "4")
+    .filter((x) => x.res && x.res !== "void" && x.tier === "10")
     .slice(-10)
     .reverse();
-  const bets = ["10", "6"].map((t) => tierRecord(f, t as EdgeTier));
-  const bw = bets[0].w + bets[1].w;
-  const bl = bets[0].l + bets[1].l;
-  const bu = bets[0].u + bets[1].u;
+  const bet = tierRecord(f, "10");
+  const bw = bet.w;
+  const bl = bet.l;
+  const bu = bet.u;
 
   return (
     <Panel padded={false}>
@@ -77,8 +72,9 @@ export function NbaPropEdges() {
           </span>{" "}
           Every book&apos;s points, rebounds, assists and threes line becomes an expected stat (line
           plus how far the no-vig price leans); the other books&apos; average is the consensus, and
-          the edge is the expected value of betting that book&apos;s side at its own price. Bet 6%+
-          at 1 unit; 4–6% is tracked only.
+          the edge is the expected value of betting that book&apos;s side at its own price. Only the
+          big books are bet: DraftKings, FanDuel, BetMGM, Caesars, theScore Bet, Fanatics, Hard Rock
+          and bet365. Bet 10%+ at 1 unit; 4–10% is tracked only.
         </p>
         <div className="grid grid-cols-3 gap-2">
           {EDGE_TIERS.map((t) => {
@@ -106,9 +102,10 @@ export function NbaPropEdges() {
           })}
         </div>
         <p className="font-mono text-[10px] text-faint">
-          Backtest: 2023-24 closing lines at 6 books. Live lines move, so expect less; checked once
-          a day (about 6pm Eastern), and each prop is graded at the line and price when first
-          flagged.
+          Backtest: 2023-24 closing lines, bet only at the big books in that data (DraftKings, MGM,
+          Caesars, ESPN BET); MGM paid the most, DraftKings the least. FanDuel, Hard Rock, bet365
+          and Fanatics weren&apos;t in it. Live lines move, so expect less; checked once a day
+          (about 6pm Eastern), each prop graded at the line and price when first flagged.
         </p>
       </div>
 
@@ -121,7 +118,7 @@ export function NbaPropEdges() {
           onClick={() => setShowTrack((v) => !v)}
           className="font-mono text-[10px] uppercase tracking-wider text-mute hover:text-foreground"
         >
-          {showTrack ? "Hide 4–6%" : "Show 4–6%"}
+          {showTrack ? "Hide 4–10%" : "Show 4–10%"}
         </button>
       </div>
       {open.length ? (
