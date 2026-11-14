@@ -13,5 +13,5 @@ jobs:
         with: { path: probe-repo }
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
-      - run: cd app && npm ci --no-audit --no-fund >/dev/null 2>&1 || npm install --no-audit --no-fund >/dev/null 2>&1
-      - run: cp probe-repo/probe/schedule-size.ts app/schedule-size.ts && cd app && npx tsx --tsconfig tsconfig.json schedule-size.ts
+      - run: mkdir -p "$RUNNER_TEMP/tsx" && npm i --prefix "$RUNNER_TEMP/tsx" --no-audit --no-fund tsx@4.19.2 >/dev/null
+      - run: cp probe-repo/probe/schedule-size.ts app/scripts/schedule-size.ts && node "$RUNNER_TEMP/tsx/node_modules/tsx/dist/cli.mjs" --tsconfig app/tsconfig.json app/scripts/schedule-size.ts

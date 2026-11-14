@@ -8,3 +8,4 @@ const s = JSON.stringify(games);
 console.log("games", games.length, "chars", s.length, "first build ms", t1 - t0, "second ms", t2 - t1);
 const g = games[0] as Record<string, unknown>;
 for (const [k, v] of Object.entries(g)) console.log(k, JSON.stringify(v)?.length);
+// v2
