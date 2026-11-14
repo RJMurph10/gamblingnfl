@@ -136,6 +136,8 @@ export interface UpcomingPropGame {
   sp?: SpecialRow[];
   /** "player|market" → another book's tag (FD, MGM, CZR…) where DraftKings had no price for the prop. */
   bk?: Record<string, string>;
+  /** "player|market" → the best over and under price across the big books at this line, with each book. */
+  bp?: Record<string, [number | null, string | null, number | null, string | null]>;
   /**
    * NFL: DraftKings' touchdown-scorer prices (from the SportsGameOdds pull):
    * [player, team abbr, anytime, first TD, 2+ TDs, last TD, then where each of those opened (the first
