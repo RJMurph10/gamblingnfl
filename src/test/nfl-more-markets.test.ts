@@ -5,7 +5,15 @@ import { marketsOf, periodPropsOf, fullLineOf } from "../../scripts/line-history
 import { chances, gradeFlag, similar } from "../../scripts/props/nfl-partials.mjs";
 import { bestOffers, marketName, type MarketRow } from "@/lib/nfl/more-markets";
 
-const odd = (statID: string, who: string, periodID: string, betTypeID: string, sideID: string, books: Record<string, object>, playerID?: string) => ({
+const odd = (
+  statID: string,
+  who: string,
+  periodID: string,
+  betTypeID: string,
+  sideID: string,
+  books: Record<string, object>,
+  playerID?: string,
+) => ({
   statID,
   statEntityID: playerID ?? who,
   periodID,
@@ -18,13 +26,37 @@ const odd = (statID: string, who: string, periodID: string, betTypeID: string, s
 const event = {
   players: { P1: { name: "Joe Back" } },
   odds: {
-    a: odd("points", "all", "1q", "ou", "over", { draftkings: { odds: "-120", overUnder: "9.5" }, fanduel: { odds: "-110", overUnder: "8.5" } }),
-    b: odd("points", "all", "1q", "ou", "under", { draftkings: { odds: "100", overUnder: "9.5" }, fanduel: { odds: "-110", overUnder: "8.5" } }),
+    a: odd("points", "all", "1q", "ou", "over", {
+      draftkings: { odds: "-120", overUnder: "9.5" },
+      fanduel: { odds: "-110", overUnder: "8.5" },
+    }),
+    b: odd("points", "all", "1q", "ou", "under", {
+      draftkings: { odds: "100", overUnder: "9.5" },
+      fanduel: { odds: "-110", overUnder: "8.5" },
+    }),
     c: odd("points", "home", "1h", "sp", "home", { draftkings: { odds: "-110", spread: "-3.5" } }),
     d: odd("points", "away", "1h", "sp", "away", { draftkings: { odds: "-110", spread: "3.5" } }),
-    e: odd("points", "all", "game", "ou", "over", { draftkings: { odds: "-110", overUnder: "44.5" } }),
-    f: odd("rushing_yards", "", "1h", "ou", "over", { draftkings: { odds: "-115", overUnder: "30.5" } }, "P1"),
-    g: odd("rushing_yards", "", "1h", "ou", "under", { draftkings: { odds: "-105", overUnder: "30.5" } }, "P1"),
+    e: odd("points", "all", "game", "ou", "over", {
+      draftkings: { odds: "-110", overUnder: "44.5" },
+    }),
+    f: odd(
+      "rushing_yards",
+      "",
+      "1h",
+      "ou",
+      "over",
+      { draftkings: { odds: "-115", overUnder: "30.5" } },
+      "P1",
+    ),
+    g: odd(
+      "rushing_yards",
+      "",
+      "1h",
+      "ou",
+      "under",
+      { draftkings: { odds: "-105", overUnder: "30.5" } },
+      "P1",
+    ),
   },
 };
 
@@ -34,7 +66,9 @@ describe("NFL more markets", () => {
     expect(mk.map((r) => `${r[0]}|${r[1]}`)).toEqual(["1h|sp", "1q|ou"]);
     expect(mk[1][4]).toEqual({ draftkings: [9.5, -120, 100], fanduel: [8.5, -110, -110] });
     expect(mk[0][4].draftkings).toEqual([-3.5, -110, -110]);
-    expect(periodPropsOf(event)).toEqual([["Joe Back", "1h", "Rush yds", { draftkings: [30.5, -115, -105] }]]);
+    expect(periodPropsOf(event)).toEqual([
+      ["Joe Back", "1h", "Rush yds", { draftkings: [30.5, -115, -105] }],
+    ]);
   });
   it("finds the best number per side", () => {
     const [over, under] = bestOffers(marketsOf(event)[1]);
@@ -43,10 +77,29 @@ describe("NFL more markets", () => {
     expect(marketName(marketsOf(event)[1], "Giants", "Commanders")).toBe("Total points");
   });
   it("takes the middle book's full-game line", () => {
-    expect(fullLineOf([{ spread: [-3, -110, -110], total: [44.5, -110, -110] }, { spread: [-3.5, -110, -110], total: [45, -110, -110] }, { spread: null, total: null }])).toEqual([-3.5, 44.5]);
+    expect(
+      fullLineOf([
+        { spread: [-3, -110, -110], total: [44.5, -110, -110] },
+        { spread: [-3.5, -110, -110], total: [45, -110, -110] },
+        { spread: null, total: null },
+      ]),
+    ).toEqual([-3.5, 44.5]);
   });
   it("prices off similar games and grades from line scores", () => {
-    const rows = Array.from({ length: 80 }, (_, i) => [3, 44, i % 2 ? 7 : 3, 0, 7, 3, 0, 7, 7, 3, 21, 13]);
+    const rows = Array.from({ length: 80 }, (_, i) => [
+      3,
+      44,
+      i % 2 ? 7 : 3,
+      0,
+      7,
+      3,
+      0,
+      7,
+      7,
+      3,
+      21,
+      13,
+    ]);
     const sim = similar(rows, -3, 44);
     expect(sim.length).toBe(80);
     expect(chances(sim, "1q|ou|all", 5.5)).toEqual([0.5, 0.5]);
@@ -54,5 +107,42 @@ describe("NFL more markets", () => {
     expect(gradeFlag(f, { home: [7, 3, 0, 7], away: [0, 7, 3, 3] })).toBe("win");
     const s = { key: "1h|sp|", side: "home", line: -3.5 };
     expect(gradeFlag(s, { home: [7, 3, 0, 7], away: [0, 7, 3, 3] })).toBe("loss");
+  });
+});
+
+import { fullGameRows, marketResult } from "@/lib/nfl/more-markets";
+
+describe("NFL all lines", () => {
+  it("turns each book's full-game lines into rows", () => {
+    const rows = fullGameRows([
+      { key: "draftkings", spread: [3.5, -110, -110], total: [44.5, -105, -115], ml: [150, -175] },
+      { key: "consensus", spread: [3, null, null], total: [44, null, null], ml: null },
+    ]);
+    expect(rows.map((r) => `${r[0]}|${r[1]}`)).toEqual(["game|sp", "game|ml", "game|ou"]);
+    expect(rows[1][4].draftkings).toEqual([null, 150, -175]);
+  });
+  it("settles a market once its part of the game is over", () => {
+    const home = [3, 7, 0, 7];
+    const away = [7, 10, 3, 7];
+    // [away, home] for spreads and moneylines; [over, under] for totals
+    expect(marketResult(["game", "sp", "", "points", {}], 9.5, home, away, true)).toEqual([
+      true,
+      false,
+    ]);
+    expect(marketResult(["1q", "ou", "all", "points", {}], 7.5, home, away, true)).toEqual([
+      true,
+      false,
+    ]);
+    expect(marketResult(["1h", "ou", "home", "points", {}], 10, home, away, true)).toEqual([
+      null,
+      null,
+    ]);
+    expect(marketResult(["1q", "ml3way", "", "points", {}], null, [7], [7], true)).toEqual([
+      false,
+      false,
+      true,
+    ]);
+    expect(marketResult(["1q", "ou", "all", "points", {}], 7.5, home, away, false)).toBeNull();
+    expect(marketResult(["game", "ou", "all", "touchdowns", {}], 4.5, home, away, true)).toBeNull();
   });
 });

@@ -8,7 +8,13 @@
 
 import type { Game, TeamGameStats } from "@/data/shared/games";
 import { teamByAbbr } from "@/data/shared/teams";
-import { MODEL_SETTINGS, runModel, type GameModelRow, type KickoffWeather, type PriorResult } from "../shared/game-model";
+import {
+  MODEL_SETTINGS,
+  runModel,
+  type GameModelRow,
+  type KickoffWeather,
+  type PriorResult,
+} from "../shared/game-model";
 import { getSaved, saveReplacing, whenLoaded } from "../shared/blob-cache";
 import { hashStep } from "../shared/walk-cache";
 import { buildQbRatings, type QbAdjuster, type QbAdjustment, type QbStart } from "./qb-ratings";
@@ -346,7 +352,8 @@ export function pastSeasonRuns(input: HistoryGame[], options: RunOptions = {}): 
     });
   }
   byOptions.set(optionsKey, out);
-  if (typeof window !== "undefined") saveReplacing("nfl-past-runs|", savedKey, JSON.parse(JSON.stringify(out)));
+  if (typeof window !== "undefined")
+    saveReplacing("nfl-past-runs|", savedKey, JSON.parse(JSON.stringify(out)));
   return out;
 }
 

@@ -6,15 +6,20 @@ import {
   findMarketsGame,
   fmtLine,
   fmtOdds,
+  fullGameRows,
+  mainLine,
   marketName,
   marketRank,
+  marketResult,
+  periodEnd,
+  periodPoints,
   PERIODS,
   sideLabels,
   type MarketRow,
   type PartialFlag,
   type PeriodProp,
 } from "@/lib/nfl/more-markets";
-import { useNflMoreMarkets, useNflPartials } from "@/lib/nfl/use-more-markets";
+import { useNflLineGame, useNflMoreMarkets, useNflPartials } from "@/lib/nfl/use-more-markets";
 import { bookName } from "@/lib/shared/best-lines";
 
 const fullName = (t: Team) => `${t.city} ${t.name}`.trim();
@@ -48,13 +53,32 @@ function FlagBadge({ f }: { f: PartialFlag }) {
   );
 }
 
-const ORDER = ["1h", "1q", "2q", "3q", "4q", "2h", "game"];
+const ORDER = ["game", "1h", "1q", "2q", "3q", "4q", "2h"];
+const TAB: Record<string, string> = { ...PERIODS, game: "Full game" };
 
-/** Every book's halves, quarters, team totals and game specials for an upcoming NFL game, best price per side. */
-export function MoreMarkets({ home, away, when }: { home: Team; away: Team; when: string }) {
-  const { q, game } = useGameMarkets(home, away, when);
+/**
+ * Every book's lines for an NFL game: full-game spread, moneyline and total, each half and quarter, team
+ * totals and game specials, best price per side at the books' main line, where it opened, and once a
+ * period is over which side won. Upcoming games: the latest pull; live and finished games: the last pull
+ * before kickoff.
+ */
+export function AllLines({
+  home,
+  away,
+  when,
+  status,
+  quarters,
+}: {
+  home: Team;
+  away: Team;
+  when: string;
+  status: "scheduled" | "live" | "final";
+  quarters?: { home: number[]; away: number[] };
+}) {
+  const q = useNflLineGame(fullName(home), fullName(away), when);
   const partials = useNflPartials();
-  const [period, setPeriod] = useState("1h");
+  const [period, setPeriod] = useState("game");
+  const game = q.data;
   const H = home.name;
   const A = away.name;
   const flags = useMemo(() => {
@@ -72,24 +96,44 @@ export function MoreMarkets({ home, away, when }: { home: Team; away: Team; when
   }, [partials.data, game]);
   const byPeriod = useMemo(() => {
     const m = new Map<string, MarketRow[]>();
-    for (const r of game?.mk ?? []) m.set(r[0], [...(m.get(r[0]) ?? []), r]);
+    for (const r of [...fullGameRows(game?.books ?? []), ...(game?.mk ?? [])])
+      m.set(r[0], [...(m.get(r[0]) ?? []), r]);
     for (const v of m.values()) v.sort((a, b) => marketRank(a) - marketRank(b));
     return m;
   }, [game]);
+  const openRows = useMemo(() => {
+    const m = new Map<string, MarketRow>();
+    for (const r of [...fullGameRows(game?.open.books ?? []), ...(game?.open.mk ?? [])])
+      m.set(`${r[0]}|${r[1]}|${r[2]}|${r[3]}`, r);
+    return m;
+  }, [game]);
   const periods = ORDER.filter((p) => byPeriod.has(p));
-  const rows = byPeriod.get(periods.includes(period) ? period : periods[0]) ?? [];
+  const cur = periods.includes(period) ? period : periods[0];
+  const rows = byPeriod.get(cur) ?? [];
+  const hq = quarters?.home ?? [];
+  const aq = quarters?.away ?? [];
+  // a period is settled when the game is over, or (live) once the next quarter has started
+  const done =
+    status === "final" ||
+    (status === "live" && cur !== "2h" && cur !== "game" && hq.length > (periodEnd[cur] ?? 9));
+  const hp = periodPoints(hq, cur);
+  const ap = periodPoints(aq, cur);
   const rec = partials.data?.record;
+  const started = status !== "scheduled";
+  const bookCount = game
+    ? new Set([...game.books.map((b) => b.key), ...game.mk.flatMap((r) => Object.keys(r[4]))]).size
+    : 0;
 
   return (
     <Panel padded={false}>
       <PanelHeader
-        title="More markets"
+        title="All lines"
         aside={
           <span className="label-mono">
             {q.isLoading
               ? "Loading…"
               : game
-                ? `${new Set(game.mk.flatMap((r) => Object.keys(r[4]))).size} books`
+                ? `${started ? "Last lines before kickoff · " : ""}${bookCount} books`
                 : ""}
           </span>
         }
@@ -98,7 +142,9 @@ export function MoreMarkets({ home, away, when }: { home: Team; away: Team; when
         <p className="px-4 py-3 text-sm text-faint">
           {q.isLoading
             ? ""
-            : "Halves, quarters and team totals show up once the books post them (usually 1–2 days before kickoff)."}
+            : started
+              ? "No lines were saved for this game (every book's halves, quarters and specials are saved from November 14, 2026)."
+              : "The books' halves, quarters, team totals and specials show up once they're posted (usually 1–2 days before kickoff)."}
         </p>
       ) : (
         <>
@@ -112,33 +158,42 @@ export function MoreMarkets({ home, away, when }: { home: Team; away: Team; when
                 key={p}
                 type="button"
                 role="tab"
-                aria-selected={(periods.includes(period) ? period : periods[0]) === p}
+                aria-selected={cur === p}
                 onClick={() => setPeriod(p)}
-                className={`rounded-md px-2.5 py-1.5 font-disp text-xs font-semibold uppercase tracking-wider transition-colors ${(periods.includes(period) ? period : periods[0]) === p ? "bg-acc text-black" : "text-mute hover:bg-line/5 hover:text-foreground"}`}
+                className={`rounded-md px-2.5 py-1.5 font-disp text-xs font-semibold uppercase tracking-wider transition-colors ${cur === p ? "bg-acc text-black" : "text-mute hover:bg-line/5 hover:text-foreground"}`}
               >
-                {p === "game" ? "Team totals & specials" : PERIODS[p]}
+                {TAB[p]}
               </button>
             ))}
           </div>
+          {started && hp != null && ap != null ? (
+            <p className="px-4 pt-2 font-mono text-[11px] text-mute">
+              {TAB[cur]}
+              {done ? "" : " so far"}: {A} {ap} – {H} {hp}
+            </p>
+          ) : null}
           <div className="overflow-x-auto">
-            <table className="mt-2 w-full min-w-[620px] text-sm">
+            <table className="mt-2 w-full min-w-[640px] text-sm">
               <thead>
                 <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
                   <th className="px-4 py-2 font-normal">Market</th>
                   <th className="px-2 py-2 font-normal">Best price, each side</th>
+                  <th className="px-2 py-2 text-right font-normal">Opened</th>
                   <th className="px-4 py-2 text-right font-normal">Books</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-line/5">
                 {rows.map((r) => {
+                  const key = `${r[0]}|${r[1]}|${r[2]}|${r[3]}`;
                   const labels = sideLabels(r, H, A);
                   const offers = bestOffers(r);
+                  const main = mainLine(r);
+                  const open = openRows.get(key);
+                  const openLine = open ? mainLine(open) : null;
+                  const result = marketResult(r, main, hq, aq, done);
                   const f = r[3] === "points" ? flags.get(`${r[0]}|${r[1]}|${r[2]}`) : undefined;
                   return (
-                    <tr
-                      key={`${r[0]}|${r[1]}|${r[2]}|${r[3]}`}
-                      className={f?.tier === "watch" ? "bg-win/5" : undefined}
-                    >
+                    <tr key={key} className={f?.tier === "watch" ? "bg-win/5" : undefined}>
                       <td className="px-4 py-2">
                         {marketName(r, H, A)}
                         {f ? <FlagBadge f={f} /> : null}
@@ -147,15 +202,35 @@ export function MoreMarkets({ home, away, when }: { home: Team; away: Team; when
                         <div className="flex flex-wrap gap-x-4 gap-y-1">
                           {offers.map((o, i) =>
                             o ? (
-                              <span key={i} className="font-mono text-[12px] tabular-nums">
-                                <span className="text-mute">{labels[i]}</span>{" "}
+                              <span
+                                key={i}
+                                className={`font-mono text-[12px] tabular-nums ${
+                                  result?.[i] === true
+                                    ? "font-semibold text-win"
+                                    : result?.[i] === false
+                                      ? "text-faint line-through"
+                                      : ""
+                                }`}
+                              >
+                                <span className={result?.[i] == null ? "text-mute" : ""}>
+                                  {labels[i]}
+                                </span>{" "}
                                 {o.line != null ? `${fmtLine(o.line, r[1] === "sp")} ` : ""}
-                                <span className="text-foreground">{fmtOdds(o.price)}</span>{" "}
+                                <span className={result?.[i] == null ? "text-foreground" : ""}>
+                                  {fmtOdds(o.price)}
+                                </span>{" "}
                                 <span className="text-[10px] text-faint">{o.book}</span>
                               </span>
                             ) : null,
                           )}
                         </div>
+                      </td>
+                      <td className="px-2 py-2 text-right font-mono text-[11px] tabular-nums text-faint">
+                        {openLine != null && (r[1] === "ou" || r[1] === "sp") ? (
+                          <span className={openLine !== main ? "text-mute" : undefined}>
+                            {r[1] === "sp" ? `${H} ${fmtLine(openLine, true)}` : openLine}
+                          </span>
+                        ) : null}
                       </td>
                       <td className="px-4 py-2 text-right font-mono text-[11px] text-faint">
                         {Object.keys(r[4]).length}
@@ -169,6 +244,13 @@ export function MoreMarkets({ home, away, when }: { home: Team; away: Team; when
         </>
       )}
       <div className="space-y-1 border-t border-line/10 px-4 py-3 text-xs text-mute">
+        <p>
+          Best price for each side at the line most books post (books on other numbers are left
+          out). Opened = the first saved line.
+          {started
+            ? " Green = won, struck through = lost, once that part of the game is over."
+            : ""}
+        </p>
         <p>
           <span className="font-semibold text-foreground">Quarter &amp; half edges.</span> Each
           book&apos;s 1st-quarter, 1st-half and team totals priced off the full-game line, from how

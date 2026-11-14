@@ -90,7 +90,11 @@ function mulberry32(seed: number) {
   };
 }
 
-export function simulateSeason(teams: SimTeam[], games: SimGame[], opts: SimOptions): TeamFutures[] {
+export function simulateSeason(
+  teams: SimTeam[],
+  games: SimGame[],
+  opts: SimOptions,
+): TeamFutures[] {
   const sims = opts.sims ?? 10_000;
   const gameSd = opts.gameSd ?? 13.5;
   const strengthSd = opts.strengthSd ?? 2.5;
@@ -141,7 +145,13 @@ export function simulateSeason(teams: SimTeam[], games: SimGame[], opts: SimOpti
       doneLoss[h] += 1 - r;
       doneLoss[a] += r;
     } else {
-      left.push({ h, a, line: g.homeLine ?? null, neutral: Boolean(g.neutral), adj: g.homeAdj ?? 0 });
+      left.push({
+        h,
+        a,
+        line: g.homeLine ?? null,
+        neutral: Boolean(g.neutral),
+        adj: g.homeAdj ?? 0,
+      });
     }
   }
 
@@ -159,7 +169,8 @@ export function simulateSeason(teams: SimTeam[], games: SimGame[], opts: SimOpti
     return g ? w / g : null;
   };
   const sameDiv = (i: number) => divTeams[divs.indexOf(divOf[i])].filter((j) => j !== i);
-  const sameConf = (i: number) => teams.map((_, j) => j).filter((j) => j !== i && confOf[j] === confOf[i]);
+  const sameConf = (i: number) =>
+    teams.map((_, j) => j).filter((j) => j !== i && confOf[j] === confOf[i]);
   const sov = (i: number) => {
     let w = 0;
     let g = 0;
@@ -194,7 +205,12 @@ export function simulateSeason(teams: SimTeam[], games: SimGame[], opts: SimOpti
   };
   type Step = (group: number[]) => (number | null)[] | null;
   const h2hAll: Step = (group) => {
-    const v = group.map((i) => recordVs(i, group.filter((j) => j !== i)));
+    const v = group.map((i) =>
+      recordVs(
+        i,
+        group.filter((j) => j !== i),
+      ),
+    );
     return v.some((x) => x === null) ? null : v;
   };
   const h2hSweep: Step = (group) => {
@@ -203,7 +219,8 @@ export function simulateSeason(teams: SimTeam[], games: SimGame[], opts: SimOpti
     for (const i of group) {
       if (!playedAll(i)) continue;
       const others = group.filter((j) => j !== i);
-      if (others.every((j) => win[i * n + j] >= baseGames[i * n + j])) return group.map((j) => (j === i ? 1 : 0));
+      if (others.every((j) => win[i * n + j] >= baseGames[i * n + j]))
+        return group.map((j) => (j === i ? 1 : 0));
     }
     for (const i of group) {
       if (!playedAll(i)) continue;
@@ -264,7 +281,16 @@ export function simulateSeason(teams: SimTeam[], games: SimGame[], opts: SimOpti
     return out;
   };
 
-  const res = teams.map(() => ({ wins: 0, div: 0, po: 0, bye: 0, top: 0, conf: 0, sb: 0, seed: new Array(seeds).fill(0) }));
+  const res = teams.map(() => ({
+    wins: 0,
+    div: 0,
+    po: 0,
+    bye: 0,
+    top: 0,
+    conf: 0,
+    sb: 0,
+    seed: new Array(seeds).fill(0),
+  }));
   const strength = new Float64Array(n);
   const play = (home: number, away: number, hf: number) =>
     hf + strength[home] - strength[away] + normal() * gameSd > 0;
@@ -298,9 +324,7 @@ export function simulateSeason(teams: SimTeam[], games: SimGame[], opts: SimOpti
 
     const champs: number[] = [];
     for (const c of confs) {
-      const winners = divTeams
-        .filter((d) => confOf[d[0]] === c)
-        .map((d) => order(d, false)[0]);
+      const winners = divTeams.filter((d) => confOf[d[0]] === c).map((d) => order(d, false)[0]);
       const top = order(winners, true);
       const others = teams.map((_, i) => i).filter((i) => confOf[i] === c && !winners.includes(i));
       const wild = order(others, true).slice(0, seeds - top.length);
@@ -438,14 +462,24 @@ export function marketFit(
  * ratings that come out are with the regular starter.
  */
 export function marketFitQb(
-  games: { h: string; a: string; spread: number; neutral: boolean; w: number; hq?: string; aq?: string }[],
+  games: {
+    h: string;
+    a: string;
+    spread: number;
+    neutral: boolean;
+    w: number;
+    hq?: string;
+    aq?: string;
+  }[],
   ids: string[],
   prior: Record<string, number>,
   lambda: number,
   extraPrior: Record<string, number>,
   extraLambda: number,
 ) {
-  const extras = [...new Set(games.flatMap((g) => [g.hq, g.aq]).filter((x): x is string => Boolean(x)))];
+  const extras = [
+    ...new Set(games.flatMap((g) => [g.hq, g.aq]).filter((x): x is string => Boolean(x))),
+  ];
   const n = ids.length;
   const ix = new Map<string, number>(ids.map((t, i) => [t, i]));
   extras.forEach((e, j) => ix.set(`q:${e}`, n + 1 + j));
@@ -591,7 +625,13 @@ export function nflFutures(schedule: Game[], sims = 10_000, qb?: FuturesQbInput)
   const prior: Record<string, number> = {};
   for (const id of ids) prior[id] = (NFL_MARKET_PRIOR[id] ?? 0) * S.carry;
   const lined = schedule
-    .filter((g) => g.week <= week && homeLine(g) !== null && ids.includes(g.homeTeamId) && ids.includes(g.awayTeamId))
+    .filter(
+      (g) =>
+        g.week <= week &&
+        homeLine(g) !== null &&
+        ids.includes(g.homeTeamId) &&
+        ids.includes(g.awayTeamId),
+    )
     .map((g) => ({
       h: g.homeTeamId,
       a: g.awayTeamId,
@@ -621,7 +661,13 @@ export function nflFutures(schedule: Game[], sims = 10_000, qb?: FuturesQbInput)
     const line = homeLine(g);
     const out = g.week > week && g.week <= week + S.qbOutWeeks && line === null;
     const homeAdj = out ? (qbGap.get(g.homeTeamId) ?? 0) - (qbGap.get(g.awayTeamId) ?? 0) : 0;
-    return { home: g.homeTeamId, away: g.awayTeamId, homeLine: line, neutral: Boolean(g.neutralSite), homeAdj };
+    return {
+      home: g.homeTeamId,
+      away: g.awayTeamId,
+      homeLine: line,
+      neutral: Boolean(g.neutralSite),
+      homeAdj,
+    };
   });
   return simulateSeason(
     nfl.map((t) => ({ id: t.id, conf: t.conference, div: `${t.conference} ${t.division}` })),

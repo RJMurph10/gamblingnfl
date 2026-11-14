@@ -29,7 +29,7 @@ import { useCfbPriorSeason, useCfbSchedule } from "@/lib/cfb/use-cfb";
 import { getGameWeather, getLiveGame, getTeamSeasonAverages } from "@/lib/shared/espn.functions";
 import { showGameStatistics } from "@/lib/shared/game-visibility";
 import { GamePropsTab } from "@/components/shared/GamePropsTab";
-import { MoreMarkets, PeriodProps } from "@/components/nfl/MoreMarkets";
+import { AllLines, PeriodProps } from "@/components/nfl/MoreMarkets";
 import { ProbabilityGraph } from "@/components/shared/ProbabilityGraph";
 
 /* ---------- Interactive 100-Yard Field Visualizer ---------- */
@@ -572,6 +572,8 @@ export function GameDetail({ gameId }: { gameId: string }) {
   const [activeGameTab, setActiveGameTab] =
     useState<"gamecast" | "stats" | "markets" | "props" | "information">("gamecast");
 
+  // Markets tab: the model / probabilities, or every book's lines (NFL)
+  const [marketsView, setMarketsView] = useState<"model" | "lines">("model");
   const [activeMarketTab, setActiveMarketTab] =
     useState<"moneyline" | "cover" | "total">("moneyline");
 
@@ -1432,6 +1434,18 @@ export function GameDetail({ gameId }: { gameId: string }) {
           </section>
           {showGameStatistics(game.status) && activeGameTab === "markets" ? (
             <section className="mt-6 space-y-4">
+              {league === "nfl" ? (
+                <MarketsViewTabs view={marketsView} onChange={setMarketsView} first="Probabilities" />
+              ) : null}
+              {league === "nfl" && marketsView === "lines" ? (
+                <AllLines
+                  home={home}
+                  away={away}
+                  when={game.kickoffIso ?? game.kickoff}
+                  status={game.status === "final" ? "final" : "live"}
+                  quarters={game.quarters}
+                />
+              ) : (
               <Panel>
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">Probabilities</h2>
@@ -1477,6 +1491,7 @@ export function GameDetail({ gameId }: { gameId: string }) {
                   />
                 )}
               </Panel>
+              )}
             </section>
           ) : null}
                     {/* Live / Finished games Props tab */}
@@ -1511,8 +1526,14 @@ export function GameDetail({ gameId }: { gameId: string }) {
             </section>
           ) : activeGameTab === "markets" ? (
             <section className="mt-6 space-y-6">
-              <MatchupPredictor game={game} away={away} home={home} />
-              {league === "nfl" ? <MoreMarkets home={home} away={away} when={game.kickoffIso ?? game.kickoff} /> : null}
+              {league === "nfl" ? (
+                <MarketsViewTabs view={marketsView} onChange={setMarketsView} first="Model" />
+              ) : null}
+              {league === "nfl" && marketsView === "lines" ? (
+                <AllLines home={home} away={away} when={game.kickoffIso ?? game.kickoff} status="scheduled" />
+              ) : (
+                <MatchupPredictor game={game} away={away} home={home} />
+              )}
             </section>
           ) : activeGameTab === "props" ? (
             /* Upcoming / Scheduled games Props tab */
@@ -1528,6 +1549,39 @@ export function GameDetail({ gameId }: { gameId: string }) {
         </>
       ) : null}
     </>
+  );
+}
+
+/** The Markets tab's two views: the model (or live probabilities) and every book's lines. */
+function MarketsViewTabs({
+  view,
+  onChange,
+  first,
+}: {
+  view: "model" | "lines";
+  onChange: (v: "model" | "lines") => void;
+  first: string;
+}) {
+  return (
+    <div className="grid grid-cols-2 gap-1 rounded-lg border border-line/10 p-1" role="tablist" aria-label="Markets view">
+      {(
+        [
+          ["model", first],
+          ["lines", "All lines"],
+        ] as const
+      ).map(([v, label]) => (
+        <button
+          key={v}
+          type="button"
+          role="tab"
+          aria-selected={view === v}
+          onClick={() => onChange(v)}
+          className={`rounded-md px-2 py-2.5 font-disp text-xs font-semibold uppercase tracking-wider transition-colors sm:text-sm ${view === v ? "bg-acc text-black" : "text-mute hover:bg-line/5 hover:text-foreground"}`}
+        >
+          {label}
+        </button>
+      ))}
+    </div>
   );
 }
 

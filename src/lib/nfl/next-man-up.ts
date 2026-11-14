@@ -7,9 +7,30 @@
  */
 
 /** [date, game, player, team, top target, pass rate, opening line, under price, yards, result] */
-export type NextManUpPick = [string, string, string, string, string, number | null, number, number | null, number, "win" | "loss" | "push"];
+export type NextManUpPick = [
+  string,
+  string,
+  string,
+  string,
+  string,
+  number | null,
+  number,
+  number | null,
+  number,
+  "win" | "loss" | "push",
+];
 /** [date, game, player, team, top target, his injury status, pass rate, line, under price] */
-export type NextManUpCandidate = [string, string, string, string, string, string, number | null, number, number | null];
+export type NextManUpCandidate = [
+  string,
+  string,
+  string,
+  string,
+  string,
+  string,
+  number | null,
+  number,
+  number | null,
+];
 /** wins, losses, pushes, units (1u at the listed price, −110 when none) */
 export type NextManUpRecord = [number, number, number, number];
 

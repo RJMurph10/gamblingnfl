@@ -45,7 +45,10 @@ const num = (value: unknown): number | undefined => {
 };
 
 export async function fetchGamePropPredictions(gameId: string): Promise<GamePropPredictions> {
-  const env = (typeof process !== "undefined" ? process.env : {}) as Record<string, string | undefined>;
+  const env = (typeof process !== "undefined" ? process.env : {}) as Record<
+    string,
+    string | undefined
+  >;
   const url = env.SUPABASE_URL ?? env.VITE_SUPABASE_URL;
   const key =
     env.SUPABASE_PUBLISHABLE_KEY ??
@@ -78,7 +81,14 @@ export async function fetchGamePropPredictions(gameId: string): Promise<GameProp
       const projected = num(row.projected);
       const lower = num(row.lower_bound);
       const upper = num(row.upper_bound);
-      if (!row.player_id || !row.stat || projected === undefined || lower === undefined || upper === undefined) continue;
+      if (
+        !row.player_id ||
+        !row.stat ||
+        projected === undefined ||
+        lower === undefined ||
+        upper === undefined
+      )
+        continue;
       predictions.push({
         id: String(row.id),
         gameId: String(row.game_id),
@@ -100,7 +110,11 @@ export async function fetchGamePropPredictions(gameId: string): Promise<GameProp
     }
     return predictions.length > 0
       ? { status: "ready", predictions }
-      : { status: "empty", predictions: [], message: "No model projections have been saved for this game yet." };
+      : {
+          status: "empty",
+          predictions: [],
+          message: "No model projections have been saved for this game yet.",
+        };
   } catch (error) {
     return {
       status: "error",

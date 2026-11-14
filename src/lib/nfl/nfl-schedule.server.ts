@@ -9,7 +9,18 @@ import { finalCached } from "@/lib/shared/final-cache.server";
 import type { Game } from "@/data/shared/games";
 import { gameScore } from "@/data/shared/games";
 import { teamByAbbr } from "@/data/shared/teams";
-import { REGULAR_SEASON_WEEKS, SCOREBOARD, SEASON, SUMMARY, backfillHistoricalOdds, cached, fetchJson, hasMoneylines, mapEvent, teamOf } from "@/lib/shared/espn-core.server";
+import {
+  REGULAR_SEASON_WEEKS,
+  SCOREBOARD,
+  SEASON,
+  SUMMARY,
+  backfillHistoricalOdds,
+  cached,
+  fetchJson,
+  hasMoneylines,
+  mapEvent,
+  teamOf,
+} from "@/lib/shared/espn-core.server";
 
 /** One final score from last season, for the models' head start. */
 export interface PriorSeasonResult {
@@ -26,7 +37,11 @@ export interface PriorSeasonResult {
  */
 export async function fetchPriorSeasonResults(): Promise<PriorSeasonResult[]> {
   // Last season can't change: keep it long-term once it has loaded.
-  return finalCached(`nfl-prior-season-${SEASON - 1}`, loadPriorSeasonResults, (r) => r.length > 200);
+  return finalCached(
+    `nfl-prior-season-${SEASON - 1}`,
+    loadPriorSeasonResults,
+    (r) => r.length > 200,
+  );
 }
 
 function loadPriorSeasonResults(): Promise<PriorSeasonResult[]> {
@@ -70,7 +85,11 @@ function scheduleWeek(week: number): Promise<{ week: number; events: any[] }> {
     fetchJson(`${SCOREBOARD}?dates=${SEASON}&seasontype=2&week=${week}&limit=100`)
       .then((d) => ({ week, events: (d?.events ?? []) as any[] }))
       .catch(() => ({ week, events: [] as any[] }));
-  return finalCached(`nfl-week-${SEASON}-${week}`, load, (w) => w.events.length > 0 && w.events.every(eventFinal));
+  return finalCached(
+    `nfl-week-${SEASON}-${week}`,
+    load,
+    (w) => w.events.length > 0 && w.events.every(eventFinal),
+  );
 }
 
 /** Full 2026 regular-season schedule with results, grouped by week. */
@@ -154,8 +173,7 @@ export async function fetchSchedule(): Promise<Game[]> {
             }
             if (!scoringTeamId) {
               const apiTeam = play?.team;
-              const team =
-                teamOf(apiTeam) ?? teamByAbbr(String(apiTeam?.shortDisplayName ?? ""));
+              const team = teamOf(apiTeam) ?? teamByAbbr(String(apiTeam?.shortDisplayName ?? ""));
               if (team && (team.id === game.homeTeamId || team.id === game.awayTeamId)) {
                 scoringTeamId = team.id;
               }

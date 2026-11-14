@@ -44,15 +44,20 @@ export interface QbWatchFile {
 }
 
 /** This season's QB news log; null before the first run. */
-export const getQbWatch = createServerFn({ method: "GET" }).handler(async (): Promise<QbWatchFile | null> => {
-  const now = new Date();
-  const season = now.getUTCMonth() >= 6 ? now.getUTCFullYear() : now.getUTCFullYear() - 1;
-  try {
-    const res = await fetch(`https://raw.githubusercontent.com/RJMurph10/gamblingnfl/props-site/nfl/qb-watch-${season}.json`, {
-      cache: "no-store",
-    });
-    return res.ok ? ((await res.json()) as QbWatchFile) : null;
-  } catch {
-    return null;
-  }
-});
+export const getQbWatch = createServerFn({ method: "GET" }).handler(
+  async (): Promise<QbWatchFile | null> => {
+    const now = new Date();
+    const season = now.getUTCMonth() >= 6 ? now.getUTCFullYear() : now.getUTCFullYear() - 1;
+    try {
+      const res = await fetch(
+        `https://raw.githubusercontent.com/RJMurph10/gamblingnfl/props-site/nfl/qb-watch-${season}.json`,
+        {
+          cache: "no-store",
+        },
+      );
+      return res.ok ? ((await res.json()) as QbWatchFile) : null;
+    } catch {
+      return null;
+    }
+  },
+);
