@@ -30,3 +30,35 @@ describe("props: best price across the big books", () => {
     expect(screen.getAllByText("DraftKings").length).toBeGreaterThan(0);
   });
 });
+
+describe("props: alternate lines at the best book", () => {
+  it("shows each rung's best price with a short book tag", async () => {
+    const { fireEvent } = await import("@testing-library/react");
+    const game: UpcomingPropGame = {
+      ...board,
+      props: [
+        [
+          "Trey McBride",
+          "ARI",
+          "Rec yds",
+          64.5,
+          -110,
+          -110,
+          64.5,
+          [
+            [49.5, -194, "DraftKings"],
+            [69.5, 144, "FanDuel"],
+            [79.5, 220],
+          ],
+        ],
+      ],
+      bp: { "Trey McBride|Rec yds": [-105, "BetMGM", -110, "DraftKings"] },
+    };
+    render(<GamePropLines league="nfl" game={game} title="Player props" />);
+    fireEvent.click(screen.getByRole("tab", { name: "Receiving" }));
+    fireEvent.click(screen.getByRole("button", { name: /alternate lines/i }));
+    expect(screen.getByText("FD")).toBeTruthy();
+    expect(screen.getAllByText("DK").length).toBe(2); // 50+ and the untagged 80+
+    expect(screen.getByText("MGM")).toBeTruthy(); // the main line's best over
+  });
+});

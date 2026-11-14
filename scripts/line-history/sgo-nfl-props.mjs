@@ -6,7 +6,7 @@
  * graded history read both:
  *   <out>/<YYYY-MM-DDTHH>-sgo.json
  *   [{ home, away, commence, at, props: [[player, market, line, over, under]],
- *      alts: [[player, market, [[line, over price], ...]]],   (alts: BOOK's live alternate over lines)
+ *      alts: [[player, market, [[line, best over price, book], ...]]],   (alternate overs, best of the big books)
  *      td: [[player, home|away, anytime, first, 2+, last]] }]  (BOOK's touchdown-scorer prices)
  * Only games that haven't kicked off (live lines are skipped). Keeps --keep events in reserve for the
  * other SportsGameOdds pulls (NHL periods, college basketball).
@@ -176,8 +176,10 @@ export function bestPricesOf(e) {
     for (const [name, label, line, o, u] of propsOf(e, book)) {
       const k = `${name}|${label}|${line}`;
       const row = best.get(k) ?? [name, label, line, null, null, null, null];
-      if (o != null && (row[3] == null || pay(o) > pay(row[3]))) [row[3], row[4]] = [o, BOOK_NAMES[book]];
-      if (u != null && (row[5] == null || pay(u) > pay(row[5]))) [row[5], row[6]] = [u, BOOK_NAMES[book]];
+      if (o != null && (row[3] == null || pay(o) > pay(row[3])))
+        [row[3], row[4]] = [o, BOOK_NAMES[book]];
+      if (u != null && (row[5] == null || pay(u) > pay(row[5])))
+        [row[5], row[6]] = [u, BOOK_NAMES[book]];
       best.set(k, row);
     }
   }
@@ -230,28 +232,44 @@ export function closeOf(e) {
   return [...pairs.values()].filter((r) => r[3] != null && r[4] != null);
 }
 
-/** [[player, label, [[line, over price], ...]]]: BOOK's live alternate over lines (the "X+ yards" ladder). */
-export function altsOf(e, book = BOOK) {
+/**
+ * [[player, label, [[line, best over price, its book], ...]]]: the alternate over lines (the "X+ yards"
+ * ladder) with the best price on each rung across the big books (each book's alternates and main line).
+ * Ties go to DraftKings.
+ */
+export function altsOf(e) {
+  const pay = (p) => (p > 0 ? p / 100 : 100 / -p);
   const out = [];
   for (const m of Object.values(e.odds ?? {})) {
     const label = STATS[m.statID];
     if (!label || !m.playerID || m.periodID !== "game" || m.betTypeID !== "ou" || m.started)
       continue;
     if (m.sideID !== "over") continue;
-    const b = m.byBookmaker?.[book];
-    const main = num(b?.overUnder);
     const ladder = new Map();
-    for (const a of b?.altLines ?? []) {
-      if (a.available === false) continue;
-      const line = num(a.overUnder);
-      const price = num(a.odds);
-      if (line == null || price == null || line === main) continue;
-      ladder.set(line, price);
+    let dkRungs = 0;
+    for (const [book, name] of Object.entries(BOOK_NAMES)) {
+      const b = m.byBookmaker?.[book];
+      if (!b || b.available === false) continue;
+      const rungs = [...(b.altLines ?? []), { overUnder: b.overUnder, odds: b.odds }];
+      for (const a of rungs) {
+        if (a.available === false) continue;
+        const line = num(a.overUnder);
+        const price = num(a.odds);
+        if (line == null || price == null) continue;
+        if (book === BOOK) dkRungs += 1;
+        const cur = ladder.get(line);
+        if (!cur || pay(price) > pay(cur[0])) ladder.set(line, [price, name]);
+      }
     }
-    if (ladder.size < 2) continue;
+    if (ladder.size < 3 && dkRungs < 3) continue;
     const p = e.players?.[m.playerID];
     const name = p?.name ?? [p?.firstName, p?.lastName].filter(Boolean).join(" ");
-    if (name) out.push([name, label, [...ladder].sort((x, y) => x[0] - y[0])]);
+    if (name)
+      out.push([
+        name,
+        label,
+        [...ladder].sort((x, y) => x[0] - y[0]).map(([ln, [px, bk]]) => [ln, px, bk]),
+      ]);
   }
   return out;
 }
@@ -405,7 +423,17 @@ async function main() {
           `${g.away} @ ${g.home}: ${props.length} priced lines, ${alts.length} ladders, ${td.length} TD scorers, ${others.length} other-book lines`,
         );
         if (props.length || td.length || others.length)
-          games.push({ ...g, at: new Date().toISOString(), props, alts, td, others, tdb, sides, bp });
+          games.push({
+            ...g,
+            at: new Date().toISOString(),
+            props,
+            alts,
+            td,
+            others,
+            tdb,
+            sides,
+            bp,
+          });
         const books = LIVE ? [] : booksOf(e);
         if (books.length) lines.push({ ...g, books });
         const mk = LIVE ? [] : marketsOf(e);
