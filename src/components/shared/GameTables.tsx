@@ -214,15 +214,14 @@ export function UpcomingGames({ games: all }: { games: Game[] }) {
             })}
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[620px] text-sm" style={{ tableLayout: "fixed" }}>
+            <table className="w-full min-w-[520px] text-sm" style={{ tableLayout: "fixed" }}>
               <thead>
                 <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
-                  <th className="w-[17%] px-4 py-2 font-normal">Date</th>
-                  <th className="w-[15%] px-2 py-2 font-normal">Time</th>
-                  <th className="w-[26%] px-2 py-2 text-center font-normal">Matchup</th>
-                  <th className="w-[22%] px-2 py-2 font-normal">Venue</th>
-                  <th className="w-[10%] px-2 py-2 text-right font-normal">Spread</th>
-                  <th className="w-[10%] px-4 py-2 text-right font-normal">Total</th>
+                  <th className="w-[22%] px-4 py-2 font-normal">Date</th>
+                  <th className="w-[20%] px-2 py-2 font-normal">Time</th>
+                  <th className="w-[34%] px-2 py-2 text-center font-normal">Matchup</th>
+                  <th className="w-[12%] px-2 py-2 text-right font-normal">Spread</th>
+                  <th className="w-[12%] px-4 py-2 text-right font-normal">Total</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-line/5">
@@ -267,7 +266,7 @@ export function LiveGamesPanel({ games: live }: { games: Game[] }) {
             }
           />
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[680px] text-sm" style={{ tableLayout: "fixed" }}>
+            <table className="w-full min-w-[560px] text-sm" style={{ tableLayout: "fixed" }}>
               <thead>
                 <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
                   <th className="w-[14%] px-4 py-2 font-normal">Game Clock</th>
@@ -313,15 +312,14 @@ export function RecentGamesPanel({
         }
       />
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[680px] text-sm" style={{ tableLayout: "fixed" }}>
+        <table className="w-full min-w-[560px] text-sm" style={{ tableLayout: "fixed" }}>
           <thead>
             <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
-              <th className="w-[17%] px-4 py-2 font-normal">Date</th>
-              <th className="w-[15%] px-2 py-2 font-normal">Time</th>
-              <th className="w-[26%] px-2 py-2 text-center font-normal">Matchup</th>
-              <th className="w-[22%] px-2 py-2 font-normal">Venue</th>
-              <th className="w-[10%] px-2 py-2 text-right font-normal">Spread</th>
-              <th className="w-[10%] px-4 py-2 text-right font-normal">Total</th>
+              <th className="w-[22%] px-4 py-2 font-normal">Date</th>
+              <th className="w-[20%] px-2 py-2 font-normal">Time</th>
+              <th className="w-[34%] px-2 py-2 text-center font-normal">Matchup</th>
+              <th className="w-[12%] px-2 py-2 text-right font-normal">Spread</th>
+              <th className="w-[12%] px-4 py-2 text-right font-normal">Total</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-line/5">
@@ -329,7 +327,7 @@ export function RecentGamesPanel({
               recent.map((g) => <GameRow key={g.id} game={g} />)
             ) : (
               <tr>
-                <td colSpan={6} className="px-4 py-6 text-center font-mono text-xs text-mute">
+                <td colSpan={5} className="px-4 py-6 text-center font-mono text-xs text-mute">
                   {emptyText}
                 </td>
               </tr>
