@@ -867,6 +867,9 @@ function formatExtraPoint(text: string): string {
 }
 
 /** Full game detail (quarters, drives, team stats, box score) for one event. */
+/** Upcoming (15+ minutes out) and recently finished games: the last build and when it stops being reused. */
+const quietGames = new Map<string, { until: number; game: Game | null }>();
+
 export async function fetchGameDetail(rawEventId: string): Promise<Game | null> {
   // College games come in as "cfb-<id>"; everything else is an NFL ESPN id.
   const { league, id: eventId } = eventLeague(rawEventId);
@@ -877,8 +880,18 @@ export async function fetchGameDetail(rawEventId: string): Promise<Game | null> 
     if (stored.teamRefs) registerTeams(stored.teamRefs);
     return stored;
   }
+  // nothing can change on a game that hasn't started (lines aside, which ESPN moves slowly) or just
+  // finished: reuse the last build for a couple of minutes instead of rebuilding it on every visit
+  const quiet = quietGames.get(storeKey);
+  if (quiet && Date.now() < quiet.until) return quiet.game;
   const game = await loadGameDetail(league, eventId);
   const kickoff = game?.kickoffIso ? new Date(game.kickoffIso).getTime() : NaN;
+  if (game && game.status !== "live") {
+    const startsIn = Number.isFinite(kickoff) ? kickoff - Date.now() : 0;
+    const ttl = game.status === "final" ? 5 * 60_000 : startsIn > 15 * 60_000 ? 2 * 60_000 : 0;
+    if (ttl) quietGames.set(storeKey, { until: Date.now() + ttl, game });
+    else quietGames.delete(storeKey);
+  } else quietGames.delete(storeKey);
   if (game && game.status === "final" && Number.isFinite(kickoff) && Date.now() - kickoff > 36 * 3_600_000) {
     await writeFinal(storeKey, game);
   }

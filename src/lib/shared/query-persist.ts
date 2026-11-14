@@ -12,10 +12,10 @@ import type { QueryClient, QueryKey } from "@tanstack/react-query";
 
 /**
  * Every query is kept except live per-game detail (box score / play-by-play, refreshed every few seconds
- * while a game is on), where a saved copy would show an old score until the refresh lands.
+ * while a game is on), where a saved copy would show an old score until the refresh lands. NFL / college
+ * football game pages ("nfl-game") are kept while upcoming or finished, never while live (see gameCopyOk).
  */
 const NOT_PERSISTED = new Set([
-  "nfl-game",
   "nba-game",
   "nhl-game",
   "mlb-game",
@@ -57,6 +57,20 @@ export function withoutStaleLive(
     return { ...d, games: d.games.filter(notLive) };
   return entry.data;
 }
+
+/**
+ * A single game's page (NFL / college football "nfl-game"): saved and restored only when the copy can't
+ * be misleading: never a live game, and never an upcoming copy once its kickoff has passed (the game may
+ * be live now).
+ */
+export function gameCopyOk(data: unknown, now = Date.now()): boolean {
+  const g = data as { status?: string; kickoffIso?: string } | null;
+  if (!g || typeof g !== "object" || !("status" in g)) return true;
+  if (g.status === "live") return false;
+  if (g.status === "scheduled" && g.kickoffIso && Date.parse(g.kickoffIso) <= now) return false;
+  return true;
+}
+const GAME_KEYS = new Set(["nfl-game"]);
 
 interface Saved {
   key: string;
@@ -169,6 +183,7 @@ export function useQueryPersistence(queryClient: QueryClient) {
       void read(key).then((entry) => {
         if (cancelled || !entry) return;
         if (Date.now() - entry.updatedAt > MAX_AGE_MS) return void remove(key);
+        if (GAME_KEYS.has(String(queryKey[0])) && !gameCopyOk(entry.data)) return;
         restore(entry);
       });
     };
@@ -183,6 +198,7 @@ export function useQueryPersistence(queryClient: QueryClient) {
         return;
       const { query } = event;
       if (!persisted(query.queryKey) || query.state.data === undefined) return;
+      if (GAME_KEYS.has(String(query.queryKey[0])) && !gameCopyOk(query.state.data)) return;
       const key = query.queryHash;
       if (big.has(key)) return;
       // Schedules refetch every few seconds during live games; save at most once per couple of seconds.

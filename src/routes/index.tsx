@@ -1,5 +1,6 @@
 import { useMemo, useEffect, useState } from "react";
 import { showUpcoming } from "@/lib/shared/season-window";
+import { scheduleBusy } from "@/lib/shared/schedule-busy";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { LiveGamesPanel, RecentGamesPanel, UpcomingGames } from "@/components/shared/GameTables";
@@ -53,8 +54,10 @@ function Dashboard() {
   } = useQuery({
     queryKey: ["live-schedule"],
     queryFn: () => getLiveSchedule(),
-    refetchInterval: 1_500, // refresh score and scoring transition together
-    staleTime: 0,
+    // while a game is on (or about to start): refresh score and scoring transition together; otherwise
+    // once a minute (nothing changes between games, and the server reuses its copy anyway)
+    refetchInterval: (q) => (scheduleBusy(q.state.data ?? []) ? 1_500 : 60_000),
+    staleTime: 30_000,
     retry: 1,
   });
 
