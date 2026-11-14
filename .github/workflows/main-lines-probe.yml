@@ -1,0 +1,45 @@
+name: Main-league game lines (every book, research)
+on:
+  push:
+    branches: [nfl-weather-probe]
+    paths: [probe/main-lines.trigger]
+permissions:
+  contents: write
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    strategy:
+      fail-fast: false
+      max-parallel: 6
+      matrix:
+        include:
+          - { sport: football, league: nfl, q: "" }
+          - { sport: football, league: college-football, q: "groups=80" }
+          - { sport: basketball, league: nba, q: "" }
+          - { sport: basketball, league: mens-college-basketball, q: "groups=50" }
+          - { sport: hockey, league: nhl, q: "" }
+          - { sport: baseball, league: mlb, q: "" }
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          sparse-checkout: scripts/lines
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - name: Export
+        run: |
+          node scripts/lines/export-lines.mjs --sport ${{ matrix.sport }} --league ${{ matrix.league }} \
+            --from 2022-08-01 --to "$(date -u +%Y-%m-%d)" --out out ${{ matrix.q && format('--query {0}', matrix.q) || '' }}
+      - name: Save
+        run: |
+          url="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+          for attempt in 1 2 3 4 5 6 7 8; do
+            rm -rf d && git clone -q --depth 1 --branch lines-history "$url" d
+            mkdir -p d/main && cp -r out/* d/main/
+            cd d
+            git config user.name "research-bot"; git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add -A && git commit -q -m "main-league game lines: ${{ matrix.league }}" && git push -q origin HEAD:lines-history && exit 0
+            cd ..; sleep $((attempt * 20))
+          done
+          exit 1
