@@ -184,15 +184,17 @@ function boardOf(rec, price) {
         bk[`${who[0]}|${LABELS[l.t]}`] = other[2];
       }
     }
-    // alternate overs: ESPN's milestone ("X+") rungs plus DraftKings' ladder from the saved pulls,
-    // leaving out the main line itself
-    const rungs = new Map(milestones.get(`${l.a}|${LABELS[l.t]}`) ?? []);
-    for (const [ln, px] of (price.size
+    // alternate overs: ESPN's milestone ("X+") rungs (DraftKings') plus the saved pulls' ladder, which has
+    // the best price on each rung across the big books ([line, price, book]); the main line is left out
+    const rungs = new Map(
+      (milestones.get(`${l.a}|${LABELS[l.t]}`) ?? []).map(([ln, px]) => [ln, [ln, px]]),
+    );
+    for (const r of (price.size
       ? price.ladder(rec.home?.name, rec.date, who[0], LABELS[l.t])
       : null) ?? [])
-      rungs.set(ln, px);
+      rungs.set(r[0], r);
     rungs.delete(line);
-    const ladder = [...rungs].sort((x, y) => x[0] - y[0]);
+    const ladder = [...rungs.values()].sort((x, y) => x[0] - y[0]);
     props.push([
       who[0],
       who[1],

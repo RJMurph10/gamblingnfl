@@ -837,7 +837,8 @@ export function GamePropLines({
                       <td colSpan={cols} className="px-0 pb-2 pt-0">
                         <PropLadder
                           line={r[3]}
-                          over={r[4]}
+                          over={bestOver(r[4], game.bp?.[`${r[0]}|${r[2]}`])[0]}
+                          overBook={bestOver(r[4], game.bp?.[`${r[0]}|${r[2]}`])[1]}
                           ladder={ladder}
                           unit={r[2]}
                           width={wrapW}
@@ -1048,24 +1049,49 @@ function OverUnderCount({
  * DraftKings' alternate over lines as a swipeable strip, like the sportsbook's: the main line in the
  * middle, safer lines (minus prices) to the left, longer shots (plus prices) to the right.
  */
+/** The main line's over for the ladder: the best price at the big books when saved, else DraftKings'. */
+function bestOver(
+  dk: number | null,
+  bp?: [number | null, string | null, number | null, string | null],
+): [number | null, string | null] {
+  if (bp?.[0] != null && (dk == null || payout(bp[0]) >= payout(dk))) return [bp[0], bp[1]];
+  return [dk, dk != null ? "DraftKings" : null];
+}
+
+/** Short book tags for the ladder's small tiles. */
+const BOOK_SHORT: Record<string, string> = {
+  DraftKings: "DK",
+  FanDuel: "FD",
+  BetMGM: "MGM",
+  Caesars: "CZR",
+  "theScore Bet": "SCORE",
+  Fanatics: "FAN",
+  "Hard Rock": "HR",
+  bet365: "365",
+};
+
 function PropLadder({
   line,
   over,
+  overBook,
   ladder,
   unit,
   width,
 }: {
   line: number;
   over: number | null;
-  ladder: [number, number][];
+  overBook?: string | null;
+  /** [line, over price, book (the best of the big books; DraftKings when missing)] */
+  ladder: [number, number, string?][];
   unit: string;
   width?: number;
 }) {
   const rungs = useMemo(() => {
-    const all = ladder.map(([ln, o]) => ({ ln, o, main: false }));
-    if (!all.some((x) => x.ln === line)) all.push({ ln: line, o: over ?? NaN, main: true });
+    const all = ladder.map(([ln, o, bk]) => ({ ln, o, bk: bk ?? "DraftKings", main: false }));
+    if (!all.some((x) => x.ln === line))
+      all.push({ ln: line, o: over ?? NaN, bk: overBook ?? "DraftKings", main: true });
     return all.sort((a, b) => a.ln - b.ln);
-  }, [ladder, line, over]);
+  }, [ladder, line, over, overBook]);
   const [sel, setSel] = useState(line);
   const strip = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -1100,7 +1126,7 @@ function PropLadder({
               onClick={() => setSel(x.ln)}
               aria-pressed={on}
               aria-label={`${x.main ? `Over ${x.ln}` : `${Math.ceil(x.ln)} or more`}, ${american(Number.isFinite(x.o) ? x.o : null)}`}
-              className={`relative flex h-12 w-16 shrink-0 snap-center flex-col items-center justify-center gap-0.5 rounded-lg ring-1 transition-colors ${
+              className={`relative flex h-14 w-16 shrink-0 snap-center flex-col items-center justify-center gap-0.5 rounded-lg ring-1 transition-colors ${
                 on
                   ? "bg-acc/15 ring-acc"
                   : x.main
@@ -1121,6 +1147,11 @@ function PropLadder({
               >
                 {Number.isFinite(x.o) ? american(x.o) : "—"}
               </span>
+              {Number.isFinite(x.o) ? (
+                <span className="font-sans text-[8px] font-semibold uppercase tracking-wide text-faint">
+                  {BOOK_SHORT[x.bk] ?? x.bk}
+                </span>
+              ) : null}
             </button>
           );
         })}
@@ -1134,6 +1165,7 @@ function PropLadder({
         </div>
         <span className="font-mono text-[11px] tabular-nums text-foreground">
           {what} · {american(Number.isFinite(picked.o) ? picked.o : null)}
+          {Number.isFinite(picked.o) ? ` at ${picked.bk}` : ""}
           {pr != null ? ` · ${Math.round(pr * 100)}% implied` : ""}
         </span>
       </div>

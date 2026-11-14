@@ -119,8 +119,11 @@ export type UpcomingPropRow = [
   number | null,
   number | null,
   number | null,
-  /** DraftKings' alternate over lines ("X+"), [[line, over price], ...], when saved. */
-  ([number, number][] | undefined)?,
+  /**
+   * Alternate over lines ("X+"), [[line, over price, book], ...], when saved: the best price on each rung
+   * across the big books (book missing on older boards and ESPN's milestones: DraftKings).
+   */
+  ([number, number, string?][] | undefined)?,
 ];
 
 export interface UpcomingPropGame {
