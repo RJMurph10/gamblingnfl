@@ -32,6 +32,123 @@ export interface MarketsFile {
   games: MarketsGame[];
 }
 
+/** One book's full-game lines (scripts/line-history/sgo-games.mjs booksOf). */
+export interface FullBookLine {
+  key: string;
+  spread: [number, number | null, number | null] | null;
+  total: [number, number | null, number | null] | null;
+  ml: [number | null, number | null] | null;
+}
+
+/** A game's saved lines (props-site markets/nfl/games/<file>.json): the last pull before kickoff, and the first. */
+export interface LineGame {
+  home: string;
+  away: string;
+  commence: string;
+  at: string;
+  full: [number | null, number | null] | null;
+  books: FullBookLine[];
+  mk: MarketRow[];
+  open: { at: string; books: FullBookLine[]; mk: MarketRow[] };
+}
+
+export interface LineIndexRow {
+  f: string;
+  home: string;
+  away: string;
+  commence: string;
+}
+
+/** The full-game spread, moneyline and total as market rows, so they show with the rest. */
+export function fullGameRows(books: FullBookLine[]): MarketRow[] {
+  const sp: Record<string, MarketCell> = {};
+  const ml: Record<string, MarketCell> = {};
+  const tot: Record<string, MarketCell> = {};
+  for (const b of books) {
+    if (b.key === "consensus") continue;
+    if (b.spread && (b.spread[1] != null || b.spread[2] != null))
+      sp[b.key] = [b.spread[0], b.spread[1], b.spread[2]];
+    if (b.ml && (b.ml[0] != null || b.ml[1] != null)) ml[b.key] = [null, b.ml[0], b.ml[1]];
+    if (b.total && (b.total[1] != null || b.total[2] != null))
+      tot[b.key] = [b.total[0], b.total[1], b.total[2]];
+  }
+  const rows: MarketRow[] = [];
+  if (Object.keys(sp).length) rows.push(["game", "sp", "", "points", sp]);
+  if (Object.keys(ml).length) rows.push(["game", "ml", "", "points", ml]);
+  if (Object.keys(tot).length) rows.push(["game", "ou", "all", "points", tot]);
+  return rows;
+}
+
+/** Points by period from line scores (OT counts toward the 2nd half and the game). */
+export function periodPoints(q: number[], period: string): number | null {
+  const s = (a: number, b: number) => q.slice(a, b).reduce((x, y) => x + y, 0);
+  switch (period) {
+    case "1q":
+      return q.length >= 1 ? q[0] : null;
+    case "2q":
+      return q.length >= 2 ? q[1] : null;
+    case "3q":
+      return q.length >= 3 ? q[2] : null;
+    case "4q":
+      return q.length >= 4 ? q[3] : null;
+    case "1h":
+      return q.length >= 2 ? s(0, 2) : null;
+    case "2h":
+      return q.length >= 4 ? s(2, 99) : null;
+    case "game":
+      return q.length >= 4 ? s(0, 99) : null;
+    default:
+      return null;
+  }
+}
+
+/** How many quarters a period needs before it's settled. */
+export const periodEnd: Record<string, number> = {
+  "1q": 1,
+  "2q": 2,
+  "3q": 3,
+  "4q": 4,
+  "1h": 2,
+  "2h": 4,
+  game: 4,
+};
+
+/**
+ * Which side won a points market, in sideLabels order (true = won, false = lost, null = push / not
+ * settled / not a points market). `done` = the period has finished.
+ */
+export function marketResult(
+  r: MarketRow,
+  line: number | null,
+  home: number[],
+  away: number[],
+  done: boolean,
+): (boolean | null)[] | null {
+  const [period, bet, who, stat] = r;
+  if (!done || stat !== "points") return null;
+  const h = periodPoints(home, period);
+  const a = periodPoints(away, period);
+  if (h == null || a == null) return null;
+  const win = (x: number) => (x > 0 ? true : x < 0 ? false : null);
+  if (bet === "ou") {
+    const v = who === "home" ? h : who === "away" ? a : h + a;
+    if (line == null) return null;
+    const o = win(v - line);
+    return [o, o == null ? null : !o];
+  }
+  if (bet === "sp") {
+    if (line == null) return null;
+    const homeCovers = win(h - a + line);
+    return [homeCovers == null ? null : !homeCovers, homeCovers];
+  }
+  if (bet === "ml") {
+    const hw = win(h - a);
+    return [hw == null ? null : !hw, hw];
+  }
+  if (bet === "ml3way") return [a > h, h > a, a === h];
+  return null;
+}
+
 export interface PartialFlag {
   id: string;
   key: string;

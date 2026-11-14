@@ -87,9 +87,9 @@ function parseRows(csv: string): NflverseYacRow[] {
     if (!Number.isFinite(week)) continue;
     rows.push({
       name: cells[iName] ?? "",
-      team: iTeam >= 0 ? cells[iTeam] ?? "" : "",
+      team: iTeam >= 0 ? (cells[iTeam] ?? "") : "",
       week,
-      seasonType: iType >= 0 ? cells[iType] ?? "REG" : "REG",
+      seasonType: iType >= 0 ? (cells[iType] ?? "REG") : "REG",
       pyac: iPyac >= 0 ? Number(cells[iPyac]) || 0 : 0,
       yac: iYac >= 0 ? Number(cells[iYac]) || 0 : 0,
     });
@@ -142,7 +142,9 @@ export async function nflverseSeasonYac(
   const loaded = await load(season);
   if (!loaded) return undefined;
   const key = normalizePlayerName(name);
-  const mine = loaded.rows.filter((row) => row.seasonType === "REG" && normalizePlayerName(row.name) === key);
+  const mine = loaded.rows.filter(
+    (row) => row.seasonType === "REG" && normalizePlayerName(row.name) === key,
+  );
   if (mine.length === 0) return undefined;
   return {
     pyac: mine.reduce((sum, row) => sum + row.pyac, 0),

@@ -94,6 +94,8 @@ jobs:
             # halves, quarters, team totals, specials and player period props; then the quarter / half
             # edge finder flags new edges and grades finished games (scripts/props/nfl-partials.mjs)
             if [ -f more/nfl.json ]; then mkdir -p site-repo/markets && node app/scripts/line-history/merge-best-lines.mjs site-repo/markets/nfl.json more/nfl.json; fi
+            # every game's full set of lines, one file per game, kept after kickoff (the game page's "All lines")
+            if [ -f more/nfl.json ]; then node app/scripts/line-history/save-market-games.mjs site-repo/markets/nfl more/nfl.json best/nfl.json; fi
             node app/scripts/props/nfl-partials.mjs --markets site-repo/markets/nfl.json --out site-repo || echo "edge finder failed"
             # line shopping: every book's spreads and totals, merged into the site's latest file
             if [ -f best/nfl.json ]; then mkdir -p site-repo/best-lines && node app/scripts/line-history/merge-best-lines.mjs site-repo/best-lines/nfl.json best/nfl.json; fi

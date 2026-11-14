@@ -1,6 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import { cached } from "@/lib/shared/espn-core.server";
-import type { MarketsFile, PartialsFile } from "@/lib/nfl/more-markets";
+import { z } from "zod";
+import { nameMatch } from "@/lib/shared/best-lines";
+import type { LineGame, LineIndexRow, MarketsFile, PartialsFile } from "@/lib/nfl/more-markets";
 
 const RAW = "https://raw.githubusercontent.com/RJMurph10/gamblingnfl/props-site";
 
@@ -28,3 +30,34 @@ export const getNflPartials = createServerFn({ method: "GET" }).handler(async ()
     10 * 60_000,
   );
 });
+
+/**
+ * One game's saved lines (every book's full-game, half, quarter, team-total and special markets; the last
+ * pull before kickoff and the first), matched by team names and kickoff; null when none were saved.
+ */
+export const getNflLineGame = createServerFn({ method: "GET" })
+  .inputValidator((data) =>
+    z.object({ home: z.string(), away: z.string(), when: z.string() }).parse(data),
+  )
+  .handler(async ({ data }) => {
+    const index = await cached(
+      "nfl-lines-index",
+      () => json<LineIndexRow[]>(`${RAW}/markets/nfl/index.json`),
+      10 * 60_000,
+    );
+    const t = Date.parse(data.when);
+    const row = (index ?? []).find(
+      (r) =>
+        Math.abs(Date.parse(r.commence) - t) <= 6 * 3_600_000 &&
+        nameMatch(r.home, data.home) >= 0.6 &&
+        nameMatch(r.away, data.away) >= 0.6,
+    );
+    if (!row) return null;
+    // a game that has started keeps its lines; an upcoming one refreshes with each pull
+    const ttl = Date.parse(row.commence) < Date.now() ? 60 * 60_000 : 10 * 60_000;
+    return cached(
+      `nfl-lines-${row.f}`,
+      () => json<LineGame>(`${RAW}/markets/nfl/games/${row.f}`),
+      ttl,
+    );
+  });
