@@ -1,0 +1,23 @@
+name: SGO raw event probe
+on:
+  push:
+    branches: [nfl-weather-probe]
+    paths: [probe/sgo-raw.mjs]
+permissions:
+  contents: write
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - env: { SPORTSGAMEODDS_API_KEY: "${{ secrets.SPORTSGAMEODDS_API_KEY }}" }
+        run: node probe/sgo-raw.mjs && gzip -9 sgo_nfl_event.json
+      - run: |
+          url="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+          rm -rf d && mkdir d && cd d && git init -q && git remote add origin "$url"
+          git fetch -q --depth 1 origin nfl-weather-data && git checkout -q -b nfl-weather-data FETCH_HEAD
+          cp ../sgo_nfl_event.json.gz .
+          git config user.name "research-bot"; git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A && git commit -q -m "SGO raw NFL event sample" && git push -q origin nfl-weather-data
