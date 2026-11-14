@@ -3,6 +3,7 @@
  * Line shopping: merge a new snapshot of every book's lines into the league's latest file the site reads
  * (props-site best-lines/<league>.json). Newer snapshots win per game; games that started 4+ hours ago drop.
  *   node merge-best-lines.mjs <latest.json (may not exist)> <new snapshot.json> [more snapshots...]
+ * Also merges the NFL "more markets" snapshots (sgo-markets.mjs: { ..., full, mk, pp }) the same way.
  * Snapshot format (sgo-games.mjs): { at, league, games: [{ home, away, commence, books: [{ key, spread, total }] }] }
  */
 import { readFile, writeFile } from "node:fs/promises";
@@ -23,7 +24,8 @@ let league = latest.league ?? null;
 for (const p of snaps) {
   const s = await read(p);
   if (!s) continue;
-  for (const g of s.games ?? []) if (g.books?.length) byGame.set(key(g), { ...g, at: s.at });
+  for (const g of s.games ?? [])
+    if (g.books?.length || g.mk?.length || g.pp?.length) byGame.set(key(g), { ...g, at: s.at });
   if (!at || s.at > at) at = s.at;
   league = league ?? s.league;
 }

@@ -13,6 +13,9 @@ name: NFL prop prices (SportsGameOdds)
 #   about 45 minutes after the Sunday, Thursday and Monday kickoffs (--live, games in progress only):
 #   each prop's closing line and price, averaged across books, for props whose DraftKings price wasn't
 #   saved before kickoff (tagged CLOSE on the site)
+# The same events also carry every book's halves, quarters, team totals, specials and player 1st-half /
+# quarter props: saved to props-site markets/nfl.json (no extra events), and the quarter / half edge finder
+# writes nfl/partials-<season>.json (flags + grades).
 # Needs the repository secret SPORTSGAMEODDS_API_KEY; without it the job does nothing.
 
 on:
@@ -82,12 +85,16 @@ jobs:
                 console.log([...t].join(","))})' $HOURS || true)
           echo "unpriced later kickoffs: ${ALSO:-none}"
           if [ -n "$LIVE" ]; then ALSO=""; fi
-          node app/scripts/line-history/sgo-nfl-props.mjs --out pull --hours $HOURS --also "$ALSO" --best best/nfl.json $LIVE
-          if [ -z "$(ls pull 2>/dev/null)" ]; then echo "nothing pulled"; exit 0; fi
+          node app/scripts/line-history/sgo-nfl-props.mjs --out pull --hours $HOURS --also "$ALSO" --best best/nfl.json --markets more/nfl.json $LIVE
+          if [ -z "$(ls pull 2>/dev/null)" ]; then echo "no prop prices pulled"; fi
           url="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
           for attempt in 1 2 3 4 5; do
             rm -rf site-repo && git clone -q --depth 1 --branch props-site "$url" site-repo
-            mkdir -p site-repo/nfl/odds-api && cp pull/*.json site-repo/nfl/odds-api/
+            mkdir -p site-repo/nfl/odds-api && cp pull/*.json site-repo/nfl/odds-api/ 2>/dev/null || true
+            # halves, quarters, team totals, specials and player period props; then the quarter / half
+            # edge finder flags new edges and grades finished games (scripts/props/nfl-partials.mjs)
+            if [ -f more/nfl.json ]; then mkdir -p site-repo/markets && node app/scripts/line-history/merge-best-lines.mjs site-repo/markets/nfl.json more/nfl.json; fi
+            node app/scripts/props/nfl-partials.mjs --markets site-repo/markets/nfl.json --out site-repo || echo "edge finder failed"
             # line shopping: every book's spreads and totals, merged into the site's latest file
             if [ -f best/nfl.json ]; then mkdir -p site-repo/best-lines && node app/scripts/line-history/merge-best-lines.mjs site-repo/best-lines/nfl.json best/nfl.json; fi
             # the hourly line saver merges these into upcoming.json; the daily props job into past results
