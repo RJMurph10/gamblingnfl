@@ -211,7 +211,11 @@ export function marketName(r: MarketRow, home: string, away: string): string {
   if (bet === "ml") return s[0].toUpperCase() + s.slice(1);
   if (bet === "ml3way") return "Moneyline, tie a result";
   if (bet === "eo") return `${team ? `${team} ` : "Total "}${s}: odd / even`;
-  if (bet === "yn") return `${team ? `${team} ` : "Any "}${s}?`;
+  if (bet === "yn") {
+    if (stat === "bothTeamsScored") return "Both teams score?";
+    if (stat === "points") return team ? `${team} score?` : "Any points scored?";
+    return `${team ? `${team} ` : "Any "}${s}?`;
+  }
   return team ? `${team} ${s}` : `Total ${s}`;
 }
 
