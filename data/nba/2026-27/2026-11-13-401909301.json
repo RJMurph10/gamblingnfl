@@ -7,13 +7,13 @@
   "id": "26",
   "abbr": "UTAH",
   "name": "Utah Jazz",
-  "score": 89
+  "score": 98
  },
  "home": {
   "id": "10",
   "abbr": "HOU",
   "name": "Houston Rockets",
-  "score": 92
+  "score": 107
  },
  "neutral": false,
  "venue": "Toyota Center (Houston)",

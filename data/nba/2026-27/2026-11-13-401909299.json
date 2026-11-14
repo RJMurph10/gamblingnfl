@@ -7,13 +7,13 @@
   "id": "1",
   "abbr": "ATL",
   "name": "Atlanta Hawks",
-  "score": 112
+  "score": 117
  },
  "home": {
   "id": "4",
   "abbr": "CHI",
   "name": "Chicago Bulls",
-  "score": 110
+  "score": 125
  },
  "neutral": false,
  "venue": "United Center",

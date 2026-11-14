@@ -7,13 +7,13 @@
   "id": "5",
   "abbr": "CLE",
   "name": "Cleveland Cavaliers",
-  "score": 114
+  "score": 121
  },
  "home": {
   "id": "14",
   "abbr": "MIA",
   "name": "Miami Heat",
-  "score": 122
+  "score": 131
  },
  "neutral": false,
  "venue": "Kaseya Center",
