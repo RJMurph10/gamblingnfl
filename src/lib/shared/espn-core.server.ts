@@ -105,6 +105,10 @@ export async function cached<T>(
   return request;
 }
 const inflight = new Map<string, Promise<unknown>>();
+/** Drop one cached value (e.g. a "not found" that shouldn't be kept). */
+export function clearCached(key: string) {
+  cache.delete(key);
+}
 
 /** Find yards-after-catch in ESPN Core stats, specifically targeting the receiving category. */
 export function extractYacValue(data: any): number | undefined {
