@@ -168,8 +168,15 @@ export function extractYacValue(data: any): number | undefined {
   return result === undefined ? undefined : Math.round(result);
 }
 
+/**
+ * An ESPN feed as JSON. Gives up after 12 seconds, so one stalled ESPN request can't hold a page (or the
+ * whole schedule build) open; callers already fall back on errors.
+ */
 export async function fetchJson(url: string): Promise<any> {
-  const res = await fetch(url, { headers: { "User-Agent": "GamblingNFL/1.0" } });
+  const res = await fetch(url, {
+    headers: { "User-Agent": "GamblingNFL/1.0" },
+    signal: AbortSignal.timeout(12_000),
+  });
   if (!res.ok) throw new Error(`ESPN feed failed [${res.status}] for ${url}`);
   return res.json();
 }
