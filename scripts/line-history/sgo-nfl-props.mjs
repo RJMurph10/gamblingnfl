@@ -66,7 +66,37 @@ export const STATS = {
   rushing_longestRush: "Longest rush",
   // DraftKings prices longest reception on SportsGameOdds (longest rush and tackles it doesn't)
   receiving_longestReception: "Longest rec",
+  // not on ESPN's DraftKings feed: added to the board from these pulls (build-upcoming.mjs)
+  passing_longestCompletion: "Longest comp",
 };
+
+/**
+ * 1st-half and quarter props (not on ESPN's feed; added to the board from these pulls, graded from the
+ * play-by-play): SportsGameOdds period → label prefix, and the stats offered for them.
+ */
+export const PERIOD_PREFIX = { "1h": "1H", "1q": "1Q", "2q": "2Q", "3q": "3Q", "4q": "4Q" };
+const PERIOD_STATS = new Set([
+  "passing_yards",
+  "passing_attempts",
+  "passing_completions",
+  "passing_touchdowns",
+  "passing_interceptions",
+  "rushing_yards",
+  "rushing_attempts",
+  "receiving_yards",
+  "receiving_receptions",
+  "rushing+receiving_yards",
+  "passing+rushing_yards",
+]);
+
+/** The site label for an odds entry: full-game props, plus "1H Rec yds"-style period props. */
+export function labelOf(m) {
+  const base = STATS[m.statID];
+  if (!base) return null;
+  if (m.periodID === "game") return base;
+  const pre = PERIOD_PREFIX[m.periodID];
+  return pre && PERIOD_STATS.has(m.statID) ? `${pre} ${base}` : null;
+}
 
 async function get(path) {
   const res = await fetch(`${BASE}${path}`, { headers: { "X-Api-Key": KEY } });
@@ -90,9 +120,8 @@ const num = (v) => {
 export function propsOf(e, book = BOOK) {
   const pairs = new Map();
   for (const m of Object.values(e.odds ?? {})) {
-    const label = STATS[m.statID];
-    if (!label || !m.playerID || m.periodID !== "game" || m.betTypeID !== "ou" || m.started)
-      continue;
+    const label = labelOf(m);
+    if (!label || !m.playerID || m.betTypeID !== "ou" || m.started) continue;
     const b = m.byBookmaker?.[book];
     if (!b || b.available === false) continue;
     const line = num(b.overUnder);
@@ -192,6 +221,49 @@ export function altsOf(e, book = BOOK) {
   return out;
 }
 
+/** Each player's side ("home" / "away") by name, for the props only these pulls carry. */
+export function sidesOf(e) {
+  const out = {};
+  for (const p of Object.values(e.players ?? {})) {
+    const name = p?.name ?? [p?.firstName, p?.lastName].filter(Boolean).join(" ");
+    const side =
+      p?.teamID && p.teamID === e.teams?.home?.teamID
+        ? "home"
+        : p?.teamID && p.teamID === e.teams?.away?.teamID
+          ? "away"
+          : "";
+    if (name && side) out[name] = side;
+  }
+  return out;
+}
+
+/**
+ * The best anytime-touchdown price per player across DraftKings and the other books:
+ * [[player, home|away, price, book tag]].
+ */
+export function tdBestOf(e) {
+  const best = new Map();
+  const tags = [[BOOK, "DK"], ...OTHER_BOOKS];
+  for (const m of Object.values(e.odds ?? {})) {
+    if (!m?.playerID || m.periodID !== "game" || m.started) continue;
+    if (m.statID !== "touchdowns" || m.betTypeID !== "yn" || m.sideID !== "yes") continue;
+    const p = e.players?.[m.playerID];
+    const name = p?.name ?? [p?.firstName, p?.lastName].filter(Boolean).join(" ");
+    if (!name) continue;
+    for (const [book, tag] of tags) {
+      const b = m.byBookmaker?.[book];
+      if (!b || b.available === false) continue;
+      const price = num(b.odds);
+      if (price == null) continue;
+      const pay = price > 0 ? price / 100 : 100 / -price;
+      const cur = best.get(name);
+      if (!cur || pay > cur.pay) best.set(name, { pay, price, tag });
+    }
+  }
+  const sides = sidesOf(e);
+  return [...best].map(([n, b]) => [n, sides[n] ?? "", b.price, b.tag]);
+}
+
 /**
  * BOOK's touchdown-scorer prices for one event: [[player, home|away, anytime, first TD, 2+ TDs, last TD]].
  * SportsGameOdds: anytime = touchdowns yes, 2+ = touchdowns over 1.5, first / last = firstTouchdown /
@@ -286,6 +358,8 @@ async function main() {
         const alts = LIVE ? [] : altsOf(e);
         const td = LIVE ? [] : tdOf(e);
         const others = LIVE ? closeOf(e) : otherPropsOf(e);
+        const tdb = LIVE ? [] : tdBestOf(e);
+        const sides = LIVE ? {} : sidesOf(e);
         const g = {
           home: name(e.teams?.home),
           away: name(e.teams?.away),
@@ -295,7 +369,7 @@ async function main() {
           `${g.away} @ ${g.home}: ${props.length} priced lines, ${alts.length} ladders, ${td.length} TD scorers, ${others.length} other-book lines`,
         );
         if (props.length || td.length || others.length)
-          games.push({ ...g, at: new Date().toISOString(), props, alts, td, others });
+          games.push({ ...g, at: new Date().toISOString(), props, alts, td, others, tdb, sides });
         const books = LIVE ? [] : booksOf(e);
         if (books.length) lines.push({ ...g, books });
         const mk = LIVE ? [] : marketsOf(e);

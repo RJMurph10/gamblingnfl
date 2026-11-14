@@ -139,7 +139,8 @@ export interface UpcomingPropGame {
   /**
    * NFL: DraftKings' touchdown-scorer prices (from the SportsGameOdds pull):
    * [player, team abbr, anytime, first TD, 2+ TDs, last TD, then where each of those opened (the first
-   * saved pull; missing on boards saved before November 12, 2026)].
+   * saved pull; missing on boards saved before November 12, 2026), then the best anytime price across
+   * the books and its book tag (boards saved from November 14, 2026)].
    */
   td?: [
     string,
@@ -152,6 +153,8 @@ export interface UpcomingPropGame {
     (number | null)?,
     (number | null)?,
     (number | null)?,
+    (number | null)?,
+    (string | null)?,
   ][];
 }
 
