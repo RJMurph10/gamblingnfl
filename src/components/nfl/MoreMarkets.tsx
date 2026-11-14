@@ -3,7 +3,6 @@ import { Panel, PanelHeader } from "@/components/shared/booth";
 import type { Team } from "@/data/shared/teams";
 import {
   bestOffers,
-  findMarketsGame,
   fmtLine,
   fmtOdds,
   fullGameRows,
@@ -17,21 +16,11 @@ import {
   sideLabels,
   type MarketRow,
   type PartialFlag,
-  type PeriodProp,
 } from "@/lib/nfl/more-markets";
-import { useNflLineGame, useNflMoreMarkets, useNflPartials } from "@/lib/nfl/use-more-markets";
+import { useNflLineGame, useNflPartials } from "@/lib/nfl/use-more-markets";
 import { bookName } from "@/lib/shared/best-lines";
 
 const fullName = (t: Team) => `${t.city} ${t.name}`.trim();
-
-function useGameMarkets(home: Team, away: Team, when: string) {
-  const q = useNflMoreMarkets();
-  const game = useMemo(
-    () => findMarketsGame(q.data, fullName(home), fullName(away), when),
-    [q.data, home, away, when],
-  );
-  return { q, game };
-}
 
 const record = (x: number[] | undefined) => {
   const [w = 0, l = 0, p = 0, u = 0] = x ?? [];
@@ -263,102 +252,6 @@ export function AllLines({
           This season: watch {record(rec?.watch)} · track {record(rec?.track)}
         </p>
       </div>
-    </Panel>
-  );
-}
-
-const PP_PERIODS = ["1h", "1q", "2q", "3q", "4q"];
-
-/** Player props for the 1st half and each quarter: best over and under across books. */
-export function PeriodProps({ home, away, when }: { home: Team; away: Team; when: string }) {
-  const { game } = useGameMarkets(home, away, when);
-  const [period, setPeriod] = useState("1h");
-  const by = useMemo(() => {
-    const m = new Map<string, PeriodProp[]>();
-    for (const r of game?.pp ?? []) m.set(r[1], [...(m.get(r[1]) ?? []), r]);
-    return m;
-  }, [game]);
-  const periods = PP_PERIODS.filter((p) => by.has(p));
-  if (!game || !periods.length) return null;
-  const cur = periods.includes(period) ? period : periods[0];
-  const rows = (by.get(cur) ?? [])
-    .slice()
-    .sort((a, b) => a[2].localeCompare(b[2]) || a[0].localeCompare(b[0]));
-  // best price at the line most books post
-  const best = (r: PeriodProp, slot: 1 | 2) =>
-    bestOffers(["", "ou", "", "", r[3]] as MarketRow)[slot - 1];
-  return (
-    <Panel padded={false}>
-      <PanelHeader
-        title="Player props by half & quarter"
-        aside={<span className="label-mono">{rows.length} props</span>}
-      />
-      <div className="flex flex-wrap gap-1 px-4 pt-3" role="tablist" aria-label="Part of the game">
-        {periods.map((p) => (
-          <button
-            key={p}
-            type="button"
-            role="tab"
-            aria-selected={cur === p}
-            onClick={() => setPeriod(p)}
-            className={`rounded-md px-2.5 py-1.5 font-disp text-xs font-semibold uppercase tracking-wider transition-colors ${cur === p ? "bg-acc text-black" : "text-mute hover:bg-line/5 hover:text-foreground"}`}
-          >
-            {PERIODS[p]}
-          </button>
-        ))}
-      </div>
-      <div className="max-h-[480px] overflow-auto">
-        <table className="mt-2 w-full min-w-[560px] text-sm">
-          <thead>
-            <tr className="text-left font-mono text-[10px] uppercase tracking-wider text-faint">
-              <th className="px-4 py-2 font-normal">Player</th>
-              <th className="px-2 py-2 font-normal">Market</th>
-              <th className="px-2 py-2 font-normal">Best over / yes</th>
-              <th className="px-2 py-2 font-normal">Best under</th>
-              <th className="px-4 py-2 text-right font-normal">Books</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-line/5">
-            {rows.map((r) => {
-              const o = best(r, 1);
-              const u = best(r, 2);
-              return (
-                <tr key={`${r[0]}|${r[2]}`}>
-                  <td className="px-4 py-2">{r[0]}</td>
-                  <td className="px-2 py-2 text-[12px] text-mute">{r[2]}</td>
-                  <td className="px-2 py-2 font-mono text-[12px] tabular-nums">
-                    {o ? (
-                      <>
-                        {o.line != null ? `o${o.line} ` : ""}
-                        {fmtOdds(o.price)} <span className="text-[10px] text-faint">{o.book}</span>
-                      </>
-                    ) : (
-                      "—"
-                    )}
-                  </td>
-                  <td className="px-2 py-2 font-mono text-[12px] tabular-nums">
-                    {u ? (
-                      <>
-                        u{u.line} {fmtOdds(u.price)}{" "}
-                        <span className="text-[10px] text-faint">{u.book}</span>
-                      </>
-                    ) : (
-                      "—"
-                    )}
-                  </td>
-                  <td className="px-4 py-2 text-right font-mono text-[11px] text-faint">
-                    {Object.keys(r[3]).length}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-      <p className="border-t border-line/10 px-4 py-2 font-mono text-[10px] text-faint">
-        Display only: no history yet to test these for edges. Saved with every pull so they can be
-        tested later.
-      </p>
     </Panel>
   );
 }
