@@ -7,9 +7,10 @@
  * become an implied mean: mean = line + z(no-vig over) × sd, sd = k × √line. The consensus is the other books'
  * average implied mean (3+ books on the prop). A US book whose line or price is off the consensus by enough
  * expected value (EV, at that book's own price) is flagged, one flag per prop (best book), at first sighting:
- *   tier "10": EV 10%+   bet, 1 unit   (2023-24 closing lines: +20.4%)
- *   tier "6":  EV 6–10%  bet, 1 unit   (+7.4%)
- *   tier "4":  EV 4–6%   tracked only  (+2.5%)
+ *   tier "10": EV 10%+   bet, 1 unit   (2023-24 closing lines, bet only at DraftKings / MGM / Caesars /
+ *                                       ESPN BET: 562 bets, 59.3%, +14.2%)
+ *   tier "6":  EV 6–10%  tracked only  (−0.6% at those books; +7.4% when SugarHouse / PointsBet counted)
+ *   tier "4":  EV 4–6%   tracked only  (+1.0%)
  *
  * Each run: pulls today's NBA props from SportsGameOdds (every book, one request per game; skips when the
  * month's allowance is nearly used), grades earlier flags from ESPN box scores, and writes
@@ -40,19 +41,22 @@ export const MARKETS = {
   assists: ["AST", 1.146],
   threePointersMade: ["3PT", 1.179],
 };
-/** Books you can bet in the US (others, like offshore books, only count toward the consensus). */
+/**
+ * The books flags are bet at (the big US books): DraftKings, FanDuel, BetMGM, Caesars, theScore Bet (was
+ * ESPN BET), Fanatics, Hard Rock and bet365. Every other listed book (offshore, regional) still counts
+ * toward the consensus.
+ */
 export const BETTABLE = {
   draftkings: "DraftKings",
   fanduel: "FanDuel",
   betmgm: "BetMGM",
   caesars: "Caesars",
-  espnbet: "ESPN BET",
+  williamhill: "Caesars",
+  espnbet: "theScore Bet",
+  thescorebet: "theScore Bet",
   fanatics: "Fanatics",
-  betrivers: "BetRivers",
   hardrockbet: "Hard Rock",
   bet365: "bet365",
-  ballybet: "Bally Bet",
-  betparx: "betPARX",
 };
 export const TIERS = [
   ["10", 0.1],
@@ -71,23 +75,41 @@ export const payout = (o) => (o < 0 ? 100 / -o : o / 100);
 export function phi(z) {
   const t = 1 / (1 + 0.2316419 * Math.abs(z));
   const d = 0.3989422804014327 * Math.exp((-z * z) / 2);
-  const p = d * t * (0.31938153 + t * (-0.356563782 + t * (1.781477937 + t * (-1.821255978 + t * 1.330274429))));
+  const p =
+    d *
+    t *
+    (0.31938153 + t * (-0.356563782 + t * (1.781477937 + t * (-1.821255978 + t * 1.330274429))));
   return z >= 0 ? 1 - p : p;
 }
 export function phiInv(p) {
-  const a = [-39.69683028665376, 220.9460984245205, -275.9285104469687, 138.357751867269, -30.66479806614716, 2.506628277459239];
-  const b = [-54.47609879822406, 161.5858368580409, -155.6989798598866, 66.80131188771972, -13.28068155288572];
-  const c = [-0.007784894002430293, -0.3223964580411365, -2.400758277161838, -2.549732539343734, 4.374664141464968, 2.938163982698783];
+  const a = [
+    -39.69683028665376, 220.9460984245205, -275.9285104469687, 138.357751867269, -30.66479806614716,
+    2.506628277459239,
+  ];
+  const b = [
+    -54.47609879822406, 161.5858368580409, -155.6989798598866, 66.80131188771972,
+    -13.28068155288572,
+  ];
+  const c = [
+    -0.007784894002430293, -0.3223964580411365, -2.400758277161838, -2.549732539343734,
+    4.374664141464968, 2.938163982698783,
+  ];
   const d = [0.007784695709041462, 0.3224671290700398, 2.445134137142996, 3.754408661907416];
   const q = Math.min(Math.max(p, 1e-9), 1 - 1e-9);
   if (q < 0.02425) {
     const r = Math.sqrt(-2 * Math.log(q));
-    return (((((c[0] * r + c[1]) * r + c[2]) * r + c[3]) * r + c[4]) * r + c[5]) / ((((d[0] * r + d[1]) * r + d[2]) * r + d[3]) * r + 1);
+    return (
+      (((((c[0] * r + c[1]) * r + c[2]) * r + c[3]) * r + c[4]) * r + c[5]) /
+      ((((d[0] * r + d[1]) * r + d[2]) * r + d[3]) * r + 1)
+    );
   }
   if (q > 1 - 0.02425) return -phiInv(1 - q);
   const r = q - 0.5;
   const s = r * r;
-  return ((((((a[0] * s + a[1]) * s + a[2]) * s + a[3]) * s + a[4]) * s + a[5]) * r) / (((((b[0] * s + b[1]) * s + b[2]) * s + b[3]) * s + b[4]) * s + 1);
+  return (
+    ((((((a[0] * s + a[1]) * s + a[2]) * s + a[3]) * s + a[4]) * s + a[5]) * r) /
+    (((((b[0] * s + b[1]) * s + b[2]) * s + b[3]) * s + b[4]) * s + 1)
+  );
 }
 
 /**
@@ -104,7 +126,12 @@ export function propBooks(e) {
     const name = p?.name ?? [p?.firstName, p?.lastName].filter(Boolean).join(" ");
     if (!name) continue;
     const key = `${m.playerID}|${mk[0]}`;
-    const team = p?.teamID === e.teams?.home?.teamID ? "home" : p?.teamID === e.teams?.away?.teamID ? "away" : "";
+    const team =
+      p?.teamID === e.teams?.home?.teamID
+        ? "home"
+        : p?.teamID === e.teams?.away?.teamID
+          ? "away"
+          : "";
     const rec = out.get(key) ?? { name, team, market: mk[0], k: mk[1], books: new Map() };
     for (const [book, b] of Object.entries(m.byBookmaker ?? {})) {
       if (!b || b.available === false) continue;
@@ -124,7 +151,9 @@ export function propBooks(e) {
 
 /** The best edge on one prop (or null): book, side, line, price, EV, consensus line, number of books. */
 export function bestEdge(rec) {
-  const books = [...rec.books].filter(([, r]) => r[1] != null && r[2] != null && Math.abs(implied(r[1]) - implied(r[2])) <= 0.2);
+  const books = [...rec.books].filter(
+    ([, r]) => r[1] != null && r[2] != null && Math.abs(implied(r[1]) - implied(r[2])) <= 0.2,
+  );
   if (books.length < 3) return null;
   const rows = books.map(([book, [line, o, u]]) => {
     const nv = implied(o) / (implied(o) + implied(u));
@@ -165,7 +194,10 @@ async function get(url, headers = {}) {
     try {
       const r = await fetch(url, { headers, signal: AbortSignal.timeout(30_000) });
       if (r.ok) return r.json();
-      if (r.status < 500) throw new Error(`${r.status} ${url.replace(/apiKey=[^&]+/, "")}: ${(await r.text()).slice(0, 160)}`);
+      if (r.status < 500)
+        throw new Error(
+          `${r.status} ${url.replace(/apiKey=[^&]+/, "")}: ${(await r.text()).slice(0, 160)}`,
+        );
     } catch (e) {
       if (t === 2) throw e;
     }
@@ -200,7 +232,9 @@ async function pull(file, now) {
   console.log(`SportsGameOdds month usage: ${used}/${max}`);
   const room = left == null ? 15 : Math.min(30, left - KEEP);
   if (room <= 0) {
-    console.log(`skipping the pull: ${left} events left this month (keeping ${KEEP} for the other pulls)`);
+    console.log(
+      `skipping the pull: ${left} events left this month (keeping ${KEEP} for the other pulls)`,
+    );
     file.skipped = { at: new Date(now).toISOString(), left };
     return 0;
   }
@@ -270,7 +304,11 @@ async function pull(file, now) {
 /** ESPN box score stats for one game, by normalized player name: { PTS, REB, AST, 3PT, MIN }. */
 async function boxFor(date, home, away, cache) {
   const day = date.replace(/-/g, "");
-  if (!cache.has(day)) cache.set(day, get(`${ESPN}/scoreboard?dates=${day}`).catch(() => null));
+  if (!cache.has(day))
+    cache.set(
+      day,
+      get(`${ESPN}/scoreboard?dates=${day}`).catch(() => null),
+    );
   const sb = await cache.get(day);
   const ev = (sb?.events ?? []).find((x) => {
     const names = (x.competitions?.[0]?.competitors ?? []).map((c) => norm(c.team?.displayName));
@@ -279,7 +317,11 @@ async function boxFor(date, home, away, cache) {
   if (!ev) return null;
   if (ev.status?.type?.completed !== true) return { pending: true };
   const key = `box:${ev.id}`;
-  if (!cache.has(key)) cache.set(key, get(`${ESPN}/summary?event=${ev.id}`).catch(() => null));
+  if (!cache.has(key))
+    cache.set(
+      key,
+      get(`${ESPN}/summary?event=${ev.id}`).catch(() => null),
+    );
   const s = await cache.get(key);
   const out = new Map();
   for (const team of s?.boxscore?.players ?? []) {
@@ -288,7 +330,14 @@ async function boxFor(date, home, away, cache) {
     for (const a of st?.athletes ?? []) {
       const v = Object.fromEntries(labels.map((l, i) => [l, a.stats?.[i]]));
       const n = (x) => num(String(x ?? "").split("-")[0]);
-      out.set(norm(a.athlete?.displayName), { PTS: n(v.PTS), REB: n(v.REB), AST: n(v.AST), "3PT": n(v["3PT"]), MIN: n(v.MIN), dnp: a.didNotPlay === true || !a.stats?.length });
+      out.set(norm(a.athlete?.displayName), {
+        PTS: n(v.PTS),
+        REB: n(v.REB),
+        AST: n(v.AST),
+        "3PT": n(v["3PT"]),
+        MIN: n(v.MIN),
+        dnp: a.didNotPlay === true || !a.stats?.length,
+      });
     }
   }
   return out;
@@ -313,7 +362,7 @@ async function grade(file, now) {
     const v = p[f.market];
     if (v == null) continue;
     f.actual = v;
-    f.res = v === f.line ? "push" : (v > f.line) === (f.side === "over") ? "win" : "loss";
+    f.res = v === f.line ? "push" : v > f.line === (f.side === "over") ? "win" : "loss";
     graded += 1;
   }
   return graded;
@@ -352,7 +401,11 @@ async function main() {
   file.flags.sort((a, b) => a.start.localeCompare(b.start) || b.ev - a.ev);
   file.record = record(file.flags);
   file.updated = new Date(now).toISOString();
-  file.rule = { tiers: Object.fromEntries(TIERS), k: Object.fromEntries(Object.values(MARKETS)), minBooks: 3 };
+  file.rule = {
+    tiers: Object.fromEntries(TIERS),
+    k: Object.fromEntries(Object.values(MARKETS)),
+    minBooks: 3,
+  };
   await mkdir(join(OUT, "nba"), { recursive: true });
   await writeFile(path, JSON.stringify(file));
   console.log(`graded ${g}; record ${JSON.stringify(file.record)}; wrote ${path}`);

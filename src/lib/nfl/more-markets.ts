@@ -4,7 +4,7 @@
  * scripts/line-history/sgo-markets.mjs), plus the quarter / half edge finder's flags
  * (props-site nfl/partials-<season>.json, scripts/props/nfl-partials.mjs). Pure helpers.
  */
-import { bookName, nameMatch } from "@/lib/shared/best-lines";
+import { bookName, isMajorBook, nameMatch } from "@/lib/shared/best-lines";
 
 /** [line, a, b, c?] per book: ou [line, over, under]; sp [home spread, home, away]; ml [null, home, away]; ml3way [null, home, away, tie]; yn [null, yes, no]; eo [null, even, odd]. */
 export type MarketCell = [number | null, number | null, number | null, (number | null)?];
@@ -248,7 +248,8 @@ export interface BestOffer {
 /** The line most books post (home number for spreads); ties go to the lower line. */
 export function mainLine(r: MarketRow): number | null {
   const n = new Map<number, number>();
-  for (const c of Object.values(r[4])) if (c[0] != null) n.set(c[0], (n.get(c[0]) ?? 0) + 1);
+  for (const [book, c] of Object.entries(r[4]))
+    if (c[0] != null && isMajorBook(book)) n.set(c[0], (n.get(c[0]) ?? 0) + 1);
   let best: number | null = null;
   for (const [line, k] of n)
     if (best == null || k > n.get(best)! || (k === n.get(best)! && line < best)) best = line;
@@ -267,7 +268,7 @@ export function bestOffers(r: MarketRow): (BestOffer | null)[] {
     let best: BestOffer | null = null;
     for (const [book, cell] of Object.entries(r[4])) {
       const price = cell[slot];
-      if (price == null || cell[0] !== main) continue;
+      if (price == null || cell[0] !== main || !isMajorBook(book)) continue;
       const line = bet === "sp" && main != null ? (slot === 1 ? main : -main) : main;
       if (!best || payout(price) > payout(best.price)) best = { book: bookName(book), line, price };
     }

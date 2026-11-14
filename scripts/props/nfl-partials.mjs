@@ -26,6 +26,19 @@ const opt = (n, d) => {
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ESPN = "https://site.api.espn.com/apis/site/v2/sports/football/nfl";
 export const MIN_EV = 0.05;
+/** Flags are bet only at the big US books (offshore / regional lines still set the median). */
+export const MAJOR = new Set([
+  "draftkings",
+  "fanduel",
+  "betmgm",
+  "caesars",
+  "williamhill",
+  "espnbet",
+  "thescorebet",
+  "fanatics",
+  "hardrockbet",
+  "bet365",
+]);
 
 /** market key → [label, watch?] */
 export const MARKETS = {
@@ -120,7 +133,7 @@ export function edgesFor(game, rows) {
       .sort((x, y) => x - y);
     const mid = lines.length ? lines[Math.floor((lines.length - 1) / 2)] : null;
     for (const [book, [line, pa, pb]] of Object.entries(books)) {
-      if (pa == null || pb == null) continue;
+      if (pa == null || pb == null || !MAJOR.has(book)) continue;
       if (mid != null && line != null && Math.abs(line - mid) > 1.5) continue; // off the other books: stale
       if (Math.abs(implied(pa) - implied(pb)) > 0.35) continue; // a stale or one-sided price
       const ch = chances(sim, key, line ?? 0);
