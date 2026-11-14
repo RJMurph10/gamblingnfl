@@ -861,6 +861,7 @@ export function GameDetail({ gameId }: { gameId: string }) {
                     <span className="font-mono text-[11px] text-mute">
                       {game.date}
                     </span>
+                    <GameLocation game={game} />
                   </div>
                 ) : (
                   <div className="flex flex-col items-center">
@@ -871,6 +872,7 @@ export function GameDetail({ gameId }: { gameId: string }) {
                     <span className="font-mono text-[11px] text-mute">
                       {localTime || game.date}
                     </span>
+                    <GameLocation game={game} />
                   </div>
                 )}
               </div>
@@ -1548,6 +1550,20 @@ export function GameDetail({ gameId }: { gameId: string }) {
         </>
       ) : null}
     </>
+  );
+}
+
+/** Where the game is played, under the date (finished) or kickoff time (upcoming): city, stadium on hover. */
+function GameLocation({ game }: { game: Game }) {
+  const where = game.location || game.venue;
+  if (!where) return null;
+  return (
+    <span
+      className="mt-0.5 max-w-[11rem] truncate text-center font-mono text-[10px] text-faint"
+      title={game.venue && game.location ? `${game.venue}, ${game.location}` : where}
+    >
+      {where}
+    </span>
   );
 }
 
