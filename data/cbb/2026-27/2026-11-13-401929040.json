@@ -7,18 +7,18 @@
   "id": "2815",
   "abbr": "LIN",
   "name": "Lindenwood Lions",
-  "score": 0
+  "score": 31
  },
  "home": {
   "id": "2437",
   "abbr": "OMA",
   "name": "Omaha Mavericks",
-  "score": 0
+  "score": 30
  },
  "neutral": false,
  "venue": "Baxter Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-13T01:36:25.578Z",

@@ -7,18 +7,18 @@
   "id": "1",
   "abbr": "ATL",
   "name": "Atlanta Hawks",
-  "score": 0
+  "score": 97
  },
  "home": {
   "id": "4",
   "abbr": "CHI",
   "name": "Chicago Bulls",
-  "score": 0
+  "score": 103
  },
  "neutral": false,
  "venue": "United Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-13T01:36:25.578Z",

@@ -7,18 +7,18 @@
   "id": "2433",
   "abbr": "ULM",
   "name": "UL Monroe Warhawks",
-  "score": 0
+  "score": 22
  },
  "home": {
   "id": "9",
   "abbr": "ASU",
   "name": "Arizona State Sun Devils",
-  "score": 0
+  "score": 52
  },
  "neutral": false,
  "venue": "Desert Financial Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-13T01:36:25.578Z",

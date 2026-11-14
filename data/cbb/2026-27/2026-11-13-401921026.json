@@ -7,18 +7,18 @@
   "id": "290",
   "abbr": "GASO",
   "name": "Georgia Southern Eagles",
-  "score": 0
+  "score": 70
  },
  "home": {
   "id": "2116",
   "abbr": "UCF",
   "name": "UCF Knights",
-  "score": 0
+  "score": 84
  },
  "neutral": false,
  "venue": "Addition Financial Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-13T01:36:25.578Z",

@@ -7,18 +7,18 @@
   "id": "29",
   "abbr": "MEM",
   "name": "Memphis Grizzlies",
-  "score": 0
+  "score": 107
  },
  "home": {
   "id": "3",
   "abbr": "NO",
   "name": "New Orleans Pelicans",
-  "score": 0
+  "score": 90
  },
  "neutral": false,
  "venue": "Smoothie King Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-13T01:36:25.578Z",

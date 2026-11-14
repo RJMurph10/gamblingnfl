@@ -7,18 +7,18 @@
   "id": "2546",
   "abbr": "SEMO",
   "name": "Southeast Missouri State Redhawks",
-  "score": 0
+  "score": 75
  },
  "home": {
   "id": "2393",
   "abbr": "MTSU",
   "name": "Middle Tennessee Blue Raiders",
-  "score": 0
+  "score": 88
  },
  "neutral": false,
  "venue": "Murphy Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-13T01:36:25.578Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 75,
+  "home": 88
+ }
 }

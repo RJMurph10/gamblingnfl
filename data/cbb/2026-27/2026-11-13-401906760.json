@@ -7,18 +7,18 @@
   "id": "2550",
   "abbr": "HALL",
   "name": "Seton Hall Pirates",
-  "score": 0
+  "score": 28
  },
  "home": {
   "id": "333",
   "abbr": "ALA",
   "name": "Alabama Crimson Tide",
-  "score": 0
+  "score": 38
  },
  "neutral": false,
  "venue": "Coleman Coliseum",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-13T01:36:25.578Z",

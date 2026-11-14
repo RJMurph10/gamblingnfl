@@ -7,18 +7,18 @@
   "id": "2130",
   "abbr": "CHST",
   "name": "Chicago State Cougars",
-  "score": 0
+  "score": 22
  },
  "home": {
   "id": "301",
   "abbr": "USD",
   "name": "San Diego Toreros",
-  "score": 0
+  "score": 35
  },
  "neutral": false,
  "venue": "Jenny Craig Pavilion",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-13T09:38:35.492Z",

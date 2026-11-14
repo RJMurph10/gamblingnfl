@@ -7,18 +7,18 @@
   "id": "233",
   "abbr": "SDAK",
   "name": "South Dakota Coyotes",
-  "score": 0
+  "score": 72
  },
  "home": {
   "id": "2181",
   "abbr": "DRKE",
   "name": "Drake Bulldogs",
-  "score": 0
+  "score": 81
  },
  "neutral": false,
  "venue": "Knapp Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-13T01:36:25.578Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 72,
+  "home": 81
+ }
 }

@@ -7,18 +7,18 @@
   "id": "5",
   "abbr": "CLE",
   "name": "Cleveland Cavaliers",
-  "score": 0
+  "score": 93
  },
  "home": {
   "id": "14",
   "abbr": "MIA",
   "name": "Miami Heat",
-  "score": 0
+  "score": 102
  },
  "neutral": false,
  "venue": "Kaseya Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-13T01:36:25.578Z",

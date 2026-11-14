@@ -7,18 +7,18 @@
   "id": "82",
   "abbr": "UIC",
   "name": "UIC Flames",
-  "score": 0
+  "score": 5
  },
  "home": {
   "id": "2608",
   "abbr": "SMC",
   "name": "Saint Mary's Gaels",
-  "score": 0
+  "score": 3
  },
  "neutral": false,
  "venue": "University Credit Union Pavilion",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-13T01:36:25.578Z",

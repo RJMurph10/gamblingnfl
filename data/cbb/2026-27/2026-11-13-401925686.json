@@ -7,18 +7,18 @@
   "id": "2016",
   "abbr": "ALCN",
   "name": "Alcorn State Braves",
-  "score": 0
+  "score": 69
  },
  "home": {
   "id": "2627",
   "abbr": "TAR",
   "name": "Tarleton State Texans",
-  "score": 0
+  "score": 73
  },
  "neutral": false,
  "venue": "EECU Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-13T09:38:35.492Z",

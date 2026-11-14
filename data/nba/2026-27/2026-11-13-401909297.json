@@ -7,18 +7,18 @@
   "id": "15",
   "abbr": "MIL",
   "name": "Milwaukee Bucks",
-  "score": 0
+  "score": 99
  },
  "home": {
   "id": "19",
   "abbr": "ORL",
   "name": "Orlando Magic",
-  "score": 0
+  "score": 107
  },
  "neutral": false,
  "venue": "Kia Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-13T01:36:25.578Z",
@@ -927,6 +927,243 @@
       "total": {
        "alternateDisplayValue": "224.5",
        "american": "224.5"
+      }
+     }
+    }
+   ]
+  },
+  "final": {
+   "at": "2026-11-14T03:07:32.138Z",
+   "books": [
+    {
+     "provider": {
+      "id": "100",
+      "name": "Draft Kings",
+      "priority": 1
+     },
+     "details": "ORL -9.5",
+     "overUnder": 223.5,
+     "spread": -9.5,
+     "overOdds": -112,
+     "underOdds": -108,
+     "awayTeamOdds": {
+      "favorite": false,
+      "underdog": true,
+      "moneyLine": 331,
+      "spreadOdds": -108,
+      "open": {
+       "favorite": false,
+       "pointSpread": {
+        "alternateDisplayValue": "+9.5",
+        "american": "+9.5"
+       },
+       "spread": {
+        "value": 1.9,
+        "displayValue": "10/11",
+        "alternateDisplayValue": "-110",
+        "decimal": 1.9,
+        "fraction": "10/11",
+        "american": "-110"
+       },
+       "moneyLine": {
+        "value": 3.57,
+        "displayValue": "257/100",
+        "alternateDisplayValue": "+257",
+        "decimal": 3.57,
+        "fraction": "257/100",
+        "american": "+257"
+       }
+      },
+      "close": {
+       "pointSpread": {
+        "alternateDisplayValue": "+9.5",
+        "american": "+9.5"
+       },
+       "spread": {
+        "value": 1.92,
+        "displayValue": "25/27",
+        "alternateDisplayValue": "-108",
+        "decimal": 1.92,
+        "fraction": "25/27",
+        "american": "-108"
+       },
+       "moneyLine": {
+        "value": 4.31,
+        "displayValue": "331/100",
+        "alternateDisplayValue": "+331",
+        "decimal": 4.31,
+        "fraction": "331/100",
+        "american": "+331"
+       }
+      },
+      "current": {
+       "pointSpread": {
+        "alternateDisplayValue": "+9.5",
+        "american": "+9.5"
+       },
+       "spread": {
+        "value": 1.92,
+        "displayValue": "25/27",
+        "alternateDisplayValue": "-108",
+        "decimal": 1.92,
+        "fraction": "25/27",
+        "american": "-108"
+       },
+       "moneyLine": {
+        "value": 4.31,
+        "displayValue": "331/100",
+        "alternateDisplayValue": "+331",
+        "decimal": 4.31,
+        "fraction": "331/100",
+        "american": "+331"
+       }
+      },
+      "team": {
+       "id": "15"
+      }
+     },
+     "homeTeamOdds": {
+      "favorite": true,
+      "underdog": false,
+      "moneyLine": -423,
+      "spreadOdds": -112,
+      "open": {
+       "favorite": true,
+       "pointSpread": {
+        "alternateDisplayValue": "-9.5",
+        "american": "-9.5"
+       },
+       "spread": {
+        "value": 1.9,
+        "displayValue": "10/11",
+        "alternateDisplayValue": "-110",
+        "decimal": 1.9,
+        "fraction": "10/11",
+        "american": "-110"
+       },
+       "moneyLine": {
+        "value": 1.31,
+        "displayValue": "100/319",
+        "alternateDisplayValue": "-319",
+        "decimal": 1.31,
+        "fraction": "100/319",
+        "american": "-319"
+       }
+      },
+      "close": {
+       "pointSpread": {
+        "alternateDisplayValue": "-9.5",
+        "american": "-9.5"
+       },
+       "spread": {
+        "value": 1.89,
+        "displayValue": "25/28",
+        "alternateDisplayValue": "-112",
+        "decimal": 1.89,
+        "fraction": "25/28",
+        "american": "-112"
+       },
+       "moneyLine": {
+        "value": 1.23,
+        "displayValue": "100/423",
+        "alternateDisplayValue": "-423",
+        "decimal": 1.23,
+        "fraction": "100/423",
+        "american": "-423"
+       }
+      },
+      "current": {
+       "pointSpread": {
+        "alternateDisplayValue": "-9.5",
+        "american": "-9.5"
+       },
+       "spread": {
+        "value": 1.89,
+        "displayValue": "25/28",
+        "alternateDisplayValue": "-112",
+        "decimal": 1.89,
+        "fraction": "25/28",
+        "american": "-112"
+       },
+       "moneyLine": {
+        "value": 1.23,
+        "displayValue": "100/423",
+        "alternateDisplayValue": "-423",
+        "decimal": 1.23,
+        "fraction": "100/423",
+        "american": "-423"
+       }
+      },
+      "team": {
+       "id": "19"
+      }
+     },
+     "moneylineWinner": false,
+     "spreadWinner": false,
+     "open": {
+      "over": {
+       "value": 1.9,
+       "displayValue": "10/11",
+       "alternateDisplayValue": "-110",
+       "decimal": 1.9,
+       "fraction": "10/11",
+       "american": "-110"
+      },
+      "under": {
+       "value": 1.9,
+       "displayValue": "10/11",
+       "alternateDisplayValue": "-110",
+       "decimal": 1.9,
+       "fraction": "10/11",
+       "american": "-110"
+      },
+      "total": {
+       "alternateDisplayValue": "223.5",
+       "american": "223.5"
+      }
+     },
+     "close": {
+      "over": {
+       "value": 1.89,
+       "displayValue": "25/28",
+       "alternateDisplayValue": "-112",
+       "decimal": 1.89,
+       "fraction": "25/28",
+       "american": "-112"
+      },
+      "under": {
+       "value": 1.92,
+       "displayValue": "25/27",
+       "alternateDisplayValue": "-108",
+       "decimal": 1.92,
+       "fraction": "25/27",
+       "american": "-108"
+      },
+      "total": {
+       "alternateDisplayValue": "223.5",
+       "american": "223.5"
+      }
+     },
+     "current": {
+      "over": {
+       "value": 1.89,
+       "displayValue": "25/28",
+       "alternateDisplayValue": "-112",
+       "decimal": 1.89,
+       "fraction": "25/28",
+       "american": "-112"
+      },
+      "under": {
+       "value": 1.92,
+       "displayValue": "25/27",
+       "alternateDisplayValue": "-108",
+       "decimal": 1.92,
+       "fraction": "25/27",
+       "american": "-108"
+      },
+      "total": {
+       "alternateDisplayValue": "223.5",
+       "american": "223.5"
       }
      }
     }
@@ -2450,5 +2687,9 @@
    "Jase Richardson",
    "ORL"
   ]
+ },
+ "final": {
+  "away": 99,
+  "home": 107
  }
 }

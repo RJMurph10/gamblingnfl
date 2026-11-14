@@ -7,18 +7,18 @@
   "id": "2428",
   "abbr": "NCCU",
   "name": "North Carolina Central Eagles",
-  "score": 0
+  "score": 66
  },
  "home": {
   "id": "2335",
   "abbr": "LIB",
   "name": "Liberty Flames",
-  "score": 0
+  "score": 74
  },
  "neutral": false,
  "venue": "Liberty Arena (VA)",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-13T09:38:35.492Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 66,
+  "home": 74
+ }
 }

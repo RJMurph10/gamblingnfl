@@ -7,18 +7,18 @@
   "id": "2837",
   "abbr": "ETAM",
   "name": "East Texas A&M Lions",
-  "score": 0
+  "score": 2
  },
  "home": {
   "id": "2501",
   "abbr": "PORT",
   "name": "Portland Pilots",
-  "score": 0
+  "score": 2
  },
  "neutral": false,
  "venue": "Chiles Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-13T17:49:04.100Z",

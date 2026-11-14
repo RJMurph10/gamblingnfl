@@ -7,18 +7,18 @@
   "id": "2400",
   "abbr": "MVSU",
   "name": "Mississippi Valley State Delta Devils",
-  "score": 0
+  "score": 31
  },
  "home": {
   "id": "204",
   "abbr": "ORST",
   "name": "Oregon State Beavers",
-  "score": 0
+  "score": 35
  },
  "neutral": false,
  "venue": "Gill Coliseum",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-13T09:38:35.492Z",

@@ -7,18 +7,18 @@
   "id": "2565",
   "abbr": "SIUE",
   "name": "SIU Edwardsville Cougars",
-  "score": 0
+  "score": 45
  },
  "home": {
   "id": "150",
   "abbr": "DUKE",
   "name": "Duke Blue Devils",
-  "score": 0
+  "score": 88
  },
  "neutral": false,
  "venue": "Cameron Indoor Stadium",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-13T01:36:25.578Z",

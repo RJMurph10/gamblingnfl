@@ -7,18 +7,18 @@
   "id": "24",
   "abbr": "STAN",
   "name": "Stanford Cardinal",
-  "score": 0
+  "score": 33
  },
  "home": {
   "id": "2439",
   "abbr": "UNLV",
   "name": "UNLV Rebels",
-  "score": 0
+  "score": 39
  },
  "neutral": false,
  "venue": "Thomas & Mack Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-13T01:36:25.578Z",

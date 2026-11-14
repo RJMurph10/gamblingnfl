@@ -7,18 +7,18 @@
   "id": "13",
   "abbr": "CP",
   "name": "Cal Poly Mustangs",
-  "score": 0
+  "score": 44
  },
  "home": {
   "id": "70",
   "abbr": "IDHO",
   "name": "Idaho Vandals",
-  "score": 0
+  "score": 35
  },
  "neutral": false,
  "venue": "ICCU Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-13T01:36:25.578Z",

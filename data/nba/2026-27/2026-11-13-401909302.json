@@ -7,18 +7,18 @@
   "id": "9",
   "abbr": "GS",
   "name": "Golden State Warriors",
-  "score": 0
+  "score": 10
  },
  "home": {
   "id": "24",
   "abbr": "SA",
   "name": "San Antonio Spurs",
-  "score": 0
+  "score": 33
  },
  "neutral": false,
  "venue": "Frost Bank Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-13T01:36:25.578Z",

@@ -7,18 +7,18 @@
   "id": "194",
   "abbr": "OSU",
   "name": "Ohio State Buckeyes",
-  "score": 0
+  "score": 68
  },
  "home": {
   "id": "41",
   "abbr": "CONN",
   "name": "UConn Huskies",
-  "score": 0
+  "score": 84
  },
  "neutral": false,
  "venue": "PeoplesBank Arena",
  "seasonType": 2,
- "state": "pre",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-13T01:36:25.578Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 68,
+  "home": 84
+ }
 }

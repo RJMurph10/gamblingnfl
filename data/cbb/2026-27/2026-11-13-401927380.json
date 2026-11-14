@@ -7,18 +7,18 @@
   "id": "2640",
   "abbr": "TXSO",
   "name": "Texas Southern Tigers",
-  "score": 0
+  "score": 71
  },
  "home": {
   "id": "93",
   "abbr": "MUR",
   "name": "Murray State Racers",
-  "score": 0
+  "score": 97
  },
  "neutral": false,
  "venue": "CFSB Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-13T09:38:35.492Z",
