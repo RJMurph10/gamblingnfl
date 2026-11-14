@@ -133,7 +133,12 @@ export function etDayLabel(key: string): string {
 export function etShortLabel(key: string): string {
   const d = new Date(`${key}T12:00:00-04:00`);
   if (Number.isNaN(d.getTime())) return key;
-  return d.toLocaleDateString("en-US", { timeZone: ET, weekday: "short", month: "short", day: "numeric" });
+  return d.toLocaleDateString("en-US", {
+    timeZone: ET,
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+  });
 }
 
 /** Tip-off in the viewer's own time zone, e.g. "7:30 PM". */
@@ -149,7 +154,10 @@ export function fmtLine(n: number | null | undefined, digits = 1): string {
 }
 
 /** "BOS -5.5" for a home spread (negative = home favorite); "PK" at zero. */
-export function spreadText(game: Pick<NbaGame, "away" | "home">, spread: number | null | undefined): string {
+export function spreadText(
+  game: Pick<NbaGame, "away" | "home">,
+  spread: number | null | undefined,
+): string {
   if (spread === null || spread === undefined || !Number.isFinite(spread)) return "—";
   if (spread === 0) return "PK";
   return spread < 0
@@ -201,7 +209,8 @@ export function ouResult(g: NbaGame, total = g.odds?.total): "over" | "under" | 
 export function normCdf(z: number): number {
   const t = 1 / (1 + 0.2316419 * Math.abs(z));
   const d = 0.3989423 * Math.exp((-z * z) / 2);
-  const p = d * t * (0.3193815 + t * (-0.3565638 + t * (1.781478 + t * (-1.821256 + t * 1.330274))));
+  const p =
+    d * t * (0.3193815 + t * (-0.3565638 + t * (1.781478 + t * (-1.821256 + t * 1.330274))));
   return z > 0 ? 1 - p : p;
 }
 
@@ -243,7 +252,8 @@ export interface NbaLogRow {
   part: NbaSeasonPart;
 }
 
-export type NbaStatKey = "pts" | "reb" | "ast" | "fg3m" | "stl" | "blk" | "tov" | "pra" | "pr" | "pa" | "ra" | "min";
+export type NbaStatKey =
+  "pts" | "reb" | "ast" | "fg3m" | "stl" | "blk" | "tov" | "pra" | "pr" | "pa" | "ra" | "min";
 
 export const STAT_LABEL: Record<NbaStatKey, string> = {
   pts: "Points",
@@ -409,6 +419,15 @@ export interface NbaGameDetail {
   leaders: { teamId: string; category: string; name: string; value: string; playerId?: string }[];
   /** ESPN's pregame Matchup Predictor: each team's win %, upcoming games only. */
   predictor?: { away: number; home: number };
+  /** Information tab: arena photo, its city, capacity, attendance, TV, officials (from ESPN's game info). */
+  info?: {
+    venueImages?: string[];
+    location?: string;
+    capacity?: number;
+    attendance?: number;
+    broadcast?: string;
+    officials?: { name: string; role?: string }[];
+  };
 }
 
 /* ---------- props ---------- */
@@ -448,7 +467,16 @@ export const NBA_DIVISIONS: { conference: "East" | "West"; name: string; teams: 
 ];
 
 /** ESPN uses a few different abbreviations in different feeds; fold them together. */
-const ABBR_ALIASES: Record<string, string> = { GSW: "GS", NYK: "NY", NOP: "NO", SAS: "SA", UTA: "UTAH", WAS: "WSH", PHO: "PHX", BRK: "BKN" };
+const ABBR_ALIASES: Record<string, string> = {
+  GSW: "GS",
+  NYK: "NY",
+  NOP: "NO",
+  SAS: "SA",
+  UTA: "UTAH",
+  WAS: "WSH",
+  PHO: "PHX",
+  BRK: "BKN",
+};
 export const canonAbbr = (abbr: string) => ABBR_ALIASES[abbr.toUpperCase()] ?? abbr.toUpperCase();
 
 export function divisionOf(abbr: string) {

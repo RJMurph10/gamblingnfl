@@ -2,10 +2,17 @@
  * One NBA game, laid out like the NFL game page: header, then Gamecast / Stats / Markets / Props /
  * Information tabs.
  */
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { ClosedPropLines } from "@/components/shared/GamePropsTab";
-import { PageTitle, Panel, PanelHeader, PredictorDonut, type PredictorSide } from "@/components/shared/booth";
+import {
+  PageTitle,
+  Panel,
+  PanelHeader,
+  PredictorDonut,
+  VenueImage,
+  type PredictorSide,
+} from "@/components/shared/booth";
 import { BASKETBALL_CLOCK, ProbabilityGraph } from "@/components/shared/ProbabilityGraph";
 import { NbaLogo, oddsLine, statusText } from "@/components/nba/NbaBits";
 import { NbaLiveScoreboard } from "@/components/nba/NbaLiveCourt";
@@ -51,10 +58,6 @@ export function NbaGameDetailView({ gameId }: { gameId: string }) {
   // Same tabs as the NFL game page. Before tip-off the Gamecast is empty, so open on Markets.
   const [tab, setTab] = useState<GameTab | null>(null);
   const activeTab: GameTab = tab ?? (started0 ? "gamecast" : "markets");
-  // Like the NFL page, Information isn't offered during live games.
-  useEffect(() => {
-    if (game?.status === "live" && tab === "information") setTab("gamecast");
-  }, [game?.status, tab]);
 
   const row: NbaModelRow | null = useMemo(() => {
     if (!game || game.part === "pre") return null;
@@ -97,7 +100,7 @@ export function NbaGameDetailView({ gameId }: { gameId: string }) {
     ["stats", "Stats"],
     ["markets", "Markets"],
     ["props", "Props"],
-    ...(game.status !== "live" ? ([["information", "Information"]] as [GameTab, string][]) : []),
+    ["information", "Information"],
   ];
   return (
     <>
@@ -226,8 +229,8 @@ export function NbaGameDetailView({ gameId }: { gameId: string }) {
               final={game.status === "final"}
               fallback={
                 <p className="glass p-4 text-center font-mono text-[11px] text-mute">
-                  This game&apos;s closing prop lines and results aren&apos;t saved yet. Lines are added
-                  within a few hours of tip-off and results after the game.
+                  This game&apos;s closing prop lines and results aren&apos;t saved yet. Lines are
+                  added within a few hours of tip-off and results after the game.
                 </p>
               }
             />
@@ -242,9 +245,9 @@ export function NbaGameDetailView({ gameId }: { gameId: string }) {
         </div>
       ) : null}
 
-      {activeTab === "information" && game.status !== "live" ? (
+      {activeTab === "information" ? (
         <div className="mt-6 grid gap-6 lg:grid-cols-2">
-          <GameInfo game={game} />
+          <GameInfo game={game} info={data?.info} />
           {data?.injuries.length ? (
             <Injuries game={game} injuries={data.injuries} />
           ) : (
@@ -355,53 +358,87 @@ function Probabilities({ game, detail }: { game: NbaGame; detail?: NbaGameDetail
   );
 }
 
-/** Where and when: the Information tab's facts. */
-function GameInfo({ game }: { game: NbaGame }) {
+/**
+ * Where and when, laid out like the NFL page's Game information: both logos, the arena photo, tip-off,
+ * arena, city, capacity, TV, the game type, attendance once it's known, and the officials. Upcoming,
+ * live and finished games.
+ */
+function GameInfo({ game, info }: { game: NbaGame; info?: NbaGameDetail["info"] }) {
   const when = game.date
     ? new Date(game.date).toLocaleString([], {
         weekday: "long",
         month: "long",
         day: "numeric",
-        year: "numeric",
         hour: "numeric",
         minute: "2-digit",
       })
     : "";
+  const kind = [
+    game.part === "pre"
+      ? "Preseason"
+      : game.part === "play-in"
+        ? "Play-in"
+        : game.part === "post"
+          ? "Playoffs"
+          : "Regular season",
+    game.note,
+  ]
+    .filter(Boolean)
+    .join(" · ");
   const rows: [string, string | undefined][] = [
     ["Tip-off", when || undefined],
     ["Arena", game.venue],
-    ["TV", game.broadcast],
+    ["Location", info?.location],
+    ["Capacity", info?.capacity ? info.capacity.toLocaleString() : undefined],
+    ["TV", info?.broadcast ?? game.broadcast],
+    ["Game", kind],
     [
-      "Game",
-      [
-        game.part === "pre"
-          ? "Preseason"
-          : game.part === "play-in"
-            ? "Play-in"
-            : game.part === "post"
-              ? "Playoffs"
-              : "Regular season",
-        game.note,
-      ]
-        .filter(Boolean)
-        .join(" · "),
+      "Attendance",
+      game.status !== "scheduled" && info?.attendance
+        ? info.attendance.toLocaleString()
+        : undefined,
     ],
   ];
   return (
-    <Panel>
-      <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">Game information</h2>
-      <dl className="mt-3 space-y-2 text-sm">
+    <Panel padded={false}>
+      <div className="border-b border-line/10 px-4 py-3">
+        <h2 className="font-disp text-xl font-semibold uppercase tracking-tight">
+          Game information
+        </h2>
+        <div className="mt-2 flex items-center gap-2">
+          <NbaLogo team={game.away.team} className="size-7" />
+          <span className="font-mono text-sm text-mute">@</span>
+          <NbaLogo team={game.home.team} className="size-7" />
+        </div>
+      </div>
+      {info?.venueImages?.length ? (
+        <VenueImage urls={info.venueImages} alt={game.venue ?? "Arena"} />
+      ) : null}
+      <dl className="divide-y divide-line/10 px-4 sm:px-5">
         {rows
           .filter(([, v]) => v)
           .map(([k, v]) => (
-            <div key={k} className="flex justify-between gap-3">
-              <dt className="text-mute">{k}</dt>
-              <dd className="text-right font-mono" suppressHydrationWarning>
+            <div key={k} className="flex items-start justify-between gap-4 py-3 text-sm">
+              <dt className="font-mono text-[11px] uppercase tracking-wider text-faint">{k}</dt>
+              <dd suppressHydrationWarning className="text-right font-semibold text-foreground">
                 {v}
               </dd>
             </div>
           ))}
       </dl>
+      {info?.officials?.length ? (
+        <div className="border-t border-line/10 px-4 py-3 sm:px-5">
+          <h3 className="font-mono text-[11px] uppercase tracking-wider text-faint">Officials</h3>
+          <ul className="mt-2 grid grid-cols-1 gap-1.5 text-sm">
+            {info.officials.map((o) => (
+              <li key={`${o.role}-${o.name}`} className="flex justify-between gap-3">
+                <span className="text-mute">{o.role ?? "Official"}</span>
+                <span className="text-right font-semibold text-foreground">{o.name}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
     </Panel>
   );
 }

@@ -29,7 +29,7 @@ import {
   nbaLogoFor,
 } from "./nba";
 import { possessionFromSummary } from "../shared/basketball-possession";
-import { parsePredictor } from "../shared/espn-core.server";
+import { parseGameInfo, parsePredictor } from "../shared/espn-core.server";
 import { finalCached, finalLinesStore, readFinal, writeFinal } from "../shared/final-cache.server";
 import { athleteIdOf, findPropPrice, priceToAmerican } from "../shared/props.parse";
 import { buildNbaProbabilities } from "./nba-probabilities";
@@ -862,10 +862,10 @@ function shotSpot(p: any): { shot?: { x: number; y: number } } {
 
 /** Game detail; a finished game's detail is kept long-term (it can't change any more). */
 export async function fetchNbaGameDetail(gameId: string): Promise<NbaGameDetail> {
-  const stored = await readFinal<NbaGameDetail>(`nba-game-v2-${gameId}`);
+  const stored = await readFinal<NbaGameDetail>(`nba-game-v3-${gameId}`);
   if (stored) return stored;
   const detail = await loadNbaGameDetail(gameId);
-  if (detail.game.status === "final") await writeFinal(`nba-game-v2-${gameId}`, detail);
+  if (detail.game.status === "final") await writeFinal(`nba-game-v3-${gameId}`, detail);
   return detail;
 }
 
@@ -995,7 +995,24 @@ function loadNbaGameDetail(gameId: string): Promise<NbaGameDetail> {
 
     // ESPN's pregame Matchup Predictor (win % per team), shown on the Markets tab before tip-off
     const predictor = game.status === "scheduled" ? parsePredictor(json?.predictor) : undefined;
+    // Information tab: arena photo, capacity, attendance, TV, officials (the NFL page's parser), and
+    // the arena's city
+    const parsed = parseGameInfo(json) ?? {};
+    const address = json?.gameInfo?.venue?.address;
+    const location = [address?.city, address?.state ?? address?.country].filter(Boolean).join(", ");
+    const info: NonNullable<NbaGameDetail["info"]> = {
+      ...(parsed.venueImages?.length
+        ? { venueImages: parsed.venueImages.filter((u) => !/\/venues\/nfl\//.test(u)) }
+        : {}),
+      ...(parsed.capacity ? { capacity: parsed.capacity } : {}),
+      ...(parsed.attendance ? { attendance: parsed.attendance } : {}),
+      ...(parsed.broadcast ? { broadcast: parsed.broadcast } : {}),
+      ...(parsed.officials?.length ? { officials: parsed.officials } : {}),
+      ...(location ? { location } : {}),
+    };
+    if (!info.venueImages?.length) delete info.venueImages;
     return {
+      ...(Object.keys(info).length ? { info } : {}),
       game,
       teamStats,
       box,
