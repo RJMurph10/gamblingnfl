@@ -17,6 +17,9 @@ const norm = (s) =>
 
 const imp = (o) => (o < 0 ? -o / (-o + 100) : 100 / (o + 100));
 
+/** Props only the SportsGameOdds pulls carry (ESPN's feed doesn't list them): added to the board as is. */
+export const isPullOnly = (label) => /^(1H|1Q|2Q|3Q|4Q) /.test(label) || label === "Longest comp";
+
 /** Returns lookup(homeName, isoDate, player, label, line) → [over, under] | null. */
 export async function loadPrices(dir) {
   const files = dir
@@ -45,11 +48,24 @@ export async function loadPrices(dir) {
             td: null,
             tdOpen: new Map(),
             other: new Map(),
+            otherMain: new Map(),
+            opened: new Map(),
+            sides: new Map(),
+            tdb: new Map(),
           }),
         );
+      for (const [n, side] of Object.entries(g.sides ?? {})) slot.sides.set(norm(n), [n, side]);
+      for (const [n, side, price, book] of g.tdb ?? [])
+        slot.tdb.set(norm(n), [n, side, price, book]);
       // other books' prices where DraftKings has none (newest pull wins)
-      for (const [player, label, line, o, u, book] of g.others ?? [])
+      for (const [player, label, line, o, u, book] of g.others ?? []) {
         slot.other.set(`${norm(player)}|${label}|${Number(line)}`, [o, u, book]);
+        if (isPullOnly(label)) {
+          const k = `${norm(player)}|${label}`;
+          slot.otherMain.set(k, [player, Number(line), o, u, book]);
+          if (!slot.opened.has(k)) slot.opened.set(k, Number(line));
+        }
+      }
       // newest pull's touchdown-scorer prices win; the first pull that had a player is where it opened
       if (g.td?.length) {
         slot.td = g.td;
@@ -64,11 +80,19 @@ export async function loadPrices(dir) {
         // the player's main line in this pull: the most balanced priced pair
         if (o == null || u == null) continue;
         const k = `${norm(player)}|${label}`;
+        if (isPullOnly(label)) {
+          slot.names ??= new Map();
+          slot.names.set(k, player);
+        }
         const bal = Math.abs(imp(o) - imp(u));
         const cur = slot.main.get(k);
         if (!cur || cur.at < f || (cur.at === f && bal < cur.bal))
           slot.main.set(k, { at: f, bal, v: [line, o, u] });
       }
+      // where a pull-only prop opened: its main line in the first pull that had it
+      for (const [k, m] of slot.main)
+        if (m.at === f && isPullOnly(k.split("|")[1]) && !slot.opened.has(`${k}|dk`))
+          slot.opened.set(`${k}|dk`, m.v[0]);
       byHome.set(norm(g.home), list);
     }
   }
@@ -94,11 +118,59 @@ export async function loadPrices(dir) {
       td(home, date) {
         const t = Date.parse(date);
         const slot = byHome.get(norm(home))?.find((s) => Math.abs(s.t - t) < 12 * 3_600_000);
-        if (!slot?.td) return null;
-        return slot.td.map((r) => [
+        if (!slot?.td && !slot?.tdb.size) return null;
+        const rows = (slot.td ?? []).map((r) => [
           ...r.slice(0, 6),
           ...(slot.tdOpen.get(norm(r[0])) ?? [null, null, null, null]),
         ]);
+        // players DraftKings doesn't price, from the other books
+        const have = new Set(rows.map((r) => norm(r[0])));
+        for (const [k, [n, side]] of slot.tdb)
+          if (!have.has(k)) rows.push([n, side, null, null, null, null, null, null, null, null]);
+        // the best anytime price across the books, and which book: positions 10, 11
+        return rows.map((r) => {
+          const b = slot.tdb.get(norm(r[0]));
+          return [...r, b ? b[2] : null, b ? b[3] : null];
+        });
+      },
+      /**
+       * Props only the pulls carry (1st-half / quarter props, longest completion), newest pull's main line:
+       * [[player, home|away|"", label, line, over, under, opened, book tag | null]]. DraftKings first, else
+       * another book's.
+       */
+      extra(home, date) {
+        const t = Date.parse(date);
+        const slot = byHome.get(norm(home))?.find((s) => Math.abs(s.t - t) < 12 * 3_600_000);
+        if (!slot) return [];
+        const out = new Map();
+        for (const [k, m] of slot.main) {
+          const [p, label] = k.split("|");
+          if (!isPullOnly(label)) continue;
+          const name = slot.names?.get(k) ?? p;
+          out.set(k, [
+            name,
+            slot.sides.get(p)?.[1] ?? "",
+            label,
+            ...m.v,
+            slot.opened.get(`${k}|dk`) ?? m.v[0],
+            null,
+          ]);
+        }
+        for (const [k, [name, line, o, u, book]] of slot.otherMain) {
+          if (out.has(k) || o == null || u == null) continue;
+          const p = k.split("|")[0];
+          out.set(k, [
+            name,
+            slot.sides.get(p)?.[1] ?? "",
+            k.split("|")[1],
+            line,
+            o,
+            u,
+            slot.opened.get(k) ?? line,
+            book,
+          ]);
+        }
+        return [...out.values()];
       },
       /** Another book's prices at exactly this line, where DraftKings has none: [over, under, book tag] | null. */
       other(home, date, player, label, line) {

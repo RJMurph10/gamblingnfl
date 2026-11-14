@@ -1,7 +1,8 @@
 /**
  * Server-only: a live game's player numbers for the Props tab, graded exactly like finished games
  * (scripts/line-history/prop-grading.mjs, the same code the nightly prop jobs use) from ESPN's live box
- * score and play-by-play. Cached 15 seconds per game.
+ * score and play-by-play (NFL: also the core-API plays, for 1st-half and quarter props). Cached 15
+ * seconds per game.
  */
 import {
   boxFrom,
@@ -43,6 +44,21 @@ export interface LiveProps {
 
 const cache = new Map<string, { at: number; value: Promise<LiveProps | null> }>();
 
+/** ESPN's core-API plays for an NFL game (one page holds a whole game); null when unavailable. */
+async function corePlays(id: string): Promise<unknown[] | null> {
+  try {
+    const res = await fetch(
+      `https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/events/${id}/competitions/${id}/plays?limit=1000`,
+      { headers: { Accept: "application/json" }, signal: AbortSignal.timeout(12_000) },
+    );
+    if (!res.ok) return null;
+    const j = (await res.json()) as { items?: unknown[] };
+    return j.items ?? null;
+  } catch {
+    return null;
+  }
+}
+
 async function load(league: LivePropLeague, id: string): Promise<LiveProps | null> {
   const res = await fetch(
     `https://site.api.espn.com/apis/site/v2/sports/${SPORT[league]}/summary?event=${id}`,
@@ -54,7 +70,10 @@ async function load(league: LivePropLeague, id: string): Promise<LiveProps | nul
   if (!res.ok) return null;
   const summary = await res.json();
   const box = boxFrom(summary, league);
-  const ev = (gameEvents(summary, league, box) ?? undefined) as Record<string, unknown> | undefined;
+  // NFL: the play-by-play with the passer / rusher / receiver tagged, for the 1st-half and quarter props
+  const plays = league === "nfl" ? await corePlays(id) : null;
+  const ev = (gameEvents(summary, league, box, plays) ?? undefined) as
+    Record<string, unknown> | undefined;
   const g = { box, ev };
   const status = summary?.header?.competitions?.[0]?.status?.type ?? {};
   const final = status.state === "post";

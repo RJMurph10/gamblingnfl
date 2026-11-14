@@ -24,7 +24,7 @@ const DATA = opt("data", "data");
 const OUT = opt("out", "props-site");
 const NOW = Date.now();
 const PRICES = opt("prices"); // saved Odds API pulls (NFL), to fill prices ESPN doesn't show
-const AHEAD =(KEY === "nfl" || KEY === "cfb" ? 8 : 3) * 86_400_000;
+const AHEAD = (KEY === "nfl" || KEY === "cfb" ? 8 : 3) * 86_400_000;
 /**
  * Leagues whose started and finished games also get their closing board, one file per game, for the
  * game page's Props tab: <out>/<league>/closed/<event id>.json. Rewritten while the game is recent
@@ -62,27 +62,27 @@ const LABELS = {
       "Total Passing Plus Rushing Yards (incl. overtime)": "Pass+Rush yds",
     },
     nhl: {
-    "Total Points": "Points",
-    "Total Goals": "Goals",
-    "Total Assists": "Assists",
-    "Total Shots on Goal": "Shots on goal",
-    "Total Hits": "Hits",
-    "Total Blocked Shots": "Blocked shots",
-    "Total Saves": "Saves",
-  },
-  mlb: {
-    "Total Hits": "Hits",
-    "Total Home Runs Hit": "Home runs",
-    "Total Runs Scored": "Runs",
-    "Total RBIs": "RBIs",
-    "Total Hits + Runs + RBIs": "Hits+Runs+RBIs",
-    "Total Strikeouts": "Pitcher strikeouts",
-    "Earned Runs Allowed": "Earned runs allowed",
-    "Total Walks Allowed": "Walks allowed",
-    "Total Hits Allowed": "Hits allowed",
-    "Total Outs Recorded": "Outs recorded",
-  },
-}[KEY] ?? {}),
+      "Total Points": "Points",
+      "Total Goals": "Goals",
+      "Total Assists": "Assists",
+      "Total Shots on Goal": "Shots on goal",
+      "Total Hits": "Hits",
+      "Total Blocked Shots": "Blocked shots",
+      "Total Saves": "Saves",
+    },
+    mlb: {
+      "Total Hits": "Hits",
+      "Total Home Runs Hit": "Home runs",
+      "Total Runs Scored": "Runs",
+      "Total RBIs": "RBIs",
+      "Total Hits + Runs + RBIs": "Hits+Runs+RBIs",
+      "Total Strikeouts": "Pitcher strikeouts",
+      "Earned Runs Allowed": "Earned runs allowed",
+      "Total Walks Allowed": "Walks allowed",
+      "Total Hits Allowed": "Hits allowed",
+      "Total Outs Recorded": "Outs recorded",
+    },
+  }[KEY] ?? {}),
   ...(EXTRA_OU[KEY] ?? {}),
 };
 
@@ -147,6 +147,15 @@ function mainLines(rows) {
  * snapshot (closing → latest → opening), where it opened, and prices (filled from saved DraftKings pulls).
  */
 let filled = 0;
+const pname = (s) =>
+  String(s ?? "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[.'’-]/g, "")
+    .replace(/\b(jr|sr|ii|iii|iv|v)\b/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
 function boardOf(rec, price) {
   const snap = rec.props?.close ?? rec.props?.latest ?? rec.props?.open;
   if (!snap?.rows?.length) return null;
@@ -168,7 +177,8 @@ function boardOf(rec, price) {
       else if (mn) [line, o, u] = [mn[0], mn[1], mn[2]];
       if (p || mn) filled += 1;
       // DraftKings has no price at all: another book's, at exactly this line
-      const other = p || mn ? null : price.other?.(rec.home?.name, rec.date, who[0], LABELS[l.t], line);
+      const other =
+        p || mn ? null : price.other?.(rec.home?.name, rec.date, who[0], LABELS[l.t], line);
       if (other) {
         [o, u] = [other[0], other[1]];
         bk[`${who[0]}|${LABELS[l.t]}`] = other[2];
@@ -177,11 +187,46 @@ function boardOf(rec, price) {
     // alternate overs: ESPN's milestone ("X+") rungs plus DraftKings' ladder from the saved pulls,
     // leaving out the main line itself
     const rungs = new Map(milestones.get(`${l.a}|${LABELS[l.t]}`) ?? []);
-    for (const [ln, px] of (price.size ? price.ladder(rec.home?.name, rec.date, who[0], LABELS[l.t]) : null) ?? [])
+    for (const [ln, px] of (price.size
+      ? price.ladder(rec.home?.name, rec.date, who[0], LABELS[l.t])
+      : null) ?? [])
       rungs.set(ln, px);
     rungs.delete(line);
     const ladder = [...rungs].sort((x, y) => x[0] - y[0]);
-    props.push([who[0], who[1], LABELS[l.t], line, o, u, l.opened, ...(ladder.length ? [ladder] : [])]);
+    props.push([
+      who[0],
+      who[1],
+      LABELS[l.t],
+      line,
+      o,
+      u,
+      l.opened,
+      ...(ladder.length ? [ladder] : []),
+    ]);
+  }
+  // props only the SportsGameOdds pulls carry (1st-half / quarter props, longest completion), which ESPN's
+  // feed doesn't list: added as they are, with where each opened (the first pull that had it)
+  if (price.extra) {
+    const have = new Set(props.map((r) => `${pname(r[0])}|${r[2]}`));
+    const abbr = { home: rec.home?.abbr ?? "", away: rec.away?.abbr ?? "" };
+    // a player's team: ESPN's names for the game, else the pull's home / away
+    const teamOf = new Map(Object.values(names).map(([n, t]) => [pname(n), t]));
+    for (const [player, side, label, line, o, u, opened, book] of price.extra(
+      rec.home?.name,
+      rec.date,
+    )) {
+      if (have.has(`${pname(player)}|${label}`)) continue;
+      props.push([
+        player,
+        teamOf.get(pname(player)) ?? abbr[side] ?? "",
+        label,
+        line,
+        o,
+        u,
+        opened,
+      ]);
+      if (book) bk[`${player}|${label}`] = book;
+    }
   }
   // yes-only bets (anytime goalscorer, double-double, first basket…): [[player, team, bet, price, opened]]
   const sp = specialsOf(snap.rows, KEY)
@@ -193,9 +238,13 @@ function boardOf(rec, price) {
   const td = price.td
     ? price
         .td(rec.home?.name, rec.date)
-        ?.map(([n, side, ...px]) => [n, side === "home" ? (rec.home?.abbr ?? "") : side === "away" ? (rec.away?.abbr ?? "") : "", ...px])
+        ?.map(([n, side, ...px]) => [
+          n,
+          side === "home" ? (rec.home?.abbr ?? "") : side === "away" ? (rec.away?.abbr ?? "") : "",
+          ...px,
+        ])
     : null;
-  if (!props.length && !sp.length) return null;
+  if (!props.length && !sp.length && !td?.length) return null;
   props.sort(
     (x, y) => x[1].localeCompare(y[1]) || x[0].localeCompare(y[0]) || x[2].localeCompare(y[2]),
   );
@@ -250,7 +299,9 @@ async function main() {
   games.sort((a, b) => a.date.localeCompare(b.date));
   await mkdir(join(OUT, KEY), { recursive: true });
   await writeFile(join(OUT, KEY, "upcoming.json"), JSON.stringify(games));
-  console.log(`${KEY}: ${games.length} upcoming games with prop lines${price.size ? `, ${filled} priced from saved DraftKings pulls` : ""}${CLOSED.has(KEY) ? `, ${closed} closing boards written` : ""}`);
+  console.log(
+    `${KEY}: ${games.length} upcoming games with prop lines${price.size ? `, ${filled} priced from saved DraftKings pulls` : ""}${CLOSED.has(KEY) ? `, ${closed} closing boards written` : ""}`,
+  );
 }
 
 main().catch((e) => {

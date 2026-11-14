@@ -41,12 +41,15 @@ export function TdScorers({
     () =>
       (game.td ?? [])
         .filter((r) => team === "All" || r[1] === team)
-        .sort((a, b) => (a[2] ?? 99_999) - (b[2] ?? 99_999)),
+        .sort((a, b) => (a[2] ?? a[10] ?? 99_999) - (b[2] ?? b[10] ?? 99_999)),
     [game.td, team],
   );
   if (!game.td?.length) return null;
   const graded = touchdowns !== undefined;
   const hasOpen = game.td.some((r) => r[6] != null);
+  // the best anytime price across DraftKings, FanDuel, BetMGM, Caesars, ESPN BET, Fanatics and Bovada
+  const hasBest = game.td.some((r) => r[10] != null);
+  const pay = (n: number) => (n > 0 ? n / 100 : 100 / -n);
 
   const cell = (
     price: number | null,
@@ -96,6 +99,7 @@ export function TdScorers({
             <tr className="font-mono text-[10px] uppercase tracking-wider text-faint">
               <th className="px-4 py-2 text-left font-normal">Player</th>
               <th className="px-3 py-2 text-right font-normal">Anytime TD</th>
+              {hasBest ? <th className="px-3 py-2 text-right font-normal">Best anytime</th> : null}
               <th className="px-3 py-2 text-right font-normal">First TD</th>
               <th className="px-3 py-2 text-right font-normal">2+ TDs</th>
               {graded ? (
@@ -122,6 +126,30 @@ export function TdScorers({
                     {r[0]} <span className="font-mono text-[10px] text-faint">{r[1]}</span>
                   </td>
                   {cell(r[2], r[6], anytime)}
+                  {hasBest ? (
+                    <td className="px-3 py-2 text-right align-top">
+                      {r[10] != null ? (
+                        <>
+                          <span
+                            className={`font-mono text-xs tabular-nums ${
+                              anytime === true
+                                ? "font-semibold text-win"
+                                : anytime === false
+                                  ? "text-faint line-through"
+                                  : r[2] == null || pay(r[10]) > pay(r[2])
+                                    ? "font-semibold text-acc"
+                                    : "text-foreground"
+                            }`}
+                          >
+                            {american(r[10])}
+                          </span>
+                          <span className="block font-mono text-[9px] text-faint">{r[11]}</span>
+                        </>
+                      ) : (
+                        <span className="font-mono text-xs text-faint">—</span>
+                      )}
+                    </td>
+                  ) : null}
                   {cell(r[3], r[7], first)}
                   {cell(r[4], r[8], twoPlus)}
                   {graded ? (
@@ -138,6 +166,9 @@ export function TdScorers({
       <p className="px-4 py-3 font-mono text-[10px] text-faint">
         Prices are DraftKings&apos;
         {graded ? " from the last pull before kickoff" : ", updated twice a day"}
+        {hasBest
+          ? "; best anytime = the best price at 7 books (highlighted when it beats DraftKings)"
+          : ""}
         {hasOpen ? "; “opened” is the first price saved when it has changed since" : ""}.
         {graded
           ? live

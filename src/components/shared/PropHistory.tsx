@@ -471,14 +471,40 @@ function Upcoming({ league, tabs }: { league: PropLeague; tabs: ReactNode }) {
 }
 
 /** The sportsbook's tabs: market labels grouped the way DraftKings groups them, per league. */
+/** 1st-half and quarter props (SportsGameOdds pulls; graded from the play-by-play), after their prefix. */
+const PERIOD_LABELS = [
+  "Pass yds",
+  "Pass att",
+  "Completions",
+  "Pass TDs",
+  "Interceptions",
+  "Rush yds",
+  "Carries",
+  "Rec yds",
+  "Receptions",
+  "Pass+Rush yds",
+  "Rush+Rec yds",
+];
+
 const CATEGORIES: Record<string, [string, string[]][]> = {
   nfl: [
     [
       "Passing",
-      ["Pass yds", "Pass att", "Completions", "Pass TDs", "Interceptions", "Pass+Rush yds"],
+      [
+        "Pass yds",
+        "Pass att",
+        "Completions",
+        "Pass TDs",
+        "Interceptions",
+        "Pass+Rush yds",
+        "Longest comp",
+      ],
     ],
     ["Receiving", ["Rec yds", "Receptions", "Longest rec"]],
     ["Rushing", ["Rush yds", "Carries", "Longest rush", "Rush+Rec yds"]],
+    ["1st Half", PERIOD_LABELS.map((m) => `1H ${m}`)],
+    ["1st Quarter", PERIOD_LABELS.map((m) => `1Q ${m}`)],
+    ["Quarters", ["2Q", "3Q", "4Q"].flatMap((q) => PERIOD_LABELS.map((m) => `${q} ${m}`))],
     ["Defensive", ["Tackles", "Tackles+Ast", "Tackle ast", "Sacks"]],
     ["Special Teams", ["Kicking pts", "FGs made", "XPs made"]],
   ],

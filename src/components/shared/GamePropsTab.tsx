@@ -189,10 +189,12 @@ export function ClosedPropLines({
     staleTime: 5 * 60_000,
   });
   const board = closed.data ?? pregame.data ?? undefined;
+  // the prop history's results win; the live / final box score and play-by-play fill in the props the
+  // history doesn't keep (touchdown scorers, 1st-half and quarter props, longest completion)
   const results = useMemo(() => {
-    if (past?.props.length) return resultsOf(past);
     const m = new Map<string, number | null | "dnp">();
     for (const [player, label, v] of live.data?.stats ?? []) m.set(`${player}|${label}`, v);
+    if (past?.props.length) for (const [k, v] of resultsOf(past)) m.set(k, v);
     return m;
   }, [past, live.data]);
   const td = useMemo(() => touchdownResults(live.data?.stats), [live.data]);

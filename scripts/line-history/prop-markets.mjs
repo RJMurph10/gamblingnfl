@@ -238,8 +238,12 @@ function winningPitcher(summary) {
  *        hit types and steals from the play text
  * box (athleteId → { n }) matches MLB stolen-base plays, which name the runner by last name only.
  */
-export function gameEvents(summary, league, box = {}) {
-  if (league === "nfl" || league === "cfb") return footballEvents(summary, box);
+export function gameEvents(summary, league, box = {}, corePlays = null) {
+  if (league === "nfl" || league === "cfb")
+    return {
+      ...footballEvents(summary, box),
+      ...(corePlays ? footballPeriods(corePlays, box) : {}),
+    };
   const plays = summary?.plays ?? [];
   if (!plays.length) return null;
   const comp = summary?.header?.competitions?.[0];
@@ -358,4 +362,108 @@ function footballEvents(summary, box) {
     ltd: tds.length ? who(tds.at(-1)) : null,
     tds: tds.length,
   };
+}
+
+const athleteOf = (p, type) =>
+  String((p.participants ?? []).find((x) => x.type === type)?.athlete?.$ref ?? "").match(
+    /athletes\/(\d+)/,
+  )?.[1] ?? null;
+/** The play's own yards from its text ("for 12 yards", "for no gain"), before any penalty; else ESPN's. */
+function playYards(p) {
+  const text = String(p.text ?? "");
+  const cut = text.search(/PENALTY/i);
+  const m = (cut >= 0 ? text.slice(0, cut) : text).match(/\bfor (-?\d+) yards?\b|\bfor no gain\b/i);
+  if (m) return m[1] == null ? 0 : Number(m[1]);
+  return Number(p.statYardage ?? 0);
+}
+/** Football box stats the quarter stats must add up to (player's full-game number). */
+const PERIOD_CHECK = {
+  py: (s) => num(s["passing.YDS"]),
+  pa: (s) => num(String(s["passing.C/ATT"] ?? "").split("/")[1]),
+  pc: (s) => num(String(s["passing.C/ATT"] ?? "").split("/")[0]),
+  ptd: (s) => num(s["passing.TD"]),
+  int: (s) => num(s["passing.INT"]),
+  ry: (s) => num(s["rushing.YDS"]),
+  car: (s) => num(s["rushing.CAR"]),
+  rcy: (s) => num(s["receiving.YDS"]),
+  rec: (s) => num(s["receiving.REC"]),
+};
+/** A box-score number, negatives included ("-3"); null when missing. */
+const num = (v) => {
+  const m = String(v ?? "").match(/^\s*(-?\d+(?:\.\d+)?)/);
+  return m ? Number(m[1]) : null;
+};
+
+/**
+ * Football: each player's passing / rushing / receiving numbers by quarter, from ESPN's play-by-play
+ * (core API plays, which tag the passer, rusher and receiver), for the 1st-half and quarter props:
+ *   { per: { athleteId: { 1: { py, pa, pc, ptd, int, ry, car, rcy, rec }, 2: {...}, ... } },
+ *     lc: { athleteId: longest completion }, bad: { athleteId: [stats that don't match the box] } }
+ * A player's stat is only trusted when his quarters add up to his box-score total (penalties, laterals
+ * and corrections can make them differ); the graders leave the rest ungraded.
+ */
+export function footballPeriods(plays, box = {}) {
+  const per = {};
+  const lc = {};
+  const add = (a, q, k, v) => {
+    if (!a) return;
+    const s = ((per[a] ??= {})[q] ??= {});
+    s[k] = (s[k] ?? 0) + v;
+  };
+  for (const p of plays ?? []) {
+    const q = Number(p.period?.number);
+    if (!q) continue;
+    // a replay reversal: the ruling that stands is described after "REVERSED"
+    // (and a two-point try after a touchdown is cut off: it isn't in the box score's yards)
+    const text = String(p.text ?? "")
+      .split(/REVERSED\.?/i)
+      .pop()
+      .split(/TWO-POINT CONVERSION/i)[0];
+    // penalties that wipe out the play, and stand-alone two-point tries
+    if (/No Play\b|\bNULLIFIED\b/i.test(text) || !text.trim()) continue;
+    const y = playYards({ ...p, text });
+    const passer = athleteOf(p, "passer");
+    if (passer) {
+      if (/\bsacked\b/i.test(text)) continue;
+      if (/\bINTERCEPTED\b/i.test(text)) {
+        add(passer, q, "pa", 1);
+        add(passer, q, "int", 1);
+      } else if (/\bincomplete\b|\bspiked\b/i.test(text)) add(passer, q, "pa", 1);
+      else if (/\bpass\b/i.test(text)) {
+        // a completion (fumbles after the catch included: the catch's yards count)
+        const rc = athleteOf(p, "receiver");
+        add(passer, q, "pa", 1);
+        add(passer, q, "pc", 1);
+        add(passer, q, "py", y);
+        if (/\bTOUCHDOWN\b/i.test(text) && !/\bFUMBLES\b/i.test(text)) add(passer, q, "ptd", 1);
+        lc[passer] = Math.max(lc[passer] ?? 0, y);
+        add(rc, q, "rec", 1);
+        add(rc, q, "rcy", y);
+      } else {
+        // a quarterback run tagged with "passer" (scramble)
+        const rusher = athleteOf(p, "rusher");
+        if (rusher) {
+          add(rusher, q, "ry", y);
+          add(rusher, q, "car", 1);
+        }
+      }
+      continue;
+    }
+    // rushes, rushing touchdowns, fumbled rushes and kneel-downs (the run's yards count)
+    const rusher = athleteOf(p, "rusher");
+    if (rusher) {
+      add(rusher, q, "ry", y);
+      add(rusher, q, "car", 1);
+    }
+  }
+  const bad = {};
+  for (const [a, b] of Object.entries(box)) {
+    const s = b?.s ?? {};
+    for (const [k, fn] of Object.entries(PERIOD_CHECK)) {
+      const want = fn(s) ?? 0;
+      const got = Object.values(per[a] ?? {}).reduce((x, v) => x + (v[k] ?? 0), 0);
+      if (want !== got) (bad[a] ??= []).push(k);
+    }
+  }
+  return { per, lc, bad };
 }
