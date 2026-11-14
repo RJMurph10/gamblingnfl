@@ -17,6 +17,7 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { booksOf } from "./sgo-games.mjs";
+import { fullLineOf, marketsOf, periodPropsOf } from "./sgo-markets.mjs";
 
 const args = process.argv.slice(2);
 const opt = (n, d) => {
@@ -32,6 +33,8 @@ const KEEP = Number(opt("keep", "400"));
 const BOOK = opt("book", "draftkings");
 // every book's main spread and total from the same events (line shopping; costs nothing extra)
 const BEST = opt("best", "best-lines/nfl.json");
+// every other priced market (halves, quarters, team totals, specials) and player 1st-half / quarter props
+const MARKETS_OUT = opt("markets", "markets/nfl.json");
 // games in progress: their closing lines and prices (SportsGameOdds keeps each prop's close, averaged
 // across books, after kickoff), for props whose DraftKings price wasn't saved before kickoff
 const LIVE = args.includes("--live");
@@ -205,7 +208,12 @@ export function tdOf(e, book = BOOK) {
     let col = -1;
     if (m.statID === "touchdowns" && m.betTypeID === "yn" && m.sideID === "yes") col = 2;
     else if (m.statID === "firstTouchdown" && m.betTypeID === "yn" && m.sideID === "yes") col = 3;
-    else if (m.statID === "touchdowns" && m.betTypeID === "ou" && m.sideID === "over" && num(b.overUnder) === 1.5)
+    else if (
+      m.statID === "touchdowns" &&
+      m.betTypeID === "ou" &&
+      m.sideID === "over" &&
+      num(b.overUnder) === 1.5
+    )
       col = 4;
     else if (m.statID === "lastTouchdown" && m.betTypeID === "yn" && m.sideID === "yes") col = 5;
     if (col < 0) continue;
@@ -213,7 +221,11 @@ export function tdOf(e, book = BOOK) {
     const name = p?.name ?? [p?.firstName, p?.lastName].filter(Boolean).join(" ");
     if (!name) continue;
     const side =
-      p?.teamID && p.teamID === e.teams?.home?.teamID ? "home" : p?.teamID === e.teams?.away?.teamID ? "away" : "";
+      p?.teamID && p.teamID === e.teams?.home?.teamID
+        ? "home"
+        : p?.teamID === e.teams?.away?.teamID
+          ? "away"
+          : "";
     const row = rows.get(m.playerID) ?? [name, side, null, null, null, null];
     row[col] = price;
     rows.set(m.playerID, row);
@@ -233,6 +245,7 @@ async function main() {
   const now = Date.now();
   const games = [];
   const lines = [];
+  const markets = [];
   const seen = new Set();
   const windows = LIVE ? [[null, null]] : [[now, now + HOURS * 3_600_000]];
   for (const t of ALSO) {
@@ -285,6 +298,9 @@ async function main() {
           games.push({ ...g, at: new Date().toISOString(), props, alts, td, others });
         const books = LIVE ? [] : booksOf(e);
         if (books.length) lines.push({ ...g, books });
+        const mk = LIVE ? [] : marketsOf(e);
+        const pp = LIVE ? [] : periodPropsOf(e);
+        if (mk.length || pp.length) markets.push({ ...g, full: fullLineOf(books), mk, pp });
       }
       cursor = r?.nextCursor ?? "";
       if (!cursor) break;
@@ -292,15 +308,34 @@ async function main() {
   }
   if (lines.length) {
     await mkdir(dirname(BEST), { recursive: true });
-    await writeFile(BEST, JSON.stringify({ at: new Date().toISOString(), source: "sgo", league: "NFL", games: lines }));
+    await writeFile(
+      BEST,
+      JSON.stringify({ at: new Date().toISOString(), source: "sgo", league: "NFL", games: lines }),
+    );
     console.log(`line shopping: ${lines.length} games, every book's lines → ${BEST}`);
+  }
+  if (markets.length) {
+    await mkdir(dirname(MARKETS_OUT), { recursive: true });
+    await writeFile(
+      MARKETS_OUT,
+      JSON.stringify({
+        at: new Date().toISOString(),
+        source: "sgo",
+        league: "NFL",
+        games: markets,
+      }),
+    );
+    console.log(`more markets: ${markets.length} games → ${MARKETS_OUT}`);
   }
   if (!games.length) {
     console.log("nothing priced");
     return;
   }
   await mkdir(OUT, { recursive: true });
-  const file = join(OUT, `${new Date().toISOString().slice(0, 13)}-sgo${LIVE ? "-close" : ""}.json`);
+  const file = join(
+    OUT,
+    `${new Date().toISOString().slice(0, 13)}-sgo${LIVE ? "-close" : ""}.json`,
+  );
   await writeFile(file, JSON.stringify(games));
   console.log(`saved ${games.length} games to ${file}`);
 }
