@@ -1312,6 +1312,20 @@ export function MatchupLink({
   );
 }
 
+/** A game's city under its date / time in the schedule tables (stadium on hover). */
+function RowLocation({ game }: { game: Game }) {
+  const where = game.location || game.venue;
+  if (!where) return null;
+  return (
+    <span
+      className="block max-w-[12rem] truncate text-[10px] text-faint"
+      title={game.venue && game.location ? `${game.venue}, ${game.location}` : where}
+    >
+      {where}
+    </span>
+  );
+}
+
 export function GameRow({
   game,
   showMarket = true,
@@ -1342,11 +1356,20 @@ export function GameRow({
 
   return (
     <tr className="hover:bg-line/5">
-      <td className="whitespace-nowrap px-4 py-2.5 font-mono text-mute">{formatNumericDate(game.date)}</td>
+      <td className="whitespace-nowrap px-4 py-2.5 font-mono text-mute">
+        {formatNumericDate(game.date)}
+        {/* finished: where it was played, under the date */}
+        {game.status === "final" ? <RowLocation game={game} /> : null}
+      </td>
       <td suppressHydrationWarning className="whitespace-nowrap px-2 py-2.5 font-mono text-mute">
         {game.kickoffIso
           ? new Date(game.kickoffIso).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })
           : (game.time ?? game.kickoff.replace(/^\w+\s+/, "")).replace(/\s*(ET|EDT|EST)$/i, "")}
+        {/* upcoming: where it'll be played, under the time; live: the running clock */}
+        {game.status === "scheduled" ? <RowLocation game={game} /> : null}
+        {game.status === "live" ? (
+          <span className="block text-[10px] text-acc">{runningClock || "Live"}</span>
+        ) : null}
       </td>
       <td className="px-2 py-2.5 text-center">
         <MatchupLink
@@ -1358,9 +1381,6 @@ export function GameRow({
           showOT={showOT}
           showPossession={game.status === "live"}
         />
-      </td>
-      <td className="whitespace-nowrap px-2 py-2.5 font-mono text-mute">
-        {game.status === "live" ? (runningClock || "Live") : game.location}
       </td>
 
       {showMarket ? (() => {
