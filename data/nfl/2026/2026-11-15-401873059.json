@@ -544,8 +544,8 @@
    ]
   },
   "latest": {
-   "at": "2026-11-14T03:07:32.138Z",
-   "count": 1289,
+   "at": "2026-11-14T06:26:52.591Z",
+   "count": 1290,
    "rows": [
   {"a":"3917792","t":"Total Passing Yards (incl. overtime)","ti":"8","op":[184.5,null,null],"cur":[187.5,null,null]},
   {"a":"3917792","t":"Total Passing Yards (incl. overtime)","ti":"8","op":[184.5,null,null],"cur":[187.5,null,null]},
@@ -567,8 +567,8 @@
   {"a":"3917792","t":"Total Rushing Yards (incl. overtime)","ti":"12","op":[7.5,null,null],"cur":[8.5,null,null]},
   {"a":"4242335","t":"Total Rushing Yards (incl. overtime)","ti":"12","op":[63.5,null,null],"cur":[69.5,null,null]},
   {"a":"4242335","t":"Total Rushing Yards (incl. overtime)","ti":"12","op":[63.5,null,null],"cur":[69.5,null,null]},
-  {"a":"4433971","t":"Total Rushing Yards (incl. overtime)","ti":"12","op":[7.5,null,null],"cur":[6.5,null,null]},
-  {"a":"4433971","t":"Total Rushing Yards (incl. overtime)","ti":"12","op":[7.5,null,null],"cur":[6.5,null,null]},
+  {"a":"4433971","t":"Total Rushing Yards (incl. overtime)","ti":"12","op":[7.5,null,null],"cur":[7.5,null,null]},
+  {"a":"4433971","t":"Total Rushing Yards (incl. overtime)","ti":"12","op":[7.5,null,null],"cur":[7.5,null,null]},
   {"a":"4682745","t":"Total Rushing Yards (incl. overtime)","ti":"12","op":[13.5,null,null],"cur":[13.5,null,null]},
   {"a":"4682745","t":"Total Rushing Yards (incl. overtime)","ti":"12","op":[13.5,null,null],"cur":[13.5,null,null]},
   {"a":"4686468","t":"Total Rushing Yards (incl. overtime)","ti":"12","op":[24.5,null,null],"cur":[24.5,null,null]},
@@ -630,6 +630,7 @@
   {"a":"3917792","t":"Longest Passing Completion (incl. overtime)","ti":"17","op":[30.5,null,null],"cur":[32.5,null,null]},
   {"a":"4433971","t":"Longest Passing Completion (incl. overtime)","ti":"17","op":[29.5,null,null],"cur":[29.5,null,null]},
   {"a":"4433971","t":"Longest Passing Completion (incl. overtime)","ti":"17","op":[29.5,null,null],"cur":[29.5,null,null]},
+  {"a":"3917792","t":"Total Passing Plus Rushing Yards (incl. overtime)","ti":"18","op":[196.5,null,null],"cur":[198.5,null,null]},
   {"a":"3917792","t":"Total Passing Plus Rushing Yards (incl. overtime)","ti":"18","op":[196.5,null,null],"cur":[198.5,null,null]},
   {"a":"4433971","t":"Total Passing Plus Rushing Yards (incl. overtime)","ti":"18","op":[172.5,null,null],"cur":[172.5,null,null]},
   {"a":"4433971","t":"Total Passing Plus Rushing Yards (incl. overtime)","ti":"18","op":[172.5,null,null],"cur":[172.5,null,null]},
@@ -1276,7 +1277,7 @@
   {"a":"4433971","t":"Rushing Yards Milestones","ti":"196","op":[8,null,null],"cur":[30,null,null]},
   {"a":"4433971","t":"Rushing Yards Milestones","ti":"196","op":[8,null,null],"cur":[40,null,null]},
   {"a":"4433971","t":"Rushing Yards Milestones","ti":"196","op":[8,null,null],"cur":[50,null,null]},
-  {"a":"4433971","t":"Rushing Yards Milestones","ti":"196","op":[8,null,null],"cur":[7,null,null]},
+  {"a":"4433971","t":"Rushing Yards Milestones","ti":"196","op":[8,null,null],"cur":[8,null,null]},
   {"a":"4682745","t":"Rushing Yards Milestones","ti":"196","op":[15,null,null],"cur":[10,null,null]},
   {"a":"4682745","t":"Rushing Yards Milestones","ti":"196","op":[15,null,null],"cur":[15,null,null]},
   {"a":"4682745","t":"Rushing Yards Milestones","ti":"196","op":[15,null,null],"cur":[20,null,null]},

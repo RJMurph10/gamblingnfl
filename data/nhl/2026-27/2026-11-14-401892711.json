@@ -519,14 +519,14 @@
    ]
   },
   "latest": {
-   "at": "2026-11-14T03:07:32.138Z",
+   "at": "2026-11-14T06:26:52.591Z",
    "count": 47,
    "rows": [
   {"a":null,"tm":"10","t":"1st Period Moneyline","ti":"139","cur":[null,180,null]},
   {"a":null,"tm":"17","t":"1st Period Moneyline","ti":"139","cur":[null,180,null]},
   {"a":null,"t":"1st Period Moneyline","ti":"139","cur":[null,175,null]},
-  {"a":null,"tm":"10","t":"1st Period Spread","ti":"140","op":[-0.5,null,null],"cur":[0.5,null,null],"px":[-230,170]},
-  {"a":null,"tm":"17","t":"1st Period Spread","ti":"140","op":[0.5,null,null],"cur":[-0.5,null,null],"px":[175,-220]},
+  {"a":null,"tm":"10","t":"1st Period Spread","ti":"140","op":[-0.5,null,null],"cur":[-0.5,null,null],"px":[175,170]},
+  {"a":null,"tm":"17","t":"1st Period Spread","ti":"140","op":[0.5,null,null],"cur":[0.5,null,null],"px":[-230,-220]},
   {"a":null,"t":"1st Period Total Goals","ti":"141","op":[1.5,null,null],"cur":[1.5,null,null],"px":[-130,-135]},
   {"a":null,"t":"1st Period Total Goals","ti":"141","op":[1.5,null,null],"cur":[1.5,null,null],"px":[100,105]},
   {"a":null,"tm":"10","t":"2nd Period Moneyline","ti":"142","cur":[null,160,null]},
