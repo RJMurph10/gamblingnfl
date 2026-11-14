@@ -1,0 +1,38 @@
+{
+ "day": "2026-11-14",
+ "updated": "2026-11-14T02:43:00.514Z",
+ "picks": [
+  {
+   "id": "401920074-total",
+   "game": "BRAD @ GMU",
+   "tip": "2026-11-14T18:00Z",
+   "market": "total",
+   "pick": "Over 130.5",
+   "line": 130.5,
+   "open": 130.5,
+   "model": 138.8,
+   "edge": 8.3,
+   "best": true,
+   "firstSeen": "2026-11-14T02:43:00.514Z",
+   "latest": 130.5,
+   "latestAt": "2026-11-14T02:43:00.514Z",
+   "alerted": false
+  },
+  {
+   "id": "401911308-total",
+   "game": "BRWN @ SIE",
+   "tip": "2026-11-15T00:00Z",
+   "market": "total",
+   "pick": "Under 155.5",
+   "line": 155.5,
+   "open": 155.5,
+   "model": 148.2,
+   "edge": 7.3,
+   "best": true,
+   "firstSeen": "2026-11-14T02:43:00.514Z",
+   "latest": 160.5,
+   "latestAt": "2026-11-14T02:43:00.514Z",
+   "alerted": false
+  }
+ ]
+}

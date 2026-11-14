@@ -1,6 +1,6 @@
 {
  "day": "2026-11-13",
- "updated": "2026-11-13T21:00:52.812Z",
+ "updated": "2026-11-14T02:43:00.514Z",
  "picks": [
   {
    "id": "401911210-total",
@@ -16,7 +16,12 @@
    "firstSeen": "2026-11-13T09:24:22.516Z",
    "latest": 133.5,
    "latestAt": "2026-11-13T21:00:52.812Z",
-   "alerted": false
+   "alerted": false,
+   "score": [
+    57,
+    85
+   ],
+   "close": 133.5
   },
   {
    "id": "401913528-total",
@@ -32,7 +37,12 @@
    "firstSeen": "2026-11-13T09:24:22.516Z",
    "latest": 171.5,
    "latestAt": "2026-11-13T21:00:52.812Z",
-   "alerted": false
+   "alerted": false,
+   "score": [
+    86,
+    108
+   ],
+   "close": 170.5
   },
   {
    "id": "401924796-total",
@@ -48,7 +58,12 @@
    "firstSeen": "2026-11-13T12:39:57.234Z",
    "latest": 132.5,
    "latestAt": "2026-11-13T21:00:52.812Z",
-   "alerted": false
+   "alerted": false,
+   "score": [
+    60,
+    65
+   ],
+   "close": 132.5
   },
   {
    "id": "401925755-total",
@@ -64,7 +79,12 @@
    "firstSeen": "2026-11-13T09:24:22.516Z",
    "latest": 154.5,
    "latestAt": "2026-11-13T21:00:52.812Z",
-   "alerted": false
+   "alerted": false,
+   "score": [
+    72,
+    106
+   ],
+   "close": 154.5
   },
   {
    "id": "401906794-total",
