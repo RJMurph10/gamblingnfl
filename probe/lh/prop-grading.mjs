@@ -154,11 +154,53 @@ export const TD_MARKETS = {
   "Last TD": scorer("ltd"),
 };
 
+/** 1st-half and quarter props (SportsGameOdds lines): label prefix → quarters it covers. */
+export const PERIOD_PREFIX = { "1H": [1, 2], "1Q": [1], "2Q": [2], "3Q": [3], "4Q": [4] };
+/** Site label (after the prefix) → the play-by-play stats it adds up (footballPeriods in prop-markets.mjs). */
+export const PERIOD_MARKETS = {
+  "Pass yds": ["py"],
+  "Pass att": ["pa"],
+  Completions: ["pc"],
+  "Pass TDs": ["ptd"],
+  Interceptions: ["int"],
+  "Rush yds": ["ry"],
+  Carries: ["car"],
+  "Rec yds": ["rcy"],
+  Receptions: ["rec"],
+  "Pass+Rush yds": ["py", "ry"],
+  "Rush+Rec yds": ["ry", "rcy"],
+};
+/**
+ * A player's number for a 1st-half / quarter prop from the play-by-play (g.ev.per), only when his
+ * quarters add up to his box score for every stat it uses; null otherwise (left ungraded).
+ */
+const periodStat =
+  (quarters, keys) =>
+  (s, { a, g }) => {
+    const ev = g.ev;
+    if (!ev?.per) return null;
+    if (keys.some((k) => ev.bad?.[a]?.includes(k))) return null;
+    let v = 0;
+    for (const q of quarters) for (const k of keys) v += ev.per[a]?.[q]?.[k] ?? 0;
+    return v;
+  };
+/** Longest completion (full game), from the play-by-play, when the passer's yards add up. */
+const longestCompletion = (s, { a, g }) => {
+  if (!g.ev?.per || g.ev.bad?.[a]?.includes("py")) return null;
+  if (s["passing.YDS"] == null) return null;
+  return g.ev.lc?.[a] ?? 0;
+};
+
 /** Site label → stat, for a league. */
 export function statsByLabel(league) {
   const out = new Map(Object.values(marketsFor(league)).map(([label, fn]) => [label, fn]));
-  if (league === "nfl" || league === "cfb")
+  if (league === "nfl" || league === "cfb") {
     for (const [label, fn] of Object.entries(TD_MARKETS)) out.set(label, fn);
+    out.set("Longest comp", longestCompletion);
+    for (const [pre, quarters] of Object.entries(PERIOD_PREFIX))
+      for (const [label, keys] of Object.entries(PERIOD_MARKETS))
+        out.set(`${pre} ${label}`, periodStat(quarters, keys));
+  }
   return out;
 }
 

@@ -14,3 +14,4 @@ for (const ev of [...(sb.events ?? []), ...(sb2.events ?? [])]) {
   for (const [a, b] of rel) if (r.bad[a]) { badPlayers++; for (const k of r.bad[a]) badStats[k] = (badStats[k] ?? 0) + 1; console.log(ev.shortName, b.n, r.bad[a].join(","), "plays items", (p.items ?? []).length, p.pageCount); }
 }
 console.log("players", players, "with any mismatch", badPlayers, JSON.stringify(badStats));
+// v2

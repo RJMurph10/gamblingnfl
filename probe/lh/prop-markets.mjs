@@ -240,7 +240,10 @@ function winningPitcher(summary) {
  */
 export function gameEvents(summary, league, box = {}, corePlays = null) {
   if (league === "nfl" || league === "cfb")
-    return { ...footballEvents(summary, box), ...(corePlays ? footballPeriods(corePlays, box) : {}) };
+    return {
+      ...footballEvents(summary, box),
+      ...(corePlays ? footballPeriods(corePlays, box) : {}),
+    };
   const plays = summary?.plays ?? [];
   if (!plays.length) return null;
   const comp = summary?.header?.competitions?.[0];
@@ -362,8 +365,9 @@ function footballEvents(summary, box) {
 }
 
 const athleteOf = (p, type) =>
-  String((p.participants ?? []).find((x) => x.type === type)?.athlete?.$ref ?? "").match(/athletes\/(\d+)/)?.[1] ??
-  null;
+  String((p.participants ?? []).find((x) => x.type === type)?.athlete?.$ref ?? "").match(
+    /athletes\/(\d+)/,
+  )?.[1] ?? null;
 /** The play's own yards from its text ("for 12 yards", "for no gain"), before any penalty; else ESPN's. */
 function playYards(p) {
   const text = String(p.text ?? "");
@@ -406,32 +410,49 @@ export function footballPeriods(plays, box = {}) {
     s[k] = (s[k] ?? 0) + v;
   };
   for (const p of plays ?? []) {
-    const t = String(p.type?.id ?? "");
     const q = Number(p.period?.number);
     if (!q) continue;
+    // a replay reversal: the ruling that stands is described after "REVERSED"
+    // (and a two-point try after a touchdown is cut off: it isn't in the box score's yards)
+    const text = String(p.text ?? "")
+      .split(/REVERSED\.?/i)
+      .pop()
+      .split(/TWO-POINT CONVERSION/i)[0];
+    // penalties that wipe out the play, and stand-alone two-point tries
+    if (/No Play\b/i.test(text) || !text.trim()) continue;
+    const y = playYards({ ...p, text });
     const passer = athleteOf(p, "passer");
-    if (t === "24" || t === "67") {
-      // completion (67: passing touchdown)
-      const y = playYards(p);
-      const rc = athleteOf(p, "receiver");
-      add(passer, q, "pa", 1);
-      add(passer, q, "pc", 1);
-      add(passer, q, "py", y);
-      if (t === "67") add(passer, q, "ptd", 1);
-      if (passer) lc[passer] = Math.max(lc[passer] ?? 0, y);
-      add(rc, q, "rec", 1);
-      add(rc, q, "rcy", y);
-    } else if (t === "3") add(passer, q, "pa", 1);
-    else if (t === "26" || t === "36") {
-      add(passer, q, "pa", 1);
-      add(passer, q, "int", 1);
-    } else if (t !== "8") {
-      // rushes, rushing touchdowns, and fumbled rushes (the run's yards still count)
-      const rusher = athleteOf(p, "rusher");
-      if (rusher && !passer) {
-        add(rusher, q, "ry", playYards(p));
-        add(rusher, q, "car", 1);
+    if (passer) {
+      if (/\bsacked\b/i.test(text)) continue;
+      if (/\bINTERCEPTED\b/i.test(text)) {
+        add(passer, q, "pa", 1);
+        add(passer, q, "int", 1);
+      } else if (/\bincomplete\b|\bspiked\b/i.test(text)) add(passer, q, "pa", 1);
+      else if (/\bpass\b/i.test(text)) {
+        // a completion (fumbles after the catch included: the catch's yards count)
+        const rc = athleteOf(p, "receiver");
+        add(passer, q, "pa", 1);
+        add(passer, q, "pc", 1);
+        add(passer, q, "py", y);
+        if (/\bTOUCHDOWN\b/i.test(text) && !/\bFUMBLES\b/i.test(text)) add(passer, q, "ptd", 1);
+        lc[passer] = Math.max(lc[passer] ?? 0, y);
+        add(rc, q, "rec", 1);
+        add(rc, q, "rcy", y);
+      } else {
+        // a quarterback run tagged with "passer" (scramble)
+        const rusher = athleteOf(p, "rusher");
+        if (rusher) {
+          add(rusher, q, "ry", y);
+          add(rusher, q, "car", 1);
+        }
       }
+      continue;
+    }
+    // rushes, rushing touchdowns, fumbled rushes and kneel-downs (the run's yards count)
+    const rusher = athleteOf(p, "rusher");
+    if (rusher) {
+      add(rusher, q, "ry", y);
+      add(rusher, q, "car", 1);
     }
   }
   const bad = {};
