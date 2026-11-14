@@ -29,7 +29,7 @@ import { useCfbPriorSeason, useCfbSchedule } from "@/lib/cfb/use-cfb";
 import { getGameWeather, getLiveGame, getTeamSeasonAverages } from "@/lib/shared/espn.functions";
 import { showGameStatistics } from "@/lib/shared/game-visibility";
 import { GamePropsTab } from "@/components/shared/GamePropsTab";
-import { AllLines, PeriodProps } from "@/components/nfl/MoreMarkets";
+import { AllLines } from "@/components/nfl/MoreMarkets";
 import { ProbabilityGraph } from "@/components/shared/ProbabilityGraph";
 
 /* ---------- Interactive 100-Yard Field Visualizer ---------- */
@@ -1537,9 +1537,8 @@ export function GameDetail({ gameId }: { gameId: string }) {
             </section>
           ) : activeGameTab === "props" ? (
             /* Upcoming / Scheduled games Props tab */
-            <section className="mt-6 space-y-6">
+            <section className="mt-6">
               <GamePropsTab game={game} away={away} home={home} />
-              {league === "nfl" ? <PeriodProps home={home} away={away} when={game.kickoffIso ?? game.kickoff} /> : null}
             </section>
           ) : activeGameTab === "gamecast" ? (
             <section className="mt-6">
