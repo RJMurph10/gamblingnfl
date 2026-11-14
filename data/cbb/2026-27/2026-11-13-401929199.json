@@ -7,18 +7,18 @@
   "id": "2572",
   "abbr": "USM",
   "name": "Southern Miss Golden Eagles",
-  "score": 57
+  "score": 65
  },
  "home": {
   "id": "326",
   "abbr": "TXST",
   "name": "Texas State Bobcats",
-  "score": 82
+  "score": 85
  },
  "neutral": false,
  "venue": "Strahan Arena at the University Events Center",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-13T01:36:25.578Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 65,
+  "home": 85
+ }
 }

@@ -7,18 +7,18 @@
   "id": "258",
   "abbr": "UVA",
   "name": "Virginia Cavaliers",
-  "score": 76
+  "score": 87
  },
  "home": {
   "id": "120",
   "abbr": "MD",
   "name": "Maryland Terrapins",
-  "score": 75
+  "score": 83
  },
  "neutral": false,
  "venue": "XFINITY Center",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-13T01:36:25.578Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 87,
+  "home": 83
+ }
 }

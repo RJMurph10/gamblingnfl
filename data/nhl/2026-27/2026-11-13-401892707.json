@@ -7,13 +7,13 @@
   "id": "27",
   "abbr": "NSH",
   "name": "Nashville Predators",
-  "score": 0
+  "score": 1
  },
  "home": {
   "id": "37",
   "abbr": "VGK",
   "name": "Vegas Golden Knights",
-  "score": 0
+  "score": 1
  },
  "neutral": false,
  "venue": "T-Mobile Arena",

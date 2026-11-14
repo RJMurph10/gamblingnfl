@@ -7,13 +7,13 @@
   "id": "9",
   "abbr": "GS",
   "name": "Golden State Warriors",
-  "score": 10
+  "score": 22
  },
  "home": {
   "id": "24",
   "abbr": "SA",
   "name": "San Antonio Spurs",
-  "score": 33
+  "score": 45
  },
  "neutral": false,
  "venue": "Frost Bank Center",

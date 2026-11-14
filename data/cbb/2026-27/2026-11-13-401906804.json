@@ -18,7 +18,7 @@
  "neutral": false,
  "venue": "Lloyd Noble Center",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-13T09:38:35.492Z",
@@ -769,5 +769,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 58,
+  "home": 74
+ }
 }

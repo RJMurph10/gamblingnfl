@@ -7,18 +7,18 @@
   "id": "22",
   "abbr": "POR",
   "name": "Portland Trail Blazers",
-  "score": 0
+  "score": 23
  },
  "home": {
   "id": "23",
   "abbr": "SAC",
   "name": "Sacramento Kings",
-  "score": 0
+  "score": 21
  },
  "neutral": false,
  "venue": "Golden 1 Center",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-13T01:36:25.578Z",

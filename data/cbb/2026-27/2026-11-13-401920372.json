@@ -7,18 +7,18 @@
   "id": "28",
   "abbr": "UCSD",
   "name": "UC San Diego Tritons",
-  "score": 0
+  "score": 16
  },
  "home": {
   "id": "328",
   "abbr": "USU",
   "name": "Utah State Aggies",
-  "score": 0
+  "score": 35
  },
  "neutral": false,
  "venue": "Dee Glen Smith Spectrum",
  "seasonType": 2,
- "state": "pre",
+ "state": "in",
  "lines": {
   "open": {
    "at": "2026-11-13T01:36:25.578Z",

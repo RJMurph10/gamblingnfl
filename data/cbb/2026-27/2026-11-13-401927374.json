@@ -7,18 +7,18 @@
   "id": "2287",
   "abbr": "ILST",
   "name": "Illinois State Redbirds",
-  "score": 79
+  "score": 81
  },
  "home": {
   "id": "2449",
   "abbr": "NDSU",
   "name": "North Dakota State Bison",
-  "score": 77
+  "score": 82
  },
  "neutral": false,
  "venue": "Scheels Center",
  "seasonType": 2,
- "state": "in",
+ "state": "post",
  "lines": {
   "open": {
    "at": "2026-11-13T01:36:25.578Z",
@@ -933,5 +933,9 @@
    ]
   }
  },
- "props": {}
+ "props": {},
+ "final": {
+  "away": 81,
+  "home": 82
+ }
 }
