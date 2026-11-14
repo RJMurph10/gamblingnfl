@@ -4,6 +4,7 @@
  * DraftKings player props. Everything is cached in memory; empty or failed feeds stay empty —
  * no sample data is ever substituted.
  */
+import type { EdgesFile } from "./nba-edges";
 import type { RebStarsFile } from "./nba-reb-stars";
 import type { NbaInjury, StarFile } from "./star-absence";
 import {
@@ -94,8 +95,24 @@ export async function fetchNbaRebStars(): Promise<RebStarsFile | null> {
   const y = nbaSeasonYear();
   const season = `${y - 1}-${String(y).slice(2)}`;
   try {
-    const res = await fetch(`https://raw.githubusercontent.com/RJMurph10/gamblingnfl/props-site/nba/reb-stars-${season}.json`);
+    const res = await fetch(
+      `https://raw.githubusercontent.com/RJMurph10/gamblingnfl/props-site/nba/reb-stars-${season}.json`,
+    );
     return res.ok ? ((await res.json()) as RebStarsFile) : null;
+  } catch {
+    return null;
+  }
+}
+
+/** This season's prop edge finder flags and results (scripts/props/nba-edges.mjs); null before the first run. */
+export async function fetchNbaEdges(): Promise<EdgesFile | null> {
+  const y = nbaSeasonYear();
+  const season = `${y - 1}-${String(y).slice(2)}`;
+  try {
+    const res = await fetch(
+      `https://raw.githubusercontent.com/RJMurph10/gamblingnfl/props-site/nba/edges-${season}.json`,
+    );
+    return res.ok ? ((await res.json()) as EdgesFile) : null;
   } catch {
     return null;
   }
@@ -212,8 +229,12 @@ function parseOdds(o: any, awayAbbr: string, homeAbbr: string): NbaOdds | undefi
   // openers: core feed `open.total` / `homeTeamOdds.open.pointSpread`; scoreboard `total.over.open.line`
   // ("o236.5") / `pointSpread.home.open.line` ("+2.5")
   const lineNum = (v: unknown) => num(String(v ?? "").replace(/^[ou]/i, ""));
-  const open = lineNum(o.open?.total?.american ?? o.open?.total?.alternateDisplayValue ?? o.total?.over?.open?.line);
-  const spreadOpen = lineNum(o.homeTeamOdds?.open?.pointSpread?.american ?? o.pointSpread?.home?.open?.line);
+  const open = lineNum(
+    o.open?.total?.american ?? o.open?.total?.alternateDisplayValue ?? o.total?.over?.open?.line,
+  );
+  const spreadOpen = lineNum(
+    o.homeTeamOdds?.open?.pointSpread?.american ?? o.pointSpread?.home?.open?.line,
+  );
   const out: NbaOdds = {
     spread,
     total: total !== null && total > 0 ? total : null,
@@ -248,14 +269,17 @@ export function parseEvent(event: any): NbaGame | null {
     return {
       team: teamRefFrom(c.team),
       score: status === "scheduled" ? null : score,
-      record: (c.records ?? c.record ?? []).find?.((r: any) => r?.type === "total" || r?.name === "overall")
-        ?.summary as string | undefined,
+      record: (c.records ?? c.record ?? []).find?.(
+        (r: any) => r?.type === "total" || r?.name === "overall",
+      )?.summary as string | undefined,
       periods: (c.linescores ?? []).map((l: any) => numOr(l?.value ?? l?.displayValue)),
     };
   };
   const awaySide = side(away);
   const homeSide = side(home);
-  const possessionCompetitor = competitors.find((c) => c?.possession === true || c?.possession === "true");
+  const possessionCompetitor = competitors.find(
+    (c) => c?.possession === true || c?.possession === "true",
+  );
   const broadcast =
     comp?.broadcasts?.[0]?.names?.[0] ??
     comp?.geoBroadcasts?.[0]?.media?.shortName ??
@@ -269,7 +293,9 @@ export function parseEvent(event: any): NbaGame | null {
     statusDetail: detail,
     period: numOr(status0.period),
     clock: String(status0.displayClock ?? ""),
-    ...(status === "live" && possessionCompetitor?.id ? { possessionTeamId: String(possessionCompetitor.id) } : {}),
+    ...(status === "live" && possessionCompetitor?.id
+      ? { possessionTeamId: String(possessionCompetitor.id) }
+      : {}),
     part: partOf(event),
     ...(note ? { note: String(note) } : {}),
     ...(comp?.venue?.fullName ? { venue: String(comp.venue.fullName) } : {}),
@@ -303,12 +329,17 @@ function fetchDay(day: Date, now: Date): Promise<NbaGame[]> {
   );
 }
 
-const allFinal = (games: NbaGame[]) => games.length > 0 && games.every((g) => g.status === "final" || g.status === "postponed");
+const allFinal = (games: NbaGame[]) =>
+  games.length > 0 && games.every((g) => g.status === "final" || g.status === "postponed");
 
 async function fetchRange(from: Date, to: Date, ttl: number): Promise<NbaGame[]> {
   // A range that ended two+ days ago with every game final never changes: keep it long-term.
   if (to.getTime() < Date.now() - 2 * 24 * HOUR) {
-    return finalCached(`nba-range-${ymd(from)}-${ymd(to)}`, () => loadRange(from, to, ttl), allFinal);
+    return finalCached(
+      `nba-range-${ymd(from)}-${ymd(to)}`,
+      () => loadRange(from, to, ttl),
+      allFinal,
+    );
   }
   return loadRange(from, to, ttl);
 }
@@ -323,9 +354,16 @@ async function loadRange(from: Date, to: Date, ttl: number): Promise<NbaGame[]> 
       // ESPN sometimes rejects the range form (HTTP 400); ask day by day instead.
       const now = new Date();
       const days: Date[] = [];
-      for (let d = new Date(from); d <= to; d = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1)) days.push(new Date(d));
+      for (
+        let d = new Date(from);
+        d <= to;
+        d = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1)
+      )
+        days.push(new Date(d));
       const perDay = await Promise.allSettled(days.map((d) => fetchDay(d, now)));
-      const ok = perDay.filter((r): r is PromiseFulfilledResult<NbaGame[]> => r.status === "fulfilled");
+      const ok = perDay.filter(
+        (r): r is PromiseFulfilledResult<NbaGame[]> => r.status === "fulfilled",
+      );
       if (!ok.length) throw first;
       return ok.flatMap((r) => r.value);
     }
@@ -381,11 +419,15 @@ async function closingOdds(game: NbaGame): Promise<NbaOdds | null> {
 /** Fills in missing spreads/totals on live and finished games (newest first, a bounded batch per refresh). */
 async function withClosingOdds(games: NbaGame[]): Promise<NbaGame[]> {
   const missing = (g: NbaGame) =>
-    (g.status === "live" || g.status === "final") && (g.odds?.spread == null || g.odds?.total == null);
+    (g.status === "live" || g.status === "final") &&
+    (g.odds?.spread == null || g.odds?.total == null);
   const todo = games.filter(missing).sort((a, b) => b.date.localeCompare(a.date));
   const fresh = (g: NbaGame) => {
     const hit = oddsBackfill.get(g.id);
-    return Boolean(hit && Date.now() - hit.at < (hit.odds ? 12 * HOUR : g.status === "live" ? MINUTE : 10 * MINUTE));
+    return Boolean(
+      hit &&
+      Date.now() - hit.at < (hit.odds ? 12 * HOUR : g.status === "live" ? MINUTE : 10 * MINUTE),
+    );
   };
   // Lines of finished games never change: read them from the long-term store first.
   const finals = todo.filter((g) => g.status === "final");
@@ -405,7 +447,10 @@ async function withClosingOdds(games: NbaGame[]): Promise<NbaGame[]> {
     }),
   );
   const newFinals = lookups
-    .filter((g) => g.status === "final" && found.get(g.id)?.spread != null && found.get(g.id)?.total != null)
+    .filter(
+      (g) =>
+        g.status === "final" && found.get(g.id)?.spread != null && found.get(g.id)?.total != null,
+    )
     .map((g) => ({ id: g.id, date: g.date, odds: found.get(g.id) as NbaOdds }));
   if (newFinals.length) await finalLines.save(newFinals);
   return games.map((g) => {
@@ -414,11 +459,17 @@ async function withClosingOdds(games: NbaGame[]): Promise<NbaGame[]> {
     const merged: NbaOdds = {
       spread: g.odds?.spread ?? o.spread,
       total: g.odds?.total ?? o.total,
-      ...((g.odds?.totalOpen ?? o.totalOpen) != null ? { totalOpen: (g.odds?.totalOpen ?? o.totalOpen) as number } : {}),
-      ...((g.odds?.spreadOpen ?? o.spreadOpen) != null ? { spreadOpen: (g.odds?.spreadOpen ?? o.spreadOpen) as number } : {}),
+      ...((g.odds?.totalOpen ?? o.totalOpen) != null
+        ? { totalOpen: (g.odds?.totalOpen ?? o.totalOpen) as number }
+        : {}),
+      ...((g.odds?.spreadOpen ?? o.spreadOpen) != null
+        ? { spreadOpen: (g.odds?.spreadOpen ?? o.spreadOpen) as number }
+        : {}),
       mlHome: g.odds?.mlHome ?? o.mlHome,
       mlAway: g.odds?.mlAway ?? o.mlAway,
-      ...((g.odds?.provider ?? o.provider) ? { provider: (g.odds?.provider ?? o.provider) as string } : {}),
+      ...((g.odds?.provider ?? o.provider)
+        ? { provider: (g.odds?.provider ?? o.provider) as string }
+        : {}),
     };
     return { ...g, odds: merged };
   });
@@ -438,18 +489,27 @@ export async function fetchNbaSchedule(): Promise<NbaGame[]> {
   const start = new Date(season - 1, 9, 1); // Oct 1
   const end = new Date(Math.min(now.getTime() + 14 * day, new Date(season, 5, 30).getTime()));
   const chunks: [Date, Date][] = [];
-  for (let d = new Date(start); d <= end; d = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 10)) {
+  for (
+    let d = new Date(start);
+    d <= end;
+    d = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 10)
+  ) {
     const last = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 9);
     chunks.push([new Date(d), last > end ? end : last]);
   }
   const results = await Promise.allSettled(
     chunks.map(([a, b]) => fetchRange(a, b, b.getTime() < now.getTime() - 2 * day ? HOUR : 15_000)),
   );
-  const ok = results.filter((r): r is PromiseFulfilledResult<NbaGame[]> => r.status === "fulfilled");
-  for (const r of results) if (r.status === "rejected") console.error("NBA schedule range failed:", r.reason);
+  const ok = results.filter(
+    (r): r is PromiseFulfilledResult<NbaGame[]> => r.status === "fulfilled",
+  );
+  for (const r of results)
+    if (r.status === "rejected") console.error("NBA schedule range failed:", r.reason);
   if (!ok.length) {
     const first = results.find((r) => r.status === "rejected") as PromiseRejectedResult | undefined;
-    throw first?.reason instanceof Error ? first.reason : new Error("ESPN NBA schedule unavailable");
+    throw first?.reason instanceof Error
+      ? first.reason
+      : new Error("ESPN NBA schedule unavailable");
   }
   const seen = new Set<string>();
   const all: NbaGame[] = [];
@@ -479,14 +539,19 @@ export async function fetchNbaSchedule(): Promise<NbaGame[]> {
 
 /* ---------- standings ---------- */
 
-const norm = (s: unknown) => String(s ?? "").toLowerCase().replace(/[^a-z0-9]/g, "");
+const norm = (s: unknown) =>
+  String(s ?? "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, "");
 
 function statOf(entry: any, names: string[]): { value: number | null; text: string } {
   const stats: any[] = entry?.stats ?? [];
   const wanted = names.map(norm);
   for (const w of wanted) {
     const s = stats.find((x) =>
-      [x?.name, x?.type, x?.displayName, x?.shortDisplayName, x?.abbreviation].some((k) => norm(k) === w),
+      [x?.name, x?.type, x?.displayName, x?.shortDisplayName, x?.abbreviation].some(
+        (k) => norm(k) === w,
+      ),
     );
     if (s) return { value: num(s.value), text: String(s.displayValue ?? s.value ?? "") };
   }
@@ -565,9 +630,13 @@ function playerFrom(a: any, team: NbaTeamRef): NbaPlayer {
     ...(a?.displayHeight ? { height: String(a.displayHeight) } : {}),
     ...(a?.displayWeight ? { weight: String(a.displayWeight) } : {}),
     ...(num(a?.age) !== null ? { age: num(a.age) as number } : {}),
-    ...(num(a?.experience?.years) !== null ? { experience: num(a.experience.years) as number } : {}),
+    ...(num(a?.experience?.years) !== null
+      ? { experience: num(a.experience.years) as number }
+      : {}),
     ...(a?.college?.name ? { college: String(a.college.name) } : {}),
-    headshot: String(a?.headshot?.href ?? `https://a.espncdn.com/i/headshots/nba/players/full/${a?.id}.png`),
+    headshot: String(
+      a?.headshot?.href ?? `https://a.espncdn.com/i/headshots/nba/players/full/${a?.id}.png`,
+    ),
     ...(injury?.status ? { status: String(injury.status) } : {}),
   };
 }
@@ -649,7 +718,9 @@ export interface NbaPlayerIndex {
 export function fetchNbaPlayerIndex(): Promise<NbaPlayerIndex> {
   return cached("player-index", 15 * MINUTE, async () => {
     const teams = await fetchNbaTeams();
-    const rosters = await Promise.all(teams.map((t) => fetchNbaRoster(t.id).catch(() => [] as NbaPlayer[])));
+    const rosters = await Promise.all(
+      teams.map((t) => fetchNbaRoster(t.id).catch(() => [] as NbaPlayer[])),
+    );
     const current = nbaSeasonYear();
     let season = current;
     let avgs = await fetchAverages(current);
@@ -662,7 +733,9 @@ export function fetchNbaPlayerIndex(): Promise<NbaPlayerIndex> {
         season = current - 1;
       }
     }
-    const players = rosters.flat().map((p) => ({ ...p, ...(avgs.get(p.id) ? { avg: avgs.get(p.id) } : {}) }));
+    const players = rosters
+      .flat()
+      .map((p) => ({ ...p, ...(avgs.get(p.id) ? { avg: avgs.get(p.id) } : {}) }));
     return { players, statsSeason: season };
   });
 }
@@ -761,7 +834,9 @@ export async function fetchNbaPlayerProfile(playerId: string): Promise<NbaPlayer
     fetchNbaGameLog(playerId, season),
     fetchNbaGameLog(playerId, season - 1),
     fetchNbaPlayerIndex().catch(() => null),
-    cached(`bio-${playerId}`, HOUR, () => fetchJson(`${WEB}/athletes/${playerId}`)).catch(() => null),
+    cached(`bio-${playerId}`, HOUR, () => fetchJson(`${WEB}/athletes/${playerId}`)).catch(
+      () => null,
+    ),
   ]);
   let player = index?.players.find((p) => p.id === playerId) ?? null;
   const a = bio?.athlete;
@@ -804,7 +879,13 @@ function loadNbaGameDetail(gameId: string): Promise<NbaGameDetail> {
       date: comp?.date,
       status: comp?.status,
       season: header?.season,
-      competitions: [{ ...comp, odds: json?.odds ?? comp?.odds, notes: header?.gameNote ? [{ headline: header.gameNote }] : comp?.notes }],
+      competitions: [
+        {
+          ...comp,
+          odds: json?.odds ?? comp?.odds,
+          notes: header?.gameNote ? [{ headline: header.gameNote }] : comp?.notes,
+        },
+      ],
     });
     if (!game) throw new Error("ESPN returned no game for this id");
     // Lines: the pick center is the most complete source.
@@ -818,7 +899,8 @@ function loadNbaGameDetail(gameId: string): Promise<NbaGameDetail> {
       : undefined;
     if (pickOdds && (game.odds?.spread === undefined || game.odds.spread === null))
       game.odds = { ...game.odds, ...pickOdds } as NbaOdds;
-    else if (pickOdds && game.odds && game.odds.total === null) game.odds = { ...game.odds, total: pickOdds.total };
+    else if (pickOdds && game.odds && game.odds.total === null)
+      game.odds = { ...game.odds, total: pickOdds.total };
     else if (pickOdds && !game.odds) game.odds = pickOdds;
 
     // Team stats side by side.
@@ -846,7 +928,9 @@ function loadNbaGameDetail(gameId: string): Promise<NbaGameDetail> {
           id: String(p?.athlete?.id ?? ""),
           name: String(p?.athlete?.displayName ?? p?.athlete?.shortName ?? "Unknown"),
           ...(p?.athlete?.jersey ? { jersey: String(p.athlete.jersey) } : {}),
-          ...(p?.athlete?.position?.abbreviation ? { position: String(p.athlete.position.abbreviation) } : {}),
+          ...(p?.athlete?.position?.abbreviation
+            ? { position: String(p.athlete.position.abbreviation) }
+            : {}),
           ...(p?.athlete?.headshot?.href ? { headshot: String(p.athlete.headshot.href) } : {}),
           starter: Boolean(p?.starter),
           ...(p?.didNotPlay ? { dnp: String(p?.reason || "DNP") } : {}),
@@ -879,7 +963,10 @@ function loadNbaGameDetail(gameId: string): Promise<NbaGameDetail> {
       .filter((v: number | null): v is number => v !== null);
     const probabilities = buildNbaProbabilities(
       (json?.winprobability ?? [])
-        .map((w: any) => ({ homeWinPercentage: num(w?.homeWinPercentage), playId: w?.playId ? String(w.playId) : undefined }))
+        .map((w: any) => ({
+          homeWinPercentage: num(w?.homeWinPercentage),
+          playId: w?.playId ? String(w.playId) : undefined,
+        }))
         .filter((w: { homeWinPercentage: number | null }) => w.homeWinPercentage !== null),
       plays,
       game,
@@ -925,7 +1012,10 @@ function loadNbaGameDetail(gameId: string): Promise<NbaGameDetail> {
 /* ---------- props ---------- */
 
 function classifyNbaProp(typeName: string): { stat: NbaStatKey; market: string } | null {
-  const n = typeName.toLowerCase().replace(/\(incl\.? overtime\)/, "").trim();
+  const n = typeName
+    .toLowerCase()
+    .replace(/\(incl\.? overtime\)/, "")
+    .trim();
   if (/milestone|first|double|triple|quarter|half|1st|2nd/.test(n)) return null;
   const hasP = /point/.test(n) && !/three|3/.test(n);
   const hasR = /rebound/.test(n);
@@ -956,7 +1046,11 @@ async function fetchPropsJson(url: string): Promise<any> {
 }
 
 /** DraftKings player props for one game from ESPN's core odds feed (empty when none are posted). */
-export function fetchNbaGameProps(gameId: string, awayId: string, homeId: string): Promise<NbaPropBoard> {
+export function fetchNbaGameProps(
+  gameId: string,
+  awayId: string,
+  homeId: string,
+): Promise<NbaPropBoard> {
   return cached(`props-${gameId}`, 30_000, async () => {
     const base = `${CORE}/events/${gameId}/competitions/${gameId}/odds/100/propBets`;
     let items: any[] = [];
@@ -976,14 +1070,21 @@ export function fetchNbaGameProps(gameId: string, awayId: string, homeId: string
           await Promise.all(
             refs.slice(i, i + 20).map(async (ref) => {
               try {
-                resolved.set(ref, await cached(`propref-${ref}`, MINUTE, () => fetchPropsJson(ref)));
+                resolved.set(
+                  ref,
+                  await cached(`propref-${ref}`, MINUTE, () => fetchPropsJson(ref)),
+                );
               } catch {
                 // skip
               }
             }),
           );
         }
-        items = items.map((x) => (x && !x.type && typeof x.$ref === "string" ? resolved.get(String(x.$ref)) : x)).filter(Boolean);
+        items = items
+          .map((x) =>
+            x && !x.type && typeof x.$ref === "string" ? resolved.get(String(x.$ref)) : x,
+          )
+          .filter(Boolean);
       }
     } catch {
       return { available: false, offers: [], fetchedAt: Date.now() };
@@ -996,7 +1097,9 @@ export function fetchNbaGameProps(gameId: string, awayId: string, homeId: string
     const offers: NbaPropOffer[] = [];
     const seen = new Set<string>();
     for (const x of items) {
-      const typeName = String(x?.type?.name ?? x?.type?.displayName ?? x?.displayName ?? x?.name ?? "");
+      const typeName = String(
+        x?.type?.name ?? x?.type?.displayName ?? x?.displayName ?? x?.name ?? "",
+      );
       const kind = classifyNbaProp(typeName);
       const id = athleteIdOf(x);
       if (!kind || !id) continue;
@@ -1025,7 +1128,10 @@ export function fetchNbaGameProps(gameId: string, awayId: string, homeId: string
 /* ---------- projections input ---------- */
 
 /** Rotation players for both teams with this and last season's game logs. */
-export async function fetchNbaGameRosterStats(awayId: string, homeId: string): Promise<NbaGameRosterStat[]> {
+export async function fetchNbaGameRosterStats(
+  awayId: string,
+  homeId: string,
+): Promise<NbaGameRosterStat[]> {
   const season = nbaSeasonYear();
   const [index, awayRoster, homeRoster] = await Promise.all([
     fetchNbaPlayerIndex().catch(() => null),

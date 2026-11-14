@@ -7,6 +7,7 @@ import {
   fetchNbaPlayerIndex,
   fetchNbaPlayerProfile,
   fetchNbaPriorTeams,
+  fetchNbaEdges,
   fetchNbaRebStars,
   fetchNbaStars,
   fetchNbaInjuries,
@@ -18,7 +19,9 @@ import {
 } from "./nba.server";
 
 /** The NBA season so far plus the next month, with lines. */
-export const getNbaSchedule = createServerFn({ method: "GET" }).handler(async () => fetchNbaSchedule());
+export const getNbaSchedule = createServerFn({ method: "GET" }).handler(async () =>
+  fetchNbaSchedule(),
+);
 
 /** The 30 teams. */
 export const getNbaTeams = createServerFn({ method: "GET" }).handler(async () => fetchNbaTeams());
@@ -29,7 +32,9 @@ export const getNbaStandings = createServerFn({ method: "GET" }).handler(async (
 );
 
 /** Last season's scoring per team (the model's starting point). */
-export const getNbaPriorTeams = createServerFn({ method: "GET" }).handler(async () => fetchNbaPriorTeams());
+export const getNbaPriorTeams = createServerFn({ method: "GET" }).handler(async () =>
+  fetchNbaPriorTeams(),
+);
 
 /** A team's roster. */
 export const getNbaRoster = createServerFn({ method: "GET" })
@@ -37,7 +42,9 @@ export const getNbaRoster = createServerFn({ method: "GET" })
   .handler(async ({ data }) => fetchNbaRoster(data.teamId));
 
 /** Every player with last/this season's per-game averages. */
-export const getNbaPlayerIndex = createServerFn({ method: "GET" }).handler(async () => fetchNbaPlayerIndex());
+export const getNbaPlayerIndex = createServerFn({ method: "GET" }).handler(async () =>
+  fetchNbaPlayerIndex(),
+);
 
 /** One player: bio plus this and last season's game logs. */
 export const getNbaPlayerProfile = createServerFn({ method: "GET" })
@@ -50,7 +57,10 @@ export const getNbaGameDetail = createServerFn({ method: "GET" })
   .handler(async ({ data }) => fetchNbaGameDetail(data.gameId));
 
 /** ★ rebound unders: this season's graded picks and players' projection inputs. */
-export const getNbaRebStars = createServerFn({ method: "GET" }).handler(async () => fetchNbaRebStars());
+export const getNbaEdges = createServerFn({ method: "GET" }).handler(async () => fetchNbaEdges());
+export const getNbaRebStars = createServerFn({ method: "GET" }).handler(async () =>
+  fetchNbaRebStars(),
+);
 
 /** 20+ ppg regulars per team and today's injury report (star-absence adjustment to totals). */
 export const getNbaStarStatus = createServerFn({ method: "GET" }).handler(async () => {
