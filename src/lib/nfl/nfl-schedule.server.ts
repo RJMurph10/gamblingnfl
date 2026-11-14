@@ -5,6 +5,7 @@
  * (Split out of the old lib/espn.server.ts; the code is unchanged.)
  */
 
+import { scheduleBusy } from "@/lib/shared/schedule-busy";
 import { finalCached } from "@/lib/shared/final-cache.server";
 import type { Game } from "@/data/shared/games";
 import { gameScore } from "@/data/shared/games";
@@ -92,8 +93,26 @@ function scheduleWeek(week: number): Promise<{ week: number; events: any[] }> {
   );
 }
 
-/** Full 2026 regular-season schedule with results, grouped by week. */
+/** How long a quiet schedule (no game on or about to start) is reused before asking ESPN again. */
+const QUIET_TTL_MS = 2 * 60_000;
+let lastSchedule: { at: number; games: Game[] } | null = null;
+
+/**
+ * Full 2026 regular-season schedule with results, grouped by week. Rebuilt from ESPN every 1.5 seconds
+ * while a game is on (scores and scoring transitions); otherwise the last build is reused for 2 minutes,
+ * so pages don't wait on ESPN's ten-odd scoreboards when nothing can have changed.
+ */
 export async function fetchSchedule(): Promise<Game[]> {
+  const now = Date.now();
+  if (lastSchedule && now - lastSchedule.at < QUIET_TTL_MS && !scheduleBusy(lastSchedule.games, now))
+    return lastSchedule.games;
+  const games = await buildSchedule();
+  if (games.length) lastSchedule = { at: Date.now(), games };
+  else if (lastSchedule) return lastSchedule.games; // ESPN hiccup: keep showing the last good schedule
+  return games;
+}
+
+function buildSchedule(): Promise<Game[]> {
   return cached(
     "schedule",
     async () => {
