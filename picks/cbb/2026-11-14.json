@@ -1,6 +1,6 @@
 {
  "day": "2026-11-14",
- "updated": "2026-11-14T02:43:00.514Z",
+ "updated": "2026-11-14T11:47:54.928Z",
  "picks": [
   {
    "id": "401920074-total",
@@ -14,8 +14,40 @@
    "edge": 8.3,
    "best": true,
    "firstSeen": "2026-11-14T02:43:00.514Z",
+   "latest": 128.5,
+   "latestAt": "2026-11-14T11:47:54.928Z",
+   "alerted": false
+  },
+  {
+   "id": "401923303-total",
+   "game": "DREX @ ME",
+   "tip": "2026-11-14T18:00Z",
+   "market": "total",
+   "pick": "Over 129.5",
+   "line": 129.5,
+   "open": 129.5,
+   "model": 137,
+   "edge": 7.5,
+   "best": true,
+   "firstSeen": "2026-11-14T11:47:54.928Z",
    "latest": 130.5,
-   "latestAt": "2026-11-14T02:43:00.514Z",
+   "latestAt": "2026-11-14T11:47:54.928Z",
+   "alerted": false
+  },
+  {
+   "id": "401911264-total",
+   "game": "LAF @ SBU",
+   "tip": "2026-11-14T21:00Z",
+   "market": "total",
+   "pick": "Over 139.5",
+   "line": 139.5,
+   "open": 139.5,
+   "model": 148.7,
+   "edge": 9.2,
+   "best": true,
+   "firstSeen": "2026-11-14T11:47:54.928Z",
+   "latest": 139.5,
+   "latestAt": "2026-11-14T11:47:54.928Z",
    "alerted": false
   },
   {
@@ -31,7 +63,7 @@
    "best": true,
    "firstSeen": "2026-11-14T02:43:00.514Z",
    "latest": 160.5,
-   "latestAt": "2026-11-14T02:43:00.514Z",
+   "latestAt": "2026-11-14T11:47:54.928Z",
    "alerted": false
   }
  ]
