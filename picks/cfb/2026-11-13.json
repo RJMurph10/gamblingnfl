@@ -1,6 +1,6 @@
 {
  "day": "2026-11-13",
- "updated": "2026-11-13T19:50:13.278Z",
+ "updated": "2026-11-14T01:29:04.865Z",
  "picks": [
   {
    "id": "401858526-total-weather",
@@ -16,9 +16,9 @@
    "tag": "weather",
    "note": "10 mph · gusts 12 · rain 0.11 in",
    "firstSeen": "2026-11-13T09:24:59.223Z",
-   "lastSeen": "2026-11-13T19:50:13.278Z",
-   "latest": 47.5,
-   "latestAt": "2026-11-13T19:50:13.278Z"
+   "lastSeen": "2026-11-14T01:29:04.865Z",
+   "latest": 48.5,
+   "latestAt": "2026-11-14T01:29:04.865Z"
   },
   {
    "id": "401856860-total-late",
@@ -33,9 +33,9 @@
    "best": false,
    "tag": "late",
    "firstSeen": "2026-11-13T09:24:59.223Z",
-   "lastSeen": "2026-11-13T19:50:13.278Z",
-   "latest": 51.5,
-   "latestAt": "2026-11-13T19:50:13.278Z"
+   "lastSeen": "2026-11-14T01:29:04.865Z",
+   "latest": 52.5,
+   "latestAt": "2026-11-14T01:29:04.865Z"
   }
  ]
 }
