@@ -1,0 +1,42 @@
+{
+ "day": "2026-11-15",
+ "updated": "2026-11-14T10:37:59.193Z",
+ "picks": [
+  {
+   "id": "401856887-spread-bounce",
+   "game": "MISS @ OU",
+   "tip": "2026-11-15T18:00Z",
+   "market": "spread",
+   "pick": "MISS +2.5",
+   "line": -2.5,
+   "open": -4,
+   "model": -2.5,
+   "edge": 0,
+   "best": true,
+   "tag": "bounce",
+   "firstSeen": "2026-11-14T10:37:59.193Z",
+   "lastSeen": "2026-11-14T10:37:59.193Z",
+   "latest": -2.5,
+   "latestAt": "2026-11-14T10:37:59.193Z"
+  },
+  {
+   "id": "401856887-total-weather",
+   "game": "MISS @ OU",
+   "tip": "2026-11-15T18:00Z",
+   "market": "total",
+   "pick": "Under 49.5",
+   "line": 49.5,
+   "rule": 53.5,
+   "open": 53.5,
+   "model": null,
+   "edge": null,
+   "best": false,
+   "tag": "weather",
+   "note": "10 mph · gusts 16 · rain 0.08 in",
+   "firstSeen": "2026-11-14T10:37:59.193Z",
+   "lastSeen": "2026-11-14T10:37:59.193Z",
+   "latest": 49.5,
+   "latestAt": "2026-11-14T10:37:59.193Z"
+  }
+ ]
+}

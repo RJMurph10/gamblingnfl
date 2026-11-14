@@ -1,6 +1,6 @@
 {
  "day": "2026-11-16",
- "updated": "2026-11-14T01:29:04.865Z",
+ "updated": "2026-11-14T10:37:59.193Z",
  "picks": [
   {
    "id": "401873065-spread-west-coast-east",
@@ -15,9 +15,9 @@
    "best": false,
    "tag": "west-coast-east",
    "firstSeen": "2026-11-13T09:24:59.223Z",
-   "lastSeen": "2026-11-14T01:29:04.865Z",
+   "lastSeen": "2026-11-14T10:37:59.193Z",
    "latest": -4.5,
-   "latestAt": "2026-11-14T01:29:04.865Z"
+   "latestAt": "2026-11-14T10:37:59.193Z"
   }
  ]
 }
