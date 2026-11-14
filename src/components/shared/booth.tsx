@@ -12,7 +12,7 @@ import { gameRoute, headshotUrl, playerRoute, teamRoute, teamShort, useLeague } 
 /* ---------- primitives ---------- */
 
 /** Stadium photo that tries each candidate URL in order and hides itself if none load. */
-function VenueImage({ urls, alt }: { urls: string[]; alt: string }) {
+export function VenueImage({ urls, alt }: { urls: string[]; alt: string }) {
   const [index, setIndex] = useState(0);
   if (index >= urls.length) return null;
   return (
